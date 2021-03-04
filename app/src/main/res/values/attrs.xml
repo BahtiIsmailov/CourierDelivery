@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CircleProgressView">
+        <attr name="ap_progress" format="integer" />
+        <attr name="ap_progress_scale_current_color" format="color" />
+        <attr name="ap_progress_scale_wait_color" format="color" />
+        <attr name="ap_progress_background_color" format="color" />
+        <attr name="ap_progress_foreground_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="ProgressButtonView">
+        <attr name="progress_button_name" format="string" />
+        <attr name="progress_button_state" format="enum">
+            <enum name="disable" value="0" />
+            <enum name="enable" value="1" />
+            <enum name="progress" value="2" />
+        </attr>
+    </declare-styleable>
+
+</resources>

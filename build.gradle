@@ -1,0 +1,37 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+
+    ext {
+        kotlin_version = "1.4.30"
+        retrofitVersion = '2.3.0'
+        okhttpVersion = '3.9.0'
+        version_retrofit_coroutines_adapter = "0.9.2"
+        version_room = "2.1.0"
+        version_room_coroutine = "2.1.0-alpha04"
+    }
+
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+    project.logger.lifecycle("remove root dir apk ${rootProject.rootDir}" + "\\apk")
+    fileTree("${rootProject.rootDir}" + "\\apk").each { File file ->
+        project.logger.lifecycle("${file.name}")
+        delete file
+    }
+}

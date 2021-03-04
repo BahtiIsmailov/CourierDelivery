@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">WB Logistics</string>
+
+    <string name="app_nav_delivery">Доставка</string>
+    <string name="app_nav_out_app">Выйти из аккаунта</string>
+    <string name="app_version">Версия %s</string>
+
+    <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
+    <string name="nav_default_count">100</string>
+
+    <string name="delivery_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
+    <string name="delivery_empty_flight_update">Обновить</string>
+    <string name="delivery_parking_title">Парковка</string>
+
+    <string name="confirm_info_dialog_button">Понятно</string>
+
+
+</resources>
