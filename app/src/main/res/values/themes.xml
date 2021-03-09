@@ -31,12 +31,16 @@
 <!--        <item name="android:background">@color/colorWhite</item>-->
 <!--    </style>-->
 
+    <!-- Default app button style -->
     <style name="AppButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="android:background">@drawable/button_round_corner_gradient</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/button_text_size</item>
-        <item name="android:textColor">@color/button_text</item>
+        <item name="android:textColor">@color/button_text_default</item>
         <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="AppProgressBarCircularDark" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/white</item>
     </style>
 
     <style name="MenuTextAppearance">

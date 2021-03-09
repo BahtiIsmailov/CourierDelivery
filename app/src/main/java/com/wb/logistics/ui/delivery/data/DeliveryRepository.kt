@@ -6,13 +6,13 @@ import com.wb.logistics.ui.delivery.data.delivery.Delivery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class DeliveryRepository(private val deliveryApi: DeliveryApi, private val deliveryDao: DeliveryDao) {
+class DeliveryRepository(private val receptionApi: DeliveryApi, private val receptionDao: DeliveryDao) {
 
     val data = MutableLiveData<Delivery>()
 
     suspend fun refresh(city: String) {
         withContext(Dispatchers.IO) {
-            val delivery = deliveryApi.getTemplateAsync(city, API_KEY).await()
+            val delivery = receptionApi.getTemplateAsync(city, API_KEY).await()
             data.postValue(delivery)
         }
     }

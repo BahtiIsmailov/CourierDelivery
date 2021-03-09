@@ -18,6 +18,10 @@ class DeliveryViewModel(
     val flights: LiveData<List<BaseItem>>
         get() = _flights
 
+    private val _visibleStartAddingBoxes = MutableLiveData<Boolean>()
+    val visibleStartAddingBoxes: LiveData<Boolean>
+        get() = _visibleStartAddingBoxes
+
     fun fetchFlights() {
         _flights.value = getMockEmptyFlights()
     }
@@ -48,7 +52,13 @@ class DeliveryViewModel(
     }
 
     fun updateScreenClick() {
-        _flights.value = getMockFlights()
+        val flights = getMockFlights()
+        if (flights.isEmpty()) {
+            _visibleStartAddingBoxes.value = false
+        } else {
+            _visibleStartAddingBoxes.value = true
+            _flights.value = getMockFlights()
+        }
     }
 
 }

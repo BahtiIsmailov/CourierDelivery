@@ -44,6 +44,9 @@ class DeliveryFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        deliveryViewModel.visibleStartAddingBoxes.observe(viewLifecycleOwner) {
+            visibleStartAddingBoxes(it)
+        }
         deliveryViewModel.flights.observe(viewLifecycleOwner) { displayItems(it) }
     }
 
@@ -83,6 +86,10 @@ class DeliveryFragment : Fragment() {
             }))
         }
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun visibleStartAddingBoxes(isVisible: Boolean) {
+        binding.startAddingBoxesButton.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 
 }

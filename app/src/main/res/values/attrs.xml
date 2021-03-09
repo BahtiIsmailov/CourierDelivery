@@ -18,4 +18,18 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="ProgressImageButtonView">
+        <attr name="app_text" format="string" />
+        <attr name="app_state" format="enum">
+            <enum name="enable" value="0" />
+            <enum name="progress" value="1" />
+            <enum name="disabled" value="2" />
+        </attr>
+        <attr name="app_text_color_enable" format="color" />
+        <attr name="app_text_color_progress" format="color" />
+        <attr name="app_text_color_disable" format="color" />
+        <attr name="app_icon" format="integer" />
+        <attr name="app_background" format="reference|color" />
+    </declare-styleable>
+
 </resources>

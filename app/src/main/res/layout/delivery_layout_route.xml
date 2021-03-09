@@ -47,7 +47,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/date_text"
             app:layout_constraintStart_toEndOf="@+id/date_text"
             app:layout_constraintTop_toTopOf="@+id/date_text"
-            app:srcCompat="@drawable/ic_dot_divider_date" />
+            app:srcCompat="@drawable/ic_dot_divider" />
 
         <TextView
             android:id="@+id/time_text"

@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.delivery.data
+package com.wb.logistics.ui.reception.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -7,10 +7,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface DeliveryDao {
+interface ReceptionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(receptionEntities: List<DeliveryEntity>)
+    fun add(receptionEntities: List<ReceptionEntity>)
 
     @Query("SELECT * FROM Reception")
-    fun findAll(): LiveData<List<DeliveryEntity>>
+    fun findAll(): LiveData<List<ReceptionEntity>>
 }

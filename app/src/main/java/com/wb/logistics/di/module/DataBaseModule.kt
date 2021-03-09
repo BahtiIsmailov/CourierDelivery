@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.wb.logistics.app.DATABASE_NAME
 import com.wb.logistics.db.AppDatabase
 import com.wb.logistics.ui.delivery.data.DeliveryDao
+import com.wb.logistics.ui.reception.data.ReceptionDao
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -17,10 +18,15 @@ val databaseModule = module {
             .build()
     }
 
-    fun provideUserDao(database: AppDatabase): DeliveryDao {
+    fun provideDeliveryDao(database: AppDatabase): DeliveryDao {
         return database.deliveryDao
     }
 
+    fun provideReceptionDao(database: AppDatabase): ReceptionDao {
+        return database.receptionDao
+    }
+
     single { provideDatabase(androidApplication()) }
-    single { provideUserDao(get()) }
+    single { provideDeliveryDao(get()) }
+    single { provideReceptionDao(get()) }
 }

@@ -9,6 +9,14 @@
         android:id="@+id/nav_home"
         android:name="com.wb.logistics.ui.delivery.DeliveryFragment"
         android:label="@string/app_nav_delivery"
-        tools:layout="@layout/delivery_fragment" />
+        tools:layout="@layout/delivery_fragment" >
+        <action
+            android:id="@+id/action_nav_home_to_receptionFragment"
+            app:destination="@id/receptionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/receptionFragment"
+        android:name="com.wb.logistics.ui.reception.ReceptionFragment"
+        android:label="ReceptionFragment" />
 
 </navigation>

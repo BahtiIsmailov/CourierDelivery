@@ -35,12 +35,34 @@
     <color name="delivery_empty_background">#F6F6F6</color>
     <color name="delivery_parking_number">#4CAF50</color>
 
+    <color name="button_text_default">#FFFFFF</color>
     <color name="button_disabled_gradient_start">#E0DDE4</color>
     <color name="button_disabled_gradient_end">#E0DDE4</color>
     <color name="button_normal_gradient_start">#642CA3</color>
     <color name="button_normal_gradient_end">#642CA3</color>
-    <color name="button_pressed_gradient_start">#642CA3</color>
-    <color name="button_pressed_gradient_end">#642CA3</color>
-    <color name="button_text">#FFFFFF</color>
+    <color name="button_pressed_gradient_start">#703AAC</color>
+    <color name="button_pressed_gradient_end">#703AAC</color>
+
+    <color name="button_default_text_enable">#FFFFFF</color>
+    <color name="button_default_text_progress">#FFFFFF</color>
+    <color name="button_default_text_disable">#FFFFFF</color>
+
+    <color name="button_default_disabled">#E0DDE4</color>
+    <color name="button_default_enabled">#642CA3</color>
+    <color name="button_default_pressed">#703AAC</color>
+
+    <color name="button_light_disabled">#E0DDE4</color>
+    <color name="button_light_enabled">#FFFFFF</color>
+    <color name="button_light_pressed">#E0DDE4</color>
+
+    <color name="button_gray_text_enable">#FFFFFF</color>
+    <color name="button_gray_text_progress">#FFFFFF</color>
+    <color name="button_gray_text_disable">#FFFFFF</color>
+
+    <color name="button_gray_disabled">#F3F1F6</color>
+    <color name="button_gray_enabled">#E0DDE4</color>
+    <color name="button_gray_pressed">#BEBBC1</color>
+
+    <color name="reception_text_manual_input">#642CA3</color>
 
 </resources>

@@ -1,14 +1,21 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.ui.delivery.data.DeliveryApi
-import com.wb.logistics.ui.delivery.data.DeliveryDao
-import com.wb.logistics.ui.delivery.data.DeliveryRepository
+import com.wb.logistics.ui.delivery.data.*
+import com.wb.logistics.ui.reception.data.ReceptionApi
+import com.wb.logistics.ui.reception.data.ReceptionDao
+import com.wb.logistics.ui.reception.data.ReceptionRepository
 import org.koin.dsl.module
 
 val deliveryRepositoryModule = module {
-    fun provideUserRepository(api: DeliveryApi, dao: DeliveryDao): DeliveryRepository {
+
+    fun provideDeliveryRepository(api: DeliveryApi, dao: DeliveryDao): DeliveryRepository {
         return DeliveryRepository(api, dao)
     }
 
-    single { provideUserRepository(get(), get()) }
+    fun provideReceptionRepository(api: ReceptionApi, dao: ReceptionDao): ReceptionRepository {
+        return ReceptionRepository(api, dao)
+    }
+
+    single { provideDeliveryRepository(get(), get()) }
+    single { provideReceptionRepository(get(), get()) }
 }

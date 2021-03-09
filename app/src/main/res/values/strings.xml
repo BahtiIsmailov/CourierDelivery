@@ -11,8 +11,12 @@
     <string name="delivery_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
     <string name="delivery_empty_flight_update">Обновить</string>
     <string name="delivery_parking_title">Парковка</string>
+    <string name="delivery_start_receiving_boxes_button">Начать прием коробок</string>
+
+    <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
+    <string name="reception_manual_input_button">Ручной ввод</string>
+    <string name="reception_complete_button">Завершить</string>
 
     <string name="confirm_info_dialog_button">Понятно</string>
-
 
 </resources>
