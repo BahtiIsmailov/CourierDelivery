@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.NavigationDrawer" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryVariant">@color/white</item>
@@ -17,6 +17,29 @@
 
         <!-- Button. -->
         <item name="buttonStyle">@style/AppButtonStyle</item>
+
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+<!--        <item name="android:textColorPrimary">@color/textColorPrimary</item>-->
+<!--        <item name="android:textColorSecondary">@android:color/darker_gray</item>-->
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="fontFamily">@font/regular</item>
+        <item name="colorSecondaryVariant">@color/white</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.SplashTheme">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+<!--        <item name="android:textColor">@color/splash_text</item>-->
+<!--        <item name="android:textColorPrimary">@color/splash_text</item>-->
+<!--        <item name="android:textColorSecondary">@color/splash_text</item>-->
+<!--        <item name="colorSecondaryVariant">@color/splash_text</item>-->
+
+<!--        <item name="colorPrimary">@color/white</item>-->
+<!--        <item name="colorPrimaryVariant">@color/white</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
 
     </style>
 
@@ -89,14 +112,9 @@
         <item name="android:textColor">@color/large_regular_text</item>
     </style>
 
-    <style name="Theme.NavigationDrawer.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.NavigationDrawer.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.NavigationDrawer.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="AppProgressBarCircularLight" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/white</item>
