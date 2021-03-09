@@ -33,6 +33,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/navigation_content" />
+    <include layout="@layout/navigation_app_host" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

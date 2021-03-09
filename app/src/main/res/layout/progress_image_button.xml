@@ -55,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"
-        android:text="@string/delivery_start_receiving_boxes_button"
+        android:text="@string/delivery_start_receiving_boxes_start"
         android:textColor="@color/white"
         tools:ignore="MissingConstraints" />
 

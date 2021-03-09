@@ -2,7 +2,6 @@ package com.wb.logistics.app
 
 import android.app.Application
 import android.content.Context
-import androidx.multidex.MultiDex
 import com.wb.logistics.di.module.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -32,7 +31,6 @@ class App : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-        MultiDex.install(this)
     }
 
 }

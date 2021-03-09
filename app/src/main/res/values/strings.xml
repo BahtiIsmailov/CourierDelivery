@@ -5,13 +5,20 @@
     <string name="app_nav_out_app">Выйти из аккаунта</string>
     <string name="app_version">Версия %s</string>
 
+    <string name="auth_phone_input_title">Введите номер телефона</string>
+    <string name="auth_phone_input_title_description">Мы отправим на него код подтверждения</string>
+    <string name="auth_phone_hint">+7</string>
+    <string name="auth_phone_not_found">Номер телефона не зарегистрирован</string>
+    <string name="auth_phone_attempt">Осталось попаыток:</string>
+    <string name="auth_phone_next">Далее</string>
+
     <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
     <string name="nav_default_count">100</string>
 
     <string name="delivery_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
     <string name="delivery_empty_flight_update">Обновить</string>
     <string name="delivery_parking_title">Парковка</string>
-    <string name="delivery_start_receiving_boxes_button">Начать прием коробок</string>
+    <string name="delivery_start_receiving_boxes_start">Начать прием коробок</string>
 
     <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
     <string name="reception_manual_input_button">Ручной ввод</string>

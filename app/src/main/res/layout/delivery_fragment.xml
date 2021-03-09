@@ -28,7 +28,7 @@
         app:app_background="@drawable/progress_image_button_default"
         app:app_icon="@drawable/ic_start_scanner"
         app:app_state="enable"
-        app:app_text="@string/delivery_start_receiving_boxes_button"
+        app:app_text="@string/delivery_start_receiving_boxes_start"
         app:app_text_color_disable="@color/button_default_text_disable"
         app:app_text_color_enable="@color/button_default_text_enable"
         app:app_text_color_progress="@color/button_default_text_progress"
