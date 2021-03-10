@@ -5,16 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
-import com.wb.logistics.adapters.DefaultAdapter
-import com.wb.logistics.databinding.DeliveryFragmentBinding
 import com.wb.logistics.databinding.ReceptionFragmentBinding
-import com.wb.logistics.mvp.model.base.BaseItem
-import com.wb.logistics.ui.delivery.delegates.OnRouteEmptyCallback
-import com.wb.logistics.ui.delivery.delegates.RouteDelegate
-import com.wb.logistics.ui.delivery.delegates.RouteEmptyDelegate
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReceptionFragment : Fragment() {

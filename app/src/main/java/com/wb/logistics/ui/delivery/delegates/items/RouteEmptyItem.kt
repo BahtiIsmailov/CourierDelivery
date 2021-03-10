@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.delivery.delegates.items
 
-import com.wb.logistics.mvp.model.base.BaseItem
+import com.wb.logistics.mvvm.model.base.BaseItem
 
 data class RouteEmptyItem(
     val message: String

@@ -8,4 +8,11 @@ public interface SharedWorker {
 
     void save(@NonNull String key, boolean value);
 
+    @NonNull
+    String load(@NonNull String key, @NonNull String defValue);
+
+    void save(@NonNull String key, @NonNull String value);
+
+    void delete(@NonNull String... keys);
+
 }

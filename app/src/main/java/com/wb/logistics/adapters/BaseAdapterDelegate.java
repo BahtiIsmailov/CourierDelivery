@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate;
-import com.wb.logistics.mvp.model.base.BaseItem;
+import com.wb.logistics.mvvm.model.base.BaseItem;
 
 import java.util.List;
 

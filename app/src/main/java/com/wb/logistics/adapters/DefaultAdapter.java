@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate;
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager;
-import com.wb.logistics.mvp.model.base.BaseItem;
+import com.wb.logistics.mvvm.model.base.BaseItem;
 
 import java.util.ArrayList;
 import java.util.List;

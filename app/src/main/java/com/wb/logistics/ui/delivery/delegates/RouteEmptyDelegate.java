@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wb.logistics.R;
 import com.wb.logistics.adapters.BaseAdapterDelegate;
 import com.wb.logistics.databinding.DeliveryLayoutRouteEmptyBinding;
-import com.wb.logistics.mvp.model.base.BaseItem;
+import com.wb.logistics.mvvm.model.base.BaseItem;
 import com.wb.logistics.ui.delivery.delegates.items.RouteEmptyItem;
 
 public class RouteEmptyDelegate extends BaseAdapterDelegate<RouteEmptyItem,

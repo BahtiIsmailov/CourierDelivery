@@ -22,6 +22,7 @@ class App : Application() {
                     networkModule,
                     deliveryRepositoryModule,
                     resourceModule,
+                    rxModule,
                     utilsModule,
                     viewModelModule
                 )

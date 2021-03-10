@@ -3,7 +3,7 @@ package com.wb.logistics.ui.delivery
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wb.logistics.mvp.model.base.BaseItem
+import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.delivery.data.DeliveryRepository
 import com.wb.logistics.ui.delivery.delegates.items.RouteEmptyItem
 import com.wb.logistics.ui.delivery.delegates.items.RouteItem

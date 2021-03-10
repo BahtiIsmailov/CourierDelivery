@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wb.logistics.R;
 import com.wb.logistics.adapters.BaseAdapterDelegate;
 import com.wb.logistics.databinding.DeliveryLayoutRouteBinding;
-import com.wb.logistics.mvp.model.base.BaseItem;
+import com.wb.logistics.mvvm.model.base.BaseItem;
 import com.wb.logistics.ui.delivery.delegates.items.RouteItem;
 
 import java.util.List;

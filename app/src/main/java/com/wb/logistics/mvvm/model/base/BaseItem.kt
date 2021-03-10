@@ -1,4 +1,4 @@
-package com.wb.logistics.mvp.model.base
+package com.wb.logistics.mvvm.model.base
 
 interface BaseItem {
     var idView: Int
