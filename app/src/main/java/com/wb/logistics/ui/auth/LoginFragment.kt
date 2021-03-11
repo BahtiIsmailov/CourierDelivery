@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.LoginFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -18,7 +19,7 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
     private val binding get() = _binding!!
 
     private lateinit var inputMethod: InputMethodManager
-    private val viewModel: LoginViewModel by viewModel()
+    private val viewModel by viewModel<LoginViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,10 +29,10 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        initListener()
         (activity as AppCompatActivity).supportActionBar?.hide()
         inputMethod =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -42,8 +43,14 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
         _binding = null
     }
 
-    private fun initViews() {
+    private fun initListener() {
+        binding.title.setOnLongClickListener {
+            findNavController().navigate(R.id.configActivity)
+            true
+        }
+    }
 
+    private fun initViews() {
 //        binding.numberAttempt
 //        binding.numberNotFound
 //        binding.phoneNumber

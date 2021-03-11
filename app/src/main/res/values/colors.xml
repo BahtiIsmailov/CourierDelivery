@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="colorPrimary">#642CA3</color>
+    <color name="colorPrimaryDark">#291466</color>
+    <color name="colorStatusBarBackground">#F2F3F5</color>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#276EA6</color>
     <color name="purple_700">#95276EA6</color>

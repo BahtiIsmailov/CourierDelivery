@@ -8,6 +8,21 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.wb.logistics.ui.auth.LoginFragment"
-        android:label="LoginFragment" />
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_configActivity"
+            app:destination="@id/configActivity"
+            app:enterAnim="@anim/nav_default_pop_enter_anim"
+            app:exitAnim="@anim/nav_default_pop_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+    <activity
+        android:id="@+id/configActivity"
+        android:name="com.wb.logistics.ui.config.ConfigActivity"
+        android:label="ConfigActivity" />
 
 </navigation>

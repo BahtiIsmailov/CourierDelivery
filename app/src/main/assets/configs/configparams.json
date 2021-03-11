@@ -1,0 +1,21 @@
+﻿{
+  "auth_servers": [
+    {
+      "key": "AUTH_SERVER_DLDEVEL",
+      "value": "https://auth.wbtrans.svc.k8s.dldevel"
+    },
+    {
+      "key": "AUTH_SERVER_DATALINE",
+      "value": "https://auth.wbtrans.svc.k8s.dataline"
+    },
+    {
+      "key": "AUTH_SERVER_DATAPRO",
+      "value": "https://auth.wbtrans.svc.k8s.datapro"
+    },
+    {
+      "key": "AUTH_SERVER_FRONTEND",
+      "value": "https://wbtrans-auth.wildberries.ru"
+    }
+  ],
+  "api_servers": []
+}

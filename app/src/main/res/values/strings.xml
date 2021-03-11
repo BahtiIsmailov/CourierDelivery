@@ -11,6 +11,15 @@
     <string name="wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
 
+    <!--debug panel-->
+    <string name="debug_panel_caption">App Debug Console</string>
+    <string name="debug_auto_substitution">Auto substitution</string>
+    <string name="debug_auto_authorization">Auto authorization</string>
+    <string name="debug_save">Save</string>
+    <string name="debug_close">Close</string>
+
+    <string name="selector_title">Выбор</string>
+
     <string name="auth_phone_input_title">Введите номер телефона</string>
     <string name="auth_phone_input_title_description">Мы отправим на него код подтверждения</string>
     <string name="auth_phone_hint">+7</string>

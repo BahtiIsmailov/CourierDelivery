@@ -55,7 +55,7 @@ public class RouteAdapter extends ArrayAdapter<String> {
         return items.size();
     }
 
-    protected class ViewHolder {
+    private class ViewHolder {
 
         DeliveryLayoutRouteLegendBinding binding;
 

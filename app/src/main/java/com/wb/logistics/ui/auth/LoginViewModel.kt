@@ -6,4 +6,9 @@ import androidx.lifecycle.ViewModel
 class LoginViewModel : ViewModel() {
 
     fun getCodeByPhone(phoneNumber: String) {}
+
+    fun longTitleClick() {
+
+    }
+
 }

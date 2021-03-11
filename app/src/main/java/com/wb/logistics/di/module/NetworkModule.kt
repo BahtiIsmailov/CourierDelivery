@@ -1,13 +1,9 @@
 package com.wb.logistics.di.module
 
-import android.app.Application
 import android.content.Context
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.wb.logistics.BuildConfig
-import com.wb.logistics.app.BASE_URL_AUTH
 import com.wb.logistics.network.NullOnEmptyConverterFactory
 import com.wb.logistics.network.certificate.CertificateStore
 import com.wb.logistics.network.client.OkHttpFactory
@@ -16,24 +12,23 @@ import com.wb.logistics.network.domain.InterceptorFactory
 import com.wb.logistics.network.headers.HeaderManager
 import com.wb.logistics.network.rest.RetrofitAppFactory
 import com.wb.logistics.network.rx.*
-import okhttp3.Cache
-import okhttp3.Interceptor
+import com.wb.logistics.utils.managers.ConfigManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.CallAdapter
-import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
+const val AUTH_NAMED = "auth"
 
 val networkModule = module {
 
     //==============================================================================================
     // url api
     //==============================================================================================
-    fun provideAuthServer(): String {
-        return BASE_URL_AUTH
+    fun provideAuthServer(configManager: ConfigManager): String {
+        return configManager.readAuthServerUrl()
     }
 
     //==============================================================================================
@@ -103,40 +98,11 @@ val networkModule = module {
         )
     }
 
-
-    fun provideHttpLoggingInterceptor(): Interceptor {
-        return HttpLoggingInterceptor()
-            .setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE)
-    }
-
-    fun provideCache(application: Application): Cache {
-        val cacheSize = 10 * 1024 * 1024
-        return Cache(application.cacheDir, cacheSize.toLong())
-    }
-
-    fun provideHttpClient(loggerInterceptor: Interceptor, cache: Cache): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(loggerInterceptor)
-            .cache(cache)
-            .build()
-    }
-
     fun provideGson(): Gson {
         return GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create()
     }
 
-
-    fun provideRetrofit(factory: Gson, client: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL_AUTH)
-            .addConverterFactory(GsonConverterFactory.create(factory))
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .client(client)
-            .build()
-    }
-
-    single<String>(named("auth")) { provideAuthServer() }
-//        .client(get(named("auth")))
+    single(named(AUTH_NAMED)) { provideAuthServer(get()) }
 
     single { provideCallAdapterFactoryResourceProvider(get()) }
     single { provideApiErrorsFactory(get()) }
@@ -150,10 +116,6 @@ val networkModule = module {
 
     single { provideRetrofitAuthFactory(get(), get(), get(), get(), get()) }
 
-    single { provideHttpLoggingInterceptor() }
-    single { provideCache(androidApplication()) }
-    single { provideHttpClient(get(), get()) }
     single { provideGson() }
-    single { provideRetrofit(get(), get()) }
 
 }
