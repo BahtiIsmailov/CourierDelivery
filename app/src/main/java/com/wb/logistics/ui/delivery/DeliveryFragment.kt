@@ -5,16 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapter
 import com.wb.logistics.databinding.DeliveryFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.delivery.delegates.OnRouteEmptyCallback
 import com.wb.logistics.ui.delivery.delegates.RouteDelegate
 import com.wb.logistics.ui.delivery.delegates.RouteEmptyDelegate
+import com.wb.logistics.views.ProgressImageButtonMode
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.concurrent.TimeUnit
 
 class DeliveryFragment : Fragment() {
 
@@ -39,6 +45,15 @@ class DeliveryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initAdapter()
+
+        binding.startAddingBoxes.setOnClickListener {
+            binding.startAddingBoxes.setState(ProgressImageButtonMode.PROGRESS)
+            binding.startAddingBoxes.postDelayed(
+                { findNavController().navigate(R.id.receptionFragment) },
+                2000
+            )
+        }
+
         deliveryViewModel.fetchFlights()
     }
 
@@ -81,7 +96,11 @@ class DeliveryFragment : Fragment() {
             addDelegate(RouteDelegate(requireContext()))
             addDelegate(RouteEmptyDelegate(requireContext(), object : OnRouteEmptyCallback {
                 override fun onUpdateRouteClick() {
-                    deliveryViewModel.updateScreenClick()
+                    Observable.timer(2, TimeUnit.SECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            { deliveryViewModel.updateScreenClick() }
+                        ) { }
                 }
             }))
         }
@@ -89,7 +108,7 @@ class DeliveryFragment : Fragment() {
     }
 
     private fun visibleStartAddingBoxes(isVisible: Boolean) {
-        binding.startAddingBoxesButton.visibility = if (isVisible) View.VISIBLE else View.GONE
+        binding.startAddingBoxes.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 
 }

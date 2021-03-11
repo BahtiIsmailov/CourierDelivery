@@ -2,7 +2,7 @@ package com.wb.logistics.utils.reader
 
 import android.content.Context
 import com.google.gson.Gson
-import com.wb.logistics.ui.config.dao.ConfigDAO
+import com.wb.logistics.ui.config.dao.ConfigDao
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -12,7 +12,7 @@ class ConfigReaderImpl(
     private val fileName: String
 ) : ConfigReader {
 
-    override fun build(): ConfigDAO {
+    override fun build(): ConfigDao {
         val json = read()
         return parse(json)
     }
@@ -28,8 +28,8 @@ class ConfigReaderImpl(
         return resultString.toString()
     }
 
-    private fun parse(json: String): ConfigDAO {
-        return gson.fromJson(json, ConfigDAO::class.java)
+    private fun parse(json: String): ConfigDao {
+        return gson.fromJson(json, ConfigDao::class.java)
     }
 
     companion object {

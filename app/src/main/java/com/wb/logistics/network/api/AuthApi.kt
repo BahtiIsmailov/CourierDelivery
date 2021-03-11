@@ -1,15 +1,26 @@
 package com.wb.logistics.network.api
 
-import io.reactivex.Completable
+import com.wb.logistics.network.api.remote.AuthRemote
+import com.wb.logistics.network.api.remote.CheckPhoneRemote
+import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AuthApi {
 
-    @GET("template")
-    fun getTemplateAsync(
-        @Query("") apiKey1: String,
-        @Query("") apiKey2: String
-    ): Completable
+    @POST("auth")
+    fun authByPhoneOrPassword(
+        @Query("password") password: String,
+        @Query("phone") phone: String,
+        @Query("useSMS") useSMS: Boolean
+    ): Single<AuthRemote>
+
+
+    @GET("auth/{phone}")
+    fun checkPhone(
+        @Path("phone") phone: String
+    ): Single<CheckPhoneRemote>
 
 }

@@ -15,13 +15,13 @@ import com.wb.logistics.R;
 
 public class ProgressButtonView extends FrameLayout {
 
-    private final static String DEFAULT_NAME = "";
+    private final static String DEFAULT_TEXT = "";
     private final static int DEFAULT_CURRENT_STATE = ProgressButtonMode.DISABLE;
 
     private Button progressButton;
     private ProgressBar progressBar;
 
-    private String text = DEFAULT_NAME;
+    private String text = DEFAULT_TEXT;
     private int currentState = ProgressButtonMode.DISABLE;
 
     public ProgressButtonView(Context context) {
@@ -68,7 +68,7 @@ public class ProgressButtonView extends FrameLayout {
     }
 
     private void initDefaultState() {
-        text = DEFAULT_NAME;
+        text = DEFAULT_TEXT;
         currentState = DEFAULT_CURRENT_STATE;
     }
 
@@ -90,18 +90,21 @@ public class ProgressButtonView extends FrameLayout {
     private void disableState() {
         progressButton.setEnabled(false);
         progressButton.setVisibility(VISIBLE);
+        progressButton.setText(text);
         progressBar.setVisibility(GONE);
     }
 
     private void enableState() {
         progressButton.setEnabled(true);
         progressButton.setVisibility(VISIBLE);
+        progressButton.setText(text);
         progressBar.setVisibility(GONE);
     }
 
     private void progressState() {
         progressButton.setEnabled(false);
-        progressButton.setVisibility(GONE);
+        progressButton.setVisibility(VISIBLE);
+        progressButton.setText(DEFAULT_TEXT);
         progressBar.setVisibility(VISIBLE);
     }
 

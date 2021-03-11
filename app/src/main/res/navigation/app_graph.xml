@@ -3,19 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/auth_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@id/deliveryFragment">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.wb.logistics.ui.reception.ReceptionFragment"
-        android:label="@string/app_nav_delivery">
+        android:id="@+id/deliveryFragment"
+        android:name="com.wb.logistics.ui.delivery.DeliveryFragment"
+        android:label="@string/delivery_label"
+        tools:layout="@layout/delivery_fragment">
         <action
-            android:id="@+id/action_nav_home_to_receptionFragment"
+            android:id="@+id/action_deliveryFragment_to_receptionFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true"
             app:destination="@id/receptionFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/receptionFragment"
         android:name="com.wb.logistics.ui.reception.ReceptionFragment"
-        android:label="ReceptionFragment" />
+        android:label="@string/reception_label"
+        tools:layout="@layout/reception_fragment" />
 
 </navigation>

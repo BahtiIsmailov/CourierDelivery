@@ -30,11 +30,13 @@
     <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
     <string name="nav_default_count">100</string>
 
+    <string name="delivery_label">Доставка</string>
     <string name="delivery_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
     <string name="delivery_empty_flight_update">Обновить</string>
     <string name="delivery_parking_title">Парковка</string>
     <string name="delivery_start_receiving_boxes_start">Начать прием коробок</string>
 
+    <string name="reception_label">Прием</string>
     <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
     <string name="reception_manual_input_button">Ручной ввод</string>
     <string name="reception_complete_button">Завершить</string>

@@ -11,6 +11,7 @@ import com.wb.logistics.adapters.BaseAdapterDelegate;
 import com.wb.logistics.databinding.DeliveryLayoutRouteEmptyBinding;
 import com.wb.logistics.mvvm.model.base.BaseItem;
 import com.wb.logistics.ui.delivery.delegates.items.RouteEmptyItem;
+import com.wb.logistics.views.ProgressButtonMode;
 
 public class RouteEmptyDelegate extends BaseAdapterDelegate<RouteEmptyItem,
         RouteEmptyDelegate.EmptyViewHolder> {
@@ -52,7 +53,11 @@ public class RouteEmptyDelegate extends BaseAdapterDelegate<RouteEmptyItem,
         private EmptyViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = DeliveryLayoutRouteEmptyBinding.bind(itemView);
-            binding.progressButton.setOnClickListener(view -> onRouteEmptyCallback.onUpdateRouteClick());
+            binding.progressButton.setOnClickListener(view -> {
+                binding.progressButton.setState(ProgressButtonMode.PROGRESS);
+                onRouteEmptyCallback.onUpdateRouteClick();
+            });
+
         }
 
     }

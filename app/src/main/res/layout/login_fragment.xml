@@ -44,6 +44,7 @@
         android:background="@drawable/ripple_round10_rectangle_white"
         android:elevation="4dp"
         android:hint="@string/auth_phone_hint"
+        android:paddingStart="32dp"
         android:imeOptions="actionDone"
         android:inputType="phone"
         android:maxLength="18"

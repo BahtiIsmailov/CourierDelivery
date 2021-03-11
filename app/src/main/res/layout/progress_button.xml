@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_round_corner"
         android:enabled="true"
-        android:background="@drawable/button_round_corner_gradient"
         tools:text="..." />
 
     <ProgressBar

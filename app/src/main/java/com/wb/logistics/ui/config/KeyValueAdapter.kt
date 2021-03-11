@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AdapterTwoRowItemLayoutBinding
-import com.wb.logistics.ui.config.dao.KeyValueDAO
+import com.wb.logistics.ui.config.dao.KeyValueDao
 
-class KeyValueAdapter(context: Context?, val items: List<KeyValueDAO>) :
-    ArrayAdapter<KeyValueDAO?>(
+class KeyValueAdapter(context: Context?, val items: List<KeyValueDao>) :
+    ArrayAdapter<KeyValueDao?>(
         context!!, R.layout.adapter_two_row_item_layout
     ) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -39,7 +39,7 @@ class KeyValueAdapter(context: Context?, val items: List<KeyValueDAO>) :
         return getView(position, convertView)
     }
 
-    override fun getItem(position: Int): KeyValueDAO {
+    override fun getItem(position: Int): KeyValueDao {
         return items[position]
     }
 

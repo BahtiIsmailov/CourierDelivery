@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.wb.logistics.app.AppPreffsKeys
 import com.wb.logistics.databinding.ConfigActivityBinding
-import com.wb.logistics.ui.config.dao.KeyValueDAO
+import com.wb.logistics.ui.config.dao.KeyValueDao
 import com.wb.logistics.views.SelectorView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,7 +28,7 @@ class ConfigActivity : AppCompatActivity() {
 
     private fun initListener() {
         binding.authSelector.setItemListener(object : SelectorView.OnItemSelectListener {
-            override fun onItemSelected(keyValue: KeyValueDAO) {
+            override fun onItemSelected(keyValue: KeyValueDao) {
                 configViewModel.onAuthServerSelected(keyValue)
             }
         })

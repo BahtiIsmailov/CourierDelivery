@@ -3,10 +3,7 @@
     <item
         android:state_enabled="false">
         <shape android:shape="rectangle">
-            <gradient
-                android:startColor="@color/button_disabled_gradient_start"
-                android:endColor="@color/button_disabled_gradient_end"
-                android:angle="315"/>
+            <solid android:color="@color/button_round_default_disabled" />
             <corners android:radius="@dimen/button_corner_radius" />
         </shape>
     </item>
@@ -14,10 +11,7 @@
         android:state_enabled="true"
         android:state_pressed="false">
         <shape  android:shape="rectangle">
-            <gradient
-                android:startColor="@color/button_normal_gradient_start"
-                android:endColor="@color/button_normal_gradient_end"
-                android:angle="315"/>
+            <solid android:color="@color/button_round_default_enabled" />
             <corners android:radius="@dimen/button_corner_radius" />
         </shape>
     </item>
@@ -25,10 +19,7 @@
         android:state_enabled="true"
         android:state_pressed="true">
         <shape android:shape="rectangle">
-            <gradient
-                android:startColor="@color/button_pressed_gradient_start"
-                android:endColor="@color/button_pressed_gradient_end"
-                android:angle="315"/>
+            <solid android:color="@color/button_round_default_pressed" />
             <corners android:radius="@dimen/button_corner_radius" />
         </shape>
     </item>

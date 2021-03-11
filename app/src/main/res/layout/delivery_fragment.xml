@@ -15,18 +15,18 @@
         android:layout_gravity="center_vertical"
         android:background="@color/delivery_flight_background"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/start_adding_boxes_button"
+        app:layout_constraintBottom_toTopOf="@+id/start_adding_boxes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/delivery_layout_route" />
 
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/start_adding_boxes_button"
+        android:id="@+id/start_adding_boxes"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         app:app_background="@drawable/progress_image_button_default"
-        app:app_icon="@drawable/ic_start_scanner"
+        app:app_icon="@drawable/ic_scan_barcode"
         app:app_state="enable"
         app:app_text="@string/delivery_start_receiving_boxes_start"
         app:app_text_color_disable="@color/button_default_text_disable"

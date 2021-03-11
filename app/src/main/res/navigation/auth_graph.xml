@@ -18,11 +18,18 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_navigationActivity"
+            app:destination="@id/navigationActivity" />
 
     </fragment>
     <activity
         android:id="@+id/configActivity"
         android:name="com.wb.logistics.ui.config.ConfigActivity"
-        android:label="ConfigActivity" />
+        app:popUpToInclusive="true" />
+    <activity
+        android:id="@+id/navigationActivity"
+        android:name="com.wb.logistics.ui.nav.NavigationActivity"
+        tools:layout="@layout/navigation_app_bar" />
 
 </navigation>

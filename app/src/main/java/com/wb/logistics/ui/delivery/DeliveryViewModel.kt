@@ -4,14 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.delivery.data.DeliveryRepository
 import com.wb.logistics.ui.delivery.delegates.items.RouteEmptyItem
 import com.wb.logistics.ui.delivery.delegates.items.RouteItem
 import com.wb.logistics.ui.res.ResourceProvider
 
 class DeliveryViewModel(
-    private val deliveryRepository: DeliveryRepository,
-    private val resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider //private val deliveryRepository: DeliveryRepository,
 ) : ViewModel() {
 
     private val _flights = MutableLiveData<List<BaseItem>>()
@@ -24,6 +22,7 @@ class DeliveryViewModel(
 
     fun fetchFlights() {
         _flights.value = getMockEmptyFlights()
+        _visibleStartAddingBoxes.value = false
     }
 
     private fun getMockEmptyFlights(): List<BaseItem> {
@@ -57,7 +56,7 @@ class DeliveryViewModel(
             _visibleStartAddingBoxes.value = false
         } else {
             _visibleStartAddingBoxes.value = true
-            _flights.value = getMockFlights()
+            _flights.value = flights
         }
     }
 

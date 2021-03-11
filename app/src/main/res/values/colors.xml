@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <color name="colorPrimary">#642CA3</color>
+    <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#291466</color>
     <color name="colorStatusBarBackground">#F2F3F5</color>
 
@@ -25,7 +24,6 @@
     <color name="color_progress">#FF5722</color>
     <color name="invalid">#E22D2D</color>
 
-
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
 
@@ -48,16 +46,14 @@
     <color name="delivery_parking_number">#4CAF50</color>
 
     <color name="button_text_default">#FFFFFF</color>
-    <color name="button_disabled_gradient_start">#E0DDE4</color>
-    <color name="button_disabled_gradient_end">#E0DDE4</color>
-    <color name="button_normal_gradient_start">#642CA3</color>
-    <color name="button_normal_gradient_end">#642CA3</color>
-    <color name="button_pressed_gradient_start">#703AAC</color>
-    <color name="button_pressed_gradient_end">#703AAC</color>
 
     <color name="button_default_text_enable">#FFFFFF</color>
     <color name="button_default_text_progress">#FFFFFF</color>
     <color name="button_default_text_disable">#FFFFFF</color>
+
+    <color name="button_round_default_disabled">#E0DDE4</color>
+    <color name="button_round_default_enabled">#642CA3</color>
+    <color name="button_round_default_pressed">#703AAC</color>
 
     <color name="button_default_disabled">#E0DDE4</color>
     <color name="button_default_enabled">#642CA3</color>

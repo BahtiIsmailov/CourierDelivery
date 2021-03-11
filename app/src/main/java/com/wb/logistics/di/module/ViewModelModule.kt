@@ -10,6 +10,6 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModel { ConfigViewModel(get(), get()) }
     viewModel { NavigationViewModel(get(), get()) }
-    viewModel { DeliveryViewModel(get(), get()) }
+    viewModel { DeliveryViewModel(get()) }
     viewModel { ReceptionViewModel(get(), get()) }
 }

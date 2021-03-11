@@ -3,7 +3,7 @@ package com.wb.logistics.ui.config
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wb.logistics.ui.config.dao.KeyValueDAO
+import com.wb.logistics.ui.config.dao.KeyValueDao
 import com.wb.logistics.utils.managers.ConfigManager
 import com.wb.logistics.utils.managers.DeviceManager
 
@@ -12,16 +12,16 @@ class ConfigViewModel(
     private val deviceManager: DeviceManager
 ) : ViewModel() {
 
-    private var authServerValueSelected: KeyValueDAO? = null
+    private var authServerValueSelected: KeyValueDao? = null
     private var autoSubstitutionChecked = false
     private var autoAuthorizationChecked = false
 
-    private val _authServerValues = MutableLiveData<List<KeyValueDAO>>()
-    val authServerValues: LiveData<List<KeyValueDAO>>
+    private val _authServerValues = MutableLiveData<List<KeyValueDao>>()
+    val authServerValues: LiveData<List<KeyValueDao>>
         get() = _authServerValues
 
-    private val _authServerSelect = MutableLiveData<KeyValueDAO>()
-    val authServerSelect: LiveData<KeyValueDAO>
+    private val _authServerSelect = MutableLiveData<KeyValueDao>()
+    val authServerSelect: LiveData<KeyValueDao>
         get() = _authServerSelect
 
     init {
@@ -33,7 +33,7 @@ class ConfigViewModel(
         _authServerSelect.value = configManager.readDaoAuthServerUrl()
     }
 
-    fun onAuthServerSelected(keyValue: KeyValueDAO) {
+    fun onAuthServerSelected(keyValue: KeyValueDao) {
         authServerValueSelected = keyValue
     }
 
