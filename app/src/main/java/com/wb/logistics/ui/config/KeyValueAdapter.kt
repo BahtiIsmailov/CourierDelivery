@@ -44,7 +44,7 @@ class KeyValueAdapter(context: Context?, val items: List<KeyValueDao>) :
     }
 
     override fun getCount(): Int {
-        return items.size ?: 0
+        return items.size
     }
 
     private class ViewHolder(rootView: View) {

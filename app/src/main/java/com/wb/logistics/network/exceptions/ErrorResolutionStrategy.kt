@@ -1,4 +1,4 @@
-package com.wb.logistics.network.rx
+package com.wb.logistics.network.exceptions
 
 import io.reactivex.Completable
 import io.reactivex.Observable

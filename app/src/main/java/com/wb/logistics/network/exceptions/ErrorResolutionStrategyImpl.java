@@ -1,17 +1,12 @@
-package com.wb.logistics.network.rx;
+package com.wb.logistics.network.exceptions;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.wb.logistics.app.AppConsts;
-import com.wb.logistics.network.exceptions.ApiGeneralException;
-import com.wb.logistics.network.exceptions.NoInternetException;
-import com.wb.logistics.network.exceptions.TimeoutException;
-import com.wb.logistics.network.exceptions.UnauthorizedException;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -25,13 +20,14 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
+import retrofit2.Response;
 
 public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
     @NonNull
-    private final CallAdapterFactoryResourceProvider resourceProvider;
+    private final ErrorResolutionResourceProvider resourceProvider;
 
-    public ErrorResolutionStrategyImpl(@NonNull CallAdapterFactoryResourceProvider resourceProvider) {
+    public ErrorResolutionStrategyImpl(@NonNull ErrorResolutionResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
     }
 
@@ -40,7 +36,7 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     public Observable<?> apply(@NonNull Observable<?> call) {
         return call.doOnNext(o -> processOnNext())
                 .onErrorResumeNext(throwable -> {
-                    return Observable.error(convertException((Throwable) throwable));
+                    return Observable.error(convertException(throwable));
                 });
     }
 
@@ -49,7 +45,7 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     public Single<?> apply(@NonNull Single<?> call) {
         return call.doOnSuccess(o -> processOnNext())
                 .onErrorResumeNext(throwable ->
-                        Single.error(convertException((Throwable) throwable))
+                        Single.error(convertException(throwable))
                 );
     }
 
@@ -79,7 +75,7 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
         } else if (throwable instanceof JsonSyntaxException) {
             return getTimeoutException();
         } else {
-            return getTimeoutException();
+            return getUnknownException(throwable.getMessage());
         }
     }
 
@@ -94,52 +90,39 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     }
 
     @NonNull
+    private Throwable getUnknownException(String message) {
+        return new UnknownException(message, resourceProvider.getUnknownError());
+    }
+
+    @NonNull
     private Throwable getHttpException(@NonNull HttpException exception) {
+        String message = convertMessageException(exception.response());
         int code = exception.code();
         switch (code) {
-            // TODO: 15.03.2019 переработать case после изменения API авторизации
-            case AppConsts.SERVICE_CODE_AUTHORIZED:
-                return getAuthorizedException(exception);
+            case AppConsts.SERVICE_CODE_BAD_REQUEST:
+                return new BadRequestException(message);
             case AppConsts.SERVICE_CODE_UNAUTHORIZED:
-                String extensionMessage = "";
-                try {
-                    ResponseBody responseBody = exception.response().errorBody();
-                    if (responseBody != null) {
-                        JSONObject jObject = new JSONObject(responseBody.string());
-                        extensionMessage = jObject.getString("message");
-                    }
-                } catch (JSONException e) {
-                    //LogUtils.logError("ERROR_RES", e.getMessage());
-                } catch (IOException e) {
-                    //LogUtils.logError("ERROR_RES", e.getMessage());
-                }
-                return getUnauthorizedException(code, extensionMessage);
+                return new UnauthorizedException(message);
+            case AppConsts.SERVICE_CODE_FORBIDDEN:
+                return new ForbiddenException(message);
+            case AppConsts.SERVICE_CODE_LOCKED:
+                return new LockedException(message);
             default:
-                return getTimeoutException();
+                return new UnknownHttpException(resourceProvider.getUnknownHttpError(), exception.message(), code);
         }
     }
 
-    @NonNull
-    private Throwable getAuthorizedException(@NonNull HttpException exception) {
+    private String convertMessageException(Response<?> response) {
+        ApiErrorModel apiErrorModel = new ApiErrorModel("Unknown error");
         try {
-            String logicalErrorMessage = "";
-            ResponseBody responseBody = exception.response().errorBody();
+            ResponseBody responseBody = response.errorBody();
             if (responseBody != null) {
-                logicalErrorMessage = responseBody.string();
+                apiErrorModel = new Gson().fromJson(responseBody.string(), ApiErrorModel.class);
             }
-            // TODO: 27.12.2018 заменить responseBody на errorResponse.getApiMessage() после переработки сервера
-            //ApiGeneralErrorResponse errorResponse = new Gson().fromJson(responseBody, ApiGeneralErrorResponse.class);
-            return new ApiGeneralException(exception.getMessage(), logicalErrorMessage);
-        } catch (JsonSyntaxException e) {
-            return new ApiGeneralException(exception.getMessage(), resourceProvider.getUnauthorizedError());
         } catch (IOException e) {
-            return exception;
+            return apiErrorModel.getError();
         }
-    }
-
-    @NonNull
-    private Throwable getUnauthorizedException(int code, String extensionMessage) {
-        return new UnauthorizedException(resourceProvider.getUnauthorizedError(), code, extensionMessage);
+        return apiErrorModel.getError();
     }
 
 }

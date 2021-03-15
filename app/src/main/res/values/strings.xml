@@ -10,6 +10,8 @@
     <string name="timeout_service_error">Ведутся работы по улучшению сервиса</string>
     <string name="wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="unknown_http_error">Неизвестная ошибка</string>
 
     <!--debug panel-->
     <string name="debug_panel_caption">App Debug Console</string>

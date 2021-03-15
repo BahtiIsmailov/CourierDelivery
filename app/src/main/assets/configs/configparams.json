@@ -2,7 +2,7 @@
   "auth_servers": [
     {
       "key": "AUTH_SERVER_DLDEVEL",
-      "value": "https://auth.wbtrans.svc.k8s.dldevel"
+      "value": "http://auth.wbtrans.svc.k8s.dldevel"
     },
     {
       "key": "AUTH_SERVER_DATALINE",

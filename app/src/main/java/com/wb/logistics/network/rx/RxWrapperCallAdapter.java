@@ -2,6 +2,8 @@ package com.wb.logistics.network.rx;
 
 import androidx.annotation.NonNull;
 
+import com.wb.logistics.network.exceptions.ErrorResolutionStrategy;
+
 import java.lang.reflect.Type;
 
 import io.reactivex.Completable;

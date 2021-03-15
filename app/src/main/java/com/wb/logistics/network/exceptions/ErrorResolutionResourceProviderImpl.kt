@@ -1,10 +1,10 @@
-package com.wb.logistics.network.rx
+package com.wb.logistics.network.exceptions
 
 import android.content.Context
 import com.wb.logistics.R
 
-class CallAdapterFactoryResourceProviderImpl(private val context: Context) :
-    CallAdapterFactoryResourceProvider {
+class ErrorResolutionResourceProviderImpl(private val context: Context) :
+    ErrorResolutionResourceProvider {
     override val noInternetError: String
         get() = context.getString(R.string.no_internet_error)
     override val timeoutServiceError: String
@@ -13,4 +13,8 @@ class CallAdapterFactoryResourceProviderImpl(private val context: Context) :
         get() = context.getString(R.string.wrong_identity_error)
     override val unauthorizedError: String
         get() = context.getString(R.string.session_error)
+    override val unknownError: String
+        get() = context.getString(R.string.unknown_error)
+    override val unknownHttpError: String
+        get() = context.getString(R.string.unknown_http_error)
 }
