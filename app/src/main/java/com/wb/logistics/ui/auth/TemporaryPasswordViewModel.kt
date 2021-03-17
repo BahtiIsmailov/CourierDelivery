@@ -92,16 +92,24 @@ class TemporaryPasswordViewModel(
         )
     }
 
-    private fun fetchTmpPasswordCheck(password: String) {
-        addSubscription(interactor.checkPassword(formatPhone(), password)
+    private fun fetchTmpPasswordCheck(tmpPassword: String) {
+        addSubscription(interactor.checkPassword(formatPhone(), tmpPassword)
             .subscribe(
-                { }, //fetchPhoneNumberComplete(it)
-                { error(it) }
+                { tmpPasswordCheckComplete(tmpPassword) },
+                { tmpPasswordCheckError(it) }
             )
         )
     }
 
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
+
+    private fun tmpPasswordCheckComplete(tmpPassword: String) {
+        stateUI.value = NavigateToCreatePassword(parameters.phone, tmpPassword)
+    }
+
+    private fun tmpPasswordCheckError(throwable: Throwable) {
+        error(throwable)
+    }
 
     private fun error(throwable: Throwable) {
         LogUtils { logDebugApp(throwable.toString()) }

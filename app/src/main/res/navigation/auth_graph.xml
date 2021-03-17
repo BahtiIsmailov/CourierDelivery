@@ -44,6 +44,9 @@
             android:name="phone_key"
             app:argType="com.wb.logistics.ui.auth.TemporaryPasswordParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_temporaryPasswordFragment_to_createPasswordFragment"
+            app:destination="@id/createPasswordFragment" />
 
     </fragment>
     <fragment
@@ -66,6 +69,21 @@
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/createPasswordFragment"
+        android:name="com.wb.logistics.ui.auth.CreatePasswordFragment"
+        tools:layout="@layout/auth_create_password_fragment"
+        android:label="@string/auth_input_password_toolbar_label" >
+        <argument
+            android:name="phone_key"
+            app:argType="com.wb.logistics.ui.auth.CreatePasswordParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_createPasswordFragment_to_navigationActivity"
+            app:destination="@id/navigationActivity"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

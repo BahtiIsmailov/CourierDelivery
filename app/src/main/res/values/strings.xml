@@ -48,6 +48,10 @@
     <string name="auth_input_password_input">Войти</string>
     <string name="auth_input_password_title">Авторизация по номеру %1$s</string>
 
+    <string name="auth_create_password_toolbar_label">Придумайте пароль</string>
+    <string name="auth_create_password_title">Этот пароль будет использоваться при последующих авторизациях</string>
+    <string name="auth_create_password_input">Сохранить и войти</string>
+
     <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
     <string name="nav_default_count">100</string>
 

@@ -20,10 +20,19 @@ val viewModelModule = module {
             get()
         )
     }
+
     viewModel { (parameters: InputPasswordParameters) ->
         InputPasswordViewModel(
             parameters,
             get(),
+            get(),
+            get()
+        )
+    }
+
+    viewModel { (parameters: CreatePasswordParameters) ->
+        CreatePasswordViewModel(
+            parameters,
             get(),
             get()
         )

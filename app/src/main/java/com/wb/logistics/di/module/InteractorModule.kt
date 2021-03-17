@@ -2,10 +2,7 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.network.api.AuthRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
-import com.wb.logistics.ui.auth.domain.InputPasswordInteractor
-import com.wb.logistics.ui.auth.domain.InputPasswordInteractorImpl
-import com.wb.logistics.ui.auth.domain.TemporaryPasswordInteractor
-import com.wb.logistics.ui.auth.domain.TemporaryPasswordInteractorImpl
+import com.wb.logistics.ui.auth.domain.*
 import org.koin.dsl.module
 
 val interactorModule = module {
@@ -24,7 +21,15 @@ val interactorModule = module {
         return InputPasswordInteractorImpl(rxSchedulerFactory, repository)
     }
 
+    fun provideCreatePasswordInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        repository: AuthRepository
+    ): CreatePasswordInteractor {
+        return CreatePasswordInteractorImpl(rxSchedulerFactory, repository)
+    }
+
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
+    single { provideCreatePasswordInteractor(get(), get()) }
 
 }

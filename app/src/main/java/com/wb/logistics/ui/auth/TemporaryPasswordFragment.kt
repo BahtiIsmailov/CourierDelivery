@@ -102,7 +102,11 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is TemporaryPasswordUIState.NavigateToCreatePassword ->
-                    findNavController().navigate(R.id.configActivity)
+                    findNavController().navigate(
+                        TemporaryPasswordFragmentDirections.actionTemporaryPasswordFragmentToCreatePasswordFragment(
+                            CreatePasswordParameters(state.phone, state.tmpPassword)
+                        )
+                    )
                 is TemporaryPasswordUIState.Error -> {
                     showBarMessage(state.message)
                     binding.password.isEnabled = true
@@ -125,7 +129,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                 }
                 is TemporaryPasswordUIState.RepeatPasswordTimer -> {
                     binding.repeatPasswordTimer.visibility = VISIBLE
-//                    binding.repeatPasswordTimer.text = state.timer
                     binding.repeatPasswordTimer.setText(
                         timeSpannable(state),
                         TextView.BufferType.SPANNABLE
@@ -140,6 +143,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                 is TemporaryPasswordUIState.Update -> {
                     showBarMessage(state.message)
                     binding.password.isEnabled = true
+                    binding.password.text?.clear()
                     binding.repeatPasswordTimer.visibility = GONE
                     binding.repeatPassword.visibility = VISIBLE
                     binding.countAttempt.visibility = VISIBLE
