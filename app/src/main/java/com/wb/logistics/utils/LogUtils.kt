@@ -5,6 +5,14 @@ import com.wb.logistics.BuildConfig
 
 class LogUtils(block: LogUtils.() -> Unit) {
 
+    inline operator fun invoke(crossinline block: LogUtils.() -> Unit) {
+        this.block()
+    }
+
+    init {
+        this.block()
+    }
+
     fun logDebug(owner: Any, message: String) {
         if (DEBUG_MODE) {
             Log.d(owner.javaClass.simpleName, message)

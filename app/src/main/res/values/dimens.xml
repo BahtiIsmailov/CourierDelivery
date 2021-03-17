@@ -26,5 +26,9 @@
 
     <dimen name="button_text_size">18sp</dimen>
 
+    <dimen name="floating_hint_vertical_margin">20dp</dimen>
+    <dimen name="floating_hint_horizontal_margin">5dp</dimen>
+    <dimen name="floating_hint_corner_radius">5dp</dimen>
+
 
 </resources>

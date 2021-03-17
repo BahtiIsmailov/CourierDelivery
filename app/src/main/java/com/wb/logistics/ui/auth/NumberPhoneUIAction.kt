@@ -6,5 +6,5 @@ sealed class NumberPhoneUIAction {
     object LongTitle : NumberPhoneUIAction()
 
     data class CheckPhone(val number: String) : NumberPhoneUIAction()
-    data class NumberChanged(val observable: InitialValueObservable<CharSequence>) : NumberPhoneUIAction()
+    data class NumberChanges(val observable: InitialValueObservable<CharSequence>) : NumberPhoneUIAction()
 }

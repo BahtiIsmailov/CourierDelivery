@@ -3,11 +3,11 @@ package com.wb.logistics.ui.nav
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wb.logistics.ui.res.ResourceProvider
+import com.wb.logistics.ui.res.AppResourceProvider
 import com.wb.logistics.utils.managers.DeviceManager
 
 class NavigationViewModel(
-    private val resourceProvider: ResourceProvider,
+    private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager
 ) : ViewModel() {
 

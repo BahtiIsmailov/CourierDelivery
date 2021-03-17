@@ -1,9 +1,9 @@
-package com.wb.logistics.network.api.remote
+package com.wb.logistics.network.api.query
 
 import com.google.gson.annotations.SerializedName
 
-data class AuthRemote (
+data class AuthByPhoneOrPasswordQuery (
     @SerializedName("password") var password: String,
     @SerializedName("phone") var phone: String,
-    @SerializedName("useSMS") var useSMS: Boolean
+    @SerializedName("useSMS") var useSMS: Boolean,
 )

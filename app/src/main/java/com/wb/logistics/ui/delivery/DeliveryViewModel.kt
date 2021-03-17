@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.delivery.delegates.items.RouteEmptyItem
 import com.wb.logistics.ui.delivery.delegates.items.RouteItem
-import com.wb.logistics.ui.res.ResourceProvider
+import com.wb.logistics.ui.res.AppResourceProvider
 
 class DeliveryViewModel(
-    private val resourceProvider: ResourceProvider //private val deliveryRepository: DeliveryRepository,
+    private val resourceProvider: AppResourceProvider //private val deliveryRepository: DeliveryRepository,
 ) : ViewModel() {
 
     private val _flights = MutableLiveData<List<BaseItem>>()

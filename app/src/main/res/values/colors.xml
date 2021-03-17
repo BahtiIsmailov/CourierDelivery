@@ -3,6 +3,11 @@
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#291466</color>
     <color name="colorStatusBarBackground">#F2F3F5</color>
+    <color name="colorOnSecondary">#642CA3</color>
+
+    <color name="colorControlNormal">#8948D3</color>
+    <color name="colorControlActivated">#642CA3</color>
+    <color name="colorErrorAppearance">#116C15</color>
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#276EA6</color>
@@ -26,6 +31,10 @@
 
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
+    <color name="text_spannable_phone">#17233B</color>
+    <color name="text_spannable_time">#8C94A8</color>
+
+    <color name="buttonColor">#642CA3</color>
 
     <color name="splash_text">#fafafa</color>
 

@@ -1,7 +1,9 @@
 package com.wb.logistics.network.api
 
-import com.wb.logistics.network.api.remote.AuthRemote
-import com.wb.logistics.network.api.remote.CheckPhoneRemote
+import com.wb.logistics.network.api.response.CheckExistPhoneResponse
+import com.wb.logistics.network.api.response.RemainingAttemptsResponse
+import com.wb.logistics.network.api.response.StatisticsResponse
+import io.reactivex.Completable
 import io.reactivex.Single
 
 interface AuthRepository {
@@ -10,8 +12,16 @@ interface AuthRepository {
         password: String,
         phone: String,
         useSMS: Boolean
-    ): Single<AuthRemote>
+    ): Completable
 
-    fun checkExistPhone(phone: String): Single<CheckPhoneRemote>
+    fun checkExistPhone(phone: String): Single<CheckExistPhoneResponse>
+
+    fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse>
+
+    fun passwordCheck(phone: String, tmpPassword: String): Completable
+
+    fun changePasswordBySmsCode(phone: String, password: String, tmpPassword: String): Completable
+
+    fun statistics(): Single<StatisticsResponse>
 
 }

@@ -1,6 +1,7 @@
 package com.wb.logistics.ui.splash
 
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.wb.logistics.R
@@ -14,18 +15,21 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var binding: SplashActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initNav()
+        initNavToolbar()
     }
 
-    private fun initNav() {
+    private fun initNavToolbar() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         val navGraph = navController.navInflater.inflate(R.navigation.auth_graph)
+        val toolbarTitle = findViewById<TextView>(R.id.toolbar_title)
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            toolbarTitle.text = navController.currentDestination?.label
+        }
     }
 
 }

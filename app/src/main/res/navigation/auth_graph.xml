@@ -3,24 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/auth_navigation"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/numberPhoneFragment">
 
     <fragment
-        android:id="@+id/loginFragment"
+        android:id="@+id/numberPhoneFragment"
         android:name="com.wb.logistics.ui.auth.NumberPhoneFragment"
-        android:label="LoginFragment">
+        android:label="@string/uth_number_phone_toolbar_label"
+        tools:layout="@layout/auth_number_phone_fragment">
         <action
             android:id="@+id/action_loginFragment_to_configActivity"
             app:destination="@id/configActivity"
-            app:enterAnim="@anim/nav_default_pop_enter_anim"
-            app:exitAnim="@anim/nav_default_pop_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_loginFragment_to_navigationActivity"
-            app:destination="@id/navigationActivity" />
+            android:id="@+id/action_numberPhoneFragment_to_temporaryPasswordFragment"
+            app:destination="@id/temporaryPasswordFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_numberPhoneFragment_to_inputPasswordFragment"
+            app:destination="@id/inputPasswordFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
 
     </fragment>
     <activity
@@ -31,5 +35,37 @@
         android:id="@+id/navigationActivity"
         android:name="com.wb.logistics.ui.nav.NavigationActivity"
         tools:layout="@layout/navigation_app_bar" />
+    <fragment
+        android:id="@+id/temporaryPasswordFragment"
+        android:name="com.wb.logistics.ui.auth.TemporaryPasswordFragment"
+        android:label="@string/auth_temporary_toolbar_label"
+        tools:layout="@layout/auth_temporary_password_fragment">
+        <argument
+            android:name="phone_key"
+            app:argType="com.wb.logistics.ui.auth.TemporaryPasswordParameters"
+            app:nullable="false" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/inputPasswordFragment"
+        android:name="com.wb.logistics.ui.auth.InputPasswordFragment"
+        android:label="@string/auth_input_password_toolbar_label"
+        tools:layout="@layout/auth_input_password_fragment">
+        <argument
+            android:name="phone_key"
+            app:argType="com.wb.logistics.ui.auth.InputPasswordParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_inputPasswordFragment_to_temporaryPasswordFragment"
+            app:destination="@id/temporaryPasswordFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_inputPasswordFragment_to_navigationActivity"
+            app:destination="@id/navigationActivity"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+
+    </fragment>
 
 </navigation>

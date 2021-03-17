@@ -19,6 +19,7 @@ class App : Application() {
                 listOf(
                     apiModule,
                     databaseModule,
+                    interactorModule,
                     networkModule,
                     deliveryRepositoryModule,
                     resourceModule,

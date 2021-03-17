@@ -113,16 +113,16 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     }
 
     private String convertMessageException(Response<?> response) {
-        ApiErrorModel apiErrorModel = new ApiErrorModel("Unknown error");
+        ApiErrorModel apiErrorModel = new ApiErrorModel(new Error("Unknown error", ""));
         try {
             ResponseBody responseBody = response.errorBody();
             if (responseBody != null) {
                 apiErrorModel = new Gson().fromJson(responseBody.string(), ApiErrorModel.class);
             }
         } catch (IOException e) {
-            return apiErrorModel.getError();
+            return apiErrorModel.getError().getMessage();
         }
-        return apiErrorModel.getError();
+        return apiErrorModel.getError().getMessage();
     }
 
 }

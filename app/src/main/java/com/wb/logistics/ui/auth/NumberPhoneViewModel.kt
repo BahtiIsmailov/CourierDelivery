@@ -2,13 +2,12 @@ package com.wb.logistics.ui.auth
 
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.api.AuthRepository
-import com.wb.logistics.network.api.remote.CheckPhoneRemote
+import com.wb.logistics.network.api.response.CheckExistPhoneResponse
 import com.wb.logistics.network.exceptions.BadRequestException
-import com.wb.logistics.network.exceptions.ForbiddenException
-import com.wb.logistics.network.exceptions.LockedException
-import com.wb.logistics.network.exceptions.UnauthorizedException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.auth.NumberPhoneUIState.*
 import com.wb.logistics.utils.formatter.PhoneUtils
 import io.reactivex.disposables.CompositeDisposable
 
@@ -24,12 +23,13 @@ class NumberPhoneViewModel(
         val state = when (actionView) {
             is NumberPhoneUIAction.CheckPhone -> {
                 fetchPhoneNumber(actionView.number)
-                NumberPhoneUIState.Loading
+                PhoneCheck
             }
-            NumberPhoneUIAction.LongTitle -> NumberPhoneUIState.NavigateToConfig
-            is NumberPhoneUIAction.NumberChanged -> {
+            NumberPhoneUIAction.LongTitle -> NavigateToConfig
+            is NumberPhoneUIAction.NumberChanges -> {
                 fetchPhoneNumberFormat(actionView)
-                NumberPhoneUIState.Empty
+                Empty
+//                NumberFormat("+7 (925) 123-11-49")
             }
         }
         stateUI.value = state
@@ -38,35 +38,32 @@ class NumberPhoneViewModel(
     private fun fetchPhoneNumber(phone: String) {
         val disposable = authRepository.checkExistPhone(phone.filter { it.isDigit() })
             .subscribe(
-                { fetchPhoneNumberComplete(it) },
+                { fetchPhoneNumberComplete(it, phone) },
                 { fetchPhoneNumberError(it) }
             )
         addSubscription(disposable)
     }
 
-    private fun fetchPhoneNumberFormat(actionView: NumberPhoneUIAction.NumberChanged) {
+    private fun fetchPhoneNumberFormat(actionView: NumberPhoneUIAction.NumberChanges) {
         addSubscription(
             PhoneUtils.phoneFormatter(actionView.observable, rxSchedulerFactory)
                 .subscribe { number ->
                     stateUI.value = if (number.length == PHONE_MAX_LENGTH)
-                        NumberPhoneUIState.NumberFormatComplete else NumberPhoneUIState.NumberFormat(
-                        number
-                    )
+                        NumberFormatComplete else NumberFormat(number)
                 })
     }
 
-    private fun fetchPhoneNumberComplete(checkPhoneRemote: CheckPhoneRemote) {
-        stateUI.value = if (checkPhoneRemote.hasPassword)
-            NumberPhoneUIState.NavigateToInput else NumberPhoneUIState.NavigateToTemporaryPassword
+    private fun fetchPhoneNumberComplete(checkPhoneRemote: CheckExistPhoneResponse, phone: String) {
+        stateUI.value =
+            if (checkPhoneRemote.hasPassword)
+                NavigateToInputPassword(phone) else NavigateToTemporaryPassword(phone)
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable) {
         stateUI.value = when (throwable) {
-            is BadRequestException -> NumberPhoneUIState.PhoneNumberNotFound(throwable.message)
-            is UnauthorizedException -> NumberPhoneUIState.PhoneNumberNotFound(throwable.message)
-            is ForbiddenException -> NumberPhoneUIState.PhoneNumberNotFound(throwable.message)
-            is LockedException -> NumberPhoneUIState.SMSAuthenticationLocked(throwable.message)
-            else -> NumberPhoneUIState.Error(throwable.toString())
+            is NoInternetException -> Error(throwable.message)
+            is BadRequestException -> NumberNotFound(throwable.message)
+            else -> Error(throwable.toString())
         }
     }
 
