@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.wb.logistics.app.AppPreffsKeys
 import com.wb.logistics.databinding.ConfigActivityBinding
 import com.wb.logistics.ui.config.dao.KeyValueDao
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.views.SelectorView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -42,9 +43,11 @@ class ConfigActivity : AppCompatActivity() {
     private fun initView() {
         configViewModel.authServerValues.observe(this) {
             binding.authSelector.initData(AppPreffsKeys.AUTH_SERVER_KEY, it)
+            LogUtils {logDebugApp(it.toString())}
         }
         configViewModel.authServerSelect.observe(this) {
             binding.authSelector.selectItem(it)
+            LogUtils {logDebugApp(it.toString())}
         }
     }
 

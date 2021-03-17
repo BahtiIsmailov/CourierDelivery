@@ -2,7 +2,7 @@ package com.wb.logistics.utils.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 
 class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker {

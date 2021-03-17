@@ -19,8 +19,8 @@ class ConfigManagerImpl(private val reader: ConfigReader, private val worker: Sh
         worker.save(AUTH_SERVER_KEY, apiServer)
     }
 
-    override fun readDaoAuthServerUrl(): KeyValueDao? {
-        return worker.load(AUTH_SERVER_KEY, KeyValueDao::class.java)
+    override fun readDaoAuthServerUrl(): KeyValueDao {
+        return worker.load(AUTH_SERVER_KEY, KeyValueDao::class.java) ?: authServersUrl.last()
     }
 
     override fun readAuthServerUrl(): String {

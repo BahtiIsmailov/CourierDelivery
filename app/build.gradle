@@ -103,4 +103,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
     implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha1'
 
+    //pref
+    implementation 'androidx.preference:preference-ktx:1.1.1'
+
 }
