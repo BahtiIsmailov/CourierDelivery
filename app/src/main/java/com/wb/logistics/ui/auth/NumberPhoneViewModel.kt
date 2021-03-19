@@ -29,7 +29,7 @@ class NumberPhoneViewModel(
             is NumberPhoneUIAction.NumberChanges -> {
                 fetchPhoneNumberFormat(actionView)
                 Empty
-//                NumberFormat("+7 (925) 123-11-49")
+                //NumberFormat("+7 (925) 123-11-49")
             }
         }
         stateUI.value = state
@@ -57,6 +57,7 @@ class NumberPhoneViewModel(
         stateUI.value =
             if (checkPhoneRemote.hasPassword)
                 NavigateToInputPassword(phone) else NavigateToTemporaryPassword(phone)
+        stateUI.value = Empty
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable) {

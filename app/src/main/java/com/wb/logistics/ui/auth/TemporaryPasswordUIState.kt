@@ -5,7 +5,8 @@ sealed class TemporaryPasswordUIState<out R> {
     data class RemainingAttempts(val remainingAttempts: String) :
         TemporaryPasswordUIState<Nothing>()
 
-    data class NavigateToCreatePassword(val phone: String, val tmpPassword: String) : TemporaryPasswordUIState<Nothing>()
+    data class NavigateToCreatePassword(val phone: String, val tmpPassword: String) :
+        TemporaryPasswordUIState<Nothing>()
 
     data class InitTitle(val title: String, val phone: String) : TemporaryPasswordUIState<Nothing>()
     data class RepeatPasswordTimer(val text: String, val timeStart: String) :
@@ -13,8 +14,10 @@ sealed class TemporaryPasswordUIState<out R> {
 
     object RepeatPassword : TemporaryPasswordUIState<Nothing>()
 
+    object Progress : TemporaryPasswordUIState<Nothing>()
     object NextEnable : TemporaryPasswordUIState<Nothing>()
     object NextDisable : TemporaryPasswordUIState<Nothing>()
+    object Empty : TemporaryPasswordUIState<Nothing>()
 
     data class Update(val message: String) : TemporaryPasswordUIState<Nothing>()
     data class Error(val message: String) : TemporaryPasswordUIState<Nothing>()

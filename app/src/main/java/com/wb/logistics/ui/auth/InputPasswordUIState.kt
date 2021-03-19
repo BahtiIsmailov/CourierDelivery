@@ -7,7 +7,7 @@ sealed class InputPasswordUIState<out R> {
 
     object NextEnable : InputPasswordUIState<Nothing>()
     object NextDisable : InputPasswordUIState<Nothing>()
-    data class InitTitle(val title: String, val phone: String) : InputPasswordUIState<Nothing>()
+    object Empty : InputPasswordUIState<Nothing>()
 
     object AuthProcess : InputPasswordUIState<Nothing>()
     object AuthComplete : InputPasswordUIState<Nothing>()

@@ -30,5 +30,11 @@
     <dimen name="floating_hint_horizontal_margin">5dp</dimen>
     <dimen name="floating_hint_corner_radius">5dp</dimen>
 
+    <dimen name="auth_input_top_offset">96dp</dimen>
+    <dimen name="auth_input_horizontal_patent_offset">24dp</dimen>
+    <dimen name="auth_button_height">56dp</dimen>
+
+
+
 
 </resources>

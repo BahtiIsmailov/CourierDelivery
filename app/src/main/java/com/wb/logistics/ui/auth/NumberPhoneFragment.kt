@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
@@ -39,6 +40,10 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
         initListener()
         initInputMethod()
         initStateObserve()
+
+        val safeArgs: NumberPhoneFragmentArgs by navArgs()
+        val flowStepNumber = safeArgs.navigationFlowStep
+        if (flowStepNumber == 1) findNavController().navigate(R.id.navigationActivity)
     }
 
     private fun initInputMethod() {
@@ -55,20 +60,24 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                     binding.next.setState(ProgressImageButtonMode.PROGRESS)
                     inputMethod.hideSoftInputFromWindow(binding.next.windowToken, 0)
                 }
-                is NumberPhoneUIState.NavigateToInputPassword ->
+                is NumberPhoneUIState.NavigateToInputPassword -> {
                     findNavController().navigate(
                         NumberPhoneFragmentDirections.actionNumberPhoneFragmentToInputPasswordFragment(
                             InputPasswordParameters(state.number)
                         )
                     )
-                is NumberPhoneUIState.NavigateToTemporaryPassword ->
+                    clearUI()
+                }
+                is NumberPhoneUIState.NavigateToTemporaryPassword -> {
                     findNavController().navigate(
                         NumberPhoneFragmentDirections.actionNumberPhoneFragmentToTemporaryPasswordFragment(
                             TemporaryPasswordParameters(state.number)
                         )
                     )
+                    clearUI()
+                }
                 NumberPhoneUIState.NavigateToConfig ->
-                    findNavController().navigate(R.id.configActivity)
+                    findNavController().navigate(R.id.authConfigActivity)
                 is NumberPhoneUIState.NumberNotFound -> {
                     binding.phoneNumber.isEnabled = true
                     binding.numberNotFound.text = state.message
@@ -98,6 +107,11 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
         })
     }
 
+    private fun clearUI() {
+        binding.phoneNumber.text?.clear()
+        binding.next.setState(ProgressImageButtonMode.DISABLED)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -108,11 +122,13 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
     }
 
     private fun initListener() {
-        binding.title.setOnLongClickListener {
+        binding.loginLayout.setOnLongClickListener {
             viewModel.action(NumberPhoneUIAction.LongTitle)
             true
         }
         val phone = binding.phoneNumber
+        phone.isFocusableInTouchMode = true
+        phone.requestFocus()
         viewModel.action(NumberPhoneUIAction.NumberChanges(phone.textChanges()))
         binding.next.setOnClickListener { viewModel.action(NumberPhoneUIAction.CheckPhone(phone.text.toString())) }
     }

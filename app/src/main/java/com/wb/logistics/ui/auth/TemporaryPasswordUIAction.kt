@@ -4,6 +4,6 @@ import com.jakewharton.rxbinding3.InitialValueObservable
 
 sealed class TemporaryPasswordUIAction{
     data class PasswordChanges(val observable: InitialValueObservable<CharSequence>) : TemporaryPasswordUIAction()
-    object RepeatPassword : TemporaryPasswordUIAction()
+    object RepeatTmpPassword : TemporaryPasswordUIAction()
     data class CheckPassword(val password: String) : TemporaryPasswordUIAction()
 }

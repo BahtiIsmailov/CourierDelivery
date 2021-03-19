@@ -25,7 +25,6 @@ val viewModelModule = module {
         InputPasswordViewModel(
             parameters,
             get(),
-            get(),
             get()
         )
     }

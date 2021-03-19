@@ -2,14 +2,10 @@ package com.wb.logistics.ui.auth
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -73,20 +69,15 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
                             TemporaryPasswordParameters(state.phone)
                         )
                     )
-                InputPasswordUIState.NavigateToApplication ->
-                    findNavController().navigate(
-                        InputPasswordFragmentDirections.actionInputPasswordFragmentToNavigationActivity()
+                InputPasswordUIState.NavigateToApplication -> {
+                    findNavController().setGraph(
+                        R.navigation.auth_graph,
+                        bundleOf("navigationFlowStep" to 1)
                     )
+                }
                 InputPasswordUIState.NextDisable -> binding.next.setState(
                     ProgressImageButtonMode.DISABLED
                 )
-                is InputPasswordUIState.InitTitle -> {
-                    binding.numberPhoneTitle.setText(
-                        phoneSpannable(state),
-                        TextView.BufferType.SPANNABLE
-                    )
-                    binding.numberPhoneTitle.visibility = View.VISIBLE
-                }
                 InputPasswordUIState.NextEnable -> binding.next.setState(ProgressImageButtonMode.ENABLED)
                 InputPasswordUIState.AuthProcess -> {
                     binding.password.isEnabled = false
@@ -101,31 +92,14 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
                 is InputPasswordUIState.Error -> {
                     showBarMessage(state.message)
                     binding.password.isEnabled = true
+                    binding.password.text?.clear()
                     binding.remindPassword.isEnabled = true
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
+                InputPasswordUIState.Empty -> {
+                }
             }
         })
-    }
-
-    private fun phoneSpannable(state: InputPasswordUIState.InitTitle): Spannable {
-        val title = state.title
-        val spannable: Spannable = SpannableString(title)
-        val first = title.indexOf(state.phone)
-        val last = first + state.phone.length
-        spannable.setSpan(
-            ForegroundColorSpan(
-                ResourcesCompat.getColor(
-                    resources,
-                    R.color.text_spannable_phone,
-                    null
-                )
-            ),
-            first,
-            last,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        return spannable
     }
 
     override fun onDestroyView() {

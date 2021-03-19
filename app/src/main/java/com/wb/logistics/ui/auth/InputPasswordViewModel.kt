@@ -13,29 +13,18 @@ import io.reactivex.disposables.CompositeDisposable
 class InputPasswordViewModel(
     private val parameters: InputPasswordParameters,
     compositeDisposable: CompositeDisposable,
-    private val interactor: InputPasswordInteractor,
-    private val resourceProvider: AuthResourceProvider
+    private val interactor: InputPasswordInteractor
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUI = MutableLiveData<InputPasswordUIState<String>>()
 
-    init {
-        fetchTitle()
-    }
-
-    private fun fetchTitle() {
-        stateUI.postValue(
-            InitTitle(
-                resourceProvider.getTitleInputPassword(parameters.phone),
-                parameters.phone
-            )
-        )
-    }
-
     fun action(actionView: InputPasswordUIAction) {
         when (actionView) {
             is PasswordChanges -> fetchPasswordChanges(actionView.observable)
-            RemindPassword -> stateUI.value = NavigateToTemporaryPassword(parameters.phone)
+            RemindPassword -> {
+                stateUI.value = NavigateToTemporaryPassword(parameters.phone)
+                stateUI.value = Empty
+            }
             is Auth -> fetchAuth(actionView.password)
         }
     }
@@ -71,7 +60,7 @@ class InputPasswordViewModel(
         stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> Error(throwable.message)
-          else -> Error(throwable.toString())
+            else -> Error(throwable.toString())
         }
     }
 

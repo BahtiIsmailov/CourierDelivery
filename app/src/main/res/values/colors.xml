@@ -19,6 +19,8 @@
 
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
+    <color name="text_clickable">#642CA3</color>
+
     <color name="background">#642CA3</color>
     <color name="background_content">#F4F3F7</color>
     <color name="background_tint">#FD3F18</color>
@@ -27,7 +29,7 @@
 
     <color name="color_tint">#BFC5D1</color>
     <color name="color_progress">#FF5722</color>
-    <color name="invalid">#E22D2D</color>
+    <color name="invalid">#DF1F00</color>
 
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>

@@ -59,6 +59,7 @@ class CreatePasswordViewModel(
             is BadRequestException -> Error(throwable.message)
             else -> Error(throwable.toString())
         }
+        stateUI.value = NavigateToTemporaryPassword("")
     }
 
 }

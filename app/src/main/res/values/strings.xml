@@ -24,11 +24,7 @@
 
     <string name="selector_title">Выбор</string>
 
-    numberPhoneFragment
-
-    <string name="uth_number_phone_toolbar_label">Номер телефона</string>
-    <string name="auth_number_phone_phone_input_title">Введите номер телефона</string>
-    <string name="auth_number_phone_phone_input_title_description">Мы отправим на него код подтверждения</string>
+    <string name="auth_number_phone_toolbar_label">Номер телефона</string>
     <string name="auth_number_phone_phone_hint">+7</string>
     <string name="auth_number_phone_phone_not_found">Номер телефона не зарегистрирован</string>
     <string name="auth_number_phone_phone_attempt">Осталось попыток: %1$s</string>
@@ -39,7 +35,7 @@
     <string name="auth_temporary_hint_password">Временный пароль</string>
     <string name="auth_temporary_code_attempt">Осталось попыток: %1$s</string>
     <string name="auth_temporary_send_password_again">Выслать пароль повторно: %1$s сек.</string>
-    <string name="auth_temporary_repeat_code"><u>Повторить код</u></string>
+    <string name="auth_temporary_repeat_code"><u>Выслать пароль повторно</u></string>
     <string name="auth_temporary_number_attempt">Осталось попыток: %1$d</string>
 
     <string name="auth_input_password_toolbar_label">Вход</string>

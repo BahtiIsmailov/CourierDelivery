@@ -84,7 +84,7 @@ class TemporaryPasswordInteractorImpl(
 
     companion object {
         private const val PERIOD = 1000
-        private const val DURATION_CODE = 60
+        private const val DURATION_CODE = 30
         private const val COUNT_CHECK_ATTEMPT = 3
         private const val LENGTH_SMS_CODE = 4
     }

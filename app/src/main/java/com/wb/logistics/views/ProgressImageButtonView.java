@@ -1,13 +1,10 @@
 package com.wb.logistics.views;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 
 import com.wb.logistics.R;
 
@@ -111,6 +106,7 @@ ProgressImageButtonView extends FrameLayout {
 
     private void enableState() {
         layout.setEnabled(true);
+        layout.setClickable(true);
         imageView.setVisibility(VISIBLE);
         imageView.setImageDrawable(icon);
         imageView.setColorFilter(enableColor, PorterDuff.Mode.SRC_ATOP);
@@ -120,7 +116,8 @@ ProgressImageButtonView extends FrameLayout {
     }
 
     private void progressState() {
-        layout.setEnabled(true);
+        layout.setEnabled(false);
+        layout.setClickable(false);
         imageView.setVisibility(GONE);
         progressBar.setVisibility(VISIBLE);
         textView.setText(text);
@@ -129,6 +126,7 @@ ProgressImageButtonView extends FrameLayout {
 
     private void disabledState() {
         layout.setEnabled(false);
+        layout.setClickable(false);
         imageView.setVisibility(VISIBLE);
         imageView.setImageDrawable(icon);
         imageView.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);

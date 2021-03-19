@@ -64,8 +64,6 @@ class TemporaryPasswordViewModel(
         startTimer()
         subscribeTimer()
         stateUI.value =
-            if (it.remainingAttempts >= MIN_ATTEMPTS) NextEnable else NextDisable
-        stateUI.value =
             RemainingAttempts(resourceProvider.getNumberAttempt(it.remainingAttempts))
     }
 
@@ -76,7 +74,7 @@ class TemporaryPasswordViewModel(
     fun action(actionView: TemporaryPasswordUIAction) {
         when (actionView) {
             is PasswordChanges -> fetchPasswordChanges(actionView.observable)
-            TemporaryPasswordUIAction.RepeatPassword -> fetchTmpPassword()
+            TemporaryPasswordUIAction.RepeatTmpPassword -> fetchTmpPassword()
             is CheckPassword -> fetchTmpPasswordCheck(actionView.password)
         }
     }
@@ -93,6 +91,7 @@ class TemporaryPasswordViewModel(
     }
 
     private fun fetchTmpPasswordCheck(tmpPassword: String) {
+        stateUI.value = Progress
         addSubscription(interactor.checkPassword(formatPhone(), tmpPassword)
             .subscribe(
                 { tmpPasswordCheckComplete(tmpPassword) },
@@ -105,6 +104,7 @@ class TemporaryPasswordViewModel(
 
     private fun tmpPasswordCheckComplete(tmpPassword: String) {
         stateUI.value = NavigateToCreatePassword(parameters.phone, tmpPassword)
+        stateUI.value = Empty
     }
 
     private fun tmpPasswordCheckError(throwable: Throwable) {
@@ -140,7 +140,6 @@ class TemporaryPasswordViewModel(
 
     companion object {
         const val TIME_DIVIDER = 60
-        const val MIN_ATTEMPTS = 1
     }
 
 }

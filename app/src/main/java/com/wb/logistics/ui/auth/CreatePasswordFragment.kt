@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -66,9 +67,12 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {
                 CreatePasswordUIState.NavigateToApplication ->
-                    findNavController().navigate(
-                        CreatePasswordFragmentDirections.actionCreatePasswordFragmentToNavigationActivity()
+                {
+                    findNavController().setGraph(
+                        R.navigation.auth_graph,
+                        bundleOf("navigationFlowStep" to 1)
                     )
+                }
                 CreatePasswordUIState.SaveAndNextDisable -> binding.next.setState(
                     ProgressImageButtonMode.DISABLED
                 )
@@ -92,6 +96,12 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
                     showBarMessage(state.message)
                     binding.password.isEnabled = true
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
+                }
+                is CreatePasswordUIState.NavigateToTemporaryPassword -> {
+                    findNavController().navigate(
+                        CreatePasswordFragmentDirections.actionCreatePasswordFragmentToTemporaryPasswordFragment(
+                        )
+                    )
                 }
             }
         })

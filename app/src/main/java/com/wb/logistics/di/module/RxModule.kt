@@ -15,6 +15,6 @@ val rxModule = module {
         return RxSchedulerFactoryImpl()
     }
 
-    single { provideCompositeDisposable() }
+    factory { provideCompositeDisposable() }
     single { provideRxSchedulerFactory() }
 }

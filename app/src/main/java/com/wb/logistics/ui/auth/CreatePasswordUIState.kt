@@ -3,6 +3,7 @@ package com.wb.logistics.ui.auth
 sealed class CreatePasswordUIState<out R> {
 
     object NavigateToApplication : CreatePasswordUIState<Nothing>()
+    data class NavigateToTemporaryPassword(val phone: String) : CreatePasswordUIState<Nothing>()
 
     object SaveAndNextEnable : CreatePasswordUIState<Nothing>()
     object SaveAndNextDisable : CreatePasswordUIState<Nothing>()
