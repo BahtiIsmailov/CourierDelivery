@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.wb.logistics.app.AppPreffsKeys
 import com.wb.logistics.databinding.ConfigActivityBinding
-import com.wb.logistics.ui.config.dao.KeyValueDao
-import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.ui.config.data.KeyValueDao
 import com.wb.logistics.views.SelectorView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,9 +27,14 @@ class ConfigActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
-        binding.authSelector.setItemListener(object : SelectorView.OnItemSelectListener {
+        binding.authApiSelector.setItemListener(object : SelectorView.OnItemSelectListener {
             override fun onItemSelected(keyValue: KeyValueDao) {
                 configViewModel.onAuthServerSelected(keyValue)
+            }
+        })
+        binding.appApiSelector.setItemListener(object : SelectorView.OnItemSelectListener {
+            override fun onItemSelected(keyValue: KeyValueDao) {
+                configViewModel.onAppServerSelected(keyValue)
             }
         })
         binding.restart.setOnClickListener {
@@ -42,12 +46,16 @@ class ConfigActivity : AppCompatActivity() {
 
     private fun initView() {
         configViewModel.authServerValues.observe(this) {
-            binding.authSelector.initData(AppPreffsKeys.AUTH_SERVER_KEY, it)
-            LogUtils {logDebugApp(it.toString())}
+            binding.authApiSelector.initData(AppPreffsKeys.AUTH_SERVER_KEY, it)
         }
         configViewModel.authServerSelect.observe(this) {
-            binding.authSelector.selectItem(it)
-            LogUtils {logDebugApp(it.toString())}
+            binding.authApiSelector.selectItem(it)
+        }
+        configViewModel.appServerValues.observe(this) {
+            binding.appApiSelector.initData(AppPreffsKeys.APP_SERVER_KEY, it)
+        }
+        configViewModel.appServerSelect.observe(this) {
+            binding.appApiSelector.selectItem(it)
         }
     }
 

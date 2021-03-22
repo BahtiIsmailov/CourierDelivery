@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object OkHttpFactory {
-    fun createOkHttpClient(
+    fun createAuthOkHttpClient(
         certificateStore: CertificateStore,
         requestInterceptor: HeaderRequestInterceptor,
         httpLogginInterceptor: HttpLoggingInterceptor

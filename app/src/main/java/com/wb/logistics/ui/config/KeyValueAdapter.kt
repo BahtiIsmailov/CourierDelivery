@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AdapterTwoRowItemLayoutBinding
-import com.wb.logistics.ui.config.dao.KeyValueDao
+import com.wb.logistics.ui.config.data.KeyValueDao
 
 class KeyValueAdapter(context: Context?, val items: List<KeyValueDao>) :
     ArrayAdapter<KeyValueDao?>(

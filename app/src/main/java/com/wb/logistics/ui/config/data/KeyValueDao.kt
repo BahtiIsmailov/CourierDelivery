@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.config.dao
+package com.wb.logistics.ui.config.data
 
 import com.google.gson.annotations.SerializedName
 

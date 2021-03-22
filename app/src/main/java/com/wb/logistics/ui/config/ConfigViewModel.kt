@@ -3,7 +3,7 @@ package com.wb.logistics.ui.config
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wb.logistics.ui.config.dao.KeyValueDao
+import com.wb.logistics.ui.config.data.KeyValueDao
 import com.wb.logistics.utils.managers.ConfigManager
 import com.wb.logistics.utils.managers.DeviceManager
 
@@ -13,6 +13,7 @@ class ConfigViewModel(
 ) : ViewModel() {
 
     private var authServerValueSelected: KeyValueDao? = null
+    private var appServerValueSelected: KeyValueDao? = null
     private var autoSubstitutionChecked = false
     private var autoAuthorizationChecked = false
 
@@ -24,6 +25,15 @@ class ConfigViewModel(
     val authServerSelect: LiveData<KeyValueDao>
         get() = _authServerSelect
 
+    private val _appServerValues = MutableLiveData<List<KeyValueDao>>()
+    val appServerValues: LiveData<List<KeyValueDao>>
+        get() = _appServerValues
+
+    private val _appServerSelect = MutableLiveData<KeyValueDao>()
+    val appServerSelect: LiveData<KeyValueDao>
+        get() = _appServerSelect
+
+
     init {
         fetchCount()
     }
@@ -31,10 +41,16 @@ class ConfigViewModel(
     private fun fetchCount() {
         _authServerValues.value = configManager.authServersUrl
         _authServerSelect.value = configManager.readDaoAuthServerUrl()
+        _appServerValues.value = configManager.appServersUrl
+        _appServerSelect.value = configManager.readDaoAppServerUrl()
     }
 
     fun onAuthServerSelected(keyValue: KeyValueDao) {
         authServerValueSelected = keyValue
+    }
+
+    fun onAppServerSelected(keyValue: KeyValueDao) {
+        appServerValueSelected = keyValue
     }
 
     fun onAutoSubstitutionChecked(isChecked: Boolean) {
@@ -51,6 +67,7 @@ class ConfigViewModel(
 
     private fun saveConfigDataAndRestartClick() {
         authServerValueSelected?.let { configManager.saveAuthServerUrl(it) }
+        appServerValueSelected?.let { configManager.saveAppServerUrl(it) }
         deviceManager.doRestart()
     }
 

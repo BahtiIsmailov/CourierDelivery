@@ -24,7 +24,12 @@
                 android:textSize="18sp" />
 
             <com.wb.logistics.views.SelectorView
-                android:id="@+id/auth_selector"
+                android:id="@+id/auth_api_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.wb.logistics.views.SelectorView
+                android:id="@+id/app_api_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

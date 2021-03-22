@@ -8,7 +8,7 @@ import android.widget.AdapterView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.wb.logistics.databinding.SelectorLayoutBinding
 import com.wb.logistics.ui.config.KeyValueAdapter
-import com.wb.logistics.ui.config.dao.KeyValueDao
+import com.wb.logistics.ui.config.data.KeyValueDao
 
 class SelectorView : ConstraintLayout {
     private lateinit var binding: SelectorLayoutBinding

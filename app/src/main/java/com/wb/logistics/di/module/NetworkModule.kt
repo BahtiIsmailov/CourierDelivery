@@ -27,7 +27,15 @@ import retrofit2.CallAdapter
 import retrofit2.converter.gson.GsonConverterFactory
 
 const val AUTH_NAMED_API = "auth_named_api"
-const val AUTH_NAMED = "auth_named"
+const val APP_NAMED_API = "app_named_api"
+const val AUTH_NAMED_MANAGER = "auth_named_manager"
+const val APP_NAMED_MANAGER = "app_named_manager"
+const val AUTH_NAMED_INTERCEPTOR = "auth_named_interceptor"
+const val APP_NAMED_INTERCEPTOR = "app_named_interceptor"
+const val AUTH_NAMED_RETROFIT = "auth_named_retrofit"
+const val APP_NAMED_RETROFIT = "app_named_retrofit"
+const val AUTH_NAMED_CLIENT = "auth_named_client"
+const val APP_NAMED_CLIENT = "app_named_client"
 
 val networkModule = module {
 
@@ -38,14 +46,18 @@ val networkModule = module {
         return configManager.readAuthServerUrl()
     }
 
+    fun provideAppServer(configManager: ConfigManager): String {
+        return configManager.readAppServerUrl()
+    }
+
     //==============================================================================================
     // error factory
     //==============================================================================================
-    fun provideCallAdapterFactoryResourceProvider(context: Context): ErrorResolutionResourceProvider {
+    fun provideErrorResolutionResourceProvider(context: Context): ErrorResolutionResourceProvider {
         return ErrorResolutionResourceProviderImpl(context)
     }
 
-    fun provideApiErrorsFactory(
+    fun provideErrorResolutionStrategy(
         resourceProvider: ErrorResolutionResourceProvider,
         //authRepository: AuthRepository
     ): ErrorResolutionStrategy {
@@ -57,7 +69,7 @@ val networkModule = module {
     }
 
     //==============================================================================================
-    //store
+    //certificate store
     //==============================================================================================
     fun provideCertificateStore(context: Context): CertificateStore {
         return CertificateStoreFactory.createCertificateStore(context)
@@ -99,15 +111,31 @@ val networkModule = module {
         return InterceptorFactory.createHeaderRequestInterceptor(headerManager)
     }
 
+    fun provideAppHeaderInterceptor(headerManager: HeaderManager): HeaderRequestInterceptor {
+        return InterceptorFactory.createHeaderRequestInterceptor(headerManager)
+    }
+
     //==============================================================================================
     // OkHttpClient
     //==============================================================================================
-    fun provideOkHttpClient(
+    fun provideAuthOkHttpClient(
         certificateStore: CertificateStore,
         requestInterceptor: HeaderRequestInterceptor,
         httpLoggerInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
-        return OkHttpFactory.createOkHttpClient(
+        return OkHttpFactory.createAuthOkHttpClient(
+            certificateStore,
+            requestInterceptor,
+            httpLoggerInterceptor
+        )
+    }
+
+    fun provideAppOkHttpClient(
+        certificateStore: CertificateStore,
+        requestInterceptor: HeaderRequestInterceptor,
+        httpLoggerInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient {
+        return OkHttpFactory.createAuthOkHttpClient(
             certificateStore,
             requestInterceptor,
             httpLoggerInterceptor
@@ -115,20 +143,9 @@ val networkModule = module {
     }
 
     //==============================================================================================
-    // converters
-    //==============================================================================================
-    fun provideGsonConverterFactory(): GsonConverterFactory {
-        return GsonConverterFactory.create()
-    }
-
-    fun provideGson(): Gson {
-        return GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create()
-    }
-
-    //==============================================================================================
     // retrofit factory
     //==============================================================================================
-    fun provideRetrofitAuthFactory(
+    fun provideAuthRetrofitAuthFactory(
         apiServer: String,
         okHttpClient: OkHttpClient,
         callAdapterFactory: CallAdapter.Factory,
@@ -144,30 +161,98 @@ val networkModule = module {
         )
     }
 
-    single(named(AUTH_NAMED_API)) { provideAuthServer(get()) }
+    fun provideAppRetrofitAuthFactory(
+        apiServer: String,
+        okHttpClient: OkHttpClient,
+        callAdapterFactory: CallAdapter.Factory,
+        nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
+        gsonConverterFactory: GsonConverterFactory
+    ): RetrofitAppFactory {
+        return RetrofitAppFactory(
+            apiServer,
+            okHttpClient,
+            callAdapterFactory,
+            nullOnEmptyConverterFactory,
+            gsonConverterFactory
+        )
+    }
 
-    single { provideCallAdapterFactoryResourceProvider(get()) }
-    single { provideApiErrorsFactory(get()) } //, get()
+    //==============================================================================================
+    // converters
+    //==============================================================================================
+    fun provideGsonConverterFactory(): GsonConverterFactory {
+        return GsonConverterFactory.create()
+    }
+
+    fun provideGson(): Gson {
+        return GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create()
+    }
+
+    single(named(AUTH_NAMED_API)) { provideAuthServer(get()) }
+    single(named(APP_NAMED_API)) { provideAppServer(get()) }
+
+    single { provideErrorResolutionResourceProvider(get()) }
+    single { provideErrorResolutionStrategy(get()) } //, get()
     single { provideCallAdapterFactory(get()) }
 
     single { provideCertificateStore(get()) }
 
     single { provideTokenManager(get()) }
 
-    single(named(AUTH_NAMED)) { provideAuthHeaderManager() }
-    single { provideAppHeaderManager(get()) }
+    single(named(AUTH_NAMED_MANAGER)) { provideAuthHeaderManager() }
+    single(named(APP_NAMED_MANAGER)) { provideAppHeaderManager(get()) }
 
     single { provideNullOnEmptyConverterFactory() }
 
     single { provideLoggerInterceptor() }
-    single { provideAuthHeaderInterceptor(get(named(AUTH_NAMED))) }
+    single(named(AUTH_NAMED_INTERCEPTOR)) {
+        provideAuthHeaderInterceptor(
+            get(
+                named(
+                    AUTH_NAMED_MANAGER
+                )
+            )
+        )
+    }
+    single(named(APP_NAMED_INTERCEPTOR)) { provideAppHeaderInterceptor(get(named(APP_NAMED_MANAGER))) }
 
-    single { provideOkHttpClient(get(), get(), get()) }
+    single(named(AUTH_NAMED_CLIENT)) {
+        provideAuthOkHttpClient(
+            get(),
+            get(named(AUTH_NAMED_INTERCEPTOR)),
+            get()
+        )
+    }
+    single(named(APP_NAMED_CLIENT)) {
+        provideAppOkHttpClient(
+            get(),
+            get(named(APP_NAMED_INTERCEPTOR)),
+            get()
+        )
+    }
 
     single { provideGsonConverterFactory() }
-
-    single { provideRetrofitAuthFactory(get(named(AUTH_NAMED_API)), get(), get(), get(), get()) }
-
     single { provideGson() }
+
+    single(named(AUTH_NAMED_RETROFIT)) {
+        provideAuthRetrofitAuthFactory(
+            get(named(AUTH_NAMED_API)),
+            get(named(AUTH_NAMED_CLIENT)),
+            get(),
+            get(),
+            get()
+        )
+    }
+
+    single(named(APP_NAMED_RETROFIT)) {
+        provideAppRetrofitAuthFactory(
+            get(named(APP_NAMED_API)),
+            get(named(APP_NAMED_CLIENT)),
+            get(),
+            get(),
+            get()
+        )
+    }
+
 
 }

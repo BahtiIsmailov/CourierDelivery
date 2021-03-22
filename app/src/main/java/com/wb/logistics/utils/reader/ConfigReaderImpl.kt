@@ -2,7 +2,7 @@ package com.wb.logistics.utils.reader
 
 import android.content.Context
 import com.google.gson.Gson
-import com.wb.logistics.ui.config.dao.ConfigDao
+import com.wb.logistics.ui.config.data.ConfigDao
 import java.io.BufferedReader
 import java.io.InputStreamReader
 

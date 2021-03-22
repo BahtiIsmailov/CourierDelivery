@@ -17,5 +17,22 @@
       "value": "https://wbtrans-auth.wildberries.ru"
     }
   ],
-  "api_servers": []
+  "app_servers": [
+    {
+      "key": "APP_SERVER_DLDEVEL",
+      "value": "http://mobile-api.wbtrans.svc.k8s.dldevel"
+    },
+    {
+      "key": "AUTH_SERVER_DATALINE",
+      "value": "http://mobile-api.wbtrans.svc.k8s.dataline"
+    },
+    {
+      "key": "AUTH_SERVER_DATAPRO",
+      "value": "http://mobile-api.wbtrans.svc.k8s.datapro"
+    },
+    {
+      "key": "AUTH_SERVER_FRONTEND",
+      "value": "http://wbtrans-mobile-api.wildberries.ru"
+    }
+  ]
 }
