@@ -1,20 +1,17 @@
 package com.wb.logistics.network.headers
 
+import com.wb.logistics.network.headers.HeaderManager.Companion.ACCEPT
+import com.wb.logistics.network.headers.HeaderManager.Companion.CONTENT_TYPE
+import com.wb.logistics.network.headers.HeaderManager.Companion.TOKEN_AUTH
 import java.util.*
 
-class HeaderManagerImpl(private val tokenManager: TokenManager) : HeaderManager {
+class AppHeaderManagerImpl(private val token: String) : HeaderManager {
     override val headerApiMap: Map<String, String>
         get() {
             val headerMap: MutableMap<String, String> = HashMap()
             headerMap[CONTENT_TYPE] = "application/json"
             headerMap[ACCEPT] = "application/json"
-            headerMap[TOKEN_AUTH] = tokenManager.bearerToken
+            headerMap[TOKEN_AUTH] = token
             return headerMap
         }
-
-    companion object {
-        const val CONTENT_TYPE = "Content-Type"
-        const val ACCEPT = "Accept"
-        const val TOKEN_AUTH = "Authorization"
-    }
 }

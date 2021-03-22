@@ -1,6 +1,6 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.network.api.AuthApi
+import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.rest.RetrofitAppFactory
 import com.wb.logistics.ui.delivery.data.DeliveryApi
 import com.wb.logistics.ui.reception.data.ReceptionApi

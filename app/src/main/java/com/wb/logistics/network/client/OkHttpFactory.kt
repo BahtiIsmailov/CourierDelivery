@@ -2,7 +2,7 @@ package com.wb.logistics.network.client
 
 import com.wb.logistics.BuildConfig
 import com.wb.logistics.network.certificate.CertificateStore
-import com.wb.logistics.network.domain.HeaderRequestInterceptor
+import com.wb.logistics.network.headers.HeaderRequestInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 

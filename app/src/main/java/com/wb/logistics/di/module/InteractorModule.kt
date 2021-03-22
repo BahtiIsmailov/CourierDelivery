@@ -1,6 +1,6 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.network.api.AuthRepository
+import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.domain.*
 import org.koin.dsl.module

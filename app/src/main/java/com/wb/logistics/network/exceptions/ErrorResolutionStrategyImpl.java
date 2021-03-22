@@ -26,27 +26,30 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
     @NonNull
     private final ErrorResolutionResourceProvider resourceProvider;
+//    @NonNull
+//    private final AuthRepository authRepository;
 
-    public ErrorResolutionStrategyImpl(@NonNull ErrorResolutionResourceProvider resourceProvider) {
+
+    public ErrorResolutionStrategyImpl(@NonNull ErrorResolutionResourceProvider resourceProvider
+                                       ) { //@NonNull AuthRepository authRepository
         this.resourceProvider = resourceProvider;
+       // this.authRepository = authRepository;
     }
 
     @NotNull
     @Override
     public Observable<?> apply(@NonNull Observable<?> call) {
-        return call.doOnNext(o -> processOnNext())
-                .onErrorResumeNext(throwable -> {
-                    return Observable.error(convertException(throwable));
-                });
+        return call.onErrorResumeNext(throwable -> {
+            return Observable.error(convertException(throwable));
+        });
     }
 
     @NotNull
     @Override
     public Single<?> apply(@NonNull Single<?> call) {
-        return call.doOnSuccess(o -> processOnNext())
-                .onErrorResumeNext(throwable ->
-                        Single.error(convertException(throwable))
-                );
+        return call.onErrorResumeNext(throwable ->
+                Single.error(convertException(throwable))
+        );
     }
 
     @NotNull
@@ -55,10 +58,6 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
         return call.onErrorResumeNext(throwable ->
                 Completable.error(convertException(throwable))
         );
-    }
-
-    private void processOnNext() {
-        // TODO: 10.03.2021 prolong session
     }
 
     private Throwable convertException(@NonNull Throwable throwable) {

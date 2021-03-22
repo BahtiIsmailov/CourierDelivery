@@ -1,8 +1,8 @@
 package com.wb.logistics.ui.auth.domain
 
 import com.jakewharton.rxbinding3.InitialValueObservable
-import com.wb.logistics.network.api.AuthRepository
-import com.wb.logistics.network.api.response.RemainingAttemptsResponse
+import com.wb.logistics.network.api.auth.AuthRepository
+import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.signup.TimerOverStateImpl
 import com.wb.logistics.ui.auth.signup.TimerState

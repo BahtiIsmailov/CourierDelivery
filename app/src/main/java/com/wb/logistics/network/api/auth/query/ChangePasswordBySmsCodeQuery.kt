@@ -1,4 +1,4 @@
-package com.wb.logistics.network.api.query
+package com.wb.logistics.network.api.auth.query
 
 import com.google.gson.annotations.SerializedName
 

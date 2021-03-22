@@ -1,4 +1,4 @@
-package com.wb.logistics.network.api.response
+package com.wb.logistics.network.api.auth.response
 
 import com.google.gson.annotations.SerializedName
 

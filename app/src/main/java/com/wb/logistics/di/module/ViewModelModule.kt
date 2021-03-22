@@ -11,7 +11,6 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModel { NumberPhoneViewModel(get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
-
     viewModel { (parameters: TemporaryPasswordParameters) ->
         TemporaryPasswordViewModel(
             parameters,
@@ -20,7 +19,6 @@ val viewModelModule = module {
             get()
         )
     }
-
     viewModel { (parameters: InputPasswordParameters) ->
         InputPasswordViewModel(
             parameters,
@@ -28,7 +26,6 @@ val viewModelModule = module {
             get()
         )
     }
-
     viewModel { (parameters: CreatePasswordParameters) ->
         CreatePasswordViewModel(
             parameters,
@@ -36,7 +33,6 @@ val viewModelModule = module {
             get()
         )
     }
-
     viewModel { NavigationViewModel(get(), get()) }
     viewModel { DeliveryViewModel(get()) }
     viewModel { ReceptionViewModel(get(), get()) }

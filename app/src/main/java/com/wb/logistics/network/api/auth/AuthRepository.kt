@@ -1,8 +1,8 @@
-package com.wb.logistics.network.api
+package com.wb.logistics.network.api.auth
 
-import com.wb.logistics.network.api.response.CheckExistPhoneResponse
-import com.wb.logistics.network.api.response.RemainingAttemptsResponse
-import com.wb.logistics.network.api.response.StatisticsResponse
+import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
+import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
+import com.wb.logistics.network.api.auth.response.StatisticsResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -13,6 +13,8 @@ interface AuthRepository {
         phone: String,
         useSMS: Boolean
     ): Completable
+
+    fun refreshToken(): Completable
 
     fun checkExistPhone(phone: String): Single<CheckExistPhoneResponse>
 

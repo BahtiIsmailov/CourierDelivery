@@ -1,7 +1,6 @@
-package com.wb.logistics.network.domain
+package com.wb.logistics.network.headers
 
 import com.wb.logistics.BuildConfig
-import com.wb.logistics.network.headers.HeaderManager
 import okhttp3.logging.HttpLoggingInterceptor
 
 object InterceptorFactory {

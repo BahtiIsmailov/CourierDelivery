@@ -7,7 +7,8 @@ import com.google.gson.Gson
 
 class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker {
 
-    private val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val preferences: SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 
     override fun load(key: String, defValue: String): String {
         return preferences.getString(key, defValue)!!
@@ -30,14 +31,9 @@ class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker 
         preferences.edit().putString(key, json).apply()
     }
 
-
-    override fun <T> load(key: String, serializeClass: Class<T>?): T? {
+    override fun <T> load(key: String, serializeClass: Class<T>): T {
         val result = preferences.getString(key, DEFAULT)
-        return if (result == DEFAULT) {
-            null
-        } else {
-            gson.fromJson(result, serializeClass)
-        }
+        return gson.fromJson(result, serializeClass)
     }
 
     override fun isAllExists(vararg keys: String): Boolean {

@@ -1,8 +1,8 @@
 package com.wb.logistics.ui.auth
 
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.network.api.AuthRepository
-import com.wb.logistics.network.api.response.CheckExistPhoneResponse
+import com.wb.logistics.network.api.auth.AuthRepository
+import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.rx.RxSchedulerFactory
