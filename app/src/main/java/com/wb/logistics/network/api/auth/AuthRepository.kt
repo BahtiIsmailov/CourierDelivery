@@ -26,4 +26,6 @@ interface AuthRepository {
 
     fun statistics(): Single<StatisticsResponse>
 
+    fun userInfo() : Single<Pair<String, String>>
+
 }

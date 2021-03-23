@@ -54,8 +54,9 @@
         style="@style/SMediumRegularDarkText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:paddingBottom="4dp"
-        android:text="@string/delivery_start_receiving_boxes_start"
+        android:text="@string/flights_start_adding_boxes"
         android:textColor="@color/white"
         tools:ignore="MissingConstraints" />
 

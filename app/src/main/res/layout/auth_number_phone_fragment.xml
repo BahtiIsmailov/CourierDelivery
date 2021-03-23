@@ -6,37 +6,47 @@
     android:layout_height="match_parent"
     android:background="@color/background_content">
 
-    <EditText
-        android:id="@+id/phone_number"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phone_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
         android:layout_marginTop="@dimen/auth_input_top_offset"
         android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
-        android:autofillHints="@string/auth_number_phone_phone_hint"
-        android:background="@drawable/ripple_round_rectangle_white"
-        android:elevation="4dp"
-        android:hint="@string/auth_number_phone_phone_hint"
-        android:imeOptions="actionDone"
-        android:inputType="phone"
-        android:maxLength="18"
-        android:paddingStart="32dp"
-        android:textCursorDrawable="@null"
+        android:background="@drawable/ripple_round_rectangle_white_hint"
+        android:elevation="5dp"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phone_number"
+            style="@style/MediumRegularDarkText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:hint="@string/auth_number_phone_phone_hint"
+            android:importantForAutofill="noExcludeDescendants"
+            android:inputType="phone"
+            android:maxLength="18"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:textCursorDrawable="@null" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/number_not_found"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:text="@string/auth_number_phone_phone_not_found"
         android:textAppearance="@style/SmallRegularDarkText"
         android:textColor="@color/invalid"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/phone_number"
-        app:layout_constraintTop_toBottomOf="@+id/phone_number" />
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="@+id/phone_layout"
+        app:layout_constraintTop_toBottomOf="@+id/phone_layout" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/next"

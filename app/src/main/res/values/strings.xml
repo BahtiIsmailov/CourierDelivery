@@ -25,7 +25,7 @@
     <string name="selector_title">Выбор</string>
 
     <string name="auth_number_phone_toolbar_label">Номер телефона</string>
-    <string name="auth_number_phone_phone_hint">+7</string>
+    <string name="auth_number_phone_phone_hint">Номер телефона</string>
     <string name="auth_number_phone_phone_not_found">Номер телефона не зарегистрирован</string>
     <string name="auth_number_phone_phone_attempt">Осталось попыток: %1$s</string>
     <string name="auth_number_phone_phone_next">Далее</string>
@@ -51,11 +51,14 @@
     <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
     <string name="nav_default_count">100</string>
 
-    <string name="delivery_label">Доставка</string>
-    <string name="delivery_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
-    <string name="delivery_empty_flight_update">Обновить</string>
-    <string name="delivery_parking_title">Парковка</string>
-    <string name="delivery_start_receiving_boxes_start">Начать прием коробок</string>
+    <string name="flights_label">Доставка</string>
+    <string name="flights_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
+    <string name="flights_error_flight">Что-то пошло не так обновите экран для продолжения</string>
+    <string name="flights_empty_flight_update">Обновить</string>
+    <string name="flights_parking_title">Парковка</string>
+    <string name="flights_start_adding_boxes">Начать прием коробок</string>
+    <string name="flights_return_balance">Вернуть\nна баланс</string>
+    <string name="flights_continue_acceptance">Продолжить\nприемку</string>
 
     <string name="reception_label">Прием</string>
     <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>

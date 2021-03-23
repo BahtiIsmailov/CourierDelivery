@@ -34,6 +34,15 @@ class NavigationActivity : AppCompatActivity() {
         initToolbar()
         initNavController()
         initView()
+        initObserver()
+    }
+
+    private fun initObserver() {
+        navigationViewModel.navHeader.observe(this) {
+            val header: View = binding.navView.getHeaderView(0)
+            header.findViewById<TextView>(R.id.nav_header_name).text = it.first
+            header.findViewById<TextView>(R.id.nav_header_company).text = it.second
+        }
     }
 
     private fun initStatusBar() {
@@ -54,7 +63,7 @@ class NavigationActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.deliveryFragment
+                R.id.flightsFragment
             ), binding.drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

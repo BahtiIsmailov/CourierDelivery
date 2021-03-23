@@ -2,7 +2,7 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.ui.auth.*
 import com.wb.logistics.ui.config.ConfigViewModel
-import com.wb.logistics.ui.delivery.DeliveryViewModel
+import com.wb.logistics.ui.flights.FlightsViewModel
 import com.wb.logistics.ui.nav.NavigationViewModel
 import com.wb.logistics.ui.reception.ReceptionViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -33,7 +33,7 @@ val viewModelModule = module {
             get()
         )
     }
-    viewModel { NavigationViewModel(get(), get()) }
-    viewModel { DeliveryViewModel(get()) }
+    viewModel { NavigationViewModel(get(), get(), get(), get()) }
+    viewModel { FlightsViewModel(get(), get(), get()) }
     viewModel { ReceptionViewModel(get(), get()) }
 }

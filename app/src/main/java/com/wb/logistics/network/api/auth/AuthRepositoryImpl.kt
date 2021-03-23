@@ -99,6 +99,11 @@ class AuthRepositoryImpl(
         return authApi.statistics().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun userInfo(): Single<Pair<String, String>> {
+        return Single.just(Pair(tokenManager.userName(), tokenManager.userCompany()))
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
     companion object {
         const val START_COUNT_REPEAT = 1
         const val COUNT_REPEAT = 3

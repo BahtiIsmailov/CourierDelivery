@@ -32,7 +32,7 @@
     },
     {
       "key": "AUTH_SERVER_FRONTEND",
-      "value": "http://wbtrans-mobile-api.wildberries.ru"
+      "value": "https://wbtrans-mobile-api.wildberries.ru"
     }
   ]
 }

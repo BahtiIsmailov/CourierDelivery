@@ -1,13 +1,13 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.network.api.app.response.FlightStatusesResponse
-import com.wb.logistics.network.api.app.response.FlightsResponse
+import com.wb.logistics.network.api.app.response.FlightResponse
+import com.wb.logistics.network.api.app.response.FlightStatuses
 import io.reactivex.Single
 
 interface AppRepository {
 
-    fun flightStatuses(): Single<FlightStatusesResponse>
+    fun flightStatuses(): Single<FlightStatuses>
 
-    fun flights(): Single<FlightsResponse>
+    fun flight(): Single<FlightResponse>
 
 }

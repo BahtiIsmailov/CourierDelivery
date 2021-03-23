@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/delivery_flight_background"
+    tools:context=".ui.flights.FlightsFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/delivery_flight_background"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_barrier"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/flights_layout_route" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/bottom_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="return_balance,continue_acceptance,start_adding_boxes" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/back_group"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="return_balance,continue_acceptance" />
+
+    <com.wb.logistics.views.ProgressImageButtonView
+        android:id="@+id/return_balance"
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        app:app_background="@drawable/progress_image_button_light"
+        app:app_icon="@drawable/ic_return_balance"
+        app:app_state="enable"
+        app:app_text="@string/flights_return_balance"
+        app:app_text_color_disable="@color/button_alert_text_disable"
+        app:app_text_color_enable="@color/button_alert_text_enable"
+        app:app_text_color_progress="@color/button_alert_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.wb.logistics.views.ProgressImageButtonView
+        android:id="@+id/continue_acceptance"
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        app:app_background="@drawable/progress_image_button_default"
+        app:app_icon="@drawable/ic_scan_barcode"
+        app:app_state="enable"
+        app:app_text="@string/flights_continue_acceptance"
+        app:app_text_color_disable="@color/button_default_text_disable"
+        app:app_text_color_enable="@color/button_default_text_enable"
+        app:app_text_color_progress="@color/button_default_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline" />
+
+    <com.wb.logistics.views.ProgressImageButtonView
+        android:id="@+id/start_adding_boxes"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:visibility="gone"
+        app:app_background="@drawable/progress_image_button_default"
+        app:app_icon="@drawable/ic_scan_barcode"
+        app:app_state="enable"
+        app:app_text="@string/flights_start_adding_boxes"
+        app:app_text_color_disable="@color/button_default_text_disable"
+        app:app_text_color_enable="@color/button_default_text_enable"
+        app:app_text_color_progress="@color/button_default_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

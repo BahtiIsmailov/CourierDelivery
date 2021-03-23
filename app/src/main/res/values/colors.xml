@@ -22,19 +22,22 @@
     <color name="text_clickable">#642CA3</color>
 
     <color name="background">#642CA3</color>
-    <color name="background_content">#F4F3F7</color>
+
+    <color name="background_content">#E5E5E5</color>
     <color name="background_tint">#FD3F18</color>
     <color name="background_view">#642CA3</color>
     <color name="background_transparently">#97276EA6</color>
 
     <color name="color_tint">#BFC5D1</color>
-    <color name="color_progress">#FF5722</color>
+    <color name="color_progress">#642CA3</color>
     <color name="invalid">#DF1F00</color>
 
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
     <color name="text_spannable_phone">#17233B</color>
     <color name="text_spannable_time">#8C94A8</color>
+
+    <color name="text_info">#6F6779</color>
 
     <color name="buttonColor">#642CA3</color>
 
@@ -61,6 +64,10 @@
     <color name="button_default_text_enable">#FFFFFF</color>
     <color name="button_default_text_progress">#FFFFFF</color>
     <color name="button_default_text_disable">#FFFFFF</color>
+
+    <color name="button_alert_text_enable">#DF1F00</color>
+    <color name="button_alert_text_progress">#E0DDE4</color>
+    <color name="button_alert_text_disable">#E0DDE4</color>
 
     <color name="button_round_default_disabled">#E0DDE4</color>
     <color name="button_round_default_enabled">#642CA3</color>

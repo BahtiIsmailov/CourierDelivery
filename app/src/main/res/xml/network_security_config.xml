@@ -7,5 +7,7 @@
         <domain includeSubdomains="true">last-mile.wbtrans.svc.k8s.datapro</domain>
 
         <domain includeSubdomains="true">auth.wbtrans.svc.k8s.dldevel</domain>
+        <domain includeSubdomains="true">wbtrans-mobile-api.wildberries.ru</domain>
+
     </domain-config>
 </network-security-config>

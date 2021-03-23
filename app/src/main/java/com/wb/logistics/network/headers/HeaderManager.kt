@@ -7,5 +7,6 @@ interface HeaderManager {
         const val CONTENT_TYPE = "Content-Type"
         const val ACCEPT = "Accept"
         const val TOKEN_AUTH = "Authorization"
+        const val HOST = "Host"
     }
 }

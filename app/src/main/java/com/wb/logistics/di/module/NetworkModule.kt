@@ -25,6 +25,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.CallAdapter
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.URI
 
 const val AUTH_NAMED_API = "auth_named_api"
 const val APP_NAMED_API = "app_named_api"
@@ -89,8 +90,8 @@ val networkModule = module {
         return AuthHeaderManagerImpl()
     }
 
-    fun provideAppHeaderManager(tokenManager: TokenManager): HeaderManager {
-        return AppHeaderManagerImpl(tokenManager.bearerToken())
+    fun provideAppHeaderManager(tokenManager: TokenManager, host: String): HeaderManager {
+        return AppHeaderManagerImpl(tokenManager.bearerToken(), URI(host).host)
     }
 
     //==============================================================================================
@@ -192,7 +193,7 @@ val networkModule = module {
     single(named(APP_NAMED_API)) { provideAppServer(get()) }
 
     single { provideErrorResolutionResourceProvider(get()) }
-    single { provideErrorResolutionStrategy(get()) } //, get()
+    single { provideErrorResolutionStrategy(get()) }
     single { provideCallAdapterFactory(get()) }
 
     single { provideCertificateStore(get()) }
@@ -200,7 +201,7 @@ val networkModule = module {
     single { provideTokenManager(get()) }
 
     single(named(AUTH_NAMED_MANAGER)) { provideAuthHeaderManager() }
-    single(named(APP_NAMED_MANAGER)) { provideAppHeaderManager(get()) }
+    single(named(APP_NAMED_MANAGER)) { provideAppHeaderManager(get(), get(named(APP_NAMED_API))) }
 
     single { provideNullOnEmptyConverterFactory() }
 

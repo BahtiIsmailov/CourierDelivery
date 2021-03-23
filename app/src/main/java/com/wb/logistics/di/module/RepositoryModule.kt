@@ -25,10 +25,9 @@ val deliveryRepositoryModule = module {
 
     fun provideAppRepository(
         api: AppApi,
-        rxSchedulerFactory: RxSchedulerFactory,
-        tokenManager: TokenManager
+        rxSchedulerFactory: RxSchedulerFactory
     ): AppRepository {
-        return AppRepositoryImpl(api, rxSchedulerFactory, tokenManager)
+        return AppRepositoryImpl(api, rxSchedulerFactory)
     }
 
     fun provideReceptionRepository(api: ReceptionApi, dao: ReceptionDao): ReceptionRepository {
@@ -36,7 +35,7 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRepository(get(), get(), get()) }
-    single { provideAppRepository(get(), get(), get()) }
+    single { provideAppRepository(get(), get()) }
     single { provideReceptionRepository(get(), get()) }
 
 }

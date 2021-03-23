@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/auth_navigation"
-    app:startDestination="@id/deliveryFragment">
+    app:startDestination="@id/flightsFragment">
 
     <fragment
-        android:id="@+id/deliveryFragment"
-        android:name="com.wb.logistics.ui.delivery.DeliveryFragment"
-        android:label="@string/delivery_label"
-        tools:layout="@layout/delivery_fragment">
+        android:id="@+id/flightsFragment"
+        android:name="com.wb.logistics.ui.flights.FlightsFragment"
+        android:label="@string/flights_label"
+        tools:layout="@layout/flights_fragment">
         <action
             android:id="@+id/action_deliveryFragment_to_receptionFragment"
             app:popUpTo="@+id/nav_graph"
