@@ -3,6 +3,9 @@ package com.wb.logistics.ui.nav
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.RequiresApi
@@ -15,15 +18,18 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.NavigationActivityBinding
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
+import com.wb.logistics.ui.flights.FlightsFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class NavigationActivity : AppCompatActivity() {
+class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount {
 
     private val navigationViewModel by viewModel<NavigationViewModel>()
 
     private lateinit var binding: NavigationActivityBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var networkIcon: ImageView
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +48,12 @@ class NavigationActivity : AppCompatActivity() {
             val header: View = binding.navView.getHeaderView(0)
             header.findViewById<TextView>(R.id.nav_header_name).text = it.first
             header.findViewById<TextView>(R.id.nav_header_company).text = it.second
+        }
+        navigationViewModel.networkState.observe(this) {
+            networkIcon.visibility = if (it) GONE else VISIBLE
+        }
+        navigationViewModel.versionApp.observe(this) {
+            binding.versionAppText.text = it
         }
     }
 
@@ -72,11 +84,14 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        navigationViewModel.countFlight.observe(this) {
-            setMenuCounter(getMenuIds().first(), it)
-        }
-        navigationViewModel.versionApp.observe(this) {
-            binding.versionAppText.text = it
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        networkIcon = toolbar.findViewById<ImageView>(R.id.no_internet_image)
+        networkIcon.setOnClickListener {
+            InformationDialogFragment.newInstance(
+                getString(R.string.nav_no_internet_title),
+                getString(R.string.nav_no_internet_description),
+                getString(R.string.nav_no_internet_button),
+            ).show(supportFragmentManager, "TAG")
         }
     }
 
@@ -86,6 +101,15 @@ class NavigationActivity : AppCompatActivity() {
         counter.text = count
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun flightCount(count: String) {
+        setMenuCounter(getMenuIds().first(), count)
+    }
+
     private fun getMenuIds(): List<Int> {
         val menuItemId: MutableList<Int> = ArrayList()
         val menu = binding.navView.menu
@@ -93,11 +117,6 @@ class NavigationActivity : AppCompatActivity() {
             menuItemId.add(menu.getItem(i).itemId)
         }
         return menuItemId
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
 }

@@ -19,30 +19,30 @@ class NavigationViewModel(
     val navHeader: LiveData<Pair<String, String>>
         get() = _navHeader
 
-    private val _countFlight = MutableLiveData<String>()
-    val countFlight: LiveData<String>
-        get() = _countFlight
-
     private val _versionApp = MutableLiveData<String>()
     val versionApp: LiveData<String>
         get() = _versionApp
 
+    private val _networkState = MutableLiveData<Boolean>()
+    val networkState: LiveData<Boolean>
+        get() = _networkState
+
     init {
         fetchNavHeader()
-        fetchCountFlight()
         fetchVersionApp()
+        fetchNetworkState()
     }
 
     private fun fetchNavHeader() {
         addSubscription(interactor.sessionInfo().subscribe({ _navHeader.value = it }, {}))
     }
 
-    private fun fetchCountFlight() {
-        _countFlight.value = "1"
-    }
-
     private fun fetchVersionApp() {
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+    }
+
+    private fun fetchNetworkState() {
+        addSubscription(interactor.isNetworkConnected().subscribe({ _networkState.value = it }, {}))
     }
 
 }

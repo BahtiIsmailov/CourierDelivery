@@ -2,6 +2,7 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.api.auth.AuthRepository
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.domain.*
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
@@ -34,21 +35,28 @@ val interactorModule = module {
     }
 
     fun provideNavigationInteractor(
-        repository: AuthRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        authRepository: AuthRepository
     ): NavigationInteractor {
-        return NavigationInteractorImpl(repository)
+        return NavigationInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            authRepository
+        )
     }
 
     fun provideFlightsInteractor(
+        networkMonitorRepository: NetworkMonitorRepository,
         repository: AppRepository
     ): FlightsInteractor {
-        return FlightsInteractorImpl(repository)
+        return FlightsInteractorImpl(networkMonitorRepository, repository)
     }
 
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
-    single { provideNavigationInteractor(get()) }
-    single { provideFlightsInteractor(get()) }
+    single { provideNavigationInteractor(get(), get(), get()) }
+    single { provideFlightsInteractor(get(), get()) }
 
 }

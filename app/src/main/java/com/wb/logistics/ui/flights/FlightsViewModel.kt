@@ -38,20 +38,30 @@ class FlightsViewModel(
     }
 
     private fun fetchFlights() {
-        stateUI.value = FlightsPasswordUIState.ProgressFlight(getProgressFlights())
+        stateUI.value = FlightsPasswordUIState.ProgressFlight(
+            getProgressFlights(),
+            zeroFlight()
+        )
         addSubscription(
             interactor.flight().subscribe({ flightsComplete(it) }, { flightsError(it) })
         )
     }
 
     private fun flightsComplete(flight: List<BaseItem>) {
-        stateUI.value = if (flight.isEmpty()) FlightsPasswordUIState.UpdateFlight(getEmptyFlights())
-        else FlightsPasswordUIState.ShowFlight(flight)
+        stateUI.value =
+            if (flight.isEmpty()) FlightsPasswordUIState.UpdateFlight(
+                getEmptyFlights(),
+                zeroFlight()
+            )
+            else FlightsPasswordUIState.ShowFlight(flight, resourceProvider.getOneFlight())
     }
 
     private fun flightsError(throwable: Throwable) {
-        stateUI.value = FlightsPasswordUIState.UpdateFlight(getErrorFlights())
+        stateUI.value =
+            FlightsPasswordUIState.UpdateFlight(getErrorFlights(), zeroFlight())
     }
+
+    private fun zeroFlight() = resourceProvider.getZeroFlight()
 
     private fun getProgressFlights(): List<BaseItem> {
         val data = mutableListOf<BaseItem>()

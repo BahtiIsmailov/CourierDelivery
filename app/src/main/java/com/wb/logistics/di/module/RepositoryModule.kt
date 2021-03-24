@@ -6,6 +6,8 @@ import com.wb.logistics.network.api.app.AppRepositoryImpl
 import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.api.auth.AuthRepositoryImpl
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkMonitorRepositoryImpl
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.ui.reception.data.ReceptionApi
@@ -34,8 +36,13 @@ val deliveryRepositoryModule = module {
         return ReceptionRepository(api, dao)
     }
 
+    fun provideNetworkMonitorRepository(): NetworkMonitorRepository {
+        return NetworkMonitorRepositoryImpl()
+    }
+
     single { provideAuthRepository(get(), get(), get()) }
     single { provideAppRepository(get(), get()) }
     single { provideReceptionRepository(get(), get()) }
+    single { provideNetworkMonitorRepository() }
 
 }

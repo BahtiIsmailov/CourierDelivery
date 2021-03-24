@@ -3,6 +3,7 @@ package com.wb.logistics.app
 import android.app.Application
 import android.content.Context
 import com.wb.logistics.di.module.*
+import com.wb.logistics.network.monitor.NetworkMonitor
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -12,6 +13,11 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        initDI()
+        initMonitor()
+    }
+
+    private fun initDI() {
         startKoin {
             androidContext(this@App)
             androidLogger(Level.DEBUG)
@@ -31,8 +37,17 @@ class App : Application() {
         }
     }
 
+    private fun initMonitor() {
+        NetworkMonitor(this).startNetworkCallback()
+    }
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
+    }
+
+    override fun onTerminate(){
+        super.onTerminate()
+        NetworkMonitor(this).stopNetworkCallback()
     }
 
 }

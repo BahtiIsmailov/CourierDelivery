@@ -11,4 +11,8 @@ class AppResourceProvider(private val context: Context) {
 
     fun getErrorFlight() : String = context.getString(R.string.flights_error_flight)
 
+    fun getZeroFlight() : String = context.getString(R.string.flights_zero)
+
+    fun getOneFlight() : String = context.getString(R.string.flights_one)
+
 }

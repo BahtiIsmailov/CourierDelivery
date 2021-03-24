@@ -1,0 +1,7 @@
+package com.wb.logistics.app
+
+object AppExtras {
+    const val EXTRA_DIALOG_TITLE = "EXTRA_DIALOG_TITLE"
+    const val EXTRA_DIALOG_DESCRIPTION = "EXTRA_DIALOG_DESCRIPTION"
+    const val EXTRA_DIALOG_POSITIVE_BUTTON_TITLE = "EXTRA_DIALOG_POSITIVE_BUTTON_TITLE"
+}

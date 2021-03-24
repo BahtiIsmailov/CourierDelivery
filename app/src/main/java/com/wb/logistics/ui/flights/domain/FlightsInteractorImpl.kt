@@ -2,12 +2,16 @@ package com.wb.logistics.ui.flights.domain
 
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.network.api.app.AppRepository
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.ui.flights.delegates.items.FlightItem
 import io.reactivex.Single
 
 class FlightsInteractorImpl(
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val repository: AppRepository
 ) : FlightsInteractor {
+
+
     override fun flight(): Single<List<BaseItem>> {
         return repository.flight()
             .map {

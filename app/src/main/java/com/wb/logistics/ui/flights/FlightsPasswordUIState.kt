@@ -8,9 +8,9 @@ sealed class FlightsPasswordUIState {
     object NavigateToNetworkInfoDialog : FlightsPasswordUIState()
     object NavigateToReturnBalanceDialog : FlightsPasswordUIState()
 
-    data class ShowFlight(val items: List<BaseItem>) : FlightsPasswordUIState()
-    data class ProgressFlight(val items: List<BaseItem>) : FlightsPasswordUIState()
-    data class UpdateFlight(val items: List<BaseItem>) : FlightsPasswordUIState()
+    data class ShowFlight(val items: List<BaseItem>, val countFlight: String) : FlightsPasswordUIState()
+    data class ProgressFlight(val items: List<BaseItem>, val countFlight: String) : FlightsPasswordUIState()
+    data class UpdateFlight(val items: List<BaseItem>, val countFlight: String) : FlightsPasswordUIState()
 
     object Empty : FlightsPasswordUIState()
 }

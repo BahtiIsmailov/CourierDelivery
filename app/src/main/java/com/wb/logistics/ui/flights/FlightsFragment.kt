@@ -1,5 +1,6 @@
 package com.wb.logistics.ui.flights
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,12 @@ import com.wb.logistics.ui.flights.delegates.FlightsRefreshDelegate
 import com.wb.logistics.ui.flights.delegates.OnFlightsUpdateCallback
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 class FlightsFragment : Fragment() {
+
+    interface OnFlightsCount {
+        fun flightCount(count: String)
+    }
 
     private val viewModel by viewModel<FlightsViewModel>()
 
@@ -29,6 +35,7 @@ class FlightsFragment : Fragment() {
     private lateinit var adapter: DefaultAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
+    private lateinit var onFlightsCount: OnFlightsCount
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,12 +49,8 @@ class FlightsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initAdapter()
-
         initListener()
-
         initStateObserve()
-
-        //deliveryViewModel.fetchFlights()
     }
 
     private fun initListener() {
@@ -75,31 +78,29 @@ class FlightsFragment : Fragment() {
                 is FlightsPasswordUIState.ShowFlight -> {
                     displayItems(state.items)
                     visibleStartAddingBoxes()
+                    showFlight(state.countFlight)
                 }
                 is FlightsPasswordUIState.ProgressFlight -> {
                     displayItems(state.items)
                     goneStartAddingBoxes()
+                    showFlight(state.countFlight)
                 }
                 is FlightsPasswordUIState.UpdateFlight -> {
                     displayItems(state.items)
                     goneStartAddingBoxes()
+                    showFlight(state.countFlight)
                 }
             }
         })
     }
 
-//    binding.startAddingBoxes.setState(ProgressImageButtonMode.PROGRESS)
-//    binding.startAddingBoxes.postDelayed(
-//    { findNavController().navigate(R.id.receptionFragment) },
-//    2000
-//    )
+    private fun showFlight(countFlight: String) {
+        onFlightsCount.flightCount(countFlight)
+    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-//        deliveryViewModel.visibleStartAddingBoxes.observe(viewLifecycleOwner) {
-//            visibleStartAddingBoxes(it)
-//        }
-//        deliveryViewModel.flights.observe(viewLifecycleOwner) { displayItems(it) }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onFlightsCount = context as OnFlightsCount
     }
 
     override fun onDestroyView() {

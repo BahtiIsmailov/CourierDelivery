@@ -36,4 +36,13 @@ class RxSchedulerFactoryImpl : RxSchedulerFactory {
         }
     }
 
+    override fun <T> applyFlowableSchedulers(): FlowableTransformer<T, T> {
+        return FlowableTransformer { upstream: Flowable<T> ->
+            upstream
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+        }
+    }
+
 }
