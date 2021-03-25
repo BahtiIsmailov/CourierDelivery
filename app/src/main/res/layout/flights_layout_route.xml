@@ -21,16 +21,17 @@
 
         <TextView
             android:id="@+id/flight_text"
-            style="@style/MediumRegularDarkText"
+            style="@style/SMediumRegularDarkText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Рейс № 31324" />
 
         <TextView
             android:id="@+id/date_text"
-            style="@style/MediumRegularLightText"
+            style="@style/BaseRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -51,7 +52,7 @@
 
         <TextView
             android:id="@+id/time_text"
-            style="@style/MediumRegularLightText"
+            style="@style/BaseRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -63,7 +64,7 @@
 
         <TextView
             android:id="@+id/parking_title_text"
-            style="@style/MediumRegularLightText"
+            style="@style/SMediumRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -94,7 +95,7 @@
 
         <TextView
             android:id="@+id/routes_title_text"
-            style="@style/MediumRegularDarkText"
+            style="@style/SMediumRegularDarkText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

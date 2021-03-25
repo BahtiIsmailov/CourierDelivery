@@ -1,45 +1,42 @@
 package com.wb.logistics.ui.flights.domain
 
-import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.network.api.app.AppRepository
+import com.wb.logistics.network.api.app.response.Flight
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
-import com.wb.logistics.ui.flights.delegates.items.FlightItem
-import io.reactivex.Single
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 
 class FlightsInteractorImpl(
     private val networkMonitorRepository: NetworkMonitorRepository,
-    private val repository: AppRepository
+    private val appRepository: AppRepository
 ) : FlightsInteractor {
 
+    override var action = BehaviorSubject.create<Boolean>()
 
-    override fun flight(): Single<List<BaseItem>> {
-        return repository.flight()
-            .map {
-                val list = mutableListOf<BaseItem>()
-                if (it.flight != null) {
-                    list.addAll(getMockFlights())
-                }
-                list
-            }
+    override fun flight(): Observable<FlightEntity<FlightsData>> {
+        val connectionMonitor = networkMonitorRepository.isNetworkConnected()
+        val repository = appRepository.flight()
+            .map { if (it.flight == null) FlightEntity.Empty() else successFlight(it.flight) }
+            .toObservable()
+        return Observable.merge(connectionMonitor, action)
+            .filter { it }
+            .switchMap { repository }
     }
 
-    private fun getMockFlights(): List<BaseItem> {
-        val data = mutableListOf<BaseItem>()
-        (0..3).forEach { _ ->
-            val address = mutableListOf<String>()
-            (0..5).forEach { _ -> address.add("ПВЗ Москва, ул. Карамазова, 32/3") }
-            data.add(
-                FlightItem(
-                    "Рейс № 31324",
-                    "№23",
-                    "23.09.20",
-                    "10:00",
-                    "Маршрут № 4 «Подольск север»",
-                    address
+    private fun successFlight(flight: Flight): FlightEntity.Success<FlightsData> {
+        return with(flight) {
+            val addressesName = mutableListOf<String>()
+            offices.forEach { addresses -> addressesName.add(addresses.name) }
+            FlightEntity.Success(
+                FlightsData(
+                    id,
+                    gate,
+                    plannedDate,
+                    route.name,
+                    addressesName
                 )
             )
         }
-        return data
     }
 
 }

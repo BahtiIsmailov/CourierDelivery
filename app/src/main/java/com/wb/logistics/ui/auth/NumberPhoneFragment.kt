@@ -66,7 +66,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                             InputPasswordParameters(state.number)
                         )
                     )
-                    clearUI()
+                    binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is NumberPhoneUIState.NavigateToTemporaryPassword -> {
                     findNavController().navigate(
@@ -74,7 +74,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                             TemporaryPasswordParameters(state.number)
                         )
                     )
-                    clearUI()
+                    binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 NumberPhoneUIState.NavigateToConfig ->
                     findNavController().navigate(R.id.authConfigActivity)
@@ -105,11 +105,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
             }
 
         })
-    }
-
-    private fun clearUI() {
-        binding.phoneNumber.text?.clear()
-        binding.next.setState(ProgressImageButtonMode.DISABLED)
     }
 
     override fun onDestroyView() {

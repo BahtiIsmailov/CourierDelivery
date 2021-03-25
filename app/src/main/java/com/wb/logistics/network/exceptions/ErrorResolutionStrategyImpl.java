@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.wb.logistics.app.AppConsts;
+import com.wb.logistics.utils.LogUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +19,7 @@ import javax.net.ssl.SSLException;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Unit;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Response;
@@ -31,9 +33,9 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
 
     public ErrorResolutionStrategyImpl(@NonNull ErrorResolutionResourceProvider resourceProvider
-                                       ) { //@NonNull AuthRepository authRepository
+    ) { //@NonNull AuthRepository authRepository
         this.resourceProvider = resourceProvider;
-       // this.authRepository = authRepository;
+        // this.authRepository = authRepository;
     }
 
     @NotNull
@@ -61,6 +63,10 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     }
 
     private Throwable convertException(@NonNull Throwable throwable) {
+        new LogUtils(logUtils -> {
+            logUtils.logDebugApp(throwable.toString());
+            return Unit.INSTANCE;
+        });
         if (throwable instanceof UnknownHostException) {
             return getNotInternetException();
         } else if (throwable instanceof ConnectException) {

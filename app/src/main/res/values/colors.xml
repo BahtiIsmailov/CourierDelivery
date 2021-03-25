@@ -40,10 +40,13 @@
     <color name="text_info">#6F6779</color>
 
     <color name="buttonColor">#642CA3</color>
+    <color name="button_text">#642CA3</color>
 
     <color name="splash_text">#fafafa</color>
 
     <color name="text">#000000</color>
+    <color name="base_regular_light_text">#8C94A8</color>
+    <color name="base_regular_dark_text">#17233B</color>
     <color name="small_regular_light_text">#8C94A8</color>
     <color name="small_regular_dark_text">#17233B</color>
     <color name="smedium_regular_light_text">#8C94A8</color>

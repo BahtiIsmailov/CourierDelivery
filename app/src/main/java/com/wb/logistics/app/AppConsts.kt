@@ -1,6 +1,9 @@
 package com.wb.logistics.app
 
 object AppConsts {
+
+    const val SERVER_TIMEZONE = "Europe/Moscow"
+
     const val SERVICE_CODE_OK = 200
     const val SERVICE_CODE_BAD_REQUEST = 400
     const val SERVICE_CODE_UNAUTHORIZED = 401

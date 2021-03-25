@@ -87,6 +87,16 @@
         <item name="android:textColor">@color/text</item>
     </style>
 
+    <style name="BaseRegularDarkText" parent="RegularBaseText">
+        <item name="android:textSize">@dimen/base_text</item>
+        <item name="android:textColor">@color/base_regular_dark_text</item>>
+    </style>
+
+    <style name="BaseRegularLightText" parent="RegularBaseText">
+        <item name="android:textSize">@dimen/base_text</item>
+        <item name="android:textColor">@color/base_regular_light_text</item>>
+    </style>
+
     <style name="SmallRegularDarkText" parent="RegularBaseText">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/small_regular_dark_text</item>>

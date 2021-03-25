@@ -56,7 +56,7 @@
 
     <string name="flights_label">Доставка</string>
     <string name="flights_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
-    <string name="flights_error_flight">Что-то пошло не так обновите экран для продолжения</string>
+    <string name="flights_error_flight">Что-то пошло не так, обновите экран для продолжения</string>
     <string name="flights_empty_flight_update">Обновить</string>
     <string name="flights_parking_title">Парковка</string>
     <string name="flights_start_adding_boxes">Начать прием коробок</string>
@@ -64,6 +64,10 @@
     <string name="flights_continue_acceptance">Продолжить\nприемку</string>
     <string name="flights_zero">0</string>
     <string name="flights_one">1</string>
+    <string name="flights_flight_number">Рейс № %1$d</string>
+    <string name="flights_parking_number">№%1$d</string>
+    <string name="flights_routes_title_pref">Маршрут %1$s</string>
+    <string name="flights_routes_empty">Маршруты не назначены</string>
 
     <string name="reception_label">Прием</string>
     <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>

@@ -17,7 +17,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "0.2.1"
+        versionName "0.3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -42,12 +42,12 @@ android {
         viewBinding = true
     }
 
-//    android.applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
-//            outputFileName = "../../../../../apk/" + fileName
-//        }
-//    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
+            outputFileName = "../../../../../apk/" + fileName
+        }
+    }
 
 }
 
@@ -105,5 +105,8 @@ dependencies {
 
     //pref
     implementation 'androidx.preference:preference-ktx:1.1.1'
+
+    //date tame
+    implementation 'joda-time:joda-time:2.9.9'
 
 }

@@ -11,6 +11,8 @@ import com.wb.logistics.utils.prefs.SharedWorker
 import com.wb.logistics.utils.prefs.SharedWorkerImpl
 import com.wb.logistics.utils.reader.ConfigReader
 import com.wb.logistics.utils.reader.ConfigReaderImpl
+import com.wb.logistics.utils.time.TimeFormatter
+import com.wb.logistics.utils.time.TimeFormatterImpl
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -41,11 +43,16 @@ val utilsModule = module {
         return ConfigManagerImpl(configReader, sharedWorker)
     }
 
+    fun provideTimeFormatter(): TimeFormatter {
+        return TimeFormatterImpl()
+    }
+
     single { provideSharedWorker(get(), get()) }
     single { provideDeviceManager(get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
     single { provideConfigReader(get(), get(), get(named(PATH_CONFIG_NAMED))) }
     single { provideConfigManager(get(), get()) }
+    single { provideTimeFormatter() }
 
 
 }

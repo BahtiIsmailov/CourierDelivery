@@ -3,7 +3,9 @@ package com.wb.logistics.ui.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.wb.logistics.R
 import com.wb.logistics.app.AppExtras
 
 class InformationDialogFragment : DialogFragment() {
@@ -48,4 +50,14 @@ class InformationDialogFragment : DialogFragment() {
             return fragment
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        context?.let {
+        (dialog as AlertDialog)
+            .getButton(AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(ContextCompat.getColor(it, R.color.button_text))
+        }
+    }
+
 }

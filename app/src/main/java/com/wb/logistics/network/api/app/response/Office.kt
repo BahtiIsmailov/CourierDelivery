@@ -6,6 +6,6 @@ data class Office(
     @SerializedName("id") val id: Int,
     @SerializedName("name") val name: String,
     @SerializedName("phone") val fullAddress: Int,
-    @SerializedName("long") val long: List<Double>,
+    @SerializedName("long") val long: Double,
     @SerializedName("lat") val lat: Double
 )

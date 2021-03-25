@@ -1,18 +1,18 @@
 package com.wb.logistics.ui.flights
 
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.mvvm.model.base.BaseItem
+import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.flights.delegates.items.FlightProgressItem
-import com.wb.logistics.ui.flights.delegates.items.FlightRefreshItem
+import com.wb.logistics.ui.flights.domain.FlightEntity
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
-import com.wb.logistics.ui.res.AppResourceProvider
+import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightsViewModel(
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: AppResourceProvider,
+    private val resourceProvider: FlightResourceProvider,
     private val interactor: FlightsInteractor,
+    private val dataBuilder: FlightsDataBuilder
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUI = MutableLiveData<FlightsPasswordUIState>()
@@ -39,46 +39,45 @@ class FlightsViewModel(
 
     private fun fetchFlights() {
         stateUI.value = FlightsPasswordUIState.ProgressFlight(
-            getProgressFlights(),
+            listOf(dataBuilder.buildProgressItem()),
             zeroFlight()
         )
+        interactor.action.onNext(true)
         addSubscription(
-            interactor.flight().subscribe({ flightsComplete(it) }, { flightsError(it) })
+            interactor.flight()
+                .map {
+                    when (it) {
+                        is FlightEntity.Empty -> FlightsPasswordUIState.UpdateFlight(
+                            listOf(dataBuilder.buildEmptyItem()), zeroFlight()
+                        )
+                        is FlightEntity.Success -> FlightsPasswordUIState.ShowFlight(
+                            listOf(dataBuilder.buildSuccessItem(it)),
+                            resourceProvider.getOneFlight()
+                        )
+                    }
+                }
+                .subscribe({ flightsComplete(it) }, { flightsError(it) })
         )
     }
 
-    private fun flightsComplete(flight: List<BaseItem>) {
-        stateUI.value =
-            if (flight.isEmpty()) FlightsPasswordUIState.UpdateFlight(
-                getEmptyFlights(),
-                zeroFlight()
-            )
-            else FlightsPasswordUIState.ShowFlight(flight, resourceProvider.getOneFlight())
+    private fun flightsComplete(flight: FlightsPasswordUIState) {
+        stateUI.value = flight
     }
 
     private fun flightsError(throwable: Throwable) {
-        stateUI.value =
-            FlightsPasswordUIState.UpdateFlight(getErrorFlights(), zeroFlight())
+        LogUtils { logDebugApp(throwable.toString()) }
+        stateUI.value = when (throwable) {
+            is UnauthorizedException -> FlightsPasswordUIState.UpdateFlight(
+                listOf(dataBuilder.buildErrorMessageItem(throwable.message)),
+                zeroFlight()
+            )
+            else -> FlightsPasswordUIState.UpdateFlight(
+                listOf(dataBuilder.buildErrorItem()),
+                zeroFlight()
+            )
+        }
     }
 
     private fun zeroFlight() = resourceProvider.getZeroFlight()
-
-    private fun getProgressFlights(): List<BaseItem> {
-        val data = mutableListOf<BaseItem>()
-        data.add(FlightProgressItem())
-        return data
-    }
-
-    private fun getErrorFlights(): List<BaseItem> {
-        val data = mutableListOf<BaseItem>()
-        data.add(FlightRefreshItem(resourceProvider.getErrorFlight()))
-        return data
-    }
-
-    private fun getEmptyFlights(): List<BaseItem> {
-        val data = mutableListOf<BaseItem>()
-        data.add(FlightRefreshItem(resourceProvider.getEmptyFlight()))
-        return data
-    }
 
 }
