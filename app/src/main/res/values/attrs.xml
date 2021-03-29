@@ -32,4 +32,31 @@
         <attr name="app_background" format="reference|color" />
     </declare-styleable>
 
+    <declare-styleable name="ReceptionInfoView">
+        <attr name="reception_info_box" format="string" />
+        <attr name="reception_info_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="submerge_box" value="1" />
+            <enum name="return_box" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ReceptionAcceptedView">
+        <attr name="reception_accepted_box" format="string" />
+        <attr name="reception_accepted_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="contains_complete_box" value="1" />
+            <enum name="contains_deny_box" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ReceptionParkingView">
+        <attr name="reception_parking_number" format="string" />
+        <attr name="reception_parking_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="contains_complete_box" value="1" />
+            <enum name="contains_deny_box" value="2" />
+        </attr>
+    </declare-styleable>
+
 </resources>

@@ -73,6 +73,17 @@
     <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
     <string name="reception_manual_input_button">Ручной ввод</string>
     <string name="reception_complete_button">Завершить</string>
+    <string name="reception_current_box">Текущая коробка</string>
+    <string name="reception_code_pref_box">TRBX-</string>
+    <string name="reception_code_box">TRBX-%1$s</string>
+    <string name="reception_status_box_empty" />
+    <string name="reception_status_box_submerge">Погрузите в машину</string>
+    <string name="reception_status_box_return">Верните коробку</string>
+    <string name="reception_accepted">Принято</string>
+    <string name="reception_parking">Парковка №</string>
+    <string name="reception_list"><u>Список</u></string>
+    <string name="reception_default_count_box">-</string>
+    <string name="reception_default_parking" />
 
     <string name="confirm_info_dialog_button">Понятно</string>
 

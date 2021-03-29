@@ -61,7 +61,7 @@ class FlightsFragment : Fragment() {
 
         }
         binding.startAddingBoxes.setOnClickListener {
-
+            viewModel.action(FlightsPasswordUIAction.ReceptionBoxesClick)
         }
     }
 

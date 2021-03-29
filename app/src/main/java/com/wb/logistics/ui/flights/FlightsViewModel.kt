@@ -23,7 +23,8 @@ class FlightsViewModel(
             is FlightsPasswordUIAction.NetworkInfoClick ->
                 FlightsPasswordUIState.NavigateToNetworkInfoDialog
             is FlightsPasswordUIAction.ReceptionBoxesClick -> {
-                FlightsPasswordUIState.NavigateToReceptionBox
+                stateUI.value = FlightsPasswordUIState.NavigateToReceptionBox
+                stateUI.value = FlightsPasswordUIState.Empty
             }
             is FlightsPasswordUIAction.ReturnToBalanceClick -> {
                 FlightsPasswordUIState.NavigateToReturnBalanceDialog

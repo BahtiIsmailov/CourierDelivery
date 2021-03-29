@@ -22,7 +22,7 @@
         tools:listitem="@layout/flights_layout_route" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/guideline_center_vertical"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -54,7 +54,7 @@
         app:app_text_color_enable="@color/button_alert_text_enable"
         app:app_text_color_progress="@color/button_alert_text_progress"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_center_vertical"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.wb.logistics.views.ProgressImageButtonView
@@ -70,7 +70,7 @@
         app:app_text_color_progress="@color/button_default_text_progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline" />
+        app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/start_adding_boxes"

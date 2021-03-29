@@ -8,39 +8,155 @@
     android:background="@color/delivery_flight_background"
     tools:context=".ui.flights.FlightsFragment">
 
-    <ImageView
+    <me.dm7.barcodescanner.zxing.ZXingScannerView
+        android:id="@+id/scannerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/guideline2"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline_center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/reception_subtract" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+<!--    <View-->
+<!--        android:id="@+id/divider1"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="2dip"-->
+<!--        android:layout_marginTop="12dp"-->
+<!--        android:background="#DF1F00"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/guideline_center_horizontal"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <ImageView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:adjustViewBounds="true"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/guideline_center_horizontal"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/reception_subtract" />-->
+
+<!--    <ImageView-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:padding="30dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/guideline_center_horizontal"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/frame_scanner" />-->
 
     <ImageView
+        android:id="@+id/sun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
         android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_sun" />
 
     <TextView
-        style="@style/MediumRegularLightText"
+        style="@style/SmallRegularLightText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:text="@string/reception_scan_info"
+        app:layout_constraintBottom_toBottomOf="@+id/sun"
+        app:layout_constraintEnd_toStartOf="@+id/sun"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sun" />
+
+    <ImageView
+        android:id="@+id/minus"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_reception_minus"
+        app:layout_constraintBottom_toBottomOf="@+id/zoom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/zoom" />
+
+    <ImageView
+        android:id="@+id/plus"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/ic_reception_plus"
+        app:layout_constraintBottom_toBottomOf="@+id/zoom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/zoom" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/zoom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:maxHeight="5dip"
+        android:minHeight="5dip"
+        android:progressDrawable="@drawable/progress_appearance"
+        android:splitTrack="false"
+        android:thumb="@drawable/progress_appearance_thumb"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toStartOf="@+id/plus"
+        app:layout_constraintStart_toEndOf="@+id/minus" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/reception_bottom_sheet_info"
+        app:layout_constraintBottom_toTopOf="@+id/complete_button"
+        app:layout_constraintTop_toBottomOf="@+id/guideline3" />
+
+    <com.wb.logistics.views.ReceptionAcceptedView
+        android:id="@+id/received"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_center_info"
+        app:layout_constraintEnd_toEndOf="@+id/guideline_center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal"
+        app:reception_accepted_box="5"
+        app:reception_accepted_state="contains_complete_box" />
+
+    <com.wb.logistics.views.ReceptionParkingView
+        android:id="@+id/parking"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_center_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal"
+        app:reception_parking_number="10"
+        app:reception_parking_state="contains_complete_box" />
+
+    <com.wb.logistics.views.ReceptionInfoView
+        android:id="@+id/info"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@+id/guideline_center_info"
+        app:reception_info_box="66727363762"
+        app:reception_info_state="submerge_box" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/manual_input_button"
         android:layout_width="0dp"
-        android:layout_height="72dp"
+        android:layout_height="0dp"
         android:visibility="visible"
         app:app_background="@drawable/progress_image_button_light"
         app:app_icon="@drawable/ic_manual_input"
@@ -50,13 +166,14 @@
         app:app_text_color_enable="@color/reception_text_manual_input"
         app:app_text_color_progress="@color/button_default_text_progress"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/guideline_center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/complete_button"
         android:layout_width="0dp"
-        android:layout_height="72dp"
+        android:layout_height="0dp"
         android:visibility="visible"
         app:app_background="@drawable/progress_image_button_default"
         app:app_icon="@drawable/ic_complete"
@@ -67,20 +184,49 @@
         app:app_text_color_progress="@color/button_gray_text_progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline" />
+        app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/guideline_center_vertical"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
+        android:id="@+id/guideline_center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.47" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_center_info"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.70" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="72dp" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/section_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="manual_input_button, complete_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

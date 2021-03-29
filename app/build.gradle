@@ -42,12 +42,12 @@ android {
         viewBinding = true
     }
 
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
-            outputFileName = "../../../../../apk/" + fileName
-        }
-    }
+//    android.applicationVariants.all { variant ->
+//        variant.outputs.all {
+//            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
+//            outputFileName = "../../../../../apk/" + fileName
+//        }
+//    }
 
 }
 
@@ -108,5 +108,9 @@ dependencies {
 
     //date tame
     implementation 'joda-time:joda-time:2.9.9'
+
+    //scanner
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'com.orhanobut:hawk:2.0.1'
 
 }
