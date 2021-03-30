@@ -116,7 +116,7 @@ public class ReceptionParkingView extends FrameLayout {
         initState();
     }
 
-    public void setState(int currentState) {
+    public void setParkingNumber(int currentState) {
         this.currentState = currentState;
         initState();
     }

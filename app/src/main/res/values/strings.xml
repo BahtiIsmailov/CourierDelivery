@@ -94,6 +94,10 @@
     <string name="reception_box_not_address_title">Адрес доставки</string>
     <string name="reception_box_not_belong_understand">Понятно</string>
 
+    <string name="reception_boxes_label">Принято</string>
+    <string name="reception_boxes_empty_list">Список пуст</string>
+    <string name="reception_boxes_remove_item">Удалить отмеченные</string>
+
     <string name="confirm_info_dialog_button">Понятно</string>
 
 </resources>

@@ -2,25 +2,33 @@ package com.wb.logistics.ui.reception
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
+import android.os.Handler
+import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
-import com.wb.logistics.R
 import com.wb.logistics.databinding.ReceptionFragmentBinding
 import com.wb.logistics.ui.reception.ReceptionHandleFragment.Companion.HANDLE_INPUT_RESULT
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.views.ReceptionAcceptedMode
 import com.wb.logistics.views.ReceptionInfoMode
+import com.wb.logistics.views.ReceptionParkingMode
+import me.dm7.barcodescanner.core.IViewFinder
+import me.dm7.barcodescanner.core.ViewFinderView
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,6 +39,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private var _binding: ReceptionFragmentBinding? = null
     private val binding get() = _binding!!
+    private lateinit var scannerView: ZXingScannerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,40 +51,88 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initPermission()
+        initScanner()
+        initListener()
+        initObserver()
+    }
+
+    private fun initPermission() {
         if (!hasPermissions(Manifest.permission.CAMERA)) {
             requestPermissions(
                 arrayOf(Manifest.permission.CAMERA),
                 PERMISSIONS_REQUEST_CAMERA_NO_ACTION
             )
         }
-        //binding.scannerView.setFormats(listOf(BarcodeFormat.CODE_128))
-        binding.scannerView.setResultHandler(this)
-        binding.scannerView.background = AppCompatResources.getDrawable(
-            requireContext(),
-            R.drawable.reception_subtract
-        )
-//        binding.scannerView.setAspectTolerance(0.5f)
+    }
 
+    private fun initScanner() {
+        scannerView = object : ZXingScannerView(context) {
+            override fun createViewFinderView(context: Context): IViewFinder {
+                return CustomViewFinderView(context)
+            }
+        }
+        scannerView.setBorderColor(Color.WHITE)
+        scannerView.setLaserEnabled(true)
+        scannerView.setIsBorderCornerRounded(true)
+        scannerView.setBorderCornerRadius(10)
+        scannerView.setBorderAlpha(0.5F)
+        binding.scannerLayout.addView(scannerView)
+    }
+
+    private fun initObserver() {
+        viewModel.stateUI.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ReceptionUIState.NavigateToReceptionBoxNotBelong -> {
+                    findNavController().navigate(
+                        ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
+                            ReceptionBoxNotBelongParameters(state.box, state.address)
+                        )
+                    )
+
+                }
+                ReceptionUIState.Empty -> {
+                }
+                ReceptionUIState.NavigateToBoxes -> findNavController().navigate(
+                    ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxesFragment())
+            }
+        }
+
+        viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ReceptionBoxUIState.BoxComplete -> {
+                    binding.received.setCountBox(state.countBox,
+                        ReceptionAcceptedMode.CONTAINS_COMPLETE)
+                    binding.parking.setParkingNumber(state.parking,
+                        ReceptionParkingMode.CONTAINS_COMPLETE)
+                    binding.info.setCodeBox(state.box, ReceptionInfoMode.SUBMERGE)
+                }
+                is ReceptionBoxUIState.BoxDeny -> {
+                    binding.received.setCountBox(state.countBox,
+                        ReceptionAcceptedMode.CONTAINS_DENY)
+                    binding.parking.setParkingNumber(state.parking,
+                        ReceptionParkingMode.CONTAINS_DENY)
+                    binding.info.setCodeBox(state.box, ReceptionInfoMode.RETURN)
+                }
+                ReceptionBoxUIState.Empty -> {
+                    binding.received.setCountBox(ReceptionAcceptedMode.EMPTY)
+                    binding.parking.setParkingNumber(ReceptionParkingMode.EMPTY)
+                    binding.info.setCodeBox(ReceptionInfoMode.EMPTY)
+                }
+            }
+        }
+    }
+
+    private fun initListener() {
         binding.manualInputButton.setOnClickListener {
             val receptionHandleFragment = ReceptionHandleFragment.newInstance()
             receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
             receptionHandleFragment.show(parentFragmentManager, "add_reception_handle_fragment")
         }
 
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
-            if (state is ReceptionUIState.NavigateToReceptionBoxNotBelong) {
-                findNavController().navigate(
-                    ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
-                        ReceptionBoxNotBelongParameters(state.box, state.address)
-                    )
-                )
-            }
-        })
-
-        viewModel.codeBox.observe(viewLifecycleOwner) {
-            binding.info.setCodeBox(it, ReceptionInfoMode.SUBMERGE)
+        binding.received.setOnClickListener {
+            viewModel.onListClicked()
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -104,11 +161,10 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         val code = rawResult?.text ?: return
         viewModel.onBoxScanned(code)
         LogUtils { logDebugApp("Cod $code") }
-
         beep()
-
-        Snackbar.make(binding.scannerView, "Cod $code", Snackbar.LENGTH_LONG).show()
-        binding.scannerView.resumeCameraPreview(this)
+        val handler = Handler()
+        handler.postDelayed({ scannerView.resumeCameraPreview(this) },
+            2000)
     }
 
     private fun beep() {
@@ -118,18 +174,66 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onStart() {
         super.onStart()
-        binding.scannerView.startCamera()
+        scannerView.setResultHandler(this)
+        scannerView.startCamera()
     }
 
     override fun onStop() {
         super.onStop()
-        binding.scannerView.stopCamera()
+        scannerView.stopCamera()
     }
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA_NO_ACTION = 1
         const val REQUEST_HANDLE_CODE = 100
     }
+
+
+    private class CustomViewFinderView : ViewFinderView {
+        val PAINT = Paint()
+
+        constructor(context: Context?) : super(context) {
+            init()
+        }
+
+        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+            init()
+        }
+
+        private fun init() {
+            PAINT.color = Color.WHITE
+            PAINT.isAntiAlias = true
+            val textPixelSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                TRADE_MARK_TEXT_SIZE_SP.toFloat(), resources.displayMetrics)
+            PAINT.textSize = textPixelSize
+//            setSquareViewFinder(true)
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            drawTradeMark(canvas)
+        }
+
+        private fun drawTradeMark(canvas: Canvas) {
+            val framingRect = framingRect
+            val tradeMarkTop: Float
+            val tradeMarkLeft: Float
+            if (framingRect != null) {
+                tradeMarkTop = framingRect.bottom + PAINT.textSize + 10
+                tradeMarkLeft = framingRect.left.toFloat()
+            } else {
+                tradeMarkTop = 10f
+                tradeMarkLeft = canvas.height - PAINT.textSize - 10
+            }
+            canvas.drawText(TRADE_MARK_TEXT, tradeMarkLeft, tradeMarkTop, PAINT)
+        }
+
+        companion object {
+            const val TRADE_MARK_TEXT = "WB"
+            const val TRADE_MARK_TEXT_SIZE_SP = 40
+        }
+    }
+
 
 }
 

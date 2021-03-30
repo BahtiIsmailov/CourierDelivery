@@ -9,6 +9,8 @@ import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.flights.domain.FlightsInteractorImpl
 import com.wb.logistics.ui.nav.domain.NavigationInteractor
 import com.wb.logistics.ui.nav.domain.NavigationInteractorImpl
+import com.wb.logistics.ui.reception.domain.ReceptionInteractor
+import com.wb.logistics.ui.reception.domain.ReceptionInteractorImpl
 import org.koin.dsl.module
 
 val interactorModule = module {
@@ -53,10 +55,15 @@ val interactorModule = module {
         return FlightsInteractorImpl(networkMonitorRepository, repository)
     }
 
+    fun provideReceptionInteractor(rxSchedulerFactory: RxSchedulerFactory): ReceptionInteractor {
+        return ReceptionInteractorImpl(rxSchedulerFactory)
+    }
+
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideFlightsInteractor(get(), get()) }
+    single { provideReceptionInteractor(get()) }
 
 }

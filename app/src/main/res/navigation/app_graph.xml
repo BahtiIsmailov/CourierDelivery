@@ -29,6 +29,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_receptionFragment_to_receptionBoxesFragment"
+            app:destination="@id/receptionBoxesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -41,5 +48,11 @@
             app:argType="com.wb.logistics.ui.reception.ReceptionBoxNotBelongParameters"
             app:nullable="false" />
     </fragment>
+
+    <fragment
+        android:id="@+id/receptionBoxesFragment"
+        android:name="com.wb.logistics.ui.reception.ReceptionBoxesFragment"
+        android:label="@string/reception_boxes_label"
+        tools:layout="@layout/reception_boxes_fragment" />
 
 </navigation>

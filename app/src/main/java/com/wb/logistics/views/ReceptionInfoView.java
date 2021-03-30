@@ -88,7 +88,7 @@ public class ReceptionInfoView extends FrameLayout {
     }
 
     private void emptyState() {
-        codeBoxTextView.setText(DEFAULT_CODE_BOX_TEXT);
+        codeBoxTextView.setText(getResources().getString(R.string.reception_code_pref_box));
         statusBoxTextView.setText(STATUS_BOX_EMPTY_TEXT);
     }
 
@@ -106,6 +106,11 @@ public class ReceptionInfoView extends FrameLayout {
 
     public void setCodeBox(String codeBox, int state) {
         this.codeBox = codeBox;
+        this.state = state;
+        initState();
+    }
+
+    public void setCodeBox(int state) {
         this.state = state;
         initState();
     }

@@ -7,10 +7,7 @@ import com.wb.logistics.ui.flights.FlightsDataBuilder
 import com.wb.logistics.ui.flights.FlightsDataBuilderImpl
 import com.wb.logistics.ui.flights.FlightsViewModel
 import com.wb.logistics.ui.nav.NavigationViewModel
-import com.wb.logistics.ui.reception.ReceptionBoxNotBelongModel
-import com.wb.logistics.ui.reception.ReceptionBoxNotBelongParameters
-import com.wb.logistics.ui.reception.ReceptionHandleModel
-import com.wb.logistics.ui.reception.ReceptionViewModel
+import com.wb.logistics.ui.reception.*
 import com.wb.logistics.utils.time.TimeFormatter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -20,7 +17,7 @@ val viewModelModule = module {
     // TODO: 25.03.2021 вынести в отдельный модуль
     fun provideFlightsDataBuilder(
         timeFormatter: TimeFormatter,
-        resourceProvider: FlightResourceProvider
+        resourceProvider: FlightResourceProvider,
     ): FlightsDataBuilder {
         return FlightsDataBuilderImpl(timeFormatter, resourceProvider)
     }
@@ -52,9 +49,13 @@ val viewModelModule = module {
             get()
         )
     }
-    viewModel { (parameters: ReceptionBoxNotBelongParameters) -> ReceptionBoxNotBelongModel(parameters) }
+    viewModel { (parameters: ReceptionBoxNotBelongParameters) ->
+        ReceptionBoxNotBelongModel(parameters)
+    }
     viewModel { NavigationViewModel(get(), get(), get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get(), get()) }
-    viewModel { ReceptionViewModel(get()) }
+    viewModel { ReceptionViewModel(get(), get(), get()) }
     viewModel { ReceptionHandleModel(get(), get()) }
+
+    viewModel { ReceptionBoxesViewModel(get(), get()) }
 }

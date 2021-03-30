@@ -91,20 +91,28 @@ public class ReceptionAcceptedView extends FrameLayout {
     private void emptyState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_empty));
         countBoxTextView.setText(getResources().getString(R.string.reception_default_count_box));
+        listBoxTextView.setVisibility(INVISIBLE);
     }
 
     private void containsCompleteState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_complete_trans));
         countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(VISIBLE);
     }
 
     private void containsDenyState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_trans));
         countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(VISIBLE);
     }
 
     public void setCountBox(String countBox, int currentState) {
         this.countBox = countBox;
+        this.currentState = currentState;
+        initState();
+    }
+
+    public void setCountBox(int currentState) {
         this.currentState = currentState;
         initState();
     }
