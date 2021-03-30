@@ -12,15 +12,34 @@
         tools:layout="@layout/flights_fragment">
         <action
             android:id="@+id/action_deliveryFragment_to_receptionFragment"
+            app:destination="@id/receptionFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            app:destination="@id/receptionFragment" />
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
         android:id="@+id/receptionFragment"
         android:name="com.wb.logistics.ui.reception.ReceptionFragment"
         android:label="@string/reception_label"
-        tools:layout="@layout/reception_content" />
+        tools:layout="@layout/reception_fragment">
+        <action
+            android:id="@+id/action_receptionFragment_to_receptionBoxNotBelongFragment"
+            app:destination="@id/receptionBoxNotBelongFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/receptionBoxNotBelongFragment"
+        android:name="com.wb.logistics.ui.reception.ReceptionBoxNotBelongFragment"
+        android:label="@string/reception_box_not_belong_label"
+        tools:layout="@layout/reception_box_not_belong_fragment">
+        <argument
+            android:name="box_not_belong_key"
+            app:argType="com.wb.logistics.ui.reception.ReceptionBoxNotBelongParameters"
+            app:nullable="false" />
+    </fragment>
 
 </navigation>

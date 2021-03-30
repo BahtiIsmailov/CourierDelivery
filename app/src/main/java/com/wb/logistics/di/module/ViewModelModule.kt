@@ -7,6 +7,8 @@ import com.wb.logistics.ui.flights.FlightsDataBuilder
 import com.wb.logistics.ui.flights.FlightsDataBuilderImpl
 import com.wb.logistics.ui.flights.FlightsViewModel
 import com.wb.logistics.ui.nav.NavigationViewModel
+import com.wb.logistics.ui.reception.ReceptionBoxNotBelongModel
+import com.wb.logistics.ui.reception.ReceptionBoxNotBelongParameters
 import com.wb.logistics.ui.reception.ReceptionHandleModel
 import com.wb.logistics.ui.reception.ReceptionViewModel
 import com.wb.logistics.utils.time.TimeFormatter
@@ -50,6 +52,7 @@ val viewModelModule = module {
             get()
         )
     }
+    viewModel { (parameters: ReceptionBoxNotBelongParameters) -> ReceptionBoxNotBelongModel(parameters) }
     viewModel { NavigationViewModel(get(), get(), get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get(), get()) }
     viewModel { ReceptionViewModel(get()) }

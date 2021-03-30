@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import com.wb.logistics.R
@@ -33,7 +34,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = ReceptionFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,6 +61,16 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
             receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
             receptionHandleFragment.show(parentFragmentManager, "add_reception_handle_fragment")
         }
+
+        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+            if (state is ReceptionUIState.NavigateToReceptionBoxNotBelong) {
+                findNavController().navigate(
+                    ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
+                        ReceptionBoxNotBelongParameters(state.box, state.address)
+                    )
+                )
+            }
+        })
 
         viewModel.codeBox.observe(viewLifecycleOwner) {
             binding.info.setCodeBox(it, ReceptionInfoMode.SUBMERGE)

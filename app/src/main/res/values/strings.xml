@@ -88,6 +88,12 @@
     <string name="reception_handle_label">Ручной ввод</string>
     <string name="reception_handle_receive">Принять</string>
 
+    <string name="reception_box_not_belong_label">Не принадлежит РЦ</string>
+    <string name="reception_box_not_belong_title">Коробка не принадлежит РЦ,\nверните её сотруднику склада</string>
+    <string name="reception_box_not_code_title">ШК</string>
+    <string name="reception_box_not_address_title">Адрес доставки</string>
+    <string name="reception_box_not_belong_understand">Понятно</string>
+
     <string name="confirm_info_dialog_button">Понятно</string>
 
 </resources>
