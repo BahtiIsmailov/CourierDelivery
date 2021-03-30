@@ -34,7 +34,7 @@
     <dimen name="auth_input_horizontal_patent_offset">24dp</dimen>
     <dimen name="auth_button_height">56dp</dimen>
 
-    <dimen name="reception_rounded_corner">10dp</dimen>
+    <dimen name="reception_rounded_corner">15dp</dimen>
 
 
 </resources>

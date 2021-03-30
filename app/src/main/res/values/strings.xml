@@ -85,6 +85,9 @@
     <string name="reception_default_count_box">-</string>
     <string name="reception_default_parking" />
 
+    <string name="reception_handle_label">Ручной ввод</string>
+    <string name="reception_handle_receive">Принять</string>
+
     <string name="confirm_info_dialog_button">Понятно</string>
 
 </resources>

@@ -1,6 +1,8 @@
 package com.wb.logistics.ui.reception
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -15,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.Result
 import com.wb.logistics.R
 import com.wb.logistics.databinding.ReceptionFragmentBinding
+import com.wb.logistics.ui.reception.ReceptionHandleFragment.Companion.HANDLE_INPUT_RESULT
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.views.ReceptionInfoMode
 import me.dm7.barcodescanner.zxing.ZXingScannerView
@@ -52,24 +55,33 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         )
 //        binding.scannerView.setAspectTolerance(0.5f)
 
-//        binding.addBoxButton.setOnClickListener {
-//            findNavController().navigate(ScannerFragment2Directions.actionScannerFragment2ToAddBoxDialogFragment())
-//        }
-//        binding.loadingBoxesButton.setOnClickListener {
-//            findNavController().navigate(ScannerFragment2Directions.actionScannerFragment2ToLoadingBoxesFragment())
-//        }
-//        viewModel.state.observe(viewLifecycleOwner) {
-//            binding.currentBoxTextView.text = it.currentBox
-//            binding.scannedBoxCountTextView.text = it.scannedBoxCount
-//            binding.currentBoxDeliveryAddressTextView.text = it.currentBoxDestination
-//        }
+        binding.manualInputButton.setOnClickListener {
+            val receptionHandleFragment = ReceptionHandleFragment.newInstance()
+            receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
+            receptionHandleFragment.show(parentFragmentManager, "add_reception_handle_fragment")
+        }
+
         viewModel.codeBox.observe(viewLifecycleOwner) {
             binding.info.setCodeBox(it, ReceptionInfoMode.SUBMERGE)
         }
+
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK)
+            resultScannerCardNumber(requestCode, data)
+    }
+
+    private fun resultScannerCardNumber(requestCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_HANDLE_CODE) {
+            data?.apply {
+                val result = data.getStringExtra(HANDLE_INPUT_RESULT)
+                if (data.hasExtra(HANDLE_INPUT_RESULT) && result != null) {
+                    viewModel.onBoxHandleInput(result)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -105,6 +117,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA_NO_ACTION = 1
+        const val REQUEST_HANDLE_CODE = 100
     }
 
 }

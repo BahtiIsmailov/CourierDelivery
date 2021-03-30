@@ -41,7 +41,7 @@
             android:name="com.wb.logistics.ui.nav.NavigationActivity"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 

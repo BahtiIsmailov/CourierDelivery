@@ -12,6 +12,10 @@ class ReceptionViewModel(
     val codeBox: LiveData<String>
         get() = _codeBox
 
+    fun onBoxHandleInput(code: String) {
+        _codeBox.value = receptionResourceProvider.getCodeBox(code)
+    }
+
     fun onBoxScanned(code: String) {
         _codeBox.value = receptionResourceProvider.getCodeBox(code)
     }
