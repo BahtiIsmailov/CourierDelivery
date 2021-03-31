@@ -1,5 +1,7 @@
 package com.wb.logistics.di.module
 
+import com.wb.logistics.network.api.BoxesRepository
+import com.wb.logistics.network.api.BoxesRepositoryImpl
 import com.wb.logistics.network.api.app.AppApi
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.api.app.AppRepositoryImpl
@@ -20,14 +22,14 @@ val deliveryRepositoryModule = module {
     fun provideAuthRepository(
         api: AuthApi,
         rxSchedulerFactory: RxSchedulerFactory,
-        tokenManager: TokenManager
+        tokenManager: TokenManager,
     ): AuthRepository {
         return AuthRepositoryImpl(api, rxSchedulerFactory, tokenManager)
     }
 
     fun provideAppRepository(
         api: AppApi,
-        rxSchedulerFactory: RxSchedulerFactory
+        rxSchedulerFactory: RxSchedulerFactory,
     ): AppRepository {
         return AppRepositoryImpl(api, rxSchedulerFactory)
     }
@@ -40,9 +42,14 @@ val deliveryRepositoryModule = module {
         return NetworkMonitorRepositoryImpl()
     }
 
+    fun provideBoxesRepository(): BoxesRepository {
+        return BoxesRepositoryImpl()
+    }
+
     single { provideAuthRepository(get(), get(), get()) }
     single { provideAppRepository(get(), get()) }
     single { provideReceptionRepository(get(), get()) }
     single { provideNetworkMonitorRepository() }
+    single { provideBoxesRepository() }
 
 }

@@ -88,10 +88,10 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount {
         networkIcon = toolbar.findViewById<ImageView>(R.id.no_internet_image)
         networkIcon.setOnClickListener {
             InformationDialogFragment.newInstance(
-                getString(R.string.nav_no_internet_title),
-                getString(R.string.nav_no_internet_description),
-                getString(R.string.nav_no_internet_button),
-            ).show(supportFragmentManager, "TAG")
+                getString(R.string.nav_no_internet_dialog_title),
+                getString(R.string.nav_no_internet_dialog_description),
+                getString(R.string.nav_no_internet_dialog_button),
+            ).show(supportFragmentManager, "TAG_NETWORK")
         }
     }
 

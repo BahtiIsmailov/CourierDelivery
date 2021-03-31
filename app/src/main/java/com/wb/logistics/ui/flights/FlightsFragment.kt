@@ -1,6 +1,8 @@
 package com.wb.logistics.ui.flights
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import androidx.recyclerview.widget.RecyclerView.*
 import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapter
 import com.wb.logistics.databinding.FlightsFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
+import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flights.delegates.FlightsDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsProgressDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsRefreshDelegate
@@ -25,6 +28,11 @@ class FlightsFragment : Fragment() {
 
     interface OnFlightsCount {
         fun flightCount(count: String)
+    }
+
+    companion object {
+        private const val RETURN_BALANCE_REQUEST_CODE = 100
+        private const val RETURN_BALANCE_TAG = "RETURN_BALANCE_TAG"
     }
 
     private val viewModel by viewModel<FlightsViewModel>()
@@ -39,7 +47,7 @@ class FlightsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FlightsFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -55,43 +63,80 @@ class FlightsFragment : Fragment() {
 
     private fun initListener() {
         binding.returnBalance.setOnClickListener {
-
+            showDialogReturnBalance()
         }
         binding.continueAcceptance.setOnClickListener {
-
+            viewModel.action(FlightsUIAction.ReceptionBoxesClick)
         }
-        binding.startAddingBoxes.setOnClickListener {
-            viewModel.action(FlightsPasswordUIAction.ReceptionBoxesClick)
+        binding.scanBoxes.setOnClickListener {
+            viewModel.action(FlightsUIAction.ReceptionBoxesClick)
         }
     }
 
     private fun initStateObserve() {
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+        viewModel.stateUINav.observe(viewLifecycleOwner, { state ->
             when (state) {
-                FlightsPasswordUIState.Empty -> {
+                FlightsUINavState.Empty -> {
                 }
-                FlightsPasswordUIState.NavigateToNetworkInfoDialog -> {
+                FlightsUINavState.NavigateToNetworkInfoDialog -> {
                 }
-                FlightsPasswordUIState.NavigateToReceptionBox -> findNavController().navigate(R.id.receptionFragment)
-                FlightsPasswordUIState.NavigateToReturnBalanceDialog -> {
+                FlightsUINavState.NavigateToReceptionBox -> findNavController().navigate(R.id.receptionFragment)
+                FlightsUINavState.NavigateToReturnBalanceDialog -> {
                 }
-                is FlightsPasswordUIState.ShowFlight -> {
+            }
+        })
+
+        viewModel.stateUIList.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is FlightsUIListState.ShowFlight -> {
                     displayItems(state.items)
                     visibleStartAddingBoxes()
                     showFlight(state.countFlight)
                 }
-                is FlightsPasswordUIState.ProgressFlight -> {
+                is FlightsUIListState.ProgressFlight -> {
                     displayItems(state.items)
                     goneStartAddingBoxes()
                     showFlight(state.countFlight)
                 }
-                is FlightsPasswordUIState.UpdateFlight -> {
+                is FlightsUIListState.UpdateFlight -> {
                     displayItems(state.items)
                     goneStartAddingBoxes()
                     showFlight(state.countFlight)
                 }
             }
-        })
+        }
+
+        viewModel.stateUIBottom.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                FlightsUIBottomState.ReturnBox -> {
+                    binding.returnGroup.visibility = VISIBLE
+                    binding.scanBoxes.visibility = INVISIBLE
+                }
+                FlightsUIBottomState.ScanBox -> {
+                    binding.returnGroup.visibility = INVISIBLE
+                    binding.scanBoxes.visibility = VISIBLE
+                }
+            }
+        }
+
+    }
+
+    private fun showDialogReturnBalance() {
+        val dialog = SimpleResultDialogFragment.newInstance(
+            getString(R.string.reception_return_dialog_title),
+            getString(R.string.reception_return_dialog_description),
+            getString(R.string.reception_return_dialog_positive_button),
+            getString(R.string.reception_return_dialog_negative_button)
+        )
+        dialog.setTargetFragment(this, RETURN_BALANCE_REQUEST_CODE)
+        dialog.show(parentFragmentManager, RETURN_BALANCE_TAG)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == RETURN_BALANCE_REQUEST_CODE) {
+            viewModel.action(FlightsUIAction.RemoveBoxesClick)
+        }
     }
 
     private fun showFlight(countFlight: String) {
@@ -137,7 +182,7 @@ class FlightsFragment : Fragment() {
                     requireContext(),
                     object : OnFlightsUpdateCallback {
                         override fun onUpdateRouteClick() {
-                            viewModel.action(FlightsPasswordUIAction.Refresh)
+                            viewModel.action(FlightsUIAction.Refresh)
                         }
                     })
             )
@@ -147,11 +192,11 @@ class FlightsFragment : Fragment() {
     }
 
     private fun visibleStartAddingBoxes() {
-        binding.startAddingBoxes.visibility = View.VISIBLE
+        binding.scanBoxes.visibility = View.VISIBLE
     }
 
     private fun goneStartAddingBoxes() {
-        binding.startAddingBoxes.visibility = View.GONE
+        binding.scanBoxes.visibility = View.GONE
     }
 
 }

@@ -33,10 +33,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="return_balance,continue_acceptance,start_adding_boxes" />
+        app:constraint_referenced_ids="return_balance,continue_acceptance,scan_boxes" />
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/back_group"
+        android:id="@+id/return_group"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical" />
 
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/start_adding_boxes"
+        android:id="@+id/scan_boxes"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:visibility="gone"

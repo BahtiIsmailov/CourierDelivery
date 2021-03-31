@@ -50,9 +50,9 @@
 
     <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
     <string name="nav_default_count">100</string>
-    <string name="nav_no_internet_title">У вас отсутствует интернет!</string>
-    <string name="nav_no_internet_description">Вы можете продолжить работу, сохранение произойдет после того как возобновится связь</string>
-    <string name="nav_no_internet_button">Понятно</string>
+    <string name="nav_no_internet_dialog_title">У вас отсутствует интернет!</string>
+    <string name="nav_no_internet_dialog_description">Вы можете продолжить работу, сохранение произойдет после того как возобновится связь</string>
+    <string name="nav_no_internet_dialog_button">Понятно</string>
 
     <string name="flights_label">Доставка</string>
     <string name="flights_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
@@ -84,6 +84,11 @@
     <string name="reception_list"><u>Список</u></string>
     <string name="reception_default_count_box">-</string>
     <string name="reception_default_parking" />
+
+    <string name="reception_return_dialog_title">Вернуть на баланс?</string>
+    <string name="reception_return_dialog_description">Все отсканированные коробки вернуться на баланс перевозчика</string>
+    <string name="reception_return_dialog_positive_button">Вернуть</string>
+    <string name="reception_return_dialog_negative_button">Отмена</string>
 
     <string name="reception_handle_label">Ручной ввод</string>
     <string name="reception_handle_receive">Принять</string>

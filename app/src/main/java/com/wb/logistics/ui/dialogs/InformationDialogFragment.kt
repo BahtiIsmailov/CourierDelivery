@@ -9,9 +9,11 @@ import com.wb.logistics.R
 import com.wb.logistics.app.AppExtras
 
 class InformationDialogFragment : DialogFragment() {
+
     private lateinit var title: String
     private lateinit var description: String
     private lateinit var positiveButtonName: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         readArguments(arguments)

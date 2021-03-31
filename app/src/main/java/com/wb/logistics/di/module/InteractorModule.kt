@@ -1,5 +1,6 @@
 package com.wb.logistics.di.module
 
+import com.wb.logistics.network.api.BoxesRepository
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
@@ -17,21 +18,21 @@ val interactorModule = module {
 
     fun provideTemporaryPasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        repository: AuthRepository
+        repository: AuthRepository,
     ): TemporaryPasswordInteractor {
         return TemporaryPasswordInteractorImpl(rxSchedulerFactory, repository)
     }
 
     fun provideInputPasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        repository: AuthRepository
+        repository: AuthRepository,
     ): InputPasswordInteractor {
         return InputPasswordInteractorImpl(rxSchedulerFactory, repository)
     }
 
     fun provideCreatePasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        repository: AuthRepository
+        repository: AuthRepository,
     ): CreatePasswordInteractor {
         return CreatePasswordInteractorImpl(rxSchedulerFactory, repository)
     }
@@ -39,7 +40,7 @@ val interactorModule = module {
     fun provideNavigationInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
-        authRepository: AuthRepository
+        authRepository: AuthRepository,
     ): NavigationInteractor {
         return NavigationInteractorImpl(
             rxSchedulerFactory,
@@ -49,21 +50,29 @@ val interactorModule = module {
     }
 
     fun provideFlightsInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
-        repository: AppRepository
+        appRepository: AppRepository,
+        boxesRepository: BoxesRepository,
     ): FlightsInteractor {
-        return FlightsInteractorImpl(networkMonitorRepository, repository)
+        return FlightsInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            appRepository,
+            boxesRepository)
     }
 
-    fun provideReceptionInteractor(rxSchedulerFactory: RxSchedulerFactory): ReceptionInteractor {
-        return ReceptionInteractorImpl(rxSchedulerFactory)
+    fun provideReceptionInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        boxesRepository: BoxesRepository,
+    ): ReceptionInteractor {
+        return ReceptionInteractorImpl(rxSchedulerFactory, boxesRepository)
     }
 
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
-    single { provideFlightsInteractor(get(), get()) }
-    single { provideReceptionInteractor(get()) }
+    single { provideFlightsInteractor(get(), get(), get(), get()) }
+    single { provideReceptionInteractor(get(), get()) }
 
 }

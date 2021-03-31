@@ -5,6 +5,7 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.flights.domain.FlightEntity
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
+import com.wb.logistics.ui.reception.domain.ReceptionBoxEntity
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
@@ -12,34 +13,53 @@ class FlightsViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: FlightResourceProvider,
     private val interactor: FlightsInteractor,
-    private val dataBuilder: FlightsDataBuilder
+    private val dataBuilder: FlightsDataBuilder,
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUI = MutableLiveData<FlightsPasswordUIState>()
+    val stateUINav = MutableLiveData<FlightsUINavState>()
+    val stateUIList = MutableLiveData<FlightsUIListState>()
+    val stateUIBottom = MutableLiveData<FlightsUIBottomState>()
 
-    fun action(actionView: FlightsPasswordUIAction) {
+    fun action(actionView: FlightsUIAction) {
         when (actionView) {
-            is FlightsPasswordUIAction.Refresh -> fetchFlights()
-            is FlightsPasswordUIAction.NetworkInfoClick ->
-                FlightsPasswordUIState.NavigateToNetworkInfoDialog
-            is FlightsPasswordUIAction.ReceptionBoxesClick -> {
-                stateUI.value = FlightsPasswordUIState.NavigateToReceptionBox
-                stateUI.value = FlightsPasswordUIState.Empty
+            is FlightsUIAction.Refresh -> fetchFlights()
+            is FlightsUIAction.NetworkInfoClick ->
+                FlightsUINavState.NavigateToNetworkInfoDialog
+            is FlightsUIAction.ReceptionBoxesClick -> {
+                stateUINav.value = FlightsUINavState.NavigateToReceptionBox
+                stateUINav.value = FlightsUINavState.Empty
             }
-            is FlightsPasswordUIAction.ReturnToBalanceClick -> {
-                FlightsPasswordUIState.NavigateToReturnBalanceDialog
+            is FlightsUIAction.ReturnToBalanceClick -> {
+                FlightsUINavState.NavigateToReturnBalanceDialog
             }
-            is FlightsPasswordUIAction.ContinueAcceptanceClick ->
-                FlightsPasswordUIState.NavigateToReceptionBox
+            is FlightsUIAction.ContinueAcceptanceClick ->
+                FlightsUINavState.NavigateToReceptionBox
+            FlightsUIAction.RemoveBoxesClick -> interactor.removeBoxes()
         }
     }
 
     init {
         fetchFlights()
+        fetchBoxes()
+    }
+
+    private fun fetchBoxes() {
+        addSubscription(interactor.changeBoxes().subscribe({ changeBoxesComplete(it) },
+            { changeBoxesError(it) }))
+    }
+
+    private fun changeBoxesComplete(boxes: List<ReceptionBoxEntity>) {
+        stateUIBottom.value =
+            if (boxes.isEmpty()) FlightsUIBottomState.ScanBox
+            else FlightsUIBottomState.ReturnBox
+    }
+
+    private fun changeBoxesError(error: Throwable) {
+
     }
 
     private fun fetchFlights() {
-        stateUI.value = FlightsPasswordUIState.ProgressFlight(
+        stateUIList.value = FlightsUIListState.ProgressFlight(
             listOf(dataBuilder.buildProgressItem()),
             zeroFlight()
         )
@@ -48,10 +68,10 @@ class FlightsViewModel(
             interactor.flight()
                 .map {
                     when (it) {
-                        is FlightEntity.Empty -> FlightsPasswordUIState.UpdateFlight(
+                        is FlightEntity.Empty -> FlightsUIListState.UpdateFlight(
                             listOf(dataBuilder.buildEmptyItem()), zeroFlight()
                         )
-                        is FlightEntity.Success -> FlightsPasswordUIState.ShowFlight(
+                        is FlightEntity.Success -> FlightsUIListState.ShowFlight(
                             listOf(dataBuilder.buildSuccessItem(it)),
                             resourceProvider.getOneFlight()
                         )
@@ -61,18 +81,18 @@ class FlightsViewModel(
         )
     }
 
-    private fun flightsComplete(flight: FlightsPasswordUIState) {
-        stateUI.value = flight
+    private fun flightsComplete(flight: FlightsUIListState) {
+        stateUIList.value = flight
     }
 
     private fun flightsError(throwable: Throwable) {
         LogUtils { logDebugApp(throwable.toString()) }
-        stateUI.value = when (throwable) {
-            is UnauthorizedException -> FlightsPasswordUIState.UpdateFlight(
+        stateUIList.value = when (throwable) {
+            is UnauthorizedException -> FlightsUIListState.UpdateFlight(
                 listOf(dataBuilder.buildErrorMessageItem(throwable.message)),
                 zeroFlight()
             )
-            else -> FlightsPasswordUIState.UpdateFlight(
+            else -> FlightsUIListState.UpdateFlight(
                 listOf(dataBuilder.buildErrorItem()),
                 zeroFlight()
             )

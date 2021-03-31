@@ -17,7 +17,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="danger">#DF1F00</color>
+
 
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
@@ -25,12 +25,15 @@
 
     <color name="background">#642CA3</color>
 
+    <color name="danger">#DF1F00</color>
     <color name="complete">#66AF68</color>
     <color name="error">#DF1F00</color>
     <color name="accept">#4BCF85</color>
     <color name="accept_trans">#1A4BCF85</color>
     <color name="deny">#EC5C5C</color>
     <color name="deny_trans">#1AEC5C5C</color>
+    <color name="primary">#642CA3</color>
+
 
     <color name="background_content_light">#FFFFFF</color>
     <color name="background_content">#E5E5E5</color>
