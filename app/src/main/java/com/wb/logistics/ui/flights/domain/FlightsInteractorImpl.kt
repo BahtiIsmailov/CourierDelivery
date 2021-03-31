@@ -32,7 +32,7 @@ class FlightsInteractorImpl(
                     id,
                     gate,
                     plannedDate,
-                    route.name,
+                    dc.name,
                     addressesName
                 )
             )

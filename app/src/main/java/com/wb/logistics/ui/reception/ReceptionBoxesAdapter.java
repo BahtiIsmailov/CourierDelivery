@@ -50,6 +50,7 @@ public class ReceptionBoxesAdapter extends ArrayAdapter<String> {
         holder.binding.number.setText(item.getNumber());
         holder.binding.box.setText(item.getBox());
         holder.binding.address.setText(item.getAddress());
+        holder.binding.checked.setOnCheckedChangeListener(null);
         holder.binding.checked.setChecked(item.isChecked());
         holder.binding.checked.setOnCheckedChangeListener((buttonView, isChecked) -> onItemClickCallBack.onItemClick(position, isChecked));
         return convertView;

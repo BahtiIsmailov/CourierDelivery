@@ -49,7 +49,7 @@ class TimeFormatterImpl : TimeFormatter {
     private fun formatDate(
         input: DateTime,
         timeFormat: String,
-        timeZone: DateTimeZone
+        timeZone: DateTimeZone,
     ): String {
         val fmt = DateTimeFormat.forPattern(timeFormat)
         return fmt.print(input.withZone(timeZone))
@@ -101,6 +101,10 @@ class TimeFormatterImpl : TimeFormatter {
         return getCalendar(date, PATTERN_SIMPLE_CALENDAR_FORMAT)
     }
 
+    override fun calendarWithTimezoneFromString(date: String): Calendar {
+        return getCalendar(date, PATTERN_SIMPLE_CALENDAR_WITH_TIMEZONE_FORMAT)
+    }
+
     override fun calendarWithoutTimezoneFromString(date: String): Calendar {
         return getCalendar(date, PATTERN_CALENDAR_WITHOUT_TIMEZONE_FORMAT)
     }
@@ -108,13 +112,16 @@ class TimeFormatterImpl : TimeFormatter {
     private fun getCalendar(date: String, format: String): Calendar {
         val calendar = Calendar.getInstance()
         val simpleDateFormat = SimpleDateFormat(format, Locale.getDefault())
-        var parsed = Date(System.currentTimeMillis())
+        simpleDateFormat.timeZone = TimeZone.getTimeZone(TIME_ZONE_GMT)
+        var parseDate: Date? = Date(System.currentTimeMillis())
         try {
-            parsed = simpleDateFormat.parse(date)
+            parseDate = simpleDateFormat.parse(date)
         } catch (e: ParseException) {
             e.printStackTrace()
         }
-        calendar.timeInMillis = parsed.time
+        parseDate?.apply {
+            calendar.timeInMillis = parseDate.time
+        }
         return calendar
     }
 
@@ -128,6 +135,10 @@ class TimeFormatterImpl : TimeFormatter {
 
     override fun dateTimeFromStringSimple(date: String): DateTime {
         return DateTime(calendarFromStringSimple(date).timeInMillis)
+    }
+
+    override fun dateTimeWithTimezoneFromString(date: String): DateTime {
+        return DateTime(calendarWithTimezoneFromString(date).timeInMillis)
     }
 
     override fun dateTimeWithoutTimezoneFromString(date: String): DateTime {
@@ -147,11 +158,13 @@ class TimeFormatterImpl : TimeFormatter {
         private const val LOCALE_RU = "RU"
         private const val FULL_DATE_TIME_FORMAT = "%s в %s"
         private const val MILLIS_IN_SECOND = 1000
-        private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+        private const val TIME_ZONE_GMT = "GMT"
+
+        private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
         private const val PATTERN_SIMPLE_CALENDAR_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
         private const val PATTERN_CALENDAR_WITHOUT_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
-        private const val PATTERN_SIMPLE_CALENDAR_WITHOUT_TIMEZONE_FORMAT =
-            "yyyy-MM-dd HH:mm:ss.SSS Z"
+        private const val PATTERN_SIMPLE_CALENDAR_WITH_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ"
     }
 
 }

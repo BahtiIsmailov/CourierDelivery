@@ -12,21 +12,21 @@ import com.wb.logistics.utils.time.TimeFormatter
 
 class FlightsDataBuilderImpl(
     private val timeFormatter: TimeFormatter,
-    private val resourceProvider: FlightResourceProvider
+    private val resourceProvider: FlightResourceProvider,
 ) : FlightsDataBuilder {
 
     override fun buildSuccessItem(flightEntity: FlightEntity.Success<FlightsData>): BaseItem {
         return with(flightEntity.data) {
-            val flightRoutes =
-                if (routes.isEmpty()) listOf(resourceProvider.getRoutesEmpty())
-                else routes
+            val flightOffices =
+                if (offices.isEmpty()) listOf(resourceProvider.getRoutesEmpty())
+                else offices
             FlightItem(
                 resourceProvider.getFlightNumber(flight),
                 resourceProvider.getParkingNumber(parkingNumber),
                 timeFormatter.format(date, ONLY_DATE),
                 timeFormatter.format(date, ONLY_TIME),
                 resourceProvider.getRoutesTitle(routesTitle),
-                flightRoutes
+                flightOffices
             )
         }
     }

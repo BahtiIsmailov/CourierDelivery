@@ -8,7 +8,7 @@ data class Flight(
     @SerializedName("dc") val dc: Dc,
     @SerializedName("offices") val offices: List<Office>,
     @SerializedName("driver") val driver: Driver,
-    @SerializedName("route") val route: Route,
+    @SerializedName("route") val route: Route? = null,
     @SerializedName("car") val car: Car,
     @SerializedName("plannedDate") val plannedDate: String,
     @SerializedName("startedDate") val startedDate: String,

@@ -26,6 +26,8 @@ class ReceptionBoxesViewModel(
     val enableRemove: LiveData<Boolean>
         get() = _enableRemove
 
+    private var copyReceptionBoxes = mutableListOf<ReceptionBoxItem>()
+
     init {
         addSubscription(receptionInteractor.changeBoxes()
             .flatMap { convertBoxes(it) }
@@ -49,10 +51,8 @@ class ReceptionBoxesViewModel(
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }
 
-    private var copyCheckedBoxes = mutableListOf<Boolean>()
-
     private fun copyConvertBoxes(boxes: List<ReceptionBoxItem>) {
-        copyCheckedBoxes = boxes.map { it.isChecked }.toMutableList()
+        copyReceptionBoxes = boxes.toMutableList()
     }
 
     private fun changeBoxesComplete(boxes: List<ReceptionBoxItem>) {
@@ -68,20 +68,31 @@ class ReceptionBoxesViewModel(
     }
 
     fun onRemoveClick() {
-        receptionInteractor.removeBoxes(copyCheckedBoxes)
+        val checkedBoxes = copyReceptionBoxes.map { it.isChecked }.toMutableList()
+        receptionInteractor.removeBoxes(checkedBoxes)
         _navigateToBack.value = NavigateToBack
     }
 
     fun onItemClick(index: Int, checked: Boolean) {
-        copyCheckedBoxes[index] = checked
+        changeCheckedBox(index, checked)
+        changeEnableRemove()
+    }
+
+    private fun changeEnableRemove() {
         var activeRemove = false
-        copyCheckedBoxes.forEach {
-            if (it) {
-                activeRemove = it
+        copyReceptionBoxes.forEach {
+            if (it.isChecked) {
+                activeRemove = it.isChecked
                 return@forEach
             }
         }
         _enableRemove.value = activeRemove
+    }
+
+    private fun changeCheckedBox(index: Int, checked: Boolean) {
+        val copyReception = copyReceptionBoxes[index].copy(isChecked = checked)
+        copyReceptionBoxes[index] = copyReception
+        _boxes.value = ReceptionBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
     }
 
     object NavigateToBack

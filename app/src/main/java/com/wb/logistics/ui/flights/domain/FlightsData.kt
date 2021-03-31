@@ -5,6 +5,6 @@ data class FlightsData(
     val parkingNumber: Int,
     val date: String,
     val routesTitle: String,
-    val routes: List<String>
+    val offices: List<String>
 )
 
