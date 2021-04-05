@@ -1,11 +1,11 @@
 package com.wb.logistics.ui.flights
 
+import com.wb.logistics.db.FlightData
+import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flights.delegates.items.FlightItem
 import com.wb.logistics.ui.flights.delegates.items.FlightProgressItem
 import com.wb.logistics.ui.flights.delegates.items.FlightRefreshItem
-import com.wb.logistics.ui.flights.domain.FlightEntity
-import com.wb.logistics.ui.flights.domain.FlightsData
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_DATE
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_TIME
 import com.wb.logistics.utils.time.TimeFormatter
@@ -15,7 +15,7 @@ class FlightsDataBuilderImpl(
     private val resourceProvider: FlightResourceProvider,
 ) : FlightsDataBuilder {
 
-    override fun buildSuccessItem(flightEntity: FlightEntity.Success<FlightsData>): BaseItem {
+    override fun buildSuccessItem(flightEntity: SuccessOrEmptyData.Success<FlightData>): BaseItem {
         return with(flightEntity.data) {
             val flightOffices =
                 if (offices.isEmpty()) listOf(resourceProvider.getRoutesEmpty())

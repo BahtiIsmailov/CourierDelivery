@@ -2,17 +2,15 @@ package com.wb.logistics.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.wb.logistics.ui.flights.data.FlightsDao
-import com.wb.logistics.ui.flights.data.FlightsEntity
-import com.wb.logistics.ui.reception.data.ReceptionDao
-import com.wb.logistics.ui.reception.data.ReceptionEntity
+import com.wb.logistics.db.entity.boxesfromflight.FlightBoxEntity
+import com.wb.logistics.db.entity.flight.FlightEntity
+import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 
 @Database(
-    entities = [FlightsEntity::class, ReceptionEntity::class],
+    entities = [FlightEntity::class, FlightOfficeEntity::class, FlightBoxEntity::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract val deliveryDao: FlightsDao
-    abstract val receptionDao: ReceptionDao
+    abstract val flightDao: FlightDao
 }

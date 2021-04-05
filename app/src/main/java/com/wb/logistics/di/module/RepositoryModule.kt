@@ -1,10 +1,13 @@
 package com.wb.logistics.di.module
 
+import com.wb.logistics.data.AppRepository
+import com.wb.logistics.data.AppRepositoryImpl
+import com.wb.logistics.db.FlightDao
+import com.wb.logistics.db.LocalRepository
+import com.wb.logistics.db.LocalRepositoryImpl
 import com.wb.logistics.network.api.BoxesRepository
 import com.wb.logistics.network.api.BoxesRepositoryImpl
-import com.wb.logistics.network.api.app.AppApi
-import com.wb.logistics.network.api.app.AppRepository
-import com.wb.logistics.network.api.app.AppRepositoryImpl
+import com.wb.logistics.network.api.app.RemoteRepository
 import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.api.auth.AuthRepositoryImpl
@@ -28,10 +31,16 @@ val deliveryRepositoryModule = module {
     }
 
     fun provideAppRepository(
-        api: AppApi,
-        rxSchedulerFactory: RxSchedulerFactory,
+        remoteRepository: RemoteRepository,
+        localRepository: LocalRepository,
     ): AppRepository {
-        return AppRepositoryImpl(api, rxSchedulerFactory)
+        return AppRepositoryImpl(remoteRepository, localRepository)
+    }
+
+    fun provideLocalRepository(
+        flightDao: FlightDao,
+    ): LocalRepository {
+        return LocalRepositoryImpl(flightDao)
     }
 
     fun provideReceptionRepository(api: ReceptionApi, dao: ReceptionDao): ReceptionRepository {
@@ -47,6 +56,7 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRepository(get(), get(), get()) }
+    single { provideLocalRepository(get()) }
     single { provideAppRepository(get(), get()) }
     single { provideReceptionRepository(get(), get()) }
     single { provideNetworkMonitorRepository() }

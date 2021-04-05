@@ -8,6 +8,7 @@
 
         <domain includeSubdomains="true">auth.wbtrans.svc.k8s.dldevel</domain>
         <domain includeSubdomains="true">wbtrans-mobile-api.wildberries.ru</domain>
+        <domain includeSubdomains="true">192.168.1.66</domain>
 
     </domain-config>
 </network-security-config>

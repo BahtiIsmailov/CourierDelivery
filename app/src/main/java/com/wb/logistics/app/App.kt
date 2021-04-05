@@ -14,7 +14,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         initDI()
-        initMonitor()
+        initNetworkMonitor()
     }
 
     private fun initDI() {
@@ -37,7 +37,7 @@ class App : Application() {
         }
     }
 
-    private fun initMonitor() {
+    private fun initNetworkMonitor() {
         NetworkMonitor(this).startNetworkCallback()
     }
 

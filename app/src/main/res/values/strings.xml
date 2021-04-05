@@ -76,6 +76,7 @@
     <string name="reception_current_box">Текущая коробка</string>
     <string name="reception_code_pref_box">TRBX-</string>
     <string name="reception_code_box">TRBX-%1$s</string>
+    <string name="reception_code_added_box">TRBX-%1$s добавлена</string>
     <string name="reception_status_box_empty" />
     <string name="reception_status_box_submerge">Погрузите в машину</string>
     <string name="reception_status_box_return">Верните коробку</string>
@@ -94,7 +95,10 @@
     <string name="reception_handle_receive">Принять</string>
 
     <string name="reception_box_not_belong_label">Не принадлежит РЦ</string>
-    <string name="reception_box_not_belong_title">Коробка не принадлежит РЦ,\nверните её сотруднику склада</string>
+    <string name="reception_box_not_belong_dc_title">Коробка не принадлежит РЦ,\nверните её сотруднику склада</string>
+    <string name="reception_box_not_belong_flight_title">Коробка не принадлежит рейсу,\nверните её сотруднику склада</string>
+    <string name="reception_box_not_belong_address_title">\ПВЗ Москва, длинный адрес, который разошелся на 2 строки</string>
+
     <string name="reception_box_not_code_title">ШК</string>
     <string name="reception_box_not_address_title">Адрес доставки</string>
     <string name="reception_box_not_belong_understand">Понятно</string>

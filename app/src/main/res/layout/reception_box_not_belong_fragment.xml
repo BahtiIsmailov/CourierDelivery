@@ -32,7 +32,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginRight="24dp"
             android:gravity="center"
-            android:text="@string/reception_box_not_belong_title"
+            tools:text="@string/reception_box_not_belong_dc_title"
             android:textColor="@color/danger" />
     </RelativeLayout>
 

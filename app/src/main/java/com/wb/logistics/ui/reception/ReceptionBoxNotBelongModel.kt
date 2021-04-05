@@ -18,7 +18,10 @@ class ReceptionBoxNotBelongModel(
 
     init {
         _belongInfo.value =
-            ReceptionBoxNotBelongState.BelongInfo(parameters.box, parameters.address)
+            ReceptionBoxNotBelongState.BelongInfo(
+                parameters.title,
+                parameters.box,
+                parameters.address)
     }
 
     fun onUnderstandClick() {

@@ -1,9 +1,8 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.network.api.app.AppApi
+import com.wb.logistics.network.api.app.RemoteRepository
 import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.rest.RetrofitAppFactory
-import com.wb.logistics.ui.flights.data.FlightsApi
 import com.wb.logistics.ui.reception.data.ReceptionApi
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -15,12 +14,8 @@ val apiModule = module {
         return retrofitAppFactory.getApiInterface(AuthApi::class.java)
     }
 
-    fun provideAppApi(retrofitAppFactory: RetrofitAppFactory): AppApi {
-        return retrofitAppFactory.getApiInterface(AppApi::class.java)
-    }
-
-    fun provideDeliveryApi(retrofit: Retrofit): FlightsApi {
-        return retrofit.create(FlightsApi::class.java)
+    fun provideAppApi(retrofitAppFactory: RetrofitAppFactory): RemoteRepository {
+        return retrofitAppFactory.getApiInterface(RemoteRepository::class.java)
     }
 
     fun provideReceptionApi(retrofit: Retrofit): ReceptionApi {
@@ -29,7 +24,6 @@ val apiModule = module {
 
     single { provideAuthApi(get(named(AUTH_NAMED_RETROFIT))) }
     single { provideAppApi(get(named(APP_NAMED_RETROFIT))) }
-    single { provideDeliveryApi(get()) }
     single { provideReceptionApi(get()) }
 
 }

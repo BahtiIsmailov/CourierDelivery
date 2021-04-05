@@ -26,10 +26,16 @@ class ReceptionViewModel(
             boxStateUI.value = ReceptionBoxUIState.Empty
         } else {
             val count = boxes.size
+            val lastBox = boxes.last().box
             if (count % 2 == 0) {
-                boxStateUI.value = ReceptionBoxUIState.BoxComplete(count.toString(), "7", boxes.last().box)
+                boxStateUI.value =
+                    ReceptionBoxUIState.BoxComplete(
+                        receptionResourceProvider.getAddedBox(lastBox),
+                        count.toString(),
+                        "7",
+                        lastBox)
             } else {
-                boxStateUI.value = ReceptionBoxUIState.BoxDeny(count.toString(), "10", boxes.last().box)
+                boxStateUI.value = ReceptionBoxUIState.BoxDeny(count.toString(), "10", lastBox)
             }
         }
     }
@@ -41,8 +47,10 @@ class ReceptionViewModel(
     fun onBoxHandleInput(code: String) {
         // TODO: 30.03.2021 заменить на реальные данные
         //_codeBox.value = receptionResourceProvider.getCodeBox(code)
-        stateUI.value = ReceptionUIState.NavigateToReceptionBoxNotBelong(code,
-            "ПВЗ Москва, длинный адрес, который разошелся на 2 строки")
+        stateUI.value = ReceptionUIState.NavigateToReceptionBoxNotBelong(
+            receptionResourceProvider.getBoxNotBelongDcTitle(),
+            code,
+            receptionResourceProvider.getBoxNotBelongAddressTitle())
         stateUI.value = ReceptionUIState.Empty
     }
 

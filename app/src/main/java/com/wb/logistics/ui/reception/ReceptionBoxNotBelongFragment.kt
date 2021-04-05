@@ -35,6 +35,7 @@ class ReceptionBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is ReceptionBoxNotBelongState.BelongInfo -> {
+                    binding.title.text = it.title
                     binding.code.text = it.code
                     binding.address.text = it.address
                 }
@@ -63,5 +64,5 @@ class ReceptionBoxNotBelongFragment : Fragment() {
 
 @Parcelize
 data class ReceptionBoxNotBelongParameters(
-    val box: String, val address: String,
+    val title: String, val box: String, val address: String,
 ) : Parcelable

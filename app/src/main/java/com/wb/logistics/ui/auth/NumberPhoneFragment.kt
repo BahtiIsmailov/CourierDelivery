@@ -28,7 +28,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = AuthNumberPhoneFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -125,7 +125,9 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
         phone.isFocusableInTouchMode = true
         phone.requestFocus()
         viewModel.action(NumberPhoneUIAction.NumberChanges(phone.textChanges()))
-        binding.next.setOnClickListener { viewModel.action(NumberPhoneUIAction.CheckPhone(phone.text.toString())) }
+        binding.next.setOnClickListener {
+            viewModel.action(NumberPhoneUIAction.CheckPhone(phone.text.toString()))
+        }
     }
 
     private fun initViews() {

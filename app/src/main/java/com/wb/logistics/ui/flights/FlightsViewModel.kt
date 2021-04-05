@@ -1,9 +1,9 @@
 package com.wb.logistics.ui.flights
 
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.flights.domain.FlightEntity
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.reception.domain.ReceptionBoxEntity
 import com.wb.logistics.utils.LogUtils
@@ -41,6 +41,19 @@ class FlightsViewModel(
     init {
         fetchFlights()
         fetchBoxes()
+        addSubscription(interactor.readFlight()
+            .map {
+                when (it) {
+                    is SuccessOrEmptyData.Empty -> FlightsUIListState.UpdateFlight(
+                        listOf(dataBuilder.buildEmptyItem()), zeroFlight()
+                    )
+                    is SuccessOrEmptyData.Success -> FlightsUIListState.ShowFlight(
+                        listOf(dataBuilder.buildSuccessItem(it)),
+                        resourceProvider.getOneFlight()
+                    )
+                }
+            }
+            .subscribe({ flightsComplete(it) }, { flightsError(it) }))
     }
 
     private fun fetchBoxes() {
@@ -63,21 +76,9 @@ class FlightsViewModel(
             listOf(dataBuilder.buildProgressItem()),
             zeroFlight()
         )
-        interactor.action.onNext(true)
+        interactor.updateFlight.onNext(true)
         addSubscription(
-            interactor.flight()
-                .map {
-                    when (it) {
-                        is FlightEntity.Empty -> FlightsUIListState.UpdateFlight(
-                            listOf(dataBuilder.buildEmptyItem()), zeroFlight()
-                        )
-                        is FlightEntity.Success -> FlightsUIListState.ShowFlight(
-                            listOf(dataBuilder.buildSuccessItem(it)),
-                            resourceProvider.getOneFlight()
-                        )
-                    }
-                }
-                .subscribe({ flightsComplete(it) }, { flightsError(it) })
+            interactor.flight().subscribe({ }, { flightsError(it) })
         )
     }
 

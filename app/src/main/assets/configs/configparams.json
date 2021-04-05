@@ -23,16 +23,20 @@
       "value": "http://mobile-api.wbtrans.svc.k8s.dldevel"
     },
     {
-      "key": "AUTH_SERVER_DATALINE",
+      "key": "APP_SERVER_DATALINE",
       "value": "http://mobile-api.wbtrans.svc.k8s.dataline"
     },
     {
-      "key": "AUTH_SERVER_DATAPRO",
+      "key": "APP_SERVER_DATAPRO",
       "value": "http://mobile-api.wbtrans.svc.k8s.datapro"
     },
     {
-      "key": "AUTH_SERVER_FRONTEND",
+      "key": "APP_SERVER_FRONTEND",
       "value": "https://wbtrans-mobile-api.wildberries.ru"
+    },
+    {
+      "key": "APP_SERVER_LOCAL_HOST",
+      "value": "http://192.168.1.66:8000"
     }
   ]
 }

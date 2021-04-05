@@ -1,7 +1,7 @@
 package com.wb.logistics.di.module
 
+import com.wb.logistics.data.AppRepository
 import com.wb.logistics.network.api.BoxesRepository
-import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory

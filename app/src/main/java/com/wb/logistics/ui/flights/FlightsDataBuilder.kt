@@ -1,11 +1,11 @@
 package com.wb.logistics.ui.flights
 
+import com.wb.logistics.db.FlightData
+import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.flights.domain.FlightEntity
-import com.wb.logistics.ui.flights.domain.FlightsData
 
 interface FlightsDataBuilder {
-    fun buildSuccessItem(flightEntity: FlightEntity.Success<FlightsData>): BaseItem
+    fun buildSuccessItem(flightEntity: SuccessOrEmptyData.Success<FlightData>): BaseItem
     fun buildEmptyItem(): BaseItem
     fun buildProgressItem(): BaseItem
     fun buildErrorItem(): BaseItem

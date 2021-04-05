@@ -92,6 +92,9 @@ dependencies {
     implementation "androidx.room:room-coroutines:$version_room_coroutine"
     implementation "androidx.room:room-rxjava2:$version_room"
     kapt "androidx.room:room-compiler:$version_room"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 
     // navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
