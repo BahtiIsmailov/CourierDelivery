@@ -112,7 +112,12 @@ public class ReceptionAcceptedView extends FrameLayout {
         initState();
     }
 
-    public void setCountBox(int currentState) {
+    public void setCountBox(String countBox) {
+        this.countBox = countBox;
+        initState();
+    }
+
+    public void setState(int currentState) {
         this.currentState = currentState;
         initState();
     }

@@ -3,10 +3,8 @@ package com.wb.logistics.ui.reception
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.reception.domain.ReceptionBoxEntity
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.utils.LogUtils
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class ReceptionBoxesViewModel(
@@ -29,25 +27,25 @@ class ReceptionBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<ReceptionBoxItem>()
 
     init {
-        addSubscription(receptionInteractor.changeBoxes()
-            .flatMap { convertBoxes(it) }
-            .doOnNext { copyConvertBoxes(it) }
-            .subscribe({ changeBoxesComplete(it) },
-                { changeBoxesError(it) }))
+//        addSubscription(receptionInteractor.changeBoxes()
+//            .flatMap { convertBoxes(it) }
+//            .doOnNext { copyConvertBoxes(it) }
+//            .subscribe({ changeBoxesComplete(it) },
+//                { changeBoxesError(it) }))
     }
 
-    private fun convertBoxes(boxes: List<ReceptionBoxEntity>) =
-        Observable.fromIterable(boxes.withIndex())
-            .map(receptionBoxItem)
-            .toList()
-            .toObservable()
-
-    private val receptionBoxItem = { (index, item): IndexedValue<ReceptionBoxEntity> ->
-        ReceptionBoxItem(singleIncrement(index),
-            item.box,
-            item.address,
-            false)
-    }
+//    private fun convertBoxes(boxes: List<ReceptionBoxEntity>) =
+//        Observable.fromIterable(boxes.withIndex())
+//            .map(receptionBoxItem)
+//            .toList()
+//            .toObservable()
+//
+//    private val receptionBoxItem = { (index, item): IndexedValue<ReceptionBoxEntity> ->
+//        ReceptionBoxItem(singleIncrement(index),
+//            item.box,
+//            item.address,
+//            false)
+//    }
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }
 

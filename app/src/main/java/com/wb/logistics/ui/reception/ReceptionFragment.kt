@@ -28,6 +28,7 @@ import com.wb.logistics.R
 import com.wb.logistics.databinding.ReceptionFragmentBinding
 import com.wb.logistics.ui.reception.ReceptionHandleFragment.Companion.HANDLE_INPUT_RESULT
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.views.ProgressImageButtonMode
 import com.wb.logistics.views.ReceptionAcceptedMode
 import com.wb.logistics.views.ReceptionInfoMode
 import com.wb.logistics.views.ReceptionParkingMode
@@ -68,7 +69,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         val text: TextView = layout.findViewById(R.id.text)
         text.text = message
         with(Toast(context)) {
-            setGravity(Gravity.TOP or Gravity.CENTER, 0, 160)
+            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
             duration = Toast.LENGTH_LONG
             view = layout
             show()
@@ -104,10 +105,13 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
                 is ReceptionUIState.NavigateToReceptionBoxNotBelong -> {
                     findNavController().navigate(
                         ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
-                            ReceptionBoxNotBelongParameters(state.title, state.box, state.address)
+                            ReceptionBoxNotBelongParameters(
+                                state.toolbarTitle,
+                                state.title,
+                                state.box,
+                                state.address)
                         )
                     )
-
                 }
                 ReceptionUIState.Empty -> {
                 }
@@ -116,27 +120,47 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
             }
         }
 
+        viewModel.navigationStateUI.observe(viewLifecycleOwner) { state ->
+            binding.completeButton.setState(
+                if (state) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
+        }
+
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ReceptionBoxUIState.BoxComplete -> {
                     showToast(state.toastBox)
-                    binding.received.setCountBox(state.countBox,
+                    binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_COMPLETE)
-                    binding.parking.setParkingNumber(state.parking,
+                    binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_COMPLETE)
-                    binding.info.setCodeBox(state.box, ReceptionInfoMode.SUBMERGE)
+                    binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
                 is ReceptionBoxUIState.BoxDeny -> {
-                    binding.received.setCountBox(state.countBox,
+                    binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_DENY)
-                    binding.parking.setParkingNumber(state.parking,
+                    binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_DENY)
-                    binding.info.setCodeBox(state.box, ReceptionInfoMode.RETURN)
+                    binding.info.setCodeBox(state.barcode, ReceptionInfoMode.RETURN)
                 }
                 ReceptionBoxUIState.Empty -> {
-                    binding.received.setCountBox(ReceptionAcceptedMode.EMPTY)
+                    binding.received.setState(ReceptionAcceptedMode.EMPTY)
                     binding.parking.setParkingNumber(ReceptionParkingMode.EMPTY)
                     binding.info.setCodeBox(ReceptionInfoMode.EMPTY)
+                }
+                is ReceptionBoxUIState.BoxHasBeenAdded -> {
+                    showToast(state.toastBox)
+                    binding.received.setCountBox(state.accepted,
+                        ReceptionAcceptedMode.CONTAINS_COMPLETE)
+                    binding.parking.setParkingNumber(state.gate,
+                        ReceptionParkingMode.CONTAINS_COMPLETE)
+                    binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
+                }
+                is ReceptionBoxUIState.BoxInit -> {
+                    binding.received.setCountBox(state.accepted,
+                        ReceptionAcceptedMode.CONTAINS_COMPLETE)
+                    binding.parking.setParkingNumber(state.gate,
+                        ReceptionParkingMode.CONTAINS_COMPLETE)
+                    binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
             }
         }
@@ -252,7 +276,6 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
             const val TRADE_MARK_TEXT_SIZE_SP = 40
         }
     }
-
 
 }
 

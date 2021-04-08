@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.ReceptionBoxNotBelongFragmentBinding
+import com.wb.logistics.ui.nav.NavToolbarTitleListener
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -35,6 +36,7 @@ class ReceptionBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is ReceptionBoxNotBelongState.BelongInfo -> {
+                    (activity as NavToolbarTitleListener).updateTitle(it.toolbarTitle)
                     binding.title.text = it.title
                     binding.code.text = it.code
                     binding.address.text = it.address
@@ -64,5 +66,5 @@ class ReceptionBoxNotBelongFragment : Fragment() {
 
 @Parcelize
 data class ReceptionBoxNotBelongParameters(
-    val title: String, val box: String, val address: String,
+    val toolbarTitle: String, val title: String, val box: String, val address: String,
 ) : Parcelable

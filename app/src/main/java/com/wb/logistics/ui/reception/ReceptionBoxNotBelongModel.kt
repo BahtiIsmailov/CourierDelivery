@@ -19,6 +19,7 @@ class ReceptionBoxNotBelongModel(
     init {
         _belongInfo.value =
             ReceptionBoxNotBelongState.BelongInfo(
+                parameters.toolbarTitle,
                 parameters.title,
                 parameters.box,
                 parameters.address)

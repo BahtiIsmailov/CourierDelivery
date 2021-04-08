@@ -1,15 +1,17 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.boxesfromflight.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
+import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
 class LocalRepositoryImpl(
     private val flightDao: FlightDao,
+    private val boxDao: BoxDao,
 ) : LocalRepository {
 
     override fun saveFlight(
@@ -20,19 +22,29 @@ class LocalRepositoryImpl(
             .andThen(flightDao.insertFlightOffice(flightOfficesEntity))
     }
 
-    override fun readFlight(): Flowable<SuccessOrEmptyData<FlightData>> {
-        return flightDao.readFlight().map { convertFlight(it) }
+    override fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>> {
+        return flightDao.observeFlight().map { convertFlight(it) }
+    }
+
+    override fun readFlight(): Single<SuccessOrEmptyData<FlightEntity>> {
+        return flightDao.readFlight()
+            .map<SuccessOrEmptyData<FlightEntity>> { SuccessOrEmptyData.Success(it) }
+            .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+    override fun readFlightData(): Single<SuccessOrEmptyData<FlightData>> {
+        return flightDao.readFlightData().map { convertFlight(it) }
     }
 
     private fun convertFlight(flightData: FlightDataEntity?): SuccessOrEmptyData<FlightData> {
         return if (flightData == null) {
             SuccessOrEmptyData.Empty()
         } else {
-            successData(flightData)
+            successFlightData(flightData)
         }
     }
 
-    private fun successData(flightDataEntity: FlightDataEntity): SuccessOrEmptyData<FlightData> {
+    private fun successFlightData(flightDataEntity: FlightDataEntity): SuccessOrEmptyData<FlightData> {
         return with(flightDataEntity) {
             val addressesName = mutableListOf<String>()
             officeEntity.forEach { addresses -> addressesName.add(addresses.name) }
@@ -54,16 +66,38 @@ class LocalRepositoryImpl(
 
     }
 
-    override fun saveBoxesFromFlight(boxesEntity: List<FlightBoxEntity>): Completable {
+    override fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable {
         return flightDao.insertFlightBoxes(boxesEntity)
     }
 
-    override fun readBoxesFromFlight(): Single<List<FlightBoxEntity>> {
-        return Single.error(Throwable())
+    override fun findBoxFromFlight(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>> {
+        return flightDao.findFlightBox(barcode)
+            .map<SuccessOrEmptyData<FlightBoxEntity>> { SuccessOrEmptyData.Success(it) }
+            .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
     override fun removeBoxesFromFlight() {
 
+    }
+
+    //==============================================================================================
+
+    override fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
+        return boxDao.insertFlightBoxScanned(flightBoxScannedEntity)
+    }
+
+    override fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>> { //BoxInfoEntity
+        return boxDao.observeFlightBoxScanned()
+    }
+
+    override fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>> {
+        return boxDao.findFlightBoxScanned(barcode)
+            .map<SuccessOrEmptyData<FlightBoxScannedEntity>> { SuccessOrEmptyData.Success(it) }
+            .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+    override fun deleteAllFlightBoxScanned() {
+        boxDao.deleteAllFlightBoxScanned()
     }
 
 }

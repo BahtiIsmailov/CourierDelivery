@@ -1,8 +1,9 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.boxesfromflight.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
+import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -13,14 +14,28 @@ interface LocalRepository {
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
     ): Completable
 
-    fun readFlight(): Flowable<SuccessOrEmptyData<FlightData>>
+    fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
+
+    fun readFlight(): Single<SuccessOrEmptyData<FlightEntity>>
+
+    fun readFlightData(): Single<SuccessOrEmptyData<FlightData>>
 
     fun removeFlight()
 
-    fun saveBoxesFromFlight(boxesEntity: List<FlightBoxEntity>): Completable
+    fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable
 
-    fun readBoxesFromFlight(): Single<List<FlightBoxEntity>>
+    fun findBoxFromFlight(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
 
     fun removeBoxesFromFlight()
+
+    //==============================================================================================
+
+    fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+
+    fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>>
+
+    fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>>
+
+    fun deleteAllFlightBoxScanned()
 
 }

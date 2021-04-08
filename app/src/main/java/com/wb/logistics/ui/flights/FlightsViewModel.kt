@@ -5,7 +5,6 @@ import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
-import com.wb.logistics.ui.reception.domain.ReceptionBoxEntity
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
@@ -34,14 +33,39 @@ class FlightsViewModel(
             }
             is FlightsUIAction.ContinueAcceptanceClick ->
                 FlightsUINavState.NavigateToReceptionBox
-            FlightsUIAction.RemoveBoxesClick -> interactor.removeBoxes()
+            FlightsUIAction.RemoveBoxesClick -> interactor.removeBoxesToFlight()
         }
     }
 
     init {
         fetchFlights()
-        fetchBoxes()
-        addSubscription(interactor.readFlight()
+        observeBoxesToFlight()
+        observeFlight()
+    }
+
+    private fun fetchFlights() {
+        stateUIList.value = FlightsUIListState.ProgressFlight(
+            listOf(dataBuilder.buildProgressItem()),
+            zeroFlight()
+        )
+        interactor.updateFlight()
+        addSubscription(interactor.flight().subscribe({ }, { flightsError(it) }))
+    }
+
+    private fun observeBoxesToFlight() {
+        addSubscription(interactor.observeFlightBoxScanned()
+            .subscribe({ observeBoxesToFlightComplete(it) },
+                { observeBoxesToFlightError(it) }))
+    }
+
+    private fun observeBoxesToFlightComplete(boxes: Int) {
+        stateUIBottom.value =
+            if (boxes == 0) FlightsUIBottomState.ScanBox
+            else FlightsUIBottomState.ReturnBox
+    }
+
+    private fun observeFlight() {
+        addSubscription(interactor.observeFlight()
             .map {
                 when (it) {
                     is SuccessOrEmptyData.Empty -> FlightsUIListState.UpdateFlight(
@@ -56,30 +80,8 @@ class FlightsViewModel(
             .subscribe({ flightsComplete(it) }, { flightsError(it) }))
     }
 
-    private fun fetchBoxes() {
-        addSubscription(interactor.changeBoxes().subscribe({ changeBoxesComplete(it) },
-            { changeBoxesError(it) }))
-    }
-
-    private fun changeBoxesComplete(boxes: List<ReceptionBoxEntity>) {
-        stateUIBottom.value =
-            if (boxes.isEmpty()) FlightsUIBottomState.ScanBox
-            else FlightsUIBottomState.ReturnBox
-    }
-
-    private fun changeBoxesError(error: Throwable) {
-
-    }
-
-    private fun fetchFlights() {
-        stateUIList.value = FlightsUIListState.ProgressFlight(
-            listOf(dataBuilder.buildProgressItem()),
-            zeroFlight()
-        )
-        interactor.updateFlight.onNext(true)
-        addSubscription(
-            interactor.flight().subscribe({ }, { flightsError(it) })
-        )
+    private fun observeBoxesToFlightError(error: Throwable) {
+        LogUtils { logDebugApp(error.toString()) }
     }
 
     private fun flightsComplete(flight: FlightsUIListState) {

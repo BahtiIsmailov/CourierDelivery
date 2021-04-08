@@ -14,7 +14,7 @@ import io.reactivex.disposables.CompositeDisposable
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
     private val authRepository: AuthRepository,
-    private val rxSchedulerFactory: RxSchedulerFactory
+    private val rxSchedulerFactory: RxSchedulerFactory,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUI = MutableLiveData<NumberPhoneUIState<String>>()

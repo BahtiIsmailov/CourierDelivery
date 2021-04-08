@@ -1,12 +1,13 @@
 package com.wb.logistics.db
 
 import androidx.room.*
-import com.wb.logistics.db.entity.boxesfromflight.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
+import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface FlightDao {
@@ -19,7 +20,14 @@ interface FlightDao {
 
     @Transaction
     @Query("SELECT * FROM FlightEntity")
-    fun readFlight(): Flowable<FlightDataEntity>
+    fun observeFlight(): Flowable<FlightDataEntity>
+
+    @Query("SELECT * FROM FlightEntity")
+    fun readFlight(): Single<FlightEntity>
+
+    @Transaction
+    @Query("SELECT * FROM FlightEntity")
+    fun readFlightData(): Single<FlightDataEntity>
 
     @Delete
     fun deleteFlight(flightEntity: FlightEntity)
@@ -27,7 +35,7 @@ interface FlightDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlightBoxes(flightBoxes: List<FlightBoxEntity>): Completable
 
-    @Query("SELECT * FROM FlightBoxEntity")
-    fun readFlightBoxes(): Flowable<List<FlightBoxEntity>>
+    @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode")
+    fun findFlightBox(barcode: String): Single<FlightBoxEntity>
 
 }

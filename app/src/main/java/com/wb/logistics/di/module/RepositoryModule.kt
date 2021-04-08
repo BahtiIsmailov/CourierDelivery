@@ -2,11 +2,10 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.data.AppRepository
 import com.wb.logistics.data.AppRepositoryImpl
+import com.wb.logistics.db.BoxDao
 import com.wb.logistics.db.FlightDao
 import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.LocalRepositoryImpl
-import com.wb.logistics.network.api.BoxesRepository
-import com.wb.logistics.network.api.BoxesRepositoryImpl
 import com.wb.logistics.network.api.app.RemoteRepository
 import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.api.auth.AuthRepository
@@ -39,8 +38,9 @@ val deliveryRepositoryModule = module {
 
     fun provideLocalRepository(
         flightDao: FlightDao,
+        boxDao: BoxDao,
     ): LocalRepository {
-        return LocalRepositoryImpl(flightDao)
+        return LocalRepositoryImpl(flightDao, boxDao)
     }
 
     fun provideReceptionRepository(api: ReceptionApi, dao: ReceptionDao): ReceptionRepository {
@@ -51,15 +51,10 @@ val deliveryRepositoryModule = module {
         return NetworkMonitorRepositoryImpl()
     }
 
-    fun provideBoxesRepository(): BoxesRepository {
-        return BoxesRepositoryImpl()
-    }
-
     single { provideAuthRepository(get(), get(), get()) }
-    single { provideLocalRepository(get()) }
+    single { provideLocalRepository(get(), get()) }
     single { provideAppRepository(get(), get()) }
     single { provideReceptionRepository(get(), get()) }
     single { provideNetworkMonitorRepository() }
-    single { provideBoxesRepository() }
 
 }

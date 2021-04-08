@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.wb.logistics.app.DATABASE_NAME
 import com.wb.logistics.db.AppDatabase
+import com.wb.logistics.db.BoxDao
 import com.wb.logistics.db.FlightDao
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -17,10 +18,15 @@ val databaseModule = module {
             .build()
     }
 
-    fun provideDeliveryDao(database: AppDatabase): FlightDao {
+    fun provideFlightDao(database: AppDatabase): FlightDao {
         return database.flightDao
     }
 
+    fun provideBoxDao(database: AppDatabase): BoxDao {
+        return database.boxDao
+    }
+
     single { provideDatabase(androidApplication()) }
-    single { provideDeliveryDao(get()) }
+    single { provideFlightDao(get()) }
+    single { provideBoxDao(get()) }
 }

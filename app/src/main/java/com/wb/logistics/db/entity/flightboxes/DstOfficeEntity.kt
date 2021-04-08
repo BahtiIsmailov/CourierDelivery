@@ -1,4 +1,4 @@
-package com.wb.logistics.db.entity.boxesfromflight
+package com.wb.logistics.db.entity.flightboxes
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

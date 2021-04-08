@@ -4,10 +4,30 @@ sealed class ReceptionBoxUIState<out R> {
 
     object Empty : ReceptionBoxUIState<Nothing>()
 
-    data class BoxComplete(val toastBox: String, val countBox: String, val parking: String, val box: String) :
+    data class BoxComplete(
+        val toastBox: String,
+        val accepted: String,
+        val gate: String,
+        val barcode: String,
+    ) :
         ReceptionBoxUIState<Nothing>()
 
-    data class BoxDeny(val countBox: String, val parking: String, val box: String) :
+    data class BoxInit(
+        val accepted: String,
+        val gate: String,
+        val barcode: String,
+    ) :
+        ReceptionBoxUIState<Nothing>()
+
+    data class BoxDeny(val accepted: String, val gate: String, val barcode: String) :
+        ReceptionBoxUIState<Nothing>()
+
+    data class BoxHasBeenAdded(
+        val toastBox: String,
+        val accepted: String,
+        val gate: String,
+        val barcode: String,
+    ) :
         ReceptionBoxUIState<Nothing>()
 
 }

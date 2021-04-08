@@ -1,7 +1,12 @@
 package com.wb.logistics.ui.reception
 
 sealed class ReceptionUIState<out R> {
-    data class NavigateToReceptionBoxNotBelong(val title: String, val box: String, val address: String) :
+    data class NavigateToReceptionBoxNotBelong(
+        val toolbarTitle: String,
+        val title: String,
+        val box: String,
+        val address: String,
+    ) :
         ReceptionUIState<Nothing>()
 
     object NavigateToBoxes : ReceptionUIState<Nothing>()

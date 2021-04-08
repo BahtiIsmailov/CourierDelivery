@@ -1,5 +1,6 @@
 package com.wb.logistics.network.api.app
 
+import com.wb.logistics.network.api.app.response.boxdeletefromflight.BoxDeletFromFlightRemote
 import com.wb.logistics.network.api.app.response.boxesfromflight.BoxesRemote
 import com.wb.logistics.network.api.app.response.boxinfo.BoxInfoRemote
 import com.wb.logistics.network.api.app.response.boxtoflight.BoxToFlightRemote
@@ -7,10 +8,7 @@ import com.wb.logistics.network.api.app.response.flight.FlightRemote
 import com.wb.logistics.network.api.app.response.flightstatuses.FlightStatusesRemote
 import io.reactivex.Completable
 import io.reactivex.Single
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface RemoteRepository {
 
@@ -21,12 +19,19 @@ interface RemoteRepository {
     fun flight(): Single<FlightRemote?>
 
     @GET("/api/v1/flights/{flightID}/boxes")
-    fun boxesFromFlight(@Path("flightID")  flightID : String): Single<BoxesRemote>
+    fun boxesFromFlight(@Path("flightID") flightID: String): Single<BoxesRemote>
 
     @GET("/api/v1/boxes/{barcode}")
-    fun boxInfo(@Path("barcode")  barcode : String): Single<BoxInfoRemote>
+    fun boxInfo(@Path("barcode") barcode: String): Single<BoxInfoRemote>
 
     @POST("/api/v1/flights/{flightID}/boxes")
-    fun boxToFlight(@Path("flightID")  flightID : String, @Body box:  BoxToFlightRemote): Completable
+    fun boxToFlight(@Path("flightID") flightID: String, @Body box: BoxToFlightRemote): Completable
+
+    @DELETE("/api/v1/flights/{flightID}/boxes/{barcode}")
+    fun boxDeleteFromFlight(
+        @Path("flightID") flightID: String,
+        @Path("barcode") barcode: String,
+        @Body box: BoxDeletFromFlightRemote,
+    ): Completable
 
 }

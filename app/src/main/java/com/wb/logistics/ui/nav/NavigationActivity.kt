@@ -23,7 +23,8 @@ import com.wb.logistics.ui.flights.FlightsFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount {
+class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
+    NavToolbarTitleListener {
 
     private val navigationViewModel by viewModel<NavigationViewModel>()
 
@@ -119,4 +120,13 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount {
         return menuItemId
     }
 
+    override fun updateTitle(title: String) {
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        toolbar.title = title
+    }
+
+}
+
+interface NavToolbarTitleListener {
+    fun updateTitle(title: String)
 }
