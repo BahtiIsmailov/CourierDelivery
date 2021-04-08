@@ -237,4 +237,8 @@ class AppRepositoryImpl(
         return local.findFlightBoxScanned(barcode)
     }
 
+    override fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>> {
+        return local.loadFlightBoxScanned(barcodes)
+    }
+
 }

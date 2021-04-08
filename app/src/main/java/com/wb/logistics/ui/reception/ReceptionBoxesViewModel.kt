@@ -65,9 +65,14 @@ class ReceptionBoxesViewModel(
     }
 
     fun onRemoveClick() {
-        val checkedBoxes = copyReceptionBoxes.map { it.isChecked }.toMutableList()
-        receptionInteractor.removeFlightBoxes(checkedBoxes)
-        _navigateToBack.value = NavigateToBack
+        _boxes.value = ReceptionBoxesUIState.Progress
+        val checkedReceptionBoxes =
+            copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
+        addSubscription(receptionInteractor.deleteFlightBoxes(checkedReceptionBoxes)
+            .subscribe({
+                _boxes.value = ReceptionBoxesUIState.ProgressComplete
+                _navigateToBack.value = NavigateToBack
+            }, { _boxes.value = ReceptionBoxesUIState.ProgressComplete }))
     }
 
     fun onItemClick(index: Int, checked: Boolean) {

@@ -6,4 +6,8 @@ sealed class ReceptionBoxesUIState<out R> {
 
     object Empty : ReceptionBoxesUIState<Nothing>()
 
+    object Progress : ReceptionBoxesUIState<Nothing>()
+
+    object ProgressComplete : ReceptionBoxesUIState<Nothing>()
+
 }

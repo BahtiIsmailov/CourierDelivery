@@ -56,4 +56,6 @@ interface AppRepository {
 
     fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>>
 
+    fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>>
+
 }

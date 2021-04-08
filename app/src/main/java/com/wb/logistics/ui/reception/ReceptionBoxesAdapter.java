@@ -48,7 +48,7 @@ public class ReceptionBoxesAdapter extends ArrayAdapter<String> {
         }
         ReceptionBoxItem item = items.get(position);
         holder.binding.number.setText(item.getNumber());
-        holder.binding.box.setText(item.getBox());
+        holder.binding.box.setText(item.getBarcode());
         holder.binding.address.setText(item.getAddress());
         holder.binding.checked.setOnCheckedChangeListener(null);
         holder.binding.checked.setChecked(item.isChecked());

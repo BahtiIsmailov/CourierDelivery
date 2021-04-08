@@ -8,6 +8,7 @@ import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Single
@@ -121,9 +122,27 @@ class ReceptionInteractorImpl(
             isManualInput = isManual)
     }
 
-    override fun removeFlightBoxes(checkedBoxes: List<Boolean>) {
-
+    override fun deleteFlightBoxes(checkedBoxes: List<String>): Completable {
+        return appRepository.loadFlightBoxScanned(checkedBoxes)
+            .flatMapCompletable { flightBoxScanned ->
+                Observable.fromIterable(flightBoxScanned)
+                    .flatMapCompletable {
+                        deleteScannedFlightBoxRemote(it).andThen(deleteScannedFlightBoxLocal(it))
+                    }
+            }.compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
+
+    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: FlightBoxScannedEntity) =
+        with(flightBoxScannedEntity) {
+            appRepository.deleteFlightBoxScannedRemote(
+                flightId.toString(),
+                barcode,
+                isManualInput,
+                srcOffice.id)
+        }
+
+    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: FlightBoxScannedEntity) =
+        appRepository.deleteFlightBoxScanned(flightBoxScannedEntity).onErrorComplete()
 
     private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
         val barcodeScanned = param.first

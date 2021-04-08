@@ -1,11 +1,12 @@
 package com.wb.logistics.ui.reception.domain
 
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import io.reactivex.Completable
 import io.reactivex.Observable
 
 interface ReceptionInteractor {
 
-    fun removeFlightBoxes(checkedBoxes: List<Boolean>)
+    fun deleteFlightBoxes(checkedBoxes: List<String>): Completable
 
     fun boxScanned(barcode: String, isManualInput: Boolean)
 

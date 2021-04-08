@@ -86,6 +86,10 @@ class LocalRepositoryImpl(
         return boxDao.insertFlightBoxScanned(flightBoxScannedEntity)
     }
 
+    override fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>> {
+        return boxDao.loadFlightBoxScanned(barcodes)
+    }
+
     override fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>> {
         return boxDao.observeFlightBoxScanned()
     }

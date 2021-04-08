@@ -68,7 +68,6 @@ class FlightsInteractorImpl(
                 barcode,
                 isManualInput,
                 srcOffice.id)
-                .onErrorComplete()
         }
 
     private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: FlightBoxScannedEntity) =

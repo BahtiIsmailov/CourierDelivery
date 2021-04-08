@@ -46,6 +46,10 @@ class ReceptionBoxesFragment : Fragment() {
                     binding.boxes.visibility = GONE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
                 }
+                ReceptionBoxesUIState.Progress ->
+                    binding.remove.setState(ProgressImageButtonMode.PROGRESS)
+                ReceptionBoxesUIState.ProgressComplete ->
+                    binding.remove.setState(ProgressImageButtonMode.DISABLED)
             }
         }
 

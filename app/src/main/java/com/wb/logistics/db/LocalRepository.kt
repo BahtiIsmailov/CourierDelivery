@@ -32,6 +32,8 @@ interface LocalRepository {
 
     fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
 
+    fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>>
+
     fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>>
 
     fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>>
