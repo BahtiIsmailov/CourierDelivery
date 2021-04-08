@@ -101,9 +101,7 @@ class ReceptionViewModel(
             is ScanBoxData.BoxHasBeenAdded -> {
                 boxStateUI.value =
                     with(scanBoxData) {
-                        val toastBox = receptionResourceProvider.getShortHasBeenAddedBox(barcode)
                         ReceptionBoxUIState.BoxHasBeenAdded(
-                            toastBox,
                             accepted,
                             gate,
                             barcode)

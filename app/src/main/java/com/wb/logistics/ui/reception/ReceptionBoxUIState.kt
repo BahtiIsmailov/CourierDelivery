@@ -23,7 +23,6 @@ sealed class ReceptionBoxUIState<out R> {
         ReceptionBoxUIState<Nothing>()
 
     data class BoxHasBeenAdded(
-        val toastBox: String,
         val accepted: String,
         val gate: String,
         val barcode: String,

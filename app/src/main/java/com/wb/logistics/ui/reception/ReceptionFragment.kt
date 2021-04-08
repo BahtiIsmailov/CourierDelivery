@@ -148,9 +148,8 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
                     binding.info.setCodeBox(ReceptionInfoMode.EMPTY)
                 }
                 is ReceptionBoxUIState.BoxHasBeenAdded -> {
-                    showToast(state.toastBox)
                     binding.received.setCountBox(state.accepted,
-                        ReceptionAcceptedMode.CONTAINS_COMPLETE)
+                        ReceptionAcceptedMode.CONTAINS_HAS_ADDED)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_COMPLETE)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)

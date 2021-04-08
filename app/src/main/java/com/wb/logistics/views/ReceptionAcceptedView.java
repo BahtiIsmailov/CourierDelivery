@@ -85,6 +85,9 @@ public class ReceptionAcceptedView extends FrameLayout {
             case ReceptionAcceptedMode.CONTAINS_DENY:
                 containsDenyState();
                 break;
+            case ReceptionAcceptedMode.CONTAINS_HAS_ADDED:
+                containsHasAddedState();
+                break;
         }
     }
 
@@ -102,6 +105,12 @@ public class ReceptionAcceptedView extends FrameLayout {
 
     private void containsDenyState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_trans));
+        countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(VISIBLE);
+    }
+
+    private void containsHasAddedState() {
+        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_has_added_trans));
         countBoxTextView.setText(countBox);
         listBoxTextView.setVisibility(VISIBLE);
     }

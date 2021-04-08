@@ -18,7 +18,6 @@
     <color name="white">#FFFFFFFF</color>
 
 
-
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
     <color name="text_clickable">#642CA3</color>
@@ -32,6 +31,8 @@
     <color name="accept_trans">#1A4BCF85</color>
     <color name="deny">#EC5C5C</color>
     <color name="deny_trans">#1AEC5C5C</color>
+    <color name="added">#FB8C00</color>
+    <color name="added_trans">#2FFB8C00</color>
     <color name="primary">#642CA3</color>
 
 
