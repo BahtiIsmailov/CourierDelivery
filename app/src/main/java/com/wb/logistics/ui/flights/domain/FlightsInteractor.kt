@@ -10,5 +10,5 @@ interface FlightsInteractor {
     fun flight(): Completable
     fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
     fun observeFlightBoxScanned(): Flowable<Int>
-    fun removeBoxesToFlight()
+    fun deleteFlightBoxes(): Completable
 }

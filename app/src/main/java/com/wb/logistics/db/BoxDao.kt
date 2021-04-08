@@ -1,9 +1,6 @@
 package com.wb.logistics.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -29,5 +26,8 @@ interface BoxDao {
 
     @Query("DELETE FROM FlightBoxScannedEntity")
     fun deleteAllFlightBoxScanned()
+
+    @Delete
+    fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
 
 }

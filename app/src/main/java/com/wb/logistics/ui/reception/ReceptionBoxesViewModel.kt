@@ -2,9 +2,11 @@ package com.wb.logistics.ui.reception
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.utils.LogUtils
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class ReceptionBoxesViewModel(
@@ -27,25 +29,22 @@ class ReceptionBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<ReceptionBoxItem>()
 
     init {
-//        addSubscription(receptionInteractor.changeBoxes()
-//            .flatMap { convertBoxes(it) }
-//            .doOnNext { copyConvertBoxes(it) }
-//            .subscribe({ changeBoxesComplete(it) },
-//                { changeBoxesError(it) }))
+        addSubscription(receptionInteractor.observeFlightBoxes()
+            .flatMap { convertBoxes(it) }
+            .doOnNext { copyConvertBoxes(it) }
+            .subscribe({ changeBoxesComplete(it) },
+                { changeBoxesError(it) }))
     }
 
-//    private fun convertBoxes(boxes: List<ReceptionBoxEntity>) =
-//        Observable.fromIterable(boxes.withIndex())
-//            .map(receptionBoxItem)
-//            .toList()
-//            .toObservable()
-//
-//    private val receptionBoxItem = { (index, item): IndexedValue<ReceptionBoxEntity> ->
-//        ReceptionBoxItem(singleIncrement(index),
-//            item.box,
-//            item.address,
-//            false)
-//    }
+    private fun convertBoxes(boxes: List<FlightBoxScannedEntity>) =
+        Observable.fromIterable(boxes.withIndex())
+            .map(receptionBoxItem)
+            .toList()
+            .toObservable()
+
+    private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxScannedEntity> ->
+        ReceptionBoxItem(singleIncrement(index), item.barcode, "", false)
+    }
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }
 
@@ -67,7 +66,7 @@ class ReceptionBoxesViewModel(
 
     fun onRemoveClick() {
         val checkedBoxes = copyReceptionBoxes.map { it.isChecked }.toMutableList()
-        receptionInteractor.removeBoxes(checkedBoxes)
+        receptionInteractor.removeFlightBoxes(checkedBoxes)
         _navigateToBack.value = NavigateToBack
     }
 

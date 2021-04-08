@@ -38,7 +38,7 @@ interface AppRepository {
         currentOffice: Int,
     ): Completable
 
-    fun boxDeleteOfFlight(
+    fun deleteFlightBoxScannedRemote(
         flightID: String,
         barcode: String,
         isManual: Boolean,
@@ -48,7 +48,9 @@ interface AppRepository {
     //==============================================================================================
     fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
 
-    fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>>
+    fun observeFlightBoxesScanned(): Flowable<List<FlightBoxScannedEntity>>
+
+    fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
 
     fun deleteAllFlightBoxScanned()
 

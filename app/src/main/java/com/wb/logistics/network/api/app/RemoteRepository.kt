@@ -1,6 +1,6 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.network.api.app.response.boxdeletefromflight.BoxDeletFromFlightRemote
+import com.wb.logistics.network.api.app.response.boxdeletefromflight.BoxDeleteFromFlightRemote
 import com.wb.logistics.network.api.app.response.boxesfromflight.BoxesRemote
 import com.wb.logistics.network.api.app.response.boxinfo.BoxInfoRemote
 import com.wb.logistics.network.api.app.response.boxtoflight.BoxToFlightRemote
@@ -27,11 +27,11 @@ interface RemoteRepository {
     @POST("/api/v1/flights/{flightID}/boxes")
     fun boxToFlight(@Path("flightID") flightID: String, @Body box: BoxToFlightRemote): Completable
 
-    @DELETE("/api/v1/flights/{flightID}/boxes/{barcode}")
+    @HTTP(method = "DELETE", path = "/api/v1/flights/{flightID}/boxes/{barcode}", hasBody = true)
     fun boxDeleteFromFlight(
         @Path("flightID") flightID: String,
         @Path("barcode") barcode: String,
-        @Body box: BoxDeletFromFlightRemote,
+        @Body box: BoxDeleteFromFlightRemote,
     ): Completable
 
 }

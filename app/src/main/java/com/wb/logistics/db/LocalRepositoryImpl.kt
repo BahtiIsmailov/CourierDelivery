@@ -86,7 +86,7 @@ class LocalRepositoryImpl(
         return boxDao.insertFlightBoxScanned(flightBoxScannedEntity)
     }
 
-    override fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>> { //BoxInfoEntity
+    override fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>> {
         return boxDao.observeFlightBoxScanned()
     }
 
@@ -98,6 +98,10 @@ class LocalRepositoryImpl(
 
     override fun deleteAllFlightBoxScanned() {
         boxDao.deleteAllFlightBoxScanned()
+    }
+
+    override fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
+        return boxDao.deleteFlightBoxScanned(flightBoxScannedEntity)
     }
 
 }

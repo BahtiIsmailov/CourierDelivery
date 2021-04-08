@@ -5,7 +5,7 @@ import io.reactivex.Observable
 
 interface ReceptionInteractor {
 
-    fun removeBoxes(checkedBoxes: List<Boolean>)
+    fun removeFlightBoxes(checkedBoxes: List<Boolean>)
 
     fun boxScanned(barcode: String, isManualInput: Boolean)
 

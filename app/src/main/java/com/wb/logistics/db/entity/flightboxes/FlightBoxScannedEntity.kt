@@ -19,4 +19,5 @@ data class FlightBoxScannedEntity(
     @Embedded
     val dstOffice: DstOfficeEntity,
     val smID: Int,
+    val isManualInput: Boolean,
 )

@@ -96,7 +96,8 @@ class ReceptionInteractorImpl(
             barcode,
             isManual,
             officeId)
-        val saveBoxInfo = saveFlightBoxScanned(convertFlightBoxScanned(flightBox.data, gate))
+        val saveBoxInfo =
+            saveFlightBoxScanned(convertFlightBoxScanned(flightBox.data, gate, isManual))
         val boxAdded = boxAdded(barcode, gate.toString())
         return boxToFlight
             .andThen(saveBoxInfo)
@@ -105,18 +106,22 @@ class ReceptionInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun convertFlightBoxScanned(flightBoxEntity: FlightBoxEntity, gate: Int) =
-        with(flightBoxEntity) {
-            FlightBoxScannedEntity(
-                flightId = flightId,
-                barcode = barcode,
-                gate = gate,
-                srcOffice = SrcOfficeEntity(srcOffice.id),
-                dstOffice = DstOfficeEntity(dstOffice.id),
-                smID = smID)
-        }
+    private fun convertFlightBoxScanned(
+        flightBoxEntity: FlightBoxEntity,
+        gate: Int,
+        isManual: Boolean,
+    ) = with(flightBoxEntity) {
+        FlightBoxScannedEntity(
+            flightId = flightId,
+            barcode = barcode,
+            gate = gate,
+            srcOffice = SrcOfficeEntity(srcOffice.id),
+            dstOffice = DstOfficeEntity(dstOffice.id),
+            smID = smID,
+            isManualInput = isManual)
+    }
 
-    override fun removeBoxes(checkedBoxes: List<Boolean>) {
+    override fun removeFlightBoxes(checkedBoxes: List<Boolean>) {
 
     }
 
@@ -128,7 +133,11 @@ class ReceptionInteractorImpl(
             findFlightBoxScanned(barcodeScanned), //коробка уже добавлена
             findFlightBox(barcodeScanned), //коробка привязана к рейсу
             { flight, findFlightBoxScanned, findFlightBox ->
-                BoxDefinitionResult(flight, findFlightBoxScanned, findFlightBox, barcodeScanned, isManual)
+                BoxDefinitionResult(flight,
+                    findFlightBoxScanned,
+                    findFlightBox,
+                    barcodeScanned,
+                    isManual)
             }
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
@@ -159,7 +168,7 @@ class ReceptionInteractorImpl(
     private fun infoBox(barcode: String) = appRepository.boxInfo(barcode)
 
     override fun observeFlightBoxes(): Observable<List<FlightBoxScannedEntity>> {
-        return appRepository.observeFlightBoxScanned().toObservable()
+        return appRepository.observeFlightBoxesScanned().toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

@@ -3,6 +3,7 @@ package com.wb.logistics.ui.flights.domain
 import com.wb.logistics.data.AppRepository
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Completable
@@ -46,12 +47,31 @@ class FlightsInteractorImpl(
     private fun networkMonitor() = networkMonitorRepository.isNetworkConnected()
 
     override fun observeFlightBoxScanned(): Flowable<Int> {
-        return appRepository.observeFlightBoxScanned().map { it.size }
+        return appRepository.observeFlightBoxesScanned().map { it.size }
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
-    override fun removeBoxesToFlight() {
-        appRepository.deleteAllFlightBoxScanned()
+    override fun deleteFlightBoxes(): Completable {
+        return appRepository.observeFlightBoxesScanned()
+            .toObservable()
+            .flatMapIterable { it }
+            .flatMapCompletable {
+                deleteScannedFlightBoxRemote(it).andThen(deleteScannedFlightBoxLocal(it))
+            }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
+
+    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: FlightBoxScannedEntity) =
+        with(flightBoxScannedEntity) {
+            appRepository.deleteFlightBoxScannedRemote(
+                flightId.toString(),
+                barcode,
+                isManualInput,
+                srcOffice.id)
+                .onErrorComplete()
+        }
+
+    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: FlightBoxScannedEntity) =
+        appRepository.deleteFlightBoxScanned(flightBoxScannedEntity).onErrorComplete()
 
 }

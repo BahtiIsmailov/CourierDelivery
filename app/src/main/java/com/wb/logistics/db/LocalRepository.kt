@@ -38,4 +38,6 @@ interface LocalRepository {
 
     fun deleteAllFlightBoxScanned()
 
+    fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+
 }

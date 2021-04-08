@@ -33,8 +33,14 @@ class FlightsViewModel(
             }
             is FlightsUIAction.ContinueAcceptanceClick ->
                 FlightsUINavState.NavigateToReceptionBox
-            FlightsUIAction.RemoveBoxesClick -> interactor.removeBoxesToFlight()
+            FlightsUIAction.RemoveBoxesClick ->
+                addSubscription(interactor.deleteFlightBoxes()
+                    .subscribe({ removeFlightBoxesComplete() }, {}))
         }
+    }
+
+    private fun removeFlightBoxesComplete() {
+
     }
 
     init {

@@ -10,7 +10,7 @@ import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.network.api.app.RemoteRepository
-import com.wb.logistics.network.api.app.response.boxdeletefromflight.BoxDeletFromFlightRemote
+import com.wb.logistics.network.api.app.response.boxdeletefromflight.BoxDeleteFromFlightRemote
 import com.wb.logistics.network.api.app.response.boxdeletefromflight.DeleteCurrentOfficeRemote
 import com.wb.logistics.network.api.app.response.boxesfromflight.BoxRemote
 import com.wb.logistics.network.api.app.response.boxinfo.BoxInfoRemote
@@ -20,6 +20,7 @@ import com.wb.logistics.network.api.app.response.boxtoflight.BoxToFlightRemote
 import com.wb.logistics.network.api.app.response.boxtoflight.CurrentOfficeRemote
 import com.wb.logistics.network.api.app.response.flight.*
 import com.wb.logistics.network.api.app.response.flightstatuses.FlightStatusesRemote
+import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -203,15 +204,16 @@ class AppRepositoryImpl(
             BoxToFlightRemote(barcode, isManualInput, CurrentOfficeRemote(currentOffice)))
     }
 
-    override fun boxDeleteOfFlight(
+    override fun deleteFlightBoxScannedRemote(
         flightID: String,
         barcode: String,
-        isManual: Boolean,
-        idOffice: Int,
+        isManualInput: Boolean,
+        currentOffice: Int,
     ): Completable {
         return remote.boxDeleteFromFlight(flightID,
             barcode,
-            BoxDeletFromFlightRemote(isManual, DeleteCurrentOfficeRemote(idOffice)))
+            BoxDeleteFromFlightRemote(isManualInput, DeleteCurrentOfficeRemote(currentOffice)))
+            .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
     //==============================================================================================
@@ -219,8 +221,12 @@ class AppRepositoryImpl(
         return local.saveFlightBoxScanned(flightBoxScannedEntity)
     }
 
-    override fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>> {
+    override fun observeFlightBoxesScanned(): Flowable<List<FlightBoxScannedEntity>> {
         return local.observeFlightBoxScanned()
+    }
+
+    override fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
+       return local.deleteFlightBoxScanned(flightBoxScannedEntity)
     }
 
     override fun deleteAllFlightBoxScanned() {
