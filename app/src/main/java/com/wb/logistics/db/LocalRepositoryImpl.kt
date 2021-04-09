@@ -1,5 +1,6 @@
 package com.wb.logistics.db
 
+import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -44,6 +45,7 @@ class LocalRepositoryImpl(
         }
     }
 
+    // TODO: 09.04.2021 вынести в конертер
     private fun successFlightData(flightDataEntity: FlightDataEntity): SuccessOrEmptyData<FlightData> {
         return with(flightDataEntity) {
             val addressesName = mutableListOf<String>()
@@ -63,7 +65,7 @@ class LocalRepositoryImpl(
     }
 
     override fun removeFlight() {
-
+        // TODO: 09.04.2021 реализовать
     }
 
     override fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable {
@@ -77,11 +79,12 @@ class LocalRepositoryImpl(
     }
 
     override fun removeBoxesFromFlight() {
-
+        // TODO: 09.04.2021 реализовать
     }
 
     //==============================================================================================
-
+    //scanned box
+    //==============================================================================================
     override fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
         return boxDao.insertFlightBoxScanned(flightBoxScannedEntity)
     }
@@ -106,6 +109,22 @@ class LocalRepositoryImpl(
 
     override fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
         return boxDao.deleteFlightBoxScanned(flightBoxScannedEntity)
+    }
+
+    //==============================================================================================
+    //balance box
+    //==============================================================================================
+
+    override fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable {
+        return flightDao.insertFlightBoxBalanceAwait(flightBoxBalanceEntity)
+    }
+
+    override fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>> {
+        return flightDao.observeFlightBoxBalanceAwait()
+    }
+
+    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable {
+        return flightDao.deleteFlightBoxBalanceAwait(flightBoxBalanceEntity)
     }
 
 }

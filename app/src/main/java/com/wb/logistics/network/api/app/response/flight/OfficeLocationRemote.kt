@@ -1,5 +1,5 @@
 package com.wb.logistics.network.api.app.response.flight
 
-data class OfficeLocation(
+data class OfficeLocationRemote(
     val id: Int,
 )

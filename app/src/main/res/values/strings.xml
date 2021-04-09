@@ -102,7 +102,7 @@
     <string name="reception_box_not_belong_dc_title">Коробка не принадлежит РЦ,\nверните её сотруднику склада</string>
     <string name="reception_box_not_belong_flight_toolbar_title">Не принадлежит рейсу</string>
     <string name="reception_box_not_belong_flight_title">Коробка не принадлежит рейсу,\nверните её сотруднику склада</string>
-    <string name="reception_box_not_belong_address_title">\ПВЗ Москва, длинный адрес, который разошелся на 2 строки</string>
+    <string name="reception_box_not_belong_address_title">Уточните у сотрудника склада</string>
 
     <string name="reception_box_not_code_title">ШК</string>
     <string name="reception_box_not_address_title">Адрес доставки</string>

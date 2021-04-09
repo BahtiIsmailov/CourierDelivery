@@ -35,17 +35,21 @@ class FlightsViewModel(
                 FlightsUINavState.NavigateToReceptionBox
             FlightsUIAction.RemoveBoxesClick ->
                 addSubscription(interactor.deleteFlightBoxes()
-                    .subscribe({ removeFlightBoxesComplete() }, {}))
+                    .subscribe({ removeFlightBoxesComplete() }, { removeFlightBoxesError(it) }))
         }
     }
 
     private fun removeFlightBoxesComplete() {
+        // TODO: 09.04.2021 реализовать
+    }
 
+    private fun removeFlightBoxesError(throwable: Throwable) {
+        // TODO: 09.04.2021 реализовать
     }
 
     init {
         fetchFlights()
-        observeBoxesToFlight()
+        observeFlightBoxes()
         observeFlight()
     }
 
@@ -58,13 +62,13 @@ class FlightsViewModel(
         addSubscription(interactor.flight().subscribe({ }, { flightsError(it) }))
     }
 
-    private fun observeBoxesToFlight() {
+    private fun observeFlightBoxes() {
         addSubscription(interactor.observeFlightBoxScanned()
-            .subscribe({ observeBoxesToFlightComplete(it) },
-                { observeBoxesToFlightError(it) }))
+            .subscribe({ observeFlightBoxesComplete(it) },
+                { observeFlightBoxesError(it) }))
     }
 
-    private fun observeBoxesToFlightComplete(boxes: Int) {
+    private fun observeFlightBoxesComplete(boxes: Int) {
         stateUIBottom.value =
             if (boxes == 0) FlightsUIBottomState.ScanBox
             else FlightsUIBottomState.ReturnBox
@@ -86,7 +90,7 @@ class FlightsViewModel(
             .subscribe({ flightsComplete(it) }, { flightsError(it) }))
     }
 
-    private fun observeBoxesToFlightError(error: Throwable) {
+    private fun observeFlightBoxesError(error: Throwable) {
         LogUtils { logDebugApp(error.toString()) }
     }
 

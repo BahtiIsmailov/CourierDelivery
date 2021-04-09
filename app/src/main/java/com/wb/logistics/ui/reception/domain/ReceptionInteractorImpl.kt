@@ -2,6 +2,8 @@ package com.wb.logistics.ui.reception.domain
 
 import com.wb.logistics.data.AppRepository
 import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.entity.boxtoflight.CurrentOfficeEntity
+import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
@@ -42,7 +44,7 @@ class ReceptionInteractorImpl(
                     flight is SuccessOrEmptyData.Success -> //данные по рейсу актуальны
                         when (flightBox) {
                             is SuccessOrEmptyData.Success ->  //коробка принадлежит рейсу
-                                return@flatMap saveFlightBox(
+                                return@flatMap saveFlightBoxToBalance(
                                     flightId = flight.data.id.toString(),
                                     barcode = flightBox.data.barcode,
                                     isManual = boxDefinition.isManual,
@@ -65,7 +67,7 @@ class ReceptionInteractorImpl(
     ) = infoBox(barcodeScanned).map { boxInfo ->
         when (boxInfo) {
             is SuccessOrEmptyData.Empty -> {
-                ScanBoxData.Empty
+                ScanBoxData.BoxDoesNotBelongInfo(barcodeScanned)
             }
             is SuccessOrEmptyData.Success -> {
                 if (boxInfo.data.box.srcOffice.id == flight.data.dc.id)  //не принадлежит рейсу
@@ -84,7 +86,7 @@ class ReceptionInteractorImpl(
         .toObservable()
         .compose(rxSchedulerFactory.applyObservableSchedulers())
 
-    private fun saveFlightBox(
+    private fun saveFlightBoxToBalance(
         flightId: String,
         barcode: String,
         isManual: Boolean,
@@ -92,22 +94,26 @@ class ReceptionInteractorImpl(
         flightBox: SuccessOrEmptyData.Success<FlightBoxEntity>,
         gate: Int,
     ): Observable<ScanBoxData> {
-        val boxToFlight = boxToFlight(
-            flightId,
-            barcode,
-            isManual,
-            officeId)
-        val saveBoxInfo =
-            saveFlightBoxScanned(convertFlightBoxScanned(flightBox.data, gate, isManual))
+        val saveBoxScannedToBalanceRemote =
+            saveBoxScannedToBalanceRemote(flightId, barcode, isManual, officeId)
+        val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId)
+        val saveBoxScanned = saveBoxScanned(convertBoxScanned(flightBox.data, gate, isManual))
         val boxAdded = boxAdded(barcode, gate.toString())
-        return boxToFlight
-            .andThen(saveBoxInfo)
+
+        return saveBoxScanned
+            .andThen(saveBoxBalanceAwait)
+            .andThen(appRepository.observeFlightBoxBalanceAwait()
+                .flatMapIterable { it }
+                .flatMapCompletable {
+                    saveBoxScannedToBalanceRemote.andThen(deleteFlightBoxBalanceAwait(it))
+                        .onErrorComplete()
+                })
             .andThen(boxAdded)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun convertFlightBoxScanned(
+    private fun convertBoxScanned(
         flightBoxEntity: FlightBoxEntity,
         gate: Int,
         isManual: Boolean,
@@ -144,17 +150,20 @@ class ReceptionInteractorImpl(
     private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: FlightBoxScannedEntity) =
         appRepository.deleteFlightBoxScanned(flightBoxScannedEntity).onErrorComplete()
 
+    private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity) =
+        appRepository.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity).onErrorComplete()
+
     private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
         val barcodeScanned = param.first
         val isManual = param.second
         return Single.zip(
             flight(), //рейс
-            findFlightBoxScanned(barcodeScanned), //коробка уже добавлена
             findFlightBox(barcodeScanned), //коробка привязана к рейсу
+            findFlightBoxScanned(barcodeScanned), //коробка уже добавлена
             { flight, findFlightBoxScanned, findFlightBox ->
                 BoxDefinitionResult(flight,
-                    findFlightBoxScanned,
                     findFlightBox,
+                    findFlightBoxScanned,
                     barcodeScanned,
                     isManual)
             }
@@ -167,18 +176,25 @@ class ReceptionInteractorImpl(
 
     private fun findFlightBox(barcode: String) = appRepository.findFlightBox(barcode)
 
-    private fun boxToFlight(
+    private fun saveBoxScannedToBalanceRemote(
         flight: String,
         barcode: String,
         isManualInput: Boolean,
         currentOffice: Int,
-    ) = appRepository.boxToFlight(
+    ) = appRepository.flightBoxScannedToBalanceRemote(
         flight,
         barcode,
         isManualInput,
         currentOffice)
 
-    private fun saveFlightBoxScanned(FlightBoxScanned: FlightBoxScannedEntity) =
+    private fun boxBalanceAwait(
+        barcode: String,
+        isManualInput: Boolean,
+        currentOffice: Int,
+    ) = appRepository.saveFlightBoxBalanceAwait(
+        FlightBoxBalanceAwaitEntity(barcode, isManualInput, CurrentOfficeEntity(currentOffice)))
+
+    private fun saveBoxScanned(FlightBoxScanned: FlightBoxScannedEntity) =
         appRepository.saveFlightBoxScanned(FlightBoxScanned)
 
     private fun boxAdded(barcode: String, gate: String) =

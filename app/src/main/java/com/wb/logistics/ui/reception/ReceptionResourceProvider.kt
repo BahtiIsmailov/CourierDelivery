@@ -14,6 +14,6 @@ class ReceptionResourceProvider(private val context: Context) {
     fun getBoxNotBelongDcTitle() : String = context.getString(R.string.reception_box_not_belong_dc_title)
     fun getBoxNotBelongFlightTitle() : String = context.getString(R.string.reception_box_not_belong_flight_title)
     fun getBoxNotBelongFlightToolbarTitle() : String = context.getString(R.string.reception_box_not_belong_flight_toolbar_title)
-    fun getBoxNotBelongAddressTitle() : String = context.getString(R.string.reception_box_not_belong_address_title)
+    fun getBoxNotBelongAddress() : String = context.getString(R.string.reception_box_not_belong_address_title)
 
 }

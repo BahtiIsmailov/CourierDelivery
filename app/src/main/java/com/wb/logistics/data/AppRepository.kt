@@ -3,6 +3,7 @@ package com.wb.logistics.data
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
+import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
@@ -31,7 +32,7 @@ interface AppRepository {
 
     //==============================================================================================
 
-    fun boxToFlight(
+    fun flightBoxScannedToBalanceRemote(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
@@ -57,5 +58,15 @@ interface AppRepository {
     fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>>
 
     fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>>
+
+    //==============================================================================================
+    //balance await
+    //==============================================================================================
+
+    fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable
+
+    fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+
+    fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable
 
 }

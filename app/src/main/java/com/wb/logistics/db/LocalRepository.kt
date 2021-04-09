@@ -1,5 +1,6 @@
 package com.wb.logistics.db
 
+import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
@@ -29,7 +30,8 @@ interface LocalRepository {
     fun removeBoxesFromFlight()
 
     //==============================================================================================
-
+    //scanned box
+    //==============================================================================================
     fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
 
     fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>>
@@ -41,5 +43,14 @@ interface LocalRepository {
     fun deleteAllFlightBoxScanned()
 
     fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+
+    //==============================================================================================
+    //balance box
+    //==============================================================================================
+    fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+
+    fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+
+    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
 
 }

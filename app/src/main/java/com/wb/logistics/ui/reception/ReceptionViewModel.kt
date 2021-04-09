@@ -108,7 +108,14 @@ class ReceptionViewModel(
                     }
             }
             ScanBoxData.Empty -> boxStateUI.value = ReceptionBoxUIState.Empty
-
+            is ScanBoxData.BoxDoesNotBelongInfo -> {
+                stateUI.value = ReceptionUIState.NavigateToReceptionBoxNotBelong(
+                    receptionResourceProvider.getBoxNotBelongFlightToolbarTitle(),
+                    receptionResourceProvider.getBoxNotBelongFlightTitle(),
+                    scanBoxData.barcode,
+                    receptionResourceProvider.getBoxNotBelongAddress())
+                stateUI.value = ReceptionUIState.Empty
+            }
         }
     }
 

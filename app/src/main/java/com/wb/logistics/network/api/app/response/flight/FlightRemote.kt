@@ -9,8 +9,8 @@ data class FlightRemote(
     val route: RouteRemote?,
     val car: CarRemote,
     val plannedDate: String,
-    val startedDate: String,
+    val startedDate: String?,
     val status: String,
-    val location: LocationRemote,
+    val location: LocationRemote?,
 )
 

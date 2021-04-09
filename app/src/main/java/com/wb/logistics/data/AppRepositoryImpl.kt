@@ -4,6 +4,7 @@ import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.boxinfo.*
+import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.*
 import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
@@ -16,9 +17,9 @@ import com.wb.logistics.network.api.app.response.boxesfromflight.BoxRemote
 import com.wb.logistics.network.api.app.response.boxinfo.BoxInfoRemote
 import com.wb.logistics.network.api.app.response.boxinfo.DstOfficeRemote
 import com.wb.logistics.network.api.app.response.boxinfo.SrcOfficeRemote
-import com.wb.logistics.network.api.app.response.boxtoflight.BoxToFlightRemote
-import com.wb.logistics.network.api.app.response.boxtoflight.CurrentOfficeRemote
 import com.wb.logistics.network.api.app.response.flight.*
+import com.wb.logistics.network.api.app.response.flightboxtobalance.CurrentOfficeRemote
+import com.wb.logistics.network.api.app.response.flightboxtobalance.FlightBoxScannedRemote
 import com.wb.logistics.network.api.app.response.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
@@ -83,18 +84,20 @@ class AppRepositoryImpl(
     }
 
     private fun convertFlight(flightRemote: FlightRemote) = with(flightRemote) {
-        FlightEntity(
-            id = id,
-            gate = gate,
-            dc = convertDc(flightRemote.dc),
-            driver = convertDriver(flightRemote.driver),
-            route = convertRoute(flightRemote.route),
-            car = convertCar(flightRemote.car),
-            plannedDate = plannedDate,
-            startedDate = startedDate,
-            status = status,
-            location = convertLocation(flightRemote.location)
-        )
+        with(flightRemote) {
+            FlightEntity(
+                id = id,
+                gate = gate,
+                dc = convertDc(dc),
+                driver = convertDriver(driver),
+                route = convertRoute(route),
+                car = convertCar(car),
+                plannedDate = plannedDate,
+                startedDate = startedDate ?: "",
+                status = status,
+                location = convertLocation(location)
+            )
+        }
     }
 
     private fun convertOffices(
@@ -140,9 +143,19 @@ class AppRepositoryImpl(
         CarEntity(id = id, plateNumber = plateNumber)
     }
 
-    private fun convertLocation(location: LocationRemote): LocationEntity = with(location) {
-        LocationEntity(office = OfficeLocationEntity(office.id), getFromGPS = getFromGPS)
-    }
+    private fun convertLocation(location: LocationRemote?): LocationEntity =
+        with(location) {
+            if (location == null) {
+                LocationEntity(office = OfficeLocationEntity(0),
+                    getFromGPS = false)
+            } else {
+                LocationEntity(office = convertOfficeLocation(this?.office),
+                    getFromGPS = this?.getFromGPS ?: false)
+            }
+        }
+
+    private fun convertOfficeLocation(officeLocation: OfficeLocationRemote?) =
+        OfficeLocationEntity(officeLocation?.id ?: 0)
 
     override fun boxInfo(barcode: String): Single<SuccessOrEmptyData<BoxInfoEntity>> {
         return remote.boxInfo(barcode)
@@ -192,16 +205,17 @@ class AppRepositoryImpl(
                 latitude = lat)
         }
 
-
     //==============================================================================================
-    override fun boxToFlight(
+    //scanned box remote balance
+    //==============================================================================================
+    override fun flightBoxScannedToBalanceRemote(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
         currentOffice: Int,
     ): Completable {
-        return remote.boxToFlight(flightID,
-            BoxToFlightRemote(barcode, isManualInput, CurrentOfficeRemote(currentOffice)))
+        return remote.flightBoxScannedToBalance(flightID,
+            FlightBoxScannedRemote(barcode, isManualInput, CurrentOfficeRemote(currentOffice)))
     }
 
     override fun deleteFlightBoxScannedRemote(
@@ -217,6 +231,8 @@ class AppRepositoryImpl(
     }
 
     //==============================================================================================
+    //scanned box
+    //==============================================================================================
     override fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
         return local.saveFlightBoxScanned(flightBoxScannedEntity)
     }
@@ -226,7 +242,7 @@ class AppRepositoryImpl(
     }
 
     override fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
-       return local.deleteFlightBoxScanned(flightBoxScannedEntity)
+        return local.deleteFlightBoxScanned(flightBoxScannedEntity)
     }
 
     override fun deleteAllFlightBoxScanned() {
@@ -239,6 +255,21 @@ class AppRepositoryImpl(
 
     override fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>> {
         return local.loadFlightBoxScanned(barcodes)
+    }
+
+    //==============================================================================================
+    //balance await
+    //==============================================================================================
+    override fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable {
+        return local.saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity)
+    }
+
+    override fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>> {
+        return local.observeFlightBoxBalanceAwait()
+    }
+
+    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable {
+        return local.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity)
     }
 
 }

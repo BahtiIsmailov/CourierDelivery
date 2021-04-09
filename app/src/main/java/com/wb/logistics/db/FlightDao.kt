@@ -1,6 +1,7 @@
 package com.wb.logistics.db
 
 import androidx.room.*
+import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -37,5 +38,18 @@ interface FlightDao {
 
     @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode")
     fun findFlightBox(barcode: String): Single<FlightBoxEntity>
+
+
+    //==============================================================================================
+    //баланс отсканированых коробок которые ожидают отправки на сервер
+    //==============================================================================================
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+
+    @Query("SELECT * FROM FlightBoxBalanceAwaitEntity")
+    fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+
+    @Delete
+    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
 
 }
