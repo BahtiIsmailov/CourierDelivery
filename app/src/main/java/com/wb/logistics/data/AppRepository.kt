@@ -7,7 +7,7 @@ import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
-import com.wb.logistics.network.api.app.response.flightstatuses.FlightStatusesRemote
+import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single

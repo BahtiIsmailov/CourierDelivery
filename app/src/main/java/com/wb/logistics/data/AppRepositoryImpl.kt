@@ -11,16 +11,16 @@ import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.network.api.app.RemoteRepository
-import com.wb.logistics.network.api.app.response.boxdeletefromflight.BoxDeleteFromFlightRemote
-import com.wb.logistics.network.api.app.response.boxdeletefromflight.DeleteCurrentOfficeRemote
-import com.wb.logistics.network.api.app.response.boxesfromflight.BoxRemote
-import com.wb.logistics.network.api.app.response.boxinfo.BoxInfoRemote
-import com.wb.logistics.network.api.app.response.boxinfo.DstOfficeRemote
-import com.wb.logistics.network.api.app.response.boxinfo.SrcOfficeRemote
-import com.wb.logistics.network.api.app.response.flight.*
-import com.wb.logistics.network.api.app.response.flightboxtobalance.CurrentOfficeRemote
-import com.wb.logistics.network.api.app.response.flightboxtobalance.FlightBoxScannedRemote
-import com.wb.logistics.network.api.app.response.flightstatuses.FlightStatusesRemote
+import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
+import com.wb.logistics.network.api.app.remote.boxdeletefromflight.DeleteCurrentOfficeRemote
+import com.wb.logistics.network.api.app.remote.boxesfromflight.BoxRemote
+import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoRemote
+import com.wb.logistics.network.api.app.remote.boxinfo.DstOfficeRemote
+import com.wb.logistics.network.api.app.remote.boxinfo.SrcOfficeRemote
+import com.wb.logistics.network.api.app.remote.flight.*
+import com.wb.logistics.network.api.app.remote.flightboxtobalance.CurrentOfficeRemote
+import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScannedRemote
+import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -180,7 +180,7 @@ class AppRepositoryImpl(
             plannedDate = flight.plannedDate,
             isAttached = flight.isAttached)
 
-    private fun BoxInfoRemote.convertBoxEntity(boxRemote: com.wb.logistics.network.api.app.response.boxinfo.BoxRemote): BoxEntity {
+    private fun BoxInfoRemote.convertBoxEntity(boxRemote: com.wb.logistics.network.api.app.remote.boxinfo.BoxRemote): BoxEntity {
         return BoxEntity(
             barcode = box.barcode,
             srcOffice = convertBoxInfoSrcOfficeEntity(boxRemote.srcOffice),
