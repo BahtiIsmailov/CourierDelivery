@@ -65,8 +65,8 @@ class LocalRepositoryImpl(
         }
     }
 
-    override fun removeFlight() {
-        // TODO: 09.04.2021 реализовать
+    override fun deleteAllFlight() {
+        flightDao.deleteAllFlight()
     }
 
     override fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable {
@@ -79,8 +79,8 @@ class LocalRepositoryImpl(
             .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
-    override fun removeFlightBoxes() {
-        // TODO: 09.04.2021 реализовать
+    override fun deleteAllFlightBoxes() {
+        flightDao.deleteAllFlightBoxes()
     }
 
     //==============================================================================================
@@ -92,6 +92,10 @@ class LocalRepositoryImpl(
         return flightDao.findMatchingBox(barcode)
             .map<SuccessOrEmptyData<MatchingBoxEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+    override fun deleteAllMatchingBox() {
+        flightDao.deleteAllMatchingBox()
     }
 
     //==============================================================================================
@@ -115,12 +119,12 @@ class LocalRepositoryImpl(
             .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
-    override fun deleteAllFlightBoxScanned() {
-        boxDao.deleteAllFlightBoxScanned()
-    }
-
     override fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
         return boxDao.deleteFlightBoxScanned(flightBoxScannedEntity)
+    }
+
+    override fun deleteAllFlightBoxScanned() {
+        boxDao.deleteAllFlightBoxScanned()
     }
 
     //==============================================================================================
@@ -141,6 +145,10 @@ class LocalRepositoryImpl(
 
     override fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable {
         return flightDao.deleteFlightBoxBalanceAwait(flightBoxBalanceEntity)
+    }
+
+    override fun deleteAllFlightBoxBalanceAwait() {
+        flightDao.deleteAllFlightBoxBalanceAwait()
     }
 
 }

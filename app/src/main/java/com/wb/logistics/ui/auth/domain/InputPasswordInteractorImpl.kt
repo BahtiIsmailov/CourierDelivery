@@ -1,17 +1,39 @@
 package com.wb.logistics.ui.auth.domain
 
 import com.jakewharton.rxbinding3.InitialValueObservable
+import com.wb.logistics.data.AppRepository
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
+import com.wb.logistics.network.token.UserManager
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 
 class InputPasswordInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val repository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val appRepository: AppRepository,
+    private val userManager: UserManager,
 ) : InputPasswordInteractor {
     override fun authByPassword(phone: String, password: String): Completable {
-        return repository.authByPhoneOrPassword(phone, password, false)
+        return authRepository.authByPhoneOrPassword(phone, password, false)
+            .andThen(checkAndRefreshUser(phone))
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun checkAndRefreshUser(phone: String): Completable {
+        return Single.just(userManager)
+            .filter { userManager.isUserChanged(phone) }
+            .doOnSuccess { it.savePhone(phone) }
+            .flatMapCompletable {
+                Completable.fromCallable {
+                    appRepository.deleteAllFlightData()
+                    appRepository.deleteAllFlightBox()
+                    appRepository.deleteAllMatchingBox()
+                    appRepository.deleteAllFlightBoxScanned()
+                    appRepository.deleteAllFlightBoxBalanceAwait()
+                }
+            }
     }
 
     override fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
@@ -21,7 +43,9 @@ class InputPasswordInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
+
     companion object {
         private const val LENGTH_PASSWORD_MIN = 1
     }
+
 }

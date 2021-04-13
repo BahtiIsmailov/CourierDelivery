@@ -13,7 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 class InputPasswordViewModel(
     private val parameters: InputPasswordParameters,
     compositeDisposable: CompositeDisposable,
-    private val interactor: InputPasswordInteractor
+    private val interactor: InputPasswordInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUI = MutableLiveData<InputPasswordUIState<String>>()
@@ -41,7 +41,8 @@ class InputPasswordViewModel(
 
     private fun fetchAuth(password: String) {
         stateUI.value = AuthProcess
-        addSubscription(interactor.authByPassword(formatPhone(), password)
+        val phone = formatPhone()
+        addSubscription(interactor.authByPassword(phone, password)
             .subscribe(
                 { authComplete() },
                 { authError(it) }

@@ -28,7 +28,7 @@ class AuthRepositoryImpl(
         val auth = authApi.authByPhoneOrPassword(requestBody)
             .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
             .doOnSuccess { saveToken(it) }
-        return Completable.fromSingle(auth).compose(rxSchedulerFactory.applyCompletableSchedulers())
+        return Completable.fromSingle(auth)
     }
 
     override fun refreshToken(): Completable {

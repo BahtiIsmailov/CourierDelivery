@@ -66,8 +66,16 @@ class AppRepositoryImpl(
         return local.readFlightData()
     }
 
+    override fun deleteAllFlightData() {
+        local.deleteAllFlight()
+    }
+
     override fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>> {
         return local.findFlightBox(barcode)
+    }
+
+    override fun deleteAllFlightBox() {
+        local.deleteAllFlightBoxes()
     }
 
     private fun convertBox(boxes: List<BoxRemote>, flightId: Int): List<FlightBoxEntity> {
@@ -199,6 +207,10 @@ class AppRepositoryImpl(
         return local.findMatchBox(barcode)
     }
 
+    override fun deleteAllMatchingBox() {
+        local.deleteAllMatchingBox()
+    }
+
     private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): BoxInfoEntity {
         return with(boxInfoRemote) {
             BoxInfoEntity(
@@ -309,6 +321,10 @@ class AppRepositoryImpl(
 
     override fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable {
         return local.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity)
+    }
+
+    override fun deleteAllFlightBoxBalanceAwait() {
+        local.deleteAllFlightBoxBalanceAwait()
     }
 
 }

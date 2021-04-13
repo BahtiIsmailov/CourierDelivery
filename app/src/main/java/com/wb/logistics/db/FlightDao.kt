@@ -14,6 +14,9 @@ import io.reactivex.Single
 @Dao
 interface FlightDao {
 
+    //==============================================================================================
+    //flight
+    //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlight(flightEntity: FlightEntity): Completable
 
@@ -32,16 +35,25 @@ interface FlightDao {
     fun readFlightData(): Single<FlightDataEntity>
 
     @Delete
-    fun deleteFlight(flightEntity: FlightEntity)
+    fun deleteFlight(flightEntity: FlightEntity): Completable
 
+    @Query("DELETE FROM FlightEntity")
+    fun deleteAllFlight()
 
-
+    //==============================================================================================
+    //boxes attached to flight
+    //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlightBoxes(flightBoxes: List<FlightBoxEntity>): Completable
 
     @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode")
     fun findFlightBox(barcode: String): Single<FlightBoxEntity>
 
+    @Query("DELETE FROM FlightBoxEntity")
+    fun deleteAllFlightBoxes()
+
+    //==============================================================================================
+    //matching boxes
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
@@ -49,8 +61,11 @@ interface FlightDao {
     @Query("SELECT * FROM MatchingBoxEntity WHERE barcode = :barcode")
     fun findMatchingBox(barcode: String): Single<MatchingBoxEntity>
 
+    @Query("DELETE FROM MatchingBoxEntity")
+    fun deleteAllMatchingBox()
+
     //==============================================================================================
-    //баланс отсканированых коробок которые ожидают отправки на сервер
+    //box balance await
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
@@ -63,5 +78,8 @@ interface FlightDao {
 
     @Delete
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+
+    @Query("DELETE FROM FlightBoxBalanceAwaitEntity")
+    fun deleteAllFlightBoxBalanceAwait()
 
 }

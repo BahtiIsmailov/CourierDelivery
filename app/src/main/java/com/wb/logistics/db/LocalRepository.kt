@@ -22,18 +22,21 @@ interface LocalRepository {
 
     fun readFlightData(): Single<SuccessOrEmptyData<FlightData>>
 
-    fun removeFlight()
+    fun deleteAllFlight()
+    //==============================================================================================
 
     fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable
 
     fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
 
-    fun removeFlightBoxes()
+    fun deleteAllFlightBoxes()
 
     //==============================================================================================
     fun saveMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
 
     fun findMatchBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
+
+    fun deleteAllMatchingBox()
 
     //==============================================================================================
     //scanned box
@@ -46,9 +49,9 @@ interface LocalRepository {
 
     fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>>
 
-    fun deleteAllFlightBoxScanned()
-
     fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+
+    fun deleteAllFlightBoxScanned()
 
     //==============================================================================================
     //balance box
@@ -60,5 +63,7 @@ interface LocalRepository {
     fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>>
 
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+
+    fun deleteAllFlightBoxBalanceAwait()
 
 }

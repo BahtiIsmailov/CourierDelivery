@@ -17,6 +17,8 @@ import com.wb.logistics.network.rest.RetrofitAppFactory
 import com.wb.logistics.network.rx.RxHandlingCallAdapterFactory
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.network.token.TokenManagerImpl
+import com.wb.logistics.network.token.UserManager
+import com.wb.logistics.network.token.UserManagerImpl
 import com.wb.logistics.utils.managers.ConfigManager
 import com.wb.logistics.utils.prefs.SharedWorker
 import okhttp3.OkHttpClient
@@ -83,6 +85,12 @@ val networkModule = module {
         return TokenManagerImpl(sharedWorker)
     }
 
+    //==============================================================================================
+    //user manager
+    //==============================================================================================
+    fun provideUserManager(sharedWorker: SharedWorker): UserManager {
+        return UserManagerImpl(sharedWorker)
+    }
     //==============================================================================================
     //header manager
     //==============================================================================================
@@ -199,6 +207,7 @@ val networkModule = module {
     single { provideCertificateStore(get()) }
 
     single { provideTokenManager(get()) }
+    single { provideUserManager(get()) }
 
     single(named(AUTH_NAMED_MANAGER)) { provideAuthHeaderManager() }
     single(named(APP_NAMED_MANAGER)) { provideAppHeaderManager(get(), get(named(APP_NAMED_API))) }

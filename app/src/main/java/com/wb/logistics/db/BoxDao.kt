@@ -24,10 +24,10 @@ interface BoxDao {
     @Query("DELETE FROM FlightBoxScannedEntity WHERE barcode = :barcode")
     fun deleteFlightBoxScanned(barcode: String)
 
-    @Query("DELETE FROM FlightBoxScannedEntity")
-    fun deleteAllFlightBoxScanned()
-
     @Delete
     fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+
+    @Query("DELETE FROM FlightBoxScannedEntity")
+    fun deleteAllFlightBoxScanned()
 
 }
