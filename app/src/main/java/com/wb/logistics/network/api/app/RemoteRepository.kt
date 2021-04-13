@@ -8,6 +8,7 @@ import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScann
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
+import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
@@ -25,6 +26,9 @@ interface RemoteRepository {
 
     @GET("/api/v1/boxes/{barcode}")
     fun boxInfo(@Path("barcode") barcode: String): Single<BoxInfoRemote>
+
+    @GET("/api/v1/flights/{flightID}/matching-boxes")
+    fun matchingBoxes(@Path("flightID") flightID: String): Single<MatchingBoxesRemote>
 
     @POST("/api/v1/flights/{flightID}/boxes")
     fun flightBoxScannedToBalance(

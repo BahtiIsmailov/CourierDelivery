@@ -20,4 +20,5 @@ data class FlightBoxScannedEntity(
     val dstOffice: DstOfficeEntity,
     val smID: Int,
     val isManualInput: Boolean,
+    val dstFullAddress: String,
 )

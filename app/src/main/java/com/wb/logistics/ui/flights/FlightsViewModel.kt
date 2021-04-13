@@ -49,7 +49,7 @@ class FlightsViewModel(
 
     init {
         fetchFlights()
-        observeFlightBoxes()
+        observeFlightBoxesScanned()
         observeFlight()
     }
 
@@ -62,7 +62,7 @@ class FlightsViewModel(
         addSubscription(interactor.flight().subscribe({ }, { flightsError(it) }))
     }
 
-    private fun observeFlightBoxes() {
+    private fun observeFlightBoxesScanned() {
         addSubscription(interactor.observeFlightBoxScanned()
             .subscribe({ observeFlightBoxesComplete(it) },
                 { observeFlightBoxesError(it) }))

@@ -5,6 +5,7 @@ import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -25,9 +26,14 @@ interface LocalRepository {
 
     fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable
 
-    fun findBoxFromFlight(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
+    fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
 
-    fun removeBoxesFromFlight()
+    fun removeFlightBoxes()
+
+    //==============================================================================================
+    fun saveMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
+
+    fun findMatchBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
 
     //==============================================================================================
     //scanned box
@@ -50,6 +56,8 @@ interface LocalRepository {
     fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
 
     fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+
+    fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>>
 
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
 

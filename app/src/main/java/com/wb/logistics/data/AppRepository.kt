@@ -7,6 +7,7 @@ import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -18,18 +19,29 @@ interface AppRepository {
 
     fun updateFlight(): Completable
 
-    fun updateFlightBox(flightId: Int): Completable
-
     fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
 
     fun readFlight(): Single<SuccessOrEmptyData<FlightEntity>>
 
     fun readFlightData(): Single<SuccessOrEmptyData<FlightData>>
 
+    //==============================================================================================
+
+    fun updateFlightBoxes(flightId: Int): Completable
+
     fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
+
+    //==============================================================================================
 
     fun boxInfo(barcode: String): Single<SuccessOrEmptyData<BoxInfoEntity>>
 
+    //==============================================================================================
+
+    fun updateMatchingBoxes(flightId: String): Completable
+
+    fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
+
+//    fun loadMatchingBox(barcodes: List<String>): Single<List<MatchingBoxEntity>>
     //==============================================================================================
 
     fun flightBoxScannedToBalanceRemote(
@@ -66,6 +78,8 @@ interface AppRepository {
     fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable
 
     fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+
+    fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>>
 
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable
 

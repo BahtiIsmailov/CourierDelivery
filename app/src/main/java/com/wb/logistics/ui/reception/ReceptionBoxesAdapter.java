@@ -17,7 +17,7 @@ import java.util.List;
 public class ReceptionBoxesAdapter extends ArrayAdapter<String> {
 
     @NonNull
-    private final List<ReceptionBoxItem> items;
+    private final List<ReceptionBoxesItem> items;
     @NonNull
     private final OnItemClickCallBack onItemClickCallBack;
 
@@ -28,7 +28,7 @@ public class ReceptionBoxesAdapter extends ArrayAdapter<String> {
     }
 
     public ReceptionBoxesAdapter(@NonNull Context context,
-                                 @NonNull List<ReceptionBoxItem> items,
+                                 @NonNull List<ReceptionBoxesItem> items,
                                  @NonNull OnItemClickCallBack onItemClickCallBack) {
         super(context, R.layout.reception_boxes_item_layout);
         this.items = items;
@@ -46,7 +46,7 @@ public class ReceptionBoxesAdapter extends ArrayAdapter<String> {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        ReceptionBoxItem item = items.get(position);
+        ReceptionBoxesItem item = items.get(position);
         holder.binding.number.setText(item.getNumber());
         holder.binding.box.setText(item.getBarcode());
         holder.binding.address.setText(item.getAddress());

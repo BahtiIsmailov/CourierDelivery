@@ -25,7 +25,7 @@
         android:id="@+id/receptionFragment"
         android:name="com.wb.logistics.ui.reception.ReceptionFragment"
         android:label="@string/reception_label"
-        tools:layout="@layout/reception_fragment">
+        tools:layout="@layout/reception_scan_fragment">
         <action
             android:id="@+id/action_receptionFragment_to_receptionBoxNotBelongFragment"
             app:destination="@id/receptionBoxNotBelongFragment"

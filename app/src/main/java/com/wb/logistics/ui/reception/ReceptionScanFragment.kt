@@ -22,10 +22,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.zxing.Result
 import com.wb.logistics.R
-import com.wb.logistics.databinding.ReceptionFragmentBinding
+import com.wb.logistics.databinding.ReceptionScanFragmentBinding
 import com.wb.logistics.ui.reception.ReceptionHandleFragment.Companion.HANDLE_INPUT_RESULT
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.views.ProgressImageButtonMode
@@ -40,9 +41,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
-    private val viewModel by viewModel<ReceptionViewModel>()
+    private val viewModel by viewModel<ReceptionScanViewModel>()
 
-    private var _binding: ReceptionFragmentBinding? = null
+    private var _binding: ReceptionScanFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var scannerView: ZXingScannerView
 
@@ -50,7 +51,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = ReceptionFragmentBinding.inflate(inflater, container, false)
+        _binding = ReceptionScanFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -60,20 +61,6 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         initScanner()
         initListener()
         initObserver()
-    }
-
-    private fun showToast(message: String) {
-        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
-        val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.reception_added_box_toast, container) as ViewGroup
-        val text: TextView = layout.findViewById(R.id.text)
-        text.text = message
-        with(Toast(context)) {
-            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
-        }
     }
 
     private fun initPermission() {
@@ -100,9 +87,9 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun initObserver() {
-        viewModel.stateUI.observe(viewLifecycleOwner) { state ->
+        val eventObserver = Observer<ReceptionScanNavigationEvent> { state ->
             when (state) {
-                is ReceptionUIState.NavigateToReceptionBoxNotBelong -> {
+                is ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong -> {
                     findNavController().navigate(
                         ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
                             ReceptionBoxNotBelongParameters(
@@ -113,48 +100,62 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
                         )
                     )
                 }
-                ReceptionUIState.Empty -> {
-                }
-                ReceptionUIState.NavigateToBoxes -> findNavController().navigate(
+                ReceptionScanNavigationEvent.NavigateToBoxes -> findNavController().navigate(
                     ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxesFragment())
             }
         }
 
-        viewModel.navigationStateUI.observe(viewLifecycleOwner) { state ->
+        viewModel.navigationEvent.observe(viewLifecycleOwner, eventObserver)
+
+        viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ReceptionScanToastState.BoxAdded -> showToastBoxAdded(state.message)
+                is ReceptionScanToastState.BoxHasBeenAdded -> showToastBoxHasBeenAdded(state.message)
+            }
+        }
+
+        viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ReceptionScanBeepState.BoxAdded -> {
+                }
+                is ReceptionScanBeepState.BoxSkipAdded -> beepSkip()
+            }
+        }
+
+        viewModel.bottomNavigationEvent.observe(viewLifecycleOwner) { state ->
             binding.completeButton.setState(
                 if (state) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
         }
 
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is ReceptionBoxUIState.BoxComplete -> {
-                    showToast(state.toastBox)
+                is ReceptionScanBoxUIState.BoxAdded -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_COMPLETE)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_COMPLETE)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
-                is ReceptionBoxUIState.BoxDeny -> {
+                is ReceptionScanBoxUIState.BoxDeny -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_DENY)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_DENY)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.RETURN)
                 }
-                ReceptionBoxUIState.Empty -> {
+                ReceptionScanBoxUIState.Empty -> {
                     binding.received.setState(ReceptionAcceptedMode.EMPTY)
                     binding.parking.setParkingNumber(ReceptionParkingMode.EMPTY)
                     binding.info.setCodeBox(ReceptionInfoMode.EMPTY)
                 }
-                is ReceptionBoxUIState.BoxHasBeenAdded -> {
+                is ReceptionScanBoxUIState.BoxHasBeenAdded -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_HAS_ADDED)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_COMPLETE)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
-                is ReceptionBoxUIState.BoxInit -> {
+                is ReceptionScanBoxUIState.BoxInit -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_COMPLETE)
                     binding.parking.setParkingNumber(state.gate,
@@ -165,11 +166,39 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
+    private fun showToastBoxAdded(message: String) {
+        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
+        val layout: ViewGroup =
+            layoutInflater.inflate(R.layout.reception_added_box_toast, container) as ViewGroup
+        val text: TextView = layout.findViewById(R.id.text)
+        text.text = message
+        with(Toast(context)) {
+            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
+            duration = Toast.LENGTH_LONG
+            view = layout
+            show()
+        }
+    }
+
+    private fun showToastBoxHasBeenAdded(message: String) {
+        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
+        val layout: ViewGroup =
+            layoutInflater.inflate(R.layout.reception_has_been_added_box_toast,
+                container) as ViewGroup
+        val text: TextView = layout.findViewById(R.id.text)
+        text.text = message
+        with(Toast(context)) {
+            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
+            duration = Toast.LENGTH_LONG
+            view = layout
+            show()
+        }
+    }
+
     private fun initListener() {
         binding.manualInputButton.setOnClickListener {
-            val receptionHandleFragment = ReceptionHandleFragment.newInstance()
-            receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
-            receptionHandleFragment.show(parentFragmentManager, "add_reception_handle_fragment")
+            stoopScanner()
+            showHandleInput()
         }
 
         binding.received.setOnClickListener {
@@ -177,8 +206,17 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
+    private fun showHandleInput() {
+        val receptionHandleFragment = ReceptionHandleFragment.newInstance()
+        receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
+        receptionHandleFragment.show(parentFragmentManager, "add_reception_handle_fragment")
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        startScanner()
+
         if (resultCode == RESULT_OK)
             resultScannerCardNumber(requestCode, data)
     }
@@ -203,25 +241,38 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         val code = rawResult?.text ?: return
         viewModel.onBoxScanned(code)
         LogUtils { logDebugApp("Cod $code") }
-        beep()
+        beepComplete()
         val handler = Handler()
         handler.postDelayed({ scannerView.resumeCameraPreview(this) },
             2000)
     }
 
-    private fun beep() {
+    private fun beepComplete() {
         val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
     }
 
+    private fun beepSkip() {
+        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+        toneGenerator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
+    }
+
     override fun onStart() {
         super.onStart()
+        startScanner()
+    }
+
+    private fun startScanner() {
         scannerView.setResultHandler(this)
         scannerView.startCamera()
     }
 
     override fun onStop() {
         super.onStop()
+        stoopScanner()
+    }
+
+    private fun stoopScanner() {
         scannerView.stopCamera()
     }
 
@@ -232,7 +283,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
 
     private class CustomViewFinderView : ViewFinderView {
-        val PAINT = Paint()
+        val paint = Paint()
 
         constructor(context: Context?) : super(context) {
             init()
@@ -243,11 +294,11 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
 
         private fun init() {
-            PAINT.color = Color.WHITE
-            PAINT.isAntiAlias = true
+            paint.color = Color.WHITE
+            paint.isAntiAlias = true
             val textPixelSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 TRADE_MARK_TEXT_SIZE_SP.toFloat(), resources.displayMetrics)
-            PAINT.textSize = textPixelSize
+            paint.textSize = textPixelSize
 //            setSquareViewFinder(true)
         }
 
@@ -261,13 +312,13 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
             val tradeMarkTop: Float
             val tradeMarkLeft: Float
             if (framingRect != null) {
-                tradeMarkTop = framingRect.bottom + PAINT.textSize + 10
+                tradeMarkTop = framingRect.bottom + paint.textSize + 10
                 tradeMarkLeft = framingRect.left.toFloat()
             } else {
                 tradeMarkTop = 10f
-                tradeMarkLeft = canvas.height - PAINT.textSize - 10
+                tradeMarkLeft = canvas.height - paint.textSize - 10
             }
-            canvas.drawText(TRADE_MARK_TEXT, tradeMarkLeft, tradeMarkTop, PAINT)
+            canvas.drawText(TRADE_MARK_TEXT, tradeMarkLeft, tradeMarkTop, paint)
         }
 
         companion object {

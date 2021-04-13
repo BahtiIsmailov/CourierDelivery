@@ -6,6 +6,7 @@ import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -33,12 +34,20 @@ interface FlightDao {
     @Delete
     fun deleteFlight(flightEntity: FlightEntity)
 
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlightBoxes(flightBoxes: List<FlightBoxEntity>): Completable
 
     @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode")
     fun findFlightBox(barcode: String): Single<FlightBoxEntity>
 
+    //==============================================================================================
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
+
+    @Query("SELECT * FROM MatchingBoxEntity WHERE barcode = :barcode")
+    fun findMatchingBox(barcode: String): Single<MatchingBoxEntity>
 
     //==============================================================================================
     //баланс отсканированых коробок которые ожидают отправки на сервер
@@ -48,6 +57,9 @@ interface FlightDao {
 
     @Query("SELECT * FROM FlightBoxBalanceAwaitEntity")
     fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+
+    @Query("SELECT * FROM FlightBoxBalanceAwaitEntity")
+    fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>>
 
     @Delete
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable

@@ -10,6 +10,9 @@ import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
+import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
+import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.RemoteRepository
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.DeleteCurrentOfficeRemote
@@ -44,7 +47,7 @@ class AppRepositoryImpl(
             }
     }
 
-    override fun updateFlightBox(flightId: Int): Completable {
+    override fun updateFlightBoxes(flightId: Int): Completable {
         return remote.boxesFromFlight(flightId.toString())
             .map { it.data }
             .map { convertBox(it, flightId) }
@@ -64,7 +67,7 @@ class AppRepositoryImpl(
     }
 
     override fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>> {
-        return local.findBoxFromFlight(barcode)
+        return local.findFlightBox(barcode)
     }
 
     private fun convertBox(boxes: List<BoxRemote>, flightId: Int): List<FlightBoxEntity> {
@@ -162,6 +165,38 @@ class AppRepositoryImpl(
             .map { covertBoxInfoToFlight(it) }
             .map<SuccessOrEmptyData<BoxInfoEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+    override fun updateMatchingBoxes(flightId: String): Completable {
+        return remote.matchingBoxes(flightId)
+            .map {
+                val matchingBoxesEntity = mutableListOf<MatchingBoxEntity>()
+                it.data.forEach { box ->
+                    matchingBoxesEntity.add(with(box) {
+                        MatchingBoxEntity(
+                            barcode = barcode,
+                            srcOffice = MatchingSrcOfficeEntity(
+                                id = srcOffice.id,
+                                name = srcOffice.name,
+                                fullAddress = srcOffice.fullAddress,
+                                longitude = srcOffice.long,
+                                latitude = srcOffice.lat),
+                            dstOffice = MatchingDstOfficeEntity(
+                                id = dstOffice.id,
+                                name = dstOffice.name,
+                                fullAddress = dstOffice.fullAddress,
+                                longitude = dstOffice.long,
+                                latitude = dstOffice.lat),
+                            smID = smID)
+                    })
+                }
+                matchingBoxesEntity
+            }
+            .flatMapCompletable { local.saveMatchingBoxes(it) }
+    }
+
+    override fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>> {
+        return local.findMatchBox(barcode)
     }
 
     private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): BoxInfoEntity {
@@ -266,6 +301,10 @@ class AppRepositoryImpl(
 
     override fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>> {
         return local.observeFlightBoxBalanceAwait()
+    }
+
+    override fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>> {
+        return local.flightBoxBalanceAwait()
     }
 
     override fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: FlightBoxBalanceAwaitEntity): Completable {

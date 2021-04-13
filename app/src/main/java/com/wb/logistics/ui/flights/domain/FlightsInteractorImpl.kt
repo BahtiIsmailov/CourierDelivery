@@ -16,26 +16,26 @@ class FlightsInteractorImpl(
     private val appRepository: AppRepository,
 ) : FlightsInteractor {
 
-    private var updateFlight = BehaviorSubject.create<Boolean>()
+    private var updateFlightAndBoxes = BehaviorSubject.create<Boolean>()
 
     override fun updateFlight() {
-        updateFlight.onNext(true)
+        updateFlightAndBoxes.onNext(true)
     }
 
     override fun flight(): Completable {
         // TODO: 07.04.2021 включить после отладки
 //        return Observable.merge(networkMonitor(), updateFlight)
-        return updateFlight
+        return updateFlightAndBoxes
             .filter { it }
-            .switchMapCompletable { updateFlightAndBox() }
+            .switchMapCompletable { updateFlightAndBoxes() }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun updateFlightAndBox(): Completable {
+    private fun updateFlightAndBoxes(): Completable {
         return appRepository.updateFlight()
             .andThen(appRepository.readFlightData())
             .flatMapCompletable {
-                if (it is SuccessOrEmptyData.Success) appRepository.updateFlightBox(it.data.flight)
+                if (it is SuccessOrEmptyData.Success) appRepository.updateMatchingBoxes(it.data.flight.toString())
                 else Completable.complete()
             }
     }

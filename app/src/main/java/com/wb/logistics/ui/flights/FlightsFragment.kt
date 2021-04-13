@@ -90,7 +90,6 @@ class FlightsFragment : Fragment() {
             when (state) {
                 is FlightsUIListState.ShowFlight -> {
                     displayItems(state.items)
-                    visibleStartAddingBoxes()
                     showFlight(state.countFlight)
                 }
                 is FlightsUIListState.ProgressFlight -> {
@@ -189,11 +188,6 @@ class FlightsFragment : Fragment() {
             addDelegate(FlightsProgressDelegate(requireContext()))
         }
         binding.recyclerView.adapter = adapter
-    }
-
-    private fun visibleStartAddingBoxes() {
-        binding.scanBoxes.visibility = View.VISIBLE
-        binding.returnGroup.visibility = View.VISIBLE
     }
 
     private fun goneStartAddingBoxes() {

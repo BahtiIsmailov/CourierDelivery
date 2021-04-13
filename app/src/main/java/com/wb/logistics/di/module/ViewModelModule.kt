@@ -54,7 +54,7 @@ val viewModelModule = module {
     }
     viewModel { NavigationViewModel(get(), get(), get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get(), get()) }
-    viewModel { ReceptionViewModel(get(), get(), get()) }
+    viewModel { ReceptionScanViewModel(get(), get(), get()) }
     viewModel { ReceptionHandleModel(get(), get()) }
 
     viewModel { ReceptionBoxesViewModel(get(), get()) }

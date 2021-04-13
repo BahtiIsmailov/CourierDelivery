@@ -26,7 +26,7 @@ class ReceptionBoxesViewModel(
     val enableRemove: LiveData<Boolean>
         get() = _enableRemove
 
-    private var copyReceptionBoxes = mutableListOf<ReceptionBoxItem>()
+    private var copyReceptionBoxes = mutableListOf<ReceptionBoxesItem>()
 
     init {
         addSubscription(receptionInteractor.observeFlightBoxes()
@@ -43,16 +43,16 @@ class ReceptionBoxesViewModel(
             .toObservable()
 
     private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxScannedEntity> ->
-        ReceptionBoxItem(singleIncrement(index), item.barcode, "", false)
+        ReceptionBoxesItem(singleIncrement(index), item.barcode, item.dstFullAddress, false)
     }
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }
 
-    private fun copyConvertBoxes(boxes: List<ReceptionBoxItem>) {
+    private fun copyConvertBoxes(boxes: List<ReceptionBoxesItem>) {
         copyReceptionBoxes = boxes.toMutableList()
     }
 
-    private fun changeBoxesComplete(boxes: List<ReceptionBoxItem>) {
+    private fun changeBoxesComplete(boxes: List<ReceptionBoxesItem>) {
         if (boxes.isEmpty()) {
             _boxes.value = ReceptionBoxesUIState.Empty
         } else {
@@ -72,7 +72,10 @@ class ReceptionBoxesViewModel(
             .subscribe({
                 _boxes.value = ReceptionBoxesUIState.ProgressComplete
                 _navigateToBack.value = NavigateToBack
-            }, { _boxes.value = ReceptionBoxesUIState.ProgressComplete }))
+            }, {
+                _boxes.value = ReceptionBoxesUIState.ProgressComplete
+                changeDisableAllCheckedBox()
+            }))
     }
 
     fun onItemClick(index: Int, checked: Boolean) {
@@ -89,6 +92,14 @@ class ReceptionBoxesViewModel(
             }
         }
         _enableRemove.value = activeRemove
+    }
+
+    private fun changeDisableAllCheckedBox() {
+        copyReceptionBoxes.forEachIndexed { index, _ ->
+            val copyReception = copyReceptionBoxes[index].copy(isChecked = false)
+            copyReceptionBoxes[index] = copyReception
+        }
+        _boxes.value = ReceptionBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
     }
 
     private fun changeCheckedBox(index: Int, checked: Boolean) {
