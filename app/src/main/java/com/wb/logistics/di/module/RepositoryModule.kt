@@ -33,7 +33,7 @@ val deliveryRepositoryModule = module {
         remoteRepository: RemoteRepository,
         localRepository: LocalRepository,
     ): AppRepository {
-        return AppRepositoryImpl(remoteRepository, localRepository)
+        return AppRepositoryImpl(remoteRepository, localRepository) //, tokenManager
     }
 
     fun provideLocalRepository(
@@ -53,7 +53,7 @@ val deliveryRepositoryModule = module {
 
     single { provideAuthRepository(get(), get(), get()) }
     single { provideLocalRepository(get(), get()) }
-    single { provideAppRepository(get(), get()) }
+    single { provideAppRepository(get(), get()) } //, get()
     single { provideReceptionRepository(get(), get()) }
     single { provideNetworkMonitorRepository() }
 

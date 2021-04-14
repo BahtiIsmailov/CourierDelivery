@@ -49,8 +49,10 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     @NotNull
     @Override
     public Single<?> apply(@NonNull Single<?> call) {
-        return call.onErrorResumeNext(throwable ->
-                Single.error(convertException(throwable))
+        return call.onErrorResumeNext(throwable -> {
+            return Single.error(convertException(throwable));
+                }
+
         );
     }
 

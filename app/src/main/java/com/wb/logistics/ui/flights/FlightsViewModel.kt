@@ -13,6 +13,7 @@ class FlightsViewModel(
     private val resourceProvider: FlightResourceProvider,
     private val interactor: FlightsInteractor,
     private val dataBuilder: FlightsDataBuilder,
+    //private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUINav = MutableLiveData<FlightsUINavState>()

@@ -24,36 +24,22 @@ val viewModelModule = module {
 
     single { provideFlightsDataBuilder(get(), get()) }
 
-
     viewModel { NumberPhoneViewModel(get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
     viewModel { (parameters: TemporaryPasswordParameters) ->
-        TemporaryPasswordViewModel(
-            parameters,
-            get(),
-            get(),
-            get()
-        )
+        TemporaryPasswordViewModel(parameters, get(), get(), get())
     }
     viewModel { (parameters: InputPasswordParameters) ->
-        InputPasswordViewModel(
-            parameters,
-            get(),
-            get()
-        )
+        InputPasswordViewModel(parameters, get(), get())
     }
     viewModel { (parameters: CreatePasswordParameters) ->
-        CreatePasswordViewModel(
-            parameters,
-            get(),
-            get()
-        )
+        CreatePasswordViewModel(parameters, get(), get())
     }
     viewModel { (parameters: ReceptionBoxNotBelongParameters) ->
         ReceptionBoxNotBelongModel(parameters)
     }
     viewModel { NavigationViewModel(get(), get(), get(), get()) }
-    viewModel { FlightsViewModel(get(), get(), get(), get()) }
+    viewModel { FlightsViewModel(get(), get(), get(), get()) } //, get()
     viewModel { ReceptionScanViewModel(get(), get(), get()) }
     viewModel { ReceptionHandleModel(get(), get()) }
 

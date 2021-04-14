@@ -91,6 +91,7 @@ val networkModule = module {
     fun provideUserManager(sharedWorker: SharedWorker): UserManager {
         return UserManagerImpl(sharedWorker)
     }
+
     //==============================================================================================
     //header manager
     //==============================================================================================
@@ -114,6 +115,13 @@ val networkModule = module {
     //==============================================================================================
     fun provideLoggerInterceptor(): HttpLoggingInterceptor {
         return InterceptorFactory.createHttpLoggingInterceptor()
+    }
+
+    fun provideMockResponseInterceptor(
+        headerManager: HeaderManager,
+        tokenManager: TokenManager,
+    ): MockResponseInterceptor {
+        return InterceptorFactory.createMockResponseInterceptor(headerManager, tokenManager)
     }
 
     fun provideAuthHeaderInterceptor(headerManager: HeaderManager): HeaderRequestInterceptor {
@@ -215,6 +223,7 @@ val networkModule = module {
     single { provideNullOnEmptyConverterFactory() }
 
     single { provideLoggerInterceptor() }
+    single { provideMockResponseInterceptor(get(), get()) }
     single(named(AUTH_NAMED_INTERCEPTOR)) {
         provideAuthHeaderInterceptor(
             get(
@@ -235,6 +244,7 @@ val networkModule = module {
     }
     single(named(APP_NAMED_CLIENT)) {
         provideAppOkHttpClient(
+            get(),
             get(),
             get(named(APP_NAMED_INTERCEPTOR)),
             get()

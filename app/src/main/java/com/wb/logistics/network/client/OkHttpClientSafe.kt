@@ -3,6 +3,7 @@ package com.wb.logistics.network.client
 import com.wb.logistics.app.AppConfig
 import com.wb.logistics.network.certificate.CertificateStore
 import com.wb.logistics.network.headers.HeaderRequestInterceptor
+import com.wb.logistics.network.headers.MockResponseInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
