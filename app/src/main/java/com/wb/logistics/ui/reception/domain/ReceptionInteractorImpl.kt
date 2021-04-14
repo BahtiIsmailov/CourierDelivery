@@ -1,6 +1,5 @@
 package com.wb.logistics.ui.reception.domain
 
-import com.wb.logistics.data.AppRepository
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.boxtoflight.CurrentOfficeEntity
 import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
@@ -9,6 +8,7 @@ import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable

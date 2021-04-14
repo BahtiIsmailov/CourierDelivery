@@ -1,21 +1,17 @@
-package com.wb.logistics.ui.flights.token
+package com.wb.logistics.network.headers
 
 import com.wb.logistics.network.api.auth.query.RefreshTokenQuery
 import com.wb.logistics.network.api.auth.response.RefreshResponse
-import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.PUT
 
-interface RefreshRepository {
-
-    @PUT("/api/v1/auth")
-    fun refreshToken(
-        @Body refreshTokenQuery: RefreshTokenQuery
-    ): Single<RefreshResponse>
+interface RefreshTokenApi {
 
     @PUT("/api/v1/auth")
     fun refreshAccessTokens(
+        @Header("Authorization") credentials: String,
         @Body refreshTokenQuery: RefreshTokenQuery
     ): Call<RefreshResponse>
 

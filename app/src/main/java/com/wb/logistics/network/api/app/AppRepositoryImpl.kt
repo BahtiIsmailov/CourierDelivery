@@ -1,4 +1,4 @@
-package com.wb.logistics.data
+package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.LocalRepository
@@ -29,7 +29,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 class AppRepositoryImpl(
-    private val remote: RemoteRepository,
+    private val remote: RemoteAppRepository,
     private val local: LocalRepository,
 ) : AppRepository {
 

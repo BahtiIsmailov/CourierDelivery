@@ -1,9 +1,9 @@
 package com.wb.logistics.ui.flights.domain
 
-import com.wb.logistics.data.AppRepository
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Completable
@@ -18,18 +18,19 @@ class FlightsInteractorImpl(
 
     private var updateFlightAndBoxes = BehaviorSubject.create<Boolean>()
 
-    override fun updateFlight() {
-        updateFlightAndBoxes.onNext(true)
+    override fun updateFlight(): Completable {
+        //updateFlightAndBoxes.onNext(true)
+        return updateFlightAndBoxes()
     }
 
-    override fun flight(): Completable {
-        // TODO: 07.04.2021 включить после отладки
-//        return Observable.merge(networkMonitor(), updateFlight)
-        return updateFlightAndBoxes
-            .filter { it }
-            .switchMapCompletable { updateFlightAndBoxes() }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
+    // TODO: 07.04.2021 включить после отладки
+//    override fun flight(): Completable {
+////        return Observable.merge(networkMonitor(), updateFlight)
+//        return updateFlightAndBoxes
+//            .filter { it }
+//            .switchMapCompletable { updateFlightAndBoxes() }
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+//    }
 
     private fun updateFlightAndBoxes(): Completable {
         return appRepository.updateFlight()
@@ -38,6 +39,7 @@ class FlightsInteractorImpl(
                 if (it is SuccessOrEmptyData.Success) appRepository.updateMatchingBoxes(it.data.flight.toString())
                 else Completable.complete()
             }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     override fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>> {

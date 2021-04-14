@@ -11,7 +11,12 @@ object InterceptorFactory {
             .setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE)
     }
 
-    fun createHeaderRequestInterceptor(headerManager: HeaderManager): HeaderRequestInterceptor {
-        return HeaderRequestInterceptor(headerManager)
+    fun createRefreshTokenInterceptor(
+        refreshTokenRepository: RefreshTokenRepository,
+        headerManager: HeaderManager,
+        tokenManager: TokenManager,
+    ): RefreshTokenInterceptor {
+        return RefreshTokenInterceptor(refreshTokenRepository, headerManager, tokenManager)
     }
+
 }

@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 import javax.net.ssl.SSLException;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Unit;
@@ -28,14 +29,10 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
     @NonNull
     private final ErrorResolutionResourceProvider resourceProvider;
-//    @NonNull
-//    private final AuthRepository authRepository;
 
 
-    public ErrorResolutionStrategyImpl(@NonNull ErrorResolutionResourceProvider resourceProvider
-    ) { //@NonNull AuthRepository authRepository
+    public ErrorResolutionStrategyImpl(@NonNull ErrorResolutionResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
-        // this.authRepository = authRepository;
     }
 
     @NotNull
@@ -49,24 +46,32 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     @NotNull
     @Override
     public Single<?> apply(@NonNull Single<?> call) {
-        return call.onErrorResumeNext(throwable -> {
-            return Single.error(convertException(throwable));
-                }
-
-        );
+        return call.retryWhen(this::retryWhenUnauthorized);
     }
 
     @NotNull
     @Override
     public Completable apply(@NonNull Completable call) {
-        return call.onErrorResumeNext(throwable ->
-                Completable.error(convertException(throwable))
-        );
+        return call.retryWhen(this::retryWhenUnauthorized);
+    }
+
+    private Flowable<Completable> retryWhenUnauthorized(Flowable<Throwable> throwableFlowable) {
+        return throwableFlowable.flatMap(throwable -> {
+            if (throwable instanceof HttpException) {
+                int code = ((HttpException) throwable).code();
+                if (code == AppConsts.SERVICE_CODE_UNAUTHORIZED) {
+                    return Flowable.just(Completable.complete());
+                } else {
+                    return Flowable.error(convertException(throwable));
+                }
+            }
+            return Flowable.error(convertException(throwable));
+        }).take(1);
     }
 
     private Throwable convertException(@NonNull Throwable throwable) {
         new LogUtils(logUtils -> {
-            logUtils.logDebugApp(throwable.toString());
+            logUtils.logDebugApp("Throwable convertException " + throwable.toString());
             return Unit.INSTANCE;
         });
         if (throwable instanceof UnknownHostException) {

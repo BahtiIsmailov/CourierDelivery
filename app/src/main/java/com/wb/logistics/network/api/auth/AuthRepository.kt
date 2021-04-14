@@ -14,8 +14,6 @@ interface AuthRepository {
         useSMS: Boolean
     ): Completable
 
-    fun refreshToken(): Completable
-
     fun checkExistPhone(phone: String): Single<CheckExistPhoneResponse>
 
     fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse>

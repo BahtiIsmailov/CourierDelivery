@@ -5,7 +5,6 @@ import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
-import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightsViewModel(
@@ -13,7 +12,6 @@ class FlightsViewModel(
     private val resourceProvider: FlightResourceProvider,
     private val interactor: FlightsInteractor,
     private val dataBuilder: FlightsDataBuilder,
-    //private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUINav = MutableLiveData<FlightsUINavState>()
@@ -48,8 +46,11 @@ class FlightsViewModel(
         // TODO: 09.04.2021 реализовать
     }
 
-    init {
+    fun update() {
         fetchFlights()
+    }
+
+    init {
         observeFlightBoxesScanned()
         observeFlight()
     }
@@ -59,8 +60,7 @@ class FlightsViewModel(
             listOf(dataBuilder.buildProgressItem()),
             zeroFlight()
         )
-        interactor.updateFlight()
-        addSubscription(interactor.flight().subscribe({ }, { flightsError(it) }))
+        addSubscription(interactor.updateFlight().subscribe({ }, { flightsError(it) }))
     }
 
     private fun observeFlightBoxesScanned() {
@@ -92,7 +92,6 @@ class FlightsViewModel(
     }
 
     private fun observeFlightBoxesError(error: Throwable) {
-        LogUtils { logDebugApp(error.toString()) }
     }
 
     private fun flightsComplete(flight: FlightsUIListState) {
@@ -100,7 +99,6 @@ class FlightsViewModel(
     }
 
     private fun flightsError(throwable: Throwable) {
-        LogUtils { logDebugApp(throwable.toString()) }
         stateUIList.value = when (throwable) {
             is UnauthorizedException -> FlightsUIListState.UpdateFlight(
                 listOf(dataBuilder.buildErrorMessageItem(throwable.message)),

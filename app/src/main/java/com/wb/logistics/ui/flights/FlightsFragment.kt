@@ -59,6 +59,7 @@ class FlightsFragment : Fragment() {
         initAdapter()
         initListener()
         initStateObserve()
+        viewModel.update()
     }
 
     private fun initListener() {

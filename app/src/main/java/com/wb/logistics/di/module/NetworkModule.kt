@@ -13,7 +13,8 @@ import com.wb.logistics.network.exceptions.ErrorResolutionResourceProviderImpl
 import com.wb.logistics.network.exceptions.ErrorResolutionStrategy
 import com.wb.logistics.network.exceptions.ErrorResolutionStrategyImpl
 import com.wb.logistics.network.headers.*
-import com.wb.logistics.network.rest.RetrofitAppFactory
+import com.wb.logistics.network.rest.RefreshTokenRetrofitFactory
+import com.wb.logistics.network.rest.RetrofitFactory
 import com.wb.logistics.network.rx.RxHandlingCallAdapterFactory
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.network.token.TokenManagerImpl
@@ -29,16 +30,17 @@ import retrofit2.CallAdapter
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URI
 
-const val AUTH_NAMED_API = "auth_named_api"
-const val APP_NAMED_API = "app_named_api"
-const val AUTH_NAMED_MANAGER = "auth_named_manager"
-const val APP_NAMED_MANAGER = "app_named_manager"
-const val AUTH_NAMED_INTERCEPTOR = "auth_named_interceptor"
-const val APP_NAMED_INTERCEPTOR = "app_named_interceptor"
+const val AUTH_NAMED_HOST = "auth_named_host"
+const val APP_NAMED_HOST = "app_named_host"
+const val AUTH_NAMED_HEADER_MANAGER = "auth_named_header_manager"
+const val REFRESH_TOKEN_NAMED_HEADER_MANAGER = "refresh_token_named_header_manager"
+const val APP_NAMED_HEADER_MANAGER = "app_named_header_manager"
 const val AUTH_NAMED_RETROFIT = "auth_named_retrofit"
+const val REFRESH_TOKEN_NAMED_RETROFIT = "refresh_token_named_retrofit"
 const val APP_NAMED_RETROFIT = "app_named_retrofit"
-const val AUTH_NAMED_CLIENT = "auth_named_client"
-const val APP_NAMED_CLIENT = "app_named_client"
+const val AUTH_NAMED_HTTP_CLIENT = "auth_named_client"
+const val REFRESH_TOKEN_NAMED_HTTP_CLIENT = "refresh_token_named_client"
+const val APP_NAMED_HTTP_CLIENT = "app_named_client"
 
 val networkModule = module {
 
@@ -62,9 +64,8 @@ val networkModule = module {
 
     fun provideErrorResolutionStrategy(
         resourceProvider: ErrorResolutionResourceProvider,
-        //authRepository: AuthRepository
     ): ErrorResolutionStrategy {
-        return ErrorResolutionStrategyImpl(resourceProvider) //, authRepository
+        return ErrorResolutionStrategyImpl(resourceProvider)
     }
 
     fun provideCallAdapterFactory(errorResolutionStrategy: ErrorResolutionStrategy): CallAdapter.Factory {
@@ -99,8 +100,12 @@ val networkModule = module {
         return AuthHeaderManagerImpl()
     }
 
+    fun provideRefreshTokenHeaderManager(tokenManager: TokenManager): HeaderManager {
+        return RefreshTokenHeaderManagerImpl(tokenManager)
+    }
+
     fun provideAppHeaderManager(tokenManager: TokenManager, host: String): HeaderManager {
-        return AppHeaderManagerImpl(tokenManager.bearerToken(), URI(host).host)
+        return AppHeaderManagerImpl(tokenManager, URI(host).host)
     }
 
     //==============================================================================================
@@ -113,23 +118,18 @@ val networkModule = module {
     //==============================================================================================
     // interceptors
     //==============================================================================================
-    fun provideLoggerInterceptor(): HttpLoggingInterceptor {
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return InterceptorFactory.createHttpLoggingInterceptor()
     }
 
-    fun provideMockResponseInterceptor(
+    fun provideRefreshTokenInterceptor(
+        refreshTokenRepository: RefreshTokenRepository,
         headerManager: HeaderManager,
         tokenManager: TokenManager,
-    ): MockResponseInterceptor {
-        return InterceptorFactory.createMockResponseInterceptor(headerManager, tokenManager)
-    }
-
-    fun provideAuthHeaderInterceptor(headerManager: HeaderManager): HeaderRequestInterceptor {
-        return InterceptorFactory.createHeaderRequestInterceptor(headerManager)
-    }
-
-    fun provideAppHeaderInterceptor(headerManager: HeaderManager): HeaderRequestInterceptor {
-        return InterceptorFactory.createHeaderRequestInterceptor(headerManager)
+    ): RefreshTokenInterceptor {
+        return InterceptorFactory.createRefreshTokenInterceptor(refreshTokenRepository,
+            headerManager,
+            tokenManager)
     }
 
     //==============================================================================================
@@ -137,39 +137,41 @@ val networkModule = module {
     //==============================================================================================
     fun provideAuthOkHttpClient(
         certificateStore: CertificateStore,
-        requestInterceptor: HeaderRequestInterceptor,
-        httpLoggerInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpFactory.createAuthOkHttpClient(
             certificateStore,
-            requestInterceptor,
-            httpLoggerInterceptor
+            httpLoggingInterceptor
         )
+    }
+
+    fun createTokenRefreshOkHttpClient(): OkHttpClient {
+        return OkHttpFactory.createTokenRefreshOkHttpClient()
     }
 
     fun provideAppOkHttpClient(
         certificateStore: CertificateStore,
-        requestInterceptor: HeaderRequestInterceptor,
-        httpLoggerInterceptor: HttpLoggingInterceptor
+        refreshResponseInterceptor: RefreshTokenInterceptor,
+        httpLoggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
-        return OkHttpFactory.createAuthOkHttpClient(
+        return OkHttpFactory.createAppOkHttpClient(
             certificateStore,
-            requestInterceptor,
-            httpLoggerInterceptor
+            refreshResponseInterceptor,
+            httpLoggingInterceptor,
         )
     }
 
     //==============================================================================================
     // retrofit factory
     //==============================================================================================
-    fun provideAuthRetrofitAuthFactory(
+    fun provideAuthRetrofitFactory(
         apiServer: String,
         okHttpClient: OkHttpClient,
         callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
-        gsonConverterFactory: GsonConverterFactory
-    ): RetrofitAppFactory {
-        return RetrofitAppFactory(
+        gsonConverterFactory: GsonConverterFactory,
+    ): RetrofitFactory {
+        return RetrofitFactory(
             apiServer,
             okHttpClient,
             callAdapterFactory,
@@ -178,14 +180,26 @@ val networkModule = module {
         )
     }
 
-    fun provideAppRetrofitAuthFactory(
+    fun provideRefreshTokenRetrofitFactory(
+        apiServer: String,
+        okHttpClient: OkHttpClient,
+        gsonConverterFactory: GsonConverterFactory,
+    ): RefreshTokenRetrofitFactory {
+        return RefreshTokenRetrofitFactory(
+            apiServer,
+            okHttpClient,
+            gsonConverterFactory
+        )
+    }
+
+    fun provideAppRetrofitFactory(
         apiServer: String,
         okHttpClient: OkHttpClient,
         callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
-        gsonConverterFactory: GsonConverterFactory
-    ): RetrofitAppFactory {
-        return RetrofitAppFactory(
+        gsonConverterFactory: GsonConverterFactory,
+    ): RetrofitFactory {
+        return RetrofitFactory(
             apiServer,
             okHttpClient,
             callAdapterFactory,
@@ -205,8 +219,8 @@ val networkModule = module {
         return GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create()
     }
 
-    single(named(AUTH_NAMED_API)) { provideAuthServer(get()) }
-    single(named(APP_NAMED_API)) { provideAppServer(get()) }
+    single(named(AUTH_NAMED_HOST)) { provideAuthServer(get()) }
+    single(named(APP_NAMED_HOST)) { provideAppServer(get()) }
 
     single { provideErrorResolutionResourceProvider(get()) }
     single { provideErrorResolutionStrategy(get()) }
@@ -217,62 +231,55 @@ val networkModule = module {
     single { provideTokenManager(get()) }
     single { provideUserManager(get()) }
 
-    single(named(AUTH_NAMED_MANAGER)) { provideAuthHeaderManager() }
-    single(named(APP_NAMED_MANAGER)) { provideAppHeaderManager(get(), get(named(APP_NAMED_API))) }
+    factory(named(AUTH_NAMED_HEADER_MANAGER)) { provideAuthHeaderManager() }
+    factory(named(REFRESH_TOKEN_NAMED_HEADER_MANAGER)) { provideRefreshTokenHeaderManager(get()) } //get(named(AUTH_NAMED_HOST))
+    factory(named(APP_NAMED_HEADER_MANAGER)) {
+        provideAppHeaderManager(get(), get(named(APP_NAMED_HOST)))
+    }
 
     single { provideNullOnEmptyConverterFactory() }
 
-    single { provideLoggerInterceptor() }
-    single { provideMockResponseInterceptor(get(), get()) }
-    single(named(AUTH_NAMED_INTERCEPTOR)) {
-        provideAuthHeaderInterceptor(
-            get(
-                named(
-                    AUTH_NAMED_MANAGER
-                )
-            )
-        )
-    }
-    single(named(APP_NAMED_INTERCEPTOR)) { provideAppHeaderInterceptor(get(named(APP_NAMED_MANAGER))) }
+    single { provideLoggingInterceptor() }
 
-    single(named(AUTH_NAMED_CLIENT)) {
-        provideAuthOkHttpClient(
-            get(),
-            get(named(AUTH_NAMED_INTERCEPTOR)),
-            get()
-        )
+    single { provideRefreshTokenInterceptor(get(), get(named(APP_NAMED_HEADER_MANAGER)), get()) }
+
+    single(named(AUTH_NAMED_HTTP_CLIENT)) { provideAuthOkHttpClient(get(), get()) }
+
+    single(named(REFRESH_TOKEN_NAMED_HTTP_CLIENT)) {
+        createTokenRefreshOkHttpClient()
     }
-    single(named(APP_NAMED_CLIENT)) {
-        provideAppOkHttpClient(
-            get(),
-            get(),
-            get(named(APP_NAMED_INTERCEPTOR)),
-            get()
-        )
-    }
+
+    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get()) }
 
     single { provideGsonConverterFactory() }
     single { provideGson() }
 
     single(named(AUTH_NAMED_RETROFIT)) {
-        provideAuthRetrofitAuthFactory(
-            get(named(AUTH_NAMED_API)),
-            get(named(AUTH_NAMED_CLIENT)),
+        provideAuthRetrofitFactory(
+            get(named(AUTH_NAMED_HOST)),
+            get(named(AUTH_NAMED_HTTP_CLIENT)),
             get(),
             get(),
             get()
+        )
+    }
+
+    single(named(REFRESH_TOKEN_NAMED_RETROFIT)) {
+        provideRefreshTokenRetrofitFactory(
+            get(named(AUTH_NAMED_HOST)),
+            get(named(REFRESH_TOKEN_NAMED_HTTP_CLIENT)),
+            get(),
         )
     }
 
     single(named(APP_NAMED_RETROFIT)) {
-        provideAppRetrofitAuthFactory(
-            get(named(APP_NAMED_API)),
-            get(named(APP_NAMED_CLIENT)),
+        provideAppRetrofitFactory(
+            get(named(APP_NAMED_HOST)),
+            get(named(APP_NAMED_HTTP_CLIENT)),
             get(),
             get(),
             get()
         )
     }
-
 
 }

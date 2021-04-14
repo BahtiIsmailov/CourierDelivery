@@ -1,4 +1,4 @@
-package com.wb.logistics.data
+package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
@@ -14,6 +14,8 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 interface AppRepository {
+
+    //==============================================================================================
 
     fun flightStatuses(): Single<FlightStatusesRemote>
 

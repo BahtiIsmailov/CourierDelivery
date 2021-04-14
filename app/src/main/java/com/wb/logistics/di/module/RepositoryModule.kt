@@ -1,15 +1,18 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.data.AppRepository
-import com.wb.logistics.data.AppRepositoryImpl
 import com.wb.logistics.db.BoxDao
 import com.wb.logistics.db.FlightDao
 import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.LocalRepositoryImpl
-import com.wb.logistics.network.api.app.RemoteRepository
+import com.wb.logistics.network.api.app.AppRepository
+import com.wb.logistics.network.api.app.AppRepositoryImpl
+import com.wb.logistics.network.api.app.RemoteAppRepository
 import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.api.auth.AuthRepositoryImpl
+import com.wb.logistics.network.headers.RefreshTokenApi
+import com.wb.logistics.network.headers.RefreshTokenRepository
+import com.wb.logistics.network.headers.RefreshTokenRepositoryImpl
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepositoryImpl
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -29,11 +32,18 @@ val deliveryRepositoryModule = module {
         return AuthRepositoryImpl(api, rxSchedulerFactory, tokenManager)
     }
 
+    fun provideRefreshTokenRepository(
+        api: RefreshTokenApi,
+        tokenManager: TokenManager,
+    ): RefreshTokenRepository {
+        return RefreshTokenRepositoryImpl(api, tokenManager)
+    }
+
     fun provideAppRepository(
-        remoteRepository: RemoteRepository,
+        remoteRepository: RemoteAppRepository,
         localRepository: LocalRepository,
     ): AppRepository {
-        return AppRepositoryImpl(remoteRepository, localRepository) //, tokenManager
+        return AppRepositoryImpl(remoteRepository, localRepository)
     }
 
     fun provideLocalRepository(
@@ -52,8 +62,9 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRepository(get(), get(), get()) }
+    single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get()) }
-    single { provideAppRepository(get(), get()) } //, get()
+    single { provideAppRepository(get(), get()) }
     single { provideReceptionRepository(get(), get()) }
     single { provideNetworkMonitorRepository() }
 

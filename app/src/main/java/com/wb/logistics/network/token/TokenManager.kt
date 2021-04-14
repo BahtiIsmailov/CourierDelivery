@@ -6,6 +6,7 @@ interface TokenManager {
     fun saveToken(token: TokenEntity)
     fun bearerToken(): String
     fun bearerRefreshToken(): String
+    fun refreshToken(): String
     fun userName(): String
     fun userCompany(): String
     fun clear()

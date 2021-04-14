@@ -13,7 +13,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
 
-interface RemoteRepository {
+interface RemoteAppRepository {
 
     @GET("/api/v1/flight-statuses")
     fun flightStatuses(): Single<FlightStatusesRemote>

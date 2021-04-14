@@ -2,7 +2,6 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.api.auth.AuthRepository
-import com.wb.logistics.network.api.auth.SessionRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.domain.*
@@ -26,15 +25,8 @@ val interactorModule = module {
     fun provideInputPasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         authRepository: AuthRepository,
-        //appRepository: AppRepository,
-//        userManager: UserManager,
     ): InputPasswordInteractor {
-        return InputPasswordInteractorImpl(
-            rxSchedulerFactory,
-            authRepository,
-           // appRepository,
-//            userManager
-        )
+        return InputPasswordInteractorImpl(rxSchedulerFactory, authRepository)
     }
 
     fun provideCreatePasswordInteractor(
@@ -49,11 +41,9 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         authRepository: AuthRepository,
     ): NavigationInteractor {
-        return NavigationInteractorImpl(
-            rxSchedulerFactory,
+        return NavigationInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
-            authRepository
-        )
+            authRepository)
     }
 
     fun provideFlightsInteractor(
@@ -67,14 +57,13 @@ val interactorModule = module {
     }
 
     fun provideReceptionInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRepository: AppRepository,
+        rxSchedulerFactory: RxSchedulerFactory, appRepository: AppRepository,
     ): ReceptionInteractor {
         return ReceptionInteractorImpl(rxSchedulerFactory, appRepository)
     }
 
     single { provideTemporaryPasswordInteractor(get(), get()) }
-    single { provideInputPasswordInteractor(get(), get()) } //, get(), get()
+    single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
