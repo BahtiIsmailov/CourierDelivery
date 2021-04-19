@@ -2,7 +2,7 @@ package com.wb.logistics.ui.reception
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.utils.LogUtils
@@ -29,20 +29,20 @@ class ReceptionBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<ReceptionBoxesItem>()
 
     init {
-        addSubscription(receptionInteractor.observeFlightBoxes()
+        addSubscription(receptionInteractor.observeScannedBoxes()
             .flatMap { convertBoxes(it) }
             .doOnNext { copyConvertBoxes(it) }
             .subscribe({ changeBoxesComplete(it) },
                 { changeBoxesError(it) }))
     }
 
-    private fun convertBoxes(boxes: List<FlightBoxScannedEntity>) =
+    private fun convertBoxes(boxes: List<ScannedBoxEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map(receptionBoxItem)
             .toList()
             .toObservable()
 
-    private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxScannedEntity> ->
+    private val receptionBoxItem = { (index, item): IndexedValue<ScannedBoxEntity> ->
         ReceptionBoxesItem(singleIncrement(index), item.barcode, item.dstFullAddress, false)
     }
 
@@ -68,7 +68,7 @@ class ReceptionBoxesViewModel(
         _boxes.value = ReceptionBoxesUIState.Progress
         val checkedReceptionBoxes =
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
-        addSubscription(receptionInteractor.deleteFlightBoxes(checkedReceptionBoxes)
+        addSubscription(receptionInteractor.deleteScannedBoxes(checkedReceptionBoxes)
             .subscribe({
                 _boxes.value = ReceptionBoxesUIState.ProgressComplete
                 _navigateToBack.value = NavigateToBack

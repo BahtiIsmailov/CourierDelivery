@@ -92,16 +92,16 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
                 is ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong -> {
                     findNavController().navigate(
                         ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
-                            ReceptionBoxNotBelongParameters(
-                                state.toolbarTitle,
-                                state.title,
-                                state.box,
-                                state.address)
+                            with(state) {
+                                ReceptionBoxNotBelongParameters(toolbarTitle, title, box, address)
+                            }
                         )
                     )
                 }
                 ReceptionScanNavigationEvent.NavigateToBoxes -> findNavController().navigate(
                     ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxesFragment())
+                ReceptionScanNavigationEvent.NavigateToFlightDeliveries -> findNavController().navigate(
+                    ReceptionFragmentDirections.actionReceptionFragmentToFlightDeliveriesFragment())
             }
         }
 
@@ -201,9 +201,14 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
             showHandleInput()
         }
 
+        binding.completeButton.setOnClickListener {
+            viewModel.onCompleteClicked()
+        }
+
         binding.received.setOnClickListener {
             viewModel.onListClicked()
         }
+
     }
 
     private fun showHandleInput() {

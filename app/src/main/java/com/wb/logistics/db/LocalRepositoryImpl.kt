@@ -1,12 +1,13 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
-import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -101,49 +102,53 @@ class LocalRepositoryImpl(
     //==============================================================================================
     //scanned box
     //==============================================================================================
-    override fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
-        return boxDao.insertFlightBoxScanned(flightBoxScannedEntity)
+    override fun saveFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
+        return boxDao.insertScannedBox(flightBoxScannedEntity)
     }
 
-    override fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>> {
-        return boxDao.loadFlightBoxScanned(barcodes)
+    override fun loadFlightBoxScanned(barcodes: List<String>): Single<List<ScannedBoxEntity>> {
+        return boxDao.loadScannedBox(barcodes)
     }
 
-    override fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>> {
-        return boxDao.observeFlightBoxScanned()
+    override fun observeFlightBoxScanned(): Flowable<List<ScannedBoxEntity>> {
+        return boxDao.observeScannedBox()
     }
 
-    override fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>> {
-        return boxDao.findFlightBoxScanned(barcode)
-            .map<SuccessOrEmptyData<FlightBoxScannedEntity>> { SuccessOrEmptyData.Success(it) }
+    override fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>> {
+        return boxDao.findScannedBox(barcode)
+            .map<SuccessOrEmptyData<ScannedBoxEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
-    override fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable {
-        return boxDao.deleteFlightBoxScanned(flightBoxScannedEntity)
+    override fun deleteFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
+        return boxDao.deleteScannedBox(flightBoxScannedEntity)
     }
 
     override fun deleteAllFlightBoxScanned() {
-        boxDao.deleteAllFlightBoxScanned()
+        boxDao.deleteAllScannedBox()
+    }
+
+    override fun groupByDstAddressScannedBoxScanned(): Single<List<ScannedBoxGroupByAddressEntity>> {
+        return boxDao.groupByDstAddressScannedBox()
     }
 
     //==============================================================================================
     //balance box
     //==============================================================================================
 
-    override fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable {
+    override fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable {
         return flightDao.insertFlightBoxBalanceAwait(flightBoxBalanceEntity)
     }
 
-    override fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>> {
+    override fun observeFlightBoxBalanceAwait(): Flowable<List<ScannedBoxBalanceAwaitEntity>> {
         return flightDao.observeFlightBoxBalanceAwait()
     }
 
-    override fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>> {
+    override fun flightBoxBalanceAwait(): Single<List<ScannedBoxBalanceAwaitEntity>> {
         return flightDao.flightBoxBalanceAwait()
     }
 
-    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable {
+    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable {
         return flightDao.deleteFlightBoxBalanceAwait(flightBoxBalanceEntity)
     }
 

@@ -3,7 +3,7 @@ package com.wb.logistics.ui.flights
 import android.content.Context
 import com.wb.logistics.R
 
-class FlightResourceProvider(private val context: Context) {
+class FlightsResourceProvider(private val context: Context) {
 
     fun getEmptyFlight() : String = context.getString(R.string.flights_empty_flight)
 

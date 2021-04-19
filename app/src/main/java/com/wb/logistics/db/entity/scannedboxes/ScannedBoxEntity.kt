@@ -1,4 +1,4 @@
-package com.wb.logistics.db.entity.flightboxes
+package com.wb.logistics.db.entity.scannedboxes
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class FlightBoxScannedEntity(
+data class ScannedBoxEntity(
 
     @ColumnInfo(name = "flight_box_id")
     val flightId: Int,

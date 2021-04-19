@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flights.domain
 
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
-import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -49,12 +49,12 @@ class FlightsInteractorImpl(
     private fun networkMonitor() = networkMonitorRepository.isNetworkConnected()
 
     override fun observeFlightBoxScanned(): Flowable<Int> {
-        return appRepository.observeFlightBoxesScanned().map { it.size }
+        return appRepository.observeBoxesScanned().map { it.size }
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
     override fun deleteFlightBoxes(): Completable {
-        return appRepository.observeFlightBoxesScanned()
+        return appRepository.observeBoxesScanned()
             .toObservable()
             .flatMapIterable { it }
             .flatMapCompletable {
@@ -63,7 +63,7 @@ class FlightsInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: FlightBoxScannedEntity) =
+    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: ScannedBoxEntity) =
         with(flightBoxScannedEntity) {
             appRepository.deleteFlightBoxScannedRemote(
                 flightId.toString(),
@@ -72,7 +72,7 @@ class FlightsInteractorImpl(
                 srcOffice.id)
         }
 
-    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: FlightBoxScannedEntity) =
-        appRepository.deleteFlightBoxScanned(flightBoxScannedEntity).onErrorComplete()
+    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: ScannedBoxEntity) =
+        appRepository.deleteBoxScanned(flightBoxScannedEntity).onErrorComplete()
 
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WB Logistics</string>
+    <string name="app_name">Perevozka</string>
 
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
@@ -113,5 +113,18 @@
     <string name="reception_boxes_remove_item">Удалить отмеченные</string>
 
     <string name="confirm_info_dialog_button">Понятно</string>
+
+    <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>
+    <string name="flight_deliveries_dialog_title">Начать доставку?</string>
+    <string name="flight_deliveries_dialog_description">Перейдя к доставке, вы больше не сможете погрузить корбки в машину</string>
+    <string name="flight_deliveries_dialog_positive_button">Начать</string>
+    <string name="flight_deliveries_dialog_negative_button">Отмена</string>
+
+    <string name="light_deliveries_label" />
+    <string name="flight_deliveries_flight_toolbar_title">Рейс №%1$d</string>
+    <string name="flight_deliveries_delivery_toolbar_title">Доставка №%1$d</string>
+    <string name="flight_deliveries_title_empty">Рейс</string>
+    <string name="flight_deliveries_redo_count">Сдать %1$d шт.</string>
+    <string name="flight_deliveries_count_box">Вы приняли %1$d коробок</string>
 
 </resources>

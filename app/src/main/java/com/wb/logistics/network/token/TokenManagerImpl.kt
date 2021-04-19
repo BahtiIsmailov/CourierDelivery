@@ -30,7 +30,8 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return tokenResource().extra.company
     }
 
-    private fun token(): TokenEntity = worker.load(AppPreffsKeys.TOKEN_KEY, TokenEntity::class.java)
+    private fun token(): TokenEntity =
+        worker.load(AppPreffsKeys.TOKEN_KEY, TokenEntity::class.java) ?: TokenEntity("", 0, "")
 
     private fun tokenResource(): TokenResource {
         return decodeToken(token().accessToken)

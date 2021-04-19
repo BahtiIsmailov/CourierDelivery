@@ -5,13 +5,16 @@ import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
+import com.wb.logistics.ui.nav.domain.ScreenManager
+import com.wb.logistics.ui.nav.domain.ScreenState
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightsViewModel(
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: FlightResourceProvider,
+    private val resourceProvider: FlightsResourceProvider,
     private val interactor: FlightsInteractor,
     private val dataBuilder: FlightsDataBuilder,
+    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUINav = MutableLiveData<FlightsUINavState>()
@@ -26,6 +29,7 @@ class FlightsViewModel(
             is FlightsUIAction.ReceptionBoxesClick -> {
                 stateUINav.value = FlightsUINavState.NavigateToReceptionBox
                 stateUINav.value = FlightsUINavState.Empty
+                screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
             }
             is FlightsUIAction.ReturnToBalanceClick -> {
                 FlightsUINavState.NavigateToReturnBalanceDialog

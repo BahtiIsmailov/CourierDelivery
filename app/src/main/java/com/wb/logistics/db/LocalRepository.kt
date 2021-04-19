@@ -1,11 +1,12 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
-import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -41,28 +42,30 @@ interface LocalRepository {
     //==============================================================================================
     //scanned box
     //==============================================================================================
-    fun saveFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+    fun saveFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable
 
-    fun loadFlightBoxScanned(barcodes: List<String>): Single<List<FlightBoxScannedEntity>>
+    fun loadFlightBoxScanned(barcodes: List<String>): Single<List<ScannedBoxEntity>>
 
-    fun observeFlightBoxScanned(): Flowable<List<FlightBoxScannedEntity>>
+    fun observeFlightBoxScanned(): Flowable<List<ScannedBoxEntity>>
 
-    fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<FlightBoxScannedEntity>>
+    fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>>
 
-    fun deleteFlightBoxScanned(flightBoxScannedEntity: FlightBoxScannedEntity): Completable
+    fun deleteFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable
 
     fun deleteAllFlightBoxScanned()
+
+    fun groupByDstAddressScannedBoxScanned(): Single<List<ScannedBoxGroupByAddressEntity>>
 
     //==============================================================================================
     //balance box
     //==============================================================================================
-    fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+    fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable
 
-    fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+    fun observeFlightBoxBalanceAwait(): Flowable<List<ScannedBoxBalanceAwaitEntity>>
 
-    fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>>
+    fun flightBoxBalanceAwait(): Single<List<ScannedBoxBalanceAwaitEntity>>
 
-    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable
 
     fun deleteAllFlightBoxBalanceAwait()
 

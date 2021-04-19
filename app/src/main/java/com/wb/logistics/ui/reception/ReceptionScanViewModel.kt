@@ -2,11 +2,14 @@ package com.wb.logistics.ui.reception
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
+import com.wb.logistics.ui.nav.domain.ScreenManager
+import com.wb.logistics.ui.nav.domain.ScreenState
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ScanBoxData
+import com.wb.logistics.utils.LogUtils
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
@@ -14,6 +17,7 @@ class ReceptionScanViewModel(
     compositeDisposable: CompositeDisposable,
     private val receptionResourceProvider: ReceptionResourceProvider,
     private val receptionInteractor: ReceptionInteractor,
+    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -34,24 +38,23 @@ class ReceptionScanViewModel(
     val bottomNavigationEvent = MutableLiveData<Boolean>()
 
     init {
+        //addMockScannedBox()
         addSubscription(
             Observable.combineLatest(
-                receptionInteractor.observeScanState().startWith(ScanBoxData.Init),
-                receptionInteractor.observeFlightBoxes(),
-                { scanState, flightBoxes -> Pair(scanState, flightBoxes) })
+                receptionInteractor.observeScanProcess().startWith(ScanBoxData.Init),
+                receptionInteractor.observeScannedBoxes(),
+                { scanState, scannedBoxes -> Pair(scanState, scannedBoxes) })
                 .subscribe { addBoxToFlightComplete(it) }
         )
     }
 
-    fun onBoxHandleInput(barcode: String) {
-        receptionInteractor.boxScanned(barcode.replace("-", ""), true)
+    private fun addMockScannedBox() {
+        addSubscription(receptionInteractor.addMockScannedBox()
+            .subscribe({ LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() complete") } },
+                { LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() error") } }))
     }
 
-    fun onBoxScanned(barcode: String) {
-        receptionInteractor.boxScanned(receptionResourceProvider.getBarCodeBox(barcode), false)
-    }
-
-    private fun addBoxToFlightComplete(pair: Pair<ScanBoxData, List<FlightBoxScannedEntity>>) {
+    private fun addBoxToFlightComplete(pair: Pair<ScanBoxData, List<ScannedBoxEntity>>) {
         val scanBoxData = pair.first
         val scannedBoxes = pair.second
         val accepted = scannedBoxes.size.toString()
@@ -79,11 +82,12 @@ class ReceptionScanViewModel(
             }
             is ScanBoxData.BoxDoesNotBelongDc -> {
                 _navigationEvent.call()
-                _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong(
-                    receptionResourceProvider.getBoxNotBelongDcToolbarTitle(),
-                    receptionResourceProvider.getBoxNotBelongDcTitle(),
-                    scanBoxData.barcode,
-                    scanBoxData.address)
+                _navigationEvent.value =
+                    ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong(
+                        receptionResourceProvider.getBoxNotBelongDcToolbarTitle(),
+                        receptionResourceProvider.getBoxNotBelongDcTitle(),
+                        scanBoxData.barcode,
+                        scanBoxData.address)
                 boxStateUI.value =
                     with(scanBoxData) {
                         ReceptionScanBoxUIState.BoxDeny(
@@ -95,11 +99,12 @@ class ReceptionScanViewModel(
             }
             is ScanBoxData.BoxDoesNotBelongFlight -> {
                 _beepEvent.value = ReceptionScanBeepState.BoxSkipAdded
-                _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong(
-                    receptionResourceProvider.getBoxNotBelongFlightToolbarTitle(),
-                    receptionResourceProvider.getBoxNotBelongFlightTitle(),
-                    scanBoxData.barcode,
-                    scanBoxData.address)
+                _navigationEvent.value =
+                    ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong(
+                        receptionResourceProvider.getBoxNotBelongFlightToolbarTitle(),
+                        receptionResourceProvider.getBoxNotBelongFlightTitle(),
+                        scanBoxData.barcode,
+                        scanBoxData.address)
                 boxStateUI.value =
                     with(scanBoxData) {
                         ReceptionScanBoxUIState.BoxDeny(
@@ -127,17 +132,31 @@ class ReceptionScanViewModel(
             ScanBoxData.Empty -> boxStateUI.value = ReceptionScanBoxUIState.Empty
             is ScanBoxData.BoxDoesNotBelongInfo -> {
                 _beepEvent.value = ReceptionScanBeepState.BoxSkipAdded
-                _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong(
-                    receptionResourceProvider.getBoxNotBelongFlightToolbarTitle(),
-                    receptionResourceProvider.getBoxNotBelongFlightTitle(),
-                    scanBoxData.barcode,
-                    receptionResourceProvider.getBoxNotBelongAddress())
+                _navigationEvent.value =
+                    ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong(
+                        receptionResourceProvider.getBoxNotBelongFlightToolbarTitle(),
+                        receptionResourceProvider.getBoxNotBelongFlightTitle(),
+                        scanBoxData.barcode,
+                        receptionResourceProvider.getBoxNotBelongAddress())
             }
         }
     }
 
+    fun onBoxHandleInput(barcode: String) {
+        receptionInteractor.boxScanned(barcode.replace("-", ""), true)
+    }
+
+    fun onBoxScanned(barcode: String) {
+        receptionInteractor.boxScanned(receptionResourceProvider.getBarCodeBox(barcode), false)
+    }
+
     fun onListClicked() {
         _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToBoxes
+    }
+
+    fun onCompleteClicked() {
+        screenManager.saveScreenState(ScreenState.FLIGHT_PICK_UP_POINT)
+        _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToFlightDeliveries
     }
 
 }

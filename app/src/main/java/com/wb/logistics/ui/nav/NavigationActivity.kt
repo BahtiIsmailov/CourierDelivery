@@ -20,8 +20,10 @@ import com.wb.logistics.R
 import com.wb.logistics.databinding.NavigationActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flights.FlightsFragment
+import com.wb.logistics.ui.flights.FlightsFragmentDirections
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
+
 
 class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
     NavToolbarTitleListener {
@@ -45,6 +47,35 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
     }
 
     private fun initObserver() {
+
+        navigationViewModel.backTtn.observe(this) {
+            if (it) {
+                val toolbar = findViewById<Toolbar>(R.id.toolbar)
+                toolbar.setNavigationIcon(R.drawable.ic_fligt_delivery_transport_doc)
+                setSupportActionBar(toolbar)
+            }
+        }
+
+        navigationViewModel.stateUINav.observe(this) { state ->
+            when (state) {
+                NavigationUINavState.NavigateToFlight -> {
+                }
+                NavigationUINavState.NavigateToReceptionScan -> findNavController(R.id.nav_host_fragment).navigate(
+                    FlightsFragmentDirections.actionFlightsFragmentToReceptionScanFragment())
+                NavigationUINavState.NavigateToPickUpPoint -> findNavController(R.id.nav_host_fragment).navigate(
+                    FlightsFragmentDirections.actionFlightsFragmentToFlightDeliveriesFragment())
+                NavigationUINavState.NavigateToDelivery -> {
+                    findNavController(R.id.nav_host_fragment).navigate(
+                        FlightsFragmentDirections.actionFlightsFragmentToFlightDeliveriesFragment())
+
+                    val toolbar = findViewById<Toolbar>(R.id.toolbar)
+                    toolbar.setNavigationIcon(R.drawable.ic_fligt_delivery_transport_doc)
+                    setSupportActionBar(toolbar)
+
+                }
+            }
+        }
+
         navigationViewModel.navHeader.observe(this) {
             val header: View = binding.navView.getHeaderView(0)
             header.findViewById<TextView>(R.id.nav_header_name).text = it.first
@@ -123,6 +154,7 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
     override fun updateTitle(title: String) {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.title = title
+        navigationViewModel.onChangeTitle()
     }
 
 }

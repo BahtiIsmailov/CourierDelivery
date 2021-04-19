@@ -12,7 +12,7 @@ import com.wb.logistics.utils.time.TimeFormatter
 
 class FlightsDataBuilderImpl(
     private val timeFormatter: TimeFormatter,
-    private val resourceProvider: FlightResourceProvider,
+    private val resourceProvider: FlightsResourceProvider,
 ) : FlightsDataBuilder {
 
     override fun buildSuccessItem(flightEntity: SuccessOrEmptyData.Success<FlightData>): BaseItem {

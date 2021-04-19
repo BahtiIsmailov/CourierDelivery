@@ -6,7 +6,7 @@ interface SharedWorker {
     fun load(key: String, defValue: String): String
     fun save(key: String, value: String)
     fun <T : Any> save(key: String, value: T)
-    fun <T> load(key: String, serializeClass: Class<T>): T
+    fun <T> load(key: String, serializeClass: Class<T>): T?
     fun isAllExists(vararg keys: String): Boolean
     fun delete(vararg keys: String)
 }

@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.wb.logistics.R;
-import com.wb.logistics.databinding.DeliveryLayoutRouteLegendBinding;
+import com.wb.logistics.databinding.FlightsLayoutRouteLegendBinding;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class FlightsAdapter extends ArrayAdapter<String> {
 
     public FlightsAdapter(@NonNull Context context, @NonNull List<String> items,
                           @NonNull OnItemClickCallBack onItemClickCallBack) {
-        super(context, R.layout.delivery_layout_route_legend);
+        super(context, R.layout.flights_layout_route_legend);
         this.items = items;
         this.onItemClickCallBack = onItemClickCallBack;
     }
@@ -39,7 +39,7 @@ public class FlightsAdapter extends ArrayAdapter<String> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.delivery_layout_route_legend, null);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.flights_layout_route_legend, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
@@ -57,10 +57,10 @@ public class FlightsAdapter extends ArrayAdapter<String> {
 
     private class ViewHolder {
 
-        DeliveryLayoutRouteLegendBinding binding;
+        FlightsLayoutRouteLegendBinding binding;
 
         protected ViewHolder(View rootView) {
-            binding = DeliveryLayoutRouteLegendBinding.bind(rootView);
+            binding = FlightsLayoutRouteLegendBinding.bind(rootView);
         }
 
     }

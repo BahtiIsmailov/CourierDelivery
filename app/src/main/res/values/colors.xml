@@ -101,6 +101,10 @@
     <color name="button_gray_enabled">#E0DDE4</color>
     <color name="button_gray_pressed">#BEBBC1</color>
 
+    <color name="button_success_disabled">#F3F1F6</color>
+    <color name="button_success_enabled">#4CAF50</color>
+    <color name="button_success_pressed">#66BC69</color>
+
     <color name="button_danger_disabled">#F3F1F6</color>
     <color name="button_danger_enabled">#DF1F00</color>
     <color name="button_danger_pressed">#F83212</color>

@@ -3,6 +3,8 @@ package com.wb.logistics.di.module
 import android.app.Application
 import com.google.gson.Gson
 import com.wb.logistics.app.AppConfig
+import com.wb.logistics.ui.nav.domain.ScreenManager
+import com.wb.logistics.ui.nav.domain.ScreenManagerImpl
 import com.wb.logistics.utils.managers.ConfigManager
 import com.wb.logistics.utils.managers.ConfigManagerImpl
 import com.wb.logistics.utils.managers.DeviceManager
@@ -47,12 +49,17 @@ val utilsModule = module {
         return TimeFormatterImpl()
     }
 
+    fun provideScreenManager(worker: SharedWorker): ScreenManager {
+        return ScreenManagerImpl(worker)
+    }
+
     single { provideSharedWorker(get(), get()) }
     single { provideDeviceManager(get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
     single { provideConfigReader(get(), get(), get(named(PATH_CONFIG_NAMED))) }
     single { provideConfigManager(get(), get()) }
     single { provideTimeFormatter() }
+    single { provideScreenManager(get()) }
 
 
 }

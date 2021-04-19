@@ -5,6 +5,8 @@ import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.domain.*
+import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
+import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.flights.domain.FlightsInteractorImpl
 import com.wb.logistics.ui.nav.domain.NavigationInteractor
@@ -56,6 +58,16 @@ val interactorModule = module {
             appRepository)
     }
 
+    fun provideFlightDeliveriesInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRepository: AppRepository,
+    ): FlightDeliveriesInteractor {
+        return FlightDeliveriesInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            appRepository)
+    }
+
     fun provideReceptionInteractor(
         rxSchedulerFactory: RxSchedulerFactory, appRepository: AppRepository,
     ): ReceptionInteractor {
@@ -67,6 +79,7 @@ val interactorModule = module {
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
+    single { provideFlightDeliveriesInteractor(get(), get(), get()) }
     single { provideReceptionInteractor(get(), get()) }
 
 }

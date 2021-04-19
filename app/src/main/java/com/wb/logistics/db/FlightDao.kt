@@ -1,7 +1,7 @@
 package com.wb.logistics.db
 
 import androidx.room.*
-import com.wb.logistics.db.entity.boxtoflight.FlightBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -68,18 +68,18 @@ interface FlightDao {
     //box balance await
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+    fun insertFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable
 
-    @Query("SELECT * FROM FlightBoxBalanceAwaitEntity")
-    fun observeFlightBoxBalanceAwait(): Flowable<List<FlightBoxBalanceAwaitEntity>>
+    @Query("SELECT * FROM ScannedBoxBalanceAwaitEntity")
+    fun observeFlightBoxBalanceAwait(): Flowable<List<ScannedBoxBalanceAwaitEntity>>
 
-    @Query("SELECT * FROM FlightBoxBalanceAwaitEntity")
-    fun flightBoxBalanceAwait(): Single<List<FlightBoxBalanceAwaitEntity>>
+    @Query("SELECT * FROM ScannedBoxBalanceAwaitEntity")
+    fun flightBoxBalanceAwait(): Single<List<ScannedBoxBalanceAwaitEntity>>
 
     @Delete
-    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: FlightBoxBalanceAwaitEntity): Completable
+    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable
 
-    @Query("DELETE FROM FlightBoxBalanceAwaitEntity")
+    @Query("DELETE FROM ScannedBoxBalanceAwaitEntity")
     fun deleteAllFlightBoxBalanceAwait()
 
 }

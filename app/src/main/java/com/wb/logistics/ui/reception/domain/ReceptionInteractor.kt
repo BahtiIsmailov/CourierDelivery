@@ -1,17 +1,19 @@
 package com.wb.logistics.ui.reception.domain
 
-import com.wb.logistics.db.entity.flightboxes.FlightBoxScannedEntity
+import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Observable
 
 interface ReceptionInteractor {
 
-    fun deleteFlightBoxes(checkedBoxes: List<String>): Completable
+    fun deleteScannedBoxes(checkedBoxes: List<String>): Completable
 
     fun boxScanned(barcode: String, isManualInput: Boolean)
 
-    fun observeScanState(): Observable<ScanBoxData>
+    fun observeScanProcess(): Observable<ScanBoxData>
 
-    fun observeFlightBoxes(): Observable<List<FlightBoxScannedEntity>>
+    fun observeScannedBoxes(): Observable<List<ScannedBoxEntity>>
+
+    fun addMockScannedBox(): Completable
 
 }
