@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.hardware.Camera
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
@@ -41,6 +42,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
+    private var cameraZoom: Camera? = null
+
     private val viewModel by viewModel<ReceptionScanViewModel>()
 
     private var _binding: ReceptionScanFragmentBinding? = null
@@ -66,9 +69,22 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun initPermission() {
         if (!hasPermissions(Manifest.permission.CAMERA)) {
             requestPermissions(
-                arrayOf(Manifest.permission.CAMERA),
-                PERMISSIONS_REQUEST_CAMERA_NO_ACTION
+                arrayOf(Manifest.permission.CAMERA), PERMISSIONS_REQUEST_CAMERA_NO_ACTION
             )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CAMERA_NO_ACTION
+            && grantResults.isNotEmpty()
+            && grantResults.first() == PackageManager.PERMISSION_GRANTED
+        ) {
+            startScanner()
         }
     }
 
@@ -102,6 +118,7 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
                     ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxesFragment())
                 ReceptionScanNavigationEvent.NavigateToFlightDeliveries -> findNavController().navigate(
                     ReceptionFragmentDirections.actionReceptionFragmentToFlightDeliveriesFragment())
+                ReceptionScanNavigationEvent.NavigateToBack -> findNavController().popBackStack()
             }
         }
 
@@ -116,15 +133,14 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is ReceptionScanBeepState.BoxAdded -> {
-                }
+                is ReceptionScanBeepState.BoxAdded -> beepAdded()
                 is ReceptionScanBeepState.BoxSkipAdded -> beepSkip()
             }
         }
 
-        viewModel.bottomNavigationEvent.observe(viewLifecycleOwner) { state ->
+        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
             binding.completeButton.setState(
-                if (state) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
+                if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
@@ -223,10 +239,10 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         startScanner()
 
         if (resultCode == RESULT_OK)
-            resultScannerCardNumber(requestCode, data)
+            resultScanner(requestCode, data)
     }
 
-    private fun resultScannerCardNumber(requestCode: Int, data: Intent?) {
+    private fun resultScanner(requestCode: Int, data: Intent?) {
         if (requestCode == REQUEST_HANDLE_CODE) {
             data?.apply {
                 val result = data.getStringExtra(HANDLE_INPUT_RESULT)
@@ -246,13 +262,13 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         val code = rawResult?.text ?: return
         viewModel.onBoxScanned(code)
         LogUtils { logDebugApp("Cod $code") }
-        beepComplete()
+        beepAdded()
         val handler = Handler()
         handler.postDelayed({ scannerView.resumeCameraPreview(this) },
             2000)
     }
 
-    private fun beepComplete() {
+    private fun beepAdded() {
         val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
     }

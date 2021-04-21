@@ -35,7 +35,7 @@ val viewModelModule = module {
     single { provideFlightsDataBuilder(get(), get()) }
     single { provideFlightDeliveriesDataBuilder(get()) }
 
-    viewModel { NumberPhoneViewModel(get(), get(), get()) }
+    viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
     viewModel { (parameters: TemporaryPasswordParameters) ->
         TemporaryPasswordViewModel(parameters, get(), get(), get())
@@ -52,7 +52,7 @@ val viewModelModule = module {
     viewModel { NavigationViewModel(get(), get(), get(), get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get(), get(), get()) }
     viewModel { ReceptionScanViewModel(get(), get(), get(), get()) }
-    viewModel { ReceptionHandleModel(get(), get()) }
+    viewModel { ReceptionHandleViewModel(get(), get()) }
 
     viewModel { ReceptionBoxesViewModel(get(), get()) }
 

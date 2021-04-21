@@ -23,7 +23,7 @@
             android:id="@+id/action_flightsFragment_to_flightDeliveriesFragment"
             app:destination="@id/flightDeliveriesFragment"
             app:popUpTo="@+id/flightsFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -47,7 +47,11 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_receptionFragment_to_flightDeliveriesFragment"
-            app:destination="@id/flightDeliveriesFragment" />
+            app:destination="@id/flightDeliveriesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -71,7 +75,7 @@
         android:id="@+id/flightDeliveriesFragment"
         android:name="com.wb.logistics.ui.flightdeliveries.FlightDeliveriesFragment"
         android:label="light_deliveries_label"
-        tools:layout="@layout/flight_deliveries_fragment" >
+        tools:layout="@layout/flight_deliveries_fragment">
         <action
             android:id="@+id/action_flightDeliveriesFragment_self"
             app:destination="@id/flightDeliveriesFragment" />

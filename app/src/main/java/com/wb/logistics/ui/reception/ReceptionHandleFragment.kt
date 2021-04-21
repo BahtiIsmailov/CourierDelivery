@@ -12,11 +12,12 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.databinding.ReceptionHandleBottomSheetBinding
+import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReceptionHandleFragment : BottomSheetDialogFragment() {
 
-    private val viewModel by viewModel<ReceptionHandleModel>()
+    private val viewModel by viewModel<ReceptionHandleViewModel>()
 
     private var _binding: ReceptionHandleBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -75,11 +76,20 @@ class ReceptionHandleFragment : BottomSheetDialogFragment() {
         viewModel.stateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ReceptionHandleUIState.BoxFormatted -> {
-                    binding.codeBox.setText(state.number)
-                    binding.codeBox.setSelection(state.number.length)
+                    binding.accept.setState(ProgressImageButtonMode.ENABLED)
+                    setFormatCodeBox(state.number)
+                }
+                is ReceptionHandleUIState.BoxAcceptDisabled -> {
+                    setFormatCodeBox(state.number)
+                    binding.accept.setState(ProgressImageButtonMode.DISABLED)
                 }
             }
         }
+    }
+
+    private fun setFormatCodeBox(number: String) {
+        binding.codeBox.setText(number)
+        binding.codeBox.setSelection(number.length)
     }
 
     private fun initListener() {

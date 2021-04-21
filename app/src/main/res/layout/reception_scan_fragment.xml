@@ -197,7 +197,7 @@
         android:visibility="visible"
         app:app_background="@drawable/progress_image_button_default"
         app:app_icon="@drawable/ic_complete"
-        app:app_state="disabled"
+        app:app_state="enable"
         app:app_text="@string/reception_complete_button"
         app:app_text_color_disable="@color/button_gray_text_disable"
         app:app_text_color_enable="@color/button_gray_text_enable"

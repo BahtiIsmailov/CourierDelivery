@@ -6,9 +6,9 @@ import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.utils.formatter.BoxUtils
 import io.reactivex.disposables.CompositeDisposable
 
-class ReceptionHandleModel(
+class ReceptionHandleViewModel(
     compositeDisposable: CompositeDisposable,
-    private val rxSchedulerFactory: RxSchedulerFactory
+    private val rxSchedulerFactory: RxSchedulerFactory,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUI = MutableLiveData<ReceptionHandleUIState<String>>()
@@ -24,9 +24,9 @@ class ReceptionHandleModel(
     private fun fetchBoxNumberFormat(actionView: ReceptionHandleUIAction.BoxChanges) {
         addSubscription(
             BoxUtils.boxNumberFormatter(actionView.observable, rxSchedulerFactory)
-                .subscribe { number ->
-                    stateUI.value =  ReceptionHandleUIState.BoxFormatted(number)
-                })
+                .map { if (it.length > 5) ReceptionHandleUIState.BoxFormatted(it) else ReceptionHandleUIState.BoxAcceptDisabled(it) }
+                .subscribe { stateUI.value = it }
+        )
     }
 
 }

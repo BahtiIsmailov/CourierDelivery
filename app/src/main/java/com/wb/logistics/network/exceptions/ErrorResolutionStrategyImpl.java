@@ -27,6 +27,8 @@ import retrofit2.Response;
 
 public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
+    private final static int NUMBER_ATTEMPTS_ON_ERROR = 2;
+
     @NonNull
     private final ErrorResolutionResourceProvider resourceProvider;
 
@@ -66,7 +68,7 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
                 }
             }
             return Flowable.error(convertException(throwable));
-        }).take(1);
+        }).take(NUMBER_ATTEMPTS_ON_ERROR);
     }
 
     private Throwable convertException(@NonNull Throwable throwable) {

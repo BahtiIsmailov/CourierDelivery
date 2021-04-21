@@ -48,6 +48,8 @@ interface LocalRepository {
 
     fun observeFlightBoxScanned(): Flowable<List<ScannedBoxEntity>>
 
+    fun readBoxesScanned(): Single<List<ScannedBoxEntity>>
+
     fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>>
 
     fun deleteFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable

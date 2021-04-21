@@ -288,6 +288,10 @@ class AppRepositoryImpl(
         return local.observeFlightBoxScanned()
     }
 
+    override fun readBoxesScanned(): Single<List<ScannedBoxEntity>> {
+        return local.readBoxesScanned()
+    }
+
     override fun deleteBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
         return local.deleteFlightBoxScanned(flightBoxScannedEntity)
     }

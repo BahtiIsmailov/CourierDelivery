@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.ReceptionBoxesFragmentBinding
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -29,6 +30,16 @@ class ReceptionBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.navigateToMessage.observe(viewLifecycleOwner) {
+            val dialog = InformationDialogFragment.newInstance(
+                "Log remove boxing",
+                it.message,
+                "Ok"
+            )
+            dialog.setTargetFragment(this, 10101)
+            dialog.show(parentFragmentManager, "START_DELIVERY_TAG")
+        }
 
         viewModel.boxes.observe(viewLifecycleOwner) {
             when (it) {

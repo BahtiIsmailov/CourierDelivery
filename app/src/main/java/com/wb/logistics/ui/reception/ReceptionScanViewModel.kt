@@ -10,7 +10,6 @@ import com.wb.logistics.ui.nav.domain.ScreenState
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ScanBoxData
 import com.wb.logistics.utils.LogUtils
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class ReceptionScanViewModel(
@@ -35,16 +34,30 @@ class ReceptionScanViewModel(
 
     val boxStateUI = MutableLiveData<ReceptionScanBoxUIState<Nothing>>()
 
-    val bottomNavigationEvent = MutableLiveData<Boolean>()
+    val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
         //addMockScannedBox()
+        screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
+        addSubscription(receptionInteractor.observeScannedBoxes().subscribe {
+            if (it.isEmpty()) {
+                boxStateUI.value = ReceptionScanBoxUIState.Empty
+            } else {
+                val lastBox = it.last()
+                boxStateUI.value =
+                    ReceptionScanBoxUIState.BoxInit(
+                        it.size.toString(),
+                        lastBox.gate.toString(),
+                        lastBox.barcode)
+            }
+        })
+
         addSubscription(
-            Observable.combineLatest(
-                receptionInteractor.observeScanProcess().startWith(ScanBoxData.Init),
-                receptionInteractor.observeScannedBoxes(),
-                { scanState, scannedBoxes -> Pair(scanState, scannedBoxes) })
-                .subscribe { addBoxToFlightComplete(it) }
+            receptionInteractor.observeScanProcess()
+                .flatMapSingle { data ->
+                    receptionInteractor.readBoxesScanned()
+                        .map { Pair(data, it) }
+                }.subscribe { addBoxToFlightComplete(it) }
         )
     }
 
@@ -58,20 +71,7 @@ class ReceptionScanViewModel(
         val scanBoxData = pair.first
         val scannedBoxes = pair.second
         val accepted = scannedBoxes.size.toString()
-        bottomNavigationEvent.value = scannedBoxes.isNotEmpty()
         when (scanBoxData) {
-            ScanBoxData.Init -> {
-                if (scannedBoxes.isEmpty()) {
-                    boxStateUI.value = ReceptionScanBoxUIState.Empty
-                } else {
-                    val lastBox = scannedBoxes.last()
-                    boxStateUI.value =
-                        ReceptionScanBoxUIState.BoxInit(
-                            accepted,
-                            lastBox.gate.toString(),
-                            lastBox.barcode)
-                }
-            }
             is ScanBoxData.BoxAdded -> {
                 boxStateUI.value = with(scanBoxData) {
                     ReceptionScanBoxUIState.BoxAdded(accepted, gate, barcode)
@@ -79,6 +79,7 @@ class ReceptionScanViewModel(
                 _toastEvent.value =
                     ReceptionScanToastState.BoxAdded(receptionResourceProvider.getShortAddedBox(
                         scanBoxData.barcode))
+                _beepEvent.value = ReceptionScanBeepState.BoxAdded
             }
             is ScanBoxData.BoxDoesNotBelongDc -> {
                 _navigationEvent.call()
@@ -155,8 +156,23 @@ class ReceptionScanViewModel(
     }
 
     fun onCompleteClicked() {
-        screenManager.saveScreenState(ScreenState.FLIGHT_PICK_UP_POINT)
-        _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToFlightDeliveries
+        toFlightDeliveries()
+    }
+
+    private fun toFlightDeliveries() {
+        bottomProgressEvent.value = true
+        addSubscription(receptionInteractor.sendAwaitBoxes().subscribe({
+            if (it > 0) {
+                bottomProgressEvent.value = false
+            } else {
+                screenManager.saveScreenState(ScreenState.FLIGHT_PICK_UP_POINT)
+                _navigationEvent.value = ReceptionScanNavigationEvent.NavigateToFlightDeliveries
+                bottomProgressEvent.value = false
+            }
+
+        }, {
+            bottomProgressEvent.value = false
+        }))
     }
 
 }

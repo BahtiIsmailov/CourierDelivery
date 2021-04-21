@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="reception_box_count">
+        <item quantity="zero">Вы приняли %d коробок</item>
+        <item quantity="one">Вы приняли %d коробку</item>
+        <item quantity="two">Вы приняли %d коробки</item>
+        <item quantity="few">Вы приняли %d коробки</item>
+        <item quantity="many">Вы приняли %d коробок</item>
+        <item quantity="other">Вы приняли %d коробок</item>
+    </plurals>
+</resources>

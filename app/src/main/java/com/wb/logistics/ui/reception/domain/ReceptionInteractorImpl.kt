@@ -4,10 +4,10 @@ import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.boxtoflight.CurrentOfficeEntity
 import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
-import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
-import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.scannedboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
+import com.wb.logistics.db.entity.scannedboxes.SrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.utils.LogUtils
@@ -15,14 +15,14 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Single
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 
 class ReceptionInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRepository: AppRepository,
 ) : ReceptionInteractor {
 
-    private val actionBarcodeScannedSubject = BehaviorSubject.create<Pair<String, Boolean>>()
+    private val actionBarcodeScannedSubject = PublishSubject.create<Pair<String, Boolean>>()
 
     override fun boxScanned(barcode: String, isManualInput: Boolean) {
         actionBarcodeScannedSubject.onNext(Pair(barcode, isManualInput))
@@ -102,24 +102,25 @@ class ReceptionInteractorImpl(
                 isManual,
                 matchingBox.data.dstOffice.fullAddress))
         val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId)
-        val saveBoxScannedToBalanceRemote =
-            saveBoxScannedToBalanceRemote(flightId.toString(), barcode, isManual, officeId)
         val boxAdded = boxAdded(barcode, gate.toString())
 
         return saveBoxScanned
             .andThen(saveBoxBalanceAwait)
-            .andThen(sendBoxBalanceAwait(saveBoxScannedToBalanceRemote))
+            .andThen(sendBoxBalanceAwait(flightId.toString()))
             .andThen(boxAdded)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun sendBoxBalanceAwait(saveBoxScannedToBalanceRemote: Completable) =
+    private fun sendBoxBalanceAwait(flightId: String) =
         appRepository.flightBoxBalanceAwait()
             .flatMapCompletable { boxesBalanceAwait ->
                 Observable.fromIterable(boxesBalanceAwait).flatMapCompletable {
-                    saveBoxScannedToBalanceRemote.andThen(deleteFlightBoxBalanceAwait(it))
-                        .onErrorComplete()
+                    saveBoxScannedToBalanceRemote(flightId,
+                        it.barcode,
+                        it.isManualInput,
+                        it.dstOffice.id)
+                        .andThen(deleteFlightBoxBalanceAwait(it)).onErrorComplete()
                 }
             }
 
@@ -219,6 +220,22 @@ class ReceptionInteractorImpl(
     override fun observeScannedBoxes(): Observable<List<ScannedBoxEntity>> {
         return appRepository.observeBoxesScanned().toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun readBoxesScanned(): Single<List<ScannedBoxEntity>> {
+        return appRepository.readBoxesScanned().compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    override fun sendAwaitBoxes(): Single<Int> {
+        return flight().flatMap {
+            when (it) {
+                is SuccessOrEmptyData.Empty -> Single.error(Throwable())
+                is SuccessOrEmptyData.Success -> Single.just(it.data.id)
+            }
+        }
+            .map { it.toString() }
+            .flatMapCompletable { sendBoxBalanceAwait(it) }
+            .andThen(appRepository.flightBoxBalanceAwait().map { it.size })
     }
 
     override fun addMockScannedBox(): Completable {

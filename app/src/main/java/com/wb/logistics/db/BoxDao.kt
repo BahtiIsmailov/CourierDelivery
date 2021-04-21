@@ -16,6 +16,9 @@ interface BoxDao {
     @Query("SELECT * FROM ScannedBoxEntity")
     fun observeScannedBox(): Flowable<List<ScannedBoxEntity>>
 
+    @Query("SELECT * FROM ScannedBoxEntity")
+    fun readScannedBox(): Single<List<ScannedBoxEntity>>
+
     @Query("SELECT * FROM ScannedBoxEntity WHERE barcode = :barcode")
     fun findScannedBox(barcode: String): Single<ScannedBoxEntity>
 
@@ -32,6 +35,12 @@ interface BoxDao {
     fun deleteAllScannedBox()
 
     @Query("SELECT dstFullAddress, COUNT(*) AS count FROM ScannedBoxEntity GROUP BY dstFullAddress")
+    fun groupByOffice(): Single<List<ScannedBoxGroupByAddressEntity>>
+
+//    @Query("SELECT dstFullAddress, COUNT(*) AS count FROM ScannedBoxEntity GROUP BY dstFullAddress")
+//    fun groupByDstAddress(): Single<List<ScannedBoxGroupByAddressEntity>>
+
+    @Query("SELECT fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM ScannedBoxEntity WHERE FlightOfficeEntity.office_id = ScannedBoxEntity.dst_office_id) AS count FROM FlightOfficeEntity")
     fun groupByDstAddressScannedBox(): Single<List<ScannedBoxGroupByAddressEntity>>
 
 }

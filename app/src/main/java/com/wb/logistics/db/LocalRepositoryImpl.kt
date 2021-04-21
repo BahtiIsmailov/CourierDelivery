@@ -114,6 +114,10 @@ class LocalRepositoryImpl(
         return boxDao.observeScannedBox()
     }
 
+    override fun readBoxesScanned(): Single<List<ScannedBoxEntity>> {
+        return boxDao.readScannedBox()
+    }
+
     override fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>> {
         return boxDao.findScannedBox(barcode)
             .map<SuccessOrEmptyData<ScannedBoxEntity>> { SuccessOrEmptyData.Success(it) }

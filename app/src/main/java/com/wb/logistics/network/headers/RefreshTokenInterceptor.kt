@@ -44,9 +44,6 @@ class RefreshTokenInterceptor(
                 }
             }
         }
-        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            tokenManager.clear()
-        }
         return response
     }
 

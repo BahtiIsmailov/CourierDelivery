@@ -13,4 +13,6 @@ sealed class ReceptionScanNavigationEvent {
 
     object NavigateToFlightDeliveries : ReceptionScanNavigationEvent()
 
+    object NavigateToBack : ReceptionScanNavigationEvent()
+
 }

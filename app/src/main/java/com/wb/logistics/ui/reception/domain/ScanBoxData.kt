@@ -2,8 +2,6 @@ package com.wb.logistics.ui.reception.domain
 
 sealed class ScanBoxData {
 
-    object Init : ScanBoxData()
-
     data class BoxHasBeenAdded(val barcode: String, val gate: String) : ScanBoxData()
 
     data class BoxAdded(val barcode: String, val gate: String) : ScanBoxData()

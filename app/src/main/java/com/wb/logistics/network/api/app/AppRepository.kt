@@ -71,6 +71,8 @@ interface AppRepository {
 
     fun observeBoxesScanned(): Flowable<List<ScannedBoxEntity>>
 
+    fun readBoxesScanned(): Single<List<ScannedBoxEntity>>
+
     fun deleteBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable
 
     fun findBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>>

@@ -22,6 +22,10 @@ class ReceptionBoxesViewModel(
     val navigateToBack: LiveData<NavigateToBack>
         get() = _navigateToBack
 
+    private val _navigateToMessage = MutableLiveData<NavigateToMessage>()
+    val navigateToMessage: LiveData<NavigateToMessage>
+        get() = _navigateToMessage
+
     private val _enableRemove = MutableLiveData<Boolean>()
     val enableRemove: LiveData<Boolean>
         get() = _enableRemove
@@ -70,9 +74,11 @@ class ReceptionBoxesViewModel(
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
         addSubscription(receptionInteractor.deleteScannedBoxes(checkedReceptionBoxes)
             .subscribe({
+                _navigateToMessage.value = NavigateToMessage("Delete complete")
                 _boxes.value = ReceptionBoxesUIState.ProgressComplete
                 _navigateToBack.value = NavigateToBack
             }, {
+                _navigateToMessage.value = NavigateToMessage("Error delete: " + it.toString())
                 _boxes.value = ReceptionBoxesUIState.ProgressComplete
                 changeDisableAllCheckedBox()
             }))
@@ -109,5 +115,7 @@ class ReceptionBoxesViewModel(
     }
 
     object NavigateToBack
+
+    data class NavigateToMessage(val message : String)
 
 }

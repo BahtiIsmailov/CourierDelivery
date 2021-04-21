@@ -8,6 +8,7 @@ import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.auth.NumberPhoneUIState.*
+import com.wb.logistics.ui.nav.domain.ScreenManager
 import com.wb.logistics.utils.formatter.PhoneUtils
 import io.reactivex.disposables.CompositeDisposable
 
@@ -15,6 +16,7 @@ class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
     private val authRepository: AuthRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUI = MutableLiveData<NumberPhoneUIState<String>>()
@@ -22,14 +24,15 @@ class NumberPhoneViewModel(
     fun action(actionView: NumberPhoneUIAction) {
         val state = when (actionView) {
             is NumberPhoneUIAction.CheckPhone -> {
+                //screenManager.saveScreenState(ScreenState.FLIGHT)
                 fetchPhoneNumber(actionView.number)
                 PhoneCheck
             }
             NumberPhoneUIAction.LongTitle -> NavigateToConfig
             is NumberPhoneUIAction.NumberChanges -> {
                 fetchPhoneNumberFormat(actionView)
-//                Empty
-                NumberFormat("+7 (925) 123-11-51")
+                Empty
+                //NumberFormat("+7 (925) 123-11-51")
             }
         }
         stateUI.value = state
