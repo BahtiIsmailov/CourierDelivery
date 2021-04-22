@@ -14,8 +14,16 @@ class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker 
         return preferences.getString(key, defValue)!!
     }
 
+    override fun load(key: String, defValue: Long): Long {
+        return preferences.getLong(key, defValue)
+    }
+
     override fun save(key: String, value: String) {
         preferences.edit().putString(key, value).apply()
+    }
+
+    override fun save(key: String, value: Long) {
+        preferences.edit().putLong(key, value).apply()
     }
 
     override fun load(key: String, defValue: Boolean): Boolean {

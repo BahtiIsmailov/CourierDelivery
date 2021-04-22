@@ -11,4 +11,5 @@ data class ScannedBoxBalanceAwaitEntity(
     val isManualInput: Boolean,
     @Embedded
     val dstOffice: CurrentOfficeEntity,
+    val updatedAt: String
 )

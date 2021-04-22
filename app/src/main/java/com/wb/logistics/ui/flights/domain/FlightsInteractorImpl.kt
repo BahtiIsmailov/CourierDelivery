@@ -33,7 +33,7 @@ class FlightsInteractorImpl(
 //    }
 
     private fun updateFlightAndBoxes(): Completable {
-        return appRepository.updateFlight()
+        return appRepository.updateFlightAndTime()
             .andThen(appRepository.readFlightData())
             .flatMapCompletable {
                 if (it is SuccessOrEmptyData.Success) appRepository.updateMatchingBoxes(it.data.flight.toString())
@@ -63,12 +63,13 @@ class FlightsInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: ScannedBoxEntity) =
-        with(flightBoxScannedEntity) {
+    private fun deleteScannedFlightBoxRemote(scannedBoxEntity: ScannedBoxEntity) =
+        with(scannedBoxEntity) {
             appRepository.deleteFlightBoxScannedRemote(
                 flightId.toString(),
                 barcode,
                 isManualInput,
+                updatedAt,
                 srcOffice.id)
         }
 

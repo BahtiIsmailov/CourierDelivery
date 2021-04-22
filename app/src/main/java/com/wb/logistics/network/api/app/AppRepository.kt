@@ -20,7 +20,7 @@ interface AppRepository {
 
     fun flightStatuses(): Single<FlightStatusesRemote>
 
-    fun updateFlight(): Completable
+    fun updateFlightAndTime(): Completable
 
     fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
 
@@ -56,6 +56,7 @@ interface AppRepository {
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
+        updatedAt: String,
         currentOffice: Int,
     ): Completable
 
@@ -63,6 +64,7 @@ interface AppRepository {
         flightID: String,
         barcode: String,
         isManual: Boolean,
+        updatedAt: String,
         idOffice: Int,
     ): Completable
 
@@ -96,5 +98,11 @@ interface AppRepository {
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: ScannedBoxBalanceAwaitEntity): Completable
 
     fun deleteAllFlightBoxBalanceAwait()
+
+    //==============================================================================================
+    //time
+    //==============================================================================================
+
+    fun getOffsetLocalTime(): String
 
 }

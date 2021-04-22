@@ -21,4 +21,5 @@ data class ScannedBoxEntity(
     val smID: Int,
     val isManualInput: Boolean,
     val dstFullAddress: String,
+    val updatedAt: String,
 )

@@ -24,6 +24,7 @@ import com.wb.logistics.network.api.app.remote.flight.*
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.CurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScannedRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
+import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -32,19 +33,23 @@ import io.reactivex.Single
 class AppRepositoryImpl(
     private val remote: RemoteAppRepository,
     private val local: LocalRepository,
+    private val timeManager: TimeManager,
 ) : AppRepository {
 
     override fun flightStatuses(): Single<FlightStatusesRemote> {
         return remote.flightStatuses()
     }
 
-    override fun updateFlight(): Completable {
-        return remote.flight()
+    override fun updateFlightAndTime(): Completable {
+        val flight = remote.flight()
             .flatMapCompletable {
                 local.saveFlight(
                     convertFlight(it),
                     convertOffices(it.offices, it.id))
             }
+        val time = remote.getTime()
+            .flatMapCompletable { Completable.fromAction { timeManager.saveNetworkTime(it.currentTime) } }
+        return Completable.mergeArray(flight, time)
     }
 
     override fun updateFlightBoxes(flightId: Int): Completable {
@@ -259,21 +264,28 @@ class AppRepositoryImpl(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
+        updatedAt: String,
         currentOffice: Int,
     ): Completable {
         return remote.flightBoxScannedToBalance(flightID,
-            FlightBoxScannedRemote(barcode, isManualInput, CurrentOfficeRemote(currentOffice)))
+            FlightBoxScannedRemote(barcode,
+                isManualInput,
+                updatedAt,
+                CurrentOfficeRemote(currentOffice)))
     }
 
     override fun deleteFlightBoxScannedRemote(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
+        updatedAt: String,
         currentOffice: Int,
     ): Completable {
         return remote.boxDeleteFromFlight(flightID,
             barcode,
-            BoxDeleteFromFlightRemote(isManualInput, DeleteCurrentOfficeRemote(currentOffice)))
+            BoxDeleteFromFlightRemote(isManualInput,
+                updatedAt,
+                DeleteCurrentOfficeRemote(currentOffice)))
             .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
@@ -333,6 +345,14 @@ class AppRepositoryImpl(
 
     override fun deleteAllFlightBoxBalanceAwait() {
         local.deleteAllFlightBoxBalanceAwait()
+    }
+
+    //==============================================================================================
+    //balance await
+    //==============================================================================================
+
+    override fun getOffsetLocalTime(): String {
+        return timeManager.getOffsetLocalTime()
     }
 
 }
