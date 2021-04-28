@@ -64,11 +64,12 @@ class UnloadingInteractorImpl(
                         with(findAttachedBox) {
                             if (dstOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ
                                 // TODO: 27.04.2021 добавить коробку в базу
+                                val updatedAt = appRepository.getOffsetLocalTime()
                                 return@flatMap appRepository.saveUnloadedBox(UnloadedBoxEntity(
                                     flightId,
                                     isManual,
                                     barcodeScanned,
-                                    "2021-04-19T15:45:00+03:00", // TODO: 27.04.2021 добавить время
+                                    updatedAt,
                                     UnloadedCurrentOfficeEntity(dstOfficeId)))
 
                                     .andThen(saveBoxScannedToBalanceRemote(flightId.toString(), //сохранение на сервере
@@ -86,9 +87,11 @@ class UnloadingInteractorImpl(
                     }
 
                     findAttachedBox is SuccessOrEmptyData.Empty -> { //коробки нет в списке доставки - принятие на возврат
+                        val updatedAt = appRepository.getOffsetLocalTime()
                         return@flatMap saveReturnBox(flightId,
                             isManual,
                             barcodeScanned,
+                            updatedAt,
                             dstOfficeId)
                             .andThen(Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned)))
                     }
@@ -102,11 +105,12 @@ class UnloadingInteractorImpl(
         flightId: Int,
         isManual: Boolean,
         barcodeScanned: String,
+        updateAt: String,
         dstOfficeId: Int,
     ) = appRepository.saveReturnBox(ReturnBoxEntity(flightId,
         isManual,
         barcodeScanned,
-        "2021-04-19T15:45:00+03:00", // TODO: 27.04.2021 добавить время
+        updateAt,
         ReturnCurrentOfficeEntity(dstOfficeId)))
 
     override fun observeAttachedBoxesByDstOfficeId(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
@@ -143,6 +147,7 @@ class UnloadingInteractorImpl(
                 flightId.toString(),
                 barcode,
                 isManualInput,
+                updatedAt,
                 srcOffice.id)
         }
 

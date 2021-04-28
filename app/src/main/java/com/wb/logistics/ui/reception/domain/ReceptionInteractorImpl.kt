@@ -106,7 +106,7 @@ class ReceptionInteractorImpl(
                 isManual,
                 matchingBox.data.dstOffice.fullAddress,
                 updatedAt))
-        val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId)
+        val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId, updatedAt)
         val boxAdded = boxAdded(barcode, gate.toString())
 
         return saveBoxScanned

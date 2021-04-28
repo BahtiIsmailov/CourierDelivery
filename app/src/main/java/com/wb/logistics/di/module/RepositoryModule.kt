@@ -76,7 +76,7 @@ val deliveryRepositoryModule = module {
     single { provideAuthRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get()) }
-    single { provideAppRepository(get(), get()) }
+    single { provideAppRepository(get(), get(), get()) }
     single { provideReceptionRepository(get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
