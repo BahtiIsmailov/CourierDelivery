@@ -33,7 +33,7 @@ class FlightsInteractorImpl(
 //    }
 
     private fun updateFlightAndBoxes(): Completable {
-        return appRepository.updateFlight()
+        return appRepository.updateFlightAndTime()
             .andThen(appRepository.readFlightData())
             .flatMapCompletable {
                 if (it is SuccessOrEmptyData.Success) appRepository.updateMatchingBoxes(it.data.flight.toString())
@@ -69,6 +69,7 @@ class FlightsInteractorImpl(
                 flightId.toString(),
                 barcode,
                 isManualInput,
+                updatedAt,
                 srcOffice.id)
         }
 

@@ -98,12 +98,14 @@ class ReceptionInteractorImpl(
         matchingBox: SuccessOrEmptyData.Success<MatchingBoxEntity>,
         gate: Int,
     ): Observable<ScanBoxData> {
+        val updatedAt = appRepository.getOffsetLocalTime()
         val saveBoxScanned =
             saveBoxScanned(convertBoxScanned(flightId,
                 matchingBox.data,
                 gate,
                 isManual,
-                matchingBox.data.dstOffice.fullAddress))
+                matchingBox.data.dstOffice.fullAddress,
+                updatedAt))
         val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId)
         val boxAdded = boxAdded(barcode, gate.toString())
 
@@ -122,6 +124,7 @@ class ReceptionInteractorImpl(
                     saveBoxScannedToBalanceRemote(flightId,
                         it.barcode,
                         it.isManualInput,
+                        it.updatedAt,
                         it.dstOffice.id)
                         .andThen(deleteFlightBoxBalanceAwait(it)).onErrorComplete()
                 }
@@ -133,6 +136,7 @@ class ReceptionInteractorImpl(
         gate: Int,
         isManual: Boolean,
         dstFullAddress: String,
+        updatedAt: String,
     ) = with(matchingBoxEntity) {
         LogUtils { logDebugApp(dstFullAddress) }
         AttachedBoxEntity(
@@ -143,7 +147,8 @@ class ReceptionInteractorImpl(
             dstOffice = AttachedDstOfficeEntity(dstOffice.id),
             smID = smID,
             isManualInput = isManual,
-            dstFullAddress = dstFullAddress)
+            dstFullAddress = dstFullAddress,
+            updatedAt = updatedAt)
     }
 
     override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
@@ -162,6 +167,7 @@ class ReceptionInteractorImpl(
                 flightId.toString(),
                 barcode,
                 isManualInput,
+                updatedAt,
                 srcOffice.id)
         }
 
@@ -198,21 +204,25 @@ class ReceptionInteractorImpl(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
+        updatedAt: String,
         currentOffice: Int,
     ) = appRepository.flightBoxScannedToBalanceRemote(
         flightId,
         barcode,
         isManualInput,
+        updatedAt,
         currentOffice)
 
     private fun boxBalanceAwait(
         barcode: String,
         isManualInput: Boolean,
         currentOffice: Int,
+        updatedAt: String,
     ) = appRepository.saveFlightBoxBalanceAwait(
         AttachedBoxBalanceAwaitEntity(barcode,
             isManualInput,
-            AttachedBoxCurrentOfficeEntity(currentOffice)))
+            AttachedBoxCurrentOfficeEntity(currentOffice),
+            updatedAt))
 
     private fun saveBoxScanned(flightBoxScanned: AttachedBoxEntity) =
         appRepository.saveAttachedBox(flightBoxScanned)
@@ -320,7 +330,8 @@ class ReceptionInteractorImpl(
             dstOffice = AttachedDstOfficeEntity(dstOfficeId),
             smID = 10,
             isManualInput = false,
-            dstFullAddress = dstFullAddress)
+            dstFullAddress = dstFullAddress,
+            updatedAt = "2021-04-19T15:45:00+03:00")
     }
 
 }

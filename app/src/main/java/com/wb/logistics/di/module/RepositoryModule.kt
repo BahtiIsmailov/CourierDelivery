@@ -18,6 +18,7 @@ import com.wb.logistics.network.headers.RefreshTokenRepositoryImpl
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepositoryImpl
 import com.wb.logistics.network.rx.RxSchedulerFactory
+import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.ui.reception.data.ReceptionApi
 import com.wb.logistics.ui.reception.data.ReceptionDao
@@ -46,8 +47,9 @@ val deliveryRepositoryModule = module {
     fun provideAppRepository(
         remoteRepository: RemoteAppRepository,
         localRepository: LocalRepository,
+        timeManager: TimeManager,
     ): AppRepository {
-        return AppRepositoryImpl(remoteRepository, localRepository)
+        return AppRepositoryImpl(remoteRepository, localRepository, timeManager)
     }
 
     fun provideLocalRepository(

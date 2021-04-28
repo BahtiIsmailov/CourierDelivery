@@ -11,4 +11,5 @@ data class AttachedBoxBalanceAwaitEntity(
     val isManualInput: Boolean,
     @Embedded
     val dstOffice: AttachedBoxCurrentOfficeEntity,
+    val updatedAt: String
 )

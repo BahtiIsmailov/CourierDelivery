@@ -12,36 +12,45 @@ import java.util.*
 
 class TimeFormatterImpl : TimeFormatter {
     private val dateFormatSymbols: DateFormatSymbols = DateFormatSymbols(Locale(LOCALE_RU))
+
+    override fun currentDateTime(): DateTime {
+        return DateTime()
+    }
+
+    override fun currentDateTimeFormat(formatType: String): String {
+        return format(DateTime(), formatType)
+    }
+
     override fun format(date: String, formatType: String): String {
-        val calendar = calendarFromString(date)
+        val calendar = calendarWithoutTimezoneFromString(date)
         val dateTime = DateTime(calendar.timeInMillis)
         return format(dateTime, formatType)
     }
 
-    override fun format(time: DateTime, formatType: String): String {
+    override fun format(dateTime: DateTime, formatType: String): String {
         return when (formatType) {
-            TimeFormatType.ONLY_DATE -> formatDate(time, ONLY_DATE)
+            TimeFormatType.ONLY_DATE -> formatDateTime(dateTime, ONLY_DATE)
             TimeFormatType.ONLY_DATE_YMD -> formatDate(
-                time,
+                dateTime,
                 ONLY_DATE_YMD,
                 DateTimeZone.forID(AppConsts.SERVER_TIMEZONE)
             )
-            TimeFormatType.DAY_LETTER_MONTH_YEAR -> formatDate(
-                time,
+            TimeFormatType.DAY_LETTER_MONTH_YEAR -> formatDateTime(
+                dateTime,
                 DAY_LETTER_MONTH_YEAR
             )
-            TimeFormatType.ONLY_TIME -> formatDate(time, ONLY_TIME)
-            TimeFormatType.ONLY_MONTH -> formatDate(time, ONLY_MONTH)
-            TimeFormatType.MIN_AND_SEC -> formatDate(time, MIN_AND_SEC)
-            TimeFormatType.DAY_AND_LETTER_MONTH -> formatDayLetterMonth(time)
-            TimeFormatType.HUMAN_DATE -> formatHumanDate(time)
-            TimeFormatType.FULL_DATE_AND_TIME -> formatFullDateTime(time)
-            TimeFormatType.DATE_AND_TIME -> formatDate(time, DATE_AND_TIME)
-            else -> formatDate(time, DATE_AND_TIME)
+            TimeFormatType.ONLY_TIME -> formatDateTime(dateTime, ONLY_TIME)
+            TimeFormatType.ONLY_MONTH -> formatDateTime(dateTime, ONLY_MONTH)
+            TimeFormatType.MIN_AND_SEC -> formatDateTime(dateTime, MIN_AND_SEC)
+            TimeFormatType.DAY_AND_LETTER_MONTH -> formatDayLetterMonth(dateTime)
+            TimeFormatType.HUMAN_DATE -> formatHumanDate(dateTime)
+            TimeFormatType.FULL_DATE_AND_TIME -> formatFullDateTime(dateTime)
+            TimeFormatType.DATE_AND_TIME -> formatDateTime(dateTime, DATE_AND_TIME)
+            else -> formatDateTime(dateTime, DATE_AND_TIME)
         }
     }
 
-    private fun formatDate(input: DateTime, timeFormat: String): String {
+    private fun formatDateTime(input: DateTime, timeFormat: String): String {
         val fmt = DateTimeFormat.forPattern(timeFormat)
         return fmt.print(input)
     }
@@ -49,10 +58,10 @@ class TimeFormatterImpl : TimeFormatter {
     private fun formatDate(
         input: DateTime,
         timeFormat: String,
-        timeZone: DateTimeZone,
+        dateTimeZone: DateTimeZone,
     ): String {
         val fmt = DateTimeFormat.forPattern(timeFormat)
-        return fmt.print(input.withZone(timeZone))
+        return fmt.print(input.withZone(dateTimeZone))
     }
 
     private fun formatDayLetterMonth(input: DateTime): String {
@@ -67,14 +76,14 @@ class TimeFormatterImpl : TimeFormatter {
         } else if (time.toLocalDate() == LocalDate().minusDays(1)) {
             return YESTERDAY
         }
-        return formatDate(time, DATE_AND_TIME)
+        return formatDateTime(time, DATE_AND_TIME)
     }
 
     private fun formatFullDateTime(time: DateTime): String {
         return String.format(
             Locale.getDefault(), FULL_DATE_TIME_FORMAT,
-            formatDate(time, DAY_LETTER_MONTH_YEAR),
-            formatDate(time, ONLY_TIME)
+            formatDateTime(time, DAY_LETTER_MONTH_YEAR),
+            formatDateTime(time, ONLY_TIME)
         )
     }
 
@@ -93,16 +102,12 @@ class TimeFormatterImpl : TimeFormatter {
         return dateTimeFormatter.print(seconds * MILLIS_IN_SECOND)
     }
 
-    override fun calendarFromString(date: String): Calendar {
+    override fun calendarFromStringSimple(date: String): Calendar {
         return getCalendar(date, PATTERN_CALENDAR_FORMAT)
     }
 
-    override fun calendarFromStringSimple(date: String): Calendar {
-        return getCalendar(date, PATTERN_SIMPLE_CALENDAR_FORMAT)
-    }
-
     override fun calendarWithTimezoneFromString(date: String): Calendar {
-        return getCalendar(date, PATTERN_SIMPLE_CALENDAR_WITH_TIMEZONE_FORMAT)
+        return getCalendar(date, PATTERN_CALENDAR_WITH_TIMEZONE_FORMAT)
     }
 
     override fun calendarWithoutTimezoneFromString(date: String): Calendar {
@@ -126,11 +131,7 @@ class TimeFormatterImpl : TimeFormatter {
     }
 
     override fun dateFromString(date: String): Date {
-        return calendarFromString(date).time
-    }
-
-    override fun dateTimeFromString(date: String): DateTime {
-        return DateTime(calendarFromString(date).timeInMillis)
+        return calendarWithoutTimezoneFromString(date).time
     }
 
     override fun dateTimeFromStringSimple(date: String): DateTime {
@@ -161,10 +162,9 @@ class TimeFormatterImpl : TimeFormatter {
 
         private const val TIME_ZONE_GMT = "GMT"
 
-        private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
-        private const val PATTERN_SIMPLE_CALENDAR_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
+        private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
+        private const val PATTERN_CALENDAR_WITH_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ"
         private const val PATTERN_CALENDAR_WITHOUT_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
-        private const val PATTERN_SIMPLE_CALENDAR_WITH_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ"
     }
 
 }

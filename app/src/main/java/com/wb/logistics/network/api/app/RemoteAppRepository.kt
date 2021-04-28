@@ -10,6 +10,7 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
+import com.wb.logistics.network.api.app.remote.time.TimeRemote
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
@@ -65,5 +66,8 @@ interface RemoteAppRepository {
         @Path("flightID") flightID: String,
         @Body statusesStateRemote: StatusesStateRemote,
     )
+
+    @GET("/api/v1/time")
+    fun getTime(): Single<TimeRemote>
 
 }

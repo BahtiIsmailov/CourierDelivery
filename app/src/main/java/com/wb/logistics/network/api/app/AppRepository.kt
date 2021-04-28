@@ -22,7 +22,7 @@ interface AppRepository {
 
     fun flightStatuses(): Single<FlightStatusesRemote>
 
-    fun updateFlight(): Completable
+    fun updateFlightAndTime(): Completable
 
     fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
 
@@ -58,6 +58,7 @@ interface AppRepository {
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
+        updatedAt: String,
         currentOffice: Int,
     ): Completable
 
@@ -65,10 +66,10 @@ interface AppRepository {
         flightID: String,
         barcode: String,
         isManual: Boolean,
+        updatedAt: String,
         idOffice: Int,
     ): Completable
 
-    // TODO: 28.04.2021 добавить дату и время
     fun saveBoxScannedToBalanceRemote(
         flightID: String,
         barcode: String,
@@ -134,5 +135,11 @@ interface AppRepository {
     fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>>
 
 //    fun findReturnBoxesByDstOfficeId(dstOfficeId: Int): Single<ReturnBoxByDstOfficeIdEntity>
+
+    //==============================================================================================
+    //time
+    //==============================================================================================
+
+    fun getOffsetLocalTime(): String
 
 }
