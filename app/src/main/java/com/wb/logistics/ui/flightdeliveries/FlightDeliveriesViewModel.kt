@@ -33,7 +33,7 @@ class FlightDeliveriesViewModel(
     private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByAddressEntity>()
 
     init {
-        screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
+        //screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
     }
 
     fun action(actionView: FlightDeliveriesUIAction) {
