@@ -302,7 +302,9 @@ class AppRepositoryImpl(
     ): Completable {
         return remote.putBoxScannedToBalance(flightID,
             barcode,
-            PutBoxFromFlightRemote(isManualInput, PutBoxCurrentOfficeRemote(currentOffice)))
+            PutBoxFromFlightRemote(isManualInput,
+                updatedAt,
+                PutBoxCurrentOfficeRemote(currentOffice)))
     }
 
     //==============================================================================================

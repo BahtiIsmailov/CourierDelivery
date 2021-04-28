@@ -75,6 +75,7 @@ class UnloadingInteractorImpl(
                                     .andThen(saveBoxScannedToBalanceRemote(flightId.toString(), //сохранение на сервере
                                         data.barcode,
                                         isManual,
+                                        updatedAt,
                                         dstOfficeId))
                                     .andThen(appRepository.deleteAttachedBox(data))
                                     .andThen(Observable.just(UnloadingData.BoxUnloadAdded(data.barcode)))
@@ -122,10 +123,12 @@ class UnloadingInteractorImpl(
     private fun sendBoxBalanceAwait(flightId: String) =
         appRepository.flightBoxBalanceAwait()
             .flatMapCompletable { boxesBalanceAwait ->
+                val updatedAt = appRepository.getOffsetLocalTime()
                 Observable.fromIterable(boxesBalanceAwait).flatMapCompletable {
                     saveBoxScannedToBalanceRemote(flightId,
                         it.barcode,
                         it.isManualInput,
+                        updatedAt,
                         it.dstOffice.id)
                         .andThen(deleteFlightBoxBalanceAwait(it)).onErrorComplete()
                 }
@@ -188,18 +191,19 @@ class UnloadingInteractorImpl(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
+        updatedAt: String,
         currentOffice: Int,
     ) = appRepository.saveBoxScannedToBalanceRemote(
         flightId,
         barcode,
         isManualInput,
-        "2021-04-19T15:45:00+03:00", // TODO: 27.04.2021 добавить время
+        updatedAt,
         currentOffice)
         .onErrorComplete()
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
-    private fun saveBoxScanned(flightBoxScanned: AttachedBoxEntity) =
-        appRepository.saveAttachedBox(flightBoxScanned)
+//    private fun saveBoxScanned(flightBoxScanned: AttachedBoxEntity) =
+//        appRepository.saveAttachedBox(flightBoxScanned)
 
     override fun observeUnloadedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>> {
         return Flowable.combineLatest(appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
