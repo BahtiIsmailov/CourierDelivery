@@ -1,12 +1,12 @@
 package com.wb.logistics.ui.flightdeliveries.domain
 
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
 import io.reactivex.Single
 
 interface FlightDeliveriesInteractor {
 
     fun flightId(): Single<Int>
 
-    fun getScannedBoxesGroupByAddress() : Single<List<ScannedBoxGroupByAddressEntity>>
+    fun getAttachedBoxesGroupByAddress() : Single<List<AttachedBoxGroupByAddressEntity>>
 
 }

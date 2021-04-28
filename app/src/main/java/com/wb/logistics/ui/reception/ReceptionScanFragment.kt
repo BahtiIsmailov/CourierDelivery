@@ -1,54 +1,35 @@
 package com.wb.logistics.ui.reception
 
-import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.hardware.Camera
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
-import android.os.Handler
-import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.google.zxing.Result
 import com.wb.logistics.R
 import com.wb.logistics.databinding.ReceptionScanFragmentBinding
-import com.wb.logistics.ui.reception.ReceptionHandleFragment.Companion.HANDLE_INPUT_RESULT
-import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.ui.reception.ReceptionHandleFragment.Companion.HANDLE_BARCODE_RESULT
+import com.wb.logistics.ui.reception.views.ReceptionAcceptedMode
+import com.wb.logistics.ui.reception.views.ReceptionInfoMode
+import com.wb.logistics.ui.reception.views.ReceptionParkingMode
 import com.wb.logistics.views.ProgressImageButtonMode
-import com.wb.logistics.views.ReceptionAcceptedMode
-import com.wb.logistics.views.ReceptionInfoMode
-import com.wb.logistics.views.ReceptionParkingMode
-import me.dm7.barcodescanner.core.IViewFinder
-import me.dm7.barcodescanner.core.ViewFinderView
-import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
-
-    private var cameraZoom: Camera? = null
+class ReceptionFragment : Fragment() {
 
     private val viewModel by viewModel<ReceptionScanViewModel>()
 
     private var _binding: ReceptionScanFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var scannerView: ZXingScannerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,52 +41,14 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initPermission()
-        initScanner()
         initListener()
         initObserver()
     }
 
-    private fun initPermission() {
-        if (!hasPermissions(Manifest.permission.CAMERA)) {
-            requestPermissions(
-                arrayOf(Manifest.permission.CAMERA), PERMISSIONS_REQUEST_CAMERA_NO_ACTION
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSIONS_REQUEST_CAMERA_NO_ACTION
-            && grantResults.isNotEmpty()
-            && grantResults.first() == PackageManager.PERMISSION_GRANTED
-        ) {
-            startScanner()
-        }
-    }
-
-    private fun initScanner() {
-        scannerView = object : ZXingScannerView(context) {
-            override fun createViewFinderView(context: Context): IViewFinder {
-                return CustomViewFinderView(context)
-            }
-        }
-        scannerView.setBorderColor(Color.WHITE)
-        scannerView.setLaserEnabled(true)
-        scannerView.setIsBorderCornerRounded(true)
-        scannerView.setBorderCornerRadius(10)
-        scannerView.setBorderAlpha(0.5F)
-        binding.scannerLayout.addView(scannerView)
-    }
-
     private fun initObserver() {
-        val eventObserver = Observer<ReceptionScanNavigationEvent> { state ->
+        val navigationObserver = Observer<ReceptionScanNavAction> { state ->
             when (state) {
-                is ReceptionScanNavigationEvent.NavigateToReceptionBoxNotBelong -> {
+                is ReceptionScanNavAction.NavigateToReceptionBoxNotBelong -> {
                     findNavController().navigate(
                         ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
                             with(state) {
@@ -114,15 +57,15 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
                         )
                     )
                 }
-                ReceptionScanNavigationEvent.NavigateToBoxes -> findNavController().navigate(
+                ReceptionScanNavAction.NavigateToBoxes -> findNavController().navigate(
                     ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxesFragment())
-                ReceptionScanNavigationEvent.NavigateToFlightDeliveries -> findNavController().navigate(
+                ReceptionScanNavAction.NavigateToFlightDeliveries -> findNavController().navigate(
                     ReceptionFragmentDirections.actionReceptionFragmentToFlightDeliveriesFragment())
-                ReceptionScanNavigationEvent.NavigateToBack -> findNavController().popBackStack()
+                ReceptionScanNavAction.NavigateToBack -> findNavController().popBackStack()
             }
         }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner, eventObserver)
+        viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
 
         viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -145,33 +88,33 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is ReceptionScanBoxUIState.BoxAdded -> {
+                is ReceptionScanBoxState.BoxAdded -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_COMPLETE)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_COMPLETE)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
-                is ReceptionScanBoxUIState.BoxDeny -> {
+                is ReceptionScanBoxState.BoxDeny -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_DENY)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_DENY)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.RETURN)
                 }
-                ReceptionScanBoxUIState.Empty -> {
+                ReceptionScanBoxState.Empty -> {
                     binding.received.setState(ReceptionAcceptedMode.EMPTY)
                     binding.parking.setParkingNumber(ReceptionParkingMode.EMPTY)
                     binding.info.setCodeBox(ReceptionInfoMode.EMPTY)
                 }
-                is ReceptionScanBoxUIState.BoxHasBeenAdded -> {
+                is ReceptionScanBoxState.BoxHasBeenAdded -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_HAS_ADDED)
                     binding.parking.setParkingNumber(state.gate,
                         ReceptionParkingMode.CONTAINS_COMPLETE)
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
-                is ReceptionScanBoxUIState.BoxInit -> {
+                is ReceptionScanBoxState.BoxInit -> {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_COMPLETE)
                     binding.parking.setParkingNumber(state.gate,
@@ -213,7 +156,8 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun initListener() {
         binding.manualInputButton.setOnClickListener {
-            stoopScanner()
+            // TODO: 22.04.2021 заменить на вызовы
+            viewModel.onStopScanner()
             showHandleInput()
         }
 
@@ -230,13 +174,14 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun showHandleInput() {
         val receptionHandleFragment = ReceptionHandleFragment.newInstance()
         receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
-        receptionHandleFragment.show(parentFragmentManager, "add_reception_handle_fragment")
+        receptionHandleFragment.show(parentFragmentManager, REQUEST_HANDLE_TAG)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        startScanner()
+        // TODO: 22.04.2021 заменить на вызовы
+        viewModel.onStartScanner()
 
         if (resultCode == RESULT_OK)
             resultScanner(requestCode, data)
@@ -245,9 +190,9 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun resultScanner(requestCode: Int, data: Intent?) {
         if (requestCode == REQUEST_HANDLE_CODE) {
             data?.apply {
-                val result = data.getStringExtra(HANDLE_INPUT_RESULT)
-                if (data.hasExtra(HANDLE_INPUT_RESULT) && result != null) {
-                    viewModel.onBoxHandleInput(result)
+                val barcode = data.getStringExtra(HANDLE_BARCODE_RESULT)
+                if (data.hasExtra(HANDLE_BARCODE_RESULT) && barcode != null) {
+                    viewModel.onBoxHandleInput(barcode)
                 }
             }
         }
@@ -256,16 +201,6 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun handleResult(rawResult: Result?) {
-        val code = rawResult?.text ?: return
-        viewModel.onBoxScanned(code)
-        LogUtils { logDebugApp("Cod $code") }
-        beepAdded()
-        val handler = Handler()
-        handler.postDelayed({ scannerView.resumeCameraPreview(this) },
-            2000)
     }
 
     private fun beepAdded() {
@@ -278,83 +213,9 @@ class ReceptionFragment : Fragment(), ZXingScannerView.ResultHandler {
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
     }
 
-    override fun onStart() {
-        super.onStart()
-        startScanner()
-    }
-
-    private fun startScanner() {
-        scannerView.setResultHandler(this)
-        scannerView.startCamera()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        stoopScanner()
-    }
-
-    private fun stoopScanner() {
-        scannerView.stopCamera()
-    }
-
     companion object {
-        const val PERMISSIONS_REQUEST_CAMERA_NO_ACTION = 1
         const val REQUEST_HANDLE_CODE = 100
+        const val REQUEST_HANDLE_TAG = "request_handle_tag"
     }
 
-
-    private class CustomViewFinderView : ViewFinderView {
-        val paint = Paint()
-
-        constructor(context: Context?) : super(context) {
-            init()
-        }
-
-        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-            init()
-        }
-
-        private fun init() {
-            paint.color = Color.WHITE
-            paint.isAntiAlias = true
-            val textPixelSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                TRADE_MARK_TEXT_SIZE_SP.toFloat(), resources.displayMetrics)
-            paint.textSize = textPixelSize
-//            setSquareViewFinder(true)
-        }
-
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            drawTradeMark(canvas)
-        }
-
-        private fun drawTradeMark(canvas: Canvas) {
-            val framingRect = framingRect
-            val tradeMarkTop: Float
-            val tradeMarkLeft: Float
-            if (framingRect != null) {
-                tradeMarkTop = framingRect.bottom + paint.textSize + 10
-                tradeMarkLeft = framingRect.left.toFloat()
-            } else {
-                tradeMarkTop = 10f
-                tradeMarkLeft = canvas.height - paint.textSize - 10
-            }
-            canvas.drawText(TRADE_MARK_TEXT, tradeMarkLeft, tradeMarkTop, paint)
-        }
-
-        companion object {
-            const val TRADE_MARK_TEXT = "WB"
-            const val TRADE_MARK_TEXT_SIZE_SP = 40
-        }
-    }
-
-}
-
-fun Fragment.hasPermissions(vararg permissions: String): Boolean = permissions.all(::hasPermission)
-
-fun Fragment.hasPermission(permission: String): Boolean {
-    return ActivityCompat.checkSelfPermission(
-        requireContext(),
-        permission
-    ) == PackageManager.PERMISSION_GRANTED
 }

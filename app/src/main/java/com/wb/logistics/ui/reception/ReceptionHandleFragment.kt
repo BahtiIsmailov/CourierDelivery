@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jakewharton.rxbinding3.widget.textChanges
-import com.wb.logistics.databinding.ReceptionHandleBottomSheetBinding
+import com.wb.logistics.databinding.ReceptionHandleFragmentBinding
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -19,7 +19,7 @@ class ReceptionHandleFragment : BottomSheetDialogFragment() {
 
     private val viewModel by viewModel<ReceptionHandleViewModel>()
 
-    private var _binding: ReceptionHandleBottomSheetBinding? = null
+    private var _binding: ReceptionHandleFragmentBinding? = null
     private val binding get() = _binding!!
 
     companion object {
@@ -27,7 +27,7 @@ class ReceptionHandleFragment : BottomSheetDialogFragment() {
             return ReceptionHandleFragment()
         }
 
-        const val HANDLE_INPUT_RESULT = "HANDLE_INPUT_RESULT"
+        const val HANDLE_BARCODE_RESULT = "HANDLE_INPUT_RESULT"
     }
 
 
@@ -52,7 +52,7 @@ class ReceptionHandleFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = ReceptionHandleBottomSheetBinding.inflate(inflater, container, false)
+        _binding = ReceptionHandleFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -67,6 +67,7 @@ class ReceptionHandleFragment : BottomSheetDialogFragment() {
 //                sheet.parent.parent.requestLayout()
 //            }
 //        }
+        onResult(RESULT_CANCELED, "")
 
         initListener()
         initStateObserve()
@@ -115,7 +116,7 @@ class ReceptionHandleFragment : BottomSheetDialogFragment() {
     }
 
     private fun onResult(resultCode: Int, codeBox: String) {
-        val intent = Intent().putExtra(HANDLE_INPUT_RESULT, codeBox)
+        val intent = Intent().putExtra(HANDLE_BARCODE_RESULT, codeBox)
         targetFragment?.onActivityResult(targetRequestCode, resultCode, intent)
     }
 

@@ -35,6 +35,10 @@
     <color name="added_trans">#2FFB8C00</color>
     <color name="primary">#642CA3</color>
 
+    <color name="icon_default">#CCC5D3</color>
+    <color name="icon_success">#2CA364</color>
+    <color name="icon_warning">#FB8C00</color>
+
 
     <color name="background_content_light">#FFFFFF</color>
     <color name="background_content">#E5E5E5</color>

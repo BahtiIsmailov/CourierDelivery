@@ -125,6 +125,32 @@
     <string name="flight_deliveries_delivery_toolbar_title">Доставка №%1$d</string>
     <string name="flight_deliveries_title_empty">Рейс</string>
     <string name="flight_deliveries_redo_count">Сдать %1$d шт.</string>
+    <string name="flight_deliveries_undo_count">Вернуть %1$d шт.</string>
+    <string name="flight_deliveries_empty_count" />
     <string name="flight_deliveries_count_box">Вы приняли %1$d коробок</string>
+
+    <string name="unloading_scan_label" />
+
+    <string name="unloading_boxes_label">Список для выгрузки</string>
+    <string name="unloading_boxes_title_list">Коробки</string>
+    <string name="unloading_boxes_title">Выгружено</string>
+    <string name="unloading_boxes_empty_count">0/0</string>
+    <string name="unloading_boxes_return_title">Возврат</string>
+    <string name="unloading_boxes_return_empty_count">-</string>
+    <string name="unloading_boxes_info_box_unload">Выгрузите на ПВЗ</string>
+    <string name="unloading_boxes_info_box_return">Погрузите в машину</string>
+
+    <string name="unloading_box_not_belong_point_toolbar_label">Не принадлежит ПВЗ</string>
+    <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>
+    <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ,\nверните её в машину</string>
+
+    <string name="unloading_return_boxes_label">Возврат</string>
+
+    <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
+    <string name="unloading_handle_empty_list">Список пуст</string>
+
+    <string name="unloading_boxes_complete">Ok</string>
+
+
 
 </resources>

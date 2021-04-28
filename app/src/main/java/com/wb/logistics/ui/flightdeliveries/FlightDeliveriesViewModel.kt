@@ -1,9 +1,11 @@
 package com.wb.logistics.ui.flightdeliveries
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.nav.domain.ScreenManager
 import com.wb.logistics.ui.nav.domain.ScreenState
@@ -20,28 +22,36 @@ class FlightDeliveriesViewModel(
 ) : NetworkViewModel(compositeDisposable) {
 
     val stateUIToolBar = MutableLiveData<String>()
-    val stateUINav = MutableLiveData<FlightDeliveriesUINavState>()
+
+    private val _stateUINav = SingleLiveEvent<FlightDeliveriesUINavState>()
+    val stateUINav: LiveData<FlightDeliveriesUINavState>
+        get() = _stateUINav
+
     val stateUIList = MutableLiveData<FlightDeliveriesUIListState>()
     val stateUIBottom = MutableLiveData<FlightDeliveriesUIBottomState>()
 
-    private var copyScannedBoxes = mutableListOf<ScannedBoxGroupByAddressEntity>()
+    private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByAddressEntity>()
+
+    init {
+        screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
+    }
 
     fun action(actionView: FlightDeliveriesUIAction) {
         when (actionView) {
             is FlightDeliveriesUIAction.GoToDeliveryClick -> {
-                screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
-                stateUINav.value = FlightDeliveriesUINavState.GoToDeliveryDialog
-                stateUINav.value = FlightDeliveriesUINavState.Empty
+                _stateUINav.value = FlightDeliveriesUINavState.GoToDeliveryDialog
+                //_stateUINav.value = FlightDeliveriesUINavState.Empty
             }
             is FlightDeliveriesUIAction.GoToDeliveryConfirmClick -> {
-                stateUINav.value = FlightDeliveriesUINavState.NavigateToDelivery
+                screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
+                _stateUINav.value = FlightDeliveriesUINavState.NavigateToDelivery
             }
         }
     }
 
     fun update() {
         fetchFlightId()
-        fetchScannedBoxGroupByAddress()
+        fetchAttachedBoxesGroupByAddress()
         fetchBottomState()
     }
 
@@ -51,10 +61,10 @@ class FlightDeliveriesViewModel(
     }
 
     private fun fetchFlightIdComplete(idFlight: Int) {
-        if (screenManager.readScreenState() == ScreenState.FLIGHT_PICK_UP_POINT) {
-            stateUIToolBar.value = resourceProvider.getFlightToolbar(idFlight)
+        stateUIToolBar.value =  if (screenManager.readScreenState() == ScreenState.FLIGHT_PICK_UP_POINT) {
+            resourceProvider.getFlightToolbar(idFlight)
         } else {
-            stateUIToolBar.value = resourceProvider.getDeliveryToolbar(idFlight)
+            resourceProvider.getDeliveryToolbar(idFlight)
         }
     }
 
@@ -63,8 +73,8 @@ class FlightDeliveriesViewModel(
     }
 
 
-    private fun fetchScannedBoxGroupByAddress() {
-        addSubscription(interactor.getScannedBoxesGroupByAddress()
+    private fun fetchAttachedBoxesGroupByAddress() {
+        addSubscription(interactor.getAttachedBoxesGroupByAddress()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
                 Single.zip(build(boxes), count(boxes), { t1, t2 -> Pair(t1, t2) })
@@ -77,16 +87,16 @@ class FlightDeliveriesViewModel(
                 { fetchScannedBoxGroupByAddressError(it) }))
     }
 
-    private fun build(boxes: List<ScannedBoxGroupByAddressEntity>) =
+    private fun build(boxes: List<AttachedBoxGroupByAddressEntity>) =
         Observable.fromIterable(boxes.withIndex())
-            .map { (index, item): IndexedValue<ScannedBoxGroupByAddressEntity> ->
+            .map { (index, item): IndexedValue<AttachedBoxGroupByAddressEntity> ->
                 val isEnabled = screenManager.readScreenState() == ScreenState.FLIGHT_DELIVERY
                 dataBuilder.buildSuccessItem(item, isEnabled, index)
             }
             .toList()
 
-    private fun count(boxes: List<ScannedBoxGroupByAddressEntity>) =
-        Observable.fromIterable(boxes).map { it.count }.scan { v1, v2 -> v1 + v2 }.last(0)
+    private fun count(boxes: List<AttachedBoxGroupByAddressEntity>) =
+        Observable.fromIterable(boxes).map { it.undoCount }.scan { v1, v2 -> v1 + v2 }.last(0)
 
     private fun fetchBottomState() {
         if (screenManager.readScreenState() == ScreenState.FLIGHT_PICK_UP_POINT) {
@@ -113,11 +123,10 @@ class FlightDeliveriesViewModel(
         }
     }
 
-    fun onItemClicked(idItem: Int) {
-        // TODO: 19.04.2021 реализовать
-        val item = copyScannedBoxes[idItem]
-        stateUINav.value =
-            FlightDeliveriesUINavState.NavigateToUpload("Далее выгрузка по адресу ${item.dstFullAddress} в количестве ${item.count} коробок")
+    fun onItemClicked(itemId: Int) {
+        val item = copyScannedBoxes[itemId]
+        _stateUINav.value =
+            FlightDeliveriesUINavState.NavigateToUpload(item.officeId, item.officeName)
     }
 
 }

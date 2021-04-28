@@ -7,6 +7,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +29,7 @@ import java.util.*
 class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
     NavToolbarTitleListener {
 
-    private val navigationViewModel by viewModel<NavigationViewModel>()
+    private val viewModel by viewModel<NavigationViewModel>()
 
     private lateinit var binding: NavigationActivityBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -48,43 +49,32 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
 
     private fun initObserver() {
 
-        navigationViewModel.backTtn.observe(this) {
-            if (it) {
-                val toolbar = findViewById<Toolbar>(R.id.toolbar)
-                toolbar.setNavigationIcon(R.drawable.ic_fligt_delivery_transport_doc)
-                setSupportActionBar(toolbar)
-            }
-        }
-
-        navigationViewModel.stateUINav.observe(this) { state ->
+        viewModel.stateUINav.observe(this) { state ->
             when (state) {
-                NavigationUINavState.NavigateToFlight -> {
+                NavigationNavAction.NavigateToFlight -> {
                 }
-                NavigationUINavState.NavigateToReceptionScan -> findNavController(R.id.nav_host_fragment).navigate(
+                NavigationNavAction.NavigateToReceptionScan -> findNavController(R.id.nav_host_fragment).navigate(
                     FlightsFragmentDirections.actionFlightsFragmentToReceptionScanFragment())
-                NavigationUINavState.NavigateToPickUpPoint -> findNavController(R.id.nav_host_fragment).navigate(
+                NavigationNavAction.NavigateToPickUpPoint -> findNavController(R.id.nav_host_fragment).navigate(
                     FlightsFragmentDirections.actionFlightsFragmentToFlightDeliveriesFragment())
-                NavigationUINavState.NavigateToDelivery -> {
+                NavigationNavAction.NavigateToDelivery -> {
                     findNavController(R.id.nav_host_fragment).navigate(
                         FlightsFragmentDirections.actionFlightsFragmentToFlightDeliveriesFragment())
-
-                    val toolbar = findViewById<Toolbar>(R.id.toolbar)
-                    toolbar.setNavigationIcon(R.drawable.ic_fligt_delivery_transport_doc)
-                    setSupportActionBar(toolbar)
-
                 }
             }
         }
 
-        navigationViewModel.navHeader.observe(this) {
+        viewModel.navHeader.observe(this) {
             val header: View = binding.navView.getHeaderView(0)
             header.findViewById<TextView>(R.id.nav_header_name).text = it.first
             header.findViewById<TextView>(R.id.nav_header_company).text = it.second
         }
-        navigationViewModel.networkState.observe(this) {
+
+        viewModel.networkState.observe(this) {
             networkIcon.visibility = if (it) GONE else VISIBLE
         }
-        navigationViewModel.versionApp.observe(this) {
+
+        viewModel.versionApp.observe(this) {
             binding.versionAppText.text = it
         }
     }
@@ -106,10 +96,7 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
         binding.navView.itemIconTintList = null
         val navController = findNavController(R.id.nav_host_fragment)
         appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.flightsFragment
-            ), binding.drawerLayout
-        )
+            setOf(R.id.flightsFragment), binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
         binding.exitAppLayout.setOnClickListener { finish() }
@@ -154,11 +141,26 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
     override fun updateTitle(title: String) {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.title = title
-        navigationViewModel.onChangeTitle()
+    }
+
+    override fun backButtonIcon(resId: Int) {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setNavigationIcon(resId)
+    }
+
+    override fun hideBackButton() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.navigationIcon = null
     }
 
 }
 
 interface NavToolbarTitleListener {
+
+    fun backButtonIcon(@DrawableRes resId: Int)
+
+    fun hideBackButton()
+
     fun updateTitle(title: String)
+
 }

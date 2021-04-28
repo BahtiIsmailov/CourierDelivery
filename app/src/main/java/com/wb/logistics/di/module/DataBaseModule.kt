@@ -4,8 +4,10 @@ import android.app.Application
 import androidx.room.Room
 import com.wb.logistics.app.DATABASE_NAME
 import com.wb.logistics.db.AppDatabase
-import com.wb.logistics.db.BoxDao
-import com.wb.logistics.db.FlightDao
+import com.wb.logistics.db.dao.AttachedBoxDao
+import com.wb.logistics.db.dao.FlightDao
+import com.wb.logistics.db.dao.ReturnBoxDao
+import com.wb.logistics.db.dao.UnloadingBoxDao
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -22,11 +24,21 @@ val databaseModule = module {
         return database.flightDao
     }
 
-    fun provideBoxDao(database: AppDatabase): BoxDao {
-        return database.boxDao
+    fun provideAttachedBoxDao(database: AppDatabase): AttachedBoxDao {
+        return database.attachedBoxDao
+    }
+
+    fun provideUnloadingBoxDao(database: AppDatabase): UnloadingBoxDao {
+        return database.unloadingBoxDao
+    }
+
+    fun provideReturnBoxDao(database: AppDatabase): ReturnBoxDao {
+        return database.returnBoxDao
     }
 
     single { provideDatabase(androidApplication()) }
     single { provideFlightDao(get()) }
-    single { provideBoxDao(get()) }
+    single { provideAttachedBoxDao(get()) }
+    single { provideUnloadingBoxDao(get()) }
+    single { provideReturnBoxDao(get()) }
 }

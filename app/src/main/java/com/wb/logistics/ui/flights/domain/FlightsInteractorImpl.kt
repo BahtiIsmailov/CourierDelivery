@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flights.domain
 
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -49,12 +49,12 @@ class FlightsInteractorImpl(
     private fun networkMonitor() = networkMonitorRepository.isNetworkConnected()
 
     override fun observeFlightBoxScanned(): Flowable<Int> {
-        return appRepository.observeBoxesScanned().map { it.size }
+        return appRepository.observeAttachedBoxes().map { it.size }
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
     override fun deleteFlightBoxes(): Completable {
-        return appRepository.observeBoxesScanned()
+        return appRepository.observeAttachedBoxes()
             .toObservable()
             .flatMapIterable { it }
             .flatMapCompletable {
@@ -63,8 +63,8 @@ class FlightsInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: ScannedBoxEntity) =
-        with(flightBoxScannedEntity) {
+    private fun deleteScannedFlightBoxRemote(attachedBoxEntity: AttachedBoxEntity) =
+        with(attachedBoxEntity) {
             appRepository.deleteFlightBoxScannedRemote(
                 flightId.toString(),
                 barcode,
@@ -72,7 +72,7 @@ class FlightsInteractorImpl(
                 srcOffice.id)
         }
 
-    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: ScannedBoxEntity) =
-        appRepository.deleteBoxScanned(flightBoxScannedEntity).onErrorComplete()
+    private fun deleteScannedFlightBoxLocal(attachedBoxEntity: AttachedBoxEntity) =
+        appRepository.deleteAttachedBox(attachedBoxEntity).onErrorComplete()
 
 }

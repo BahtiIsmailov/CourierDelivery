@@ -2,13 +2,15 @@ package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
-import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
+import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -66,35 +68,71 @@ interface AppRepository {
         idOffice: Int,
     ): Completable
 
+    // TODO: 28.04.2021 добавить дату и время
+    fun saveBoxScannedToBalanceRemote(
+        flightID: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOffice: Int,
+    ): Completable
+
     //==============================================================================================
-    fun saveBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable
+    //attached
+    //==============================================================================================
+    fun saveAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable
 
-    fun observeBoxesScanned(): Flowable<List<ScannedBoxEntity>>
+    fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>>
 
-    fun readBoxesScanned(): Single<List<ScannedBoxEntity>>
+    fun observedAttachedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
 
-    fun deleteBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable
+    fun readAttached(): Single<List<AttachedBoxEntity>>
 
-    fun findBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>>
+    fun deleteAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable
 
-    fun loadBoxScanned(barcodes: List<String>): Single<List<ScannedBoxEntity>>
+    fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>>
 
-    fun deleteAllBoxScanned()
+    fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
 
-    fun groupByDstAddressBoxScanned(): Single<List<ScannedBoxGroupByAddressEntity>>
+    fun deleteAllAttachedBoxes()
+
+    fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>>
+
+    //==============================================================================================
+    //unloading
+    //==============================================================================================
+    fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable
+
+    fun observeUnloadedBoxes(): Flowable<List<UnloadedBoxEntity>>
+
+    fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
+
+    fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>>
 
     //==============================================================================================
     //balance await
     //==============================================================================================
 
-    fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: ScannedBoxBalanceAwaitEntity): Completable
+    fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity): Completable
 
-    fun observeFlightBoxBalanceAwait(): Flowable<List<ScannedBoxBalanceAwaitEntity>>
+    fun observeFlightBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>>
 
-    fun flightBoxBalanceAwait(): Single<List<ScannedBoxBalanceAwaitEntity>>
+    fun flightBoxBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
 
-    fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: ScannedBoxBalanceAwaitEntity): Completable
+    fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity): Completable
 
     fun deleteAllFlightBoxBalanceAwait()
+
+
+    //==============================================================================================
+    //return box
+    //==============================================================================================
+    fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
+
+    fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>>
+
+    fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>>
+
+//    fun findReturnBoxesByDstOfficeId(dstOfficeId: Int): Single<ReturnBoxByDstOfficeIdEntity>
 
 }

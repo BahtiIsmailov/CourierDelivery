@@ -2,7 +2,7 @@ package com.wb.logistics.ui.reception
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.utils.LogUtils
@@ -40,13 +40,13 @@ class ReceptionBoxesViewModel(
                 { changeBoxesError(it) }))
     }
 
-    private fun convertBoxes(boxes: List<ScannedBoxEntity>) =
+    private fun convertBoxes(boxes: List<AttachedBoxEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map(receptionBoxItem)
             .toList()
             .toObservable()
 
-    private val receptionBoxItem = { (index, item): IndexedValue<ScannedBoxEntity> ->
+    private val receptionBoxItem = { (index, item): IndexedValue<AttachedBoxEntity> ->
         ReceptionBoxesItem(singleIncrement(index), item.barcode, item.dstFullAddress, false)
     }
 

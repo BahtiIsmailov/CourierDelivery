@@ -13,6 +13,11 @@ import com.wb.logistics.ui.nav.domain.NavigationInteractor
 import com.wb.logistics.ui.nav.domain.NavigationInteractorImpl
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ReceptionInteractorImpl
+import com.wb.logistics.ui.scanner.domain.ScannerInteractor
+import com.wb.logistics.ui.scanner.domain.ScannerInteractorImpl
+import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
+import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
 import org.koin.dsl.module
 
 val interactorModule = module {
@@ -68,10 +73,26 @@ val interactorModule = module {
             appRepository)
     }
 
+    fun provideScannerInteractor(
+        rxSchedulerFactory: RxSchedulerFactory, scannerRepository: ScannerRepository,
+    ): ScannerInteractor {
+        return ScannerInteractorImpl(rxSchedulerFactory, scannerRepository)
+    }
+
     fun provideReceptionInteractor(
-        rxSchedulerFactory: RxSchedulerFactory, appRepository: AppRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+        scannerRepository: ScannerRepository,
     ): ReceptionInteractor {
-        return ReceptionInteractorImpl(rxSchedulerFactory, appRepository)
+        return ReceptionInteractorImpl(rxSchedulerFactory, appRepository, scannerRepository)
+    }
+
+    fun provideUnloadingInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+        scannerRepository: ScannerRepository,
+    ): UnloadingInteractor {
+        return UnloadingInteractorImpl(rxSchedulerFactory, appRepository, scannerRepository)
     }
 
     single { provideTemporaryPasswordInteractor(get(), get()) }
@@ -80,6 +101,8 @@ val interactorModule = module {
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesInteractor(get(), get(), get()) }
-    single { provideReceptionInteractor(get(), get()) }
+    single { provideScannerInteractor(get(), get()) }
+    single { provideReceptionInteractor(get(), get(), get()) }
+    single { provideUnloadingInteractor(get(), get(), get()) }
 
 }

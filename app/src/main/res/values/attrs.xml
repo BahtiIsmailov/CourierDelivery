@@ -60,4 +60,30 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="UnloadingAcceptedView">
+        <attr name="unloading_accepted_box" format="string" />
+        <attr name="unloading_accepted_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="complete_box" value="1" />
+            <enum name="complete_active_box" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="UnloadingReturnView">
+        <attr name="unloading_return_box" format="string" />
+        <attr name="unloading_return_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="complete_active_box" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="UnloadingInfoView">
+        <attr name="unloading_info_box" format="string" />
+        <attr name="unloading_info_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="unloading_box" value="1" />
+            <enum name="return_box" value="2" />
+        </attr>
+    </declare-styleable>
+
 </resources>

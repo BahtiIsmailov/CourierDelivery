@@ -4,21 +4,23 @@ import android.app.Application
 import com.wb.logistics.ui.auth.AuthResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
-import com.wb.logistics.ui.reception.ReceptionResourceProvider
-import com.wb.logistics.ui.res.AppResourceProvider
+import com.wb.logistics.ui.nav.NavigationResourceProvider
+import com.wb.logistics.ui.reception.ReceptionScanResourceProvider
+import com.wb.logistics.ui.scanner.ScannerResourceProvider
+import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import org.koin.dsl.module
 
 val resourceModule = module {
-    fun provideAppResourceProvider(application: Application): AppResourceProvider {
-        return AppResourceProvider(application)
+    fun provideAppResourceProvider(application: Application): NavigationResourceProvider {
+        return NavigationResourceProvider(application)
     }
 
     fun provideFlightResourceProvider(application: Application): FlightsResourceProvider {
         return FlightsResourceProvider(application)
     }
 
-    fun provideReceptionResourceProvider(application: Application): ReceptionResourceProvider {
-        return ReceptionResourceProvider(application)
+    fun provideReceptionResourceProvider(application: Application): ReceptionScanResourceProvider {
+        return ReceptionScanResourceProvider(application)
     }
 
     fun provideFlightDeliveriesResourceProvider(application: Application): FlightDeliveriesResourceProvider {
@@ -29,9 +31,19 @@ val resourceModule = module {
         return AuthResourceProvider(application)
     }
 
+    fun provideScannerResourceProvider(application: Application): ScannerResourceProvider {
+        return ScannerResourceProvider(application)
+    }
+
+    fun provideUnloadingScanResourceProvider(application: Application): UnloadingScanResourceProvider {
+        return UnloadingScanResourceProvider(application)
+    }
+
     single { provideAppResourceProvider(get()) }
     single { provideFlightResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }
     single { provideFlightDeliveriesResourceProvider(get()) }
     single { provideTemporaryPasswordResourceProvider(get()) }
+    single { provideScannerResourceProvider(get()) }
+    single { provideUnloadingScanResourceProvider(get()) }
 }

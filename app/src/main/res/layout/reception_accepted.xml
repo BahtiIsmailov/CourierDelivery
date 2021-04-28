@@ -5,7 +5,7 @@
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/reception_rounded_corner_empty">
+    android:background="@drawable/scanner_rounded_corner_empty">
 
     <TextView
         android:id="@+id/accepted"

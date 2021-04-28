@@ -1,15 +1,17 @@
 package com.wb.logistics.ui.reception.domain
 
 import com.wb.logistics.db.SuccessOrEmptyData
-import com.wb.logistics.db.entity.boxtoflight.CurrentOfficeEntity
-import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
+import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxCurrentOfficeEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.DstOfficeEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.SrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
+import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -20,6 +22,7 @@ import io.reactivex.subjects.PublishSubject
 class ReceptionInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRepository: AppRepository,
+    private val scannerRepository: ScannerRepository,
 ) : ReceptionInteractor {
 
     private val actionBarcodeScannedSubject = PublishSubject.create<Pair<String, Boolean>>()
@@ -132,19 +135,19 @@ class ReceptionInteractorImpl(
         dstFullAddress: String,
     ) = with(matchingBoxEntity) {
         LogUtils { logDebugApp(dstFullAddress) }
-        ScannedBoxEntity(
+        AttachedBoxEntity(
             flightId = flightId,
             barcode = barcode,
             gate = gate,
-            srcOffice = SrcOfficeEntity(srcOffice.id),
-            dstOffice = DstOfficeEntity(dstOffice.id),
+            srcOffice = AttachedSrcOfficeEntity(srcOffice.id),
+            dstOffice = AttachedDstOfficeEntity(dstOffice.id),
             smID = smID,
             isManualInput = isManual,
             dstFullAddress = dstFullAddress)
     }
 
     override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
-        return appRepository.loadBoxScanned(checkedBoxes)
+        return appRepository.loadAttachedBoxes(checkedBoxes)
             .flatMapCompletable { flightBoxScanned ->
                 Observable.fromIterable(flightBoxScanned)
                     .flatMapCompletable {
@@ -153,7 +156,7 @@ class ReceptionInteractorImpl(
             }.compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: ScannedBoxEntity) =
+    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: AttachedBoxEntity) =
         with(flightBoxScannedEntity) {
             appRepository.deleteFlightBoxScannedRemote(
                 flightId.toString(),
@@ -162,10 +165,10 @@ class ReceptionInteractorImpl(
                 srcOffice.id)
         }
 
-    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: ScannedBoxEntity) =
-        appRepository.deleteBoxScanned(flightBoxScannedEntity).onErrorComplete()
+    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: AttachedBoxEntity) =
+        appRepository.deleteAttachedBox(flightBoxScannedEntity).onErrorComplete()
 
-    private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: ScannedBoxBalanceAwaitEntity) =
+    private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity) =
         appRepository.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity).onErrorComplete()
 
     private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
@@ -187,7 +190,7 @@ class ReceptionInteractorImpl(
 
     private fun flight() = appRepository.readFlight()
 
-    private fun findFlightBoxScanned(barcode: String) = appRepository.findBoxScanned(barcode)
+    private fun findFlightBoxScanned(barcode: String) = appRepository.findAttachedBox(barcode)
 
     private fun findFlightBox(barcode: String) = appRepository.findMatchingBox(barcode)
 
@@ -207,23 +210,25 @@ class ReceptionInteractorImpl(
         isManualInput: Boolean,
         currentOffice: Int,
     ) = appRepository.saveFlightBoxBalanceAwait(
-        ScannedBoxBalanceAwaitEntity(barcode, isManualInput, CurrentOfficeEntity(currentOffice)))
+        AttachedBoxBalanceAwaitEntity(barcode,
+            isManualInput,
+            AttachedBoxCurrentOfficeEntity(currentOffice)))
 
-    private fun saveBoxScanned(flightBoxScanned: ScannedBoxEntity) =
-        appRepository.saveBoxScanned(flightBoxScanned)
+    private fun saveBoxScanned(flightBoxScanned: AttachedBoxEntity) =
+        appRepository.saveAttachedBox(flightBoxScanned)
 
     private fun boxAdded(barcode: String, gate: String) =
         Single.just<ScanBoxData>(ScanBoxData.BoxAdded(barcode, gate))
 
     private fun infoBox(barcode: String) = appRepository.boxInfo(barcode)
 
-    override fun observeScannedBoxes(): Observable<List<ScannedBoxEntity>> {
-        return appRepository.observeBoxesScanned().toObservable()
+    override fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>> {
+        return appRepository.observeAttachedBoxes().toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun readBoxesScanned(): Single<List<ScannedBoxEntity>> {
-        return appRepository.readBoxesScanned().compose(rxSchedulerFactory.applySingleSchedulers())
+    override fun readBoxesScanned(): Single<List<AttachedBoxEntity>> {
+        return appRepository.readAttached().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun sendAwaitBoxes(): Single<Int> {
@@ -261,39 +266,58 @@ class ReceptionInteractorImpl(
             20))
             .map {
                 val barcode = "TRBX12345678910$it"
-                if (it % 2 == 0) {
+                if (it == 1) {
+                    createMockScannedBoxEntity("TRBX7332343002407",
+                        10,
+                        5688,
+                        "г. Камешково (Владимирская область), Школьная улица, д. 4")
+                } else if (it == 2) {
+                    createMockScannedBoxEntity("TRBX4627101160462",
+                        10,
+                        5688,
+                        "г. Камешково (Владимирская область), Школьная улица, д. 4")
+                } else if (it % 2 == 0) {
                     createMockScannedBoxEntity(barcode,
                         10,
-                        "ПВЗ Москва, ул. Карамазова, 10")
+                        5688,
+                        "г. Камешково (Владимирская область), Школьная улица, д. 4")
                 } else if (it % 3 == 0) {
                     createMockScannedBoxEntity(barcode,
                         10,
-                        "ПВЗ Москва, ул. Карамазова, 11")
+                        2096,
+                        "г. Кольчугино (Кольчугинский р-н.), ул. 3 Интернационала, 66")
                 } else if (it % 5 == 0) {
                     createMockScannedBoxEntity(barcode,
                         10,
-                        "ПВЗ Москва, ул. Карамазова, 12")
+                        2537,
+                        "г. Юрьев-Польский (Владимирская область), улица Шибанкова, д. 22")
 
                 } else {
                     createMockScannedBoxEntity(barcode,
                         11,
-                        "ПВЗ Москва, ул. Карамазова, 13")
+                        101675,
+                        "г. Собинка (Владимирская область), улица Димитрова, д. 24")
                 }
             }
             .flatMapCompletable { saveBoxScanned(it) }
     }
 
+    override fun scannerAction(scannerAction: ScannerAction) {
+        scannerRepository.scannerAction(scannerAction)
+    }
+
     private fun createMockScannedBoxEntity(
         barcode: String,
         gate: Int,
+        dstOfficeId: Int,
         dstFullAddress: String,
-    ): ScannedBoxEntity {
-        return ScannedBoxEntity(
-            flightId = 123,
+    ): AttachedBoxEntity {
+        return AttachedBoxEntity(
+            flightId = 129235,
             barcode = barcode,
             gate = gate,
-            srcOffice = SrcOfficeEntity(10),
-            dstOffice = DstOfficeEntity(20),
+            srcOffice = AttachedSrcOfficeEntity(129235),
+            dstOffice = AttachedDstOfficeEntity(dstOfficeId),
             smID = 10,
             isManualInput = false,
             dstFullAddress = dstFullAddress)

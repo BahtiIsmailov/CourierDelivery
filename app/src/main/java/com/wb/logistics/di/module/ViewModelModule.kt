@@ -12,6 +12,8 @@ import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.flights.FlightsViewModel
 import com.wb.logistics.ui.nav.NavigationViewModel
 import com.wb.logistics.ui.reception.*
+import com.wb.logistics.ui.scanner.ScannerViewModel
+import com.wb.logistics.ui.unloading.*
 import com.wb.logistics.utils.time.TimeFormatter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -50,11 +52,46 @@ val viewModelModule = module {
         ReceptionBoxNotBelongModel(parameters)
     }
     viewModel { NavigationViewModel(get(), get(), get(), get(), get()) }
-    viewModel { FlightsViewModel(get(), get(), get(), get(), get()) }
+    viewModel {
+        FlightsViewModel(get(),
+            get(),
+            get(),
+            get(),
+            get())
+    }
+    viewModel { ScannerViewModel(get(), get(), get()) }
     viewModel { ReceptionScanViewModel(get(), get(), get(), get()) }
     viewModel { ReceptionHandleViewModel(get(), get()) }
 
     viewModel { ReceptionBoxesViewModel(get(), get()) }
 
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get(), get()) }
+
+    viewModel { (parameters: UnloadingScanParameters) ->
+        UnloadingScanViewModel(parameters,
+            get(),
+            get(),
+            get(),
+            get())
+    }
+
+    viewModel { (parameters: UnloadingBoxNotBelongParameters) ->
+        UnloadingBoxNotBelongModel(parameters)
+    }
+
+    viewModel { (parameters: UnloadingBoxesParameters) ->
+        UnloadingBoxesViewModel(parameters,
+            get(),
+            get(),
+            get())
+    }
+
+    viewModel { UnloadingReturnBoxesViewModel(get(), get()) }
+    viewModel { (parameters: UnloadingHandleParameters) ->
+        UnloadingHandleViewModel(parameters,
+            get(),
+            get(),
+            get())
+    }
+
 }

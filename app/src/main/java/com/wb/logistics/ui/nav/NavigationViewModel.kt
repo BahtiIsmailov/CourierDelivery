@@ -6,23 +6,18 @@ import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.nav.domain.NavigationInteractor
 import com.wb.logistics.ui.nav.domain.ScreenManager
 import com.wb.logistics.ui.nav.domain.ScreenState
-import com.wb.logistics.ui.res.AppResourceProvider
 import com.wb.logistics.utils.managers.DeviceManager
 import io.reactivex.disposables.CompositeDisposable
 
 class NavigationViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: NavigationInteractor,
-    private val resourceProvider: AppResourceProvider,
+    private val resourceProvider: NavigationResourceProvider,
     private val deviceManager: DeviceManager,
     private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUINav = MutableLiveData<NavigationUINavState>()
-
-    private val _backTtn = MutableLiveData<Boolean>()
-    val backTtn: LiveData<Boolean>
-        get() = _backTtn
+    val stateUINav = MutableLiveData<NavigationNavAction>()
 
     private val _navHeader = MutableLiveData<Pair<String, String>>()
     val navHeader: LiveData<Pair<String, String>>
@@ -45,11 +40,11 @@ class NavigationViewModel(
             ScreenState.FLIGHT -> {
             }
             ScreenState.RECEPTION_SCAN -> stateUINav.value =
-                NavigationUINavState.NavigateToReceptionScan
+                NavigationNavAction.NavigateToReceptionScan
             ScreenState.FLIGHT_PICK_UP_POINT -> stateUINav.value =
-                    NavigationUINavState.NavigateToPickUpPoint
+                    NavigationNavAction.NavigateToPickUpPoint
             ScreenState.FLIGHT_DELIVERY -> stateUINav.value =
-                NavigationUINavState.NavigateToDelivery
+                NavigationNavAction.NavigateToDelivery
         }
     }
 
@@ -63,10 +58,6 @@ class NavigationViewModel(
 
     private fun fetchNetworkState() {
         addSubscription(interactor.isNetworkConnected().subscribe({ _networkState.value = it }, {}))
-    }
-
-    fun onChangeTitle() {
-        if (screenManager.readScreenState() == ScreenState.FLIGHT_DELIVERY) _backTtn.value = true
     }
 
 }

@@ -18,9 +18,11 @@ class FlightDeliveriesResourceProvider(private val context: Context) {
 
     fun getRedoCount(count: Int): String = context.getString(R.string.flight_deliveries_redo_count,
         count)
-//
-//    fun getCountBox(count: Int): String = context.getString(R.string.flight_deliveries_count_box,
-//        count)
+
+    fun getUndoCount(count: Int): String = context.getString(R.string.flight_deliveries_undo_count,
+        count)
+
+    fun getEmptyCount(): String = context.getString(R.string.flight_deliveries_empty_count)
 
     fun getCountBox(count: Int): String = context.resources
         .getQuantityString(R.plurals.reception_box_count, abs(count), count)

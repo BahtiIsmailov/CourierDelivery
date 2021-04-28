@@ -1,11 +1,11 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 
 interface FlightDeliveriesDataBuilder {
     fun buildSuccessItem(
-        scannedBoxGroupByAddressEntity: ScannedBoxGroupByAddressEntity,
+        scannedBoxGroupByAddressEntity: AttachedBoxGroupByAddressEntity,
         isEnabled: Boolean,
         index: Int
     ): BaseItem

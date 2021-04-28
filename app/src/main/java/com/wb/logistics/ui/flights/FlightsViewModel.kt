@@ -51,7 +51,7 @@ class FlightsViewModel(
     }
 
     fun update() {
-        screenManager.saveScreenState(ScreenState.FLIGHT)
+        //screenManager.saveScreenState(ScreenState.FLIGHT)
         fetchFlights()
     }
 

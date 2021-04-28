@@ -25,8 +25,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="10dp"
-                android:src="@drawable/ic_flight_delivery_redo" />
+                android:src="@drawable/ic_flight_delivery_redo"
+                app:tint="#642CA3" />
 
             <TextView
                 android:id="@+id/redo_count"
@@ -65,11 +66,45 @@
                 tools:text="Сдать 4 шт." />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/undo"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/ic_flight_delivery_undo_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/redo"
+            app:layout_constraintTop_toBottomOf="@+id/address">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_flight_delivery_undo"
+                app:tint="#D38119" />
+
+            <TextView
+                android:id="@+id/undo_count"
+                style="@style/BaseRegularLightText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:textColor="#D38119"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/flight_text"
+                tools:text="Сдать 4 шт." />
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/next"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="10dp"
+            android:layout_margin="16dp"
             android:src="@drawable/ic_more_horiz"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

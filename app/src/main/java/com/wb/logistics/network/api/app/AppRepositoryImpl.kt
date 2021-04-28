@@ -3,8 +3,10 @@ package com.wb.logistics.network.api.app
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.*
-import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.*
 import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
@@ -12,8 +14,10 @@ import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
+import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
+import com.wb.logistics.network.api.app.remote.PutBoxCurrentOfficeRemote
+import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.DeleteCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.boxesfromflight.BoxRemote
@@ -277,62 +281,113 @@ class AppRepositoryImpl(
             .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
+    override fun saveBoxScannedToBalanceRemote(
+        flightID: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOffice: Int,
+    ): Completable {
+        return remote.putBoxScannedToBalance(flightID,
+            barcode,
+            PutBoxFromFlightRemote(isManualInput, PutBoxCurrentOfficeRemote(currentOffice)))
+    }
+
     //==============================================================================================
     //scanned box
     //==============================================================================================
-    override fun saveBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
-        return local.saveFlightBoxScanned(flightBoxScannedEntity)
+    override fun saveAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable {
+        return local.saveAttachedBox(flightBoxScannedEntity)
     }
 
-    override fun observeBoxesScanned(): Flowable<List<ScannedBoxEntity>> {
-        return local.observeFlightBoxScanned()
+    override fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>> {
+        return local.observeAttachedBoxes()
     }
 
-    override fun readBoxesScanned(): Single<List<ScannedBoxEntity>> {
-        return local.readBoxesScanned()
+    override fun observedAttachedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
+        return local.observeFilterByOfficeAttachedBoxes(dstOfficeId)
     }
 
-    override fun deleteBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
-        return local.deleteFlightBoxScanned(flightBoxScannedEntity)
+    override fun readAttached(): Single<List<AttachedBoxEntity>> {
+        return local.readAttachedBoxes()
     }
 
-    override fun deleteAllBoxScanned() {
-        local.deleteAllFlightBoxScanned()
+    override fun deleteAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable {
+        return local.deleteAttachedBox(flightBoxScannedEntity)
     }
 
-    override fun groupByDstAddressBoxScanned(): Single<List<ScannedBoxGroupByAddressEntity>> {
-        return local.groupByDstAddressScannedBoxScanned()
+    override fun deleteAllAttachedBoxes() {
+        local.deleteAllAttachedBox()
     }
 
-    override fun findBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>> {
-        return local.findFlightBoxScanned(barcode)
+    override fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>> {
+        return local.groupAttachedBoxByDstAddress()
     }
 
-    override fun loadBoxScanned(barcodes: List<String>): Single<List<ScannedBoxEntity>> {
-        return local.loadFlightBoxScanned(barcodes)
+    override fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>> {
+        return local.findAttachedBox(barcode)
+    }
+
+    override fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
+        return local.loadAttachedBoxes(barcodes)
+    }
+
+    //==============================================================================================
+    //unloaded
+    //==============================================================================================
+    override fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable {
+        return local.saveUnloadedBox(unloadedBoxEntity)
+    }
+
+    override fun observeUnloadedBoxes(): Flowable<List<UnloadedBoxEntity>> {
+        return local.observeUnloadedBoxes()
+    }
+
+    override fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>> {
+        return local.observeUnloadedBoxesByDstOfficeId(dstOfficeId)
+    }
+
+    override fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>> {
+        return local.findUnloadedBox(barcode)
     }
 
     //==============================================================================================
     //balance await
     //==============================================================================================
-    override fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: ScannedBoxBalanceAwaitEntity): Completable {
+    override fun saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity): Completable {
         return local.saveFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity)
     }
 
-    override fun observeFlightBoxBalanceAwait(): Flowable<List<ScannedBoxBalanceAwaitEntity>> {
+    override fun observeFlightBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>> {
         return local.observeFlightBoxBalanceAwait()
     }
 
-    override fun flightBoxBalanceAwait(): Single<List<ScannedBoxBalanceAwaitEntity>> {
+    override fun flightBoxBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>> {
         return local.flightBoxBalanceAwait()
     }
 
-    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: ScannedBoxBalanceAwaitEntity): Completable {
+    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity): Completable {
         return local.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity)
     }
 
     override fun deleteAllFlightBoxBalanceAwait() {
         local.deleteAllFlightBoxBalanceAwait()
+    }
+
+    //==============================================================================================
+    //return
+    //==============================================================================================
+
+    override fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
+        return local.saveReturnBox(returnBoxEntity)
+    }
+
+    override fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>> {
+        return local.observedReturnBoxesByDstOfficeId(dstOfficeId)
+    }
+
+    override fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>> {
+        return local.findReturnBox(barcode)
     }
 
 }

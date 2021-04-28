@@ -46,6 +46,9 @@ public class FlightDeliveriesDelegate extends BaseAdapterDelegate<FlightDeliveri
         binding.address.setText(item.getAddress());
         binding.redoCount.setText(item.getRedoCount());
 
+        binding.undoCount.setText(item.getUndoCount());
+        binding.undo.setVisibility(item.getUndoCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+
         boolean isEnabled = item.isEnabled();
         binding.main.setEnabled(isEnabled);
         binding.main.setClickable(isEnabled);

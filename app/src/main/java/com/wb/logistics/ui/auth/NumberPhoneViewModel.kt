@@ -31,8 +31,8 @@ class NumberPhoneViewModel(
             NumberPhoneUIAction.LongTitle -> NavigateToConfig
             is NumberPhoneUIAction.NumberChanges -> {
                 fetchPhoneNumberFormat(actionView)
-                Empty
-                //NumberFormat("+7 (925) 123-11-51")
+                //Empty
+                NumberFormat("+7 (925) 123-11-51")
             }
         }
         stateUI.value = state

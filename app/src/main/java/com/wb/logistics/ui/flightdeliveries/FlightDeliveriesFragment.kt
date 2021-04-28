@@ -21,6 +21,7 @@ import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.nav.NavToolbarTitleListener
+import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -65,7 +66,7 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun initStateObserve() {
 
-        viewModel.stateUIToolBar.observe(viewLifecycleOwner) { updateToolbarTitle(it) }
+        viewModel.stateUIToolBar.observe(viewLifecycleOwner) { updateToolbarLabel(it) }
 
         viewModel.stateUINav.observe(viewLifecycleOwner, { state ->
             when (state) {
@@ -76,10 +77,9 @@ class FlightDeliveriesFragment : Fragment() {
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentSelf())
                 }
                 is FlightDeliveriesUINavState.NavigateToUpload -> {
-                    showGoToUnloadingDialog(state.description)
+                    findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToUnloadingScanFragment(
+                        UnloadingScanParameters(state.dstOfficeId, state.officeName)))
                 }
-
-
             }
         })
 
@@ -141,8 +141,9 @@ class FlightDeliveriesFragment : Fragment() {
         }
     }
 
-    private fun updateToolbarTitle(toolbarTitle: String) {
+    private fun updateToolbarLabel(toolbarTitle: String) {
         (activity as NavToolbarTitleListener).updateTitle(toolbarTitle)
+        (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
     }
 
     private fun updateStatus(status: String) {

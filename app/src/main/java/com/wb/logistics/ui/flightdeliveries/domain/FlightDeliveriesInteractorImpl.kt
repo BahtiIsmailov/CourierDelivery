@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.flightdeliveries.domain
 
 import com.wb.logistics.db.SuccessOrEmptyData
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -13,8 +13,8 @@ class FlightDeliveriesInteractorImpl(
     private val appRepository: AppRepository,
 ) : FlightDeliveriesInteractor {
 
-    override fun getScannedBoxesGroupByAddress(): Single<List<ScannedBoxGroupByAddressEntity>> {
-        return appRepository.groupByDstAddressBoxScanned()
+    override fun getAttachedBoxesGroupByAddress(): Single<List<AttachedBoxGroupByAddressEntity>> {
+        return appRepository.groupAttachedBoxesByDstAddress()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

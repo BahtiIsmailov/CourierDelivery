@@ -1,6 +1,10 @@
 ﻿{
   "auth_servers": [
     {
+      "key": "AUTH_SERVER_FRONTEND",
+      "value": "https://wbtrans-auth.wildberries.ru"
+    },
+    {
       "key": "AUTH_SERVER_DLDEVEL",
       "value": "http://auth.wbtrans.svc.k8s.dldevel"
     },
@@ -11,13 +15,13 @@
     {
       "key": "AUTH_SERVER_DATAPRO",
       "value": "https://auth.wbtrans.svc.k8s.datapro"
-    },
-    {
-      "key": "AUTH_SERVER_FRONTEND",
-      "value": "https://wbtrans-auth.wildberries.ru"
     }
   ],
   "app_servers": [
+    {
+      "key": "APP_SERVER_FRONTEND",
+      "value": "https://wbtrans-mobile-api.wildberries.ru"
+    },
     {
       "key": "APP_SERVER_DLDEVEL",
       "value": "http://mobile-api.wbtrans.svc.k8s.dldevel"
@@ -29,10 +33,6 @@
     {
       "key": "APP_SERVER_DATAPRO",
       "value": "http://mobile-api.wbtrans.svc.k8s.datapro"
-    },
-    {
-      "key": "APP_SERVER_FRONTEND",
-      "value": "https://wbtrans-mobile-api.wildberries.ru"
     },
     {
       "key": "APP_SERVER_LOCAL_HOST",

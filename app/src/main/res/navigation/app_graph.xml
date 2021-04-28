@@ -74,11 +74,101 @@
     <fragment
         android:id="@+id/flightDeliveriesFragment"
         android:name="com.wb.logistics.ui.flightdeliveries.FlightDeliveriesFragment"
-        android:label="light_deliveries_label"
+        android:label="@string/light_deliveries_label"
         tools:layout="@layout/flight_deliveries_fragment">
         <action
             android:id="@+id/action_flightDeliveriesFragment_self"
-            app:destination="@id/flightDeliveriesFragment" />
+            app:destination="@id/flightDeliveriesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_flightDeliveriesFragment_to_unloadingScanFragment"
+            app:destination="@id/unloadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/unloadingScanFragment"
+        android:name="com.wb.logistics.ui.unloading.UnloadingScanFragment"
+        android:label="@string/unloading_scan_label"
+        tools:layout="@layout/unloading_scan_fragment">
+        <argument
+            android:name="unloading_scan_key"
+            app:argType="com.wb.logistics.ui.unloading.UnloadingScanParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_unloadingScanFragment_to_unloadingBoxesFragment"
+            app:destination="@id/unloadingBoxesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_unloadingScanFragment_to_unloading"
+            app:destination="@id/unloadingNotBelongFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_unloadingScanFragment_to_unloadingReturnBoxesFragment"
+            app:destination="@id/unloadingReturnBoxesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_unloadingScanFragment_to_unloadingHandleFragment"
+            app:destination="@id/unloadingHandleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/unloadingBoxesFragment"
+        android:name="com.wb.logistics.ui.unloading.UnloadingBoxesFragment"
+        android:label="@string/unloading_boxes_label"
+        tools:layout="@layout/unloading_boxes_fragment">
+        <argument
+            android:name="unloading_boxes_key"
+            app:argType="com.wb.logistics.ui.unloading.UnloadingBoxesParameters"
+            app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/unloadingNotBelongFragment"
+        android:name="com.wb.logistics.ui.unloading.UnloadingBoxNotBelongFragment"
+        android:label="@string/unloading_box_not_belong_point_toolbar_label"
+        tools:layout="@layout/unloading_box_not_belong_fragment">
+        <argument
+            android:name="box_not_belong_key"
+            app:argType="com.wb.logistics.ui.unloading.UnloadingBoxNotBelongParameters"
+            app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/unloadingReturnBoxesFragment"
+        android:name="com.wb.logistics.ui.unloading.UnloadingReturnBoxesFragment"
+        android:label="@string/unloading_return_boxes_label"
+        tools:layout="@layout/unloading_return_boxes_fragment" />
+
+    <dialog
+        android:id="@+id/unloadingHandleFragment"
+        android:name="com.wb.logistics.ui.unloading.UnloadingHandleFragment"
+        android:label="UnloadingHandleFragment"
+        tools:layout="@layout/unloading_handle_fragment" >
+
+        <argument
+            android:name="unloading_handle_key"
+            app:argType="com.wb.logistics.ui.unloading.UnloadingHandleParameters"
+            app:nullable="false" />
+    </dialog>
 
 </navigation>

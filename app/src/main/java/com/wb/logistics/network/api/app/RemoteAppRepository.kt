@@ -1,5 +1,6 @@
 package com.wb.logistics.network.api.app
 
+import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxesfromflight.BoxesRemote
 import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoRemote
@@ -43,16 +44,26 @@ interface RemoteAppRepository {
         @Body box: BoxDeleteFromFlightRemote,
     ): Completable
 
-    @GET("/api/v1/flight-statuses")
+    @PUT("/api/v1/flight-statuses")
     fun getFlightStatus(): Single<StatusesStateRemote>
 
+    @PUT("/api/v1/flights/{flightID}/boxes/{barcode}")
+    fun putBoxScannedToBalance(
+        @Path("flightID") flightID: String,
+        @Path("barcode") barcode: String,
+        @Body box: PutBoxFromFlightRemote,
+    ): Completable
+
     @PUT("/api/v1/flights/{flightID}/status")
-    fun putFlightStatus(
+    fun putStatus(
         @Path("flightID") flightID: String,
         @Body statusRemote: StatusRemote,
     ): Completable
 
     @GET("/api/v1/flights/{flightID}/status")
-    fun getFlightsStatus(@Path("flightID") flightID: String, @Body statusesStateRemote: StatusesStateRemote)
+    fun getFlightsStatus(
+        @Path("flightID") flightID: String,
+        @Body statusesStateRemote: StatusesStateRemote,
+    )
 
 }

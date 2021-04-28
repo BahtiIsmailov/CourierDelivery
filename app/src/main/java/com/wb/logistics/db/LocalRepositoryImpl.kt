@@ -1,20 +1,28 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.boxtoflight.ScannedBoxBalanceAwaitEntity
+import com.wb.logistics.db.dao.AttachedBoxDao
+import com.wb.logistics.db.dao.FlightDao
+import com.wb.logistics.db.dao.ReturnBoxDao
+import com.wb.logistics.db.dao.UnloadingBoxDao
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxEntity
-import com.wb.logistics.db.entity.scannedboxes.ScannedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
+import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
 class LocalRepositoryImpl(
     private val flightDao: FlightDao,
-    private val boxDao: BoxDao,
+    private val attachedBoxDao: AttachedBoxDao,
+    private val unloadingBox: UnloadingBoxDao,
+    private val returnBoxDao: ReturnBoxDao,
 ) : LocalRepository {
 
     override fun saveFlight(
@@ -102,62 +110,106 @@ class LocalRepositoryImpl(
     //==============================================================================================
     //scanned box
     //==============================================================================================
-    override fun saveFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
-        return boxDao.insertScannedBox(flightBoxScannedEntity)
+    override fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable {
+        return attachedBoxDao.insertScannedBox(attachedBoxEntity)
     }
 
-    override fun loadFlightBoxScanned(barcodes: List<String>): Single<List<ScannedBoxEntity>> {
-        return boxDao.loadScannedBox(barcodes)
+    override fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
+        return attachedBoxDao.loadAttachedBox(barcodes)
     }
 
-    override fun observeFlightBoxScanned(): Flowable<List<ScannedBoxEntity>> {
-        return boxDao.observeScannedBox()
+    override fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>> {
+        return attachedBoxDao.observeAttachedBox()
     }
 
-    override fun readBoxesScanned(): Single<List<ScannedBoxEntity>> {
-        return boxDao.readScannedBox()
+    override fun observeFilterByOfficeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
+        return attachedBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
     }
 
-    override fun findFlightBoxScanned(barcode: String): Single<SuccessOrEmptyData<ScannedBoxEntity>> {
-        return boxDao.findScannedBox(barcode)
-            .map<SuccessOrEmptyData<ScannedBoxEntity>> { SuccessOrEmptyData.Success(it) }
+    override fun readAttachedBoxes(): Single<List<AttachedBoxEntity>> {
+        return attachedBoxDao.readAttachedBox()
+    }
+
+    override fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>> {
+        return attachedBoxDao.findAttachedBox(barcode)
+            .map<SuccessOrEmptyData<AttachedBoxEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
-    override fun deleteFlightBoxScanned(flightBoxScannedEntity: ScannedBoxEntity): Completable {
-        return boxDao.deleteScannedBox(flightBoxScannedEntity)
+    override fun deleteAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable {
+        return attachedBoxDao.deleteAttachedBox(flightBoxScannedEntity)
     }
 
-    override fun deleteAllFlightBoxScanned() {
-        boxDao.deleteAllScannedBox()
+    override fun deleteAllAttachedBox() {
+        attachedBoxDao.deleteAllAttachedBox()
     }
 
-    override fun groupByDstAddressScannedBoxScanned(): Single<List<ScannedBoxGroupByAddressEntity>> {
-        return boxDao.groupByDstAddressScannedBox()
+    override fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>> {
+        return attachedBoxDao.groupAttachedBoxByDstAddress()
+    }
+
+    //==============================================================================================
+    //unloaded boxes
+    //==============================================================================================
+
+    override fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable {
+        return unloadingBox.insertUnloadingBox(unloadedBoxEntity)
+    }
+
+    override fun observeUnloadedBoxes(): Flowable<List<UnloadedBoxEntity>> {
+        return unloadingBox.observeUnloadingBox()
+    }
+
+    override fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>> {
+        return unloadingBox.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
+    }
+
+    override fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>> {
+        return unloadingBox.findUnloadedBox(barcode)
+            .map<SuccessOrEmptyData<UnloadedBoxEntity>> { SuccessOrEmptyData.Success(it) }
+            .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
     //==============================================================================================
     //balance box
     //==============================================================================================
 
-    override fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable {
+    override fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable {
         return flightDao.insertFlightBoxBalanceAwait(flightBoxBalanceEntity)
     }
 
-    override fun observeFlightBoxBalanceAwait(): Flowable<List<ScannedBoxBalanceAwaitEntity>> {
+    override fun observeFlightBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>> {
         return flightDao.observeFlightBoxBalanceAwait()
     }
 
-    override fun flightBoxBalanceAwait(): Single<List<ScannedBoxBalanceAwaitEntity>> {
+    override fun flightBoxBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>> {
         return flightDao.flightBoxBalanceAwait()
     }
 
-    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: ScannedBoxBalanceAwaitEntity): Completable {
+    override fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable {
         return flightDao.deleteFlightBoxBalanceAwait(flightBoxBalanceEntity)
     }
 
     override fun deleteAllFlightBoxBalanceAwait() {
         flightDao.deleteAllFlightBoxBalanceAwait()
+    }
+
+    //==============================================================================================
+    //return box
+    //==============================================================================================
+
+    override fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
+        return returnBoxDao.insertReturnBoxEntity(returnBoxEntity)
+    }
+
+    override fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>> {
+        return returnBoxDao.observeFilterByOfficeIdReturnBoxes(dstOfficeId)
+    }
+
+    override fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>> {
+        return returnBoxDao.findReturnBox(barcode)
+            .map<SuccessOrEmptyData<ReturnBoxEntity>> { SuccessOrEmptyData.Success(it) }
+            .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
 }

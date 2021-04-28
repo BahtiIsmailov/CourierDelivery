@@ -17,7 +17,7 @@ import java.util.List;
 public class FlightsAdapter extends ArrayAdapter<String> {
 
     @NonNull
-    private List<String> items;
+    private final List<String> items;
     @NonNull
     private final OnItemClickCallBack onItemClickCallBack;
 
