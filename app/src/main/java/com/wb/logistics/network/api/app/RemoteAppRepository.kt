@@ -33,13 +33,13 @@ interface RemoteAppRepository {
     fun matchingBoxes(@Path("flightID") flightID: String): Single<MatchingBoxesRemote>
 
     @POST("/api/v1/flights/{flightID}/boxes")
-    fun flightBoxScannedToBalance(
+    fun loadBoxToBalance(
         @Path("flightID") flightID: String,
         @Body box: FlightBoxScannedRemote,
     ): Completable
 
     @HTTP(method = "DELETE", path = "/api/v1/flights/{flightID}/boxes/{barcode}", hasBody = true)
-    fun boxDeleteFromFlight(
+    fun deleteBoxFromFlight(
         @Path("flightID") flightID: String,
         @Path("barcode") barcode: String,
         @Body box: BoxDeleteFromFlightRemote,
@@ -49,7 +49,7 @@ interface RemoteAppRepository {
     fun getFlightStatus(): Single<StatusesStateRemote>
 
     @PUT("/api/v1/flights/{flightID}/boxes/{barcode}")
-    fun putBoxScannedToBalance(
+    fun removeFromBalance(
         @Path("flightID") flightID: String,
         @Path("barcode") barcode: String,
         @Body box: PutBoxFromFlightRemote,

@@ -12,5 +12,5 @@ data class BoxDefinitionResult(
     val findReturnBox: SuccessOrEmptyData<ReturnBoxEntity>,
     val findAttachedBox: SuccessOrEmptyData<AttachedBoxEntity>,
     val barcodeScanned: String,
-    val isManual: Boolean,
+    val isManualInput: Boolean,
 )

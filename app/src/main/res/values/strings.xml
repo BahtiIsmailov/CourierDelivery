@@ -144,13 +144,16 @@
     <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>
     <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ,\nверните её в машину</string>
 
-    <string name="unloading_return_boxes_label">Возврат</string>
-
     <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
     <string name="unloading_handle_empty_list">Список пуст</string>
 
     <string name="unloading_boxes_complete">Ok</string>
 
+    <string name="unloading_return_boxes_label">Возврат</string>
 
+    <string name="unloading_return_dialog_title">Удалить возвратные коробки?</string>
+    <string name="unloading_return_dialog_description">Убедитесь, что вы не забрали коробки в машину</string>
+    <string name="unloading_return_dialog_positive_button">Удалить</string>
+    <string name="unloading_return_dialog_negative_button">Отмена</string>
 
 </resources>

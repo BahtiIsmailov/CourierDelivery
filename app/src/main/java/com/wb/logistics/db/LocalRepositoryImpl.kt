@@ -114,7 +114,7 @@ class LocalRepositoryImpl(
         return attachedBoxDao.insertScannedBox(attachedBoxEntity)
     }
 
-    override fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
+    override fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
         return attachedBoxDao.loadAttachedBox(barcodes)
     }
 
@@ -136,8 +136,8 @@ class LocalRepositoryImpl(
             .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
-    override fun deleteAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable {
-        return attachedBoxDao.deleteAttachedBox(flightBoxScannedEntity)
+    override fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable {
+        return attachedBoxDao.deleteAttachedBox(attachedBoxEntity)
     }
 
     override fun deleteAllAttachedBox() {
@@ -210,6 +210,14 @@ class LocalRepositoryImpl(
         return returnBoxDao.findReturnBox(barcode)
             .map<SuccessOrEmptyData<ReturnBoxEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+    override fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>> {
+        return returnBoxDao.findReturnBoxes(barcodes)
+    }
+
+    override fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
+        return returnBoxDao.deleteReturnBox(returnBoxEntity)
     }
 
 }

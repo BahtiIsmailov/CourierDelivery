@@ -6,7 +6,7 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenState
+import com.wb.logistics.ui.nav.domain.ScreenManagerState
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightsViewModel(
@@ -29,7 +29,7 @@ class FlightsViewModel(
             is FlightsUIAction.ReceptionBoxesClick -> {
                 stateUINav.value = FlightsUINavState.NavigateToReceptionBox
                 stateUINav.value = FlightsUINavState.Empty
-                screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
+                screenManager.saveScreenState(ScreenManagerState.ReceptionScan)
             }
             is FlightsUIAction.ReturnToBalanceClick -> {
                 FlightsUINavState.NavigateToReturnBalanceDialog
@@ -51,7 +51,6 @@ class FlightsViewModel(
     }
 
     fun update() {
-//        screenManager.saveScreenState(ScreenState.FLIGHT)
         fetchFlights()
     }
 

@@ -121,7 +121,7 @@ class ReceptionInteractorImpl(
         appRepository.flightBoxBalanceAwait()
             .flatMapCompletable { boxesBalanceAwait ->
                 Observable.fromIterable(boxesBalanceAwait).flatMapCompletable {
-                    saveBoxScannedToBalanceRemote(flightId,
+                    loadBoxToBalanceRemote(flightId,
                         it.barcode,
                         it.isManualInput,
                         it.updatedAt,
@@ -152,18 +152,18 @@ class ReceptionInteractorImpl(
     }
 
     override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
-        return appRepository.loadAttachedBoxes(checkedBoxes)
+        return appRepository.findAttachedBoxes(checkedBoxes)
             .flatMapCompletable { flightBoxScanned ->
                 Observable.fromIterable(flightBoxScanned)
                     .flatMapCompletable {
-                        deleteScannedFlightBoxRemote(it).andThen(deleteScannedFlightBoxLocal(it))
+                        deleteAttachedBoxRemote(it).andThen(deleteAttachedBoxLocal(it))
                     }
             }.compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: AttachedBoxEntity) =
+    private fun deleteAttachedBoxRemote(flightBoxScannedEntity: AttachedBoxEntity) =
         with(flightBoxScannedEntity) {
-            appRepository.deleteFlightBoxScannedRemote(
+            appRepository.removeBoxFromFlightRemote(
                 flightId.toString(),
                 barcode,
                 isManualInput,
@@ -171,7 +171,7 @@ class ReceptionInteractorImpl(
                 srcOffice.id)
         }
 
-    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: AttachedBoxEntity) =
+    private fun deleteAttachedBoxLocal(flightBoxScannedEntity: AttachedBoxEntity) =
         appRepository.deleteAttachedBox(flightBoxScannedEntity).onErrorComplete()
 
     private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity) =
@@ -200,13 +200,13 @@ class ReceptionInteractorImpl(
 
     private fun findFlightBox(barcode: String) = appRepository.findMatchingBox(barcode)
 
-    private fun saveBoxScannedToBalanceRemote(
+    private fun loadBoxToBalanceRemote(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
-    ) = appRepository.flightBoxScannedToBalanceRemote(
+    ) = appRepository.loadBoxToBalanceRemote(
         flightId,
         barcode,
         isManualInput,
@@ -238,7 +238,7 @@ class ReceptionInteractorImpl(
     }
 
     override fun readBoxesScanned(): Single<List<AttachedBoxEntity>> {
-        return appRepository.readAttached().compose(rxSchedulerFactory.applySingleSchedulers())
+        return appRepository.readAllAttachedBoxes().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun sendAwaitBoxes(): Single<Int> {

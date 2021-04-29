@@ -10,6 +10,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class TimeFormatterImpl : TimeFormatter {
     private val dateFormatSymbols: DateFormatSymbols = DateFormatSymbols(Locale(LOCALE_RU))
 
@@ -22,7 +23,7 @@ class TimeFormatterImpl : TimeFormatter {
     }
 
     override fun format(date: String, formatType: String): String {
-        val calendar = calendarWithoutTimezoneFromString(date)
+        val calendar = calendarWithTimezoneFromString(date)
         val dateTime = DateTime(calendar.timeInMillis)
         return format(dateTime, formatType)
     }

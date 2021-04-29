@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.nav.domain.NavigationInteractor
 import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenState
+import com.wb.logistics.ui.nav.domain.ScreenManagerState
 import com.wb.logistics.utils.managers.DeviceManager
 import io.reactivex.disposables.CompositeDisposable
 
@@ -36,15 +36,17 @@ class NavigationViewModel(
         fetchVersionApp()
         fetchNetworkState()
 
-        when (screenManager.readScreenState()) {
-            ScreenState.FLIGHT -> {
+        when (val state = screenManager.readScreenState()) {
+            is ScreenManagerState.Flight -> {
             }
-            ScreenState.RECEPTION_SCAN -> stateUINav.value =
+            is ScreenManagerState.ReceptionScan -> stateUINav.value =
                 NavigationNavAction.NavigateToReceptionScan
-            ScreenState.FLIGHT_PICK_UP_POINT -> stateUINav.value =
-                    NavigationNavAction.NavigateToPickUpPoint
-            ScreenState.FLIGHT_DELIVERY -> stateUINav.value =
+            is ScreenManagerState.FlightPickUpPoint -> stateUINav.value =
+                NavigationNavAction.NavigateToPickUpPoint
+            is ScreenManagerState.FlightDelivery -> stateUINav.value =
                 NavigationNavAction.NavigateToDelivery
+            is ScreenManagerState.Unloading -> stateUINav.value =
+                NavigationNavAction.NavigateToUnloading(state.officeId, state.shortAddress)
         }
     }
 

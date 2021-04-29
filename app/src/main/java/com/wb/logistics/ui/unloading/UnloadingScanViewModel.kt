@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenState
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
@@ -57,7 +56,7 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        screenManager.saveScreenState(ScreenState.UNLOADING)
+//        screenManager.saveScreenState(ScreenState.UNLOADING)
 //        _toolbarState.value = UnloadingScanToolbarEvent.Label(parameters.shortAddress)
         observeScanProcess()
         observeUnloadedBoxes()
@@ -158,7 +157,7 @@ class UnloadingScanViewModel(
     }
 
     fun onReturnListClicked() {
-        _navigationEvent.value = UnloadingScanNavAction.NavigateToReturnBoxes
+        _navigationEvent.value = UnloadingScanNavAction.NavigateToReturnBoxes(parameters.dstOfficeId)
     }
 
     fun onaHandleClicked() {
@@ -176,22 +175,6 @@ class UnloadingScanViewModel(
 //                "TRBX-994827463",
 //                "ПВЗ Москва, длинный адрес, который разошелся на 2 строки")
 
-    }
-
-    private fun toFlightDeliveries() {
-        bottomProgressEvent.value = true
-        addSubscription(interactor.sendAwaitBoxes().subscribe({
-            if (it > 0) {
-                bottomProgressEvent.value = false
-            } else {
-                screenManager.saveScreenState(ScreenState.FLIGHT_PICK_UP_POINT)
-                _navigationEvent.value = UnloadingScanNavAction.NavigateToFlightDeliveries
-                bottomProgressEvent.value = false
-            }
-
-        }, {
-            bottomProgressEvent.value = false
-        }))
     }
 
     fun onStopScanner() {

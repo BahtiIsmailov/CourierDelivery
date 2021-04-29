@@ -2,16 +2,20 @@ package com.wb.logistics.ui.unloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.reception.domain.ReceptionInteractor
+import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.time.TimeFormatType
+import com.wb.logistics.utils.time.TimeFormatter
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class UnloadingReturnBoxesViewModel(
+    private val parameters: UnloadingReturnParameters,
     compositeDisposable: CompositeDisposable,
-    private val receptionInteractor: ReceptionInteractor,
+    private val interactor: UnloadingInteractor,
+    private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxes = MutableLiveData<UnloadingReturnBoxesUIState<Nothing>>()
@@ -33,33 +37,27 @@ class UnloadingReturnBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<UnloadingReturnBoxesItem>()
 
     init {
-        val boxes = mutableListOf<UnloadingReturnBoxesItem>()
-        for (i in 1 until 10) {
-            val item = UnloadingReturnBoxesItem(
-                i.toString(),
-                "TRBX-11325658$i",
-                "23.04.2021\u202220:0$i",
-                false
-            )
-            boxes.add(item)
-            changeBoxesComplete(boxes)
-        }
-
-//        addSubscription(receptionInteractor.observeScannedBoxes()
-//            .flatMap { convertBoxes(it) }
-//            .doOnNext { copyConvertBoxes(it) }
-//            .subscribe({ changeBoxesComplete(it) },
-//                { changeBoxesError(it) }))
+        addSubscription(interactor.observeReturnBoxes(parameters.dstOfficeId)
+            .flatMap { convertBoxes(it) }
+            .doOnNext { copyConvertBoxes(it) }
+            .subscribe({ changeBoxesComplete(it) },
+                { changeBoxesError(it) }))
     }
 
-    private fun convertBoxes(boxes: List<AttachedBoxEntity>) =
+    private fun convertBoxes(boxes: List<ReturnBoxEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map(receptionBoxItem)
             .toList()
             .toObservable()
 
-    private val receptionBoxItem = { (index, item): IndexedValue<AttachedBoxEntity> ->
-        UnloadingReturnBoxesItem(singleIncrement(index), item.barcode, item.dstFullAddress, false)
+    private val receptionBoxItem = { (index, item): IndexedValue<ReturnBoxEntity> ->
+        // TODO: 29.04.2021 переработать
+        val date = timeFormatter.dateTimeWithTimezoneFromString(item.updatedAt)
+        val timeFormat =
+            timeFormatter.format(date, TimeFormatType.ONLY_DATE) + "\u2022" + timeFormatter.format(
+                date,
+                TimeFormatType.ONLY_TIME)
+        UnloadingReturnBoxesItem(singleIncrement(index), item.barcode, timeFormat, false)
     }
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }
@@ -80,17 +78,17 @@ class UnloadingReturnBoxesViewModel(
         LogUtils { logDebugApp(error.toString()) }
     }
 
+    // TODO: 29.04.2021 удалить отладочный код
     fun onRemoveClick() {
         _boxes.value = UnloadingReturnBoxesUIState.Progress
-        val checkedReceptionBoxes =
+        val checkedReturnBoxes =
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
-        addSubscription(receptionInteractor.deleteScannedBoxes(checkedReceptionBoxes)
+        addSubscription(interactor.removeReturnBoxes(checkedReturnBoxes)
             .subscribe({
-                _navigateToMessage.value = NavigateToMessage("Delete complete")
                 _boxes.value = UnloadingReturnBoxesUIState.ProgressComplete
                 _navigateToBack.value = NavigateToBack
             }, {
-                _navigateToMessage.value = NavigateToMessage("Error delete: " + it.toString())
+                _navigateToMessage.value = NavigateToMessage("Error remove: " + it.toString())
                 _boxes.value = UnloadingReturnBoxesUIState.ProgressComplete
                 changeDisableAllCheckedBox()
             }))

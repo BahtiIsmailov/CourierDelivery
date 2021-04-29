@@ -22,6 +22,7 @@ import com.wb.logistics.databinding.NavigationActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flights.FlightsFragment
 import com.wb.logistics.ui.flights.FlightsFragmentDirections
+import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -61,6 +62,9 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
                     findNavController(R.id.nav_host_fragment).navigate(
                         FlightsFragmentDirections.actionFlightsFragmentToFlightDeliveriesFragment())
                 }
+                is NavigationNavAction.NavigateToUnloading -> findNavController(R.id.nav_host_fragment).navigate(
+                    FlightsFragmentDirections.actionFlightsFragmentToUnloadingScanFragment(
+                        UnloadingScanParameters(state.officeId, state.shortAddress)))
             }
         }
 

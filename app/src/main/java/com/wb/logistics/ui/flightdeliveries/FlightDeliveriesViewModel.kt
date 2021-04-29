@@ -8,7 +8,7 @@ import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenState
+import com.wb.logistics.ui.nav.domain.ScreenManagerState
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -32,18 +32,13 @@ class FlightDeliveriesViewModel(
 
     private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByAddressEntity>()
 
-    init {
-        //screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
-    }
-
     fun action(actionView: FlightDeliveriesUIAction) {
         when (actionView) {
             is FlightDeliveriesUIAction.GoToDeliveryClick -> {
-                _stateUINav.value = FlightDeliveriesUINavState.GoToDeliveryDialog
-                //_stateUINav.value = FlightDeliveriesUINavState.Empty
+                _stateUINav.value = FlightDeliveriesUINavState.ShowDeliveryDialog
             }
             is FlightDeliveriesUIAction.GoToDeliveryConfirmClick -> {
-                screenManager.saveScreenState(ScreenState.FLIGHT_DELIVERY)
+                screenManager.saveScreenState(ScreenManagerState.FlightDelivery)
                 _stateUINav.value = FlightDeliveriesUINavState.NavigateToDelivery
             }
         }
@@ -61,23 +56,24 @@ class FlightDeliveriesViewModel(
     }
 
     private fun fetchFlightIdComplete(idFlight: Int) {
-        stateUIToolBar.value =  if (screenManager.readScreenState() == ScreenState.FLIGHT_PICK_UP_POINT) {
-            resourceProvider.getFlightToolbar(idFlight)
-        } else {
-            resourceProvider.getDeliveryToolbar(idFlight)
-        }
+        stateUIToolBar.value =
+            if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint) {
+                resourceProvider.getFlightToolbar(idFlight)
+            } else {
+                resourceProvider.getDeliveryToolbar(idFlight)
+            }
     }
 
     private fun fetchFlightIdError(throwable: Throwable) {
         stateUIToolBar.value = resourceProvider.getEmpty()
     }
 
-
     private fun fetchAttachedBoxesGroupByAddress() {
         addSubscription(interactor.getAttachedBoxesGroupByAddress()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
-                Single.zip(build(boxes), count(boxes), { t1, t2 -> Pair(t1, t2) })
+                val isEnabled = screenManager.readScreenState() == ScreenManagerState.FlightDelivery
+                Single.zip(build(boxes, isEnabled), count(boxes), { t1, t2 -> Pair(t1, t2) })
             }
             .map {
                 FlightDeliveriesUIListState.ShowFlight(it.first,
@@ -87,10 +83,9 @@ class FlightDeliveriesViewModel(
                 { fetchScannedBoxGroupByAddressError(it) }))
     }
 
-    private fun build(boxes: List<AttachedBoxGroupByAddressEntity>) =
+    private fun build(boxes: List<AttachedBoxGroupByAddressEntity>, isEnabled: Boolean) =
         Observable.fromIterable(boxes.withIndex())
             .map { (index, item): IndexedValue<AttachedBoxGroupByAddressEntity> ->
-                val isEnabled = screenManager.readScreenState() == ScreenState.FLIGHT_DELIVERY
                 dataBuilder.buildSuccessItem(item, isEnabled, index)
             }
             .toList()
@@ -99,7 +94,7 @@ class FlightDeliveriesViewModel(
         Observable.fromIterable(boxes).map { it.undoCount }.scan { v1, v2 -> v1 + v2 }.last(0)
 
     private fun fetchBottomState() {
-        if (screenManager.readScreenState() == ScreenState.FLIGHT_PICK_UP_POINT) {
+        if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint) {
             stateUIBottom.value = FlightDeliveriesUIBottomState.GoToDelivery
         } else {
             stateUIBottom.value = FlightDeliveriesUIBottomState.Empty
@@ -125,6 +120,7 @@ class FlightDeliveriesViewModel(
 
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
+        screenManager.saveScreenState(ScreenManagerState.Unloading(item.officeId, item.officeName))
         _stateUINav.value =
             FlightDeliveriesUINavState.NavigateToUpload(item.officeId, item.officeName)
     }

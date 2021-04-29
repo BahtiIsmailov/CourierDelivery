@@ -25,13 +25,13 @@ interface ReturnBoxDao {
     fun findReturnBox(barcode: String): Single<ReturnBoxEntity>
 
     @Query("SELECT * FROM ReturnBoxEntity WHERE barcode IN (:barcodes)")
-    fun loadReturnBoxEntity(barcodes: List<String>): Single<List<ReturnBoxEntity>>
+    fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
 
     @Query("DELETE FROM ReturnBoxEntity WHERE barcode = :barcode")
     fun deleteReturnBox(barcode: String)
 
     @Delete
-    fun deleteReturnBoxEntity(returnBoxEntity: ReturnBoxEntity): Completable
+    fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
     @Query("DELETE FROM ReturnBoxEntity")
     fun deleteAllUnloadedBox()

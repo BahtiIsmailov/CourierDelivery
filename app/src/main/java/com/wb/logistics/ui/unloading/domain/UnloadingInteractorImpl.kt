@@ -2,7 +2,6 @@ package com.wb.logistics.ui.unloading.domain
 
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnCurrentOfficeEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
@@ -40,16 +39,17 @@ class UnloadingInteractorImpl(
                 val findReturnBox = boxDefinition.findReturnBox
                 val findAttachedBox = boxDefinition.findAttachedBox
                 val barcodeScanned = boxDefinition.barcodeScanned
-                val isManual = boxDefinition.isManual
+                val isManualInput = boxDefinition.isManualInput
+                val updatedAt = appRepository.getOffsetLocalTime()
 
 
                 val flightId = when (flight) {
                     is SuccessOrEmptyData.Success -> flight.data.id
                     is SuccessOrEmptyData.Empty -> 0
                 }
+                // TODO: 29.04.2021 добавить конвертер состояния в случае 0 рейса
 
                 when {
-
                     findUnloadedBox is SuccessOrEmptyData.Success -> //коробка уже выгружена из машины
                         return@flatMap Observable.just(with(findUnloadedBox.data) {
                             UnloadingData.BoxAlreadyUnloaded(barcode)
@@ -64,17 +64,16 @@ class UnloadingInteractorImpl(
                         with(findAttachedBox) {
                             if (dstOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ
                                 // TODO: 27.04.2021 добавить коробку в базу
-                                val updatedAt = appRepository.getOffsetLocalTime()
                                 return@flatMap appRepository.saveUnloadedBox(UnloadedBoxEntity(
                                     flightId,
-                                    isManual,
+                                    isManualInput,
                                     barcodeScanned,
                                     updatedAt,
                                     UnloadedCurrentOfficeEntity(dstOfficeId)))
 
-                                    .andThen(saveBoxScannedToBalanceRemote(flightId.toString(), //сохранение на сервере
+                                    .andThen(removeBoxFromBalance(flightId.toString(), //снятие с баланса
                                         data.barcode,
-                                        isManual,
+                                        isManualInput,
                                         updatedAt,
                                         dstOfficeId))
                                     .andThen(appRepository.deleteAttachedBox(data))
@@ -88,12 +87,16 @@ class UnloadingInteractorImpl(
                     }
 
                     findAttachedBox is SuccessOrEmptyData.Empty -> { //коробки нет в списке доставки - принятие на возврат
-                        val updatedAt = appRepository.getOffsetLocalTime()
                         return@flatMap saveReturnBox(flightId,
-                            isManual,
+                            isManualInput,
                             barcodeScanned,
                             updatedAt,
                             dstOfficeId)
+                            .andThen(loadBoxToBalanceRemote(flightId.toString(),
+                                barcodeScanned,
+                                isManualInput,
+                                updatedAt,
+                                dstOfficeId))
                             .andThen(Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned)))
                     }
                     else -> return@flatMap Observable.just(UnloadingData.Empty)
@@ -102,14 +105,29 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
+    private fun loadBoxToBalanceRemote(
+        flightId: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOffice: Int,
+    ) = appRepository.loadBoxToBalanceRemote(
+        flightId,
+        barcode,
+        isManualInput,
+        updatedAt,
+        currentOffice)
+        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
+        .compose(rxSchedulerFactory.applyCompletableSchedulers())
+
     private fun saveReturnBox(
         flightId: Int,
-        isManual: Boolean,
+        isManualInput: Boolean,
         barcodeScanned: String,
         updateAt: String,
         dstOfficeId: Int,
     ) = appRepository.saveReturnBox(ReturnBoxEntity(flightId,
-        isManual,
+        isManualInput,
         barcodeScanned,
         updateAt,
         ReturnCurrentOfficeEntity(dstOfficeId)))
@@ -120,45 +138,29 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun sendBoxBalanceAwait(flightId: String) =
-        appRepository.flightBoxBalanceAwait()
-            .flatMapCompletable { boxesBalanceAwait ->
-                val updatedAt = appRepository.getOffsetLocalTime()
-                Observable.fromIterable(boxesBalanceAwait).flatMapCompletable {
-                    saveBoxScannedToBalanceRemote(flightId,
-                        it.barcode,
-                        it.isManualInput,
-                        updatedAt,
-                        it.dstOffice.id)
-                        .andThen(deleteFlightBoxBalanceAwait(it)).onErrorComplete()
-                }
-            }
-
-    override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
-        return appRepository.loadAttachedBoxes(checkedBoxes)
-            .flatMapCompletable { flightBoxScanned ->
-                Observable.fromIterable(flightBoxScanned)
+    override fun removeReturnBoxes(checkedBoxes: List<String>): Completable {
+        return appRepository.findReturnBoxes(checkedBoxes)
+            .flatMapCompletable { returnBoxes ->
+                Observable.fromIterable(returnBoxes)
                     .flatMapCompletable {
-                        deleteScannedFlightBoxRemote(it).andThen(deleteScannedFlightBoxLocal(it))
+                        removeReturnBoxRemote(it).andThen(deleteReturnBoxLocal(it))
                     }
             }.compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun deleteScannedFlightBoxRemote(flightBoxScannedEntity: AttachedBoxEntity) =
-        with(flightBoxScannedEntity) {
-            appRepository.deleteFlightBoxScannedRemote(
+    private fun removeReturnBoxRemote(returnBoxEntity: ReturnBoxEntity) =
+        with(returnBoxEntity) {
+            appRepository.removeBoxFromFlightRemote(
                 flightId.toString(),
                 barcode,
                 isManualInput,
                 updatedAt,
-                srcOffice.id)
+                currentOffice.id)
+                .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
         }
 
-    private fun deleteScannedFlightBoxLocal(flightBoxScannedEntity: AttachedBoxEntity) =
-        appRepository.deleteAttachedBox(flightBoxScannedEntity).onErrorComplete()
-
-    private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity) =
-        appRepository.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity).onErrorComplete()
+    private fun deleteReturnBoxLocal(returnBoxEntity: ReturnBoxEntity) =
+        appRepository.deleteReturnBox(returnBoxEntity).onErrorComplete()
 
     private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
         val barcode = param.first
@@ -187,23 +189,20 @@ class UnloadingInteractorImpl(
 
     private fun findReturnBox(barcode: String) = appRepository.findReturnBox(barcode)
 
-    private fun saveBoxScannedToBalanceRemote(
+    private fun removeBoxFromBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
-    ) = appRepository.saveBoxScannedToBalanceRemote(
+    ) = appRepository.removeBoxFromBalanceRemote(
         flightId,
         barcode,
         isManualInput,
         updatedAt,
         currentOffice)
-        .onErrorComplete()
+        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
-
-//    private fun saveBoxScanned(flightBoxScanned: AttachedBoxEntity) =
-//        appRepository.saveAttachedBox(flightBoxScanned)
 
     override fun observeUnloadedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>> {
         return Flowable.combineLatest(appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
@@ -216,22 +215,6 @@ class UnloadingInteractorImpl(
     override fun observeReturnBoxes(dstOfficeId: Int): Observable<List<ReturnBoxEntity>> {
         return appRepository.observedReturnBoxesByDstOfficeId(dstOfficeId).toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
-
-    override fun readBoxesScanned(): Single<List<AttachedBoxEntity>> {
-        return appRepository.readAttached().compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-
-    override fun sendAwaitBoxes(): Single<Int> {
-        return flight().flatMap {
-            when (it) {
-                is SuccessOrEmptyData.Empty -> Single.error(Throwable())
-                is SuccessOrEmptyData.Success -> Single.just(it.data.id)
-            }
-        }
-            .map { it.toString() }
-            .flatMapCompletable { sendBoxBalanceAwait(it) }
-            .andThen(appRepository.flightBoxBalanceAwait().map { it.size })
     }
 
     override fun scannerAction(scannerAction: ScannerAction) {

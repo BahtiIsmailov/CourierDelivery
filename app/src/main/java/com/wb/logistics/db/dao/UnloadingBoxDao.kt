@@ -26,7 +26,7 @@ interface UnloadingBoxDao {
     fun findUnloadedBox(barcode: String): Single<UnloadedBoxEntity>
 
     @Query("SELECT * FROM UnloadedBoxEntity WHERE barcode IN (:barcodes)")
-    fun loadUnloadedBox(barcodes: List<String>): Single<List<UnloadedBoxEntity>>
+    fun findUnloadedBoxes(barcodes: List<String>): Single<List<UnloadedBoxEntity>>
 
     @Query("DELETE FROM UnloadedBoxEntity WHERE barcode = :barcode")
     fun deleteUnloadedBox(barcode: String)

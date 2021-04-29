@@ -17,7 +17,6 @@ import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapter
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.nav.NavToolbarTitleListener
@@ -72,7 +71,7 @@ class FlightDeliveriesFragment : Fragment() {
             when (state) {
                 FlightDeliveriesUINavState.Empty -> {
                 }
-                FlightDeliveriesUINavState.GoToDeliveryDialog -> showGoToDeliveryDialog()
+                FlightDeliveriesUINavState.ShowDeliveryDialog -> showDeliveryDialog()
                 FlightDeliveriesUINavState.NavigateToDelivery -> {
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentSelf())
                 }
@@ -113,22 +112,12 @@ class FlightDeliveriesFragment : Fragment() {
 
     }
 
-    private fun showGoToDeliveryDialog() {
+    private fun showDeliveryDialog() {
         val dialog = SimpleResultDialogFragment.newInstance(
             getString(R.string.flight_deliveries_dialog_title),
             getString(R.string.flight_deliveries_dialog_description),
             getString(R.string.flight_deliveries_dialog_positive_button),
             getString(R.string.flight_deliveries_dialog_negative_button)
-        )
-        dialog.setTargetFragment(this, GO_DELIVERY_REQUEST_CODE)
-        dialog.show(parentFragmentManager, GO_DELIVERY_TAG)
-    }
-
-    private fun showGoToUnloadingDialog(description: String) {
-        val dialog = InformationDialogFragment.newInstance(
-            "Выгрузка",
-            description,
-            getString(R.string.flight_deliveries_dialog_positive_button)
         )
         dialog.setTargetFragment(this, GO_DELIVERY_REQUEST_CODE)
         dialog.show(parentFragmentManager, GO_DELIVERY_TAG)

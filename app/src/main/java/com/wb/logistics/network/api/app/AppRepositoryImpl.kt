@@ -264,28 +264,28 @@ class AppRepositoryImpl(
     //==============================================================================================
     //scanned box remote balance
     //==============================================================================================
-    override fun flightBoxScannedToBalanceRemote(
+    override fun loadBoxToBalanceRemote(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
     ): Completable {
-        return remote.flightBoxScannedToBalance(flightID,
+        return remote.loadBoxToBalance(flightID,
             FlightBoxScannedRemote(barcode,
                 isManualInput,
                 updatedAt,
                 CurrentOfficeRemote(currentOffice)))
     }
 
-    override fun deleteFlightBoxScannedRemote(
+    override fun removeBoxFromFlightRemote(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
     ): Completable {
-        return remote.boxDeleteFromFlight(flightID,
+        return remote.deleteBoxFromFlight(flightID,
             barcode,
             BoxDeleteFromFlightRemote(isManualInput,
                 updatedAt,
@@ -293,14 +293,14 @@ class AppRepositoryImpl(
             .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
-    override fun saveBoxScannedToBalanceRemote(
+    override fun removeBoxFromBalanceRemote(
         flightID: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
     ): Completable {
-        return remote.putBoxScannedToBalance(flightID,
+        return remote.removeFromBalance(flightID,
             barcode,
             PutBoxFromFlightRemote(isManualInput,
                 updatedAt,
@@ -322,7 +322,7 @@ class AppRepositoryImpl(
         return local.observeFilterByOfficeAttachedBoxes(dstOfficeId)
     }
 
-    override fun readAttached(): Single<List<AttachedBoxEntity>> {
+    override fun readAllAttachedBoxes(): Single<List<AttachedBoxEntity>> {
         return local.readAttachedBoxes()
     }
 
@@ -342,8 +342,8 @@ class AppRepositoryImpl(
         return local.findAttachedBox(barcode)
     }
 
-    override fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
-        return local.loadAttachedBoxes(barcodes)
+    override fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
+        return local.findAttachedBoxes(barcodes)
     }
 
     //==============================================================================================
@@ -402,6 +402,14 @@ class AppRepositoryImpl(
 
     override fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>> {
         return local.findReturnBox(barcode)
+    }
+
+    override fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>> {
+        return local.findReturnBoxes(barcodes)
+    }
+
+    override fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
+        return local.deleteReturnBox(returnBoxEntity)
     }
 
     //==============================================================================================

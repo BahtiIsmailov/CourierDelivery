@@ -18,6 +18,30 @@ import io.reactivex.Single
 
 interface AppRepository {
 
+    fun loadBoxToBalanceRemote(
+        flightID: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOffice: Int,
+    ): Completable
+
+    fun removeBoxFromFlightRemote(
+        flightID: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        idOffice: Int,
+    ): Completable
+
+    fun removeBoxFromBalanceRemote(
+        flightID: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOffice: Int,
+    ): Completable
+
     //==============================================================================================
 
     fun flightStatuses(): Single<FlightStatusesRemote>
@@ -53,32 +77,6 @@ interface AppRepository {
     fun deleteAllMatchingBox()
 
     //==============================================================================================
-
-    fun flightBoxScannedToBalanceRemote(
-        flightID: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOffice: Int,
-    ): Completable
-
-    fun deleteFlightBoxScannedRemote(
-        flightID: String,
-        barcode: String,
-        isManual: Boolean,
-        updatedAt: String,
-        idOffice: Int,
-    ): Completable
-
-    fun saveBoxScannedToBalanceRemote(
-        flightID: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOffice: Int,
-    ): Completable
-
-    //==============================================================================================
     //attached
     //==============================================================================================
     fun saveAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable
@@ -87,13 +85,13 @@ interface AppRepository {
 
     fun observedAttachedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
 
-    fun readAttached(): Single<List<AttachedBoxEntity>>
+    fun readAllAttachedBoxes(): Single<List<AttachedBoxEntity>>
 
     fun deleteAttachedBox(flightBoxScannedEntity: AttachedBoxEntity): Completable
 
     fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>>
 
-    fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
+    fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
 
     fun deleteAllAttachedBoxes()
 
@@ -124,7 +122,6 @@ interface AppRepository {
 
     fun deleteAllFlightBoxBalanceAwait()
 
-
     //==============================================================================================
     //return box
     //==============================================================================================
@@ -134,7 +131,9 @@ interface AppRepository {
 
     fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>>
 
-//    fun findReturnBoxesByDstOfficeId(dstOfficeId: Int): Single<ReturnBoxByDstOfficeIdEntity>
+    fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
+
+    fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
     //==============================================================================================
     //time

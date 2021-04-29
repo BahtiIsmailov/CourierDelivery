@@ -46,7 +46,7 @@ interface LocalRepository {
     //==============================================================================================
     fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
 
-    fun loadAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
+    fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
 
     fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>>
 
@@ -87,7 +87,7 @@ interface LocalRepository {
     fun deleteAllFlightBoxBalanceAwait()
 
     //==============================================================================================
-    //balance box
+    //return box
     //==============================================================================================
 
     fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
@@ -95,5 +95,9 @@ interface LocalRepository {
     fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>>
 
     fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>>
+
+    fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
+
+    fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
 }

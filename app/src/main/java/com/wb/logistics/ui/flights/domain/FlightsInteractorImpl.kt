@@ -65,7 +65,7 @@ class FlightsInteractorImpl(
 
     private fun deleteScannedFlightBoxRemote(attachedBoxEntity: AttachedBoxEntity) =
         with(attachedBoxEntity) {
-            appRepository.deleteFlightBoxScannedRemote(
+            appRepository.removeBoxFromFlightRemote(
                 flightId.toString(),
                 barcode,
                 isManualInput,

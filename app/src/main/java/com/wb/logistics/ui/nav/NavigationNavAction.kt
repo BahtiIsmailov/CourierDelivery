@@ -6,5 +6,6 @@ sealed class NavigationNavAction {
     object NavigateToReceptionScan : NavigationNavAction()
     object NavigateToPickUpPoint : NavigationNavAction()
     object NavigateToDelivery : NavigationNavAction()
+    data class NavigateToUnloading(val officeId: Int, val shortAddress: String) : NavigationNavAction()
 
 }

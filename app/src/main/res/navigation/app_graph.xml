@@ -24,6 +24,9 @@
             app:destination="@id/flightDeliveriesFragment"
             app:popUpTo="@+id/flightsFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_flightsFragment_to_unloadingScanFragment"
+            app:destination="@id/unloadingScanFragment" />
     </fragment>
 
     <fragment
@@ -157,7 +160,12 @@
         android:id="@+id/unloadingReturnBoxesFragment"
         android:name="com.wb.logistics.ui.unloading.UnloadingReturnBoxesFragment"
         android:label="@string/unloading_return_boxes_label"
-        tools:layout="@layout/unloading_return_boxes_fragment" />
+        tools:layout="@layout/unloading_return_boxes_fragment">
+        <argument
+            android:name="unloading_return_key"
+            app:argType="com.wb.logistics.ui.unloading.UnloadingReturnParameters"
+            app:nullable="false" />
+    </fragment>
 
     <dialog
         android:id="@+id/unloadingHandleFragment"

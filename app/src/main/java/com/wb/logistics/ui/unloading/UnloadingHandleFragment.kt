@@ -113,7 +113,6 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
         }
     }
 
-
     private fun setFormatCodeBox(number: String) {
         binding.codeBox.setText(number)
         binding.codeBox.setSelection(number.length)

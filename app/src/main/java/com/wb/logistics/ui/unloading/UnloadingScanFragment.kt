@@ -94,8 +94,9 @@ class UnloadingScanFragment : Fragment() {
                     ReceptionFragmentDirections.actionReceptionFragmentToFlightDeliveriesFragment())
                 UnloadingScanNavAction.NavigateToBack -> findNavController().popBackStack()
 
-                UnloadingScanNavAction.NavigateToReturnBoxes -> findNavController().navigate(
-                    UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloadingReturnBoxesFragment())
+                is UnloadingScanNavAction.NavigateToReturnBoxes -> findNavController().navigate(
+                    UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloadingReturnBoxesFragment(
+                        UnloadingReturnParameters(state.dstOfficeId)))
 
                 is UnloadingScanNavAction.NavigateToHandleInput -> {
                     viewModel.onStopScanner()
@@ -202,9 +203,7 @@ class UnloadingScanFragment : Fragment() {
         }
 
         binding.manualInputButton.setOnClickListener {
-            //viewModel.onStopScanner()
             viewModel.onaHandleClicked()
-            //showHandleInput()
         }
 
         binding.completeButton.setOnClickListener {

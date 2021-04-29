@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.nav.domain
 
 interface ScreenManager {
-    fun saveScreenState(screen: ScreenState)
-    fun readScreenState(): ScreenState
+    fun saveScreenState(screenManagerState: ScreenManagerState)
+    fun readScreenState(): ScreenManagerState
     fun clear()
 }

@@ -6,7 +6,7 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenState
+import com.wb.logistics.ui.nav.domain.ScreenManagerState
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ScanBoxData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -174,7 +174,7 @@ class ReceptionScanViewModel(
             if (it > 0) {
                 bottomProgressEvent.value = false
             } else {
-                screenManager.saveScreenState(ScreenState.FLIGHT_PICK_UP_POINT)
+                screenManager.saveScreenState(ScreenManagerState.FlightPickUpPoint)
                 _navigationEvent.value = ReceptionScanNavAction.NavigateToFlightDeliveries
                 bottomProgressEvent.value = false
             }

@@ -30,7 +30,7 @@ public class UnloadingReturnBoxesAdapter extends ArrayAdapter<String> {
     public UnloadingReturnBoxesAdapter(@NonNull Context context,
                                        @NonNull List<UnloadingReturnBoxesItem> items,
                                        @NonNull OnItemClickCallBack onItemClickCallBack) {
-        super(context, R.layout.reception_boxes_item_layout);
+        super(context, R.layout.unloading_boxes_item_layout);
         this.items = items;
         this.onItemClickCallBack = onItemClickCallBack;
     }
@@ -40,7 +40,7 @@ public class UnloadingReturnBoxesAdapter extends ArrayAdapter<String> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.reception_boxes_item_layout, null);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.unloading_boxes_item_layout, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
