@@ -65,7 +65,15 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun initStateObserve() {
 
-        viewModel.stateUIToolBar.observe(viewLifecycleOwner) { updateToolbarLabel(it) }
+        viewModel.stateUIToolBar.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is FlightDeliveriesUIToolbarState.Flight -> updateToolbarLabel(state.label)
+                is FlightDeliveriesUIToolbarState.Delivery -> {
+                    updateToolbarDeliveryIcon()
+                    updateToolbarLabel(state.label)
+                }
+            }
+        }
 
         viewModel.stateUINav.observe(viewLifecycleOwner, { state ->
             when (state) {
@@ -132,6 +140,9 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun updateToolbarLabel(toolbarTitle: String) {
         (activity as NavToolbarTitleListener).updateTitle(toolbarTitle)
+    }
+
+    private fun updateToolbarDeliveryIcon() {
         (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
     }
 
@@ -167,11 +178,12 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun initAdapter() {
         adapter = with(DefaultAdapter()) {
-            addDelegate(FlightDeliveriesDelegate(requireContext(), object :OnFlightDeliveriesCallback {
-                override fun onPickToPointClick(idItem: Int) {
-                    viewModel.onItemClicked(idItem)
-                }
-            }))
+            addDelegate(FlightDeliveriesDelegate(requireContext(),
+                object : OnFlightDeliveriesCallback {
+                    override fun onPickToPointClick(idItem: Int) {
+                        viewModel.onItemClicked(idItem)
+                    }
+                }))
             addDelegate(
                 FlightDeliveriesRefreshDelegate(
                     requireContext(),

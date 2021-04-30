@@ -71,6 +71,7 @@
 
     <string name="reception_label">Прием</string>
     <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
+    <string name="reception_scan_not_permission">Разрешение не установлено</string>
     <string name="reception_manual_input_button">Ручной ввод</string>
     <string name="reception_complete_button">Завершить</string>
     <string name="reception_current_box">Текущая коробка</string>

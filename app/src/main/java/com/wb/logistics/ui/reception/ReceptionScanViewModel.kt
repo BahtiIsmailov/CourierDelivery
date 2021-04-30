@@ -38,7 +38,7 @@ class ReceptionScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        addMockScannedBox()
+        //addMockScannedBox()
         //screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
         addSubscription(interactor.observeScannedBoxes().subscribe {
             if (it.isEmpty()) {
@@ -146,10 +146,6 @@ class ReceptionScanViewModel(
 
     fun onBoxHandleInput(barcode: String) {
         interactor.boxScanned(barcode.replace("-", ""), true)
-    }
-
-    fun onBoxScanned(barcode: String) {
-        interactor.boxScanned(resourceProvider.getBarCodeBox(barcode), false)
     }
 
     fun onListClicked() {

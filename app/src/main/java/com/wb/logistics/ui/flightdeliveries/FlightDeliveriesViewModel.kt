@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flightdeliveries
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
@@ -21,7 +21,9 @@ class FlightDeliveriesViewModel(
     private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUIToolBar = MutableLiveData<String>()
+    private val _stateUIToolBar = MutableLiveData<FlightDeliveriesUIToolbarState>()
+    val stateUIToolBar: LiveData<FlightDeliveriesUIToolbarState>
+        get() = _stateUIToolBar
 
     private val _stateUINav = SingleLiveEvent<FlightDeliveriesUINavState>()
     val stateUINav: LiveData<FlightDeliveriesUINavState>
@@ -30,7 +32,7 @@ class FlightDeliveriesViewModel(
     val stateUIList = MutableLiveData<FlightDeliveriesUIListState>()
     val stateUIBottom = MutableLiveData<FlightDeliveriesUIBottomState>()
 
-    private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByAddressEntity>()
+    private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
 
     fun action(actionView: FlightDeliveriesUIAction) {
         when (actionView) {
@@ -46,7 +48,7 @@ class FlightDeliveriesViewModel(
 
     fun update() {
         fetchFlightId()
-        fetchAttachedBoxesGroupByAddress()
+        fetchAttachedBoxesGroupByOfficeId()
         fetchBottomState()
     }
 
@@ -56,20 +58,20 @@ class FlightDeliveriesViewModel(
     }
 
     private fun fetchFlightIdComplete(idFlight: Int) {
-        stateUIToolBar.value =
+        _stateUIToolBar.value =
             if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint) {
-                resourceProvider.getFlightToolbar(idFlight)
+                FlightDeliveriesUIToolbarState.Flight(resourceProvider.getFlightToolbar(idFlight))
             } else {
-                resourceProvider.getDeliveryToolbar(idFlight)
+                FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbar(idFlight))
             }
     }
 
     private fun fetchFlightIdError(throwable: Throwable) {
-        stateUIToolBar.value = resourceProvider.getEmpty()
+
     }
 
-    private fun fetchAttachedBoxesGroupByAddress() {
-        addSubscription(interactor.getAttachedBoxesGroupByAddress()
+    private fun fetchAttachedBoxesGroupByOfficeId() {
+        addSubscription(interactor.getAttachedBoxesGroupByOffice()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
                 val isEnabled = screenManager.readScreenState() == ScreenManagerState.FlightDelivery
@@ -83,22 +85,23 @@ class FlightDeliveriesViewModel(
                 { fetchScannedBoxGroupByAddressError(it) }))
     }
 
-    private fun build(boxes: List<AttachedBoxGroupByAddressEntity>, isEnabled: Boolean) =
+    private fun build(boxes: List<AttachedBoxGroupByOfficeEntity>, isEnabled: Boolean) =
         Observable.fromIterable(boxes.withIndex())
-            .map { (index, item): IndexedValue<AttachedBoxGroupByAddressEntity> ->
+            .map { (index, item): IndexedValue<AttachedBoxGroupByOfficeEntity> ->
                 dataBuilder.buildSuccessItem(item, isEnabled, index)
             }
             .toList()
 
-    private fun count(boxes: List<AttachedBoxGroupByAddressEntity>) =
-        Observable.fromIterable(boxes).map { it.undoCount }.scan { v1, v2 -> v1 + v2 }.last(0)
+    private fun count(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+        Observable.fromIterable(boxes)
+            .map { it.redoCount }
+            .scan { v1, v2 -> v1 + v2 }.last(0)
 
     private fun fetchBottomState() {
-        if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint) {
-            stateUIBottom.value = FlightDeliveriesUIBottomState.GoToDelivery
-        } else {
-            stateUIBottom.value = FlightDeliveriesUIBottomState.Empty
-        }
+        stateUIBottom.value =
+            if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint)
+                FlightDeliveriesUIBottomState.GoToDelivery
+            else FlightDeliveriesUIBottomState.Empty
     }
 
     private fun fetchScannedBoxGroupByAddressComplete(flight: FlightDeliveriesUIListState) {

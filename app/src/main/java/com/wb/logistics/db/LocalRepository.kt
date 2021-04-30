@@ -1,7 +1,7 @@
 package com.wb.logistics.db
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -60,7 +60,7 @@ interface LocalRepository {
 
     fun deleteAllAttachedBox()
 
-    fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>>
+    fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
 
     //==============================================================================================
     //attached box

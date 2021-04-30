@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesItem
 import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesProgressItem
@@ -11,7 +11,7 @@ class FlightDeliveriesDataBuilderImpl(
 ) : FlightDeliveriesDataBuilder {
 
     override fun buildSuccessItem(
-        scannedBoxGroupByAddressEntity: AttachedBoxGroupByAddressEntity,
+        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
         isEnabled: Boolean,
         index: Int,
     ): BaseItem {

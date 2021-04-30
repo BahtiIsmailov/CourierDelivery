@@ -49,7 +49,10 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun initPermission() {
-        if (!hasPermissions(Manifest.permission.CAMERA)) {
+        if (hasPermissions(Manifest.permission.CAMERA)) {
+            binding.permissionInfo.visibility = View.GONE
+        } else {
+            binding.permissionInfo.visibility = View.VISIBLE
             requestPermissions(
                 arrayOf(Manifest.permission.CAMERA), PERMISSIONS_REQUEST_CAMERA_NO_ACTION
             )
@@ -65,7 +68,10 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA_NO_ACTION
             && grantResults.isNotEmpty()
             && grantResults.first() == PackageManager.PERMISSION_GRANTED
-        ) startScanner()
+        ) {
+            binding.permissionInfo.visibility = View.GONE
+            startScanner()
+        }
 
     }
 

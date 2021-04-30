@@ -5,7 +5,7 @@ import com.wb.logistics.db.dao.FlightDao
 import com.wb.logistics.db.dao.ReturnBoxDao
 import com.wb.logistics.db.dao.UnloadingBoxDao
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -144,7 +144,7 @@ class LocalRepositoryImpl(
         attachedBoxDao.deleteAllAttachedBox()
     }
 
-    override fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>> {
+    override fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>> {
         return attachedBoxDao.groupAttachedBoxByDstAddress()
     }
 

@@ -59,6 +59,20 @@
         app:layout_constraintTop_toTopOf="@+id/scanner_top_"
         app:srcCompat="@drawable/ic_sun" />
 
+    <TextView
+        android:id="@+id/permission_info"
+        style="@style/MediumRegularLightText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:gravity="center"
+        android:text="@string/reception_scan_not_permission"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sun"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
     <ImageView
         android:id="@+id/minus"
         android:layout_width="30dp"

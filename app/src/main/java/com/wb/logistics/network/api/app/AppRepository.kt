@@ -3,7 +3,7 @@ package com.wb.logistics.network.api.app
 import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -95,7 +95,7 @@ interface AppRepository {
 
     fun deleteAllAttachedBoxes()
 
-    fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>>
+    fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
 
     //==============================================================================================
     //unloading

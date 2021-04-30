@@ -4,7 +4,7 @@ import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByAddressEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.*
 import com.wb.logistics.db.entity.flight.*
@@ -334,7 +334,7 @@ class AppRepositoryImpl(
         local.deleteAllAttachedBox()
     }
 
-    override fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByAddressEntity>> {
+    override fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>> {
         return local.groupAttachedBoxByDstAddress()
     }
 

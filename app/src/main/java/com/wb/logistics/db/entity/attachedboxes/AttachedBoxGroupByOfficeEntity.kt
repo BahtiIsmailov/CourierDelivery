@@ -1,6 +1,6 @@
 package com.wb.logistics.db.entity.attachedboxes
 
-data class AttachedBoxGroupByAddressEntity(
+data class AttachedBoxGroupByOfficeEntity(
 
     val officeName: String,
     val officeId: Int,
