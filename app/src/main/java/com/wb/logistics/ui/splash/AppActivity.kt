@@ -59,10 +59,18 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
 
         viewModel.networkState.observe(this) {
             networkIcon.visibility = if (it) View.GONE else View.VISIBLE
+            val header: View = binding.navView.getHeaderView(0)
+            val status = when (it) {
+                true -> getString(R.string.inet_ok)
+                false -> getString(R.string.inet_no)
+            }
+            header.findViewById<TextView>(R.id.inet_app_text).text = String.format("%s: %s", getString(R.string.inet_text), status )
+
         }
 
         viewModel.versionApp.observe(this) {
-            binding.versionAppText.text = it
+            val header: View = binding.navView.getHeaderView(0)
+            header.findViewById<TextView>(R.id.version_app_text).text = it
         }
     }
 

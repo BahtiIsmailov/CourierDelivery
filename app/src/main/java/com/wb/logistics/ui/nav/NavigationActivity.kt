@@ -39,6 +39,7 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
         super.onCreate(savedInstanceState)
         binding = NavigationActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         initStatusBar()
         initToolbar()
         initNavController()
@@ -47,20 +48,21 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
     }
 
     private fun initObserver() {
+            //TODO Duplicate AppActivity.kt:54
 
-        viewModel.navHeader.observe(this) {
-            val header: View = binding.navView.getHeaderView(0)
-            header.findViewById<TextView>(R.id.nav_header_name).text = it.first
-            header.findViewById<TextView>(R.id.nav_header_company).text = it.second
-        }
-
-        viewModel.networkState.observe(this) {
-            networkIcon.visibility = if (it) GONE else VISIBLE
-        }
-
-        viewModel.versionApp.observe(this) {
-            binding.versionAppText.text = it
-        }
+//        viewModel.navHeader.observe(this) {
+//            val header: View = binding.navView.getHeaderView(0)
+//            header.findViewById<TextView>(R.id.nav_header_name).text = it.first
+//            header.findViewById<TextView>(R.id.nav_header_company).text = it.second
+//        }
+//
+//        viewModel.networkState.observe(this) {
+//            networkIcon.visibility = if (it) GONE else VISIBLE
+//        }
+//        viewModel.versionApp.observe(this) {
+//            val header: View = binding.navView.getHeaderView(0)
+//            header.findViewById<TextView>(R.id.version_app_text).text = it
+//        }
     }
 
     private fun initStatusBar() {
