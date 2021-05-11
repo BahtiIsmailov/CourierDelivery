@@ -34,6 +34,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         initToolbar()
         initNavController()
         initObserver()
@@ -72,7 +73,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
 
     private fun initView() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        networkIcon = toolbar.findViewById<ImageView>(R.id.no_internet_image)
+        networkIcon = toolbar.findViewById(R.id.no_internet_image)
         networkIcon.setOnClickListener {
             InformationDialogFragment.newInstance(
                 getString(R.string.nav_no_internet_dialog_title),
