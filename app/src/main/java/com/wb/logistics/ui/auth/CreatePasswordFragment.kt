@@ -69,7 +69,7 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
                 CreatePasswordUIState.NavigateToApplication ->
                 {
                     findNavController().setGraph(
-                        R.navigation.auth_graph,
+                        R.navigation.load_graph,
                         bundleOf("navigationFlowStep" to 1)
                     )
                 }

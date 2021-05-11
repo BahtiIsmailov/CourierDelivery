@@ -26,4 +26,6 @@ interface AuthRepository {
 
     fun userInfo() : Single<Pair<String, String>>
 
+    fun clearToken()
+
 }

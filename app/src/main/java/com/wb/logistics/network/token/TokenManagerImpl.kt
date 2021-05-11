@@ -31,7 +31,11 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     private fun token(): TokenEntity =
-        worker.load(AppPreffsKeys.TOKEN_KEY, TokenEntity::class.java) ?: TokenEntity("", 0, "")
+        readTokenEntity() ?: TokenEntity("", 0, "")
+
+    private fun readTokenEntity(): TokenEntity? {
+        return worker.load(AppPreffsKeys.TOKEN_KEY, TokenEntity::class.java)
+    }
 
     private fun tokenResource(): TokenResource {
         return decodeToken(token().accessToken)
@@ -39,6 +43,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
 
     override fun clear() {
         worker.delete(AppPreffsKeys.TOKEN_KEY)
+    }
+
+    override fun isContains(): Boolean {
+        return readTokenEntity() != null
     }
 
 }

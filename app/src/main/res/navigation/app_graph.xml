@@ -2,8 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/auth_navigation"
-    app:startDestination="@id/flightsFragment">
+    android:id="@+id/app_load_navigation"
+    app:startDestination="@id/flightLoaderFragment">
 
     <fragment
         android:id="@+id/flightsFragment"
@@ -19,14 +19,6 @@
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_flightsFragment_to_flightDeliveriesFragment"
-            app:destination="@id/flightDeliveriesFragment"
-            app:popUpTo="@+id/flightsFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_flightsFragment_to_unloadingScanFragment"
-            app:destination="@id/unloadingScanFragment" />
     </fragment>
 
     <fragment
@@ -34,6 +26,11 @@
         android:name="com.wb.logistics.ui.reception.ReceptionFragment"
         android:label="@string/reception_label"
         tools:layout="@layout/reception_scan_fragment">
+
+        <deepLink
+            android:id="@+id/reception_scan_deepLink"
+            app:uri="perevozka://reception_scan" />
+
         <action
             android:id="@+id/action_receptionFragment_to_receptionBoxNotBelongFragment"
             app:destination="@id/receptionBoxNotBelongFragment"
@@ -178,5 +175,23 @@
             app:argType="com.wb.logistics.ui.unloading.UnloadingHandleParameters"
             app:nullable="false" />
     </dialog>
+    <fragment
+        android:id="@+id/flightLoaderFragment"
+        android:name="com.wb.logistics.ui.flights.FlightLoaderFragment"
+        tools:layout="@layout/flight_loader_fragment"
+        android:label="" >
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_unloadingScanFragment"
+            app:destination="@id/unloadingScanFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightDeliveriesFragment"
+            app:destination="@id/flightDeliveriesFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightsFragment"
+            app:destination="@id/flightsFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_receptionFragment"
+            app:destination="@id/receptionFragment" />
+    </fragment>
 
 </navigation>

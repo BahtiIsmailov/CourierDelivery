@@ -1,5 +1,6 @@
 package com.wb.logistics.ui.auth
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
@@ -8,7 +9,6 @@ import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.auth.NumberPhoneUIState.*
-import com.wb.logistics.ui.nav.domain.ScreenManager
 import com.wb.logistics.utils.formatter.PhoneUtils
 import io.reactivex.disposables.CompositeDisposable
 
@@ -16,26 +16,26 @@ class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
     private val authRepository: AuthRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUI = MutableLiveData<NumberPhoneUIState<String>>()
+    private val _stateUI = MutableLiveData<NumberPhoneUIState<String>>()
+    val stateUI: LiveData<NumberPhoneUIState<String>>
+        get() = _stateUI
 
     fun action(actionView: NumberPhoneUIAction) {
         val state = when (actionView) {
             is NumberPhoneUIAction.CheckPhone -> {
-                //screenManager.saveScreenState(ScreenState.FLIGHT)
                 fetchPhoneNumber(actionView.number)
                 PhoneCheck
             }
             NumberPhoneUIAction.LongTitle -> NavigateToConfig
             is NumberPhoneUIAction.NumberChanges -> {
                 fetchPhoneNumberFormat(actionView)
-                    Empty
-                //NumberFormat("+7 (925) 123-11-51")
+                Empty
+            //NumberFormat("+7 (925) 123-11-51")
             }
         }
-        stateUI.value = state
+        _stateUI.value = state
     }
 
     private fun fetchPhoneNumber(phone: String) {
@@ -51,20 +51,20 @@ class NumberPhoneViewModel(
         addSubscription(
             PhoneUtils.phoneFormatter(actionView.observable, rxSchedulerFactory)
                 .subscribe { number ->
-                    stateUI.value = if (number.length == PHONE_MAX_LENGTH)
+                    _stateUI.value = if (number.length == PHONE_MAX_LENGTH)
                         NumberFormatComplete else NumberFormat(number)
                 })
     }
 
     private fun fetchPhoneNumberComplete(checkPhoneRemote: CheckExistPhoneResponse, phone: String) {
-        stateUI.value =
+        _stateUI.value =
             if (checkPhoneRemote.hasPassword)
                 NavigateToInputPassword(phone) else NavigateToTemporaryPassword(phone)
-        stateUI.value = Empty
+        _stateUI.value = Empty
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable) {
-        stateUI.value = when (throwable) {
+        _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> NumberNotFound(throwable.message)
             else -> Error(throwable.toString())

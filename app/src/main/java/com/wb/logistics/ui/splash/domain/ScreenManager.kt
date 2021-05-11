@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.nav.domain
+package com.wb.logistics.ui.splash.domain
 
 interface ScreenManager {
     fun saveScreenState(screenManagerState: ScreenManagerState)

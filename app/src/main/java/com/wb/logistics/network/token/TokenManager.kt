@@ -10,4 +10,5 @@ interface TokenManager {
     fun userName(): String
     fun userCompany(): String
     fun clear()
+    fun isContains(): Boolean
 }

@@ -1,15 +1,15 @@
 package com.wb.logistics.ui.auth
 
-sealed class InputPasswordUIState<out R> {
+sealed class InputPasswordUIState {
 
-    data class NavigateToTemporaryPassword(val phone : String) : InputPasswordUIState<Nothing>()
-    object NavigateToApplication : InputPasswordUIState<Nothing>()
+    data class NavigateToTemporaryPassword(val phone : String) : InputPasswordUIState()
+    object NavigateToApplication : InputPasswordUIState()
 
-    object NextEnable : InputPasswordUIState<Nothing>()
-    object NextDisable : InputPasswordUIState<Nothing>()
-    object Empty : InputPasswordUIState<Nothing>()
+    object NextEnable : InputPasswordUIState()
+    object NextDisable : InputPasswordUIState()
+    object Empty : InputPasswordUIState()
 
-    object AuthProcess : InputPasswordUIState<Nothing>()
-    object AuthComplete : InputPasswordUIState<Nothing>()
-    data class Error(val message: String) : InputPasswordUIState<Nothing>()
+    object AuthProcess : InputPasswordUIState()
+    object AuthComplete : InputPasswordUIState()
+    data class Error(val message: String) : InputPasswordUIState()
 }

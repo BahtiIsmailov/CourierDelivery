@@ -1,5 +1,6 @@
 package com.wb.logistics.ui.auth
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.exceptions.BadRequestException
@@ -17,7 +18,9 @@ class CreatePasswordViewModel(
     private val interactor: CreatePasswordInteractor
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUI = MutableLiveData<CreatePasswordUIState<String>>()
+    private val _stateUI = MutableLiveData<CreatePasswordUIState>()
+    val stateUI: LiveData<CreatePasswordUIState>
+        get() = _stateUI
 
     fun action(actionView: CreatePasswordUIAction) {
         when (actionView) {
@@ -30,14 +33,14 @@ class CreatePasswordViewModel(
         addSubscription(
             interactor.remindPasswordChanges(observable)
                 .subscribe(
-                    { stateUI.value = if (it) SaveAndNextEnable else SaveAndNextDisable },
-                    { stateUI.value = SaveAndNextDisable }
+                    { _stateUI.value = if (it) SaveAndNextEnable else SaveAndNextDisable },
+                    { _stateUI.value = SaveAndNextDisable }
                 )
         )
     }
 
     private fun fetchAuth(password: String, tmpPassword: String) {
-        stateUI.value = AuthProcess
+        _stateUI.value = AuthProcess
         addSubscription(interactor.saveAndAuthByPassword(formatPhone(), password, tmpPassword)
             .subscribe(
                 { authComplete() },
@@ -49,17 +52,17 @@ class CreatePasswordViewModel(
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     private fun authComplete() {
-        stateUI.value = AuthComplete
-        stateUI.value = NavigateToApplication
+        _stateUI.value = AuthComplete
+        _stateUI.value = NavigateToApplication
     }
 
     private fun authError(throwable: Throwable) {
-        stateUI.value = when (throwable) {
+        _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> Error(throwable.message)
             else -> Error(throwable.toString())
         }
-        stateUI.value = NavigateToTemporaryPassword("")
+        _stateUI.value = NavigateToTemporaryPassword("")
     }
 
 }

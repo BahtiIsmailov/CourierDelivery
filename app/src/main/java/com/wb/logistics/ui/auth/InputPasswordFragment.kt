@@ -5,7 +5,6 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -28,7 +27,7 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = AuthInputPasswordFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -70,10 +69,7 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
                         )
                     )
                 InputPasswordUIState.NavigateToApplication -> {
-                    findNavController().setGraph(
-                        R.navigation.auth_graph,
-                        bundleOf("navigationFlowStep" to 1)
-                    )
+                    findNavController().navigate(R.id.load_navigation)
                 }
                 InputPasswordUIState.NextDisable -> binding.next.setState(
                     ProgressImageButtonMode.DISABLED
@@ -119,7 +115,7 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
 
 @Parcelize
 data class InputPasswordParameters(
-    val phone: String
+    val phone: String,
 ) : Parcelable
 
 

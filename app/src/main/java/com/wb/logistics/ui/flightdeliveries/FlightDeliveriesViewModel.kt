@@ -7,8 +7,8 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
-import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenManagerState
+import com.wb.logistics.ui.splash.domain.ScreenManager
+import com.wb.logistics.ui.splash.domain.ScreenManagerState
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable

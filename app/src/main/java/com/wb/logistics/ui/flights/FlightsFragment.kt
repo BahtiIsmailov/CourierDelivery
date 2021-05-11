@@ -21,6 +21,7 @@ import com.wb.logistics.ui.flights.delegates.FlightsDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsProgressDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsRefreshDelegate
 import com.wb.logistics.ui.flights.delegates.OnFlightsUpdateCallback
+import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -59,6 +60,7 @@ class FlightsFragment : Fragment() {
         initAdapter()
         initListener()
         initStateObserve()
+        initDrawer()
         viewModel.update()
     }
 
@@ -119,6 +121,10 @@ class FlightsFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun initDrawer() {
+        (activity as NavToolbarTitleListener).updateDrawer()
     }
 
     private fun showDialogReturnBalance() {

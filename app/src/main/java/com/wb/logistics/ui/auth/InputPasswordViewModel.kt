@@ -1,5 +1,6 @@
 package com.wb.logistics.ui.auth
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.exceptions.BadRequestException
@@ -16,14 +17,16 @@ class InputPasswordViewModel(
     private val interactor: InputPasswordInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUI = MutableLiveData<InputPasswordUIState<String>>()
+    private val _stateUI = MutableLiveData<InputPasswordUIState>()
+    val stateUI: LiveData<InputPasswordUIState>
+        get() = _stateUI
 
     fun action(actionView: InputPasswordUIAction) {
         when (actionView) {
             is PasswordChanges -> fetchPasswordChanges(actionView.observable)
             RemindPassword -> {
-                stateUI.value = NavigateToTemporaryPassword(parameters.phone)
-                stateUI.value = Empty
+                _stateUI.value = NavigateToTemporaryPassword(parameters.phone)
+                _stateUI.value = Empty
             }
             is Auth -> fetchAuth(actionView.password)
         }
@@ -33,14 +36,14 @@ class InputPasswordViewModel(
         addSubscription(
             interactor.remindPasswordChanges(observable)
                 .subscribe(
-                    { stateUI.value = if (it) NextEnable else NextDisable },
-                    { stateUI.value = NextDisable }
+                    { _stateUI.value = if (it) NextEnable else NextDisable },
+                    { _stateUI.value = NextDisable }
                 )
         )
     }
 
     private fun fetchAuth(password: String) {
-        stateUI.value = AuthProcess
+        _stateUI.value = AuthProcess
         val phone = formatPhone()
         addSubscription(interactor.authByPassword(phone, password)
             .subscribe(
@@ -53,12 +56,11 @@ class InputPasswordViewModel(
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     private fun authComplete() {
-        stateUI.value = AuthComplete
-        stateUI.value = NavigateToApplication
+        _stateUI.value = NavigateToApplication
     }
 
     private fun authError(throwable: Throwable) {
-        stateUI.value = when (throwable) {
+        _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> Error(throwable.message)
             else -> Error(throwable.toString())

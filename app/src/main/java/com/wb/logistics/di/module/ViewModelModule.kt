@@ -6,13 +6,12 @@ import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilder
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilderImpl
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
-import com.wb.logistics.ui.flights.FlightsDataBuilder
-import com.wb.logistics.ui.flights.FlightsDataBuilderImpl
-import com.wb.logistics.ui.flights.FlightsResourceProvider
-import com.wb.logistics.ui.flights.FlightsViewModel
+import com.wb.logistics.ui.flights.*
 import com.wb.logistics.ui.nav.NavigationViewModel
 import com.wb.logistics.ui.reception.*
 import com.wb.logistics.ui.scanner.ScannerViewModel
+import com.wb.logistics.ui.splash.AppViewModel
+import com.wb.logistics.ui.splash.LoaderViewModel
 import com.wb.logistics.ui.unloading.*
 import com.wb.logistics.utils.time.TimeFormatter
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -37,7 +36,11 @@ val viewModelModule = module {
     single { provideFlightsDataBuilder(get(), get()) }
     single { provideFlightDeliveriesDataBuilder(get()) }
 
-    viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
+    viewModel { AppViewModel(get(), get(), get(), get()) }
+
+    viewModel { LoaderViewModel(get(), get(), get(), get(), get()) }
+
+    viewModel { NumberPhoneViewModel(get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
     viewModel { (parameters: TemporaryPasswordParameters) ->
         TemporaryPasswordViewModel(parameters, get(), get(), get())
@@ -51,7 +54,9 @@ val viewModelModule = module {
     viewModel { (parameters: ReceptionBoxNotBelongParameters) ->
         ReceptionBoxNotBelongModel(parameters)
     }
+
     viewModel { NavigationViewModel(get(), get(), get(), get(), get()) }
+    viewModel { FlightLoaderViewModel(get(), get()) }
     viewModel {
         FlightsViewModel(get(),
             get(),
@@ -86,7 +91,12 @@ val viewModelModule = module {
             get())
     }
 
-    viewModel { (parameters: UnloadingReturnParameters) -> UnloadingReturnBoxesViewModel(parameters, get(), get(), get()) }
+    viewModel { (parameters: UnloadingReturnParameters) ->
+        UnloadingReturnBoxesViewModel(parameters,
+            get(),
+            get(),
+            get())
+    }
     viewModel { (parameters: UnloadingHandleParameters) ->
         UnloadingHandleViewModel(parameters,
             get(),

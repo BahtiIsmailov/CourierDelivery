@@ -5,8 +5,8 @@ import com.google.gson.Gson
 import com.wb.logistics.app.AppConfig
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.network.token.TimeManagerImpl
-import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenManagerImpl
+import com.wb.logistics.ui.splash.domain.ScreenManager
+import com.wb.logistics.ui.splash.domain.ScreenManagerImpl
 import com.wb.logistics.utils.managers.ConfigManager
 import com.wb.logistics.utils.managers.ConfigManagerImpl
 import com.wb.logistics.utils.managers.DeviceManager

@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthNumberPhoneFragmentBinding
+import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -40,6 +41,8 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
         initListener()
         initInputMethod()
         initStateObserve()
+
+        (activity as NavToolbarTitleListener).hideBackButton()
 
         val safeArgs: NumberPhoneFragmentArgs by navArgs()
         val flowStepNumber = safeArgs.navigationFlowStep

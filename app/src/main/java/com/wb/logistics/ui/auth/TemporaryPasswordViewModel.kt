@@ -1,5 +1,6 @@
 package com.wb.logistics.ui.auth
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
@@ -22,7 +23,9 @@ class TemporaryPasswordViewModel(
     private val resourceProvider: AuthResourceProvider
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
-    val stateUI = MutableLiveData<TemporaryPasswordUIState<Nothing>>()
+    private val _stateUI = MutableLiveData<TemporaryPasswordUIState<Nothing>>()
+    val stateUI: LiveData<TemporaryPasswordUIState<Nothing>>
+        get() = _stateUI
 
     init {
         fetchTitle()
@@ -30,7 +33,7 @@ class TemporaryPasswordViewModel(
     }
 
     private fun fetchTitle() {
-        stateUI.postValue(
+        _stateUI.postValue(
             InitTitle(
                 resourceProvider.getTitleTemporaryPassword(parameters.phone),
                 parameters.phone
@@ -51,7 +54,7 @@ class TemporaryPasswordViewModel(
     private fun onHandleSignUpError(throwable: Throwable) {}
 
     private fun fetchTmpPassword() {
-        stateUI.value = FetchingTmpPassword
+        _stateUI.value = FetchingTmpPassword
         addSubscription(
             interactor.sendTmpPassword(formatPhone()).subscribe(
                 { fetchingTmpPasswordComplete(it) },
@@ -63,7 +66,7 @@ class TemporaryPasswordViewModel(
     private fun fetchingTmpPasswordComplete(it: RemainingAttemptsResponse) {
         startTimer()
         subscribeTimer()
-        stateUI.value =
+        _stateUI.value =
             RemainingAttempts(resourceProvider.getNumberAttempt(it.remainingAttempts))
     }
 
@@ -83,15 +86,15 @@ class TemporaryPasswordViewModel(
         addSubscription(
             interactor.passwordChanges(observable)
                 .subscribe({
-                    stateUI.value = if (it) NextEnable else NextDisable
+                    _stateUI.value = if (it) NextEnable else NextDisable
                 }, {
-                    stateUI.value = NextDisable
+                    _stateUI.value = NextDisable
                 })
         )
     }
 
     private fun fetchTmpPasswordCheck(tmpPassword: String) {
-        stateUI.value = Progress
+        _stateUI.value = Progress
         addSubscription(interactor.checkPassword(formatPhone(), tmpPassword)
             .subscribe(
                 { tmpPasswordCheckComplete(tmpPassword) },
@@ -103,8 +106,8 @@ class TemporaryPasswordViewModel(
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     private fun tmpPasswordCheckComplete(tmpPassword: String) {
-        stateUI.value = NavigateToCreatePassword(parameters.phone, tmpPassword)
-        stateUI.value = Empty
+        _stateUI.value = NavigateToCreatePassword(parameters.phone, tmpPassword)
+        _stateUI.value = Empty
     }
 
     private fun tmpPasswordCheckError(throwable: Throwable) {
@@ -113,7 +116,7 @@ class TemporaryPasswordViewModel(
 
     private fun error(throwable: Throwable) {
         LogUtils { logDebugApp(throwable.toString()) }
-        stateUI.value = when (throwable) {
+        _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> Update(throwable.message)
             else -> Error(throwable.toString())
@@ -123,7 +126,7 @@ class TemporaryPasswordViewModel(
     override fun onTimerState(duration: Int) {
         val time: String =
             resourceProvider.getSignUpTimeConfirmCode(getMin(duration), getSec(duration))
-        stateUI.value = RepeatPasswordTimer(time, resourceProvider.getTitleInputTimerSpan())
+        _stateUI.value = RepeatPasswordTimer(time, resourceProvider.getTitleInputTimerSpan())
     }
 
     private fun getMin(duration: Int): Int {
@@ -135,7 +138,7 @@ class TemporaryPasswordViewModel(
     }
 
     override fun onTimeIsOverState() {
-        stateUI.value = RepeatPassword
+        _stateUI.value = RepeatPassword
     }
 
     companion object {

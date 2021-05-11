@@ -5,8 +5,8 @@ import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
-import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenManagerState
+import com.wb.logistics.ui.splash.domain.ScreenManager
+import com.wb.logistics.ui.splash.domain.ScreenManagerState
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightsViewModel(

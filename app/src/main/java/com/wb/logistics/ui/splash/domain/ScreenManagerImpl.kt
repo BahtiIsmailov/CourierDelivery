@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.nav.domain
+package com.wb.logistics.ui.splash.domain
 
 import com.wb.logistics.app.AppPreffsKeys
 import com.wb.logistics.utils.prefs.SharedWorker

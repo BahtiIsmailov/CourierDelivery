@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
-import com.wb.logistics.ui.nav.domain.ScreenManager
-import com.wb.logistics.ui.nav.domain.ScreenManagerState
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ScanBoxData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.ui.splash.domain.ScreenManager
+import com.wb.logistics.ui.splash.domain.ScreenManagerState
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
@@ -38,7 +38,7 @@ class ReceptionScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        //addMockScannedBox()
+        addMockScannedBox()
         //screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
         addSubscription(interactor.observeScannedBoxes().subscribe {
             if (it.isEmpty()) {

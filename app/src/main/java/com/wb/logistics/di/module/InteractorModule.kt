@@ -9,13 +9,13 @@ import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.flights.domain.FlightsInteractorImpl
-import com.wb.logistics.ui.nav.domain.NavigationInteractor
-import com.wb.logistics.ui.nav.domain.NavigationInteractorImpl
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ReceptionInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import com.wb.logistics.ui.splash.domain.NavigationInteractor
+import com.wb.logistics.ui.splash.domain.NavigationInteractorImpl
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
 import org.koin.dsl.module

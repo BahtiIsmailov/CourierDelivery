@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
-import com.wb.logistics.ui.nav.domain.ScreenManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.ui.splash.domain.ScreenManager
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.utils.LogUtils
@@ -56,8 +56,6 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-//        screenManager.saveScreenState(ScreenState.UNLOADING)
-//        _toolbarState.value = UnloadingScanToolbarEvent.Label(parameters.shortAddress)
         observeScanProcess()
         observeUnloadedBoxes()
         observeReturnBoxes()

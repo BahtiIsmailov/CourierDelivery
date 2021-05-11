@@ -24,6 +24,8 @@
 
     <string name="selector_title">Выбор</string>
 
+    <string name="auth_load" />
+
     <string name="auth_number_phone_toolbar_label">Номер телефона</string>
     <string name="auth_number_phone_phone_hint">Номер телефона</string>
     <string name="auth_number_phone_phone_not_found">Номер телефона не зарегистрирован</string>

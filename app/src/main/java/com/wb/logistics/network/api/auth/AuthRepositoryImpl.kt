@@ -70,4 +70,8 @@ class AuthRepositoryImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun clearToken() {
+        tokenManager.clear()
+    }
+
 }

@@ -1,49 +1,51 @@
-package com.wb.logistics.ui.nav
+package com.wb.logistics.ui.splash
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.wb.logistics.R
-import com.wb.logistics.databinding.NavigationActivityBinding
+import com.wb.logistics.databinding.SplashActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flights.FlightsFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
+class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragment.OnFlightsCount {
 
-class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
-    NavToolbarTitleListener {
+    private val viewModel by viewModel<AppViewModel>()
 
-    private val viewModel by viewModel<NavigationViewModel>()
-
-    private lateinit var binding: NavigationActivityBinding
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var binding: SplashActivityBinding
     private lateinit var networkIcon: ImageView
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    private lateinit var appBarConfiguration: AppBarConfiguration
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
-        binding = NavigationActivityBinding.inflate(layoutInflater)
+        binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initStatusBar()
         initToolbar()
         initNavController()
-        initView()
         initObserver()
+        initView()
+        initListener()
+    }
+
+    private fun initListener() {
+        binding.exitAppLayout.setOnClickListener {
+            viewModel.onExitClick()
+            finish()
+        }
     }
 
     private fun initObserver() {
@@ -55,7 +57,7 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
         }
 
         viewModel.networkState.observe(this) {
-            networkIcon.visibility = if (it) GONE else VISIBLE
+            networkIcon.visibility = if (it) View.GONE else View.VISIBLE
         }
 
         viewModel.versionApp.observe(this) {
@@ -63,27 +65,9 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
         }
     }
 
-    private fun initStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
-        } else {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }
-    }
-
     private fun initToolbar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-    }
-
-    private fun initNavController() {
-        binding.navView.itemIconTintList = null
-        val navController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.flightsFragment), binding.drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.navView.setupWithNavController(navController)
-        binding.exitAppLayout.setOnClickListener { finish() }
     }
 
     private fun initView() {
@@ -98,15 +82,13 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
         }
     }
 
-    private fun setMenuCounter(@IdRes itemId: Int, count: String) {
-        val view = binding.navView.menu.findItem(itemId).actionView
-        val counter = view.findViewById<TextView>(R.id.counter_flight_text)
-        counter.text = count
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    private fun initNavController() {
+        binding.navView.itemIconTintList = null
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.flightsFragment), binding.drawerLayout)
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     override fun flightCount(count: String) {
@@ -122,9 +104,24 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
         return menuItemId
     }
 
+    private fun setMenuCounter(@IdRes itemId: Int, count: String) {
+        val view = binding.navView.menu.findItem(itemId).actionView
+        val counter = view.findViewById<TextView>(R.id.counter_flight_text)
+        counter.text = count
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_auth_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
     override fun updateTitle(title: String) {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.title = title
+    }
+
+    override fun updateDrawer() {
+        viewModel.updateDrawer()
     }
 
     override fun backButtonIcon(resId: Int) {
@@ -146,5 +143,7 @@ interface NavToolbarTitleListener {
     fun hideBackButton()
 
     fun updateTitle(title: String)
+
+    fun updateDrawer()
 
 }

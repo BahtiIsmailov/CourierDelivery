@@ -48,7 +48,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
         initViews()
         initListener()
         initInputMethod()
-        initStateObserve()
+        initStateObserver()
     }
 
     private fun initViews() {
@@ -76,7 +76,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
-    private fun initStateObserve() {
+    private fun initStateObserver() {
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {
                 is TemporaryPasswordUIState.InitTitle -> {
