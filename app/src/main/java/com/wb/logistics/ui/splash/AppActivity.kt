@@ -43,7 +43,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
     }
 
     private fun initListener() {
-        binding.exitAppLayout.setOnClickListener {
+        binding.logoutLayout.setOnClickListener {
             viewModel.onExitClick()
             finish()
         }

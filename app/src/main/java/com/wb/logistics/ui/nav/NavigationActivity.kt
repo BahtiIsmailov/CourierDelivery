@@ -83,7 +83,7 @@ class NavigationActivity : AppCompatActivity(), FlightsFragment.OnFlightsCount,
             setOf(R.id.flightsFragment), binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
-        binding.exitAppLayout.setOnClickListener { finish() }
+        binding.logoutLayout.setOnClickListener { finish() }
     }
 
     private fun initView() {
