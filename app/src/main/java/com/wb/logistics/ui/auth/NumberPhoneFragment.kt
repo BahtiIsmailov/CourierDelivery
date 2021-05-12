@@ -56,8 +56,10 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
 
     private fun initStateObserve() {
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+
             when (state) {
                 NumberPhoneUIState.PhoneCheck -> {
+
                     binding.phoneNumber.isEnabled = false
                     binding.numberNotFound.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.PROGRESS)
@@ -95,6 +97,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                 }
                 is NumberPhoneUIState.NumberFormat -> {
                     val phoneNumber = state.number
+
                     binding.phoneNumber.setText(phoneNumber)
                     binding.phoneNumber.setSelection(phoneNumber.length)
                     binding.numberNotFound.visibility = GONE

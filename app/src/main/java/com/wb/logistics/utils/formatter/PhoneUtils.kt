@@ -1,6 +1,8 @@
 package com.wb.logistics.utils.formatter
 
 import com.jakewharton.rxbinding3.InitialValueObservable
+import com.wb.logistics.R
+import com.wb.logistics.di.module.resourceModule
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -9,20 +11,12 @@ import kotlin.math.min
 object PhoneUtils {
 
     private const val TIME_OUT_DEBOUNCE = 10
-    private const val MAX_PHONE_FORMAT_DIGITS = 18
-    private const val MAX_PHONE_DIGITS = 11
+    private const val MAX_PHONE_FORMAT_DIGITS = R.integer.max_phone_string
+    private const val MAX_PHONE_DIGITS = R.integer.max_phone_digits
     private const val PHONE_DIGIT_FORMAT = "[^\\d.]"
 
-    fun phoneDigitsToPhoneFormat(phoneNumber: String): String {
-        val phone = getPhoneDigits(phoneNumber)
-        return String.format(
-            "+%s (%s) %s-%s-%s", phone.substring(0, 1),
-            phone.substring(1, 4), phone.substring(4, 7),
-            phone.substring(7, 9), phone.substring(9, 11)
-        )
-    }
+    private fun phoneFormat(phoneNumber: String): String {
 
-    fun phoneFormat(phoneNumber: String): String {
         val phone = getPhoneDigits(phoneNumber)
         val formatNumber = StringBuilder()
         val lengthPhone = getLengthPhone(phone.length)
@@ -48,7 +42,7 @@ object PhoneUtils {
         return if (lengthPhone > MAX_PHONE_DIGITS) MAX_PHONE_DIGITS else lengthPhone
     }
 
-    fun getPhoneDigits(phoneNumber: String): String {
+    private fun getPhoneDigits(phoneNumber: String): String {
         return phoneNumber.replace(PHONE_DIGIT_FORMAT.toRegex(), "")
     }
 

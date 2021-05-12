@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content">
+    android:background="@color/background_phone_content">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phone_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
+        android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
         android:layout_marginTop="@dimen/auth_input_top_offset"
-        android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
-        android:background="@drawable/ripple_round_rectangle_white_hint"
-        android:elevation="5dp"
         app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColorHint="@color/colorOnSecondary"
+        app:boxStrokeColor="@color/colorOnSecondary"
+        app:boxBackgroundColor="@color/white"
+        app:endIconMode="clear_text"
+        app:endIconDrawable="@drawable/ic_close_dialog"
+        app:endIconTint="@color/btn_clear_phone"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_number"
-            style="@style/MediumRegularDarkText"
+            style="@style/InputPhoneOutlineBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="@string/auth_number_phone_phone_hint"
+
             android:importantForAutofill="noExcludeDescendants"
             android:inputType="phone"
-            android:maxLength="18"
+            android:maxLength="@integer/max_phone_string"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            android:textCursorDrawable="@null" />
+            android:textCursorDrawable="@null"
+
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,9 +52,11 @@
         app:layout_constraintStart_toStartOf="@+id/phone_layout"
         app:layout_constraintTop_toBottomOf="@+id/phone_layout" />
 
+
+
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/next"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"
         app:app_background="@drawable/progress_image_button_default"
         app:app_icon="@drawable/ic_arrow_left"

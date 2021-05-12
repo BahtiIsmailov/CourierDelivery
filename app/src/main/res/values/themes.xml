@@ -122,6 +122,17 @@
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
+    <style name="InputPhoneOutlineBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/dark_text</item>
+        <item name="boxStrokeColor">@color/colorOnSecondary</item>
+    </style>
+
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/colorOnSecondary</item>
+        <item name="boxStrokeWidth">2dp</item>
+    </style>
+
     <style name="MediumRegularLightText" parent="RegularBaseText">
         <item name="android:textSize">@dimen/medium_text</item>
         <item name="android:textColor">@color/light_text</item>

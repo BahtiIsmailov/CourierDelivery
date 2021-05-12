@@ -42,6 +42,7 @@
 
     <color name="background_content_light">#FFFFFF</color>
     <color name="background_content">#E5E5E5</color>
+    <color name="background_phone_content">#F1F1F4</color>
     <color name="background_tint">#FD3F18</color>
     <color name="background_view">#642CA3</color>
     <color name="background_transparently">#97276EA6</color>
@@ -49,6 +50,7 @@
     <color name="tint">#BFC5D1</color>
     <color name="color_progress">#642CA3</color>
     <color name="invalid">#DF1F00</color>
+    <color name="btn_clear_phone">#DBD7E0</color>
 
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
@@ -114,5 +116,5 @@
     <color name="button_danger_pressed">#F83212</color>
 
     <color name="reception_text_manual_input">#642CA3</color>
-
+    <color name="mtrl_textinput_default_box_stroke_color" >#673AB7</color>
 </resources>

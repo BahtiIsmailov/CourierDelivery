@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="max_phone_string">18</integer>
+    <integer name="max_phone_digits">11</integer>
+</resources>
