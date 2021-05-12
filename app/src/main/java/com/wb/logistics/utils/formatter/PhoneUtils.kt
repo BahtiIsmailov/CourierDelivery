@@ -8,7 +8,7 @@ import kotlin.math.min
 
 object PhoneUtils {
 
-    private const val TIME_OUT_DEBOUNCE = 50
+    private const val TIME_OUT_DEBOUNCE = 10
     private const val MAX_PHONE_FORMAT_DIGITS = 18
     private const val MAX_PHONE_DIGITS = 11
     private const val PHONE_DIGIT_FORMAT = "[^\\d.]"
