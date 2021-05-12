@@ -8,6 +8,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -44,7 +46,9 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
     private fun initListener() {
         binding.exitAppLayout.setOnClickListener {
             viewModel.onExitClick()
-            finish()
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            Navigation.findNavController(this, R.id.nav_auth_host_fragment)
+                .navigate(R.id.load_navigation)
         }
     }
 
