@@ -21,7 +21,6 @@ class FlightLoaderViewModel(
     }
 
     private fun toApp() {
-
         when (val state = screenManager.readScreenState()) {
             is ScreenManagerState.Flight -> _navState.value =
                 FlightLoaderUINavState.NavigateToFlight
