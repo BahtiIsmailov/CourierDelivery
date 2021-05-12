@@ -36,6 +36,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         initToolbar()
         initNavController()
         initObserver()
@@ -44,7 +45,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
     }
 
     private fun initListener() {
-        binding.exitAppLayout.setOnClickListener {
+        binding.logoutLayout.setOnClickListener {
             viewModel.onExitClick()
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             Navigation.findNavController(this, R.id.nav_auth_host_fragment)
@@ -62,10 +63,18 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
 
         viewModel.networkState.observe(this) {
             networkIcon.visibility = if (it) View.GONE else View.VISIBLE
+            val header: View = binding.navView.getHeaderView(0)
+            val status = when (it) {
+                true -> getString(R.string.inet_ok)
+                false -> getString(R.string.inet_no)
+            }
+            header.findViewById<TextView>(R.id.inet_app_text).text = String.format("%s: %s", getString(R.string.inet_text), status )
+
         }
 
         viewModel.versionApp.observe(this) {
-            binding.versionAppText.text = it
+            val header: View = binding.navView.getHeaderView(0)
+            header.findViewById<TextView>(R.id.version_app_text).text = it
         }
     }
 
@@ -76,7 +85,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
 
     private fun initView() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        networkIcon = toolbar.findViewById<ImageView>(R.id.no_internet_image)
+        networkIcon = toolbar.findViewById(R.id.no_internet_image)
         networkIcon.setOnClickListener {
             InformationDialogFragment.newInstance(
                 getString(R.string.nav_no_internet_dialog_title),

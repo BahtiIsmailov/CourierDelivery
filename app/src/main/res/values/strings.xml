@@ -3,7 +3,7 @@
 
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
-    <string name="app_version">Версия %s</string>
+    <string name="app_version">версия %s</string>
     <string name="app_duration_time_value">Выслать пароль повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
@@ -50,7 +50,6 @@
     <string name="auth_create_password_title">Этот пароль будет использоваться при последующих авторизациях</string>
     <string name="auth_create_password_input">Сохранить и войти</string>
 
-    <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
     <string name="nav_default_count">100</string>
     <string name="nav_no_internet_dialog_title">У вас отсутствует интернет!</string>
     <string name="nav_no_internet_dialog_description">Вы можете продолжить работу, сохранение произойдет после того как возобновится связь</string>
@@ -158,5 +157,9 @@
     <string name="unloading_return_dialog_description">Убедитесь, что вы не забрали коробки в машину</string>
     <string name="unloading_return_dialog_positive_button">Удалить</string>
     <string name="unloading_return_dialog_negative_button">Отмена</string>
+
+    <string name="inet_text">наличие интернета</string>
+    <string name="inet_ok">Есть</string>
+    <string name="inet_no">Нет</string>
 
 </resources>

@@ -32,7 +32,7 @@
             android:padding="16dp">
 
             <LinearLayout
-                android:id="@+id/exit_app_layout"
+                android:id="@+id/logout_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
@@ -53,11 +53,7 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/version_app_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="Версия v1.2.3" />
+
 
         </LinearLayout>
 
