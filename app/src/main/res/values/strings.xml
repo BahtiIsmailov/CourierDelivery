@@ -41,7 +41,7 @@
     <string name="auth_temporary_number_attempt">Осталось попыток: %1$d</string>
 
     <string name="auth_input_password_toolbar_label">Вход</string>
-    <string name="auth_input_password_hint_password">Пароль</string>
+    <string name="auth_input_password_hint_password">Введите пароль</string>
     <string name="auth_input_password_remember_password"><u>Забыли пароль?</u></string>
     <string name="auth_input_password_input">Войти</string>
     <string name="auth_input_password_title">Авторизация по номеру %1$s</string>

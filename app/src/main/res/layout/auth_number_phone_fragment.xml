@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,8 +36,9 @@
             android:maxLength="@integer/max_phone_string"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
+            android:paddingStart="24dp"
             android:textCursorDrawable="@null"
-
+            tools:text="01234"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
