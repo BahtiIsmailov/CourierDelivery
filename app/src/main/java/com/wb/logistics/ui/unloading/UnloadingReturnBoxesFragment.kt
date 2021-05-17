@@ -15,7 +15,7 @@ import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingReturnBoxesFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
-import com.wb.logistics.ui.nav.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel

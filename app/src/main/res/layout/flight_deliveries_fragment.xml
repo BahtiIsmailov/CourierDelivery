@@ -16,12 +16,12 @@
         android:background="@color/background_content_light"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
+        android:text="@string/flight_deliveries_activated"
         android:paddingEnd="16dp"
         android:textColor="#642CA3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Вы приняли 16 коробок" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -30,24 +30,26 @@
         android:layout_gravity="center_vertical"
         android:background="@color/delivery_flight_background"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/go_to_delivery"
+        app:layout_constraintBottom_toTopOf="@+id/complete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status"
         tools:listitem="@layout/flight_deliveries_layout_route" />
 
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/go_to_delivery"
-        android:layout_width="match_parent"
+        android:id="@+id/complete"
+        android:layout_width="0dp"
         android:layout_height="72dp"
         android:visibility="gone"
-        app:app_background="@drawable/progress_image_button_success"
-        app:app_icon="@drawable/ic_flight_delivery_start"
+        app:app_background="@drawable/progress_image_button_danger"
+        app:app_icon="@drawable/ic_force_delivery"
         app:app_state="enable"
-        app:app_text="@string/flight_deliveries_start"
-        app:app_text_color_disable="@color/button_default_text_disable"
-        app:app_text_color_enable="@color/button_default_text_enable"
-        app:app_text_color_progress="@color/button_default_text_progress"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:app_text="@string/force_termination_complete_delivery"
+        app:app_text_color_disable="@color/button_gray_text_disable"
+        app:app_text_color_enable="@color/button_gray_text_enable"
+        app:app_text_color_progress="@color/button_gray_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

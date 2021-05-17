@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.UnloadingBoxesFragmentBinding
-import com.wb.logistics.ui.nav.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -55,7 +55,7 @@ class UnloadingBoxesFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        binding.completeButton.setOnClickListener {
+        binding.complete.setOnClickListener {
             viewModel.onCompleteClick()
         }
     }

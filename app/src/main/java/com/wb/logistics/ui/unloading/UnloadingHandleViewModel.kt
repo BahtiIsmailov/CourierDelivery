@@ -21,7 +21,7 @@ class UnloadingHandleViewModel(
         get() = _stateUI
 
     init {
-        addSubscription(interactor.observeAttachedBoxesByDstOfficeId(parameters.dstOfficeId)
+        addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
             .switchMap {
                 Observable.fromIterable(it.withIndex())
                     .map {

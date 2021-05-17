@@ -6,6 +6,7 @@ import com.wb.logistics.db.dao.ReturnBoxDao
 import com.wb.logistics.db.dao.UnloadingBoxDao
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -31,6 +32,14 @@ class LocalRepositoryImpl(
     ): Completable {
         return flightDao.insertFlight(flightEntity)
             .andThen(flightDao.insertFlightOffice(flightOfficesEntity))
+    }
+
+    override fun changeFlightOfficeUnloading(
+        dstOfficeId: Int,
+        isUnloading: Boolean,
+        notUnloadingCause: String,
+    ): Completable {
+        return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
     }
 
     override fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>> {
@@ -146,6 +155,10 @@ class LocalRepositoryImpl(
 
     override fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>> {
         return attachedBoxDao.groupAttachedBoxByDstAddress()
+    }
+
+    override fun groupAttachedBox(): Single<AttachedBoxResultEntity> {
+        return attachedBoxDao.groupAttachedBox()
     }
 
     //==============================================================================================

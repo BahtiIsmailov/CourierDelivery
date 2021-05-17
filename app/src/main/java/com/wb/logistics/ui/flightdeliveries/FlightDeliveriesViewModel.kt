@@ -30,26 +30,12 @@ class FlightDeliveriesViewModel(
         get() = _stateUINav
 
     val stateUIList = MutableLiveData<FlightDeliveriesUIListState>()
-    val stateUIBottom = MutableLiveData<FlightDeliveriesUIBottomState>()
 
     private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
-
-    fun action(actionView: FlightDeliveriesUIAction) {
-        when (actionView) {
-            is FlightDeliveriesUIAction.GoToDeliveryClick -> {
-                _stateUINav.value = FlightDeliveriesUINavState.ShowDeliveryDialog
-            }
-            is FlightDeliveriesUIAction.GoToDeliveryConfirmClick -> {
-                screenManager.saveScreenState(ScreenManagerState.FlightDelivery)
-                _stateUINav.value = FlightDeliveriesUINavState.NavigateToDelivery
-            }
-        }
-    }
 
     fun update() {
         fetchFlightId()
         fetchAttachedBoxesGroupByOfficeId()
-        fetchBottomState()
     }
 
     private fun fetchFlightId() {
@@ -74,35 +60,28 @@ class FlightDeliveriesViewModel(
         addSubscription(interactor.getAttachedBoxesGroupByOffice()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
-                val isEnabled = screenManager.readScreenState() == ScreenManagerState.FlightDelivery
-                Single.zip(build(boxes, isEnabled), count(boxes), { t1, t2 -> Pair(t1, t2) })
+                Single.zip(build(boxes),
+                    isComplete(boxes),
+                    { build, isComplete -> Pair(build, isComplete) })
             }
-            .map {
-                FlightDeliveriesUIListState.ShowFlight(it.first,
-                    resourceProvider.getCountBox(it.second))
-            }
+            .map { FlightDeliveriesUIListState.ShowFlight(it.first, it.second) }
             .subscribe({ fetchScannedBoxGroupByAddressComplete(it) },
                 { fetchScannedBoxGroupByAddressError(it) }))
     }
 
-    private fun build(boxes: List<AttachedBoxGroupByOfficeEntity>, isEnabled: Boolean) =
+    private fun build(boxes: List<AttachedBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map { (index, item): IndexedValue<AttachedBoxGroupByOfficeEntity> ->
-                dataBuilder.buildSuccessItem(item, isEnabled, index)
+                dataBuilder.buildSuccessItem(index, item)
             }
             .toList()
 
-    private fun count(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+    private fun isComplete(boxes: List<AttachedBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
-            .map { it.redoCount }
-            .scan { v1, v2 -> v1 + v2 }.last(0)
-
-    private fun fetchBottomState() {
-        stateUIBottom.value =
-            if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint)
-                FlightDeliveriesUIBottomState.GoToDelivery
-            else FlightDeliveriesUIBottomState.Empty
-    }
+            .filter { it.isUnloading }
+            .map { it.isUnloading }
+            .defaultIfEmpty(false)
+            .firstOrError()
 
     private fun fetchScannedBoxGroupByAddressComplete(flight: FlightDeliveriesUIListState) {
         stateUIList.value = flight
@@ -111,21 +90,33 @@ class FlightDeliveriesViewModel(
     private fun fetchScannedBoxGroupByAddressError(throwable: Throwable) {
         stateUIList.value = when (throwable) {
             is UnauthorizedException -> FlightDeliveriesUIListState.UpdateFlight(
-                listOf(dataBuilder.buildErrorMessageItem(throwable.message)),
-                resourceProvider.getCountBox(0)
-            )
+                listOf(dataBuilder.buildErrorMessageItem(throwable.message)), false)
             else -> FlightDeliveriesUIListState.UpdateFlight(
-                listOf(dataBuilder.buildErrorItem()),
-                resourceProvider.getCountBox(0)
-            )
+                listOf(dataBuilder.buildErrorItem()), false)
         }
     }
 
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
-        screenManager.saveScreenState(ScreenManagerState.Unloading(item.officeId, item.officeName))
-        _stateUINav.value =
-            FlightDeliveriesUINavState.NavigateToUpload(item.officeId, item.officeName)
+        if (item.isUnloading) {
+            _stateUINav.value = FlightDeliveriesUINavState.NavigateToUnloadDetails
+        } else {
+            screenManager.saveScreenState(ScreenManagerState.Unloading(item.officeId, item.officeName))
+            _stateUINav.value =
+                FlightDeliveriesUINavState.NavigateToUpload(item.officeId, item.officeName)
+        }
+    }
+
+    fun onCompleteClick() {
+        addSubscription(interactor.getAttachedBoxes().subscribe({
+            _stateUINav.value =
+                FlightDeliveriesUINavState.NavigateToDialogComplete(resourceProvider.getDescriptionDialog(it))
+            },
+            {}))
+    }
+
+    fun onCompleteConfirm() {
+        _stateUINav.value = FlightDeliveriesUINavState.NavigateToCongratulation
     }
 
 }

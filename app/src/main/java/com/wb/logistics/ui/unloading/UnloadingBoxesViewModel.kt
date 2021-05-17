@@ -26,7 +26,7 @@ class UnloadingBoxesViewModel(
 
         _boxesState.value = UnloadingBoxesState.Title("Список для выгрузки")
 
-        addSubscription(interactor.observeAttachedBoxesByDstOfficeId(parameters.dstOfficeId)
+        addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
             .switchMap {
                 Observable.fromIterable(it.withIndex())
                     .map { "" + (it.index + 1) + ". " + it.value.barcode }.toList().toObservable()

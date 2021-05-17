@@ -15,12 +15,14 @@ interface UnloadingInteractor {
 
     fun observeScanProcess(dstOfficeId: Int): Observable<UnloadingData>
 
-    fun observeAttachedBoxesByDstOfficeId(dstOfficeId: Int): Observable<List<AttachedBoxEntity>>
+    fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>>
 
     fun observeUnloadedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>>
 
     fun observeReturnBoxes(dstOfficeId: Int): Observable<List<ReturnBoxEntity>>
 
     fun scannerAction(scannerAction: ScannerAction)
+
+    fun completeUnloading(dstOfficeId: Int): Completable
 
 }

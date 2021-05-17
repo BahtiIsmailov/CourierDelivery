@@ -5,9 +5,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 
 interface FlightDeliveriesDataBuilder {
     fun buildSuccessItem(
-        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
-        isEnabled: Boolean,
-        index: Int
+        index: Int, scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
     ): BaseItem
 
     fun buildEmptyItem(): BaseItem

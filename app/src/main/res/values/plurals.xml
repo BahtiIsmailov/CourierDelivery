@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <plurals name="reception_box_count">
         <item quantity="zero">Вы приняли %d коробок</item>
         <item quantity="one">Вы приняли %d коробку</item>
@@ -8,4 +9,32 @@
         <item quantity="many">Вы приняли %d коробок</item>
         <item quantity="other">Вы приняли %d коробок</item>
     </plurals>
+
+    <plurals name="delivery_box_count">
+        <item quantity="zero">из %d коробок</item>
+        <item quantity="one">из %d коробку</item>
+        <item quantity="two">из %d коробки</item>
+        <item quantity="few">из %d коробки</item>
+        <item quantity="many">из %d коробок</item>
+        <item quantity="other">из %d коробок</item>
+    </plurals>
+
+    <plurals name="delivery_point_count">
+        <item quantity="zero">в %d пунктов</item>
+        <item quantity="one">в %d пункт</item>
+        <item quantity="two">в %d пункта</item>
+        <item quantity="few">в %d пункта</item>
+        <item quantity="many">в %d пунктов</item>
+        <item quantity="other">в %d пунктов</item>
+    </plurals>
+
+    <plurals name="delivery_force_terminal_count">
+        <item quantity="zero">Вы не сдали %d коробок, уверены, что хотите завершить доставку?</item>
+        <item quantity="one">Вы не сдали %d коробку, уверены, что хотите завершить доставку?</item>
+        <item quantity="two">Вы не сдали %d коробки, уверены, что хотите завершить доставку?</item>
+        <item quantity="few">Вы не сдали %d коробки, уверены, что хотите завершить доставку?</item>
+        <item quantity="many">Вы не сдали %d коробок, уверены, что хотите завершить доставку?</item>
+        <item quantity="other">Вы не сдали %d коробок, уверены, что хотите завершить доставку?</item>
+    </plurals>
+
 </resources>

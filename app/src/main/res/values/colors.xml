@@ -24,10 +24,12 @@
 
     <color name="background">#642CA3</color>
 
-    <color name="danger">#DF1F00</color>
+    <color name="danger">#B00020</color>
+    <color name="info">#DBD7E0</color>
     <color name="complete">#66AF68</color>
     <color name="error">#DF1F00</color>
     <color name="accept">#4BCF85</color>
+    <color name="complete_text">#238137</color>
     <color name="accept_trans">#1A4BCF85</color>
     <color name="deny">#EC5C5C</color>
     <color name="deny_trans">#1AEC5C5C</color>
@@ -110,8 +112,12 @@
     <color name="button_success_pressed">#66BC69</color>
 
     <color name="button_danger_disabled">#F3F1F6</color>
-    <color name="button_danger_enabled">#DF1F00</color>
-    <color name="button_danger_pressed">#F83212</color>
+    <color name="button_danger_enabled">#B00020</color>
+    <color name="button_danger_pressed">#C50225</color>
+
+    <color name="button_warning_disabled">#F3F1F6</color>
+    <color name="button_warning_enabled">#FB8C00</color>
+    <color name="button_warning_pressed">#FA900A</color>
 
     <color name="reception_text_manual_input">#642CA3</color>
 

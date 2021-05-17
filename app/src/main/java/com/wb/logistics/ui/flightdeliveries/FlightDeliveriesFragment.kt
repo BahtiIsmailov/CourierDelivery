@@ -1,35 +1,29 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import android.app.Activity.RESULT_OK
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import androidx.recyclerview.widget.RecyclerView.*
 import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapter
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
+import com.wb.logistics.ui.congratulation.CongratulationParameters
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
-import com.wb.logistics.ui.nav.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
 class FlightDeliveriesFragment : Fragment() {
-
-    companion object {
-        private const val GO_DELIVERY_REQUEST_CODE = 100
-        private const val GO_DELIVERY_TAG = "START_DELIVERY_TAG"
-    }
 
     private val viewModel by viewModel<FlightDeliveriesViewModel>()
 
@@ -39,6 +33,12 @@ class FlightDeliveriesFragment : Fragment() {
     private lateinit var adapter: DefaultAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
+
+
+    companion object {
+        private const val FLIGHT_DELIVERY_REQUEST_CODE = 100
+        private const val FLIGHT_DELIVERY_TAG = "FLIGHT_DELIVERY_TAG"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +58,8 @@ class FlightDeliveriesFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.goToDelivery.setOnClickListener {
-            viewModel.action(FlightDeliveriesUIAction.GoToDeliveryClick)
+        binding.complete.setOnClickListener {
+            viewModel.onCompleteClick()
         }
     }
 
@@ -77,65 +77,36 @@ class FlightDeliveriesFragment : Fragment() {
 
         viewModel.stateUINav.observe(viewLifecycleOwner, { state ->
             when (state) {
-                FlightDeliveriesUINavState.Empty -> {
-                }
-                FlightDeliveriesUINavState.ShowDeliveryDialog -> showDeliveryDialog()
-                FlightDeliveriesUINavState.NavigateToDelivery -> {
-                    findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentSelf())
-                }
                 is FlightDeliveriesUINavState.NavigateToUpload -> {
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToUnloadingScanFragment(
                         UnloadingScanParameters(state.dstOfficeId, state.officeName)))
                 }
+                FlightDeliveriesUINavState.NavigateToCongratulation ->
+                    findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToCongratulationFragment(
+                        CongratulationParameters()))
+                is FlightDeliveriesUINavState.NavigateToDialogComplete -> showDialogReturnBalance(
+                    state.description)
+                FlightDeliveriesUINavState.NavigateToUnloadDetails -> showDialogInfo()
             }
         })
 
         viewModel.stateUIList.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is FlightDeliveriesUIListState.ShowFlight -> {
-                    updateStatus(state.receptionBox)
+                    updateBottom(state.isComplete)
                     displayItems(state.items)
                 }
                 is FlightDeliveriesUIListState.ProgressFlight -> {
-                    updateStatus(state.receptionBox)
+                    updateBottom(state.isComplete)
                     displayItems(state.items)
                 }
                 is FlightDeliveriesUIListState.UpdateFlight -> {
-                    updateStatus(state.receptionBox)
+                    updateBottom(state.isComplete)
                     displayItems(state.items)
                 }
             }
         }
 
-        viewModel.stateUIBottom.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                FlightDeliveriesUIBottomState.GoToDelivery -> {
-                    binding.goToDelivery.visibility = VISIBLE
-                }
-                FlightDeliveriesUIBottomState.Empty -> {
-                    binding.goToDelivery.visibility = GONE
-                }
-            }
-        }
-
-    }
-
-    private fun showDeliveryDialog() {
-        val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.flight_deliveries_dialog_title),
-            getString(R.string.flight_deliveries_dialog_description),
-            getString(R.string.flight_deliveries_dialog_positive_button),
-            getString(R.string.flight_deliveries_dialog_negative_button)
-        )
-        dialog.setTargetFragment(this, GO_DELIVERY_REQUEST_CODE)
-        dialog.show(parentFragmentManager, GO_DELIVERY_TAG)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == GO_DELIVERY_REQUEST_CODE) {
-            viewModel.action(FlightDeliveriesUIAction.GoToDeliveryConfirmClick)
-        }
     }
 
     private fun updateToolbarLabel(toolbarTitle: String) {
@@ -146,8 +117,8 @@ class FlightDeliveriesFragment : Fragment() {
         (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
     }
 
-    private fun updateStatus(status: String) {
-        binding.status.text = status
+    private fun updateBottom(isComplete: Boolean) {
+        binding.complete.visibility = if (isComplete) VISIBLE else GONE
     }
 
     override fun onDestroyView() {
@@ -184,18 +155,59 @@ class FlightDeliveriesFragment : Fragment() {
                         viewModel.onItemClicked(idItem)
                     }
                 }))
+
+            addDelegate(FlightDeliveriesUnloadDelegate(requireContext(),
+                object : OnFlightDeliveriesCallback {
+                    override fun onPickToPointClick(idItem: Int) {
+                        viewModel.onItemClicked(idItem)
+                    }
+                }))
+
+            addDelegate(FlightDeliveriesNotUnloadDelegate(requireContext(),
+                object : OnFlightDeliveriesCallback {
+                    override fun onPickToPointClick(idItem: Int) {
+                        viewModel.onItemClicked(idItem)
+                    }
+                }))
+
             addDelegate(
                 FlightDeliveriesRefreshDelegate(
                     requireContext(),
                     object : OnFlightDeliveriesUpdateCallback {
-                        override fun onUpdateRouteClick() {
-                            viewModel.action(FlightDeliveriesUIAction.Refresh)
-                        }
+                        override fun onUpdateRouteClick() {}
                     })
             )
             addDelegate(FlightDeliveriesProgressDelegate(requireContext()))
         }
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun showDialogReturnBalance(description: String) {
+        val dialog = SimpleResultDialogFragment.newInstance(
+            getString(R.string.reception_return_dialog_title),
+            description,
+            getString(R.string.flight_deliveries_dialog_force_positive_button),
+            getString(R.string.flight_deliveries_dialog_force_negative_button)
+        )
+        dialog.setTargetFragment(this, FLIGHT_DELIVERY_REQUEST_CODE)
+        dialog.show(parentFragmentManager, FLIGHT_DELIVERY_TAG)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == FLIGHT_DELIVERY_REQUEST_CODE) {
+            viewModel.onCompleteConfirm()
+        }
+    }
+
+    private fun showDialogInfo() {
+        val dialog = InformationDialogFragment.newInstance(
+            "Log unload boxing",
+            "Реализовать переход на детали выгрузки",
+            "Ok"
+        )
+        dialog.setTargetFragment(this, 10101)
+        dialog.show(parentFragmentManager, "START_DELIVERY_TAG")
     }
 
 }
