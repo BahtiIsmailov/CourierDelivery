@@ -105,7 +105,6 @@ class UnloadingScanViewModel(
         })
     }
 
-
     private fun observeUnloadedBoxes() {
         addSubscription(interactor.observeUnloadedBoxes(parameters.dstOfficeId).subscribe({
             val uploadedList = it.first
@@ -155,7 +154,8 @@ class UnloadingScanViewModel(
     }
 
     fun onReturnListClicked() {
-        _navigationEvent.value = UnloadingScanNavAction.NavigateToReturnBoxes(parameters.dstOfficeId)
+        _navigationEvent.value =
+            UnloadingScanNavAction.NavigateToReturnBoxes(parameters.dstOfficeId)
     }
 
     fun onaHandleClicked() {
@@ -164,15 +164,16 @@ class UnloadingScanViewModel(
     }
 
     fun onCompleteClicked() {
-        // TODO: 28.04.2021 реализовать переход на следующий экран
-//        toFlightDeliveries()
-
-//        _navigationEvent.value =
-//            UnloadingScanNavAction.NavigateToUnloadingBoxNotBelong("Не принадлежит ПВЗ",
-//                "Коробка с другого ПВЗ,\nверните её в машину",
-//                "TRBX-994827463",
-//                "ПВЗ Москва, длинный адрес, который разошелся на 2 строки")
-
+        addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
+            .subscribe({
+                if (it.isEmpty()) {
+                    addSubscription(interactor.completeUnloading(parameters.dstOfficeId).subscribe {
+                        _navigationEvent.value = UnloadingScanNavAction.NavigateToBack
+                    })
+                } else _navigationEvent.value =
+                    UnloadingScanNavAction.NavigateToForcedTermination(parameters.dstOfficeId)
+            }, {})
+        )
     }
 
     fun onStopScanner() {

@@ -16,4 +16,7 @@ data class FlightOfficeEntity(
     val fullAddress: String,
     val longitude: Double,
     val latitude: Double,
+    val isUnloading: Boolean,
+    val notUnloadingCause: String,
+
 )

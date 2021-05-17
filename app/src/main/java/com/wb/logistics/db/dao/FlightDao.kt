@@ -20,9 +20,6 @@ interface FlightDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlight(flightEntity: FlightEntity): Completable
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFlightOffice(flightOfficeEntity: List<FlightOfficeEntity>): Completable
-
     @Transaction
     @Query("SELECT * FROM FlightEntity")
     fun observeFlight(): Flowable<FlightDataEntity>
@@ -39,6 +36,15 @@ interface FlightDao {
 
     @Query("DELETE FROM FlightEntity")
     fun deleteAllFlight()
+
+    //==============================================================================================
+    //flight office
+    //==============================================================================================
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertFlightOffice(flightOfficeEntity: List<FlightOfficeEntity>): Completable
+
+    @Query("UPDATE FlightOfficeEntity SET isUnloading=:isUnloading, notUnloadingCause=:notUnloadingCause WHERE office_id = :dstOfficeId")
+    fun changeFlightOfficeUnloading(dstOfficeId: Int, isUnloading: Boolean, notUnloadingCause: String): Completable
 
     //==============================================================================================
     //boxes attached to flight

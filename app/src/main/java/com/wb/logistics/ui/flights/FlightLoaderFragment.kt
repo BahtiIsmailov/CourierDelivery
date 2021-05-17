@@ -52,7 +52,7 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
 //                    findNavController().navigate(deepLink)
                 }
                 FlightLoaderUINavState.NavigateToPickUpPoint -> findNavController().navigate(
-                    FlightLoaderFragmentDirections.actionFlightLoaderFragmentToFlightDeliveriesFragment())
+                    FlightLoaderFragmentDirections.actionFlightLoaderFragmentToFlightPickPointFragment())
                 FlightLoaderUINavState.NavigateToDelivery -> findNavController().navigate(
                     FlightLoaderFragmentDirections.actionFlightLoaderFragmentToFlightDeliveriesFragment())
                 is FlightLoaderUINavState.NavigateToUnloading -> findNavController().navigate(

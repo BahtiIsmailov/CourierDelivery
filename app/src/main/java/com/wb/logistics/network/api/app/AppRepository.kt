@@ -4,6 +4,7 @@ import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -56,6 +57,8 @@ interface AppRepository {
 
     fun deleteAllFlightData()
 
+    fun changeFlightOfficeUnloading(dstOfficeId: Int, isUnloading: Boolean, notUnloadingCause: String): Completable
+
     //==============================================================================================
 
     fun updateFlightBoxes(flightId: Int): Completable
@@ -83,7 +86,7 @@ interface AppRepository {
 
     fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>>
 
-    fun observedAttachedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
+    fun observedAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
 
     fun readAllAttachedBoxes(): Single<List<AttachedBoxEntity>>
 
@@ -96,6 +99,8 @@ interface AppRepository {
     fun deleteAllAttachedBoxes()
 
     fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
+
+    fun groupAttachedBox(): Single<AttachedBoxResultEntity>
 
     //==============================================================================================
     //unloading

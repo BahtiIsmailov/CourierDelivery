@@ -46,12 +46,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_receptionFragment_to_flightDeliveriesFragment"
-            app:destination="@id/flightDeliveriesFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            android:id="@+id/action_receptionFragment_to_flightPickPointFragment"
+            app:destination="@id/flightPickPointFragment" />
     </fragment>
 
     <fragment
@@ -72,24 +68,30 @@
         tools:layout="@layout/reception_boxes_fragment" />
 
     <fragment
+        android:id="@+id/flightPickPointFragment"
+        android:name="com.wb.logistics.ui.flightpickpoint.FlightPickPointFragment"
+        android:label="FlightPickPointFragment"
+        tools:layout="@layout/flight_pick_point_fragment">
+        <action
+            android:id="@+id/action_flightPickPointFragment_to_flightDeliveriesFragment"
+            app:destination="@id/flightDeliveriesFragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/flightDeliveriesFragment"
         android:name="com.wb.logistics.ui.flightdeliveries.FlightDeliveriesFragment"
-        android:label="@string/light_deliveries_label"
+        android:label="@string/flight_deliveries_label"
         tools:layout="@layout/flight_deliveries_fragment">
-        <action
-            android:id="@+id/action_flightDeliveriesFragment_self"
-            app:destination="@id/flightDeliveriesFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightDeliveriesFragment_to_unloadingScanFragment"
             app:destination="@id/unloadingScanFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_flightDeliveriesFragment_to_congratulationFragment"
+            app:destination="@id/congratulationFragment" />
     </fragment>
 
     <fragment
@@ -107,28 +109,31 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_unloadingScanFragment_to_unloading"
             app:destination="@id/unloadingNotBelongFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_unloadingScanFragment_to_unloadingReturnBoxesFragment"
             app:destination="@id/unloadingReturnBoxesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_unloadingScanFragment_to_unloadingHandleFragment"
             app:destination="@id/unloadingHandleFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_unloadingScanFragment_to_forcedTerminationFragment"
+            app:destination="@id/forcedTerminationFragment" />
     </fragment>
 
     <fragment
@@ -168,18 +173,19 @@
         android:id="@+id/unloadingHandleFragment"
         android:name="com.wb.logistics.ui.unloading.UnloadingHandleFragment"
         android:label="UnloadingHandleFragment"
-        tools:layout="@layout/unloading_handle_fragment" >
+        tools:layout="@layout/unloading_handle_fragment">
 
         <argument
             android:name="unloading_handle_key"
             app:argType="com.wb.logistics.ui.unloading.UnloadingHandleParameters"
             app:nullable="false" />
     </dialog>
+
     <fragment
         android:id="@+id/flightLoaderFragment"
         android:name="com.wb.logistics.ui.flights.FlightLoaderFragment"
-        tools:layout="@layout/flight_loader_fragment"
-        android:label="" >
+        android:label=""
+        tools:layout="@layout/flight_loader_fragment">
         <action
             android:id="@+id/action_flightLoaderFragment_to_unloadingScanFragment"
             app:destination="@id/unloadingScanFragment" />
@@ -192,6 +198,38 @@
         <action
             android:id="@+id/action_flightLoaderFragment_to_receptionFragment"
             app:destination="@id/receptionFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightPickPointFragment"
+            app:destination="@id/flightPickPointFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forcedTerminationFragment"
+        android:name="com.wb.logistics.ui.forcedtermination.ForcedTerminationFragment"
+        android:label="@string/force_termination_label"
+        tools:layout="@layout/forced_termination_fragment">
+
+        <argument
+            android:name="forced_termination_key"
+            app:argType="com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_forcedTerminationFragment_to_flightDeliveriesFragment"
+            app:destination="@id/flightDeliveriesFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/congratulationFragment"
+        android:name="com.wb.logistics.ui.congratulation.CongratulationFragment"
+        android:label="@string/congratulation_label"
+        tools:layout="@layout/congratulation_fragment">
+        <argument
+            android:name="congratulation_key"
+            app:argType="com.wb.logistics.ui.congratulation.CongratulationParameters"
+            app:nullable="false" />
+
     </fragment>
 
 </navigation>

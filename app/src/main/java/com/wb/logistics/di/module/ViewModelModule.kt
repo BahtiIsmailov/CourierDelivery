@@ -2,39 +2,23 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.ui.auth.*
 import com.wb.logistics.ui.config.ConfigViewModel
-import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilder
-import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilderImpl
-import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
+import com.wb.logistics.ui.congratulation.CongratulationParameters
+import com.wb.logistics.ui.congratulation.CongratulationViewModel
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
-import com.wb.logistics.ui.flights.*
-import com.wb.logistics.ui.nav.NavigationViewModel
+import com.wb.logistics.ui.flightpickpoint.FlightPickPointViewModel
+import com.wb.logistics.ui.flights.FlightLoaderViewModel
+import com.wb.logistics.ui.flights.FlightsViewModel
+import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
+import com.wb.logistics.ui.forcedtermination.ForcedTerminationViewModel
 import com.wb.logistics.ui.reception.*
 import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
 import com.wb.logistics.ui.splash.LoaderViewModel
 import com.wb.logistics.ui.unloading.*
-import com.wb.logistics.utils.time.TimeFormatter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module {
-
-    // TODO: 25.03.2021 вынести в отдельный модуль
-    fun provideFlightsDataBuilder(
-        timeFormatter: TimeFormatter,
-        resourceProvider: FlightsResourceProvider,
-    ): FlightsDataBuilder {
-        return FlightsDataBuilderImpl(timeFormatter, resourceProvider)
-    }
-
-    fun provideFlightDeliveriesDataBuilder(
-        resourceProvider: FlightDeliveriesResourceProvider,
-    ): FlightDeliveriesDataBuilder {
-        return FlightDeliveriesDataBuilderImpl(resourceProvider)
-    }
-
-    single { provideFlightsDataBuilder(get(), get()) }
-    single { provideFlightDeliveriesDataBuilder(get()) }
 
     viewModel { AppViewModel(get(), get(), get(), get()) }
 
@@ -55,7 +39,6 @@ val viewModelModule = module {
         ReceptionBoxNotBelongModel(parameters)
     }
 
-    viewModel { NavigationViewModel(get(), get(), get(), get(), get()) }
     viewModel { FlightLoaderViewModel(get(), get()) }
     viewModel {
         FlightsViewModel(get(),
@@ -70,6 +53,7 @@ val viewModelModule = module {
 
     viewModel { ReceptionBoxesViewModel(get(), get()) }
 
+    viewModel { FlightPickPointViewModel(get(), get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: UnloadingScanParameters) ->
@@ -99,6 +83,22 @@ val viewModelModule = module {
     }
     viewModel { (parameters: UnloadingHandleParameters) ->
         UnloadingHandleViewModel(parameters,
+            get(),
+            get(),
+            get())
+    }
+
+    viewModel { (parameters: ForcedTerminationParameters) ->
+        ForcedTerminationViewModel(parameters,
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+
+    viewModel { (parameters: CongratulationParameters) ->
+        CongratulationViewModel(parameters,
             get(),
             get(),
             get())

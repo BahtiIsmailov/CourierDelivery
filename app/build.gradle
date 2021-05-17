@@ -84,9 +84,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
 
     // Koin
-    implementation "org.koin:koin-android:2.0.1"
-    implementation 'org.koin:koin-androidx-viewmodel:2.0.1'
-    implementation 'org.koin:koin-androidx-scope:2.0.1'
+    implementation "io.insert-koin:koin-android:2.0.1"
+    implementation 'io.insert-koin:koin-androidx-viewmodel:2.0.1'
+    implementation 'io.insert-koin:koin-androidx-scope:2.0.1'
 
     // room
     implementation "androidx.room:room-runtime:$version_room"
@@ -116,7 +116,7 @@ dependencies {
     implementation 'joda-time:joda-time:2.9.9'
 
     //scanner
-    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'com.orhanobut:hawk:2.0.1'
 
 }

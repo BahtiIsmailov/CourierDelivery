@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/delivery_background">
+
+    <LinearLayout
+        android:id="@+id/cause"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            style="@style/MediumRegularDarkText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/force_termination_cause" />
+
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/box_not_found"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:button="@drawable/radio_button_custom"
+                android:checked="true"
+                android:padding="5dp"
+                android:text="@string/force_termination_box_not_found" />
+
+            <RadioButton
+                android:id="@+id/not_unload_pickup_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:button="@drawable/radio_button_custom"
+                android:padding="5dp"
+                android:text="@string/force_termination_pickup_point" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/MediumRegularDarkText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cause"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/force_termination_not_delivery" />
+
+    <TextView
+        android:id="@+id/title_count"
+        style="@style/MediumRegularLightText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cause"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        tools:text="4 шт." />
+
+    <com.wb.logistics.views.WrapContentListView
+        android:id="@+id/boxes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@+id/complete"
+        android:layout_below="@+id/title"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        tools:listitem="@layout/forced_termination_legend" />
+
+    <com.wb.logistics.views.ProgressImageButtonView
+        android:id="@+id/complete"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="visible"
+        app:app_background="@drawable/progress_image_button_danger"
+        app:app_icon="@drawable/ic_force_delivery"
+        app:app_state="enable"
+        app:app_text="@string/force_termination_complete_delivery"
+        app:app_text_color_disable="@color/button_gray_text_disable"
+        app:app_text_color_enable="@color/button_gray_text_enable"
+        app:app_text_color_progress="@color/button_gray_text_progress" />
+
+</RelativeLayout>

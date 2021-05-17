@@ -18,6 +18,13 @@ class FlightDeliveriesInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun getAttachedBoxes(): Single<Int> {
+        return appRepository.observeAttachedBoxes()
+            .map { it.size }
+            .firstOrError()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
     override fun flightId(): Single<Int> {
         return appRepository.observeFlight()
             .map {

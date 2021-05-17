@@ -16,8 +16,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
-import com.wb.logistics.ui.nav.NavToolbarTitleListener
-import com.wb.logistics.ui.reception.ReceptionFragmentDirections
+import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
+import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
@@ -90,8 +90,6 @@ class UnloadingScanFragment : Fragment() {
                     UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloadingBoxesFragment(
                         UnloadingBoxesParameters(state.dstOfficeId)))
 
-                UnloadingScanNavAction.NavigateToFlightDeliveries -> findNavController().navigate(
-                    ReceptionFragmentDirections.actionReceptionFragmentToFlightDeliveriesFragment())
                 UnloadingScanNavAction.NavigateToBack -> findNavController().popBackStack()
 
                 is UnloadingScanNavAction.NavigateToReturnBoxes -> findNavController().navigate(
@@ -104,6 +102,10 @@ class UnloadingScanFragment : Fragment() {
                         UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloadingHandleFragment(
                             UnloadingHandleParameters(state.dstOfficeId)))
                 }
+                is UnloadingScanNavAction.NavigateToForcedTermination ->
+                    findNavController().navigate(
+                        UnloadingScanFragmentDirections.actionUnloadingScanFragmentToForcedTerminationFragment(
+                            ForcedTerminationParameters(state.dstOfficeId)))
             }
         }
 
@@ -157,7 +159,7 @@ class UnloadingScanFragment : Fragment() {
         }
 
         viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
-            binding.completeButton.setState(
+            binding.complete.setState(
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
@@ -206,7 +208,7 @@ class UnloadingScanFragment : Fragment() {
             viewModel.onaHandleClicked()
         }
 
-        binding.completeButton.setOnClickListener {
+        binding.complete.setOnClickListener {
             viewModel.onCompleteClicked()
         }
 

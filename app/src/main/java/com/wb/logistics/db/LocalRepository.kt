@@ -2,6 +2,7 @@ package com.wb.logistics.db
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -18,6 +19,8 @@ interface LocalRepository {
     fun saveFlight(
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
     ): Completable
+
+    fun changeFlightOfficeUnloading(dstOfficeId: Int, isUnloading: Boolean, notUnloadingCause: String): Completable
 
     fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
 
@@ -61,6 +64,8 @@ interface LocalRepository {
     fun deleteAllAttachedBox()
 
     fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
+
+    fun groupAttachedBox(): Single<AttachedBoxResultEntity>
 
     //==============================================================================================
     //attached box

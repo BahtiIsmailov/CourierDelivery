@@ -5,7 +5,9 @@ data class AttachedBoxGroupByOfficeEntity(
     val officeName: String,
     val officeId: Int,
     val dstFullAddress: String,
-    val redoCount: Int,
-    val undoCount: Int,
+    val attachedCount: Int,
+    val returnCount: Int,
+    val unloadedCount: Int,
+    val isUnloading: Boolean,
 
     )

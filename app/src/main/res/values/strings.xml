@@ -122,14 +122,21 @@
     <string name="flight_deliveries_dialog_positive_button">Начать</string>
     <string name="flight_deliveries_dialog_negative_button">Отмена</string>
 
-    <string name="light_deliveries_label" />
+    <string name="flight_deliveries_label" />
     <string name="flight_deliveries_flight_toolbar_title">Рейс №%1$d</string>
     <string name="flight_deliveries_delivery_toolbar_title">Доставка №%1$d</string>
     <string name="flight_deliveries_title_empty">Рейс</string>
     <string name="flight_deliveries_redo_count">Сдать %1$d шт.</string>
     <string name="flight_deliveries_undo_count">Вернуть %1$d шт.</string>
+    <string name="flight_deliveries_return_count">Забрал %1$d шт.</string>
+    <string name="flight_deliveries_not_delivery">Доставил %1$d из %2$d шт.</string>
+    <string name="flight_deliveries_delivery">Доставил %1$d шт.</string>
     <string name="flight_deliveries_empty_count" />
     <string name="flight_deliveries_count_box">Вы приняли %1$d коробок</string>
+    <string name="flight_deliveries_activated">ПВЗ активизируется, когда вы приблизитесь к нему </string>
+    <string name="flight_deliveries_dialog_force_positive_button">Завершить</string>
+    <string name="flight_deliveries_dialog_force_negative_button">Отмена</string>
+
 
     <string name="unloading_scan_label" />
 
@@ -161,5 +168,22 @@
     <string name="inet_text">наличие интернета</string>
     <string name="inet_ok">Есть</string>
     <string name="inet_no">Нет</string>
+
+    <string name="force_termination_label">Принудительное завершение</string>
+    <string name="force_termination_not_delivery">Невыгруженные коробки</string>
+    <string name="force_termination_not_delivery_count">%1$d шт.</string>
+    <string name="force_termination_not_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
+    <string name="force_termination_not_refund">Не взял на возврат</string>
+    <string name="force_termination_cause">Причина</string>
+    <string name="force_termination_box_not_found">Коробки не найдены</string>
+    <string name="force_termination_pickup_point">Нет возможности выгрузить на ПВЗ</string>
+    <string name="force_termination_confirm">Подтвердить</string>
+    <string name="force_termination_complete_delivery">Завершить доставку</string>
+    <string name="force_termination_empty" />
+
+    <string name="congratulation_label">Завершение доставки</string>
+    <string name="congratulation_title">Вы завершили доставку</string>
+    <string name="congratulation_info">Вы доставили %1$d %2$s %3$s</string>
+    <string name="congratulation_complete_delivery">Перейти к возврату</string>
 
 </resources>

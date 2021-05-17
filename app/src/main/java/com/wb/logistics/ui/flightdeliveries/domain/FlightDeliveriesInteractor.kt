@@ -9,4 +9,6 @@ interface FlightDeliveriesInteractor {
 
     fun getAttachedBoxesGroupByOffice() : Single<List<AttachedBoxGroupByOfficeEntity>>
 
+    fun getAttachedBoxes(): Single<Int>
+
 }

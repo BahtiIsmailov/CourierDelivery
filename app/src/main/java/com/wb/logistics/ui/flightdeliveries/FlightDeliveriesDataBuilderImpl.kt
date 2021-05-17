@@ -2,29 +2,50 @@ package com.wb.logistics.ui.flightdeliveries
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesItem
-import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesProgressItem
-import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesRefreshItem
+import com.wb.logistics.ui.flightdeliveries.delegates.items.*
 
 class FlightDeliveriesDataBuilderImpl(
     private val resourceProvider: FlightDeliveriesResourceProvider,
 ) : FlightDeliveriesDataBuilder {
 
     override fun buildSuccessItem(
-        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
-        isEnabled: Boolean,
         index: Int,
+        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
     ): BaseItem {
-        val undoCount = scannedBoxGroupByAddressEntity.undoCount
-        return FlightDeliveriesItem(
-            address = scannedBoxGroupByAddressEntity.dstFullAddress,
-            redoCount = resourceProvider.getRedoCount(scannedBoxGroupByAddressEntity.redoCount),
-            undoCount =  if (undoCount == 0) resourceProvider.getEmptyCount() else resourceProvider.getUndoCount(undoCount),
-            isShowBoxes = false,
-            isEnabled = isEnabled,
-            boxes = listOf(),
-            idView = index
-        )
+        val attachedCount = scannedBoxGroupByAddressEntity.attachedCount
+        val returnCount = scannedBoxGroupByAddressEntity.returnCount
+        val unloadedCount = scannedBoxGroupByAddressEntity.unloadedCount
+        if (scannedBoxGroupByAddressEntity.isUnloading) {
+            val returnCountText =
+                if (returnCount > 0) resourceProvider.getReturnCount(returnCount)
+                else resourceProvider.getEmptyCount()
+            return if (attachedCount > 0) {
+                FlightDeliveriesNotUnloadItem(
+                    address = scannedBoxGroupByAddressEntity.dstFullAddress,
+                    unloadedCount = resourceProvider.getNotDelivery(unloadedCount, attachedCount),
+                    returnCount = returnCountText,
+                    idView = index)
+
+            } else {
+                FlightDeliveriesUnloadItem(
+                    address = scannedBoxGroupByAddressEntity.dstFullAddress,
+                    unloadedCount = resourceProvider.getDelivery(unloadedCount),
+                    returnCount = returnCountText,
+                    idView = index)
+            }
+
+        } else {
+            return FlightDeliveriesItem(
+                address = scannedBoxGroupByAddressEntity.dstFullAddress,
+                redoCount = resourceProvider.getRedoCount(attachedCount),
+                undoCount = if (returnCount == 0) resourceProvider.getEmptyCount()
+                else resourceProvider.getUndoCount(returnCount),
+                isShowBoxes = false,
+                isEnabled = true,
+                boxes = listOf(),
+                idView = index
+            )
+        }
     }
 
     override fun buildEmptyItem(): BaseItem =

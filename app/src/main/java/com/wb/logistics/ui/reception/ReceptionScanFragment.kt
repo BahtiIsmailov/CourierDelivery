@@ -60,7 +60,7 @@ class ReceptionFragment : Fragment() {
                 ReceptionScanNavAction.NavigateToBoxes -> findNavController().navigate(
                     ReceptionFragmentDirections.actionReceptionFragmentToReceptionBoxesFragment())
                 ReceptionScanNavAction.NavigateToFlightDeliveries -> findNavController().navigate(
-                    ReceptionFragmentDirections.actionReceptionFragmentToFlightDeliveriesFragment())
+                    ReceptionFragmentDirections.actionReceptionFragmentToFlightPickPointFragment())
                 ReceptionScanNavAction.NavigateToBack -> findNavController().popBackStack()
             }
         }
@@ -82,7 +82,7 @@ class ReceptionFragment : Fragment() {
         }
 
         viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
-            binding.completeButton.setState(
+            binding.complete.setState(
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
@@ -161,7 +161,7 @@ class ReceptionFragment : Fragment() {
             showHandleInput()
         }
 
-        binding.completeButton.setOnClickListener {
+        binding.complete.setOnClickListener {
             viewModel.onCompleteClicked()
         }
 

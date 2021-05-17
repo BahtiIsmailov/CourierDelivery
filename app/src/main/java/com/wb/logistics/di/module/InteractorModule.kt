@@ -5,10 +5,15 @@ import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.domain.*
+import com.wb.logistics.ui.congratulation.domain.CongratulationInteractorImpl
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
+import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractor
+import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractorImpl
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.flights.domain.FlightsInteractorImpl
+import com.wb.logistics.ui.forcedtermination.domain.ForcedTerminationInteractor
+import com.wb.logistics.ui.forcedtermination.domain.ForcedTerminationInteractorImpl
 import com.wb.logistics.ui.reception.domain.ReceptionInteractor
 import com.wb.logistics.ui.reception.domain.ReceptionInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerInteractor
@@ -19,6 +24,7 @@ import com.wb.logistics.ui.splash.domain.NavigationInteractorImpl
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
 import org.koin.dsl.module
+import com.wb.logistics.ui.congratulation.domain.CongratulationInteractor as CongratulationInteractor1
 
 val interactorModule = module {
 
@@ -63,6 +69,16 @@ val interactorModule = module {
             appRepository)
     }
 
+    fun provideFlightPickPointInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRepository: AppRepository,
+    ): FlightPickPointInteractor {
+        return FlightPickPointInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            appRepository)
+    }
+
     fun provideFlightDeliveriesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
@@ -95,14 +111,31 @@ val interactorModule = module {
         return UnloadingInteractorImpl(rxSchedulerFactory, appRepository, scannerRepository)
     }
 
+    fun provideForcedTerminationInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+    ): ForcedTerminationInteractor {
+        return ForcedTerminationInteractorImpl(rxSchedulerFactory, appRepository)
+    }
+
+    fun provideCongratulationInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+    ): CongratulationInteractor1 {
+        return CongratulationInteractorImpl(rxSchedulerFactory, appRepository)
+    }
+
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
+    single { provideFlightPickPointInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesInteractor(get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get()) }
     single { provideUnloadingInteractor(get(), get(), get()) }
+    single { provideForcedTerminationInteractor(get(), get()) }
+    single { provideCongratulationInteractor(get(), get()) }
 
 }

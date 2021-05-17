@@ -5,6 +5,7 @@ import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.*
 import com.wb.logistics.db.entity.flight.*
@@ -79,6 +80,14 @@ class AppRepositoryImpl(
         local.deleteAllFlight()
     }
 
+    override fun changeFlightOfficeUnloading(
+        dstOfficeId: Int,
+        isUnloading: Boolean,
+        notUnloadingCause: String,
+    ): Completable {
+        return local.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
+    }
+
     override fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>> {
         return local.findFlightBox(barcode)
     }
@@ -133,7 +142,9 @@ class AppRepositoryImpl(
                     name = name,
                     fullAddress = fullAddress,
                     longitude = long,
-                    latitude = lat
+                    latitude = lat,
+                    isUnloading = false,
+                    notUnloadingCause = ""
                 )
             })
         }
@@ -318,7 +329,7 @@ class AppRepositoryImpl(
         return local.observeAttachedBoxes()
     }
 
-    override fun observedAttachedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
+    override fun observedAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
         return local.observeFilterByOfficeAttachedBoxes(dstOfficeId)
     }
 
@@ -336,6 +347,10 @@ class AppRepositoryImpl(
 
     override fun groupAttachedBoxesByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>> {
         return local.groupAttachedBoxByDstAddress()
+    }
+
+    override fun groupAttachedBox(): Single<AttachedBoxResultEntity> {
+        return local.groupAttachedBox()
     }
 
     override fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>> {

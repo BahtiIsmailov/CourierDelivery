@@ -15,7 +15,7 @@ sealed class UnloadingScanNavAction {
 
     data class NavigateToReturnBoxes(val dstOfficeId: Int) : UnloadingScanNavAction()
 
-    object NavigateToFlightDeliveries : UnloadingScanNavAction()
+    data class NavigateToForcedTermination(val dstOfficeId: Int) : UnloadingScanNavAction()
 
     object NavigateToBack : UnloadingScanNavAction()
 

@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/reception_bottom_sheet_info"
-        app:layout_constraintBottom_toTopOf="@+id/complete_button"
+        app:layout_constraintBottom_toTopOf="@+id/complete"
         app:layout_constraintTop_toBottomOf="@+id/guideline3" />
 
     <com.wb.logistics.ui.reception.views.ReceptionAcceptedView
@@ -84,7 +84,7 @@
         app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
 
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/complete_button"
+        android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
@@ -149,7 +149,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="manual_input_button, complete_button" />
+        app:constraint_referenced_ids="manual_input_button, complete" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/scanner_top"

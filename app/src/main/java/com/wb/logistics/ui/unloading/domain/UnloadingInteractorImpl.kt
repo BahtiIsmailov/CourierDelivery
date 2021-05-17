@@ -132,8 +132,8 @@ class UnloadingInteractorImpl(
         updateAt,
         ReturnCurrentOfficeEntity(dstOfficeId)))
 
-    override fun observeAttachedBoxesByDstOfficeId(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
-        return appRepository.observedAttachedBoxesByDstOfficeId(dstOfficeId)
+    override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
+        return appRepository.observedAttachedBoxes(dstOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
@@ -206,7 +206,7 @@ class UnloadingInteractorImpl(
 
     override fun observeUnloadedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>> {
         return Flowable.combineLatest(appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
-            appRepository.observedAttachedBoxesByDstOfficeId(dstOfficeId),
+            appRepository.observedAttachedBoxes(dstOfficeId),
             { unloaded, attached -> Pair(unloaded, attached) })
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -219,6 +219,11 @@ class UnloadingInteractorImpl(
 
     override fun scannerAction(scannerAction: ScannerAction) {
         scannerRepository.scannerAction(scannerAction)
+    }
+
+    override fun completeUnloading(dstOfficeId: Int): Completable {
+        return appRepository.changeFlightOfficeUnloading(dstOfficeId, true, "")
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
 }
