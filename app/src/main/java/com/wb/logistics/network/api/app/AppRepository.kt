@@ -10,6 +10,7 @@ import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
@@ -139,6 +140,8 @@ interface AppRepository {
     fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
 
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
+
+    fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
 
     //==============================================================================================
     //time

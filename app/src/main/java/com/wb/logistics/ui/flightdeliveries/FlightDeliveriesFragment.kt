@@ -16,9 +16,9 @@ import com.wb.logistics.adapters.DefaultAdapter
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.congratulation.CongratulationParameters
-import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -33,7 +33,6 @@ class FlightDeliveriesFragment : Fragment() {
     private lateinit var adapter: DefaultAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
-
 
     companion object {
         private const val FLIGHT_DELIVERY_REQUEST_CODE = 100
@@ -86,7 +85,9 @@ class FlightDeliveriesFragment : Fragment() {
                         CongratulationParameters()))
                 is FlightDeliveriesUINavState.NavigateToDialogComplete -> showDialogReturnBalance(
                     state.description)
-                FlightDeliveriesUINavState.NavigateToUnloadDetails -> showDialogInfo()
+                is FlightDeliveriesUINavState.NavigateToUnloadDetails ->
+                    findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToFlightDeliveriesDetailsFragment(
+                        FlightDeliveriesDetailsParameters(state.dstOfficeId, state.officeName)))
             }
         })
 
@@ -198,16 +199,6 @@ class FlightDeliveriesFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK && requestCode == FLIGHT_DELIVERY_REQUEST_CODE) {
             viewModel.onCompleteConfirm()
         }
-    }
-
-    private fun showDialogInfo() {
-        val dialog = InformationDialogFragment.newInstance(
-            "Log unload boxing",
-            "Реализовать переход на детали выгрузки",
-            "Ok"
-        )
-        dialog.setTargetFragment(this, 10101)
-        dialog.show(parentFragmentManager, "START_DELIVERY_TAG")
     }
 
 }

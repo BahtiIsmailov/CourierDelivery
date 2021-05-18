@@ -8,6 +8,7 @@ import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import io.reactivex.Completable
@@ -104,5 +105,7 @@ interface LocalRepository {
     fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
 
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
+
+    fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
 
 }

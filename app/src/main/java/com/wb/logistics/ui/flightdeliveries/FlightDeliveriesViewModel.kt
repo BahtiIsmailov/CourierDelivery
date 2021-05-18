@@ -99,7 +99,7 @@ class FlightDeliveriesViewModel(
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
         if (item.isUnloading) {
-            _stateUINav.value = FlightDeliveriesUINavState.NavigateToUnloadDetails
+            _stateUINav.value = FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
         } else {
             screenManager.saveScreenState(ScreenManagerState.Unloading(item.officeId, item.officeName))
             _stateUINav.value =

@@ -10,6 +10,4 @@ data class FlightDeliveriesItem(
     val isEnabled: Boolean,
     val boxes: List<String>,
     override var idView: Int,
-) : BaseItem {
-
-}
+) : BaseItem

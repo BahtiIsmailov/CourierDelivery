@@ -5,6 +5,8 @@ import com.wb.logistics.ui.config.ConfigViewModel
 import com.wb.logistics.ui.congratulation.CongratulationParameters
 import com.wb.logistics.ui.congratulation.CongratulationViewModel
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointViewModel
 import com.wb.logistics.ui.flights.FlightLoaderViewModel
 import com.wb.logistics.ui.flights.FlightsViewModel
@@ -55,6 +57,13 @@ val viewModelModule = module {
 
     viewModel { FlightPickPointViewModel(get(), get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get(), get()) }
+    viewModel { (parameters: FlightDeliveriesDetailsParameters) ->
+        FlightDeliveriesDetailsViewModel(parameters,
+            get(),
+            get(),
+            get(),
+            get())
+    }
 
     viewModel { (parameters: UnloadingScanParameters) ->
         UnloadingScanViewModel(parameters,

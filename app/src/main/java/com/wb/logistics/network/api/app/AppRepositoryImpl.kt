@@ -15,6 +15,7 @@ import com.wb.logistics.db.entity.flightboxes.SrcOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.network.api.app.remote.PutBoxCurrentOfficeRemote
@@ -425,6 +426,10 @@ class AppRepositoryImpl(
 
     override fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
         return local.deleteReturnBox(returnBoxEntity)
+    }
+
+    override fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>> {
+        return local.groupByDstAddressReturnBox(dstOfficeId)
     }
 
     //==============================================================================================

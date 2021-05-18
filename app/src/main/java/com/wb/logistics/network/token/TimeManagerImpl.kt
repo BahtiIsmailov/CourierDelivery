@@ -18,6 +18,8 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
         LogUtils { logDebugApp("3. " + timeFormatter.currentDateTime()) }
     }
 
+
+
     override fun getOffsetLocalTime(): String {
         val networkTime = worker.load(AppPreffsKeys.TIME_NETWORK_KEY, 0L)
         val currentTime = timeFormatter.currentDateTime().millis

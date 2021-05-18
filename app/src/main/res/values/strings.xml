@@ -137,6 +137,10 @@
     <string name="flight_deliveries_dialog_force_positive_button">Завершить</string>
     <string name="flight_deliveries_dialog_force_negative_button">Отмена</string>
 
+    <string name="flight_deliveries_details_delivery_title">Доставка</string>
+    <string name="flight_deliveries_details_return_title">Возврат</string>
+    <string name="flight_deliveries_details_title_count">%1$d шт.</string>
+
 
     <string name="unloading_scan_label" />
 
@@ -173,6 +177,7 @@
     <string name="force_termination_not_delivery">Невыгруженные коробки</string>
     <string name="force_termination_not_delivery_count">%1$d шт.</string>
     <string name="force_termination_not_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
+    <string name="force_termination_not_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
     <string name="force_termination_not_refund">Не взял на возврат</string>
     <string name="force_termination_cause">Причина</string>
     <string name="force_termination_box_not_found">Коробки не найдены</string>

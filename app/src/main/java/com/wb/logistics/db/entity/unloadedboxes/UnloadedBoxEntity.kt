@@ -16,6 +16,7 @@ data class UnloadedBoxEntity(
     @PrimaryKey
     val barcode: String,
     val updatedAt: String,
+    val attachAt: String,
     @Embedded
     val currentOffice: UnloadedCurrentOfficeEntity,
 

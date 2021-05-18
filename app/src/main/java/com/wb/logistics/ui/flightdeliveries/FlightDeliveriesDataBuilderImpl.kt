@@ -22,7 +22,7 @@ class FlightDeliveriesDataBuilderImpl(
             return if (attachedCount > 0) {
                 FlightDeliveriesNotUnloadItem(
                     address = scannedBoxGroupByAddressEntity.dstFullAddress,
-                    unloadedCount = resourceProvider.getNotDelivery(unloadedCount, attachedCount),
+                    unloadedCount = resourceProvider.getNotDelivery(unloadedCount, unloadedCount + attachedCount),
                     returnCount = returnCountText,
                     idView = index)
 

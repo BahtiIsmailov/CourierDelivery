@@ -13,6 +13,7 @@ import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import io.reactivex.Completable
@@ -231,6 +232,10 @@ class LocalRepositoryImpl(
 
     override fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
         return returnBoxDao.deleteReturnBox(returnBoxEntity)
+    }
+
+    override fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>> {
+        return returnBoxDao.groupByDstAddressReturnBox(dstOfficeId)
     }
 
 }

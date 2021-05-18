@@ -25,6 +25,16 @@ class FlightDeliveriesInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+//    override fun getUnloadedAndReturnBoxesGroupByOffice(dstOfficeId: Int): Single<UnloadedAndReturnBoxesGroupByOffice> {
+//        return Single.zip(
+//            appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId).firstOrError(),
+//            appRepository.observedReturnBoxesByDstOfficeId(dstOfficeId).firstOrError(),
+//            { unloadedBoxes, returnBoxes ->
+//                UnloadedAndReturnBoxesGroupByOffice(unloadedBoxes, returnBoxes)
+//            }
+//        ).compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+
     override fun flightId(): Single<Int> {
         return appRepository.observeFlight()
             .map {

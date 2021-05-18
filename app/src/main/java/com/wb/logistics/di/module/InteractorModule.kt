@@ -8,6 +8,8 @@ import com.wb.logistics.ui.auth.domain.*
 import com.wb.logistics.ui.congratulation.domain.CongratulationInteractorImpl
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
+import com.wb.logistics.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractor
+import com.wb.logistics.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractorImpl
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractor
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractorImpl
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
@@ -65,6 +67,16 @@ val interactorModule = module {
         appRepository: AppRepository,
     ): FlightsInteractor {
         return FlightsInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            appRepository)
+    }
+
+    fun provideFlightDeliveriesDetailsInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRepository: AppRepository,
+    ): FlightDeliveriesDetailsInteractor {
+        return FlightDeliveriesDetailsInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
             appRepository)
     }
@@ -130,6 +142,7 @@ val interactorModule = module {
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
+    single { provideFlightDeliveriesDetailsInteractor(get(), get(), get()) }
     single { provideFlightPickPointInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesInteractor(get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }

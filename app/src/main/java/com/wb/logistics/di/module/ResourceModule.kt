@@ -4,6 +4,7 @@ import android.app.Application
 import com.wb.logistics.ui.auth.AuthResourceProvider
 import com.wb.logistics.ui.congratulation.CongratulationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationResourceProvider
@@ -35,6 +36,10 @@ val resourceModule = module {
         return FlightDeliveriesResourceProvider(application)
     }
 
+    fun provideFlightDeliveriesDetailsResourceProvider(application: Application): FlightDeliveriesDetailsResourceProvider {
+        return FlightDeliveriesDetailsResourceProvider(application)
+    }
+
     fun provideTemporaryPasswordResourceProvider(application: Application): AuthResourceProvider {
         return AuthResourceProvider(application)
     }
@@ -60,6 +65,7 @@ val resourceModule = module {
     single { provideReceptionResourceProvider(get()) }
     single { provideFlightPickPointResourceProvider(get()) }
     single { provideFlightDeliveriesResourceProvider(get()) }
+    single { provideFlightDeliveriesDetailsResourceProvider(get()) }
     single { provideTemporaryPasswordResourceProvider(get()) }
     single { provideScannerResourceProvider(get()) }
     single { provideUnloadingScanResourceProvider(get()) }

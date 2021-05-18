@@ -1,6 +1,7 @@
 package com.wb.logistics.db.dao
 
 import androidx.room.*
+import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -35,5 +36,8 @@ interface ReturnBoxDao {
 
     @Query("DELETE FROM ReturnBoxEntity")
     fun deleteAllUnloadedBox()
+
+    @Query("SELECT barcode AS barcode, updatedAt AS updatedAt, (SELECT fullAddress FROM FlightOfficeEntity WHERE ReturnBoxEntity.current_office_id = FlightOfficeEntity.office_id) AS address FROM ReturnBoxEntity WHERE current_office_id = :dstOfficeId")
+    fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
 
 }

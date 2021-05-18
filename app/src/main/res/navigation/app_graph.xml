@@ -92,6 +92,9 @@
         <action
             android:id="@+id/action_flightDeliveriesFragment_to_congratulationFragment"
             app:destination="@id/congratulationFragment" />
+        <action
+            android:id="@+id/action_flightDeliveriesFragment_to_flightDeliveriesDetailsFragment"
+            app:destination="@id/flightDeliveriesDetailsFragment" />
     </fragment>
 
     <fragment
@@ -228,6 +231,18 @@
         <argument
             android:name="congratulation_key"
             app:argType="com.wb.logistics.ui.congratulation.CongratulationParameters"
+            app:nullable="false" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/flightDeliveriesDetailsFragment"
+        android:name="com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsFragment"
+        android:label="FlightDeliveriesDetailsFragment"
+        tools:layout="@layout/flight_deliveries_details_fragment">
+        <argument
+            android:name="flight_deliveries_details_key"
+            app:argType="com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters"
             app:nullable="false" />
 
     </fragment>

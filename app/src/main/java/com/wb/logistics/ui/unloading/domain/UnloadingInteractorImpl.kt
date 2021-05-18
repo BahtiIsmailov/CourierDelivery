@@ -42,7 +42,6 @@ class UnloadingInteractorImpl(
                 val isManualInput = boxDefinition.isManualInput
                 val updatedAt = appRepository.getOffsetLocalTime()
 
-
                 val flightId = when (flight) {
                     is SuccessOrEmptyData.Success -> flight.data.id
                     is SuccessOrEmptyData.Empty -> 0
@@ -64,11 +63,13 @@ class UnloadingInteractorImpl(
                         with(findAttachedBox) {
                             if (dstOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ
                                 // TODO: 27.04.2021 добавить коробку в базу
+                                val attachAt = findAttachedBox.data.updatedAt
                                 return@flatMap appRepository.saveUnloadedBox(UnloadedBoxEntity(
                                     flightId,
                                     isManualInput,
                                     barcodeScanned,
                                     updatedAt,
+                                    attachAt,
                                     UnloadedCurrentOfficeEntity(dstOfficeId)))
 
                                     .andThen(removeBoxFromBalance(flightId.toString(), //снятие с баланса

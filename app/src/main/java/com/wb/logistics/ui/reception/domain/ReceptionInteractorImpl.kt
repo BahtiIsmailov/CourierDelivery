@@ -331,7 +331,7 @@ class ReceptionInteractorImpl(
             smID = 10,
             isManualInput = false,
             dstFullAddress = dstFullAddress,
-            updatedAt = "2021-04-19T15:45:00+03:00")
+            updatedAt = "2021-04-19T15:45:00.901+03:00")
     }
 
 }

@@ -3,6 +3,9 @@ package com.wb.logistics.di.module
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilder
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilderImpl
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsDataBuilder
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsDataBuilderImpl
+import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointDataBuilder
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointDataBuilderImpl
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
@@ -43,9 +46,17 @@ val dataBuilderModule = module {
         return ForcedTerminationDataBuilderImpl(timeFormatter, resourceProvider)
     }
 
+    fun provideFlightDeliveriesDetailsDataBuilder(
+        timeFormatter: TimeFormatter,
+        resourceProvider: FlightDeliveriesDetailsResourceProvider,
+    ): FlightDeliveriesDetailsDataBuilder {
+        return FlightDeliveriesDetailsDataBuilderImpl(timeFormatter, resourceProvider)
+    }
+
     single { provideFlightsDataBuilder(get(), get()) }
     single { provideFlightPickPointDataBuilder(get()) }
     single { provideFlightDeliveriesDataBuilder(get()) }
     single { provideForcedTerminationDataBuilder(get(), get()) }
+    single { provideFlightDeliveriesDetailsDataBuilder(get(), get()) }
 
 }

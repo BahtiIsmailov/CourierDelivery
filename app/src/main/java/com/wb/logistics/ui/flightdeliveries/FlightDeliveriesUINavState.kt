@@ -7,5 +7,5 @@ sealed class FlightDeliveriesUINavState {
 
     data class NavigateToDialogComplete(val description: String) : FlightDeliveriesUINavState()
     object NavigateToCongratulation : FlightDeliveriesUINavState()
-    object NavigateToUnloadDetails : FlightDeliveriesUINavState()
+    data class  NavigateToUnloadDetails(val dstOfficeId: Int, val officeName: String) : FlightDeliveriesUINavState()
 }
