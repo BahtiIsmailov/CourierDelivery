@@ -37,5 +37,7 @@
 
     <dimen name="reception_rounded_corner">15dp</dimen>
 
+    <dimen name="scanner_zoom_button">30dp</dimen>
+
 
 </resources>

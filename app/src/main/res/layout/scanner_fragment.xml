@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/scanner_top"
         app:layout_constraintEnd_toStartOf="@+id/sun"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scanner_top_"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
     <ImageView
@@ -56,7 +56,7 @@
         android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toTopOf="@+id/scanner_top"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scanner_top_"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_sun" />
 
     <TextView
@@ -67,16 +67,16 @@
         android:layout_marginStart="24dp"
         android:gravity="center"
         android:text="@string/reception_scan_not_permission"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/sun"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
     <ImageView
         android:id="@+id/minus"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/scanner_zoom_button"
+        android:layout_height="@dimen/scanner_zoom_button"
         android:layout_marginStart="10dp"
         android:src="@drawable/ic_reception_minus"
         app:layout_constraintBottom_toBottomOf="@+id/zoom"
@@ -85,8 +85,8 @@
 
     <ImageView
         android:id="@+id/plus"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/scanner_zoom_button"
+        android:layout_height="@dimen/scanner_zoom_button"
         android:layout_marginEnd="10dp"
         android:src="@drawable/ic_reception_plus"
         app:layout_constraintBottom_toBottomOf="@+id/zoom"
@@ -102,44 +102,30 @@
         android:progressDrawable="@drawable/progress_appearance"
         android:splitTrack="false"
         android:thumb="@drawable/progress_appearance_thumb"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintBottom_toBottomOf="@+id/scanner_offset_bottom"
         app:layout_constraintEnd_toStartOf="@+id/plus"
         app:layout_constraintStart_toEndOf="@+id/minus"
         app:layout_constraintTop_toBottomOf="@+id/scanner_bottom" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_center_vertical"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.93" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/scanner_top_"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.02" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/scanner_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.09" />
+        app:layout_constraintGuide_percent="0.14" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/scanner_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.84" />
+        app:layout_constraintGuide_percent="0.80" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/scanner_offset_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.96" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

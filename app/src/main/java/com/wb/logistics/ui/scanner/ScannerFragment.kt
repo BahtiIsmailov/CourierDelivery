@@ -23,6 +23,7 @@ import me.dm7.barcodescanner.core.ViewFinderView
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
 //    private var cameraZoom: Camera? = null
@@ -72,7 +73,6 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
             binding.permissionInfo.visibility = View.GONE
             startScanner()
         }
-
     }
 
     private fun initScanner() {
@@ -98,7 +98,9 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
-    private fun initListener() {}
+    private fun initListener() {
+        binding.sun.setOnClickListener {}
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

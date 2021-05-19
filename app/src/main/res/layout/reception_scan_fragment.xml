@@ -151,18 +151,4 @@
         android:visibility="visible"
         app:constraint_referenced_ids="manual_input_button, complete" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/scanner_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.07" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/scanner_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.40" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

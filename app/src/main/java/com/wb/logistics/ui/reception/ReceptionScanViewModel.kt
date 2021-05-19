@@ -38,7 +38,8 @@ class ReceptionScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        addMockScannedBox()
+        // TODO: 19.05.2021 addMockScannedBox
+        //addMockScannedBox()
         //screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
         addSubscription(interactor.observeScannedBoxes().subscribe {
             if (it.isEmpty()) {
