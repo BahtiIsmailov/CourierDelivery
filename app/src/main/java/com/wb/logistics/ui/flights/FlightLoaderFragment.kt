@@ -32,10 +32,6 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
         initObserver()
 
         (activity as NavToolbarTitleListener).hideBackButton()
-
-//        val safeArgs: NumberPhoneFragmentArgs by navArgs()
-//        val flowStepNumber = safeArgs.navigationFlowStep
-//        if (flowStepNumber == 1) findNavController().navigate(R.id.navigationActivity)
     }
 
     private fun initObserver() {
@@ -47,9 +43,6 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
                 FlightLoaderUINavState.NavigateToReceptionScan -> {
                     findNavController().navigate(
                         FlightLoaderFragmentDirections.actionFlightLoaderFragmentToReceptionFragment())
-
-//                    val deepLink = "perevozka://reception_scan".toUri()
-//                    findNavController().navigate(deepLink)
                 }
                 FlightLoaderUINavState.NavigateToPickUpPoint -> findNavController().navigate(
                     FlightLoaderFragmentDirections.actionFlightLoaderFragmentToFlightPickPointFragment())
@@ -58,6 +51,8 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
                 is FlightLoaderUINavState.NavigateToUnloading -> findNavController().navigate(
                     FlightLoaderFragmentDirections.actionFlightLoaderFragmentToUnloadingScanFragment(
                         UnloadingScanParameters(state.officeId, state.shortAddress)))
+                FlightLoaderUINavState.NavigateToDcUnloading -> findNavController().navigate(
+                    FlightLoaderFragmentDirections.actionFlightLoaderFragmentToDcUnloadingScanFragment())
             }
 
         }

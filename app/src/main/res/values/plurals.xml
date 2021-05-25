@@ -37,4 +37,13 @@
         <item quantity="other">Вы не сдали %d коробок, уверены, что хотите завершить доставку?</item>
     </plurals>
 
+    <plurals name="dc_unloading_count">
+        <item quantity="zero">Необходимо выгрузить %d коробок</item>
+        <item quantity="one">Необходимо выгрузить %d коробку</item>
+        <item quantity="two">Необходимо выгрузить %d коробки</item>
+        <item quantity="few">Необходимо выгрузить %d коробок</item>
+        <item quantity="many">Необходимо выгрузить %d коробок</item>
+        <item quantity="other">Необходимо выгрузить %d коробок</item>
+    </plurals>
+
 </resources>

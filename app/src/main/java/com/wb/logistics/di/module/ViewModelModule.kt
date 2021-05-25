@@ -2,8 +2,10 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.ui.auth.*
 import com.wb.logistics.ui.config.ConfigViewModel
-import com.wb.logistics.ui.congratulation.CongratulationParameters
-import com.wb.logistics.ui.congratulation.CongratulationViewModel
+import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsViewModel
+import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationViewModel
+import com.wb.logistics.ui.dcunloading.*
+import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationViewModel
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
@@ -17,6 +19,8 @@ import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
 import com.wb.logistics.ui.splash.LoaderViewModel
 import com.wb.logistics.ui.unloading.*
+import com.wb.logistics.ui.unloadingcongratulation.CongratulationParameters
+import com.wb.logistics.ui.unloadingcongratulation.CongratulationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -110,7 +114,35 @@ val viewModelModule = module {
         CongratulationViewModel(parameters,
             get(),
             get(),
+            get(),
             get())
     }
+
+    viewModel {
+        DcUnloadingScanViewModel(
+            get(),
+            get(),
+            get(),
+            get())
+    }
+
+    viewModel {
+        DcUnloadingHandleViewModel(
+            get(),
+            get(),
+            get())
+    }
+
+    viewModel { (parameters: DcUnloadingBoxNotBelongParameters) ->
+        DcUnloadingBoxNotBelongModel(parameters)
+    }
+
+    viewModel { DcUnloadingBoxesViewModel(get(), get()) }
+
+    viewModel { DcForcedTerminationViewModel(get(), get(), get()) }
+
+    viewModel { DcForcedTerminationDetailsViewModel(get(), get(), get()) }
+
+    viewModel { DcUnloadingCongratulationViewModel(get(), get(), get(), get()) }
 
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/delivery_background">
+
+    <com.wb.logistics.views.WrapContentListView
+        android:id="@+id/boxes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/complete"
+        android:layout_alignParentTop="true"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        tools:listitem="@layout/forced_termination_legend" />
+
+    <com.wb.logistics.views.ProgressImageButtonView
+        android:id="@+id/complete"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        app:app_background="@drawable/progress_image_button_default"
+        app:app_icon="@drawable/ic_complete"
+        app:app_state="enable"
+        app:app_text="@string/unloading_boxes_complete"
+        app:app_text_color_disable="@color/button_gray_text_disable"
+        app:app_text_color_enable="@color/button_gray_text_enable"
+        app:app_text_color_progress="@color/button_gray_text_progress" />
+
+</RelativeLayout>

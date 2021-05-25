@@ -157,6 +157,11 @@
     <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>
     <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ,\nверните её в машину</string>
 
+    <string name="dc_unloading_box_not_found_title">ШК не найден</string>
+    <string name="dc_unloading_box_already_unloaded">Коробка %1$s\nуже выгружена на РЦ</string>
+    <string name="dc_unloading_box_unloaded">"Коробка %1$s\nвыгружена на РЦ"</string>
+
+
     <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
     <string name="unloading_handle_empty_list">Список пуст</string>
 
@@ -190,5 +195,31 @@
     <string name="congratulation_title">Вы завершили доставку</string>
     <string name="congratulation_info">Вы доставили %1$d %2$s %3$s</string>
     <string name="congratulation_complete_delivery">Перейти к возврату</string>
+
+    <string name="dc_unloading_boxes_title">Возврат</string>
+
+    <string name="dc_congratulation_title">Вы завершили рейс</string>
+    <string name="dc_congratulation_info">Спасибо за проделанную работу!</string>
+    <string name="dc_congratulation_delivered_info">Доставил</string>
+    <string name="dc_congratulation_returned_info">Вернул</string>
+    <string name="dc_congratulation_count">%1$d / %2$d</string>
+    <string name="dc_congratulation_complete">Понятно</string>
+
+    <string name="dc_unloading_boxes_label">Возврат</string>
+    <string name="dc_unloading_boxes_title_list">Список коробок для выгрузки</string>
+    <string name="dc_unloading_boxes_info_box_unload">Выгрузите на РЦ</string>
+
+    <string name="dc_unloading_not_belong_title">Информация по ШК не найдена</string>
+    <string name="dc_unloading_not_belong_info">Данная коробка не является\nвозвратной, оставьте её на РЦ</string>
+
+    <string name="dc_unloading_handle_label">Ручной ввод</string>
+
+    <string name="dc_forced_termination_label">Рейс завершен</string>
+
+    <string name="dc_forced_termination_details_label">Невыгруженные коробки</string>
+    <string name="dc_forced_termination_details_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
+    <string name="dc_forced_termination_details_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
+
+    dcForcedTerminationFragment
 
 </resources>

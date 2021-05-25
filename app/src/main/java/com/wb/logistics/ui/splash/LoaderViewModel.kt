@@ -29,11 +29,9 @@ class LoaderViewModel(
                 }, {
                     toNumberPhone()
                 }))
-
         } else {
             toNumberPhone()
         }
-
     }
 
     private fun toApp() {

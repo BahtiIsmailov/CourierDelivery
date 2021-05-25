@@ -25,11 +25,12 @@ class ScreenManagerImpl(private val worker: SharedWorker) : ScreenManager {
             ScreenManagerState.ScreenId.RECEPTION_SCAN -> ScreenManagerState.ReceptionScan
             ScreenManagerState.ScreenId.UNLOADING -> worker.load(AppPreffsKeys.SCREEN_UNLOADING_KEY,
                 ScreenManagerState.Unloading::class.java) ?: ScreenManagerState.Flight
+            ScreenManagerState.ScreenId.DC_UNLOADING -> ScreenManagerState.DcUnloading
         }
     }
 
     override fun clear() {
-        worker.delete(AppPreffsKeys.PHONE_KEY)
+        worker.delete(AppPreffsKeys.SCREEN_ID_KEY)
     }
 
 }

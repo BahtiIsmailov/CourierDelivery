@@ -12,7 +12,7 @@ class ForcedTerminationInteractorImpl(
 ) : ForcedTerminationInteractor {
 
     override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
-        return appRepository.observedAttachedBoxes(dstOfficeId)
+        return appRepository.observeAttachedBoxes(dstOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }

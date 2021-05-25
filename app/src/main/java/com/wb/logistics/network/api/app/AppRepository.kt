@@ -7,6 +7,7 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
@@ -87,7 +88,7 @@ interface AppRepository {
 
     fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>>
 
-    fun observedAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
+    fun observeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
 
     fun readAllAttachedBoxes(): Single<List<AttachedBoxEntity>>
 
@@ -113,6 +114,25 @@ interface AppRepository {
     fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
 
     fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>>
+
+    //==============================================================================================
+    //unloading
+    //==============================================================================================
+    fun saveDcUnloadedBox(dcUnloadedBoxEntity: DcUnloadedBoxEntity): Completable
+
+    fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable
+
+    fun findDcUnloadedBox(barcode: String): Single<SuccessOrEmptyData<DcUnloadedBoxEntity>>
+
+    fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>>
+
+    fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>>
+
+    fun observeDcUnloadingScanBox(): Flowable<DcUnloadingScanBoxEntity>
+
+    fun congratulation(): Single<DcCongratulationEntity>
+
+    fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
 
     //==============================================================================================
     //balance await

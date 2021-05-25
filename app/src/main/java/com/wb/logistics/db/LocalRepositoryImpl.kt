@@ -1,13 +1,11 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.dao.AttachedBoxDao
-import com.wb.logistics.db.dao.FlightDao
-import com.wb.logistics.db.dao.ReturnBoxDao
-import com.wb.logistics.db.dao.UnloadingBoxDao
+import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -25,6 +23,7 @@ class LocalRepositoryImpl(
     private val attachedBoxDao: AttachedBoxDao,
     private val unloadingBox: UnloadingBoxDao,
     private val returnBoxDao: ReturnBoxDao,
+    private val dcUnloadingBox: DcUnloadingBoxDao,
 ) : LocalRepository {
 
     override fun saveFlight(
@@ -182,6 +181,44 @@ class LocalRepositoryImpl(
         return unloadingBox.findUnloadedBox(barcode)
             .map<SuccessOrEmptyData<UnloadedBoxEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+
+    //==============================================================================================
+    //dcunloaded boxes
+    //==============================================================================================
+    override fun saveDcUnloadedBox(dcUnloadedBoxEntity: DcUnloadedBoxEntity): Completable {
+        return dcUnloadingBox.insertDcUnloadingBox(dcUnloadedBoxEntity)
+    }
+
+    override fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable {
+        return dcUnloadingBox.insertDcUnloadingReturnBox(dcUnloadedReturnBoxEntity)
+    }
+
+    override fun findDcUnloadedBox(barcode: String): Single<SuccessOrEmptyData<DcUnloadedBoxEntity>> {
+        return dcUnloadingBox.findDcUnloadedBox(barcode)
+            .map<SuccessOrEmptyData<DcUnloadedBoxEntity>> { SuccessOrEmptyData.Success(it) }
+            .onErrorReturn { SuccessOrEmptyData.Empty() }
+    }
+
+    override fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>> {
+        return dcUnloadingBox.findDcUnloadedHandleBoxes()
+    }
+
+    override fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>> {
+        return dcUnloadingBox.findDcUnloadedListBoxes()
+    }
+
+    override fun observeDcUnloadingScanBox(): Flowable<DcUnloadingScanBoxEntity> {
+        return dcUnloadingBox.observeDcUnloadingScanBox()
+    }
+
+    override fun congratulation(): Single<DcCongratulationEntity> {
+        return dcUnloadingBox.congratulation()
+    }
+
+    override fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>> {
+        return dcUnloadingBox.notDcUnloadedBoxes()
     }
 
     //==============================================================================================

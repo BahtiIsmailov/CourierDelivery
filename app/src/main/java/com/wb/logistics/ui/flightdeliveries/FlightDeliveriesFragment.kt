@@ -15,12 +15,12 @@ import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapter
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.congratulation.CongratulationParameters
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
+import com.wb.logistics.ui.unloadingcongratulation.CongratulationParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FlightDeliveriesFragment : Fragment() {

@@ -39,8 +39,7 @@ class ReceptionScanViewModel(
 
     init {
         // TODO: 19.05.2021 addMockScannedBox
-        //addMockScannedBox()
-        //screenManager.saveScreenState(ScreenState.RECEPTION_SCAN)
+        addMockScannedBox()
         addSubscription(interactor.observeScannedBoxes().subscribe {
             if (it.isEmpty()) {
                 boxStateUI.value = ReceptionScanBoxState.Empty

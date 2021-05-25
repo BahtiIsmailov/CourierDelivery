@@ -2,7 +2,10 @@ package com.wb.logistics.di.module
 
 import android.app.Application
 import com.wb.logistics.ui.auth.AuthResourceProvider
-import com.wb.logistics.ui.congratulation.CongratulationResourceProvider
+import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsResourceProvider
+import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationResourceProvider
+import com.wb.logistics.ui.dcunloading.DcUnloadingScanResourceProvider
+import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
@@ -12,6 +15,7 @@ import com.wb.logistics.ui.nav.NavigationResourceProvider
 import com.wb.logistics.ui.reception.ReceptionScanResourceProvider
 import com.wb.logistics.ui.scanner.ScannerResourceProvider
 import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
+import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
 import org.koin.dsl.module
 
 val resourceModule = module {
@@ -60,6 +64,22 @@ val resourceModule = module {
         return CongratulationResourceProvider(application)
     }
 
+    fun provideDcUnloadingScanResourceProvider(application: Application): DcUnloadingScanResourceProvider {
+        return DcUnloadingScanResourceProvider(application)
+    }
+
+    fun provideDcForcedTerminationResourceProvider(application: Application): DcForcedTerminationResourceProvider {
+        return DcForcedTerminationResourceProvider(application)
+    }
+
+    fun provideDcUnloadingCongratulationResourceProvider(application: Application): DcUnloadingCongratulationResourceProvider {
+        return DcUnloadingCongratulationResourceProvider(application)
+    }
+
+    fun provideDcForcedTerminationDetailsResourceProvider(application: Application): DcForcedTerminationDetailsResourceProvider {
+        return DcForcedTerminationDetailsResourceProvider(application)
+    }
+
     single { provideAppResourceProvider(get()) }
     single { provideFlightResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }
@@ -71,5 +91,9 @@ val resourceModule = module {
     single { provideUnloadingScanResourceProvider(get()) }
     single { provideForcedTerminationResourceProvider(get()) }
     single { provideCongratulationResourceProvider(get()) }
+    single { provideDcUnloadingScanResourceProvider(get()) }
+    single { provideDcForcedTerminationResourceProvider(get()) }
+    single { provideDcForcedTerminationDetailsResourceProvider(get()) }
+    single { provideDcUnloadingCongratulationResourceProvider(get()) }
 
 }

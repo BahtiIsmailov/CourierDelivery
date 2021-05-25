@@ -6,4 +6,5 @@ sealed class FlightLoaderUINavState {
     object NavigateToPickUpPoint : FlightLoaderUINavState()
     object NavigateToDelivery : FlightLoaderUINavState()
     data class NavigateToUnloading(val officeId: Int, val shortAddress: String) : FlightLoaderUINavState()
+    object NavigateToDcUnloading : FlightLoaderUINavState()
 }

@@ -134,7 +134,7 @@ class UnloadingInteractorImpl(
         ReturnCurrentOfficeEntity(dstOfficeId)))
 
     override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
-        return appRepository.observedAttachedBoxes(dstOfficeId)
+        return appRepository.observeAttachedBoxes(dstOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
@@ -207,7 +207,7 @@ class UnloadingInteractorImpl(
 
     override fun observeUnloadedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>> {
         return Flowable.combineLatest(appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
-            appRepository.observedAttachedBoxes(dstOfficeId),
+            appRepository.observeAttachedBoxes(dstOfficeId),
             { unloaded, attached -> Pair(unloaded, attached) })
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())

@@ -204,6 +204,9 @@
         <action
             android:id="@+id/action_flightLoaderFragment_to_flightPickPointFragment"
             app:destination="@id/flightPickPointFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_dcUnloadingScanFragment"
+            app:destination="@id/dcUnloadingScanFragment" />
     </fragment>
 
     <fragment
@@ -225,13 +228,16 @@
 
     <fragment
         android:id="@+id/congratulationFragment"
-        android:name="com.wb.logistics.ui.congratulation.CongratulationFragment"
+        android:name="com.wb.logistics.ui.unloadingcongratulation.CongratulationFragment"
         android:label="@string/congratulation_label"
-        tools:layout="@layout/congratulation_fragment">
+        tools:layout="@layout/unloading_congratulation_fragment">
         <argument
             android:name="congratulation_key"
-            app:argType="com.wb.logistics.ui.congratulation.CongratulationParameters"
+            app:argType="com.wb.logistics.ui.unloadingcongratulation.CongratulationParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_congratulationFragment_to_dcUnloadingScanFragment"
+            app:destination="@id/dcUnloadingScanFragment" />
 
     </fragment>
 
@@ -246,5 +252,80 @@
             app:nullable="false" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/dcUnloadingScanFragment"
+        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingScanFragment"
+        android:label="@string/dc_unloading_boxes_label"
+        tools:layout="@layout/dc_unloading_scan_fragment">
+        <action
+            android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingBoxesFragment"
+            app:destination="@id/dcUnloadingBoxesFragment" />
+        <action
+            android:id="@+id/action_dcUnloadingScanFragment_to_dcForcedTerminationFragment"
+            app:destination="@id/dcForcedTerminationFragment" />
+        <action
+            android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingCongratulationFragment"
+            app:destination="@id/dcUnloadingCongratulationFragment" />
+        <action
+            android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingBoxNotBelongFragment"
+            app:destination="@id/dcUnloadingBoxNotBelongFragment" />
+        <action
+            android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingHandleFragment"
+            app:destination="@id/dcUnloadingHandleFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dcUnloadingBoxesFragment"
+        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingBoxesFragment"
+        android:label="DcUnloadingBoxesFragment"
+        tools:layout="@layout/dc_unloading_boxes_fragment" />
+
+    <fragment
+        android:id="@+id/dcUnloadingBoxNotBelongFragment"
+        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingBoxNotBelongFragment"
+        android:label="DcUnloadingBoxNotBelongFragment"
+        tools:layout="@layout/dc_unloading_box_not_belong_fragment">
+
+        <argument
+            android:name="dc_box_not_belong_key"
+            app:argType="com.wb.logistics.ui.dcunloading.DcUnloadingBoxNotBelongParameters"
+            app:nullable="false" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/dcUnloadingHandleFragment"
+        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment"
+        android:label="@string/dc_unloading_handle_label"
+        tools:layout="@layout/dc_unloading_handle_fragment"/>
+
+    <fragment
+        android:id="@+id/dcUnloadingCongratulationFragment"
+        android:name="com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationFragment"
+        android:label="@string/dc_forced_termination_label"
+        tools:layout="@layout/dc_unloading_congratulation_fragment" >
+        <action
+            android:id="@+id/action_dcUnloadingCongratulationFragment_to_flightLoaderFragment"
+            app:destination="@id/flightLoaderFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dcForcedTerminationFragment"
+        android:name="com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationFragment"
+        android:label="@string/dc_forced_termination_label"
+        tools:layout="@layout/dc_forced_termination_fragment">
+        <action
+            android:id="@+id/action_dcForcedTerminationFragment_to_dcForcedTerminationDetailsFragment"
+            app:destination="@id/dcForcedTerminationDetailsFragment" />
+        <action
+            android:id="@+id/action_dcForcedTerminationFragment_to_dcUnloadingCongratulationFragment"
+            app:destination="@id/dcUnloadingCongratulationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dcForcedTerminationDetailsFragment"
+        android:name="com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsFragment"
+        android:label="@string/dc_forced_termination_details_label"
+        tools:layout="@layout/dc_forced_termination_details_fragment"/>
 
 </navigation>

@@ -18,7 +18,7 @@ import com.wb.logistics.R;
 public class UnloadingReturnView extends FrameLayout {
 
     private final static String DEFAULT_COUNT_BOX_TEXT = "-";
-    private final static int DEFAULT_CURRENT_STATE = UnloadingReturnMode.EMPTY;
+    private final static int DEFAULT_CURRENT_STATE = com.wb.logistics.ui.unloading.views.UnloadingReturnMode.EMPTY;
 
     private int enableColor;
     private int disableColor;
@@ -85,7 +85,7 @@ public class UnloadingReturnView extends FrameLayout {
 
     private void initState() {
         switch (currentState) {
-            case UnloadingReturnMode.EMPTY:
+            case com.wb.logistics.ui.unloading.views.UnloadingReturnMode.EMPTY:
                 emptyState();
                 break;
             case UnloadingReturnMode.ACTIVE:

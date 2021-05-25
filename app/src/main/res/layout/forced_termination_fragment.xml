@@ -61,7 +61,7 @@
         android:text="@string/force_termination_not_delivery" />
 
     <TextView
-        android:id="@+id/title_count"
+        android:id="@+id/boxes_count"
         style="@style/MediumRegularLightText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

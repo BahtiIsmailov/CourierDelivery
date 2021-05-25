@@ -34,6 +34,8 @@ class FlightLoaderViewModel(
             is ScreenManagerState.Unloading ->
                 _navState.value =
                     FlightLoaderUINavState.NavigateToUnloading(state.officeId, state.shortAddress)
+            is ScreenManagerState.DcUnloading -> _navState.value =
+                FlightLoaderUINavState.NavigateToDcUnloading
         }
     }
 

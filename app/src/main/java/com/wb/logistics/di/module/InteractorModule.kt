@@ -5,7 +5,12 @@ import com.wb.logistics.network.api.auth.AuthRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.domain.*
-import com.wb.logistics.ui.congratulation.domain.CongratulationInteractorImpl
+import com.wb.logistics.ui.dcforcedtermination.domain.DcForcedTerminationInteractor
+import com.wb.logistics.ui.dcforcedtermination.domain.DcForcedTerminationInteractorImpl
+import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
+import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractorImpl
+import com.wb.logistics.ui.dcunloadingcongratulation.domain.DcUnloadingCongratulationInteractor
+import com.wb.logistics.ui.dcunloadingcongratulation.domain.DcUnloadingCongratulationInteractorImpl
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
 import com.wb.logistics.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractor
@@ -25,8 +30,9 @@ import com.wb.logistics.ui.splash.domain.NavigationInteractor
 import com.wb.logistics.ui.splash.domain.NavigationInteractorImpl
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
+import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
 import org.koin.dsl.module
-import com.wb.logistics.ui.congratulation.domain.CongratulationInteractor as CongratulationInteractor1
+import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
 
 val interactorModule = module {
 
@@ -137,6 +143,28 @@ val interactorModule = module {
         return CongratulationInteractorImpl(rxSchedulerFactory, appRepository)
     }
 
+    fun provideDcUnloadingInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+        scannerRepository: ScannerRepository,
+    ): DcUnloadingInteractor {
+        return DcUnloadingInteractorImpl(rxSchedulerFactory, appRepository, scannerRepository)
+    }
+
+    fun provideDcForcedTerminationInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+    ): DcForcedTerminationInteractor {
+        return DcForcedTerminationInteractorImpl(rxSchedulerFactory, appRepository)
+    }
+
+    fun provideDcUnloadingCongratulationInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRepository: AppRepository,
+    ): DcUnloadingCongratulationInteractor {
+        return DcUnloadingCongratulationInteractorImpl(rxSchedulerFactory, appRepository)
+    }
+
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
@@ -150,5 +178,8 @@ val interactorModule = module {
     single { provideUnloadingInteractor(get(), get(), get()) }
     single { provideForcedTerminationInteractor(get(), get()) }
     single { provideCongratulationInteractor(get(), get()) }
+    single { provideDcUnloadingInteractor(get(), get(), get()) }
+    single { provideDcForcedTerminationInteractor(get(), get()) }
+    single { provideDcUnloadingCongratulationInteractor(get(), get()) }
 
 }

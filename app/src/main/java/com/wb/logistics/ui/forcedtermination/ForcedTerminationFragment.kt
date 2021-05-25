@@ -38,7 +38,7 @@ class ForcedTerminationFragment : Fragment() {
     }
 
     private fun initTitleBoxes(title: String) {
-        binding.titleCount.text = title
+        binding.boxesCount.text = title
     }
 
     private fun initBoxes(routeItems: List<ForcedTerminationItem>) {

@@ -4,6 +4,7 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
@@ -69,7 +70,7 @@ interface LocalRepository {
     fun groupAttachedBox(): Single<AttachedBoxResultEntity>
 
     //==============================================================================================
-    //attached box
+    //unloaded box
     //==============================================================================================
     fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable
 
@@ -78,6 +79,25 @@ interface LocalRepository {
     fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
 
     fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>>
+
+    //==============================================================================================
+    //attached box
+    //==============================================================================================
+    fun saveDcUnloadedBox(dcUnloadedBoxEntity: DcUnloadedBoxEntity): Completable
+
+    fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable
+
+    fun findDcUnloadedBox(barcode: String): Single<SuccessOrEmptyData<DcUnloadedBoxEntity>>
+
+    fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>>
+
+    fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>>
+
+    fun observeDcUnloadingScanBox(): Flowable<DcUnloadingScanBoxEntity>
+
+    fun congratulation(): Single<DcCongratulationEntity>
+
+    fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
 
     //==============================================================================================
     //balance box

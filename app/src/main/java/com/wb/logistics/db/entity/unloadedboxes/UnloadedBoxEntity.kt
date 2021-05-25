@@ -20,4 +20,4 @@ data class UnloadedBoxEntity(
     @Embedded
     val currentOffice: UnloadedCurrentOfficeEntity,
 
-)
+    )

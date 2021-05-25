@@ -8,6 +8,7 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.boxinfo.*
+import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flight.*
 import com.wb.logistics.db.entity.flightboxes.DstOfficeEntity
 import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
@@ -330,7 +331,7 @@ class AppRepositoryImpl(
         return local.observeAttachedBoxes()
     }
 
-    override fun observedAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
+    override fun observeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
         return local.observeFilterByOfficeAttachedBoxes(dstOfficeId)
     }
 
@@ -379,6 +380,40 @@ class AppRepositoryImpl(
 
     override fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>> {
         return local.findUnloadedBox(barcode)
+    }
+    //==============================================================================================
+    //dcunloaded
+    //==============================================================================================
+    override fun saveDcUnloadedBox(dcUnloadedBoxEntity: DcUnloadedBoxEntity): Completable {
+        return local.saveDcUnloadedBox(dcUnloadedBoxEntity)
+    }
+
+    override fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable {
+        return local.saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity)
+    }
+
+    override fun findDcUnloadedBox(barcode: String): Single<SuccessOrEmptyData<DcUnloadedBoxEntity>> {
+        return local.findDcUnloadedBox(barcode)
+    }
+
+    override fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>> {
+        return local.findDcUnloadedHandleBoxes()
+    }
+
+    override fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>> {
+        return local.findDcUnloadedListBoxes()
+    }
+
+    override fun observeDcUnloadingScanBox(): Flowable<DcUnloadingScanBoxEntity> {
+        return local.observeDcUnloadingScanBox()
+    }
+
+    override fun congratulation(): Single<DcCongratulationEntity> {
+        return local.congratulation()
+    }
+
+    override fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>> {
+        return local.notDcUnloadedBoxes()
     }
 
     //==============================================================================================

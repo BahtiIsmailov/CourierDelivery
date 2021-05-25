@@ -2,10 +2,7 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.db.LocalRepository
 import com.wb.logistics.db.LocalRepositoryImpl
-import com.wb.logistics.db.dao.AttachedBoxDao
-import com.wb.logistics.db.dao.FlightDao
-import com.wb.logistics.db.dao.ReturnBoxDao
-import com.wb.logistics.db.dao.UnloadingBoxDao
+import com.wb.logistics.db.dao.*
 import com.wb.logistics.network.api.app.AppRepository
 import com.wb.logistics.network.api.app.AppRepositoryImpl
 import com.wb.logistics.network.api.app.RemoteAppRepository
@@ -57,8 +54,13 @@ val deliveryRepositoryModule = module {
         attachedBoxDao: AttachedBoxDao,
         unloadingBox: UnloadingBoxDao,
         returnBoxDao: ReturnBoxDao,
+        dcUnloadingBox: DcUnloadingBoxDao,
     ): LocalRepository {
-        return LocalRepositoryImpl(flightDao, attachedBoxDao, unloadingBox, returnBoxDao)
+        return LocalRepositoryImpl(flightDao,
+            attachedBoxDao,
+            unloadingBox,
+            returnBoxDao,
+            dcUnloadingBox)
     }
 
     fun provideReceptionRepository(api: ReceptionApi, dao: ReceptionDao): ReceptionRepository {
@@ -75,7 +77,7 @@ val deliveryRepositoryModule = module {
 
     single { provideAuthRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
-    single { provideLocalRepository(get(), get(), get(), get()) }
+    single { provideLocalRepository(get(), get(), get(), get(), get()) }
     single { provideAppRepository(get(), get(), get()) }
     single { provideReceptionRepository(get(), get()) }
     single { provideScannerRepository() }
