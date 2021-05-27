@@ -16,7 +16,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
-interface LocalRepository {
+interface AppLocalRepository {
 
     fun saveFlight(
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
@@ -42,7 +42,7 @@ interface LocalRepository {
     //==============================================================================================
     fun saveMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
 
-    fun findMatchBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
+    fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
 
     fun deleteAllMatchingBox()
 
@@ -55,7 +55,7 @@ interface LocalRepository {
 
     fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>>
 
-    fun observeFilterByOfficeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
+    fun observeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
 
     fun readAttachedBoxes(): Single<List<AttachedBoxEntity>>
 

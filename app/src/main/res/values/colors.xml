@@ -17,10 +17,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
     <color name="text_clickable">#642CA3</color>
+    <color name="border">#642CA3</color>
 
     <color name="background">#642CA3</color>
 

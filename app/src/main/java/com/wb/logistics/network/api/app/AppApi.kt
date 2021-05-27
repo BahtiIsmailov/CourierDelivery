@@ -15,7 +15,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
 
-interface RemoteAppRepository {
+interface AppApi {
 
     @GET("/api/v1/flight-statuses")
     fun flightStatuses(): Single<FlightStatusesRemote>
@@ -32,8 +32,14 @@ interface RemoteAppRepository {
     @GET("/api/v1/flights/{flightID}/matching-boxes")
     fun matchingBoxes(@Path("flightID") flightID: String): Single<MatchingBoxesRemote>
 
-    @POST("/api/v1/flights/{flightID}/boxes")
-    fun loadBoxToBalance(
+    @POST("/api/v1/flights/{flightID}/warehouse/boxes")
+    fun warehouseBoxToBalance(
+        @Path("flightID") flightID: String,
+        @Body box: FlightBoxScannedRemote,
+    ): Completable
+
+    @POST("/api/v1/flights/{flightID}/pvz/boxes")
+    fun pvzBoxToBalance(
         @Path("flightID") flightID: String,
         @Body box: FlightBoxScannedRemote,
     ): Completable

@@ -55,17 +55,9 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
     }
 
     private fun initStateObserve() {
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
-
+        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
-                NumberPhoneUIState.PhoneCheck -> {
-
-                    binding.phoneNumber.isEnabled = false
-                    binding.numberNotFound.visibility = GONE
-                    binding.next.setState(ProgressImageButtonMode.PROGRESS)
-                    inputMethod.hideSoftInputFromWindow(binding.next.windowToken, 0)
-                }
-                is NumberPhoneUIState.NavigateToInputPassword -> {
+                is NumberPhoneNavAction.NavigateToInputPassword -> {
                     findNavController().navigate(
                         NumberPhoneFragmentDirections.actionNumberPhoneFragmentToInputPasswordFragment(
                             InputPasswordParameters(state.number)
@@ -73,7 +65,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                     )
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
-                is NumberPhoneUIState.NavigateToTemporaryPassword -> {
+                is NumberPhoneNavAction.NavigateToTemporaryPassword -> {
                     findNavController().navigate(
                         NumberPhoneFragmentDirections.actionNumberPhoneFragmentToTemporaryPasswordFragment(
                             TemporaryPasswordParameters(state.number)
@@ -81,8 +73,19 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                     )
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
-                NumberPhoneUIState.NavigateToConfig ->
+                NumberPhoneNavAction.NavigateToConfig ->
                     findNavController().navigate(R.id.authConfigActivity)
+            }
+        })
+
+        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                NumberPhoneUIState.PhoneCheck -> {
+                    binding.phoneNumber.isEnabled = false
+                    binding.numberNotFound.visibility = GONE
+                    binding.next.setState(ProgressImageButtonMode.PROGRESS)
+                    inputMethod.hideSoftInputFromWindow(binding.next.windowToken, 0)
+                }
                 is NumberPhoneUIState.NumberNotFound -> {
                     binding.phoneNumber.isEnabled = true
                     binding.numberNotFound.text = state.message
@@ -97,7 +100,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                 }
                 is NumberPhoneUIState.NumberFormat -> {
                     val phoneNumber = state.number
-
                     binding.phoneNumber.setText(phoneNumber)
                     binding.phoneNumber.setSelection(phoneNumber.length)
                     binding.numberNotFound.visibility = GONE
@@ -105,8 +107,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_number_phone_fragment) {
                 }
                 NumberPhoneUIState.NumberFormatComplete -> {
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
-                }
-                NumberPhoneUIState.Empty -> {
                 }
             }
 

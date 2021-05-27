@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.UnloadingBoxesFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -44,8 +43,6 @@ class UnloadingBoxesFragment : Fragment() {
 
         viewModel.boxesState.observe(viewLifecycleOwner) {
             when (it) {
-                is UnloadingBoxesState.Title ->
-                    (activity as NavToolbarTitleListener).updateTitle(it.toolbarTitle)
                 is UnloadingBoxesState.BoxesComplete -> initBoxes(it.boxes)
                 UnloadingBoxesState.BoxesEmpty -> TODO()
             }

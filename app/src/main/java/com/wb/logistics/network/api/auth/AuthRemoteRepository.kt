@@ -6,7 +6,7 @@ import com.wb.logistics.network.api.auth.response.StatisticsResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 
-interface AuthRepository {
+interface AuthRemoteRepository {
 
     fun authByPhoneOrPassword(
         password: String,

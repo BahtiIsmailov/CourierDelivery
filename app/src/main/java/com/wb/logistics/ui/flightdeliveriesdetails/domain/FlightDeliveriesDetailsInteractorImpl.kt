@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.flightdeliveriesdetails.domain
 
-import com.wb.logistics.network.api.app.AppRepository
+import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Single
@@ -8,13 +8,13 @@ import io.reactivex.Single
 class FlightDeliveriesDetailsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
-    private val appRepository: AppRepository,
+    private val appLocalRepository: AppLocalRepository
 ) : FlightDeliveriesDetailsInteractor {
 
     override fun getUnloadedAndReturnBoxesGroupByOffice(dstOfficeId: Int): Single<UnloadedAndReturnBoxesGroupByOffice> {
         return Single.zip(
-            appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId).firstOrError(),
-            appRepository.groupByDstAddressReturnBox(dstOfficeId),
+            appLocalRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId).firstOrError(),
+            appLocalRepository.groupByDstAddressReturnBox(dstOfficeId),
             { unloadedBoxes, returnBoxes ->
                 UnloadedAndReturnBoxesGroupByOffice(unloadedBoxes, returnBoxes)
             }

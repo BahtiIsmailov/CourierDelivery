@@ -57,7 +57,10 @@ class UnloadingReturnBoxesViewModel(
             timeFormatter.format(date, TimeFormatType.ONLY_DATE) + "\u2022" + timeFormatter.format(
                 date,
                 TimeFormatType.ONLY_TIME)
-        UnloadingReturnBoxesItem(singleIncrement(index), item.barcode, timeFormat, false)
+        UnloadingReturnBoxesItem(singleIncrement(index),
+            item.barcode,
+            timeFormat,
+            false)
     }
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }

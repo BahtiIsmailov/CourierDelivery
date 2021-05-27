@@ -5,37 +5,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/delivery_flight_background">
+    android:background="@color/delivery_background">
 
-    <LinearLayout
+    <com.wb.logistics.views.WrapContentListView
+        android:id="@+id/boxes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginRight="10dp"
-        android:orientation="vertical"
+        android:layout_marginTop="12dp"
+        android:divider="@drawable/divider_line"
+        android:dividerHeight="1dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_button"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/BaseRegularLightText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/unloading_boxes_title_list" />
-
-        <com.wb.logistics.views.WrapContentListView
-            android:id="@+id/boxes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            tools:listitem="@layout/unloading_boxes_legend" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/unloading_boxes_legend" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/complete"

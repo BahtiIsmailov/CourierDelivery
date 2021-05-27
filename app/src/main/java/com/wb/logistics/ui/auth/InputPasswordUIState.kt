@@ -12,4 +12,5 @@ sealed class InputPasswordUIState {
     object AuthProcess : InputPasswordUIState()
     object AuthComplete : InputPasswordUIState()
     data class Error(val message: String) : InputPasswordUIState()
+
 }

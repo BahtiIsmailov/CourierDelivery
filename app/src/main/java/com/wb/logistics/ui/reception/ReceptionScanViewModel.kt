@@ -24,10 +24,12 @@ class ReceptionScanViewModel(
         SingleLiveEvent<ReceptionScanNavAction>()
     val navigationEvent: LiveData<ReceptionScanNavAction>
         get() = _navigationEvent
+
     private val _toastEvent =
         SingleLiveEvent<ReceptionScanToastState<Nothing>>()
     val toastEvent: LiveData<ReceptionScanToastState<Nothing>>
         get() = _toastEvent
+
     private val _beepEvent =
         SingleLiveEvent<ReceptionScanBeepState<Nothing>>()
     val beepEvent: LiveData<ReceptionScanBeepState<Nothing>>

@@ -17,7 +17,9 @@ interface UnloadingInteractor {
 
     fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>>
 
-    fun observeUnloadedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>>
+    fun observeUnloadedBoxes(dstOfficeId: Int): Observable<List<UnloadedBoxEntity>>
+
+    fun observeUnloadedAndAttachedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>>
 
     fun observeReturnBoxes(dstOfficeId: Int): Observable<List<ReturnBoxEntity>>
 

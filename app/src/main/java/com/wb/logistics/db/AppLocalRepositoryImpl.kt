@@ -18,13 +18,13 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
-class LocalRepositoryImpl(
+class AppLocalRepositoryImpl(
     private val flightDao: FlightDao,
     private val attachedBoxDao: AttachedBoxDao,
     private val unloadingBox: UnloadingBoxDao,
     private val returnBoxDao: ReturnBoxDao,
     private val dcUnloadingBox: DcUnloadingBoxDao,
-) : LocalRepository {
+) : AppLocalRepository {
 
     override fun saveFlight(
         flightEntity: FlightEntity,
@@ -106,7 +106,7 @@ class LocalRepositoryImpl(
         return flightDao.insertMatchingBoxes(matchingBoxes)
     }
 
-    override fun findMatchBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>> {
+    override fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>> {
         return flightDao.findMatchingBox(barcode)
             .map<SuccessOrEmptyData<MatchingBoxEntity>> { SuccessOrEmptyData.Success(it) }
             .onErrorReturn { SuccessOrEmptyData.Empty() }
@@ -131,7 +131,7 @@ class LocalRepositoryImpl(
         return attachedBoxDao.observeAttachedBox()
     }
 
-    override fun observeFilterByOfficeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
+    override fun observeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
         return attachedBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
     }
 

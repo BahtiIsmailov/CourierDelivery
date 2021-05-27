@@ -23,17 +23,21 @@ class UnloadingBoxesViewModel(
         get() = _navigateToBack
 
     init {
-
-        _boxesState.value = UnloadingBoxesState.Title("Список для выгрузки")
-
-        addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
-            .switchMap {
-                Observable.fromIterable(it.withIndex())
-                    .map { "" + (it.index + 1) + ". " + it.value.barcode }.toList().toObservable()
+        addSubscription(interactor.observeUnloadedBoxes(parameters.dstOfficeId)
+            .switchMap { list ->
+                Observable.fromIterable(list.withIndex())
+                    .map {
+                        with(it) {
+                            resourceProvider.getNumericBarcode(index + 1, value.barcode)
+                        }
+                    }
+                    .toList()
+                    .toObservable()
             }
             .subscribe {
-                _boxesState.value = if (it.isEmpty()) UnloadingBoxesState.BoxesEmpty
-                else UnloadingBoxesState.BoxesComplete(it)
+                _boxesState.value =
+                    if (it.isEmpty()) UnloadingBoxesState.BoxesEmpty
+                    else UnloadingBoxesState.BoxesComplete(it)
             })
     }
 

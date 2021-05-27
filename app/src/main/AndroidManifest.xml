@@ -22,7 +22,7 @@
         <activity
             android:name=".ui.splash.AppActivity"
             android:screenOrientation="locked"
-            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar.Bridge"
+            android:theme="@style/Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

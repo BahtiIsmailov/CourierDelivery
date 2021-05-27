@@ -12,11 +12,11 @@ import com.wb.logistics.network.token.TokenManager
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class AuthRepositoryImpl(
+class AuthRemoteRepositoryImpl(
     private val authApi: AuthApi,
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
-) : AuthRepository {
+) : AuthRemoteRepository {
 
     override fun authByPhoneOrPassword(
         password: String, phone: String, useSMS: Boolean,

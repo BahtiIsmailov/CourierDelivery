@@ -106,7 +106,7 @@ class UnloadingScanViewModel(
     }
 
     private fun observeUnloadedBoxes() {
-        addSubscription(interactor.observeUnloadedBoxes(parameters.dstOfficeId).subscribe({
+        addSubscription(interactor.observeUnloadedAndAttachedBoxes(parameters.dstOfficeId).subscribe({
             val uploadedList = it.first
             val listAttached = it.second
             val accepted = "" + uploadedList.size + "/" + (listAttached.size + uploadedList.size)

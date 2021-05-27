@@ -1,14 +1,14 @@
 package com.wb.logistics.ui.auth.domain
 
 import com.jakewharton.rxbinding3.InitialValueObservable
-import com.wb.logistics.network.api.auth.AuthRepository
+import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 
 class CreatePasswordInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val repository: AuthRepository
+    private val repository: AuthRemoteRepository
 ) : CreatePasswordInteractor {
     override fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
         return observable.map { it.toString() }

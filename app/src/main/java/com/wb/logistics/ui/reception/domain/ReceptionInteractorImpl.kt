@@ -1,5 +1,6 @@
 package com.wb.logistics.ui.reception.domain
 
+import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
@@ -8,8 +9,9 @@ import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEnti
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxCurrentOfficeEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.network.api.app.AppRepository
+import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
+import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.utils.LogUtils
@@ -21,8 +23,10 @@ import io.reactivex.subjects.PublishSubject
 
 class ReceptionInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val appRepository: AppRepository,
+    private val appRemoteRepository: AppRemoteRepository,
+    private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
+    private val timeManager: TimeManager
 ) : ReceptionInteractor {
 
     private val actionBarcodeScannedSubject = PublishSubject.create<Pair<String, Boolean>>()
@@ -98,7 +102,7 @@ class ReceptionInteractorImpl(
         matchingBox: SuccessOrEmptyData.Success<MatchingBoxEntity>,
         gate: Int,
     ): Observable<ScanBoxData> {
-        val updatedAt = appRepository.getOffsetLocalTime()
+        val updatedAt = timeManager.getOffsetLocalTime()
         val saveBoxScanned =
             saveBoxScanned(convertBoxScanned(flightId,
                 matchingBox.data,
@@ -118,10 +122,10 @@ class ReceptionInteractorImpl(
     }
 
     private fun sendBoxBalanceAwait(flightId: String) =
-        appRepository.flightBoxBalanceAwait()
+        appLocalRepository.flightBoxBalanceAwait()
             .flatMapCompletable { boxesBalanceAwait ->
                 Observable.fromIterable(boxesBalanceAwait).flatMapCompletable {
-                    loadBoxToBalanceRemote(flightId,
+                    warehouseBoxToBalanceRemote(flightId,
                         it.barcode,
                         it.isManualInput,
                         it.updatedAt,
@@ -152,7 +156,7 @@ class ReceptionInteractorImpl(
     }
 
     override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
-        return appRepository.findAttachedBoxes(checkedBoxes)
+        return appLocalRepository.findAttachedBoxes(checkedBoxes)
             .flatMapCompletable { flightBoxScanned ->
                 Observable.fromIterable(flightBoxScanned)
                     .flatMapCompletable {
@@ -163,7 +167,7 @@ class ReceptionInteractorImpl(
 
     private fun deleteAttachedBoxRemote(flightBoxScannedEntity: AttachedBoxEntity) =
         with(flightBoxScannedEntity) {
-            appRepository.removeBoxFromFlightRemote(
+            appRemoteRepository.removeBoxFromFlight(
                 flightId.toString(),
                 barcode,
                 isManualInput,
@@ -172,10 +176,10 @@ class ReceptionInteractorImpl(
         }
 
     private fun deleteAttachedBoxLocal(flightBoxScannedEntity: AttachedBoxEntity) =
-        appRepository.deleteAttachedBox(flightBoxScannedEntity).onErrorComplete()
+        appLocalRepository.deleteAttachedBox(flightBoxScannedEntity).onErrorComplete()
 
     private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity) =
-        appRepository.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity).onErrorComplete()
+        appLocalRepository.deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity).onErrorComplete()
 
     private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
         val barcodeScanned = param.first
@@ -194,19 +198,19 @@ class ReceptionInteractorImpl(
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun flight() = appRepository.readFlight()
+    private fun flight() = appLocalRepository.readFlight()
 
-    private fun findFlightBoxScanned(barcode: String) = appRepository.findAttachedBox(barcode)
+    private fun findFlightBoxScanned(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 
-    private fun findFlightBox(barcode: String) = appRepository.findMatchingBox(barcode)
+    private fun findFlightBox(barcode: String) = appLocalRepository.findMatchingBox(barcode)
 
-    private fun loadBoxToBalanceRemote(
+    private fun warehouseBoxToBalanceRemote(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
-    ) = appRepository.loadBoxToBalanceRemote(
+    ) = appRemoteRepository.warehouseBoxToBalance(
         flightId,
         barcode,
         isManualInput,
@@ -218,27 +222,28 @@ class ReceptionInteractorImpl(
         isManualInput: Boolean,
         currentOffice: Int,
         updatedAt: String,
-    ) = appRepository.saveFlightBoxBalanceAwait(
+    ) = appLocalRepository.saveFlightBoxBalanceAwait(
         AttachedBoxBalanceAwaitEntity(barcode,
             isManualInput,
             AttachedBoxCurrentOfficeEntity(currentOffice),
             updatedAt))
 
     private fun saveBoxScanned(flightBoxScanned: AttachedBoxEntity) =
-        appRepository.saveAttachedBox(flightBoxScanned)
+        appLocalRepository.saveAttachedBox(flightBoxScanned)
 
     private fun boxAdded(barcode: String, gate: String) =
         Single.just<ScanBoxData>(ScanBoxData.BoxAdded(barcode, gate))
 
-    private fun infoBox(barcode: String) = appRepository.boxInfo(barcode)
+    private fun infoBox(barcode: String) = appRemoteRepository.boxInfo(barcode)
 
     override fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>> {
-        return appRepository.observeAttachedBoxes().toObservable()
+        return appLocalRepository.observeAttachedBoxes().toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun readBoxesScanned(): Single<List<AttachedBoxEntity>> {
-        return appRepository.readAllAttachedBoxes().compose(rxSchedulerFactory.applySingleSchedulers())
+        return appLocalRepository.readAttachedBoxes()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun sendAwaitBoxes(): Single<Int> {
@@ -250,7 +255,7 @@ class ReceptionInteractorImpl(
         }
             .map { it.toString() }
             .flatMapCompletable { sendBoxBalanceAwait(it) }
-            .andThen(appRepository.flightBoxBalanceAwait().map { it.size })
+            .andThen(appLocalRepository.flightBoxBalanceAwait().map { it.size })
     }
 
     override fun addMockScannedBox(): Completable {

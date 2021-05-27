@@ -9,33 +9,33 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phone_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
         android:layout_marginTop="@dimen/auth_input_top_offset"
+        android:background="@drawable/border_input"
+        android:paddingLeft="24dp"
+        android:paddingTop="8dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="8dp"
         android:textColorHint="@color/colorOnSecondary"
-        app:boxBackgroundColor="@color/white"
-        app:boxStrokeColor="@color/colorOnSecondary"
         app:endIconDrawable="@drawable/ic_close_dialog"
         app:endIconMode="clear_text"
         app:endIconTint="@color/btn_clear_phone"
-        app:errorEnabled="true"
+        app:errorEnabled="false"
+        app:hintEnabled="false"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_number"
-            style="@style/InputPhoneOutlineBox"
+            style="@style/MediumRegularDarkText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:importantForAutofill="noExcludeDescendants"
             android:inputType="phone"
             android:maxLength="@integer/max_phone_string"
-            android:paddingStart="24dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:textCursorDrawable="@null"
-            tools:text="01234" />
+            tools:text="+7 (111) 111-11-11" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

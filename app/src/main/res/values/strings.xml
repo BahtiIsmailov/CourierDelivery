@@ -144,14 +144,14 @@
 
     <string name="unloading_scan_label" />
 
-    <string name="unloading_boxes_label">Список для выгрузки</string>
-    <string name="unloading_boxes_title_list">Коробки</string>
+    <string name="unloading_boxes_label">Выгруженные коробки</string>
     <string name="unloading_boxes_title">Выгружено</string>
     <string name="unloading_boxes_empty_count">0/0</string>
     <string name="unloading_boxes_return_title">Возврат</string>
     <string name="unloading_boxes_return_empty_count">-</string>
     <string name="unloading_boxes_info_box_unload">Выгрузите на ПВЗ</string>
     <string name="unloading_boxes_info_box_return">Погрузите в машину</string>
+    <string name="unloading_boxes_numeric_barcode">%1$d. %2$s</string>
 
     <string name="unloading_box_not_belong_point_toolbar_label">Не принадлежит ПВЗ</string>
     <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>

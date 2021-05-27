@@ -1,6 +1,6 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.network.api.app.RemoteAppRepository
+import com.wb.logistics.network.api.app.AppApi
 import com.wb.logistics.network.api.auth.AuthApi
 import com.wb.logistics.network.headers.RefreshTokenApi
 import com.wb.logistics.network.rest.RefreshTokenRetrofitFactory
@@ -18,8 +18,8 @@ val apiModule = module {
         return retrofitFactory.getApiInterface(RefreshTokenApi::class.java)
     }
 
-    fun provideAppApi(retrofitFactory: RetrofitFactory): RemoteAppRepository {
-        return retrofitFactory.getApiInterface(RemoteAppRepository::class.java)
+    fun provideAppApi(retrofitFactory: RetrofitFactory): AppApi {
+        return retrofitFactory.getApiInterface(AppApi::class.java)
     }
 
     single { provideAuthApi(get(named(AUTH_NAMED_RETROFIT))) }
