@@ -43,6 +43,7 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumber(phone: String) {
         val disposable = authRepository.checkExistPhone(phone.filter { it.isDigit() })
+            .compose(rxSchedulerFactory.applySingleSchedulers())
             .subscribe(
                 { fetchPhoneNumberComplete(it, phone) },
                 { fetchPhoneNumberError(it) }

@@ -11,17 +11,17 @@ import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResour
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationResourceProvider
-import com.wb.logistics.ui.nav.NavigationResourceProvider
 import com.wb.logistics.ui.reception.ReceptionScanResourceProvider
 import com.wb.logistics.ui.scanner.ScannerResourceProvider
+import com.wb.logistics.ui.splash.AppResourceProvider
 import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
 import org.koin.dsl.module
 
 val resourceModule = module {
 
-    fun provideAppResourceProvider(application: Application): NavigationResourceProvider {
-        return NavigationResourceProvider(application)
+    fun provideAppResourceProvider(application: Application): AppResourceProvider {
+        return AppResourceProvider(application)
     }
 
     fun provideFlightResourceProvider(application: Application): FlightsResourceProvider {

@@ -1,10 +1,15 @@
 package com.wb.logistics.network.token
 
 import com.wb.logistics.app.AppPreffsKeys
+import com.wb.logistics.app.VERSION_API
 import com.wb.logistics.network.api.auth.entity.TokenEntity
 import com.wb.logistics.utils.prefs.SharedWorker
 
 class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
+
+    override fun apiVersion(): String {
+        return VERSION_API
+    }
 
     override fun saveToken(token: TokenEntity) {
         worker.save(AppPreffsKeys.TOKEN_KEY, token)

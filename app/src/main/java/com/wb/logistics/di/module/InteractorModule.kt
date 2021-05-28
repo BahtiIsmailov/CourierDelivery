@@ -28,8 +28,8 @@ import com.wb.logistics.ui.reception.domain.ReceptionInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
-import com.wb.logistics.ui.splash.domain.NavigationInteractor
-import com.wb.logistics.ui.splash.domain.NavigationInteractorImpl
+import com.wb.logistics.ui.splash.domain.AppInteractor
+import com.wb.logistics.ui.splash.domain.AppInteractorImpl
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
@@ -63,8 +63,8 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         authRepository: AuthRemoteRepository,
-    ): NavigationInteractor {
-        return NavigationInteractorImpl(rxSchedulerFactory,
+    ): AppInteractor {
+        return AppInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
             authRepository)
     }

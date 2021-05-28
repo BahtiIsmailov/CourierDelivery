@@ -1,3 +1,3 @@
 package com.wb.logistics.network.api.app.remote.flightsstatus
 
-data class StatusOfficeLocationRemote(val id: Int)
+data class StatusOfficeLocationEntity(val id: Int)

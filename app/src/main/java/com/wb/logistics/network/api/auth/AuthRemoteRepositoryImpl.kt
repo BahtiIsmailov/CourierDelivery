@@ -7,14 +7,12 @@ import com.wb.logistics.network.api.auth.query.PasswordCheckQuery
 import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
 import com.wb.logistics.network.api.auth.response.StatisticsResponse
-import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TokenManager
 import io.reactivex.Completable
 import io.reactivex.Single
 
 class AuthRemoteRepositoryImpl(
     private val authApi: AuthApi,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
 ) : AuthRemoteRepository {
 
@@ -22,7 +20,7 @@ class AuthRemoteRepositoryImpl(
         password: String, phone: String, useSMS: Boolean,
     ): Completable {
         val requestBody = AuthByPhoneOrPasswordQuery(phone, password, useSMS)
-        val auth = authApi.authByPhoneOrPassword(requestBody)
+        val auth = authApi.authByPhoneOrPassword(tokenManager.apiVersion(), requestBody)
             .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
             .doOnSuccess { saveToken(it) }
         return Completable.fromSingle(auth)
@@ -33,13 +31,11 @@ class AuthRemoteRepositoryImpl(
     }
 
     override fun checkExistPhone(phone: String): Single<CheckExistPhoneResponse> {
-        return authApi.checkExistPhone(phone)
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+        return authApi.checkExistPhone(tokenManager.apiVersion(), phone)
     }
 
     override fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse> {
-        return authApi.sendTmpPassword(phone)
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+        return authApi.sendTmpPassword(tokenManager.apiVersion(), phone)
     }
 
     override fun changePasswordBySmsCode(
@@ -48,26 +44,24 @@ class AuthRemoteRepositoryImpl(
         tmpPassword: String,
     ): Completable {
         val requestBody = ChangePasswordBySmsCodeQuery(password, tmpPassword)
-        return authApi.changePasswordBySmsCode(
-            phone, requestBody
-        ).compose(rxSchedulerFactory.applyCompletableSchedulers())
+        return authApi.changePasswordBySmsCode(tokenManager.apiVersion(), phone, requestBody)
     }
 
     override fun passwordCheck(
         phone: String,
         tmpPassword: String,
     ): Completable {
-        return authApi.passwordCheck(phone, PasswordCheckQuery(tmpPassword))
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        return authApi.passwordCheck(tokenManager.apiVersion(),
+            phone,
+            PasswordCheckQuery(tmpPassword))
     }
 
     override fun statistics(): Single<StatisticsResponse> {
-        return authApi.statistics().compose(rxSchedulerFactory.applySingleSchedulers())
+        return authApi.statistics(tokenManager.apiVersion())
     }
 
     override fun userInfo(): Single<Pair<String, String>> {
         return Single.just(Pair(tokenManager.userName(), tokenManager.userCompany()))
-            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun clearToken() {

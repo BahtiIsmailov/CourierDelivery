@@ -13,34 +13,41 @@ import retrofit2.http.*
 
 interface AuthApi {
 
-    @POST("/api/v1/auth")
+    @POST("{version}/auth")
     fun authByPhoneOrPassword(
-        @Body authByPhoneOrPasswordQuery: AuthByPhoneOrPasswordQuery
+        @Path(value = "version", encoded = true) version: String,
+        @Body authByPhoneOrPasswordQuery: AuthByPhoneOrPasswordQuery,
     ): Single<AuthResponse>
 
-    @GET("/api/v1/auth/{phone}")
+    @GET("{version}/auth/{phone}")
     fun checkExistPhone(
-        @Path("phone") phone: String
+        @Path(value = "version", encoded = true) version: String,
+        @Path("phone") phone: String,
     ): Single<CheckExistPhoneResponse>
 
-    @GET("/api/v1/auth/{phone}/password")
+    @GET("{version}/auth/{phone}/password")
     fun sendTmpPassword(
-        @Path("phone") phone: String
+        @Path(value = "version", encoded = true) version: String,
+        @Path("phone") phone: String,
     ): Single<RemainingAttemptsResponse>
 
-    @PUT("/api/v1/auth/{phone}/password")
+    @PUT("{version}/auth/{phone}/password")
     fun changePasswordBySmsCode(
+        @Path(value = "version", encoded = true) version: String,
         @Path("phone") phone: String,
-        @Body changePasswordBySmsCodeQuery: ChangePasswordBySmsCodeQuery
+        @Body changePasswordBySmsCodeQuery: ChangePasswordBySmsCodeQuery,
     ): Completable
 
-    @POST("/api/v1/auth/{phone}/password/check")
+    @POST("{version}/auth/{phone}/password/check")
     fun passwordCheck(
+        @Path(value = "version", encoded = true) version: String,
         @Path("phone") phone: String,
-        @Body passwordCheckQuery: PasswordCheckQuery
+        @Body passwordCheckQuery: PasswordCheckQuery,
     ): Completable
 
-    @GET("/api/v1/statistics")
-    fun statistics(): Single<StatisticsResponse>
+    @GET("{version}/statistics")
+    fun statistics(
+        @Path(value = "version", encoded = true) version: String,
+    ): Single<StatisticsResponse>
 
 }

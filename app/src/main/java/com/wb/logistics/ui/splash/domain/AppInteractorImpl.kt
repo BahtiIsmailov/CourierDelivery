@@ -6,13 +6,13 @@ import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Observable
 import io.reactivex.Single
 
-class NavigationInteractorImpl(
+class AppInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val repository: AuthRemoteRepository,
-) : NavigationInteractor {
+) : AppInteractor {
     override fun sessionInfo(): Single<Pair<String, String>> {
-        return repository.userInfo()
+        return repository.userInfo().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun isNetworkConnected(): Observable<Boolean> {

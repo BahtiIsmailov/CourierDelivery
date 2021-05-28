@@ -14,14 +14,15 @@ import java.util.concurrent.TimeUnit
 
 class TemporaryPasswordInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val repository: AuthRemoteRepository
+    private val repository: AuthRemoteRepository,
 ) : TemporaryPasswordInteractor {
     private val timerStates: BehaviorSubject<TimerState>
     private var timerDisposable: Disposable? = null
     private var counterCheckAttempt = 0
     private var countCheckAttempt = 0
+
     override fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse> {
-        return repository.sendTmpPassword(phone)
+        return repository.sendTmpPassword(phone).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun checkPassword(phone: String, tmpPassword: String): Completable {

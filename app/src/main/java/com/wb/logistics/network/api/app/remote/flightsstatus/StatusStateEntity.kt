@@ -1,6 +1,6 @@
 package com.wb.logistics.network.api.app.remote.flightsstatus
 
-data class StatusStateRemote(
+data class StatusStateEntity(
     val status: String,
-    val location: StatusLocationRemote,
+    val location: StatusLocationEntity,
 )

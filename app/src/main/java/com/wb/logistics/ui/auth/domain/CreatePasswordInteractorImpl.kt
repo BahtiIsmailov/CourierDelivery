@@ -24,7 +24,7 @@ class CreatePasswordInteractorImpl(
     ): Completable {
         val changePassword = repository.changePasswordBySmsCode(phone, password, tmpPassword)
         val authByPassword = repository.authByPhoneOrPassword(phone, password, false)
-        return changePassword.andThen(authByPassword)
+        return changePassword.andThen(authByPassword).compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     companion object {

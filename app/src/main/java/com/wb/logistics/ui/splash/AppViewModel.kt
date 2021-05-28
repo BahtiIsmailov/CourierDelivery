@@ -3,15 +3,14 @@ package com.wb.logistics.ui.splash
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.nav.NavigationResourceProvider
-import com.wb.logistics.ui.splash.domain.NavigationInteractor
+import com.wb.logistics.ui.splash.domain.AppInteractor
 import com.wb.logistics.utils.managers.DeviceManager
 import io.reactivex.disposables.CompositeDisposable
 
 class AppViewModel(
     compositeDisposable: CompositeDisposable,
-    private val interactor: NavigationInteractor,
-    private val resourceProvider: NavigationResourceProvider,
+    private val interactor: AppInteractor,
+    private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager
 
     ) : NetworkViewModel(compositeDisposable) {

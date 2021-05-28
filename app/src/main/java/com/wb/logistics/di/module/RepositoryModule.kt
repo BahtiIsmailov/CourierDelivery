@@ -14,7 +14,6 @@ import com.wb.logistics.network.headers.RefreshTokenRepository
 import com.wb.logistics.network.headers.RefreshTokenRepositoryImpl
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepositoryImpl
-import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.ui.reception.data.ReceptionApi
 import com.wb.logistics.ui.reception.data.ReceptionDao
@@ -27,14 +26,13 @@ val deliveryRepositoryModule = module {
 
     fun provideAuthRemoteRepository(
         api: AuthApi,
-        rxSchedulerFactory: RxSchedulerFactory,
         tokenManager: TokenManager,
     ): AuthRemoteRepository {
-        return AuthRemoteRepositoryImpl(api, rxSchedulerFactory, tokenManager)
+        return AuthRemoteRepositoryImpl(api, tokenManager)
     }
 
-    fun provideAppRemoteRepository(api: AppApi): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(api)
+    fun provideAppRemoteRepository(api: AppApi, tokenManager: TokenManager): AppRemoteRepository {
+        return AppRemoteRepositoryImpl(api, tokenManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -70,8 +68,8 @@ val deliveryRepositoryModule = module {
         return NetworkMonitorRepositoryImpl()
     }
 
-    single { provideAuthRemoteRepository(get(), get(), get()) }
-    single { provideAppRemoteRepository(get()) }
+    single { provideAuthRemoteRepository(get(), get()) }
+    single { provideAppRemoteRepository(get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get()) }
     single { provideReceptionRepository(get(), get()) }

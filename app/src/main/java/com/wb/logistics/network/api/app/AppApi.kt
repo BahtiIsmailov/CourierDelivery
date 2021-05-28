@@ -7,6 +7,7 @@ import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoRemote
 import com.wb.logistics.network.api.app.remote.flight.FlightRemote
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScannedRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusRemote
+import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
@@ -17,63 +18,83 @@ import retrofit2.http.*
 
 interface AppApi {
 
-    @GET("/api/v1/flight-statuses")
-    fun flightStatuses(): Single<FlightStatusesRemote>
+    @GET("{version}/flight")
+    fun flight(
+        @Path(value = "version", encoded = true) version: String,
+    ): Single<FlightRemote?>
 
-    @GET("/api/v1/flight")
-    fun flight(): Single<FlightRemote?>
+    @GET("{version}/flights/{flightID}/boxes")
+    fun boxesFromFlight(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+    ): Single<BoxesRemote>
 
-    @GET("/api/v1/flights/{flightID}/boxes")
-    fun boxesFromFlight(@Path("flightID") flightID: String): Single<BoxesRemote>
+    @GET("{version}/boxes/{barcode}")
+    fun boxInfo(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("barcode") barcode: String,
+    ): Single<BoxInfoRemote>
 
-    @GET("/api/v1/boxes/{barcode}")
-    fun boxInfo(@Path("barcode") barcode: String): Single<BoxInfoRemote>
+    @GET("{version}/flights/{flightID}/matching-boxes")
+    fun matchingBoxes(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+    ): Single<MatchingBoxesRemote>
 
-    @GET("/api/v1/flights/{flightID}/matching-boxes")
-    fun matchingBoxes(@Path("flightID") flightID: String): Single<MatchingBoxesRemote>
-
-    @POST("/api/v1/flights/{flightID}/warehouse/boxes")
+    @POST("{version}/flights/{flightID}/warehouse/boxes")
     fun warehouseBoxToBalance(
+        @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: FlightBoxScannedRemote,
     ): Completable
 
-    @POST("/api/v1/flights/{flightID}/pvz/boxes")
+    @POST("{version}/flights/{flightID}/pvz/boxes")
     fun pvzBoxToBalance(
+        @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: FlightBoxScannedRemote,
     ): Completable
 
-    @HTTP(method = "DELETE", path = "/api/v1/flights/{flightID}/boxes/{barcode}", hasBody = true)
+    @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes/{barcode}", hasBody = true)
     fun deleteBoxFromFlight(
+        @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Path("barcode") barcode: String,
         @Body box: BoxDeleteFromFlightRemote,
     ): Completable
 
-    @PUT("/api/v1/flight-statuses")
-    fun getFlightStatus(): Single<StatusesStateRemote>
+    @PUT("{version}/flight-statuses")
+    fun getFlightStatus(
+        @Path(value = "version", encoded = true) version: String,
+    ): Single<StatusesStateRemote>
 
-    @PUT("/api/v1/flights/{flightID}/boxes/{barcode}")
+    @PUT("{version}/flights/{flightID}/boxes/{barcode}")
     fun removeFromBalance(
+        @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Path("barcode") barcode: String,
         @Body box: PutBoxFromFlightRemote,
     ): Completable
 
-    @PUT("/api/v1/flights/{flightID}/status")
-    fun putStatus(
+    @GET("{version}/flight-statuses")
+    fun flightStatuses(
+        @Path(value = "version", encoded = true) version: String,
+    ): Single<FlightStatusesRemote>
+
+    @PUT("{version}/flights/{flightID}/status")
+    fun putFlightStatus(
+        @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body statusRemote: StatusRemote,
     ): Completable
 
-    @GET("/api/v1/flights/{flightID}/status")
-    fun getFlightsStatus(
+    @GET("{version}/flights/{flightID}/status")
+    fun getFlightStatus(
+        @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-        @Body statusesStateRemote: StatusesStateRemote,
-    )
+    ): Single<StatusStateRemote>
 
-    @GET("/api/v1/time")
-    fun getTime(): Single<TimeRemote>
+    @GET("{version}/time")
+    fun getTime(@Path(value = "version", encoded = true) version: String): Single<TimeRemote>
 
 }

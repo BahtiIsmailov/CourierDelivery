@@ -3,6 +3,7 @@ package com.wb.logistics.network.token
 import com.wb.logistics.network.api.auth.entity.TokenEntity
 
 interface TokenManager {
+    fun apiVersion(): String
     fun saveToken(token: TokenEntity)
     fun bearerToken(): String
     fun bearerRefreshToken(): String
