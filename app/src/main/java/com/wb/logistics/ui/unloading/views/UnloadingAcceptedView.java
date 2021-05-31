@@ -2,7 +2,6 @@ package com.wb.logistics.ui.unloading.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ public class UnloadingAcceptedView extends FrameLayout {
 
     private final static String DEFAULT_COUNT_BOX_TEXT = "0/0";
     private final static int DEFAULT_CURRENT_STATE = UnloadingAcceptedMode.EMPTY;
-    private final static int DEFAULT_COLOR = Color.WHITE;
 
     private int enableColor;
     private int disableColor;
@@ -96,16 +94,12 @@ public class UnloadingAcceptedView extends FrameLayout {
             case UnloadingAcceptedMode.ACTIVE:
                 containsCompleteActiveState();
                 break;
-//            case UnloadingAcceptedMode.CONTAINS_HAS_ADDED:
-//                containsHasAddedState();
-//                break;
         }
     }
 
     private void emptyState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
         countBoxTextView.setText(getResources().getString(R.string.unloading_boxes_empty_count));
-
         redoIcon.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);
         listBoxTextView.setVisibility(INVISIBLE);
     }
@@ -114,7 +108,7 @@ public class UnloadingAcceptedView extends FrameLayout {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
         redoIcon.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
-        listBoxTextView.setVisibility(VISIBLE);
+        listBoxTextView.setVisibility(INVISIBLE);
     }
 
     private void containsCompleteActiveState() {
@@ -123,18 +117,6 @@ public class UnloadingAcceptedView extends FrameLayout {
         countBoxTextView.setText(countBox);
         listBoxTextView.setVisibility(VISIBLE);
     }
-
-//    private void containsDenyState() {
-//        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_trans));
-//        countBoxTextView.setText(countBox);
-//        listBoxTextView.setVisibility(VISIBLE);
-//    }
-
-//    private void containsHasAddedState() {
-//        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_has_added_trans));
-//        countBoxTextView.setText(countBox);
-//        listBoxTextView.setVisibility(VISIBLE);
-//    }
 
     public void setCountBox(String countBox, int currentState) {
         this.countBox = countBox;

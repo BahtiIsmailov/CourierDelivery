@@ -14,4 +14,6 @@ interface DcForcedTerminationInteractor {
 
     fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
 
+    fun switchScreen(): Completable
+
 }

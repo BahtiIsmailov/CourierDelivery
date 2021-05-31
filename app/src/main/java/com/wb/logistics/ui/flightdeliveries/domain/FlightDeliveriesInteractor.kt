@@ -1,6 +1,7 @@
 package com.wb.logistics.ui.flightdeliveries.domain
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import io.reactivex.Completable
 import io.reactivex.Single
 
 interface FlightDeliveriesInteractor {
@@ -10,5 +11,7 @@ interface FlightDeliveriesInteractor {
     fun getAttachedBoxesGroupByOffice() : Single<List<AttachedBoxGroupByOfficeEntity>>
 
     fun getAttachedBoxes(): Single<Int>
+
+    fun switchScreen(): Completable
 
 }

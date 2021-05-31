@@ -5,6 +5,6 @@ import com.wb.logistics.R
 
 class ScannerResourceProvider(private val context: Context) {
 
-    fun getBarCodeBox(code: String) : String = context.getString(R.string.reception_code_box, code)
+    fun getBarCodeBox(code: String) : String = context.getString(R.string.dc_loading_code_box, code)
 
 }

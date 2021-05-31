@@ -16,8 +16,6 @@ interface AppRemoteRepository {
 
     fun boxInfo(barcode: String): Single<SuccessOrEmptyData<BoxInfoEntity>>
 
-    fun flightStatuses(): Single<FlightStatusesRemote>
-
     fun flight(): Single<FlightRemote?>
 
     fun time(): Single<TimeRemote>
@@ -54,11 +52,14 @@ interface AppRemoteRepository {
         currentOffice: Int,
     ): Completable
 
+    fun flightStatuses(): Single<FlightStatusesRemote>
+
     fun putFlightStatus(
         flightID: String,
         flightStatus: FlightStatus,
         officeId: Int,
-        isGetFromGPS: Boolean
+        isGetFromGPS: Boolean,
+        updatedAt: String
         ): Completable
 
     fun getFlightStatus(flightID: String): Single<StatusStateEntity>

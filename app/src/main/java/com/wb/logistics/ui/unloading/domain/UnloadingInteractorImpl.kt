@@ -1,17 +1,19 @@
 package com.wb.logistics.ui.unloading.domain
 
+import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnCurrentOfficeEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedCurrentOfficeEntity
-import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.network.api.app.AppRemoteRepository
+import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
 
@@ -21,6 +23,7 @@ class UnloadingInteractorImpl(
     private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
     private val timeManager: TimeManager,
+    private val screenManager: ScreenManager,
 ) : UnloadingInteractor {
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
@@ -68,21 +71,30 @@ class UnloadingInteractorImpl(
                             if (dstOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ
                                 // TODO: 27.04.2021 добавить коробку в базу
                                 val attachAt = findAttachedBox.data.updatedAt
-                                return@flatMap appLocalRepository.saveUnloadedBox(UnloadedBoxEntity(
-                                    flightId,
-                                    isManualInput,
-                                    barcodeScanned,
-                                    updatedAt,
-                                    attachAt,
-                                    UnloadedCurrentOfficeEntity(dstOfficeId)))
-
-                                    .andThen(removeBoxFromBalance(flightId.toString(), //снятие с баланса
+                                val saveUnloadedBox =
+                                    appLocalRepository.saveUnloadedBox(UnloadedBoxEntity(
+                                        flightId,
+                                        isManualInput,
+                                        barcodeScanned,
+                                        updatedAt,
+                                        attachAt,
+                                        UnloadedCurrentOfficeEntity(dstOfficeId)))
+                                val removeBoxFromBalance =
+                                    removeBoxFromBalance(flightId.toString(), //снятие с баланса
                                         data.barcode,
                                         isManualInput,
                                         updatedAt,
-                                        dstOfficeId))
-                                    .andThen(appLocalRepository.deleteAttachedBox(data))
-                                    .andThen(Observable.just(UnloadingData.BoxUnloadAdded(data.barcode)))
+                                        dstOfficeId)
+                                val deleteAttachedBox = appLocalRepository.deleteAttachedBox(data)
+                                val boxUnloadAdded =
+                                    Observable.just(UnloadingData.BoxUnloadAdded(data.barcode))
+                                val switchScreen = switchScreenUnloading(dstOfficeId)
+
+                                return@flatMap saveUnloadedBox
+                                    .andThen(removeBoxFromBalance)
+                                    .andThen(deleteAttachedBox)
+                                    .andThen(switchScreen)
+                                    .andThen(boxUnloadAdded)
                             } else {
                                 return@flatMap Observable.just(UnloadingData.BoxDoesNotBelongPoint(
                                     data.barcode,
@@ -92,17 +104,21 @@ class UnloadingInteractorImpl(
                     }
 
                     findAttachedBox is SuccessOrEmptyData.Empty -> { //коробки нет в списке доставки - принятие на возврат
-                        return@flatMap saveReturnBox(flightId,
+                        val saveReturnBox = saveReturnBox(flightId,
                             isManualInput,
                             barcodeScanned,
                             updatedAt,
                             dstOfficeId)
-                            .andThen(pvzBoxToBalanceRemote(flightId.toString(),
-                                barcodeScanned,
-                                isManualInput,
-                                updatedAt,
-                                dstOfficeId))
-                            .andThen(Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned)))
+                        val pvzBoxToBalanceRemote = pvzBoxToBalanceRemote(flightId.toString(),
+                            barcodeScanned,
+                            isManualInput,
+                            updatedAt,
+                            dstOfficeId)
+                        val boxReturnAdded =
+                            Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned))
+
+                        return@flatMap saveReturnBox.andThen(pvzBoxToBalanceRemote)
+                            .andThen(boxReturnAdded)
                     }
                     else -> return@flatMap Observable.just(UnloadingData.Empty)
                 }
@@ -216,7 +232,8 @@ class UnloadingInteractorImpl(
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     override fun observeUnloadedAndAttachedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>> {
-        return Flowable.combineLatest(appLocalRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
+        return Flowable.combineLatest(appLocalRepository.observeUnloadedBoxesByDstOfficeId(
+            dstOfficeId),
             appLocalRepository.observeAttachedBoxes(dstOfficeId),
             { unloaded, attached -> Pair(unloaded, attached) })
             .toObservable()
@@ -233,8 +250,19 @@ class UnloadingInteractorImpl(
     }
 
     override fun completeUnloading(dstOfficeId: Int): Completable {
-        return appLocalRepository.changeFlightOfficeUnloading(dstOfficeId, true, "")
+        return switchScreenInTransit().andThen(appLocalRepository.changeFlightOfficeUnloading(
+            dstOfficeId,
+            true,
+            ""))
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun switchScreenInTransit(): Completable {
+        return screenManager.saveState(FlightStatus.INTRANSIT)
+    }
+
+    private fun switchScreenUnloading(dstOfficeId: Int): Completable {
+        return screenManager.saveState(FlightStatus.UNLOADING, dstOfficeId)
     }
 
 }

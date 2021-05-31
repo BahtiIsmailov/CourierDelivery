@@ -5,7 +5,7 @@
     android:layout_height="@dimen/button_progress_height">
 
     <Button
-        android:id="@+id/progress_button"
+        android:id="@+id/update"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"

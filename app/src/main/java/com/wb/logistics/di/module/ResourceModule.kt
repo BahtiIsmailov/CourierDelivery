@@ -4,14 +4,15 @@ import android.app.Application
 import com.wb.logistics.ui.auth.AuthResourceProvider
 import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsResourceProvider
 import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationResourceProvider
+import com.wb.logistics.ui.dcloading.DcLoadingScanResourceProvider
 import com.wb.logistics.ui.dcunloading.DcUnloadingScanResourceProvider
 import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
+import com.wb.logistics.ui.flightsempty.FlightsEmptyResourceProvider
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationResourceProvider
-import com.wb.logistics.ui.reception.ReceptionScanResourceProvider
 import com.wb.logistics.ui.scanner.ScannerResourceProvider
 import com.wb.logistics.ui.splash.AppResourceProvider
 import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
@@ -28,8 +29,12 @@ val resourceModule = module {
         return FlightsResourceProvider(application)
     }
 
-    fun provideReceptionResourceProvider(application: Application): ReceptionScanResourceProvider {
-        return ReceptionScanResourceProvider(application)
+    fun provideFlightEmptyResourceProvider(application: Application): FlightsEmptyResourceProvider {
+        return FlightsEmptyResourceProvider(application)
+    }
+
+    fun provideReceptionResourceProvider(application: Application): DcLoadingScanResourceProvider {
+        return DcLoadingScanResourceProvider(application)
     }
 
     fun provideFlightPickPointResourceProvider(application: Application): FlightPickPointResourceProvider {
@@ -82,6 +87,7 @@ val resourceModule = module {
 
     single { provideAppResourceProvider(get()) }
     single { provideFlightResourceProvider(get()) }
+    single { provideFlightEmptyResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }
     single { provideFlightPickPointResourceProvider(get()) }
     single { provideFlightDeliveriesResourceProvider(get()) }

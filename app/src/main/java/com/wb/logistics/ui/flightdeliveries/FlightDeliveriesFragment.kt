@@ -20,7 +20,6 @@ import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.splash.NavToolbarTitleListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
-import com.wb.logistics.ui.unloadingcongratulation.CongratulationParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FlightDeliveriesFragment : Fragment() {
@@ -78,11 +77,10 @@ class FlightDeliveriesFragment : Fragment() {
             when (state) {
                 is FlightDeliveriesUINavState.NavigateToUpload -> {
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToUnloadingScanFragment(
-                        UnloadingScanParameters(state.dstOfficeId, state.officeName)))
+                        UnloadingScanParameters(state.dstOfficeId)))
                 }
                 FlightDeliveriesUINavState.NavigateToCongratulation ->
-                    findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToCongratulationFragment(
-                        CongratulationParameters()))
+                    findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToCongratulationFragment())
                 is FlightDeliveriesUINavState.NavigateToDialogComplete -> showDialogReturnBalance(
                     state.description)
                 is FlightDeliveriesUINavState.NavigateToUnloadDetails ->
@@ -185,7 +183,7 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun showDialogReturnBalance(description: String) {
         val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.reception_return_dialog_title),
+            getString(R.string.dc_loading_return_dialog_title),
             description,
             getString(R.string.flight_deliveries_dialog_force_positive_button),
             getString(R.string.flight_deliveries_dialog_force_negative_button)

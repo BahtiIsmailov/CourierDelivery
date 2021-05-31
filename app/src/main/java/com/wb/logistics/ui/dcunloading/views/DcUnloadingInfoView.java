@@ -69,7 +69,7 @@ public class DcUnloadingInfoView extends FrameLayout {
     }
 
     private void initDefaultState() {
-        codeBox = getResources().getString(R.string.reception_code_pref_box);
+        codeBox = getResources().getString(R.string.dc_loading_code_pref_box);
         state = DEFAULT_STATE;
     }
 
@@ -85,7 +85,7 @@ public class DcUnloadingInfoView extends FrameLayout {
     }
 
     private void emptyState() {
-        barcode.setText(getResources().getString(R.string.reception_code_pref_box));
+        barcode.setText(getResources().getString(R.string.dc_loading_code_pref_box));
         status.setText(STATUS_BOX_EMPTY_TEXT);
     }
 

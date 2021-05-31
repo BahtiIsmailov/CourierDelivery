@@ -7,8 +7,7 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
-import com.wb.logistics.ui.splash.domain.ScreenManager
-import com.wb.logistics.ui.splash.domain.ScreenManagerState
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -29,6 +28,8 @@ class FlightDeliveriesViewModel(
     val stateUINav: LiveData<FlightDeliveriesUINavState>
         get() = _stateUINav
 
+    val bottomProgressEvent = MutableLiveData<Boolean>()
+
     val stateUIList = MutableLiveData<FlightDeliveriesUIListState>()
 
     private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
@@ -43,13 +44,9 @@ class FlightDeliveriesViewModel(
             .subscribe({ fetchFlightIdComplete(it) }, { fetchFlightIdError(it) }))
     }
 
-    private fun fetchFlightIdComplete(idFlight: Int) {
+    private fun fetchFlightIdComplete(flightId: Int) {
         _stateUIToolBar.value =
-            if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint) {
-                FlightDeliveriesUIToolbarState.Flight(resourceProvider.getFlightToolbar(idFlight))
-            } else {
-                FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbar(idFlight))
-            }
+            FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbar(flightId))
     }
 
     private fun fetchFlightIdError(throwable: Throwable) {
@@ -99,24 +96,33 @@ class FlightDeliveriesViewModel(
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
         if (item.isUnloading) {
-            _stateUINav.value = FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
-        } else {
-            screenManager.saveScreenState(ScreenManagerState.Unloading(item.officeId, item.officeName))
             _stateUINav.value =
-                FlightDeliveriesUINavState.NavigateToUpload(item.officeId, item.officeName)
+                FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
+        } else {
+            _stateUINav.value = FlightDeliveriesUINavState.NavigateToUpload(item.officeId)
         }
     }
 
     fun onCompleteClick() {
         addSubscription(interactor.getAttachedBoxes().subscribe({
             _stateUINav.value =
-                FlightDeliveriesUINavState.NavigateToDialogComplete(resourceProvider.getDescriptionDialog(it))
-            },
+                FlightDeliveriesUINavState.NavigateToDialogComplete(resourceProvider.getDescriptionDialog(
+                    it))
+        },
             {}))
     }
 
     fun onCompleteConfirm() {
-        _stateUINav.value = FlightDeliveriesUINavState.NavigateToCongratulation
+        bottomProgressEvent.value = true
+        addSubscription(interactor.switchScreen().subscribe(
+            {
+                _stateUINav.value = FlightDeliveriesUINavState.NavigateToCongratulation
+            },
+            {
+                // TODO: 31.05.2021 реализовать сообщение
+                bottomProgressEvent.value = false
+            }))
+
     }
 
 }

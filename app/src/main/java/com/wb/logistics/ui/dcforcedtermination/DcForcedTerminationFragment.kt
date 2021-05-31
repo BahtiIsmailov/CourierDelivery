@@ -54,6 +54,12 @@ class DcForcedTerminationFragment : Fragment() {
                     DcForcedTerminationFragmentDirections.actionDcForcedTerminationFragmentToDcUnloadingCongratulationFragment())
             }
         }
+
+        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
+            binding.complete.setState(
+                if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
+        }
+
     }
 
     private fun initListener() {

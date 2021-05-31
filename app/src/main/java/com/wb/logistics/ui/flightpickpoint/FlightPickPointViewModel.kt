@@ -7,8 +7,7 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractor
-import com.wb.logistics.ui.splash.domain.ScreenManager
-import com.wb.logistics.ui.splash.domain.ScreenManagerState
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -29,6 +28,8 @@ class FlightPickPointViewModel(
     val stateUINav: LiveData<FlightPickPointUINavState>
         get() = _stateUINav
 
+    val bottomProgressEvent = MutableLiveData<Boolean>()
+
     val stateUIList = MutableLiveData<FlightPickPointUIListState>()
 
     private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
@@ -39,8 +40,14 @@ class FlightPickPointViewModel(
                 _stateUINav.value = FlightPickPointUINavState.ShowDeliveryDialog
             }
             is FlightPickPointUIAction.GoToDeliveryConfirmClick -> {
-                screenManager.saveScreenState(ScreenManagerState.FlightDelivery)
-                _stateUINav.value = FlightPickPointUINavState.NavigateToDelivery
+                bottomProgressEvent.value = true
+                addSubscription(interactor.switchScreen().subscribe({
+                    _stateUINav.value = FlightPickPointUINavState.NavigateToDelivery
+                    bottomProgressEvent.value = false
+                }, {
+                    // TODO: 30.05.2021 реализовать сообщение
+                    bottomProgressEvent.value = false
+                }))
             }
         }
     }
@@ -55,13 +62,8 @@ class FlightPickPointViewModel(
             .subscribe({ fetchFlightIdComplete(it) }, { fetchFlightIdError(it) }))
     }
 
-    private fun fetchFlightIdComplete(idFlight: Int) {
-        _stateUIToolBar.value =
-            if (screenManager.readScreenState() == ScreenManagerState.FlightPickUpPoint) {
-                FlightPickPointUIToolbarState.Flight(resourceProvider.getFlightToolbar(idFlight))
-            } else {
-                FlightPickPointUIToolbarState.Delivery(resourceProvider.getDeliveryToolbar(idFlight))
-            }
+    private fun fetchFlightIdComplete(flightId: Int) {
+        _stateUIToolBar.value = FlightPickPointUIToolbarState.Flight(resourceProvider.getFlightToolbar(flightId))
     }
 
     private fun fetchFlightIdError(throwable: Throwable) {
@@ -72,8 +74,7 @@ class FlightPickPointViewModel(
         addSubscription(interactor.getAttachedBoxesGroupByOffice()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
-                val isEnabled = screenManager.readScreenState() == ScreenManagerState.FlightDelivery
-                Single.zip(build(boxes, isEnabled), count(boxes), { t1, t2 -> Pair(t1, t2) })
+                Single.zip(build(boxes, true), count(boxes), { t1, t2 -> Pair(t1, t2) })
             }
             .map {
                 FlightPickPointUIListState.ShowFlight(it.first,

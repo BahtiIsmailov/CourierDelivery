@@ -15,9 +15,6 @@ import com.wb.logistics.network.headers.RefreshTokenRepositoryImpl
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepositoryImpl
 import com.wb.logistics.network.token.TokenManager
-import com.wb.logistics.ui.reception.data.ReceptionApi
-import com.wb.logistics.ui.reception.data.ReceptionDao
-import com.wb.logistics.ui.reception.data.ReceptionRepository
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.ui.scanner.domain.ScannerRepositoryImpl
 import org.koin.dsl.module
@@ -56,10 +53,6 @@ val deliveryRepositoryModule = module {
             dcUnloadingBox)
     }
 
-    fun provideReceptionRepository(api: ReceptionApi, dao: ReceptionDao): ReceptionRepository {
-        return ReceptionRepository(api, dao)
-    }
-
     fun provideScannerRepository(): ScannerRepository {
         return ScannerRepositoryImpl()
     }
@@ -72,7 +65,6 @@ val deliveryRepositoryModule = module {
     single { provideAppRemoteRepository(get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get()) }
-    single { provideReceptionRepository(get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
 

@@ -18,6 +18,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightpickpoint.delegates.FlightPickPointDelegate
 import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FlightPickPointFragment : Fragment() {
@@ -94,6 +95,11 @@ class FlightPickPointFragment : Fragment() {
                     displayItems(state.items)
                 }
             }
+        }
+
+        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
+            binding.goToDelivery.setState(
+                if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
     }

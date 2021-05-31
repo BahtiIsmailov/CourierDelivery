@@ -48,7 +48,7 @@ public class ProgressButtonView extends FrameLayout {
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layoutView = inflater.inflate(R.layout.progress_button, this, false);
-        progressButton = layoutView.findViewById(R.id.progress_button);
+        progressButton = layoutView.findViewById(R.id.update);
         progressBar = layoutView.findViewById(R.id.progress_bar);
         addView(layoutView);
     }

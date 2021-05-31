@@ -52,7 +52,7 @@
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="12dp"
         android:background="?selectableItemBackground"
-        android:text="@string/reception_list"
+        android:text="@string/dc_loading_list"
         android:textColor="@color/text_clickable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

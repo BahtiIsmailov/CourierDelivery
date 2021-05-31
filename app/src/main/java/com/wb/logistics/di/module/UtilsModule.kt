@@ -3,14 +3,12 @@ package com.wb.logistics.di.module
 import android.app.Application
 import com.google.gson.Gson
 import com.wb.logistics.app.AppConfig
+import com.wb.logistics.db.AppLocalRepository
+import com.wb.logistics.network.api.app.AppRemoteRepository
+import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.network.token.TimeManagerImpl
-import com.wb.logistics.ui.splash.domain.ScreenManager
-import com.wb.logistics.ui.splash.domain.ScreenManagerImpl
-import com.wb.logistics.utils.managers.ConfigManager
-import com.wb.logistics.utils.managers.ConfigManagerImpl
-import com.wb.logistics.utils.managers.DeviceManager
-import com.wb.logistics.utils.managers.DeviceManagerImpl
+import com.wb.logistics.utils.managers.*
 import com.wb.logistics.utils.prefs.SharedWorker
 import com.wb.logistics.utils.prefs.SharedWorkerImpl
 import com.wb.logistics.utils.reader.ConfigReader
@@ -51,13 +49,22 @@ val utilsModule = module {
         return TimeFormatterImpl()
     }
 
-
     fun provideTimeManager(worker: SharedWorker, timeFormatter: TimeFormatter): TimeManager {
         return TimeManagerImpl(worker, timeFormatter)
     }
 
-    fun provideScreenManager(worker: SharedWorker): ScreenManager {
-        return ScreenManagerImpl(worker)
+    fun provideScreenManager(
+        worker: SharedWorker,
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        appLocalRepository: AppLocalRepository,
+        timeManager: TimeManager,
+    ): ScreenManager {
+        return ScreenManagerImpl(worker,
+            rxSchedulerFactory,
+            appRemoteRepository,
+            appLocalRepository,
+            timeManager)
     }
 
     single { provideSharedWorker(get(), get()) }
@@ -67,7 +74,6 @@ val utilsModule = module {
     single { provideConfigManager(get(), get()) }
     single { provideTimeFormatter() }
     single { provideTimeManager(get(), get()) }
-    single { provideScreenManager(get()) }
-
+    single { provideScreenManager(get(), get(), get(), get(), get()) }
 
 }

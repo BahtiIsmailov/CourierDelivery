@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.ui.splash.domain.ScreenManager
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class UnloadingScanViewModel(
@@ -141,7 +141,7 @@ class UnloadingScanViewModel(
 
     fun update() {
         _toolbarBackState.value = BackButtonState
-        _toolbarLabelState.value = Label(parameters.shortAddress)
+        _toolbarLabelState.value = Label("Address")
     }
 
     fun onBoxHandleInput(barcode: String) {
@@ -168,6 +168,7 @@ class UnloadingScanViewModel(
             .subscribe({
                 if (it.isEmpty()) {
                     addSubscription(interactor.completeUnloading(parameters.dstOfficeId).subscribe {
+                        // TODO: 31.05.2021 уточнить навигацию
                         _navigationEvent.value = UnloadingScanNavAction.NavigateToBack
                     })
                 } else _navigationEvent.value =

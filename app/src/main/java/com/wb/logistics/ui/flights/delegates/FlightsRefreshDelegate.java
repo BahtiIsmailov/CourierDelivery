@@ -44,7 +44,7 @@ public class FlightsRefreshDelegate extends BaseAdapterDelegate<FlightRefreshIte
     protected void onBind(@NonNull FlightRefreshItem item,
                           @NonNull EmptyViewHolder holder) {
         holder.binding.emptyFlightMessageText.setText(item.getMessage());
-        holder.binding.progressButton.setState(ProgressButtonMode.ENABLE);
+        holder.binding.update.setState(ProgressButtonMode.ENABLE);
     }
 
     class EmptyViewHolder extends RecyclerView.ViewHolder {
@@ -54,8 +54,8 @@ public class FlightsRefreshDelegate extends BaseAdapterDelegate<FlightRefreshIte
         private EmptyViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = FlightsLayoutRouteUpdateBinding.bind(itemView);
-            binding.progressButton.setOnClickListener(view -> {
-                binding.progressButton.setState(ProgressButtonMode.PROGRESS);
+            binding.update.setOnClickListener(view -> {
+                binding.update.setState(ProgressButtonMode.PROGRESS);
                 onRouteEmptyCallback.onUpdateRouteClick();
             });
 

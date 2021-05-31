@@ -6,13 +6,39 @@
     app:startDestination="@id/flightLoaderFragment">
 
     <fragment
+        android:id="@+id/flightLoaderFragment"
+        android:name="com.wb.logistics.ui.flightloader.FlightLoaderFragment"
+        android:label=""
+        tools:layout="@layout/flight_loader_fragment">
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightsEmptyFragment"
+            app:destination="@id/flightsEmptyFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightsFragment"
+            app:destination="@id/flightsFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_dcLoadingFragment"
+            app:destination="@id/dcLoadingFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightDeliveriesFragment"
+            app:destination="@id/flightDeliveriesFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_unloadingScanFragment"
+            app:destination="@id/unloadingScanFragment" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_congratulationFragment"
+            app:destination="@id/congratulationFragment" />
+
+    </fragment>
+
+    <fragment
         android:id="@+id/flightsFragment"
         android:name="com.wb.logistics.ui.flights.FlightsFragment"
         android:label="@string/flights_label"
         tools:layout="@layout/flights_fragment">
         <action
             android:id="@+id/action_flightsFragment_to_receptionScanFragment"
-            app:destination="@id/receptionFragment"
+            app:destination="@id/dcLoadingFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -22,10 +48,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/receptionFragment"
-        android:name="com.wb.logistics.ui.reception.ReceptionFragment"
-        android:label="@string/reception_label"
-        tools:layout="@layout/reception_scan_fragment">
+        android:id="@+id/dcLoadingFragment"
+        android:name="com.wb.logistics.ui.dcloading.DcLoadingFragment"
+        android:label="@string/dc_loading_label"
+        tools:layout="@layout/dc_loading_scan_fragment">
 
         <deepLink
             android:id="@+id/reception_scan_deepLink"
@@ -52,20 +78,20 @@
 
     <fragment
         android:id="@+id/receptionBoxNotBelongFragment"
-        android:name="com.wb.logistics.ui.reception.ReceptionBoxNotBelongFragment"
-        android:label="@string/reception_box_not_belong_label"
-        tools:layout="@layout/reception_box_not_belong_fragment">
+        android:name="com.wb.logistics.ui.dcloading.DcLoadingBoxNotBelongFragment"
+        android:label="@string/dc_loading_box_not_belong_label"
+        tools:layout="@layout/dc_loading_box_not_belong_fragment">
         <argument
             android:name="box_not_belong_key"
-            app:argType="com.wb.logistics.ui.reception.ReceptionBoxNotBelongParameters"
+            app:argType="com.wb.logistics.ui.dcloading.DcLoadingBoxNotBelongParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/receptionBoxesFragment"
-        android:name="com.wb.logistics.ui.reception.ReceptionBoxesFragment"
-        android:label="@string/reception_boxes_label"
-        tools:layout="@layout/reception_boxes_fragment" />
+        android:name="com.wb.logistics.ui.dcloading.DcLoadingBoxesFragment"
+        android:label="@string/dc_loading_boxes_label"
+        tools:layout="@layout/dc_loading_boxes_fragment" />
 
     <fragment
         android:id="@+id/flightPickPointFragment"
@@ -185,31 +211,6 @@
     </dialog>
 
     <fragment
-        android:id="@+id/flightLoaderFragment"
-        android:name="com.wb.logistics.ui.flights.FlightLoaderFragment"
-        android:label=""
-        tools:layout="@layout/flight_loader_fragment">
-        <action
-            android:id="@+id/action_flightLoaderFragment_to_unloadingScanFragment"
-            app:destination="@id/unloadingScanFragment" />
-        <action
-            android:id="@+id/action_flightLoaderFragment_to_flightDeliveriesFragment"
-            app:destination="@id/flightDeliveriesFragment" />
-        <action
-            android:id="@+id/action_flightLoaderFragment_to_flightsFragment"
-            app:destination="@id/flightsFragment" />
-        <action
-            android:id="@+id/action_flightLoaderFragment_to_receptionFragment"
-            app:destination="@id/receptionFragment" />
-        <action
-            android:id="@+id/action_flightLoaderFragment_to_flightPickPointFragment"
-            app:destination="@id/flightPickPointFragment" />
-        <action
-            android:id="@+id/action_flightLoaderFragment_to_dcUnloadingScanFragment"
-            app:destination="@id/dcUnloadingScanFragment" />
-    </fragment>
-
-    <fragment
         android:id="@+id/forcedTerminationFragment"
         android:name="com.wb.logistics.ui.forcedtermination.ForcedTerminationFragment"
         android:label="@string/force_termination_label"
@@ -231,10 +232,6 @@
         android:name="com.wb.logistics.ui.unloadingcongratulation.CongratulationFragment"
         android:label="@string/congratulation_label"
         tools:layout="@layout/unloading_congratulation_fragment">
-        <argument
-            android:name="congratulation_key"
-            app:argType="com.wb.logistics.ui.unloadingcongratulation.CongratulationParameters"
-            app:nullable="false" />
         <action
             android:id="@+id/action_congratulationFragment_to_dcUnloadingScanFragment"
             app:destination="@id/dcUnloadingScanFragment" />
@@ -297,13 +294,13 @@
         android:id="@+id/dcUnloadingHandleFragment"
         android:name="com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment"
         android:label="@string/dc_unloading_handle_label"
-        tools:layout="@layout/dc_unloading_handle_fragment"/>
+        tools:layout="@layout/dc_unloading_handle_fragment" />
 
     <fragment
         android:id="@+id/dcUnloadingCongratulationFragment"
         android:name="com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationFragment"
         android:label="@string/dc_forced_termination_label"
-        tools:layout="@layout/dc_unloading_congratulation_fragment" >
+        tools:layout="@layout/dc_unloading_congratulation_fragment">
         <action
             android:id="@+id/action_dcUnloadingCongratulationFragment_to_flightLoaderFragment"
             app:destination="@id/flightLoaderFragment" />
@@ -326,6 +323,11 @@
         android:id="@+id/dcForcedTerminationDetailsFragment"
         android:name="com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsFragment"
         android:label="@string/dc_forced_termination_details_label"
-        tools:layout="@layout/dc_forced_termination_details_fragment"/>
+        tools:layout="@layout/dc_forced_termination_details_fragment" />
+    <fragment
+        android:id="@+id/flightsEmptyFragment"
+        android:name="com.wb.logistics.ui.flightsempty.FlightsEmptyFragment"
+        android:label="@string/flights_label"
+        tools:layout="@layout/flights_empty_fragment" />
 
 </navigation>

@@ -22,14 +22,11 @@ import com.wb.logistics.ui.flights.delegates.FlightsProgressDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsRefreshDelegate
 import com.wb.logistics.ui.flights.delegates.OnFlightsUpdateCallback
 import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.OnFlightsCount
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class FlightsFragment : Fragment() {
-
-    interface OnFlightsCount {
-        fun flightCount(count: String)
-    }
 
     companion object {
         private const val RETURN_BALANCE_REQUEST_CODE = 100
@@ -83,7 +80,7 @@ class FlightsFragment : Fragment() {
                 }
                 FlightsUINavState.NavigateToNetworkInfoDialog -> {
                 }
-                FlightsUINavState.NavigateToReceptionBox -> findNavController().navigate(R.id.receptionFragment)
+                FlightsUINavState.NavigateToReceptionBox -> findNavController().navigate(R.id.dcLoadingFragment)
                 FlightsUINavState.NavigateToReturnBalanceDialog -> {
                 }
             }
@@ -129,10 +126,10 @@ class FlightsFragment : Fragment() {
 
     private fun showDialogReturnBalance() {
         val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.reception_return_dialog_title),
-            getString(R.string.reception_return_dialog_description),
-            getString(R.string.reception_return_dialog_positive_button),
-            getString(R.string.reception_return_dialog_negative_button)
+            getString(R.string.dc_loading_return_dialog_title),
+            getString(R.string.dc_loading_return_dialog_description),
+            getString(R.string.dc_loading_return_dialog_positive_button),
+            getString(R.string.dc_loading_return_dialog_negative_button)
         )
         dialog.setTargetFragment(this, RETURN_BALANCE_REQUEST_CODE)
         dialog.show(parentFragmentManager, RETURN_BALANCE_TAG)

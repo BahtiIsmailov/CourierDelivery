@@ -6,7 +6,7 @@ import com.wb.logistics.network.headers.RefreshTokenRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.splash.domain.ScreenManager
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class LoaderViewModel(

@@ -18,11 +18,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.SplashActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
-import com.wb.logistics.ui.flights.FlightsFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragment.OnFlightsCount {
+
+class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -44,13 +44,26 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
         initListener()
     }
 
-    private fun initListener() {
-        binding.logoutLayout.setOnClickListener {
-            viewModel.onExitClick()
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            Navigation.findNavController(this, R.id.nav_auth_host_fragment)
-                .navigate(R.id.load_navigation)
+    private fun initToolbar() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        val title = toolbar.findViewById<View>(R.id.toolbar_title) as TextView
+        setSupportActionBar(toolbar)
+        title.text = toolbar.title
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
+    }
+
+    private fun initNavController() {
+        binding.navView.itemIconTintList = null
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            updateTitle(destination.label.toString())
         }
+        appBarConfiguration =
+            AppBarConfiguration(setOf(R.id.flightsFragment, R.id.flightsEmptyFragment),
+                binding.drawerLayout)
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     private fun initObserver() {
@@ -68,7 +81,8 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
                 true -> getString(R.string.inet_ok)
                 false -> getString(R.string.inet_no)
             }
-            header.findViewById<TextView>(R.id.inet_app_text).text = String.format("%s: %s", getString(R.string.inet_text), status )
+            header.findViewById<TextView>(R.id.inet_app_text).text =
+                String.format("%s: %s", getString(R.string.inet_text), status)
 
         }
 
@@ -78,9 +92,13 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
         }
     }
 
-    private fun initToolbar() {
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+    private fun initListener() {
+        binding.logoutLayout.setOnClickListener {
+            viewModel.onExitClick()
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            Navigation.findNavController(this, R.id.nav_auth_host_fragment)
+                .navigate(R.id.load_navigation)
+        }
     }
 
     private fun initView() {
@@ -93,15 +111,6 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
                 getString(R.string.nav_no_internet_dialog_button),
             ).show(supportFragmentManager, "TAG_NETWORK")
         }
-    }
-
-    private fun initNavController() {
-        binding.navView.itemIconTintList = null
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.flightsFragment), binding.drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     override fun flightCount(count: String) {
@@ -130,7 +139,8 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, FlightsFragmen
 
     override fun updateTitle(title: String) {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        toolbar.title = title
+        val toolbarTitle = toolbar.findViewById<View>(R.id.toolbar_title) as TextView
+        toolbarTitle.text = title
     }
 
     override fun updateDrawer() {
@@ -159,4 +169,8 @@ interface NavToolbarTitleListener {
 
     fun updateDrawer()
 
+}
+
+interface OnFlightsCount {
+    fun flightCount(count: String)
 }

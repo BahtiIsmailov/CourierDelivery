@@ -21,6 +21,8 @@ class DcForcedTerminationViewModel(
     val navigateToBack: LiveData<DcForcedTerminationNavAction>
         get() = _navigateAction
 
+    val bottomProgressEvent = MutableLiveData<Boolean>()
+
     init {
 
         _boxesState.value = DcForcedTerminationState.Title(resourceProvider.getLabel())
@@ -44,9 +46,15 @@ class DcForcedTerminationViewModel(
             else -> resourceProvider.getEmpty()
         }
         // TODO: 24.05.2021 изменить статус рейса
-
-        _navigateAction.value = DcForcedTerminationNavAction.NavigateToCongratulation
+        bottomProgressEvent.value = true
+        addSubscription(interactor.switchScreen().subscribe(
+            {
+                _navigateAction.value = DcForcedTerminationNavAction.NavigateToCongratulation
+                bottomProgressEvent.value = false
+            },
+            {
+                bottomProgressEvent.value = false
+            }))
     }
-
 
 }

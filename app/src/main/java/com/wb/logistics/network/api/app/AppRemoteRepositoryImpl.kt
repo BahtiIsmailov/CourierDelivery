@@ -87,32 +87,6 @@ class AppRemoteRepositoryImpl(
                 PutBoxCurrentOfficeRemote(currentOffice)))
     }
 
-    override fun putFlightStatus(
-        flightID: String,
-        flightStatus: FlightStatus,
-        officeId: Int,
-        isGetFromGPS: Boolean,
-    ): Completable {
-        return remote.putFlightStatus(tokenManager.apiVersion(), flightID,
-            StatusRemote(flightStatus.status, StatusLocationRemote(
-                StatusOfficeLocationRemote(officeId), isGetFromGPS)))
-    }
-
-    override fun getFlightStatus(flightID: String): Single<StatusStateEntity> {
-        return remote.getFlightStatus(tokenManager.apiVersion(), flightID).map {
-            with(it) {
-                StatusStateEntity(
-                    status = status,
-                    location = StatusLocationEntity(
-                        StatusOfficeLocationEntity(location.office.id), location.getFromGPS))
-            }
-        }
-    }
-
-    override fun flightStatuses(): Single<FlightStatusesRemote> {
-        return remote.flightStatuses(tokenManager.apiVersion())
-    }
-
     override fun flight(): Single<FlightRemote?> {
         return remote.flight(tokenManager.apiVersion())
     }
@@ -193,6 +167,33 @@ class AppRemoteRepositoryImpl(
                 convertBoxEntity(box),
                 convertBoxInfoFlightEntity()
             )
+        }
+    }
+
+    override fun flightStatuses(): Single<FlightStatusesRemote> {
+        return remote.flightStatuses(tokenManager.apiVersion())
+    }
+
+    override fun putFlightStatus(
+        flightID: String,
+        flightStatus: FlightStatus,
+        officeId: Int,
+        isGetFromGPS: Boolean,
+        updatedAt: String,
+    ): Completable {
+        return remote.putFlightStatus(tokenManager.apiVersion(), flightID,
+            StatusRemote(flightStatus.status, StatusLocationRemote(
+                StatusOfficeLocationRemote(officeId), isGetFromGPS), updatedAt))
+    }
+
+    override fun getFlightStatus(flightID: String): Single<StatusStateEntity> {
+        return remote.getFlightStatus(tokenManager.apiVersion(), flightID).map {
+            with(it) {
+                StatusStateEntity(
+                    status = status,
+                    location = StatusLocationEntity(
+                        StatusOfficeLocationEntity(location.office.id), location.getFromGPS))
+            }
         }
     }
 

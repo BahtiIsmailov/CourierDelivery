@@ -4,22 +4,22 @@ import com.wb.logistics.ui.auth.*
 import com.wb.logistics.ui.config.ConfigViewModel
 import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsViewModel
 import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationViewModel
+import com.wb.logistics.ui.dcloading.*
 import com.wb.logistics.ui.dcunloading.*
 import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationViewModel
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
+import com.wb.logistics.ui.flightloader.FlightLoaderViewModel
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointViewModel
-import com.wb.logistics.ui.flights.FlightLoaderViewModel
 import com.wb.logistics.ui.flights.FlightsViewModel
+import com.wb.logistics.ui.flightsempty.FlightsEmptyViewModel
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationViewModel
-import com.wb.logistics.ui.reception.*
 import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
 import com.wb.logistics.ui.splash.LoaderViewModel
 import com.wb.logistics.ui.unloading.*
-import com.wb.logistics.ui.unloadingcongratulation.CongratulationParameters
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -41,11 +41,11 @@ val viewModelModule = module {
     viewModel { (parameters: CreatePasswordParameters) ->
         CreatePasswordViewModel(parameters, get(), get())
     }
-    viewModel { (parameters: ReceptionBoxNotBelongParameters) ->
-        ReceptionBoxNotBelongModel(parameters)
+    viewModel { (parameters: DcLoadingBoxNotBelongParameters) ->
+        DcLoadingBoxNotBelongModel(parameters)
     }
 
-    viewModel { FlightLoaderViewModel(get(), get()) }
+    viewModel { FlightLoaderViewModel(get(), get(), get()) }
     viewModel {
         FlightsViewModel(get(),
             get(),
@@ -53,11 +53,13 @@ val viewModelModule = module {
             get(),
             get())
     }
-    viewModel { ScannerViewModel(get(), get(), get()) }
-    viewModel { ReceptionScanViewModel(get(), get(), get(), get()) }
-    viewModel { ReceptionHandleViewModel(get(), get()) }
+    viewModel { FlightsEmptyViewModel(get(), get()) }
 
-    viewModel { ReceptionBoxesViewModel(get(), get()) }
+    viewModel { ScannerViewModel(get(), get(), get()) }
+    viewModel { DcLoadingScanViewModel(get(), get(), get(), get()) }
+    viewModel { DcLoadingHandleViewModel(get(), get()) }
+
+    viewModel { DcLoadingBoxesViewModel(get(), get()) }
 
     viewModel { FlightPickPointViewModel(get(), get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get(), get()) }
@@ -110,8 +112,8 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { (parameters: CongratulationParameters) ->
-        CongratulationViewModel(parameters,
+    viewModel {
+        CongratulationViewModel(
             get(),
             get(),
             get(),

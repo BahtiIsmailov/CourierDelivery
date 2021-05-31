@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.wb.logistics.R;
-import com.wb.logistics.databinding.ReceptionBoxesItemLayoutBinding;
+import com.wb.logistics.databinding.UnloadingBoxesItemLayoutBinding;
 
 import java.util.List;
 
@@ -63,10 +63,10 @@ public class UnloadingReturnBoxesAdapter extends ArrayAdapter<String> {
 
     protected class ViewHolder {
 
-        ReceptionBoxesItemLayoutBinding binding;
+        UnloadingBoxesItemLayoutBinding binding;
 
         protected ViewHolder(View rootView) {
-            binding = ReceptionBoxesItemLayoutBinding.bind(rootView);
+            binding = UnloadingBoxesItemLayoutBinding.bind(rootView);
         }
 
     }

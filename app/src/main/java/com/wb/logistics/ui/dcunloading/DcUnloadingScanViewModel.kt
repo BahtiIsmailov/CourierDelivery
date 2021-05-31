@@ -7,8 +7,8 @@ import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.ui.splash.domain.ScreenManager
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class DcUnloadingScanViewModel(

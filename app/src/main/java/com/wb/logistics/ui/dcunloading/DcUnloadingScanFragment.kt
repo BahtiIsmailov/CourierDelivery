@@ -134,7 +134,7 @@ class DcUnloadingScanFragment : Fragment() {
     private fun showToastBoxAdded(message: String) {
         val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
         val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.reception_added_box_toast, container) as ViewGroup
+            layoutInflater.inflate(R.layout.dc_loading_added_box_toast, container) as ViewGroup
         val text: TextView = layout.findViewById(R.id.text)
         text.text = message
         with(Toast(context)) {
@@ -148,7 +148,7 @@ class DcUnloadingScanFragment : Fragment() {
     private fun showToastBoxHasBeenAdded(message: String) {
         val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
         val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.reception_has_been_added_box_toast,
+            layoutInflater.inflate(R.layout.dc_loading_has_been_added_box_toast,
                 container) as ViewGroup
         val text: TextView = layout.findViewById(R.id.text)
         text.text = message

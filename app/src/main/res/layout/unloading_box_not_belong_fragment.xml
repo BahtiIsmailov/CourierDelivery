@@ -56,7 +56,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="4dp"
-        android:text="@string/reception_box_not_code_title"
+        android:text="@string/dc_loading_box_not_code_title"
         app:layout_constraintBottom_toTopOf="@+id/code"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginBottom="4dp"
-        android:text="@string/reception_box_not_address_title"
+        android:text="@string/dc_loading_box_not_address_title"
         app:layout_constraintBottom_toTopOf="@+id/address"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -102,7 +102,7 @@
         app:app_background="@drawable/progress_image_button_default"
         app:app_icon="@drawable/ic_understand"
         app:app_state="enable"
-        app:app_text="@string/reception_box_not_belong_understand"
+        app:app_text="@string/dc_loading_box_not_belong_understand"
         app:app_text_color_disable="@color/button_default_text_disable"
         app:app_text_color_enable="@color/button_default_text_enable"
         app:app_text_color_progress="@color/button_default_text_progress"
