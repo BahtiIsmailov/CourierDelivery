@@ -30,6 +30,10 @@
     <string name="inet_ok">Есть</string>
     <string name="inet_no">Нет</string>
 
+    <string name="exit_app">Выйти из приложения?</string>
+    <string name="exit_app_ok">Ok</string>
+    <string name="exit_app_cancel">Отмена</string>
+
     <string name="auth_number_phone_toolbar_label">Вход</string>
     <string name="auth_number_phone_phone_hint">Номер телефона</string>
     <string name="auth_number_phone_phone_not_found">Номер не найден, обратитесь к ответственному</string>

@@ -179,4 +179,10 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/light_text</item>
+        <item name="android:textColorPrimary">@color/base_text</item>
+        <item name="android:background">@color/background_content_light</item>
+    </style>
+
 </resources>

@@ -31,6 +31,7 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
         initObserver()
 
         (activity as NavToolbarTitleListener).hideBackButton()
+        viewModel.update()
     }
 
     private fun initObserver() {

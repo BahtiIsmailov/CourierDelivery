@@ -6,7 +6,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation
@@ -155,6 +157,21 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
     override fun hideBackButton() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.navigationIcon = null
+    }
+
+    override fun onBackPressed() {
+        when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
+            R.id.flightsEmptyFragment, R.id.flightsFragment -> {
+                AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
+                    .setMessage(R.string.exit_app)
+                    .setPositiveButton(R.string.exit_app_ok) { _, _ -> finish() }
+                    .setNegativeButton(R.string.exit_app_cancel) { dialogInterface, _ -> dialogInterface.cancel() }
+                    .show()
+            }
+            else -> {
+                super.onBackPressed()
+            }
+        }
     }
 
 }

@@ -15,7 +15,9 @@
             app:destination="@id/flightsEmptyFragment" />
         <action
             android:id="@+id/action_flightLoaderFragment_to_flightsFragment"
-            app:destination="@id/flightsFragment" />
+            app:destination="@id/flightsFragment"
+            app:popUpTo="@+id/flightLoaderFragment"
+            app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_flightLoaderFragment_to_dcLoadingFragment"
             app:destination="@id/dcLoadingFragment" />

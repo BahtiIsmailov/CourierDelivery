@@ -37,15 +37,18 @@
         app:layout_constraintStart_toStartOf="@id/content_left"
         app:layout_constraintTop_toTopOf="@+id/content_top" />
 
-    <com.wb.logistics.views.ProgressButtonView
+    <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/update"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/content_right"
-        app:layout_constraintStart_toStartOf="@id/content_left"
-        app:progress_button_name="@string/flights_empty_flight_update"
-        app:progress_button_state="enable" />
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:visibility="visible"
+        app:app_background="@drawable/progress_image_button_default"
+        app:app_icon="@drawable/ic_update"
+        app:app_state="enable"
+        app:app_text="@string/flights_empty_flight_update"
+        app:app_text_color_disable="@color/button_default_text_disable"
+        app:app_text_color_enable="@color/button_default_text_enable"
+        app:app_text_color_progress="@color/button_default_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

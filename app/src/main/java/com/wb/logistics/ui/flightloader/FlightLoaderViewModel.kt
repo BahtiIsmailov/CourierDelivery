@@ -19,7 +19,11 @@ class FlightLoaderViewModel(
     val navState: LiveData<NavigateTo>
         get() = _navState
 
-    init {
+//    init {
+//        toApp()
+//    }
+
+    fun update() {
         toApp()
     }
 
