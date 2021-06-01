@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_phone_content">
+    android:background="@color/background_auth_content">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phone_layout"
@@ -13,11 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
         android:layout_marginTop="@dimen/auth_input_top_offset"
-        android:background="@drawable/border_input"
+        android:background="@drawable/border_input_normal"
         android:paddingLeft="24dp"
-        android:paddingTop="8dp"
         android:paddingRight="14dp"
-        android:paddingBottom="8dp"
         android:textColorHint="@color/colorOnSecondary"
         app:endIconDrawable="@drawable/ic_close_dialog"
         app:endIconMode="clear_text"
@@ -30,7 +28,7 @@
             android:id="@+id/phone_number"
             style="@style/MediumRegularDarkText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/input_height"
             android:background="@android:color/transparent"
             android:importantForAutofill="noExcludeDescendants"
             android:inputType="phone"
@@ -41,11 +39,13 @@
 
     <TextView
         android:id="@+id/number_not_found"
+        style="@style/BaseRegularDarkText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="@string/auth_number_phone_phone_not_found"
         android:textAppearance="@style/SmallRegularDarkText"
-        android:textColor="@color/invalid"
+        android:textColor="@color/danger"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@+id/phone_layout"
         app:layout_constraintTop_toBottomOf="@+id/phone_layout" />

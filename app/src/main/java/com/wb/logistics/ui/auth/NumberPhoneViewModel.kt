@@ -24,15 +24,15 @@ class NumberPhoneViewModel(
     val navigationEvent: LiveData<NumberPhoneNavAction>
         get() = _navigationEvent
 
-    private val _stateUI = MutableLiveData<NumberPhoneUIState<String>>()
-    val stateUI: LiveData<NumberPhoneUIState<String>>
+    private val _stateUI = MutableLiveData<NumberPhoneUIState>()
+    val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
 
     fun action(actionView: NumberPhoneUIAction) {
         when (actionView) {
             is NumberPhoneUIAction.CheckPhone -> {
-                fetchPhoneNumber(actionView.number)
                 _stateUI.value = PhoneCheck
+                fetchPhoneNumber(actionView.number)
             }
             NumberPhoneUIAction.LongTitle ->
                 _navigationEvent.value = NumberPhoneNavAction.NavigateToConfig
@@ -61,6 +61,7 @@ class NumberPhoneViewModel(
     }
 
     private fun fetchPhoneNumberComplete(checkPhoneRemote: CheckExistPhoneResponse, phone: String) {
+        _stateUI.value = PhoneEdit
         if (checkPhoneRemote.hasPassword)
             _navigationEvent.value = NumberPhoneNavAction.NavigateToInputPassword(phone)
         else NumberPhoneNavAction.NavigateToTemporaryPassword(phone)
@@ -70,7 +71,7 @@ class NumberPhoneViewModel(
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> NumberNotFound(throwable.message)
-            else -> Error(throwable.toString())
+            else -> Error(throwable.toString()) // TODO: 01.06.2021 Добавить обобщенное сообщение
         }
     }
 

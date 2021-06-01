@@ -6,6 +6,7 @@ import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.InputPasswordUIAction.*
 import com.wb.logistics.ui.auth.InputPasswordUIState.*
 import com.wb.logistics.ui.auth.domain.InputPasswordInteractor
@@ -17,6 +18,11 @@ class InputPasswordViewModel(
     private val interactor: InputPasswordInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
+    private val _navigationEvent =
+        SingleLiveEvent<InputPasswordNavAction>()
+    val navigationEvent: LiveData<InputPasswordNavAction>
+        get() = _navigationEvent
+
     private val _stateUI = MutableLiveData<InputPasswordUIState>()
     val stateUI: LiveData<InputPasswordUIState>
         get() = _stateUI
@@ -25,8 +31,7 @@ class InputPasswordViewModel(
         when (actionView) {
             is PasswordChanges -> fetchPasswordChanges(actionView.observable)
             RemindPassword -> {
-                _stateUI.value = NavigateToTemporaryPassword(parameters.phone)
-                _stateUI.value = Empty
+                _navigationEvent.value = InputPasswordNavAction.NavigateToTemporaryPassword(parameters.phone)
             }
             is Auth -> fetchAuth(actionView.password)
         }
@@ -56,14 +61,14 @@ class InputPasswordViewModel(
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     private fun authComplete() {
-        _stateUI.value = NavigateToApplication
+        _navigationEvent.value = InputPasswordNavAction.NavigateToApplication
     }
 
     private fun authError(throwable: Throwable) {
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> Error(throwable.message)
-            else -> Error(throwable.toString())
+            else -> Error(throwable.toString()) // TODO: 01.06.2021 Добавить обобщенное сообщение
         }
     }
 

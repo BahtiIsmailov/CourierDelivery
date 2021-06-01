@@ -7,6 +7,7 @@ import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.TemporaryPasswordUIAction.CheckPassword
 import com.wb.logistics.ui.auth.TemporaryPasswordUIAction.PasswordChanges
 import com.wb.logistics.ui.auth.TemporaryPasswordUIState.*
@@ -20,11 +21,16 @@ class TemporaryPasswordViewModel(
     private val parameters: TemporaryPasswordParameters,
     compositeDisposable: CompositeDisposable,
     private val interactor: TemporaryPasswordInteractor,
-    private val resourceProvider: AuthResourceProvider
+    private val resourceProvider: AuthResourceProvider,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
-    private val _stateUI = MutableLiveData<TemporaryPasswordUIState<Nothing>>()
-    val stateUI: LiveData<TemporaryPasswordUIState<Nothing>>
+    private val _navigationEvent =
+        SingleLiveEvent<TemporaryPasswordNavAction>()
+    val navigationEvent: LiveData<TemporaryPasswordNavAction>
+        get() = _navigationEvent
+
+    private val _stateUI = MutableLiveData<TemporaryPasswordUIState>()
+    val stateUI: LiveData<TemporaryPasswordUIState>
         get() = _stateUI
 
     init {
@@ -106,8 +112,8 @@ class TemporaryPasswordViewModel(
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     private fun tmpPasswordCheckComplete(tmpPassword: String) {
-        _stateUI.value = NavigateToCreatePassword(parameters.phone, tmpPassword)
-        _stateUI.value = Empty
+        _navigationEvent.value =
+            TemporaryPasswordNavAction.NavigateToCreatePassword(parameters.phone, tmpPassword)
     }
 
     private fun tmpPasswordCheckError(throwable: Throwable) {

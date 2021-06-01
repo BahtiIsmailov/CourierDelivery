@@ -5,9 +5,9 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthInputPasswordFragmentBinding
@@ -60,21 +60,32 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
     }
 
     private fun initStateObserve() {
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+
+        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
-                is InputPasswordUIState.NavigateToTemporaryPassword ->
+                is InputPasswordNavAction.NavigateToTemporaryPassword ->
                     findNavController().navigate(
                         InputPasswordFragmentDirections.actionInputPasswordFragmentToTemporaryPasswordFragment(
                             TemporaryPasswordParameters(state.phone)
                         )
                     )
-                InputPasswordUIState.NavigateToApplication -> {
+                InputPasswordNavAction.NavigateToApplication -> {
                     findNavController().navigate(R.id.load_navigation)
                 }
+            }
+        })
+
+        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+            when (state) {
                 InputPasswordUIState.NextDisable -> binding.next.setState(
                     ProgressImageButtonMode.DISABLED
                 )
-                InputPasswordUIState.NextEnable -> binding.next.setState(ProgressImageButtonMode.ENABLED)
+                InputPasswordUIState.NextEnable -> {
+                    binding.passwordLayout.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.border_input_normal)
+                    binding.passwordNotFound.visibility = View.GONE
+                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                }
                 InputPasswordUIState.AuthProcess -> {
                     binding.password.isEnabled = false
                     binding.remindPassword.isEnabled = false
@@ -86,13 +97,14 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is InputPasswordUIState.Error -> {
-                    showBarMessage(state.message)
+                    binding.passwordLayout.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.border_input_error)
+                    binding.passwordNotFound.text = state.message
+                    binding.passwordNotFound.visibility = View.VISIBLE
                     binding.password.isEnabled = true
                     binding.password.text?.clear()
                     binding.remindPassword.isEnabled = true
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
-                }
-                InputPasswordUIState.Empty -> {
                 }
             }
         })
@@ -103,10 +115,6 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
         _binding = null
     }
 
-    private fun showBarMessage(state: String) {
-        Snackbar.make(binding.next, state, Snackbar.LENGTH_LONG).show()
-    }
-
     companion object {
         const val PHONE_KEY = "phone_key"
     }
@@ -114,8 +122,6 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
 }
 
 @Parcelize
-data class InputPasswordParameters(
-    val phone: String,
-) : Parcelable
+data class InputPasswordParameters(val phone: String) : Parcelable
 
 

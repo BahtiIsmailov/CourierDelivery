@@ -1,24 +1,20 @@
 package com.wb.logistics.ui.auth
 
-sealed class TemporaryPasswordUIState<out R> {
-    object FetchingTmpPassword : TemporaryPasswordUIState<Nothing>()
+sealed class TemporaryPasswordUIState {
+    object FetchingTmpPassword : TemporaryPasswordUIState()
     data class RemainingAttempts(val remainingAttempts: String) :
-        TemporaryPasswordUIState<Nothing>()
+        TemporaryPasswordUIState()
 
-    data class NavigateToCreatePassword(val phone: String, val tmpPassword: String) :
-        TemporaryPasswordUIState<Nothing>()
-
-    data class InitTitle(val title: String, val phone: String) : TemporaryPasswordUIState<Nothing>()
+    data class InitTitle(val title: String, val phone: String) : TemporaryPasswordUIState()
     data class RepeatPasswordTimer(val text: String, val timeStart: String) :
-        TemporaryPasswordUIState<Nothing>()
+        TemporaryPasswordUIState()
 
-    object RepeatPassword : TemporaryPasswordUIState<Nothing>()
+    object RepeatPassword : TemporaryPasswordUIState()
 
-    object Progress : TemporaryPasswordUIState<Nothing>()
-    object NextEnable : TemporaryPasswordUIState<Nothing>()
-    object NextDisable : TemporaryPasswordUIState<Nothing>()
-    object Empty : TemporaryPasswordUIState<Nothing>()
+    object Progress : TemporaryPasswordUIState()
+    object NextEnable : TemporaryPasswordUIState()
+    object NextDisable : TemporaryPasswordUIState()
 
-    data class Update(val message: String) : TemporaryPasswordUIState<Nothing>()
-    data class Error(val message: String) : TemporaryPasswordUIState<Nothing>()
+    data class Update(val message: String) : TemporaryPasswordUIState()
+    data class Error(val message: String) : TemporaryPasswordUIState()
 }

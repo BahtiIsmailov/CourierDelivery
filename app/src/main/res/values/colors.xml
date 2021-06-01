@@ -17,10 +17,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="toolbar_text">#231D2A</color>
+
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
     <color name="text_clickable">#642CA3</color>
-    <color name="border">#642CA3</color>
+    <color name="border_normal">#642CA3</color>
+    <color name="border_error">#B00020</color>
 
     <color name="background">#642CA3</color>
 
@@ -44,19 +47,19 @@
 
     <color name="background_content_light">#FFFFFF</color>
     <color name="background_content">#E5E5E5</color>
-    <color name="background_phone_content">#F1F1F4</color>
+    <color name="background_auth_content">#F1F1F4</color>
     <color name="background_tint">#FD3F18</color>
     <color name="background_view">#642CA3</color>
     <color name="background_transparently">#97276EA6</color>
 
     <color name="tint">#BFC5D1</color>
     <color name="color_progress">#642CA3</color>
-    <color name="invalid">#DF1F00</color>
+    <color name="invalid">#B00020</color>
     <color name="btn_clear_phone">#DBD7E0</color>
 
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
-    <color name="text_spannable_phone">#17233B</color>
+    <color name="text_spannable_phone">#231D2A</color>
     <color name="text_spannable_time">#8C94A8</color>
 
     <color name="text_info">#6F6779</color>
@@ -66,10 +69,9 @@
 
     <color name="splash_text">#fafafa</color>
 
-
-    <color name="base_text">#000000</color>
-    <color name="light_text">#8C94A8</color>
+    <color name="base_text">#231D2A</color>
     <color name="dark_text">#17233B</color>
+    <color name="light_text">#8C94A8</color>
     <color name="bright_text">#ffffff</color>
 
     <color name="nav_delivery_count_background">#FB8C00</color>

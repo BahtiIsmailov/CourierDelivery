@@ -37,7 +37,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = AuthTemporaryPasswordFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -77,6 +77,20 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
     }
 
     private fun initStateObserver() {
+
+        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                is TemporaryPasswordNavAction.NavigateToCreatePassword -> {
+                    findNavController().navigate(
+                        TemporaryPasswordFragmentDirections.actionTemporaryPasswordFragmentToCreatePasswordFragment(
+                            CreatePasswordParameters(state.phone, state.tmpPassword)
+                        )
+                    )
+                    binding.password.text?.clear()
+                }
+            }
+        })
+
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {
                 is TemporaryPasswordUIState.InitTitle -> {
@@ -102,15 +116,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                     binding.repeatPassword.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
-                is TemporaryPasswordUIState.NavigateToCreatePassword -> {
-                    findNavController().navigate(
-                        TemporaryPasswordFragmentDirections.actionTemporaryPasswordFragmentToCreatePasswordFragment(
-                            CreatePasswordParameters(state.phone, state.tmpPassword)
-                        )
-                    )
-                    binding.password.text?.clear()
-                }
-
                 TemporaryPasswordUIState.NextDisable -> {
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
@@ -152,7 +157,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                     binding.repeatPassword.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.PROGRESS)
                 }
-                TemporaryPasswordUIState.Empty -> {}
             }
         })
     }
@@ -213,8 +217,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
 }
 
 @Parcelize
-data class TemporaryPasswordParameters(
-    val phone: String
-) : Parcelable
+data class TemporaryPasswordParameters(val phone: String) : Parcelable
 
 

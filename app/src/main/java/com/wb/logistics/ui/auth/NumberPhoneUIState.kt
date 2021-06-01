@@ -1,12 +1,13 @@
 package com.wb.logistics.ui.auth
 
-sealed class NumberPhoneUIState<out R> {
-    object PhoneCheck : NumberPhoneUIState<Nothing>()
+sealed class NumberPhoneUIState {
+    object PhoneCheck : NumberPhoneUIState()
+    object PhoneEdit : NumberPhoneUIState()
 
-    object NumberFormatComplete : NumberPhoneUIState<Nothing>()
+    object NumberFormatComplete : NumberPhoneUIState()
 
-    data class NumberFormat(val number: String) : NumberPhoneUIState<Nothing>()
+    data class NumberFormat(val number: String) : NumberPhoneUIState()
 
-    data class NumberNotFound(val message: String) : NumberPhoneUIState<Nothing>()
-    data class Error(val message: String) : NumberPhoneUIState<Nothing>()
+    data class NumberNotFound(val message: String) : NumberPhoneUIState()
+    data class Error(val message: String) : NumberPhoneUIState()
 }
