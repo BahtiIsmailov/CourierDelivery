@@ -70,7 +70,7 @@ class NumberPhoneViewModel(
     private fun fetchPhoneNumberError(throwable: Throwable) {
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
-            is BadRequestException -> NumberNotFound(throwable.message)
+            is BadRequestException -> NumberNotFound(throwable.error.message)
             else -> Error(throwable.toString()) // TODO: 01.06.2021 Добавить обобщенное сообщение
         }
     }

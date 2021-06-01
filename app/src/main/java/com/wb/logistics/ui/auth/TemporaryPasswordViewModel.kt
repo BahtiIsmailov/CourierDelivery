@@ -24,6 +24,10 @@ class TemporaryPasswordViewModel(
     private val resourceProvider: AuthResourceProvider,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
+    private val _stateTitleUI = MutableLiveData<InitTitle>()
+    val stateTitleUI: LiveData<InitTitle>
+        get() = _stateTitleUI
+
     private val _navigationEvent =
         SingleLiveEvent<TemporaryPasswordNavAction>()
     val navigationEvent: LiveData<TemporaryPasswordNavAction>
@@ -36,10 +40,11 @@ class TemporaryPasswordViewModel(
     init {
         fetchTitle()
         fetchTmpPassword()
+        subscribeTimer()
     }
 
     private fun fetchTitle() {
-        _stateUI.postValue(
+        _stateTitleUI.postValue(
             InitTitle(
                 resourceProvider.getTitleTemporaryPassword(parameters.phone),
                 parameters.phone
@@ -70,14 +75,11 @@ class TemporaryPasswordViewModel(
     }
 
     private fun fetchingTmpPasswordComplete(it: RemainingAttemptsResponse) {
-        startTimer()
-        subscribeTimer()
-        _stateUI.value =
-            RemainingAttempts(resourceProvider.getNumberAttempt(it.remainingAttempts))
+        restartTimer(DURATION_TIME_INIT)
     }
 
-    private fun startTimer() {
-        interactor.startTimer()
+    private fun restartTimer(durationTime: Int) {
+        interactor.startTimer(durationTime)
     }
 
     fun action(actionView: TemporaryPasswordUIAction) {
@@ -122,10 +124,19 @@ class TemporaryPasswordViewModel(
 
     private fun error(throwable: Throwable) {
         LogUtils { logDebugApp(throwable.toString()) }
-        _stateUI.value = when (throwable) {
-            is NoInternetException -> Error(throwable.message)
-            is BadRequestException -> Update(throwable.message)
-            else -> Error(throwable.toString())
+        when (throwable) {
+            is NoInternetException -> _stateUI.value = Error
+            is BadRequestException -> {
+                with(throwable.error) {
+                    if (data == null) {
+                        _stateUI.value = Error
+                    } else {
+                        _stateUI.value = Error
+                        restartTimer(if (data.resendTime == 0) DURATION_TIME_INIT else data.resendTime)
+                    }
+                }
+            }
+            else -> _stateUI.value = Error
         }
     }
 
@@ -148,7 +159,10 @@ class TemporaryPasswordViewModel(
     }
 
     companion object {
+        private const val DURATION_TIME_INIT = 30
         const val TIME_DIVIDER = 60
     }
 
 }
+
+data class InitTitle(val title: String, val phone: String)

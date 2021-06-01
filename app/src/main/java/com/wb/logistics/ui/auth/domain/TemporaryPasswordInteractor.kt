@@ -9,10 +9,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 
 interface TemporaryPasswordInteractor {
-    fun startTimer()
+    fun startTimer(durationTime: Int)
     val timer: Flowable<TimerState>
     fun stopTimer()
-    fun clearCountCheckAttempt()
     fun passwordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean>
     fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse>
     fun checkPassword(phone: String, tmpPassword: String): Completable

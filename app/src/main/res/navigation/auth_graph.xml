@@ -10,10 +10,6 @@
         android:name="com.wb.logistics.ui.auth.NumberPhoneFragment"
         tools:layout="@layout/auth_phone_fragment"
         android:label="@string/auth_number_phone_toolbar_label">
-        <argument
-            android:name="navigationFlowStep"
-            android:defaultValue="0"
-            app:argType="integer" />
         <action
             android:id="@+id/action_loginFragment_to_configActivity"
             app:destination="@id/authConfigActivity" />
@@ -55,13 +51,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_temporaryPasswordFragment_to_InputPasswordFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/authInputPasswordFragment" />
     </fragment>
 
     <fragment
@@ -80,16 +69,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-<!--        <action-->
-<!--            android:id="@+id/action_inputPasswordFragment_to_navigationActivity"-->
-<!--            app:destination="@id/navigationActivity"-->
-<!--            app:enterAnim="@anim/slide_in_right"-->
-<!--            app:exitAnim="@anim/slide_out_left"-->
-<!--            app:popEnterAnim="@anim/slide_in_left"-->
-<!--            app:popExitAnim="@anim/slide_out_right" />-->
-        <action
-            android:id="@+id/action_authInputPasswordFragment_to_authNumberPhoneFragment"
-            app:popUpTo="@id/authNumberPhoneFragment" />
     </fragment>
 
     <fragment
@@ -101,15 +80,6 @@
             android:name="phone_key"
             app:argType="com.wb.logistics.ui.auth.CreatePasswordParameters"
             app:nullable="false" />
-        <action
-            android:id="@+id/action_createPasswordFragment_to_temporaryPasswordFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/temporaryPasswordFragment" />
-        <action
-            android:id="@+id/action_authCreatePasswordFragment_to_authNumberPhoneFragment"
-            app:destination="@id/authNumberPhoneFragment" />
     </fragment>
+
 </navigation>

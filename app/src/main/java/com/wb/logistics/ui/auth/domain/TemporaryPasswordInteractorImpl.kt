@@ -18,27 +18,21 @@ class TemporaryPasswordInteractorImpl(
 ) : TemporaryPasswordInteractor {
     private val timerStates: BehaviorSubject<TimerState>
     private var timerDisposable: Disposable? = null
-    private var counterCheckAttempt = 0
-    private var countCheckAttempt = 0
 
     override fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse> {
         return repository.sendTmpPassword(phone).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun checkPassword(phone: String, tmpPassword: String): Completable {
-        upCounterCheckSms()
         return repository.passwordCheck(phone, tmpPassword)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun upCounterCheckSms() {
-        countCheckAttempt = COUNT_CHECK_ATTEMPT - ++counterCheckAttempt
-        if (countCheckAttempt <= 0) clearCountCheckAttempt()
-    }
-
-    override fun startTimer() {
+    private var durationTime = 0
+    override fun startTimer(durationTime: Int) {
+        this.durationTime = durationTime
         if (timerDisposable == null) {
-            timerDisposable = Observable.interval(PERIOD.toLong(), TimeUnit.MILLISECONDS)
+            timerDisposable = Observable.interval(PERIOD, TimeUnit.MILLISECONDS)
                 .subscribe({ onTimeConfirmCode(it) }) { throwable: Throwable? -> }
         }
     }
@@ -52,11 +46,11 @@ class TemporaryPasswordInteractorImpl(
     }
 
     private fun onTimeConfirmCode(tick: Long) {
-        if (tick > DURATION_CODE) {
+        if (tick > durationTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
         } else {
-            val counterTick = DURATION_CODE - tick.toInt()
+            val counterTick = durationTime - tick.toInt()
             publishCallState(TimerStateImpl(counterTick))
         }
     }
@@ -72,21 +66,15 @@ class TemporaryPasswordInteractorImpl(
         timerStates.onNext(timerState)
     }
 
-    override fun clearCountCheckAttempt() {
-        counterCheckAttempt = 0
-    }
-
     override fun passwordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
         return observable.map { it.toString() }
             .distinctUntilChanged()
-            .map { it.length == LENGTH_SMS_CODE }
+            .map { it.length >= LENGTH_SMS_CODE }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     companion object {
-        private const val PERIOD = 1000
-        private const val DURATION_CODE = 30
-        private const val COUNT_CHECK_ATTEMPT = 3
+        private const val PERIOD = 1000L
         private const val LENGTH_SMS_CODE = 4
     }
 

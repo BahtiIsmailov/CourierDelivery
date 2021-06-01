@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -33,7 +32,7 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = AuthCreatePasswordFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -64,15 +63,24 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
     }
 
     private fun initStateObserve() {
+
+        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                CreatePasswordNavAction.NavigateToApplication -> {
+                    findNavController().navigate(R.id.load_navigation)
+                    //findNavController().setGraph(R.navigation.load_graph, bundleOf("navigationFlowStep" to 1))
+                }
+                is CreatePasswordNavAction.NavigateToTemporaryPassword -> {
+//                    findNavController().navigate(
+//                        CreatePasswordFragmentDirections.actionCreatePasswordFragmentToTemporaryPasswordFragment()
+//                    )
+                    findNavController().popBackStack()
+                }
+            }
+        })
+
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {
-                CreatePasswordUIState.NavigateToApplication ->
-                {
-                    findNavController().setGraph(
-                        R.navigation.load_graph,
-                        bundleOf("navigationFlowStep" to 1)
-                    )
-                }
                 CreatePasswordUIState.SaveAndNextDisable -> binding.next.setState(
                     ProgressImageButtonMode.DISABLED
                 )
@@ -83,7 +91,8 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
                     )
                     binding.numberPhoneTitle.visibility = View.VISIBLE
                 }
-                CreatePasswordUIState.SaveAndNextEnable -> binding.next.setState(ProgressImageButtonMode.ENABLED)
+                CreatePasswordUIState.SaveAndNextEnable -> binding.next.setState(
+                    ProgressImageButtonMode.ENABLED)
                 CreatePasswordUIState.AuthProcess -> {
                     binding.password.isEnabled = false
                     binding.next.setState(ProgressImageButtonMode.PROGRESS)
@@ -96,12 +105,6 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
                     showBarMessage(state.message)
                     binding.password.isEnabled = true
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
-                }
-                is CreatePasswordUIState.NavigateToTemporaryPassword -> {
-                    findNavController().navigate(
-                        CreatePasswordFragmentDirections.actionCreatePasswordFragmentToTemporaryPasswordFragment(
-                        )
-                    )
                 }
             }
         })
@@ -143,8 +146,6 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
 }
 
 @Parcelize
-data class CreatePasswordParameters(
-    val phone: String, val tmpPassword: String
-) : Parcelable
+data class CreatePasswordParameters(val phone: String, val tmpPassword: String) : Parcelable
 
 

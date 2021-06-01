@@ -6,6 +6,7 @@ import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.CreatePasswordUIAction.Auth
 import com.wb.logistics.ui.auth.CreatePasswordUIAction.PasswordChanges
 import com.wb.logistics.ui.auth.CreatePasswordUIState.*
@@ -15,8 +16,13 @@ import io.reactivex.disposables.CompositeDisposable
 class CreatePasswordViewModel(
     private val parameters: CreatePasswordParameters,
     compositeDisposable: CompositeDisposable,
-    private val interactor: CreatePasswordInteractor
+    private val interactor: CreatePasswordInteractor,
 ) : NetworkViewModel(compositeDisposable) {
+
+    private val _navigationEvent =
+        SingleLiveEvent<CreatePasswordNavAction>()
+    val navigationEvent: LiveData<CreatePasswordNavAction>
+        get() = _navigationEvent
 
     private val _stateUI = MutableLiveData<CreatePasswordUIState>()
     val stateUI: LiveData<CreatePasswordUIState>
@@ -53,16 +59,16 @@ class CreatePasswordViewModel(
 
     private fun authComplete() {
         _stateUI.value = AuthComplete
-        _stateUI.value = NavigateToApplication
+        _navigationEvent.value = CreatePasswordNavAction.NavigateToApplication
     }
 
     private fun authError(throwable: Throwable) {
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
-            is BadRequestException -> Error(throwable.message)
+            is BadRequestException -> Error(throwable.error.message)
             else -> Error(throwable.toString())
         }
-        _stateUI.value = NavigateToTemporaryPassword("")
+        _navigationEvent.value = CreatePasswordNavAction.NavigateToTemporaryPassword("")
     }
 
 }

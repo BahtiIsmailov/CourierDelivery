@@ -110,33 +110,33 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
     @NonNull
     private Throwable getHttpException(@NonNull HttpException exception) {
-        String message = convertMessageException(exception.response());
+        Error error = convertMessageException(exception.response());
         int code = exception.code();
         switch (code) {
             case AppConsts.SERVICE_CODE_BAD_REQUEST:
-                return new BadRequestException(message);
+                return new BadRequestException(error);
             case AppConsts.SERVICE_CODE_UNAUTHORIZED:
-                return new UnauthorizedException(message);
+                return new UnauthorizedException(error.getMessage());
             case AppConsts.SERVICE_CODE_FORBIDDEN:
-                return new ForbiddenException(message);
+                return new ForbiddenException(error.getMessage());
             case AppConsts.SERVICE_CODE_LOCKED:
-                return new LockedException(message);
+                return new LockedException(error.getMessage());
             default:
                 return new UnknownHttpException(resourceProvider.getUnknownHttpError(), exception.message(), code);
         }
     }
 
-    private String convertMessageException(Response<?> response) {
-        ApiErrorModel apiErrorModel = new ApiErrorModel(new Error("Unknown error", ""));
+    private Error convertMessageException(Response<?> response) {
+        ApiErrorModel apiErrorModel = new ApiErrorModel(new Error("Unknown error", "", new Data(0)));
         try {
             ResponseBody responseBody = response.errorBody();
             if (responseBody != null) {
                 apiErrorModel = new Gson().fromJson(responseBody.string(), ApiErrorModel.class);
             }
         } catch (IOException e) {
-            return apiErrorModel.getError().getMessage();
+            return apiErrorModel.getError();
         }
-        return apiErrorModel.getError().getMessage();
+        return apiErrorModel.getError();
     }
 
 }
