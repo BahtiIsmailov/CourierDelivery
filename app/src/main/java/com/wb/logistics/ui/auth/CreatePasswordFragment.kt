@@ -66,16 +66,8 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
 
         viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
-                CreatePasswordNavAction.NavigateToApplication -> {
+                CreatePasswordNavAction.NavigateToApplication ->
                     findNavController().navigate(R.id.load_navigation)
-                    //findNavController().setGraph(R.navigation.load_graph, bundleOf("navigationFlowStep" to 1))
-                }
-                is CreatePasswordNavAction.NavigateToTemporaryPassword -> {
-//                    findNavController().navigate(
-//                        CreatePasswordFragmentDirections.actionCreatePasswordFragmentToTemporaryPasswordFragment()
-//                    )
-                    findNavController().popBackStack()
-                }
             }
         })
 

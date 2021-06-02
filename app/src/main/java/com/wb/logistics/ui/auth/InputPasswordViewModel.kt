@@ -16,6 +16,7 @@ class InputPasswordViewModel(
     private val parameters: InputPasswordParameters,
     compositeDisposable: CompositeDisposable,
     private val interactor: InputPasswordInteractor,
+    private val resourceProvider: AuthResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -67,8 +68,8 @@ class InputPasswordViewModel(
     private fun authError(throwable: Throwable) {
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
-            is BadRequestException -> Error(throwable.error.message)
-            else -> Error(throwable.toString()) // TODO: 01.06.2021 Добавить обобщенное сообщение
+            is BadRequestException -> PasswordNotFound(resourceProvider.getPasswordNotFound())
+            else -> Error(resourceProvider.getGenericError())
         }
     }
 

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthTemporaryPasswordFragmentBinding
@@ -61,7 +62,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
     private fun initListener() {
         val password = binding.password
         viewModel.action(TemporaryPasswordUIAction.PasswordChanges(password.textChanges()))
-        binding.repeatPassword.setOnClickListener { viewModel.action(TemporaryPasswordUIAction.RepeatTmpPassword) }
+        binding.repeatPassword.setOnClickListener { viewModel.onRepeatTmpPassword() }
         binding.next.setOnClickListener {
             viewModel.action(
                 TemporaryPasswordUIAction.CheckPassword(
@@ -102,17 +103,44 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
             }
         })
 
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
-            LogUtils {logDebugApp(state.toString())}
+        viewModel.repeatStateUI.observe(viewLifecycleOwner, { state ->
+            LogUtils { logDebugApp(state.toString()) }
             when (state) {
-                TemporaryPasswordUIState.FetchingTmpPassword -> {
-                    binding.password.isEnabled = false
-                    binding.password.text?.clear()
-                    binding.bottomInfo.visibility = GONE
+                TemporaryPasswordUIRepeatState.RepeatPassword -> {
                     binding.repeatPasswordTimer.visibility = GONE
-                    binding.repeatPassword.visibility = GONE
-                    binding.next.setState(ProgressImageButtonMode.DISABLED)
+                    binding.repeatPassword.isEnabled = true
+                    binding.repeatPassword.visibility = VISIBLE
+                    binding.repeatPasswordProgress.visibility = GONE
                 }
+                is TemporaryPasswordUIRepeatState.RepeatPasswordTimer -> {
+                    binding.repeatPasswordTimer.visibility = VISIBLE
+                    binding.repeatPasswordTimer.setText(
+                        timeSpannable(state),
+                        TextView.BufferType.SPANNABLE
+                    )
+                    binding.repeatPassword.isEnabled = true
+                    binding.repeatPassword.visibility = GONE
+                    binding.repeatPasswordProgress.visibility = GONE
+                }
+                TemporaryPasswordUIRepeatState.RepeatPasswordProgress -> {
+                    binding.repeatPasswordTimer.visibility = GONE
+                    binding.repeatPassword.isEnabled = false
+                    binding.repeatPassword.visibility = VISIBLE
+                    binding.repeatPasswordProgress.visibility = VISIBLE
+                }
+                is TemporaryPasswordUIRepeatState.ErrorPassword -> {
+                    binding.repeatPasswordTimer.visibility = GONE
+                    binding.repeatPassword.isEnabled = true
+                    binding.repeatPassword.visibility = VISIBLE
+                    binding.repeatPasswordProgress.visibility = GONE
+                    showBarMessage(state.message)
+                }
+            }
+        })
+
+        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+            LogUtils { logDebugApp(state.toString()) }
+            when (state) {
                 TemporaryPasswordUIState.NextDisable -> {
                     binding.passwordLayout.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.border_input_normal)
@@ -125,21 +153,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                     binding.bottomInfo.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
-                is TemporaryPasswordUIState.RepeatPasswordTimer -> {
-                    binding.password.isEnabled = true
-                    binding.repeatPasswordTimer.visibility = VISIBLE
-                    binding.repeatPasswordTimer.setText(
-                        timeSpannable(state),
-                        TextView.BufferType.SPANNABLE
-                    )
-                    binding.repeatPassword.visibility = GONE
-                }
-                TemporaryPasswordUIState.RepeatPassword -> {
-                    binding.password.isEnabled = true
-                    binding.repeatPasswordTimer.visibility = GONE
-                    binding.repeatPassword.visibility = VISIBLE
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
-                }
                 is TemporaryPasswordUIState.Update -> {
                     binding.password.isEnabled = true
                     binding.password.text?.clear()
@@ -149,23 +162,35 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
                     binding.bottomInfo.text = state.message
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
-                is TemporaryPasswordUIState.Error -> {
-                    binding.bottomInfo.visibility = VISIBLE
+                is TemporaryPasswordUIState.PasswordNotFound -> {
                     binding.passwordLayout.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.border_input_error)
                     binding.password.isEnabled = true
-                    binding.repeatPasswordTimer.visibility = GONE
-                    binding.repeatPassword.visibility = GONE
+                    binding.repeatPassword.isEnabled = true
+                    binding.bottomInfo.visibility = VISIBLE
+                    binding.bottomInfo.text = state.message
+//                    binding.repeatPasswordTimer.visibility = GONE
+//                    binding.repeatPassword.visibility = GONE
+
+                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                }
+                is TemporaryPasswordUIState.Error -> {
+                    showBarMessage(state.message)
+                    binding.password.isEnabled = true
+                    binding.repeatPassword.isEnabled = true
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
                 TemporaryPasswordUIState.Progress -> {
                     binding.password.isEnabled = false
-                    binding.repeatPasswordTimer.visibility = GONE
-                    binding.repeatPassword.visibility = GONE
+                    binding.repeatPassword.isEnabled = false
                     binding.next.setState(ProgressImageButtonMode.PROGRESS)
                 }
             }
         })
+    }
+
+    private fun showBarMessage(state: String) {
+        Snackbar.make(binding.next, state, Snackbar.LENGTH_LONG).show()
     }
 
     private fun phoneSpannable(state: InitTitle): Spannable {
@@ -188,7 +213,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
         return spannable
     }
 
-    private fun timeSpannable(state: TemporaryPasswordUIState.RepeatPasswordTimer): Spannable {
+    private fun timeSpannable(state: TemporaryPasswordUIRepeatState.RepeatPasswordTimer): Spannable {
         val title = state.text
         val spannable: Spannable = SpannableString(title)
         val first = title.indexOf(state.timeStart)

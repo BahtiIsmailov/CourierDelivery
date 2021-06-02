@@ -2,7 +2,6 @@ package com.wb.logistics.utils.formatter
 
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.R
-import com.wb.logistics.di.module.resourceModule
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -48,13 +47,13 @@ object PhoneUtils {
 
     fun phoneFormatter(
         observablePhone: InitialValueObservable<CharSequence>,
-        rxSchedulerFactory: RxSchedulerFactory
+        rxSchedulerFactory: RxSchedulerFactory,
     ): Observable<String> {
         return observablePhone
             .map { it.toString() }
             .debounce(TIME_OUT_DEBOUNCE.toLong(), TimeUnit.MILLISECONDS)
-            .distinctUntilChanged()
             .map { phoneFormat(it) }
+            .distinctUntilChanged()
             .map {
                 it.substring(0, min(it.length, MAX_PHONE_FORMAT_DIGITS))
             }

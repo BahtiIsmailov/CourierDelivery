@@ -17,6 +17,7 @@ class CreatePasswordViewModel(
     private val parameters: CreatePasswordParameters,
     compositeDisposable: CompositeDisposable,
     private val interactor: CreatePasswordInteractor,
+    private val resourceProvider: AuthResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -66,9 +67,8 @@ class CreatePasswordViewModel(
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
             is BadRequestException -> Error(throwable.error.message)
-            else -> Error(throwable.toString())
+            else -> Error(resourceProvider.getGenericError())
         }
-        _navigationEvent.value = CreatePasswordNavAction.NavigateToTemporaryPassword("")
     }
 
 }

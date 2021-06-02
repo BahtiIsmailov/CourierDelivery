@@ -2,7 +2,6 @@ package com.wb.logistics.ui.auth
 
 sealed class NumberPhoneUIState {
     object PhoneCheck : NumberPhoneUIState()
-    object PhoneEdit : NumberPhoneUIState()
 
     object NumberFormatComplete : NumberPhoneUIState()
 

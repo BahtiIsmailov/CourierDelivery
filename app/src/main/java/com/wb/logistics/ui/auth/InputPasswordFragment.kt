@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthInputPasswordFragmentBinding
@@ -97,17 +98,26 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is InputPasswordUIState.Error -> {
+                    showBarMessage(state.message)
+                    binding.password.isEnabled = true
+                    binding.remindPassword.isEnabled = true
+                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                }
+                is InputPasswordUIState.PasswordNotFound -> {
                     binding.passwordLayout.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.border_input_error)
                     binding.passwordNotFound.text = state.message
                     binding.passwordNotFound.visibility = View.VISIBLE
                     binding.password.isEnabled = true
-                    binding.password.text?.clear()
                     binding.remindPassword.isEnabled = true
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
             }
         })
+    }
+
+    private fun showBarMessage(state: String) {
+        Snackbar.make(binding.next, state, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {

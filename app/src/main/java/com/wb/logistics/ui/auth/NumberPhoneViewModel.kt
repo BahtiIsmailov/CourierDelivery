@@ -1,7 +1,6 @@
 package com.wb.logistics.ui.auth
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.exceptions.BadRequestException
@@ -17,6 +16,7 @@ class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
     private val authRepository: AuthRemoteRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val resourceProvider: AuthResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -24,31 +24,16 @@ class NumberPhoneViewModel(
     val navigationEvent: LiveData<NumberPhoneNavAction>
         get() = _navigationEvent
 
-    private val _stateUI = MutableLiveData<NumberPhoneUIState>()
+    private val _stateUI = SingleLiveEvent<NumberPhoneUIState>()
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
 
     fun action(actionView: NumberPhoneUIAction) {
         when (actionView) {
-            is NumberPhoneUIAction.CheckPhone -> {
-                _stateUI.value = PhoneCheck
-                fetchPhoneNumber(actionView.number)
-            }
-            NumberPhoneUIAction.LongTitle ->
-                _navigationEvent.value = NumberPhoneNavAction.NavigateToConfig
             is NumberPhoneUIAction.NumberChanges -> fetchPhoneNumberFormat(actionView)
-
+            is NumberPhoneUIAction.CheckPhone -> fetchPhoneNumber(actionView.number)
+            NumberPhoneUIAction.LongTitle -> navigateToConfig()
         }
-    }
-
-    private fun fetchPhoneNumber(phone: String) {
-        val disposable = authRepository.checkExistPhone(phone.filter { it.isDigit() })
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-            .subscribe(
-                { fetchPhoneNumberComplete(it, phone) },
-                { fetchPhoneNumberError(it) }
-            )
-        addSubscription(disposable)
     }
 
     private fun fetchPhoneNumberFormat(actionView: NumberPhoneUIAction.NumberChanges) {
@@ -60,18 +45,32 @@ class NumberPhoneViewModel(
                 })
     }
 
+    private fun fetchPhoneNumber(phone: String) {
+        _stateUI.value = PhoneCheck
+        val disposable = authRepository.checkExistPhone(phone.filter { it.isDigit() })
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+            .subscribe(
+                { fetchPhoneNumberComplete(it, phone) },
+                { fetchPhoneNumberError(it) }
+            )
+        addSubscription(disposable)
+    }
+
+    private fun navigateToConfig() {
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToConfig
+    }
+
     private fun fetchPhoneNumberComplete(checkPhoneRemote: CheckExistPhoneResponse, phone: String) {
-        _stateUI.value = PhoneEdit
-        if (checkPhoneRemote.hasPassword)
-            _navigationEvent.value = NumberPhoneNavAction.NavigateToInputPassword(phone)
-        else NumberPhoneNavAction.NavigateToTemporaryPassword(phone)
+        _navigationEvent.value =
+            if (checkPhoneRemote.hasPassword) NumberPhoneNavAction.NavigateToInputPassword(phone)
+            else NumberPhoneNavAction.NavigateToTemporaryPassword(phone)
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable) {
         _stateUI.value = when (throwable) {
             is NoInternetException -> Error(throwable.message)
-            is BadRequestException -> NumberNotFound(throwable.error.message)
-            else -> Error(throwable.toString()) // TODO: 01.06.2021 Добавить обобщенное сообщение
+            is BadRequestException -> NumberNotFound(resourceProvider.getNumberNotFound())
+            else -> Error(resourceProvider.getGenericError())
         }
     }
 

@@ -161,6 +161,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
 
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
+            R.id.authNumberPhoneFragment -> finish()
             R.id.flightsEmptyFragment, R.id.flightsFragment -> {
                 AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
                     .setMessage(R.string.exit_app)

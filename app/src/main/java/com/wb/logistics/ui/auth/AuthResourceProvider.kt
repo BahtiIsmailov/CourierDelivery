@@ -20,4 +20,10 @@ class AuthResourceProvider(private val context: Context) {
             String.format(Locale.getDefault(), "%02d", sec)
         )
 
+    fun getNumberNotFound() = context.getString(R.string.auth_number_phone_phone_not_found)
+    fun getPasswordNotFound() = context.getString(R.string.auth_input_password_not_found)
+    fun getTemporaryPasswordNotFound() = context.getString(R.string.auth_temporary_password_incorrect)
+
+    fun getGenericError() = context.getString(R.string.unknown_generic_error)
+
 }

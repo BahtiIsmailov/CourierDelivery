@@ -7,6 +7,8 @@ sealed class InputPasswordUIState {
 
     object AuthProcess : InputPasswordUIState()
     object AuthComplete : InputPasswordUIState()
+
+    data class PasswordNotFound(val message: String) : InputPasswordUIState()
     data class Error(val message: String) : InputPasswordUIState()
 
 }

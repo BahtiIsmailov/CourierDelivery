@@ -3,7 +3,6 @@ package com.wb.logistics.ui.auth
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxbinding3.InitialValueObservable
-import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
@@ -14,7 +13,6 @@ import com.wb.logistics.ui.auth.TemporaryPasswordUIState.*
 import com.wb.logistics.ui.auth.domain.TemporaryPasswordInteractor
 import com.wb.logistics.ui.auth.signup.TimerState
 import com.wb.logistics.ui.auth.signup.TimerStateHandler
-import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class TemporaryPasswordViewModel(
@@ -33,13 +31,17 @@ class TemporaryPasswordViewModel(
     val navigationEvent: LiveData<TemporaryPasswordNavAction>
         get() = _navigationEvent
 
+    private val _repeatStateUI = MutableLiveData<TemporaryPasswordUIRepeatState>()
+    val repeatStateUI: LiveData<TemporaryPasswordUIRepeatState>
+        get() = _repeatStateUI
+
     private val _stateUI = MutableLiveData<TemporaryPasswordUIState>()
     val stateUI: LiveData<TemporaryPasswordUIState>
         get() = _stateUI
 
     init {
         fetchTitle()
-        fetchTmpPassword()
+        fetchInitTmpPassword()
         subscribeTimer()
     }
 
@@ -64,18 +66,43 @@ class TemporaryPasswordViewModel(
 
     private fun onHandleSignUpError(throwable: Throwable) {}
 
-    private fun fetchTmpPassword() {
-        _stateUI.value = FetchingTmpPassword
+    private fun fetchInitTmpPassword() {
         addSubscription(
             interactor.sendTmpPassword(formatPhone()).subscribe(
-                { fetchingTmpPasswordComplete(it) },
-                { error(it) }
+                { fetchingTmpPasswordComplete() },
+                { fetchingTmpPasswordError(it) }
             )
         )
     }
 
-    private fun fetchingTmpPasswordComplete(it: RemainingAttemptsResponse) {
-        restartTimer(DURATION_TIME_INIT)
+    private fun fetchTmpPassword() {
+        _repeatStateUI.value = TemporaryPasswordUIRepeatState.RepeatPasswordProgress
+        fetchInitTmpPassword()
+    }
+
+    private fun fetchingTmpPasswordComplete() {
+        _repeatStateUI.value = TemporaryPasswordUIRepeatState.RepeatPassword
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        interactor.stopTimer()
+    }
+
+    private fun fetchingTmpPasswordError(throwable: Throwable) {
+        when (throwable) {
+            is NoInternetException -> _repeatStateUI.value =
+                TemporaryPasswordUIRepeatState.ErrorPassword(throwable.message)
+            is BadRequestException -> {
+                with(throwable.error) {
+                    if (data != null) {
+                        restartTimer(if (data.resendTime == 0) DURATION_TIME_INIT else data.resendTime)
+                    }
+                }
+            }
+            else -> _repeatStateUI.value =
+                TemporaryPasswordUIRepeatState.ErrorPassword(resourceProvider.getGenericError())
+        }
     }
 
     private fun restartTimer(durationTime: Int) {
@@ -85,9 +112,12 @@ class TemporaryPasswordViewModel(
     fun action(actionView: TemporaryPasswordUIAction) {
         when (actionView) {
             is PasswordChanges -> fetchPasswordChanges(actionView.observable)
-            TemporaryPasswordUIAction.RepeatTmpPassword -> fetchTmpPassword()
             is CheckPassword -> fetchTmpPasswordCheck(actionView.password)
         }
+    }
+
+    fun onRepeatTmpPassword() {
+        fetchTmpPassword()
     }
 
     private fun fetchPasswordChanges(observable: InitialValueObservable<CharSequence>) {
@@ -119,31 +149,19 @@ class TemporaryPasswordViewModel(
     }
 
     private fun tmpPasswordCheckError(throwable: Throwable) {
-        error(throwable)
-    }
-
-    private fun error(throwable: Throwable) {
-        LogUtils { logDebugApp(throwable.toString()) }
         when (throwable) {
-            is NoInternetException -> _stateUI.value = Error
-            is BadRequestException -> {
-                with(throwable.error) {
-                    if (data == null) {
-                        _stateUI.value = Error
-                    } else {
-                        _stateUI.value = Error
-                        restartTimer(if (data.resendTime == 0) DURATION_TIME_INIT else data.resendTime)
-                    }
-                }
-            }
-            else -> _stateUI.value = Error
+            is NoInternetException -> _stateUI.value = Error(throwable.message)
+            is BadRequestException -> _stateUI.value =
+                PasswordNotFound(resourceProvider.getTemporaryPasswordNotFound())
+            else -> _stateUI.value = Error(resourceProvider.getGenericError())
         }
     }
 
     override fun onTimerState(duration: Int) {
         val time: String =
             resourceProvider.getSignUpTimeConfirmCode(getMin(duration), getSec(duration))
-        _stateUI.value = RepeatPasswordTimer(time, resourceProvider.getTitleInputTimerSpan())
+        _repeatStateUI.value = TemporaryPasswordUIRepeatState.RepeatPasswordTimer(time,
+            resourceProvider.getTitleInputTimerSpan())
     }
 
     private fun getMin(duration: Int): Int {
@@ -155,7 +173,7 @@ class TemporaryPasswordViewModel(
     }
 
     override fun onTimeIsOverState() {
-        _stateUI.value = RepeatPassword
+        _repeatStateUI.value = TemporaryPasswordUIRepeatState.RepeatPassword
     }
 
     companion object {

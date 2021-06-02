@@ -14,6 +14,7 @@
     <string name="session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
     <string name="unknown_error">Что-то пошло не так. Повторите операцию позднее</string>
     <string name="unknown_http_error">Неизвестная ошибка</string>
+    <string name="unknown_generic_error">Операция не выполнена. Мы знаем о проблемме и работаем над ее устранением</string>
 
     <!--debug panel-->
     <string name="debug_panel_caption">App Debug Console</string>
@@ -41,6 +42,13 @@
     <string name="auth_number_phone_phone_next">Далее</string>
     <string name="auth_number_phone_phone_default">+7</string>
 
+    <string name="auth_input_password_toolbar_label">Вход</string>
+    <string name="auth_input_password_hint_password">Введите пароль</string>
+    <string name="auth_input_password_remember_password"><u>Забыли пароль?</u></string>
+    <string name="auth_input_password_input">Войти</string>
+    <string name="auth_input_password_title">Авторизация по номеру %1$s</string>
+    <string name="auth_input_password_not_found">Неверный пароль</string>
+
     <string name="auth_temporary_toolbar_label">Временный пароль</string>
     <string name="auth_temporary_password_title">На номер %1$s выслан временный пароль</string>
     <string name="auth_temporary_hint_password">Временный пароль</string>
@@ -49,12 +57,6 @@
     <string name="auth_temporary_repeat_code"><u>Выслать пароль повторно</u></string>
     <string name="auth_temporary_number_attempt">Осталось попыток: %1$d</string>
     <string name="auth_temporary_password_incorrect">Неверный пароль</string>
-
-    <string name="auth_input_password_toolbar_label">Вход</string>
-    <string name="auth_input_password_hint_password">Введите пароль</string>
-    <string name="auth_input_password_remember_password"><u>Забыли пароль?</u></string>
-    <string name="auth_input_password_input">Войти</string>
-    <string name="auth_input_password_title">Авторизация по номеру %1$s</string>
 
     <string name="auth_create_password_toolbar_label">Придумайте пароль</string>
     <string name="auth_create_password_hint">Мой пароль</string>
