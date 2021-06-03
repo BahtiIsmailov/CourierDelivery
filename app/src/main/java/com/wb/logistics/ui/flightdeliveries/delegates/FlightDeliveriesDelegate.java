@@ -52,7 +52,6 @@ public class FlightDeliveriesDelegate extends BaseAdapterDelegate<FlightDeliveri
         boolean isEnabled = item.isEnabled();
         binding.main.setEnabled(isEnabled);
         binding.main.setClickable(isEnabled);
-        binding.next.setVisibility(isEnabled ? View.VISIBLE : View.INVISIBLE);
     }
 
     class RouterViewHolder extends RecyclerView.ViewHolder {

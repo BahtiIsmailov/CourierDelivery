@@ -93,13 +93,4 @@
             tools:text="Сдать 4 шт." />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/next"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_more_horiz"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

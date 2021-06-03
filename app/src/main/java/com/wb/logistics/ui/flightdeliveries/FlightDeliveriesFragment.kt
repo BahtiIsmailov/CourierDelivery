@@ -113,7 +113,9 @@ class FlightDeliveriesFragment : Fragment() {
     }
 
     private fun updateToolbarDeliveryIcon() {
-        (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
+        // TODO: 03.06.2021 реализовать ТТН
+//        (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
+        (activity as NavToolbarTitleListener).hideBackButton()
     }
 
     private fun updateBottom(isComplete: Boolean) {

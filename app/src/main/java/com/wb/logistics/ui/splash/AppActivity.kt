@@ -44,6 +44,8 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
         initObserver()
         initView()
         initListener()
+
+
     }
 
     private fun initToolbar() {
@@ -149,6 +151,12 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
         viewModel.updateDrawer()
     }
 
+    override fun leftIcon(resId: Int) {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val leftIcon = toolbar.findViewById<ImageView>(R.id.left_icon)
+        leftIcon.setImageResource(resId)
+    }
+
     override fun backButtonIcon(resId: Int) {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.setNavigationIcon(resId)
@@ -162,22 +170,26 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.flightsEmptyFragment, R.id.flightsFragment -> {
-                AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
-                    .setMessage(R.string.exit_app)
-                    .setPositiveButton(R.string.exit_app_ok) { _, _ -> finish() }
-                    .setNegativeButton(R.string.exit_app_cancel) { dialogInterface, _ -> dialogInterface.cancel() }
-                    .show()
-            }
+            R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment -> { showExitDialog() }
             else -> {
                 super.onBackPressed()
             }
         }
     }
 
+    private fun showExitDialog() {
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
+            .setMessage(R.string.exit_app)
+            .setPositiveButton(R.string.exit_app_ok) { _, _ -> finish() }
+            .setNegativeButton(R.string.exit_app_cancel) { dialogInterface, _ -> dialogInterface.cancel() }
+            .show()
+    }
+
 }
 
 interface NavToolbarTitleListener {
+
+    fun leftIcon(@DrawableRes resId: Int)
 
     fun backButtonIcon(@DrawableRes resId: Int)
 
