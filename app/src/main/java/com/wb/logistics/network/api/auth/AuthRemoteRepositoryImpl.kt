@@ -8,12 +8,14 @@ import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
 import com.wb.logistics.network.api.auth.response.StatisticsResponse
 import com.wb.logistics.network.token.TokenManager
+import com.wb.logistics.network.token.UserManager
 import io.reactivex.Completable
 import io.reactivex.Single
 
 class AuthRemoteRepositoryImpl(
     private val authApi: AuthApi,
     private val tokenManager: TokenManager,
+    private val userManager: UserManager,
 ) : AuthRemoteRepository {
 
     override fun authByPhoneOrPassword(
@@ -30,8 +32,9 @@ class AuthRemoteRepositoryImpl(
         tokenManager.saveToken(tokenEntity)
     }
 
-    override fun checkExistPhone(phone: String): Single<CheckExistPhoneResponse> {
+    override fun checkExistAndSavePhone(phone: String): Single<CheckExistPhoneResponse> {
         return authApi.checkExistPhone(tokenManager.apiVersion(), phone)
+            .doOnSuccess { userManager.savePhone(phone) }
     }
 
     override fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse> {
@@ -66,6 +69,11 @@ class AuthRemoteRepositoryImpl(
 
     override fun clearToken() {
         tokenManager.clear()
+        userManager.clear()
+    }
+
+    override fun userPhone(): String {
+        return userManager.phone()
     }
 
 }

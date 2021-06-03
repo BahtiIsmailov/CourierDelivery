@@ -1,6 +1,5 @@
 package com.wb.logistics.utils.formatter
 
-import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.R
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Observable
@@ -46,7 +45,7 @@ object PhoneUtils {
     }
 
     fun phoneFormatter(
-        observablePhone: InitialValueObservable<CharSequence>,
+        observablePhone: Observable<CharSequence>,
         rxSchedulerFactory: RxSchedulerFactory,
     ): Observable<String> {
         return observablePhone

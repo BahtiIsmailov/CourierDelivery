@@ -23,7 +23,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     private var _binding: AuthPhoneFragmentBinding? = null
     private val binding get() = _binding!!
 
-    //private lateinit var inputMethod: InputMethodManager
     private val viewModel by viewModel<NumberPhoneViewModel>()
 
     override fun onCreateView(
@@ -38,16 +37,10 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initListener()
-        //initInputMethod()
         initStateObserve()
 
         (activity as NavToolbarTitleListener).hideBackButton()
     }
-
-//    private fun initInputMethod() {
-//        inputMethod =
-//            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-//    }
 
     private fun initStateObserve() {
         viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
@@ -118,6 +111,11 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                     binding.numberNotFound.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
+                is NumberPhoneUIState.NumberFormatInit -> {
+                    binding.phoneNumber.setText(state.number)
+                    binding.phoneNumber.setSelection(state.number.length)
+                    viewModel.action(NumberPhoneUIAction.NumberChanges(binding.phoneNumber.textChanges()))
+                }
             }
 
         })
@@ -148,12 +146,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
             true
         }
 
-
         with(binding.phoneNumber) {
-//            val phone = binding.phoneNumber
-//            phone.isFocusableInTouchMode = true
-//            phone.requestFocus()
-            viewModel.action(NumberPhoneUIAction.NumberChanges(textChanges()))
             binding.next.setOnClickListener {
                 viewModel.action(NumberPhoneUIAction.CheckPhone(text.toString()))
             }

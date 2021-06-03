@@ -11,10 +11,10 @@ interface AuthRemoteRepository {
     fun authByPhoneOrPassword(
         password: String,
         phone: String,
-        useSMS: Boolean
+        useSMS: Boolean,
     ): Completable
 
-    fun checkExistPhone(phone: String): Single<CheckExistPhoneResponse>
+    fun checkExistAndSavePhone(phone: String): Single<CheckExistPhoneResponse>
 
     fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse>
 
@@ -24,8 +24,10 @@ interface AuthRemoteRepository {
 
     fun statistics(): Single<StatisticsResponse>
 
-    fun userInfo() : Single<Pair<String, String>>
+    fun userInfo(): Single<Pair<String, String>>
 
     fun clearToken()
+
+    fun userPhone(): String
 
 }

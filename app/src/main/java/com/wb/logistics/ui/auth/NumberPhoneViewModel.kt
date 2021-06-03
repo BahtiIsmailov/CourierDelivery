@@ -10,6 +10,7 @@ import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.NumberPhoneUIState.*
 import com.wb.logistics.utils.formatter.PhoneUtils
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class NumberPhoneViewModel(
@@ -27,6 +28,12 @@ class NumberPhoneViewModel(
     private val _stateUI = SingleLiveEvent<NumberPhoneUIState>()
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
+
+    init {
+        addSubscription(
+            PhoneUtils.phoneFormatter(Observable.just(authRepository.userPhone()), rxSchedulerFactory)
+                .subscribe { number -> _stateUI.value = NumberFormatInit(number) })
+    }
 
     fun action(actionView: NumberPhoneUIAction) {
         when (actionView) {
@@ -47,7 +54,7 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumber(phone: String) {
         _stateUI.value = PhoneCheck
-        val disposable = authRepository.checkExistPhone(phone.filter { it.isDigit() })
+        val disposable = authRepository.checkExistAndSavePhone(phone.filter { it.isDigit() })
             .compose(rxSchedulerFactory.applySingleSchedulers())
             .subscribe(
                 { fetchPhoneNumberComplete(it, phone) },
