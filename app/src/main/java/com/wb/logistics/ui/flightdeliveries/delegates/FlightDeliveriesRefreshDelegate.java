@@ -13,6 +13,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem;
 import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesRefreshItem;
 import com.wb.logistics.views.ProgressButtonMode;
 
+@Deprecated
 public class FlightDeliveriesRefreshDelegate extends BaseAdapterDelegate<FlightDeliveriesRefreshItem,
         FlightDeliveriesRefreshDelegate.EmptyViewHolder> {
 

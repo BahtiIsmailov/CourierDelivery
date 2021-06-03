@@ -180,15 +180,15 @@ class FlightsFragment : Fragment() {
     private fun initAdapter() {
         adapter = with(DefaultAdapter()) {
             addDelegate(FlightsDelegate(requireContext()))
-            addDelegate(
-                FlightsRefreshDelegate(
-                    requireContext(),
-                    object : OnFlightsUpdateCallback {
-                        override fun onUpdateRouteClick() {
-                            viewModel.action(FlightsUIAction.Refresh)
-                        }
-                    })
-            )
+//            addDelegate(
+//                FlightsRefreshDelegate(
+//                    requireContext(),
+//                    object : OnFlightsUpdateCallback {
+//                        override fun onUpdateRouteClick() {
+//                            viewModel.action(FlightsUIAction.Refresh)
+//                        }
+//                    })
+//            )
             addDelegate(FlightsProgressDelegate(requireContext()))
         }
         binding.recyclerView.adapter = adapter

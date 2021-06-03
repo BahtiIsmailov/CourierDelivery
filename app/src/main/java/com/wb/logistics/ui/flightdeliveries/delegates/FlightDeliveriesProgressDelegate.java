@@ -25,7 +25,7 @@ public class FlightDeliveriesProgressDelegate extends BaseAdapterDelegate<Flight
 
     @Override
     protected int getLayoutId() {
-        return R.layout.flights_layout_route_progress;
+        return R.layout.flights_progress_delegate;
     }
 
     @NonNull

@@ -5,9 +5,6 @@
     android:id="@+id/route_legend_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     android:layout_marginTop="13dp"
     android:orientation="horizontal"
     android:padding="5dp">

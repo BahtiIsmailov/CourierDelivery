@@ -17,36 +17,38 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <TextView
             android:id="@+id/flight_text"
             style="@style/SMediumRegularDarkText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Рейс № 31324" />
+            tools:text="№ 31324" />
 
         <TextView
             android:id="@+id/date_text"
             style="@style/BaseRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/flight_text"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/flight_text"
+            app:layout_constraintEnd_toStartOf="@+id/dot_image"
+            app:layout_constraintTop_toTopOf="@+id/flight_text"
             tools:text="23.09.2020" />
 
         <ImageView
             android:id="@+id/dot_image"
             android:layout_width="5dp"
             android:layout_height="5dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toBottomOf="@+id/date_text"
-            app:layout_constraintStart_toEndOf="@+id/date_text"
+            app:layout_constraintEnd_toStartOf="@+id/time_text"
             app:layout_constraintTop_toTopOf="@+id/date_text"
             app:srcCompat="@drawable/ic_dot_divider" />
 
@@ -55,11 +57,9 @@
             style="@style/BaseRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toEndOf="@+id/dot_image"
-            app:layout_constraintTop_toBottomOf="@+id/flight_text"
+            app:layout_constraintBottom_toBottomOf="@+id/date_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/date_text"
             tools:text="10:00" />
 
         <TextView
@@ -68,77 +68,67 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
             android:text="@string/flights_parking_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/delivery_parking_number"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/flight_text" />
 
         <TextView
             android:id="@+id/parking_number_text"
-            style="@style/MediumRegularDarkText"
+            style="@style/SMediumRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
             android:textColor="@color/delivery_parking_number"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/parking_title_text"
+            app:layout_constraintBottom_toBottomOf="@+id/parking_title_text"
+            app:layout_constraintStart_toEndOf="@+id/parking_title_text"
+            app:layout_constraintTop_toTopOf="@+id/parking_title_text"
             tools:text="№10" />
-
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:layout_marginTop="12dp"
-            android:background="#EDEEF0"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date_text" />
 
         <TextView
             android:id="@+id/routes_title_text"
             style="@style/SMediumRegularDarkText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider1"
+            app:layout_constraintTop_toBottomOf="@+id/parking_title_text"
+            app:layout_constraintVertical_bias="0"
             tools:text="Маршрут № 4 «Подольск север»" />
 
         <ImageView
             android:id="@+id/show_route_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
             android:background="?selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/routes_title_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/divider1"
-            app:srcCompat="@drawable/arrow_up"
+            app:layout_constraintTop_toTopOf="@+id/routes_title_text"
+            app:srcCompat="@drawable/ic_arrow_right_flight"
             tools:ignore="ContentDescription" />
-
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:layout_marginTop="12dp"
-            android:background="#EDEEF0"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/routes_title_text" />
 
         <com.wb.logistics.views.WrapContentListView
             android:id="@+id/route_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:divider="@null"
             android:dividerHeight="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider2"
-            tools:listitem="@layout/flights_layout_route_legend" />
+            app:layout_constraintTop_toBottomOf="@+id/routes_title_text"
+            tools:listitem="@layout/flights_route_item_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
