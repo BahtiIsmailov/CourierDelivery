@@ -1,7 +1,6 @@
 package com.wb.logistics.ui.flights
 
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,10 +18,6 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flights.delegates.FlightsDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsProgressDelegate
-import com.wb.logistics.ui.flights.delegates.FlightsRefreshDelegate
-import com.wb.logistics.ui.flights.delegates.OnFlightsUpdateCallback
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
-import com.wb.logistics.ui.splash.OnFlightsCount
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -41,7 +36,6 @@ class FlightsFragment : Fragment() {
     private lateinit var adapter: DefaultAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
-    private lateinit var onFlightsCount: OnFlightsCount
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,8 +51,6 @@ class FlightsFragment : Fragment() {
         initAdapter()
         initListener()
         initStateObserve()
-        initDrawer()
-        viewModel.update()
     }
 
     private fun initListener() {
@@ -76,8 +68,6 @@ class FlightsFragment : Fragment() {
     private fun initStateObserve() {
         viewModel.stateUINav.observe(viewLifecycleOwner, { state ->
             when (state) {
-                FlightsUINavState.Empty -> {
-                }
                 FlightsUINavState.NavigateToNetworkInfoDialog -> {
                 }
                 FlightsUINavState.NavigateToReceptionBox -> findNavController().navigate(R.id.dcLoadingFragment)
@@ -90,17 +80,14 @@ class FlightsFragment : Fragment() {
             when (state) {
                 is FlightsUIListState.ShowFlight -> {
                     displayItems(state.items)
-                    showFlight(state.countFlight)
                 }
                 is FlightsUIListState.ProgressFlight -> {
                     displayItems(state.items)
                     goneStartAddingBoxes()
-                    showFlight(state.countFlight)
                 }
                 is FlightsUIListState.UpdateFlight -> {
                     displayItems(state.items)
                     goneStartAddingBoxes()
-                    showFlight(state.countFlight)
                 }
             }
         }
@@ -120,10 +107,6 @@ class FlightsFragment : Fragment() {
 
     }
 
-    private fun initDrawer() {
-        (activity as NavToolbarTitleListener).updateDrawer()
-    }
-
     private fun showDialogReturnBalance() {
         val dialog = SimpleResultDialogFragment.newInstance(
             getString(R.string.dc_loading_return_dialog_title),
@@ -140,15 +123,6 @@ class FlightsFragment : Fragment() {
         if (resultCode == RESULT_OK && requestCode == RETURN_BALANCE_REQUEST_CODE) {
             viewModel.action(FlightsUIAction.RemoveBoxesClick)
         }
-    }
-
-    private fun showFlight(countFlight: String) {
-        onFlightsCount.flightCount(countFlight)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        onFlightsCount = context as OnFlightsCount
     }
 
     override fun onDestroyView() {

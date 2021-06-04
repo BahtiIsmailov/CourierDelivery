@@ -29,6 +29,7 @@ class AppViewModel(
 
     init {
         fetchNetworkState()
+        updateDrawer()
     }
 
     private fun fetchNavHeader() {
@@ -47,7 +48,7 @@ class AppViewModel(
         interactor.exitAuth()
     }
 
-    fun updateDrawer() {
+    private fun updateDrawer() {
         fetchNavHeader()
         fetchVersionApp()
     }

@@ -9,6 +9,7 @@ import com.wb.logistics.ui.dcunloading.DcUnloadingScanResourceProvider
 import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
+import com.wb.logistics.ui.flightloader.FlightLoaderProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.flightsempty.FlightsEmptyResourceProvider
@@ -23,6 +24,10 @@ val resourceModule = module {
 
     fun provideAppResourceProvider(application: Application): AppResourceProvider {
         return AppResourceProvider(application)
+    }
+
+    fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
+        return FlightLoaderProvider(application)
     }
 
     fun provideFlightResourceProvider(application: Application): FlightsResourceProvider {
@@ -86,6 +91,7 @@ val resourceModule = module {
     }
 
     single { provideAppResourceProvider(get()) }
+    single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }
     single { provideFlightEmptyResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }

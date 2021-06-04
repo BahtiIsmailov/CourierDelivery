@@ -6,5 +6,4 @@ sealed class FlightsUINavState {
     object NavigateToNetworkInfoDialog : FlightsUINavState()
     object NavigateToReturnBalanceDialog : FlightsUINavState()
 
-    object Empty : FlightsUINavState()
 }

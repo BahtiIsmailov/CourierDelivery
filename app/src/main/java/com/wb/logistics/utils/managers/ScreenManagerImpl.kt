@@ -25,9 +25,8 @@ class ScreenManagerImpl(
     private val timeManager: TimeManager,
 ) : ScreenManager {
 
-    override fun loadState(): Single<NavDirections> {
-        val flightId = appRemoteRepository.flight().map { it.id.toString() }
-        return flightId.flatMap { appRemoteRepository.getFlightStatus(it) }
+    override fun loadStatus(flightId: String): Single<NavDirections> {
+        return appRemoteRepository.getFlightStatus(flightId)
             .doOnSuccess { worker.save(AppPreffsKeys.SCREEN_KEY, it) }
             .map {
                 navDirectionsByStatus(FlightStatus.valueOf(it.status.toUpperCase()),
@@ -72,7 +71,9 @@ class ScreenManagerImpl(
         isGetFromGPS: Boolean,
     ): Completable {
         val statusStateEntity = loadStatusStateEntity()
-        if (statusStateEntity != null && flightStatus == FlightStatus.valueOf(statusStateEntity.status.toUpperCase())) return Completable.complete()
+        if (statusStateEntity != null
+            && flightStatus == FlightStatus.valueOf(statusStateEntity.status.toUpperCase())
+        ) return Completable.complete()
         val putStatus =
             appRemoteRepository.putFlightStatus(flightId,
                 flightStatus,

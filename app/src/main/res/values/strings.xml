@@ -63,7 +63,7 @@
     <string name="auth_create_password_title">Этот пароль будет использоваться при последующих авторизациях</string>
     <string name="auth_create_password_input">Сохранить и войти</string>
 
-    <string name="nav_default_count">100</string>
+    <string name="nav_default_count">0</string>
     <string name="nav_no_internet_dialog_title">У вас отсутствует интернет!</string>
     <string name="nav_no_internet_dialog_description">Вы можете продолжить работу, сохранение произойдет после того как возобновится связь</string>
     <string name="nav_no_internet_dialog_button">Понятно</string>

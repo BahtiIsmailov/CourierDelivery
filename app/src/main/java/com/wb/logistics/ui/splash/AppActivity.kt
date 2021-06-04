@@ -44,8 +44,6 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
         initObserver()
         initView()
         initListener()
-
-
     }
 
     private fun initToolbar() {
@@ -147,10 +145,6 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
         toolbarTitle.text = title
     }
 
-    override fun updateDrawer() {
-        viewModel.updateDrawer()
-    }
-
     override fun leftIcon(resId: Int) {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val leftIcon = toolbar.findViewById<ImageView>(R.id.left_icon)
@@ -170,7 +164,9 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment -> { showExitDialog() }
+            R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment -> {
+                showExitDialog()
+            }
             else -> {
                 super.onBackPressed()
             }
@@ -196,8 +192,6 @@ interface NavToolbarTitleListener {
     fun hideBackButton()
 
     fun updateTitle(title: String)
-
-    fun updateDrawer()
 
 }
 

@@ -45,15 +45,9 @@ val viewModelModule = module {
         DcLoadingBoxNotBelongModel(parameters)
     }
 
-    viewModel { FlightLoaderViewModel(get(), get(), get()) }
-    viewModel {
-        FlightsViewModel(get(),
-            get(),
-            get(),
-            get(),
-            get())
-    }
-    viewModel { FlightsEmptyViewModel(get(), get()) }
+    viewModel { FlightLoaderViewModel(get(), get(), get(), get()) }
+    viewModel { FlightsViewModel(get(), get(), get()) }
+    viewModel { FlightsEmptyViewModel(get()) }
 
     viewModel { ScannerViewModel(get(), get(), get()) }
     viewModel { DcLoadingScanViewModel(get(), get(), get(), get()) }

@@ -4,19 +4,17 @@ import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
-import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightsViewModel(
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: FlightsResourceProvider,
     private val interactor: FlightsInteractor,
     private val dataBuilder: FlightsDataBuilder,
-    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
-    val stateUINav = MutableLiveData<FlightsUINavState>()
+    val stateUINav = SingleLiveEvent<FlightsUINavState>()
     val stateUIList = MutableLiveData<FlightsUIListState>()
     val stateUIBottom = MutableLiveData<FlightsUIBottomState>()
 
@@ -25,13 +23,10 @@ class FlightsViewModel(
             is FlightsUIAction.Refresh -> fetchFlights()
             is FlightsUIAction.NetworkInfoClick ->
                 FlightsUINavState.NavigateToNetworkInfoDialog
-            is FlightsUIAction.ReceptionBoxesClick -> {
+            is FlightsUIAction.ReceptionBoxesClick ->
                 stateUINav.value = FlightsUINavState.NavigateToReceptionBox
-                stateUINav.value = FlightsUINavState.Empty
-            }
-            is FlightsUIAction.ReturnToBalanceClick -> {
+            is FlightsUIAction.ReturnToBalanceClick ->
                 FlightsUINavState.NavigateToReturnBalanceDialog
-            }
             is FlightsUIAction.ContinueAcceptanceClick ->
                 FlightsUINavState.NavigateToReceptionBox
             FlightsUIAction.RemoveBoxesClick ->
@@ -59,10 +54,8 @@ class FlightsViewModel(
 
     private fun fetchFlights() {
         stateUIList.value = FlightsUIListState.ProgressFlight(
-            listOf(dataBuilder.buildProgressItem()),
-            zeroFlight()
+            listOf(dataBuilder.buildProgressItem())
         )
-        addSubscription(interactor.updateFlight().subscribe({ }, { flightsError(it) }))
     }
 
     private fun observeFlightBoxesScanned() {
@@ -82,11 +75,10 @@ class FlightsViewModel(
             .map {
                 when (it) {
                     is SuccessOrEmptyData.Empty -> FlightsUIListState.UpdateFlight(
-                        listOf(dataBuilder.buildEmptyItem()), zeroFlight()
+                        listOf(dataBuilder.buildEmptyItem())
                     )
                     is SuccessOrEmptyData.Success -> FlightsUIListState.ShowFlight(
-                        listOf(dataBuilder.buildSuccessItem(it)),
-                        resourceProvider.getOneFlight()
+                        listOf(dataBuilder.buildSuccessItem(it))
                     )
                 }
             }
@@ -103,16 +95,10 @@ class FlightsViewModel(
     private fun flightsError(throwable: Throwable) {
         stateUIList.value = when (throwable) {
             is UnauthorizedException -> FlightsUIListState.UpdateFlight(
-                listOf(dataBuilder.buildErrorMessageItem(throwable.message)),
-                zeroFlight()
+                listOf(dataBuilder.buildErrorMessageItem(throwable.message))
             )
-            else -> FlightsUIListState.UpdateFlight(
-                listOf(dataBuilder.buildErrorItem()),
-                zeroFlight()
-            )
+            else -> FlightsUIListState.UpdateFlight(listOf(dataBuilder.buildErrorItem()))
         }
     }
-
-    private fun zeroFlight() = resourceProvider.getZeroFlight()
 
 }

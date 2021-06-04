@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.FlightLoaderFragmentBinding
 import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.OnFlightsCount
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
@@ -36,6 +37,9 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
 
     private fun initObserver() {
         viewModel.navState.observe(viewLifecycleOwner) { findNavController().navigate(it.navDirections) }
+        viewModel.countFlightsState.observe(viewLifecycleOwner) {
+            (activity as OnFlightsCount).flightCount(it.countFlights)
+        }
     }
 
     override fun onDestroyView() {

@@ -1,6 +1,5 @@
 package com.wb.logistics.ui.flightsempty
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,8 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.FlightsEmptyFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
-import com.wb.logistics.ui.splash.OnFlightsCount
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -19,7 +16,6 @@ class FlightsEmptyFragment : Fragment() {
 
     private var _binding: FlightsEmptyFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var onFlightsCount: OnFlightsCount
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +29,6 @@ class FlightsEmptyFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initStateObserve()
-        initDrawer()
     }
 
     private fun initListener() {
@@ -42,20 +37,6 @@ class FlightsEmptyFragment : Fragment() {
 
     private fun initStateObserve() {
         viewModel.stateUINav.observe(viewLifecycleOwner, { findNavController().popBackStack() })
-        viewModel.stateUI.observe(viewLifecycleOwner, { showFlight(it.countFlight) })
-    }
-
-    private fun initDrawer() {
-        (activity as NavToolbarTitleListener).updateDrawer()
-    }
-
-    private fun showFlight(countFlight: String) {
-        onFlightsCount.flightCount(countFlight)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        onFlightsCount = context as OnFlightsCount
     }
 
     override fun onDestroyView() {
