@@ -12,14 +12,14 @@ import com.wb.logistics.mvvm.model.base.BaseItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultAdapter extends RecyclerView.Adapter {
+public class DefaultAdapterDelegate extends RecyclerView.Adapter {
 
     @NonNull
     private final AdapterDelegatesManager<List<BaseItem>> delegatesManager;
     @NonNull
     private final List<BaseItem> items;
 
-    public DefaultAdapter() {
+    public DefaultAdapterDelegate() {
         this.delegatesManager = new AdapterDelegatesManager<>();
         items = new ArrayList<>();
     }
@@ -74,7 +74,7 @@ public class DefaultAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public DefaultAdapter addDelegate(@NonNull AdapterDelegate<List<BaseItem>> delegate) {
+    public DefaultAdapterDelegate addDelegate(@NonNull AdapterDelegate<List<BaseItem>> delegate) {
         delegatesManager.addDelegate(delegate);
         return this;
     }

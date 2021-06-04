@@ -37,15 +37,16 @@
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/return_group"
-        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="return_balance,continue_acceptance" />
+        android:visibility="gone"
+        app:constraint_referenced_ids="continue_acceptance" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/return_balance"
         android:layout_width="0dp"
         android:layout_height="72dp"
+        android:visibility="gone"
         app:app_background="@drawable/progress_image_button_light"
         app:app_icon="@drawable/ic_return_balance"
         app:app_state="enable"
@@ -70,7 +71,7 @@
         app:app_text_color_progress="@color/button_default_text_progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/scan_boxes"

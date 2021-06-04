@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.wb.logistics.R
-import com.wb.logistics.adapters.DefaultAdapter
+import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightsFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
@@ -33,7 +33,7 @@ class FlightsFragment : Fragment() {
     private var _binding: FlightsFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: DefaultAdapter
+    private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
 
@@ -71,8 +71,7 @@ class FlightsFragment : Fragment() {
                 FlightsUINavState.NavigateToNetworkInfoDialog -> {
                 }
                 FlightsUINavState.NavigateToReceptionBox -> findNavController().navigate(R.id.dcLoadingFragment)
-                FlightsUINavState.NavigateToReturnBalanceDialog -> {
-                }
+                FlightsUINavState.NavigateToReturnBalanceDialog -> { }
             }
         })
 
@@ -152,7 +151,7 @@ class FlightsFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapter()) {
+        adapter = with(DefaultAdapterDelegate()) {
             addDelegate(FlightsDelegate(requireContext()))
 //            addDelegate(
 //                FlightsRefreshDelegate(

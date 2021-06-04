@@ -49,6 +49,8 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/box"
         android:layout_alignBottom="@+id/address"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="@android:color/transparent"
+        android:clickable="false" />
 
 </RelativeLayout>

@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.wb.logistics.adapters.DefaultAdapter
+import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightDeliveriesDetailsFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsDelegate
@@ -30,7 +30,7 @@ class FlightDeliveriesDetailsFragment : Fragment() {
     private var _binding: FlightDeliveriesDetailsFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: DefaultAdapter
+    private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
 
@@ -71,7 +71,7 @@ class FlightDeliveriesDetailsFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapter()) {
+        adapter = with(DefaultAdapterDelegate()) {
             addDelegate(FlightDeliveriesDetailsTitleDelegate(requireContext()))
             addDelegate(FlightDeliveriesDetailsDelegate(requireContext()))
         }

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.wb.logistics.R
-import com.wb.logistics.adapters.DefaultAdapter
+import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightPickPointFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
@@ -33,7 +33,7 @@ class FlightPickPointFragment : Fragment() {
     private var _binding: FlightPickPointFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: DefaultAdapter
+    private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
 
@@ -157,7 +157,7 @@ class FlightPickPointFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapter()) {
+        adapter = with(DefaultAdapterDelegate()) {
             addDelegate(FlightPickPointDelegate(requireContext()))
         }
         binding.recyclerView.adapter = adapter

@@ -36,14 +36,24 @@
 
     </RelativeLayout>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/boxes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
         app:layout_constraintBottom_toTopOf="@+id/remove"
         app:layout_constraintTop_toTopOf="@+id/empty_list"
-        tools:layout_editor_absoluteX="20dp"
-        tools:listitem="@layout/dc_loading_boxes_item_layout" />
+        tools:listitem="@layout/dc_loading_boxes_item_layout"
+        android:clipToPadding="false" />
+
+    <View
+        android:id="@+id/overlay_boxes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/remove"
+        app:layout_constraintTop_toTopOf="@+id/empty_list"
+        android:visibility="gone" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/remove"

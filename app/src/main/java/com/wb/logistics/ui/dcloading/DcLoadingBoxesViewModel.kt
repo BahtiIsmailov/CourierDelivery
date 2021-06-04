@@ -27,6 +27,7 @@ class DcLoadingBoxesViewModel(
         get() = _navigateToMessage
 
     private val _enableRemove = MutableLiveData<Boolean>()
+
     val enableRemove: LiveData<Boolean>
         get() = _enableRemove
 
@@ -56,7 +57,7 @@ class DcLoadingBoxesViewModel(
         copyReceptionBoxes = boxes.toMutableList()
     }
 
-    private fun changeBoxesComplete(boxes: List<DcLoadingBoxesItem>) {
+    private fun changeBoxesComplete(boxes: MutableList<DcLoadingBoxesItem>) {
         if (boxes.isEmpty()) {
             _boxes.value = DcLoadingBoxesUIState.Empty
         } else {
@@ -89,6 +90,12 @@ class DcLoadingBoxesViewModel(
         changeEnableRemove()
     }
 
+    private fun changeCheckedBox(index: Int, checked: Boolean) {
+        val copyReception = copyReceptionBoxes[index].copy(isChecked = checked)
+        copyReceptionBoxes[index] = copyReception
+        _boxes.value = DcLoadingBoxesUIState.ReceptionBoxItem(index, copyReception)
+    }
+
     private fun changeEnableRemove() {
         var activeRemove = false
         copyReceptionBoxes.forEach {
@@ -105,12 +112,6 @@ class DcLoadingBoxesViewModel(
             val copyReception = copyReceptionBoxes[index].copy(isChecked = false)
             copyReceptionBoxes[index] = copyReception
         }
-        _boxes.value = DcLoadingBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
-    }
-
-    private fun changeCheckedBox(index: Int, checked: Boolean) {
-        val copyReception = copyReceptionBoxes[index].copy(isChecked = checked)
-        copyReceptionBoxes[index] = copyReception
         _boxes.value = DcLoadingBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
     }
 

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.wb.logistics.R
-import com.wb.logistics.adapters.DefaultAdapter
+import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
@@ -29,7 +29,7 @@ class FlightDeliveriesFragment : Fragment() {
     private var _binding: FlightDeliveriesFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: DefaultAdapter
+    private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
 
@@ -149,7 +149,7 @@ class FlightDeliveriesFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapter()) {
+        adapter = with(DefaultAdapterDelegate()) {
             addDelegate(FlightDeliveriesDelegate(requireContext(),
                 object : OnFlightDeliveriesCallback {
                     override fun onPickToPointClick(idItem: Int) {

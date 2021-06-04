@@ -8,6 +8,9 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.wb.logistics.databinding.DcLoadingBoxesFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.views.ProgressImageButtonMode
@@ -20,6 +23,11 @@ class DcLoadingBoxesFragment : Fragment() {
     private var _binding: DcLoadingBoxesFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var adapter: DcLoadingBoxesAdapter
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var smoothScroller: RecyclerView.SmoothScroller
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -30,14 +38,19 @@ class DcLoadingBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRecyclerView()
+        initObservable()
+        initListener()
+    }
 
+    private fun initObservable() {
         viewModel.navigateToMessage.observe(viewLifecycleOwner) {
             val dialog = InformationDialogFragment.newInstance(
                 "Log remove boxing",
                 it.message,
                 "Ok"
             )
-            dialog.setTargetFragment(this, 10101)
+            //dialog.setTargetFragment(this, 10101)
             dialog.show(parentFragmentManager, "START_DELIVERY_TAG")
         }
 
@@ -47,21 +60,32 @@ class DcLoadingBoxesFragment : Fragment() {
                     binding.emptyList.visibility = GONE
                     binding.boxes.visibility = VISIBLE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
-                    val adapter =
-                        DcLoadingBoxesAdapter(
-                            requireContext(), it.items
-                        ) { index, isChecked -> viewModel.onItemClick(index, isChecked) }
+                    val callback = object : DcLoadingBoxesAdapter.OnItemClickCallBack {
+                        override fun onItemClick(index: Int, isChecked: Boolean) {
+                            viewModel.onItemClick(index, isChecked)
+                        }
+                    }
+                    adapter = DcLoadingBoxesAdapter(requireContext(), it.items, callback)
                     binding.boxes.adapter = adapter
+                }
+                is DcLoadingBoxesUIState.ReceptionBoxItem -> {
+                    adapter.setItem(it.index, it.item)
+                    adapter.notifyItemChanged(it.index, it.item)
                 }
                 DcLoadingBoxesUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.boxes.visibility = GONE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
                 }
-                DcLoadingBoxesUIState.Progress ->
+                DcLoadingBoxesUIState.Progress -> {
+                    binding.overlayBoxes.visibility = VISIBLE
                     binding.remove.setState(ProgressImageButtonMode.PROGRESS)
-                DcLoadingBoxesUIState.ProgressComplete ->
+                }
+
+                DcLoadingBoxesUIState.ProgressComplete -> {
+                    binding.overlayBoxes.visibility = GONE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
+                }
             }
         }
 
@@ -72,11 +96,27 @@ class DcLoadingBoxesFragment : Fragment() {
         viewModel.enableRemove.observe(viewLifecycleOwner) {
             binding.remove.setState(if (it) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
         }
+    }
 
+    private fun initListener() {
         binding.remove.setOnClickListener {
             viewModel.onRemoveClick()
         }
+    }
 
+    private fun initRecyclerView() {
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.boxes.layoutManager = layoutManager
+        binding.boxes.setHasFixedSize(true)
+        initSmoothScroller()
+    }
+
+    private fun initSmoothScroller() {
+        smoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+        }
     }
 
     override fun onDestroyView() {
