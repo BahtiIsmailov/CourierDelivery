@@ -1,6 +1,7 @@
 package com.wb.logistics.network.api.auth
 
 import com.wb.logistics.network.api.auth.entity.TokenEntity
+import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.network.api.auth.query.AuthByPhoneOrPasswordQuery
 import com.wb.logistics.network.api.auth.query.ChangePasswordBySmsCodeQuery
 import com.wb.logistics.network.api.auth.query.PasswordCheckQuery
@@ -63,8 +64,8 @@ class AuthRemoteRepositoryImpl(
         return authApi.statistics(tokenManager.apiVersion())
     }
 
-    override fun userInfo(): Single<Pair<String, String>> {
-        return Single.just(Pair(tokenManager.userName(), tokenManager.userCompany()))
+    override fun userInfo(): Single<UserInfoEntity> {
+        return Single.just(UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
     }
 
     override fun clearToken() {

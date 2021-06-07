@@ -6,6 +6,8 @@ import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.flight.*
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.remote.flight.*
+import com.wb.logistics.network.api.auth.AuthRemoteRepository
+import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
@@ -17,8 +19,13 @@ class FlightsLoaderInteractorImpl(
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
+    private val authRemoteRepository: AuthRemoteRepository,
     private val timeManager: TimeManager,
 ) : FlightsLoaderInteractor {
+
+    override fun sessionInfo(): Single<UserInfoEntity> {
+        return authRemoteRepository.userInfo().compose(rxSchedulerFactory.applySingleSchedulers())
+    }
 
     override fun updateFlight(): Single<SuccessOrEmptyData<FlightData>> {
         return updateFlightAndTime()
@@ -117,3 +124,5 @@ class FlightsLoaderInteractorImpl(
         }
 
 }
+
+data class UserInfoData(val name: String, val company: String)

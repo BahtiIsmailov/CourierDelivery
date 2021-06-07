@@ -71,18 +71,18 @@ class DcLoadingBoxesViewModel(
 
     fun onRemoveClick() {
         _boxes.value = DcLoadingBoxesUIState.Progress
-        val checkedReceptionBoxes =
+        val dcLoadingBoxes =
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
-        addSubscription(receptionInteractor.deleteScannedBoxes(checkedReceptionBoxes)
-            .subscribe({
-                _navigateToMessage.value = NavigateToMessage("Delete complete")
-                _boxes.value = DcLoadingBoxesUIState.ProgressComplete
-                _navigateToBack.value = NavigateToBack
-            }, {
-                _navigateToMessage.value = NavigateToMessage("Error delete: " + it.toString())
-                _boxes.value = DcLoadingBoxesUIState.ProgressComplete
-                changeDisableAllCheckedBox()
-            }))
+        addSubscription(receptionInteractor.deleteScannedBoxes(dcLoadingBoxes)
+            .subscribe(
+                {
+                    _boxes.value = DcLoadingBoxesUIState.ProgressComplete
+                    _navigateToBack.value = NavigateToBack
+                }, {
+                    _navigateToMessage.value = NavigateToMessage(if (dcLoadingBoxes.size > 1) "Коробки не удалены" else "Коробка не удалена")
+                    _boxes.value = DcLoadingBoxesUIState.ProgressComplete
+                    changeDisableAllCheckedBox()
+                }))
     }
 
     fun onItemClick(index: Int, checked: Boolean) {
@@ -117,6 +117,6 @@ class DcLoadingBoxesViewModel(
 
     object NavigateToBack
 
-    data class NavigateToMessage(val message : String)
+    data class NavigateToMessage(val message: String)
 
 }

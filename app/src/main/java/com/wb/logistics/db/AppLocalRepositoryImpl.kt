@@ -19,6 +19,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 class AppLocalRepositoryImpl(
+    private val appDatabase: AppDatabase,
     private val flightDao: FlightDao,
     private val attachedBoxDao: AttachedBoxDao,
     private val unloadingBox: UnloadingBoxDao,
@@ -183,7 +184,9 @@ class AppLocalRepositoryImpl(
             .onErrorReturn { SuccessOrEmptyData.Empty() }
     }
 
-
+    override fun deleteAllUnloadedBox() {
+        TODO("Not yet implemented")
+    }
     //==============================================================================================
     //dcunloaded boxes
     //==============================================================================================
@@ -219,6 +222,10 @@ class AppLocalRepositoryImpl(
 
     override fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>> {
         return dcUnloadingBox.notDcUnloadedBoxes()
+    }
+
+    override fun deleteAllDcUnloadedBox() {
+        TODO("Not yet implemented")
     }
 
     //==============================================================================================
@@ -273,6 +280,14 @@ class AppLocalRepositoryImpl(
 
     override fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>> {
         return returnBoxDao.groupByDstAddressReturnBox(dstOfficeId)
+    }
+
+    override fun deleteAllReturnBox() {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteAll() {
+        appDatabase.clearAllTables()
     }
 
 }

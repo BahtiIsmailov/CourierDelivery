@@ -24,7 +24,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount {
+class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount, OnUserInfo {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -69,12 +69,6 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
     }
 
     private fun initObserver() {
-
-        viewModel.navHeader.observe(this) {
-            val header: View = binding.navView.getHeaderView(0)
-            header.findViewById<TextView>(R.id.nav_header_name).text = it.first
-            header.findViewById<TextView>(R.id.nav_header_company).text = it.second
-        }
 
         viewModel.networkState.observe(this) {
             networkIcon.visibility = if (it) View.GONE else View.VISIBLE
@@ -181,6 +175,12 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
             .show()
     }
 
+    override fun flightCount(name: String, company: String) {
+        val header: View = binding.navView.getHeaderView(0)
+        header.findViewById<TextView>(R.id.nav_header_name).text = name
+        header.findViewById<TextView>(R.id.nav_header_company).text = company
+    }
+
 }
 
 interface NavToolbarTitleListener {
@@ -193,6 +193,10 @@ interface NavToolbarTitleListener {
 
     fun updateTitle(title: String)
 
+}
+
+interface OnUserInfo {
+    fun flightCount(name: String, company: String)
 }
 
 interface OnFlightsCount {

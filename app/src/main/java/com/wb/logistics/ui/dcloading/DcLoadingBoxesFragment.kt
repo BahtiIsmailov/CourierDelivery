@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.wb.logistics.R
 import com.wb.logistics.databinding.DcLoadingBoxesFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.views.ProgressImageButtonMode
@@ -46,12 +47,11 @@ class DcLoadingBoxesFragment : Fragment() {
     private fun initObservable() {
         viewModel.navigateToMessage.observe(viewLifecycleOwner) {
             val dialog = InformationDialogFragment.newInstance(
-                "Log remove boxing",
+                getString(R.string.dc_loading_boxes_remove_dialog_title),
                 it.message,
-                "Ok"
+                getString(R.string.dc_loading_boxes_remove_dialog_positive)
             )
-            //dialog.setTargetFragment(this, 10101)
-            dialog.show(parentFragmentManager, "START_DELIVERY_TAG")
+            dialog.show(parentFragmentManager, "REMOVE_BOX_TAG")
         }
 
         viewModel.boxes.observe(viewLifecycleOwner) {

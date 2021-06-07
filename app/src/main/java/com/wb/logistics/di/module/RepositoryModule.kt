@@ -1,5 +1,6 @@
 package com.wb.logistics.di.module
 
+import com.wb.logistics.db.AppDatabase
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.AppLocalRepositoryImpl
 import com.wb.logistics.db.dao.*
@@ -42,13 +43,15 @@ val deliveryRepositoryModule = module {
     }
 
     fun provideLocalRepository(
+        appDatabase: AppDatabase,
         flightDao: FlightDao,
         attachedBoxDao: AttachedBoxDao,
         unloadingBox: UnloadingBoxDao,
         returnBoxDao: ReturnBoxDao,
         dcUnloadingBox: DcUnloadingBoxDao,
     ): AppLocalRepository {
-        return AppLocalRepositoryImpl(flightDao,
+        return AppLocalRepositoryImpl(appDatabase,
+            flightDao,
             attachedBoxDao,
             unloadingBox,
             returnBoxDao,
@@ -66,7 +69,7 @@ val deliveryRepositoryModule = module {
     single { provideAuthRemoteRepository(get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
-    single { provideLocalRepository(get(), get(), get(), get(), get()) }
+    single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
 

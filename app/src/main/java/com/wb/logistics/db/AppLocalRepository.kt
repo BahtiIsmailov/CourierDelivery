@@ -63,11 +63,11 @@ interface AppLocalRepository {
 
     fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
 
-    fun deleteAllAttachedBox()
-
     fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
 
     fun groupAttachedBox(): Single<AttachedBoxResultEntity>
+
+    fun deleteAllAttachedBox()
 
     //==============================================================================================
     //unloaded box
@@ -79,6 +79,8 @@ interface AppLocalRepository {
     fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
 
     fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>>
+
+    fun deleteAllUnloadedBox()
 
     //==============================================================================================
     //attached box
@@ -98,6 +100,8 @@ interface AppLocalRepository {
     fun congratulation(): Single<DcCongratulationEntity>
 
     fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
+
+    fun deleteAllDcUnloadedBox()
 
     //==============================================================================================
     //balance box
@@ -127,5 +131,11 @@ interface AppLocalRepository {
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
     fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
+
+    fun deleteAllReturnBox()
+
+    //==============================================================================================
+
+    fun deleteAll()
 
 }

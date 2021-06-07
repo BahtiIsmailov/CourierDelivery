@@ -1,5 +1,6 @@
 package com.wb.logistics.network.api.auth
 
+import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
 import com.wb.logistics.network.api.auth.response.StatisticsResponse
@@ -24,7 +25,7 @@ interface AuthRemoteRepository {
 
     fun statistics(): Single<StatisticsResponse>
 
-    fun userInfo(): Single<Pair<String, String>>
+    fun userInfo(): Single<UserInfoEntity>
 
     fun clearToken()
 

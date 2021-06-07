@@ -40,7 +40,7 @@ class DcLoadingScanViewModel(
 
     init {
         // TODO: 19.05.2021 addMockScannedBox
-        addMockScannedBox()
+        //addMockScannedBox()
         addSubscription(interactor.observeScannedBoxes().subscribe {
             if (it.isEmpty()) {
                 boxStateUI.value = DcLoadingScanBoxState.Empty
@@ -117,7 +117,7 @@ class DcLoadingScanViewModel(
                     }
             }
             is ScanBoxData.BoxDoesNotBelongGate -> {
-                // TODO: 07.04.2021
+                // TODO: 07.04.2021 Не принадлежит Gate
             }
             is ScanBoxData.BoxHasBeenAdded -> {
                 _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded

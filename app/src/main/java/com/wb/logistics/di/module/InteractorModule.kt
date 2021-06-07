@@ -65,11 +65,13 @@ val interactorModule = module {
     fun provideNavigationInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
-        authRepository: AuthRemoteRepository,
+        authRemoteRepository: AuthRemoteRepository,
+        appLocalRepository: AppLocalRepository,
     ): AppInteractor {
         return AppInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
-            authRepository)
+            authRemoteRepository,
+            appLocalRepository)
     }
 
     fun provideFlightsLoaderInteractor(
@@ -77,12 +79,14 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
+        authRemoteRepository: AuthRemoteRepository,
         timeManager: TimeManager,
     ): FlightsLoaderInteractor {
         return FlightsLoaderInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
+            authRemoteRepository,
             timeManager)
     }
 
@@ -225,8 +229,8 @@ val interactorModule = module {
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get()) }
-    single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get()) }
+    single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get(), get()) }
     single { provideFlightPickPointInteractor(get(), get(), get(), get(), get()) }

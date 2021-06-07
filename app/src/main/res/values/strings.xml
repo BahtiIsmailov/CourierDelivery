@@ -126,6 +126,8 @@
     <string name="dc_loading_boxes_label">Принято</string>
     <string name="dc_loading_boxes_empty_list">Список пуст</string>
     <string name="dc_loading_boxes_remove_item">Удалить отмеченные</string>
+    <string name="dc_loading_boxes_remove_dialog_title">Удаление коробки</string>
+    <string name="dc_loading_boxes_remove_dialog_positive">Ok</string>
 
     <string name="confirm_info_dialog_button">Понятно</string>
 

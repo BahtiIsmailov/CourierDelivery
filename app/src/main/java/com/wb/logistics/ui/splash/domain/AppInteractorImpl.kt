@@ -1,19 +1,17 @@
 package com.wb.logistics.ui.splash.domain
 
+import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Observable
-import io.reactivex.Single
 
 class AppInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
-    private val repository: AuthRemoteRepository,
+    private val authRemoteRepository: AuthRemoteRepository,
+    private val appLocalRepository: AppLocalRepository,
 ) : AppInteractor {
-    override fun sessionInfo(): Single<Pair<String, String>> {
-        return repository.userInfo().compose(rxSchedulerFactory.applySingleSchedulers())
-    }
 
     override fun isNetworkConnected(): Observable<Boolean> {
         return networkMonitorRepository.isNetworkConnected()
@@ -21,7 +19,8 @@ class AppInteractorImpl(
     }
 
     override fun exitAuth() {
-        repository.clearToken()
+        authRemoteRepository.clearToken()
+        appLocalRepository.deleteAll()
     }
 
 }

@@ -15,10 +15,6 @@ class AppViewModel(
 
     ) : NetworkViewModel(compositeDisposable) {
 
-    private val _navHeader = MutableLiveData<Pair<String, String>>()
-    val navHeader: LiveData<Pair<String, String>>
-        get() = _navHeader
-
     private val _versionApp = MutableLiveData<String>()
     val versionApp: LiveData<String>
         get() = _versionApp
@@ -30,10 +26,6 @@ class AppViewModel(
     init {
         fetchNetworkState()
         updateDrawer()
-    }
-
-    private fun fetchNavHeader() {
-        addSubscription(interactor.sessionInfo().subscribe({ _navHeader.value = it }, {}))
     }
 
     private fun fetchVersionApp() {
@@ -49,7 +41,6 @@ class AppViewModel(
     }
 
     private fun updateDrawer() {
-        fetchNavHeader()
         fetchVersionApp()
     }
 
