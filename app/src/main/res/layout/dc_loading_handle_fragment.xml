@@ -41,9 +41,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/ripple_round_rectangle_white_hint"
-            android:elevation="5dp"
-            app:errorEnabled="true"
+            android:background="@drawable/border_input_normal_transparent"
+            app:errorEnabled="false"
+            app:hintEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title">
@@ -52,14 +52,13 @@
                 android:id="@+id/code_box"
                 style="@style/MediumRegularDarkText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/input_height"
+                android:background="@android:color/transparent"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:hint="@string/dc_loading_code_pref_box"
                 android:importantForAutofill="noExcludeDescendants"
                 android:inputType="number"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp"
                 android:textCursorDrawable="@null" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -69,7 +68,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/auth_button_height"
             android:layout_margin="16dp"
-            app:app_background="@drawable/progress_image_button_default"
+            app:app_background="@drawable/progress_image_button_round_default"
             app:app_icon="@drawable/ic_reception_plus"
             app:app_state="enable"
             app:app_text="@string/dc_loading_handle_receive"

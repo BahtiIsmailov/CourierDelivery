@@ -8,22 +8,18 @@ import io.reactivex.Single
 
 interface DcLoadingInteractor {
 
-    fun deleteScannedBoxes(checkedBoxes: List<String>): Completable
-
     fun boxScanned(barcode: String, isManualInput: Boolean)
 
-    fun observeScanProcess(): Observable<ScanBoxData>
+    fun deleteScannedBoxes(checkedBoxes: List<String>): Completable
+
+    fun observeScanProcess(): Observable<ScanProcessData>
 
     fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>>
 
-    fun readBoxesScanned(): Single<List<AttachedBoxEntity>>
-
-    fun sendAwaitBoxes(): Single<Int>
-
-    fun addMockScannedBox(): Completable
-
-    fun scannerAction(scannerAction: ScannerAction)
+    fun sendAwaitBoxesCount(): Single<Int>
 
     fun switchScreen(): Completable
+
+    fun scannerAction(scannerAction: ScannerAction)
 
 }

@@ -25,7 +25,7 @@ class ScreenManagerImpl(
     private val timeManager: TimeManager,
 ) : ScreenManager {
 
-    override fun loadStatus(flightId: String): Single<NavDirections> {
+    override fun navDirection(flightId: String): Single<NavDirections> {
         return appRemoteRepository.getFlightStatus(flightId)
             .doOnSuccess { worker.save(AppPreffsKeys.SCREEN_KEY, it) }
             .map {
@@ -40,7 +40,7 @@ class ScreenManagerImpl(
         with(FlightLoaderFragmentDirections) {
             when (status) {
                 FlightStatus.ASSIGNED -> actionFlightLoaderFragmentToFlightsFragment()
-                FlightStatus.DCLOADING -> actionFlightLoaderFragmentToDcLoadingFragment()
+                FlightStatus.DCLOADING -> actionFlightLoaderFragmentToFlightsFragment()
                 FlightStatus.INTRANSIT -> actionFlightLoaderFragmentToFlightDeliveriesFragment()
                 FlightStatus.UNLOADING -> actionFlightLoaderFragmentToUnloadingScanFragment(
                     UnloadingScanParameters(dstOfficeId))

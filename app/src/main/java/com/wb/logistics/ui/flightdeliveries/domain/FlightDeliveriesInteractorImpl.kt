@@ -33,22 +33,12 @@ class FlightDeliveriesInteractorImpl(
         return  screenManager.saveState(FlightStatus.DCUNLOADING)
     }
 
-//    override fun getUnloadedAndReturnBoxesGroupByOffice(dstOfficeId: Int): Single<UnloadedAndReturnBoxesGroupByOffice> {
-//        return Single.zip(
-//            appRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId).firstOrError(),
-//            appRepository.observedReturnBoxesByDstOfficeId(dstOfficeId).firstOrError(),
-//            { unloadedBoxes, returnBoxes ->
-//                UnloadedAndReturnBoxesGroupByOffice(unloadedBoxes, returnBoxes)
-//            }
-//        ).compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
-
     override fun flightId(): Single<Int> {
-        return appLocalRepository.observeFlight()
+        return appLocalRepository.observeFlightWrap()
             .map {
                 when (it) {
                     is SuccessOrEmptyData.Empty -> 0
-                    is SuccessOrEmptyData.Success -> it.data.flight
+                    is SuccessOrEmptyData.Success -> it.data.flightId
                 }
             }.firstOrError()
             .compose(rxSchedulerFactory.applySingleSchedulers())

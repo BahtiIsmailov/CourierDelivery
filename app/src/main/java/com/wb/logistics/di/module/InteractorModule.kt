@@ -76,32 +76,28 @@ val interactorModule = module {
 
     fun provideFlightsLoaderInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         authRemoteRepository: AuthRemoteRepository,
         timeManager: TimeManager,
+        screenManager: ScreenManager,
     ): FlightsLoaderInteractor {
         return FlightsLoaderInteractorImpl(rxSchedulerFactory,
-            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             authRemoteRepository,
-            timeManager)
+            timeManager,
+            screenManager)
     }
 
     fun provideFlightsInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
-        timeManager: TimeManager,
     ): FlightsInteractor {
         return FlightsInteractorImpl(rxSchedulerFactory,
-            networkMonitorRepository,
             appRemoteRepository,
-            appLocalRepository,
-            timeManager)
+            appLocalRepository)
     }
 
     fun provideFlightDeliveriesDetailsInteractor(
@@ -116,15 +112,11 @@ val interactorModule = module {
 
     fun provideFlightPickPointInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
         appLocalRepository: AppLocalRepository,
-        timeManager: TimeManager,
         screenManager: ScreenManager,
     ): FlightPickPointInteractor {
         return FlightPickPointInteractorImpl(rxSchedulerFactory,
-            networkMonitorRepository,
             appLocalRepository,
-            timeManager,
             screenManager)
     }
 
@@ -231,9 +223,9 @@ val interactorModule = module {
     single { provideCreatePasswordInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideFlightsInteractor(get(), get(), get(), get(), get()) }
+    single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get(), get()) }
-    single { provideFlightPickPointInteractor(get(), get(), get(), get(), get()) }
+    single { provideFlightPickPointInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesInteractor(get(), get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get()) }

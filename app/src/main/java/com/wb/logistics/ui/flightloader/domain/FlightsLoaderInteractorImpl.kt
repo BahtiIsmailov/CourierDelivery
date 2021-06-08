@@ -1,128 +1,113 @@
 package com.wb.logistics.ui.flightloader.domain
 
+import androidx.navigation.NavDirections
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.FlightData
-import com.wb.logistics.db.SuccessOrEmptyData
-import com.wb.logistics.db.entity.flight.*
+import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
+import com.wb.logistics.db.entity.flighboxes.BoxStatus
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
-import com.wb.logistics.network.api.app.remote.flight.*
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.api.auth.entity.UserInfoEntity
-import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class FlightsLoaderInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
     private val authRemoteRepository: AuthRemoteRepository,
     private val timeManager: TimeManager,
+    private val screenManager: ScreenManager,
 ) : FlightsLoaderInteractor {
 
     override fun sessionInfo(): Single<UserInfoEntity> {
         return authRemoteRepository.userInfo().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun updateFlight(): Single<SuccessOrEmptyData<FlightData>> {
+    override fun navigateTo(): Single<NavDirections> {
         return updateFlightAndTime()
-            .andThen(appLocalRepository.readFlightData())
+            .andThen(flightData())
+            .flatMap { saveBoxes(it) }
+            .flatMap { navDirection(it) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun updateFlightAndTime(): Completable {
-        val flight = appRemoteRepository.flight()
-            .flatMapCompletable {
-                appLocalRepository.saveFlight(
-                    convertFlight(it),
-                    convertOffices(it.offices, it.id))
-            }
-        val time = appRemoteRepository.time()
-            .flatMapCompletable {
-                Completable.fromAction { timeManager.saveNetworkTime(it.currentTime) }
-            }
-        return Completable.mergeArray(flight, time)
+    private fun navDirection(flightId: String) = screenManager.navDirection(flightId)
+
+    private fun flightData() = appLocalRepository.observeFlight().firstOrError()
+
+    private fun saveBoxes(flightData: FlightData): Single<String> {
+        val flightId = flightData.flightId.toString()
+        return Completable.mergeArray(saveMatchingBoxes(flightId), saveFlightBoxes(flightData))
+            .toSingle { flightId }
     }
 
-    private fun convertFlight(flightRemote: FlightRemote) = with(flightRemote) {
-        with(flightRemote) {
-            FlightEntity(
-                id = id,
-                gate = gate,
-                dc = convertDc(dc),
-                driver = convertDriver(driver),
-                route = convertRoute(route),
-                car = convertCar(car),
-                plannedDate = plannedDate,
-                startedDate = startedDate ?: "",
-                status = status,
-                location = convertLocation(location)
-            )
-        }
+    private fun saveMatchingBoxes(flightId: String): Completable {
+        return appRemoteRepository.matchingBoxes(flightId)
+            .flatMapCompletable { appLocalRepository.saveMatchingBoxes(it) }
     }
 
-    private fun convertOffices(
-        offices: List<OfficeRemote>,
+    private fun saveFlightBoxes(flightData: FlightData): Completable {
+        return appRemoteRepository.flightBoxes(flightData.flightId.toString())
+            .flatMapCompletable {
+                Completable.mergeArray(saveFlightBoxes(it),
+                    deleteAndUpdateAttachedBoxes(flightData.flightId, flightData.gate, it))
+            }
+    }
+
+    private fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>) =
+        appLocalRepository.saveFlightBoxes(flightBoxesEntity)
+
+    private fun deleteAndUpdateAttachedBoxes(
         flightId: Int,
-    ): List<FlightOfficeEntity> {
-        val officesEntity = mutableListOf<FlightOfficeEntity>()
-        offices.forEach { offece ->
-            officesEntity.add(with(offece) {
-                FlightOfficeEntity(
-                    id = id,
-                    flightId = flightId,
-                    name = name,
-                    fullAddress = fullAddress,
-                    longitude = long,
-                    latitude = lat,
-                    isUnloading = false,
-                    notUnloadingCause = ""
-                )
-            })
-        }
-        return officesEntity
+        gate: Int,
+        flightBoxesEntity: List<FlightBoxEntity>,
+    ): Completable {
+        appLocalRepository.deleteAllAttachedBox()
+        return Observable.fromIterable(flightBoxesEntity)
+            .filter { it.status == BoxStatus.TAKE_ON_FLIGHT.ordinal }
+            .map { convertToAttachedBox(it, flightId, gate) }
+            .toList()
+            .flatMapCompletable { appLocalRepository.saveAttachedBoxes(it) }
     }
 
-    private fun convertDc(dc: DcRemote): DcEntity = with(dc) {
-        DcEntity(id = id,
-            name = name,
-            fullAddress = fullAddress,
-            longitude = long,
-            latitude = lat)
-    }
-
-    private fun convertDriver(driver: DriverRemote): DriverEntity = with(driver) {
-        DriverEntity(id = id, name = name, fullAddress = fullAddress)
-    }
-
-    private fun convertRoute(route: RouteRemote?): RouteEntity? =
-        if (route == null) null else with(route) {
-            RouteEntity(id = id,
-                changed = changed,
-                name = name)
+    private fun convertToAttachedBox(flightBoxEntity: FlightBoxEntity, flightId: Int, gate: Int) =
+        with(flightBoxEntity) {
+            AttachedBoxEntity(flightId = flightId,
+                barcode = flightBoxEntity.barcode,
+                gate = gate,
+                srcOffice = AttachedSrcOfficeEntity(
+                    id = srcOffice.id,
+                    name = srcOffice.name,
+                    fullAddress = srcOffice.fullAddress,
+                    longitude = srcOffice.longitude,
+                    latitude = srcOffice.latitude,
+                ),
+                dstOffice = AttachedDstOfficeEntity(
+                    id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    longitude = dstOffice.longitude,
+                    latitude = dstOffice.latitude,
+                ),
+                isManualInput = false,
+                dstFullAddress = dstOffice.fullAddress,
+                updatedAt = updatedAt)
         }
 
-    private fun convertCar(car: CarRemote): CarEntity = with(car) {
-        CarEntity(id = id, plateNumber = plateNumber)
-    }
+    private fun updateFlightAndTime() = Completable.mergeArray(flight(), time())
 
-    private fun convertOfficeLocation(officeLocation: OfficeLocationRemote?) =
-        OfficeLocationEntity(officeLocation?.id ?: 0)
+    private fun time() = appRemoteRepository.time()
+        .flatMapCompletable { Completable.fromAction { timeManager.saveNetworkTime(it.currentTime) } }
 
-    private fun convertLocation(location: LocationRemote?): LocationEntity =
-        with(location) {
-            if (location == null) {
-                LocationEntity(office = OfficeLocationEntity(0),
-                    getFromGPS = false)
-            } else {
-                LocationEntity(office = convertOfficeLocation(this?.office),
-                    getFromGPS = this?.getFromGPS ?: false)
-            }
-        }
+    private fun flight() = appRemoteRepository.flight()
+        .flatMapCompletable { appLocalRepository.saveFlightAndOffices(it.flight, it.offices) }
 
 }
-
-data class UserInfoData(val name: String, val company: String)

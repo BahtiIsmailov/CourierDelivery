@@ -6,7 +6,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 interface ScreenManager {
-    fun loadStatus(flightId: String): Single<NavDirections>
+    fun navDirection(flightId: String): Single<NavDirections>
     fun saveState(flightStatus: FlightStatus,
                   isGetFromGPS: Boolean = false): Completable
     fun saveState(flightStatus: FlightStatus,

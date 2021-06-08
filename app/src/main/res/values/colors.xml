@@ -81,6 +81,8 @@
     <color name="delivery_empty_background">#F6F6F6</color>
     <color name="delivery_parking_number">#642CA3</color>
 
+    <color name="background_transparent_text">#F9F5FD</color>
+
     <color name="button_text_default">#FFFFFF</color>
 
     <color name="button_default_text_enable">#FFFFFF</color>

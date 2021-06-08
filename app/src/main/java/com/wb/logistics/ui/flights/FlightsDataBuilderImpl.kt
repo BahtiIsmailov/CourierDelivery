@@ -21,8 +21,8 @@ class FlightsDataBuilderImpl(
                 if (offices.isEmpty()) listOf(resourceProvider.getRoutesEmpty())
                 else offices
             FlightItem(
-                resourceProvider.getFlightNumber(flight),
-                resourceProvider.getParkingNumber(parkingNumber),
+                resourceProvider.getFlightNumber(flightId),
+                resourceProvider.getParkingNumber(gate),
                 timeFormatter.format(date, ONLY_DATE),
                 timeFormatter.format(date, ONLY_TIME),
                 resourceProvider.getRoutesTitle(routesTitle),

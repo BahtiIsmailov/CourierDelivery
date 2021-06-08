@@ -2,9 +2,9 @@ package com.wb.logistics.network.api.app
 
 import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
-import com.wb.logistics.network.api.app.remote.boxesfromflight.BoxesRemote
 import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoRemote
 import com.wb.logistics.network.api.app.remote.flight.FlightRemote
+import com.wb.logistics.network.api.app.remote.flightboxes.FlightBoxesRemote
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScannedRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateRemote
@@ -23,11 +23,11 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
     ): Single<FlightRemote?>
 
-    @GET("{version}/flights/{flightID}/boxes")
-    fun boxesFromFlight(
+    @GET("{version}/flights/{flightID}/matching-boxes")
+    fun matchingBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-    ): Single<BoxesRemote>
+    ): Single<MatchingBoxesRemote>
 
     @GET("{version}/boxes/{barcode}")
     fun boxInfo(
@@ -35,11 +35,11 @@ interface AppApi {
         @Path("barcode") barcode: String,
     ): Single<BoxInfoRemote>
 
-    @GET("{version}/flights/{flightID}/matching-boxes")
-    fun matchingBoxes(
+    @GET("{version}/flights/{flightID}/boxes")
+    fun flightBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-    ): Single<MatchingBoxesRemote>
+    ): Single<FlightBoxesRemote>
 
     @POST("{version}/flights/{flightID}/warehouse/boxes")
     fun warehouseBoxToBalance(

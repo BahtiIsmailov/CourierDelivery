@@ -6,7 +6,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 
 interface FlightsInteractor {
-    fun updateFlight() : Completable
     fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
     fun observeFlightBoxScanned(): Flowable<Int>
     fun deleteFlightBoxes(): Completable

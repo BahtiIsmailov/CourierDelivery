@@ -5,9 +5,9 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.*
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
-import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
@@ -18,29 +18,43 @@ import io.reactivex.Single
 
 interface AppLocalRepository {
 
-    fun saveFlight(
+    fun saveFlightAndOffices(
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
     ): Completable
 
-    fun changeFlightOfficeUnloading(dstOfficeId: Int, isUnloading: Boolean, notUnloadingCause: String): Completable
+    fun changeFlightOfficeUnloading(
+        dstOfficeId: Int,
+        isUnloading: Boolean,
+        notUnloadingCause: String,
+    ): Completable
 
-    fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>>
+    fun observeFlightWrap(): Flowable<SuccessOrEmptyData<FlightData>>
+
+    fun observeFlight(): Flowable<FlightData>
 
     fun readFlight(): Single<SuccessOrEmptyData<FlightEntity>>
 
     fun readFlightData(): Single<SuccessOrEmptyData<FlightData>>
 
     fun deleteAllFlight()
-    //==============================================================================================
 
-    fun saveFlightBoxes(boxesEntity: List<FlightBoxEntity>): Completable
+    //==============================================================================================
+    //flight boxes
+    //==============================================================================================
+    fun saveFlightBoxes(flightMatchingBoxes: List<FlightBoxEntity>): Completable
 
     fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
 
     fun deleteAllFlightBoxes()
 
     //==============================================================================================
+    //matching boxes
+    //==============================================================================================
     fun saveMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
+
+    fun saveMatchingBox(matchingBox: MatchingBoxEntity): Completable
+
+    fun deleteMatchingBox(matchingBox: MatchingBoxEntity): Completable
 
     fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
 
@@ -50,6 +64,8 @@ interface AppLocalRepository {
     //attached box
     //==============================================================================================
     fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
+
+    fun saveAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
 
     fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
 
@@ -104,17 +120,17 @@ interface AppLocalRepository {
     fun deleteAllDcUnloadedBox()
 
     //==============================================================================================
-    //balance box
+    //attached box balance await
     //==============================================================================================
-    fun saveFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
+    fun saveAttachedBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
 
-    fun observeFlightBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>>
+    fun observeAttachedBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>>
 
-    fun flightBoxBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
+    fun attachedBoxesBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
 
-    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
+    fun deleteAttachedBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
 
-    fun deleteAllFlightBoxBalanceAwait()
+    fun deleteAllAttachedBoxBalanceAwait()
 
     //==============================================================================================
     //return box

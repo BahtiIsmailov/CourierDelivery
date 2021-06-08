@@ -18,7 +18,6 @@ data class AttachedBoxEntity(
     val srcOffice: AttachedSrcOfficeEntity,
     @Embedded
     val dstOffice: AttachedDstOfficeEntity,
-    val smID: Int,
     val isManualInput: Boolean,
     val dstFullAddress: String,
     val updatedAt: String,

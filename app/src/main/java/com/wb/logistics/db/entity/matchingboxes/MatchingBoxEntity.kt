@@ -14,5 +14,4 @@ data class MatchingBoxEntity(
     val srcOffice: MatchingSrcOfficeEntity,
     @Embedded
     val dstOffice: MatchingDstOfficeEntity,
-    val smID: Int,
 )

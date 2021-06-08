@@ -12,7 +12,10 @@ import io.reactivex.Single
 interface AttachedBoxDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertScannedBox(attachedBoxEntity: AttachedBoxEntity): Completable
+    fun insertAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
 
     @Query("SELECT * FROM AttachedBoxEntity")
     fun observeAttachedBox(): Flowable<List<AttachedBoxEntity>>
@@ -28,9 +31,6 @@ interface AttachedBoxDao {
 
     @Query("SELECT * FROM AttachedBoxEntity WHERE barcode IN (:barcodes)")
     fun loadAttachedBox(barcodes: List<String>): Single<List<AttachedBoxEntity>>
-
-    @Query("DELETE FROM AttachedBoxEntity WHERE barcode = :barcode")
-    fun deleteAttachedBox(barcode: String)
 
     @Delete
     fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable

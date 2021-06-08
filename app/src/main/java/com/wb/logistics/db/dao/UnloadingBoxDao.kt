@@ -1,8 +1,10 @@
 package com.wb.logistics.db.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxGroupByAddressEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -19,25 +21,7 @@ interface UnloadingBoxDao {
     @Query("SELECT * FROM UnloadedBoxEntity WHERE current_office_id = :dstOfficeId")
     fun observeFilterByOfficeIdAttachedBoxes(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
 
-    @Query("SELECT * FROM UnloadedBoxEntity")
-    fun readUnloadingBox(): Single<List<UnloadedBoxEntity>>
-
     @Query("SELECT * FROM UnloadedBoxEntity WHERE barcode = :barcode")
     fun findUnloadedBox(barcode: String): Single<UnloadedBoxEntity>
-
-    @Query("SELECT * FROM UnloadedBoxEntity WHERE barcode IN (:barcodes)")
-    fun findUnloadedBoxes(barcodes: List<String>): Single<List<UnloadedBoxEntity>>
-
-    @Query("DELETE FROM UnloadedBoxEntity WHERE barcode = :barcode")
-    fun deleteUnloadedBox(barcode: String)
-
-    @Delete
-    fun deleteUnloadedBoxEntity(unloadedBoxEntity: UnloadedBoxEntity): Completable
-
-    @Query("DELETE FROM UnloadedBoxEntity")
-    fun deleteAllUnloadedBox()
-
-    @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM AttachedBoxEntity WHERE FlightOfficeEntity.office_id = AttachedBoxEntity.dst_office_id) AS count FROM FlightOfficeEntity")
-    fun groupByDstAddressUnloadedBox(): Single<List<UnloadedBoxGroupByAddressEntity>>
 
 }

@@ -2,8 +2,8 @@ package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.network.api.app.remote.flight.FlightRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateEntity
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
@@ -12,11 +12,13 @@ import io.reactivex.Single
 
 interface AppRemoteRepository {
 
-    fun updateMatchingBoxes(flightId: String): Single<List<MatchingBoxEntity>>
+    fun flight(): Single<FlightDataEntity>
+
+    fun matchingBoxes(flightId: String): Single<List<MatchingBoxEntity>>
 
     fun boxInfo(barcode: String): Single<SuccessOrEmptyData<BoxInfoEntity>>
 
-    fun flight(): Single<FlightRemote?>
+    fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>>
 
     fun time(): Single<TimeRemote>
 
@@ -59,8 +61,8 @@ interface AppRemoteRepository {
         flightStatus: FlightStatus,
         officeId: Int,
         isGetFromGPS: Boolean,
-        updatedAt: String
-        ): Completable
+        updatedAt: String,
+    ): Completable
 
     fun getFlightStatus(flightID: String): Single<StatusStateEntity>
 

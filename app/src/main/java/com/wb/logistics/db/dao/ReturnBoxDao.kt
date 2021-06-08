@@ -13,14 +13,8 @@ interface ReturnBoxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReturnBoxEntity(returnBoxEntity: ReturnBoxEntity): Completable
 
-    @Query("SELECT * FROM ReturnBoxEntity")
-    fun observeReturnBox(): Flowable<List<ReturnBoxEntity>>
-
     @Query("SELECT * FROM ReturnBoxEntity WHERE current_office_id = :dstOfficeId")
     fun observeFilterByOfficeIdReturnBoxes(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>>
-
-    @Query("SELECT * FROM ReturnBoxEntity")
-    fun readReturnBox(): Single<List<ReturnBoxEntity>>
 
     @Query("SELECT * FROM ReturnBoxEntity WHERE barcode = :barcode")
     fun findReturnBox(barcode: String): Single<ReturnBoxEntity>
@@ -28,14 +22,8 @@ interface ReturnBoxDao {
     @Query("SELECT * FROM ReturnBoxEntity WHERE barcode IN (:barcodes)")
     fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
 
-    @Query("DELETE FROM ReturnBoxEntity WHERE barcode = :barcode")
-    fun deleteReturnBox(barcode: String)
-
     @Delete
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
-
-    @Query("DELETE FROM ReturnBoxEntity")
-    fun deleteAllUnloadedBox()
 
     @Query("SELECT barcode AS barcode, updatedAt AS updatedAt, (SELECT fullAddress FROM FlightOfficeEntity WHERE ReturnBoxEntity.current_office_id = FlightOfficeEntity.office_id) AS address FROM ReturnBoxEntity WHERE current_office_id = :dstOfficeId")
     fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>

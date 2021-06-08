@@ -2,21 +2,18 @@ package com.wb.logistics.ui.dcloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.ui.dcloading.domain.ScanBoxData
+import com.wb.logistics.ui.dcloading.domain.ScanProcessData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.utils.LogUtils
-import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class DcLoadingScanViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: DcLoadingScanResourceProvider,
     private val interactor: DcLoadingInteractor,
-    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -41,46 +38,37 @@ class DcLoadingScanViewModel(
     init {
         // TODO: 19.05.2021 addMockScannedBox
         //addMockScannedBox()
+        // TODO: 08.06.2021 инициализация виджетов
         addSubscription(interactor.observeScannedBoxes().subscribe {
-            if (it.isEmpty()) {
-                boxStateUI.value = DcLoadingScanBoxState.Empty
-            } else {
+            boxStateUI.value = if (it.isEmpty()) DcLoadingScanBoxState.Empty
+            else {
                 val lastBox = it.last()
-                boxStateUI.value =
-                    DcLoadingScanBoxState.BoxInit(
-                        it.size.toString(),
-                        lastBox.gate.toString(),
-                        lastBox.barcode)
+                DcLoadingScanBoxState.BoxInit(
+                    it.size.toString(),
+                    lastBox.gate.toString(),
+                    lastBox.barcode)
             }
         })
 
-        addSubscription(
-            interactor.observeScanProcess()
-                .flatMapSingle { data ->
-                    interactor.readBoxesScanned()
-                        .map { Pair(data, it) }
-                }.subscribe { addBoxToFlightComplete(it) }
-        )
+        addSubscription(interactor.observeScanProcess().subscribe { addBoxToFlightComplete(it) })
     }
 
-    private fun addMockScannedBox() {
-        addSubscription(interactor.addMockScannedBox()
-            .subscribe({ LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() complete") } },
-                { LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() error") } }))
-    }
+//    private fun addMockScannedBox() {
+//        addSubscription(interactor.addMockScannedBox()
+//            .subscribe({ LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() complete") } },
+//                { LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() error") } }))
+//    }
 
-    private fun addBoxToFlightComplete(pair: Pair<ScanBoxData, List<AttachedBoxEntity>>) {
-        val scanBoxData = pair.first
-        val scannedBoxes = pair.second
-        val accepted = scannedBoxes.size.toString()
+    private fun addBoxToFlightComplete(scanProcess: ScanProcessData) {
+        val scanBoxData = scanProcess.scanBoxData
+        val accepted = scanProcess.count.toString()
         when (scanBoxData) {
             is ScanBoxData.BoxAdded -> {
                 boxStateUI.value = with(scanBoxData) {
                     DcLoadingScanBoxState.BoxAdded(accepted, gate, barcode)
                 }
-                _toastEvent.value =
-                    DcLoadingScanToastState.BoxAdded(resourceProvider.getShortAddedBox(
-                        scanBoxData.barcode))
+                _toastEvent.value = DcLoadingScanToastState.BoxAdded(
+                    resourceProvider.getShortAddedBox(scanBoxData.barcode))
                 _beepEvent.value = DcLoadingScanBeepState.BoxAdded
             }
             is ScanBoxData.BoxDoesNotBelongDc -> {
@@ -117,7 +105,7 @@ class DcLoadingScanViewModel(
                     }
             }
             is ScanBoxData.BoxDoesNotBelongGate -> {
-                // TODO: 07.04.2021 Не принадлежит Gate
+                // TODO: 07.04.2021 Не принадлежит Gate реализовать
             }
             is ScanBoxData.BoxHasBeenAdded -> {
                 _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
@@ -146,7 +134,7 @@ class DcLoadingScanViewModel(
     }
 
     fun onBoxHandleInput(barcode: String) {
-        interactor.boxScanned(barcode.replace("-", ""), true)
+        interactor.boxScanned(barcode, true)
     }
 
     fun onListClicked() {
@@ -159,22 +147,29 @@ class DcLoadingScanViewModel(
 
     private fun toFlightDeliveries() {
         bottomProgressEvent.value = true
-        addSubscription(interactor.sendAwaitBoxes().subscribe({
-            if (it > 0) {
-                // TODO: 30.05.2021 Добавить сообщение что коробки не были добавлены в базу
+        addSubscription(interactor.sendAwaitBoxesCount().subscribe(
+            {
+                if (it > 0) {
+                    // TODO: 30.05.2021 Добавить сообщение что коробки не были добавлены в базу
+                    bottomProgressEvent.value = false
+                } else {
+                    addSubscription(interactor.switchScreen().subscribe(
+                        {
+                            _navigationEvent.value =
+                                DcLoadingScanNavAction.NavigateToFlightDeliveries
+                            bottomProgressEvent.value = false
+                        },
+                        {
+                            // TODO: 30.05.2021 реализовать сообщение
+                            bottomProgressEvent.value = false
+                        })
+                    )
+                }
+            },
+            {
                 bottomProgressEvent.value = false
-            } else {
-                addSubscription(interactor.switchScreen().subscribe({
-                    _navigationEvent.value = DcLoadingScanNavAction.NavigateToFlightDeliveries
-                    bottomProgressEvent.value = false
-                }, {
-                    // TODO: 30.05.2021 реализовать сообщение
-                    bottomProgressEvent.value = false
-                }))
-            }
-        }, {
-            bottomProgressEvent.value = false
-        }))
+            })
+        )
     }
 
     fun onStopScanner() {

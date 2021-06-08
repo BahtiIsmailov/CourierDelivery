@@ -81,7 +81,7 @@
     <fragment
         android:id="@+id/receptionBoxNotBelongFragment"
         android:name="com.wb.logistics.ui.dcloading.DcLoadingBoxNotBelongFragment"
-        android:label="@string/dc_loading_box_not_belong_label"
+        android:label="@string/dc_loading_box_not_belong_dc_toolbar_title"
         tools:layout="@layout/dc_loading_box_not_belong_fragment">
         <argument
             android:name="box_not_belong_key"

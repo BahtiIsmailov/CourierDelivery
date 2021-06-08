@@ -45,12 +45,23 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
         }
 
         viewModel.navigateToBack.observe(viewLifecycleOwner) {
+            showToolbar()
             findNavController().popBackStack()
         }
 
         binding.understand.setOnClickListener {
             viewModel.onUnderstandClick()
         }
+
+        hideToolbar()
+    }
+
+    private fun hideToolbar() {
+        (activity as NavToolbarTitleListener).hideToolbar()
+    }
+
+    private fun showToolbar() {
+        (activity as NavToolbarTitleListener).showToolbar()
     }
 
     override fun onDestroyView() {

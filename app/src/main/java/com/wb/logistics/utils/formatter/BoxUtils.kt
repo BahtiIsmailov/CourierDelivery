@@ -10,7 +10,7 @@ object BoxUtils {
 
     private const val TIME_OUT_DEBOUNCE = 25
     private const val MAX_BOX_FORMAT_DIGITS = 20
-    private const val MAX_BOX_PREFIX = "TRBX-"
+    private const val MAX_BOX_PREFIX = "TRBX"
 
     fun boxNumberFormatter(
         observableBox: InitialValueObservable<CharSequence>,

@@ -2,6 +2,8 @@ package com.wb.logistics.ui.splash
 
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -139,6 +141,16 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
         toolbarTitle.text = title
     }
 
+    override fun hideToolbar() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        toolbar.visibility = GONE
+    }
+
+    override fun showToolbar() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        toolbar.visibility = VISIBLE
+    }
+
     override fun leftIcon(resId: Int) {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val leftIcon = toolbar.findViewById<ImageView>(R.id.left_icon)
@@ -156,6 +168,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
     }
 
     override fun onBackPressed() {
+        showToolbar()
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
             R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment -> {
@@ -192,6 +205,10 @@ interface NavToolbarTitleListener {
     fun hideBackButton()
 
     fun updateTitle(title: String)
+
+    fun hideToolbar()
+
+    fun showToolbar()
 
 }
 

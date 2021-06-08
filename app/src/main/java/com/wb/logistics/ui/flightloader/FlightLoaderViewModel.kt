@@ -3,19 +3,15 @@ package com.wb.logistics.ui.flightloader
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
-import com.wb.logistics.db.FlightData
-import com.wb.logistics.db.SuccessOrEmptyData
 import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightloader.domain.FlightsLoaderInteractor
-import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightLoaderViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: FlightsLoaderInteractor,
-    private val screenManager: ScreenManager,
     private val flightLoaderProvider: FlightLoaderProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -37,30 +33,21 @@ class FlightLoaderViewModel(
 
     private fun toApp() {
         addSubscription(interactor.sessionInfo().subscribe({ _navHeader.value = it }, {}))
-        addSubscription(interactor.updateFlight().subscribe(
-            { flightData -> flightOnComplete(flightData) },
-            { flightOnEmpty() })
+        addSubscription(interactor.navigateTo().subscribe(
+            { navigateToOnComplete(it) },
+            { navigateToOnError() })
         )
     }
 
-    private fun flightOnComplete(flightData: SuccessOrEmptyData<FlightData>?) {
-        when (flightData) {
-            is SuccessOrEmptyData.Empty -> flightOnEmpty()
-            is SuccessOrEmptyData.Success -> loadStatus(flightData)
-        }
+    private fun navigateToOnComplete(navDirections: NavDirections) {
+        _countFlightsState.value = CountFlights(flightLoaderProvider.getOneFlight())
+        _navState.value = NavigateTo(navDirections)
     }
 
-    private fun flightOnEmpty() {
-        _countFlightsState.value = CountFlights(flightLoaderProvider.getZeroFlight())
+    private fun navigateToOnError() {
+        _countFlightsState.value = CountFlights(flightLoaderProvider.getEmptyFlight())
         _navState.value = NavigateTo(
             FlightLoaderFragmentDirections.actionFlightLoaderFragmentToFlightsEmptyFragment())
-    }
-
-    private fun loadStatus(flightData: SuccessOrEmptyData.Success<FlightData>) {
-        _countFlightsState.value = CountFlights(flightLoaderProvider.getOneFlight())
-        addSubscription(screenManager.loadStatus(flightData.data.flight.toString())
-            .subscribe({ _navState.value = NavigateTo(it) }, {})
-        )
     }
 
     data class NavigateTo(val navDirections: NavDirections)

@@ -13,6 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        tools:text="1. TRBX-113256565" />
+        tools:text="1. TRBX113256565" />
 
 </RelativeLayout>

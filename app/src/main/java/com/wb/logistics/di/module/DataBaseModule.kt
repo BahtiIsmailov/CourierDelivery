@@ -21,6 +21,10 @@ val databaseModule = module {
         return database.flightDao
     }
 
+    fun provideFlightMatchingDao(database: AppDatabase): FlightBoxDao {
+        return database.flightMatchingDao
+    }
+
     fun provideAttachedBoxDao(database: AppDatabase): AttachedBoxDao {
         return database.attachedBoxDao
     }
@@ -39,6 +43,7 @@ val databaseModule = module {
 
     single { provideDatabase(androidApplication()) }
     single { provideFlightDao(get()) }
+    single { provideFlightMatchingDao(get()) }
     single { provideAttachedBoxDao(get()) }
     single { provideUnloadingBoxDao(get()) }
     single { provideReturnBoxDao(get()) }

@@ -9,6 +9,6 @@ data class BoxDefinitionResult(
     val flight: SuccessOrEmptyData<FlightEntity>,
     val flightBoxHasBeenScanned: SuccessOrEmptyData<AttachedBoxEntity>,
     val matchingBox: SuccessOrEmptyData<MatchingBoxEntity>,
-    val barcodeScanned: String,
+    val barcode: String,
     val isManual: Boolean,
 )

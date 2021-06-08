@@ -9,21 +9,21 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintBottom_toTopOf="@+id/divider1">
 
         <ImageView
             android:id="@+id/return_danger"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_return_danger"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_attention"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/title"
-            style="@style/SMediumRegularDarkText"
+            style="@style/MediumRegularDarkText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/return_danger"
@@ -32,8 +32,21 @@
             android:layout_marginTop="24dp"
             android:layout_marginRight="24dp"
             android:gravity="center"
-            tools:text="@string/dc_loading_box_not_belong_dc_title"
-            android:textColor="@color/danger" />
+            android:textStyle="bold"
+            tools:text="Коробка не принадлежит РЦ" />
+
+        <TextView
+            android:id="@+id/description"
+            style="@style/MediumRegularLightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="24dp"
+            android:gravity="center"
+            android:text="@string/dc_loading_box_not_belong_dc_description" />
     </RelativeLayout>
 
     <View
@@ -70,7 +83,7 @@
         android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@+id/title_address"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="TRBX-994827463" />
+        tools:text="TRBX994827463" />
 
     <TextView
         android:id="@+id/title_address"

@@ -64,7 +64,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_center_info"
-        app:unloading_info_box="TRBX-"
+        app:unloading_info_box="TRBX"
         app:unloading_info_state="empty_box" />
 
     <com.wb.logistics.views.ProgressImageButtonView

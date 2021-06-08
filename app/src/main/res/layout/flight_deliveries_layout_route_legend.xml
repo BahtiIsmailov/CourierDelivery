@@ -32,6 +32,6 @@
         android:paddingStart="10dp"
         android:paddingLeft="10dp"
         tools:ignore="RtlSymmetry"
-        tools:text="TRBX-.....6565" />
+        tools:text="TRBX.....6565" />
 
 </RelativeLayout>

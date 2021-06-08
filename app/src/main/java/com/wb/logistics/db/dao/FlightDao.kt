@@ -5,7 +5,6 @@ import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEnti
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
-import com.wb.logistics.db.entity.flightboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -31,9 +30,6 @@ interface FlightDao {
     @Query("SELECT * FROM FlightEntity")
     fun readFlightData(): Single<FlightDataEntity>
 
-    @Delete
-    fun deleteFlight(flightEntity: FlightEntity): Completable
-
     @Query("DELETE FROM FlightEntity")
     fun deleteAllFlight()
 
@@ -44,25 +40,23 @@ interface FlightDao {
     fun insertFlightOffice(flightOfficeEntity: List<FlightOfficeEntity>): Completable
 
     @Query("UPDATE FlightOfficeEntity SET isUnloading=:isUnloading, notUnloadingCause=:notUnloadingCause WHERE office_id = :dstOfficeId")
-    fun changeFlightOfficeUnloading(dstOfficeId: Int, isUnloading: Boolean, notUnloadingCause: String): Completable
-
-    //==============================================================================================
-    //boxes attached to flight
-    //==============================================================================================
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFlightBoxes(flightBoxes: List<FlightBoxEntity>): Completable
-
-    @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode")
-    fun findFlightBox(barcode: String): Single<FlightBoxEntity>
-
-    @Query("DELETE FROM FlightBoxEntity")
-    fun deleteAllFlightBoxes()
+    fun changeFlightOfficeUnloading(
+        dstOfficeId: Int,
+        isUnloading: Boolean,
+        notUnloadingCause: String,
+    ): Completable
 
     //==============================================================================================
     //matching boxes
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMatchingBox(matchingBox: MatchingBoxEntity): Completable
+
+    @Delete
+    fun deleteMatchingBox(matchingBox: MatchingBoxEntity): Completable
 
     @Query("SELECT * FROM MatchingBoxEntity WHERE barcode = :barcode")
     fun findMatchingBox(barcode: String): Single<MatchingBoxEntity>
@@ -80,7 +74,7 @@ interface FlightDao {
     fun observeFlightBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>>
 
     @Query("SELECT * FROM AttachedBoxBalanceAwaitEntity")
-    fun flightBoxBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
+    fun attachedBoxesBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
 
     @Delete
     fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable

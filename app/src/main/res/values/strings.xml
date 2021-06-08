@@ -89,10 +89,10 @@
     <string name="dc_loading_manual_input_button">Ручной ввод</string>
     <string name="dc_loading_complete_button">Завершить</string>
     <string name="dc_loading_current_box">Текущая коробка</string>
-    <string name="dc_loading_code_pref_box">TRBX-</string>
-    <string name="dc_loading_code_box_divider">TRBX-%1$s</string>
+    <string name="dc_loading_code_pref_box">TRBX</string>
+    <string name="dc_loading_code_box_divider">TRBX%1$s</string>
     <string name="dc_loading_code_box">TRBX%1$s</string>
-    <string name="dc_loading_code_added_box">TRBX-%1$s добавлена</string>
+    <string name="dc_loading_code_added_box">TRBX%1$s добавлена</string>
     <string name="dc_loading_code_short_added_box">%1$s добавлена</string>
     <string name="dc_loading_code_short_has_been_added_box">%1$s добавлена ранее</string>
     <string name="dc_loading_status_box_empty" />
@@ -112,11 +112,11 @@
     <string name="dc_loading_handle_label">Ручной ввод</string>
     <string name="dc_loading_handle_receive">Принять</string>
 
-    <string name="dc_loading_box_not_belong_label">Не принадлежит РЦ</string>
-    <string name="dc_loading_box_not_belong_dc_toolbar_title">Не принадлежит РЦ</string>
-    <string name="dc_loading_box_not_belong_dc_title">Коробка не принадлежит РЦ,\nверните её сотруднику склада</string>
+    <string name="dc_loading_box_not_belong_dc_toolbar_title" />
+    <string name="dc_loading_box_not_belong_dc_title">Коробка не принадлежит РЦ</string>
+    <string name="dc_loading_box_not_belong_dc_description">верните её сотруднику склада</string>
     <string name="dc_loading_box_not_belong_flight_toolbar_title">Не принадлежит рейсу</string>
-    <string name="dc_loading_box_not_belong_flight_title">Коробка не принадлежит рейсу,\nверните её сотруднику склада</string>
+    <string name="dc_loading_box_not_belong_flight_title">Коробка не принадлежит рейсу</string>
     <string name="dc_loading_box_not_belong_address_title">Уточните у сотрудника склада</string>
 
     <string name="dc_loading_box_not_code_title">ШК</string>

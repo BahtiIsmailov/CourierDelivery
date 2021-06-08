@@ -6,24 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/delivery_flight_background"
-    tools:context=".ui.flights.FlightsEmptyFragment">
+    tools:context=".ui.flights.FlightsFragment">
 
-    <fragment class="com.wb.logistics.ui.scanner.ScannerFragment"
+    <fragment
         android:id="@+id/scanner"
+        class="com.wb.logistics.ui.scanner.ScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/guideline_center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/scanner_fragment"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/scanner_fragment" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/reception_bottom_sheet_info"
         app:layout_constraintBottom_toTopOf="@+id/complete"
-        app:layout_constraintTop_toBottomOf="@+id/guideline3" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline3"
+        tools:ignore="ContentDescription" />
 
     <com.wb.logistics.ui.dcloading.views.ReceptionAcceptedView
         android:id="@+id/received"
@@ -63,7 +65,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_center_info"
-        app:reception_info_box="TRBX-66727363762"
+        app:reception_info_box="TRBX66727363762"
         app:reception_info_state="empty_box" />
 
     <com.wb.logistics.views.ProgressImageButtonView
@@ -142,7 +144,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_end="72dp" />
+        app:layout_constraintGuide_end="@dimen/auth_button_height_large" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/section_button"
