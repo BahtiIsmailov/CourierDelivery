@@ -23,7 +23,7 @@
             android:name=".ui.splash.AppActivity"
             android:screenOrientation="locked"
             android:theme="@style/Splash"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

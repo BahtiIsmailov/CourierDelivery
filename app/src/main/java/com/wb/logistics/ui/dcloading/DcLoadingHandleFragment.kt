@@ -31,8 +31,7 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = DcLoadingHandleFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,7 +40,6 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onResult(RESULT_CANCELED, "")
-
         initListener()
         initStateObserve()
     }
@@ -96,6 +94,10 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun getTheme(): Int {
+        return com.wb.logistics.R.style.HandleInputBottomSheetDialog
     }
 
 }
