@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.flights
 
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
@@ -74,10 +74,10 @@ class FlightsViewModel(
         addSubscription(interactor.observeFlight()
             .map {
                 when (it) {
-                    is SuccessOrEmptyData.Empty -> FlightsUIListState.UpdateFlight(
+                    is Optional.Empty -> FlightsUIListState.UpdateFlight(
                         listOf(dataBuilder.buildEmptyItem())
                     )
-                    is SuccessOrEmptyData.Success -> FlightsUIListState.ShowFlight(
+                    is Optional.Success -> FlightsUIListState.ShowFlight(
                         listOf(dataBuilder.buildSuccessItem(it))
                     )
                 }

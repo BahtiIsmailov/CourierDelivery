@@ -3,6 +3,8 @@ package com.wb.logistics.ui.dcloading
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.utils.LogUtils
@@ -12,6 +14,7 @@ import io.reactivex.disposables.CompositeDisposable
 class DcLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val receptionInteractor: DcLoadingInteractor,
+    private val resourceProvider: DcLoadingResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxes = MutableLiveData<DcLoadingBoxesUIState>()
@@ -22,9 +25,9 @@ class DcLoadingBoxesViewModel(
     val navigateToBack: LiveData<NavigateToBack>
         get() = _navigateToBack
 
-    private val _navigateToMessage = MutableLiveData<NavigateToMessage>()
-    val navigateToMessage: LiveData<NavigateToMessage>
-        get() = _navigateToMessage
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
+    val navigateToMessage: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
 
     private val _enableRemove = MutableLiveData<Boolean>()
 
@@ -58,11 +61,8 @@ class DcLoadingBoxesViewModel(
     }
 
     private fun changeBoxesComplete(boxes: MutableList<DcLoadingBoxesItem>) {
-        if (boxes.isEmpty()) {
-            _boxes.value = DcLoadingBoxesUIState.Empty
-        } else {
-            _boxes.value = DcLoadingBoxesUIState.ReceptionBoxesItem(boxes)
-        }
+        _boxes.value = if (boxes.isEmpty()) DcLoadingBoxesUIState.Empty
+        else DcLoadingBoxesUIState.ReceptionBoxesItem(boxes)
     }
 
     private fun changeBoxesError(error: Throwable) {
@@ -75,14 +75,31 @@ class DcLoadingBoxesViewModel(
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
         addSubscription(receptionInteractor.deleteScannedBoxes(dcLoadingBoxes)
             .subscribe(
-                {
-                    _boxes.value = DcLoadingBoxesUIState.ProgressComplete
-                    _navigateToBack.value = NavigateToBack
-                }, {
-                    _navigateToMessage.value = NavigateToMessage(if (dcLoadingBoxes.size > 1) "Коробки не удалены" else "Коробка не удалена")
-                    _boxes.value = DcLoadingBoxesUIState.ProgressComplete
-                    changeDisableAllCheckedBox()
-                }))
+                { deleteScannedBoxesComplete() },
+                { deleteScannedBoxesError(it, dcLoadingBoxes.size) }
+            )
+        )
+    }
+
+    private fun deleteScannedBoxesComplete() {
+        _boxes.value = DcLoadingBoxesUIState.ProgressComplete
+        _navigateToBack.value = NavigateToBack
+    }
+
+    private fun deleteScannedBoxesError(throwable: Throwable, countBox: Int) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else ->
+                if (countBox > 1) resourceProvider.getBoxesDialogMessage()
+                else resourceProvider.getBoxDialogMessage()
+        }
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getBoxDialogTitle(),
+            message,
+            resourceProvider.getBoxPositiveButton())
+        _boxes.value = DcLoadingBoxesUIState.ProgressComplete
+        changeDisableAllCheckedBox()
     }
 
     fun onItemClick(index: Int, checked: Boolean) {
@@ -117,6 +134,6 @@ class DcLoadingBoxesViewModel(
 
     object NavigateToBack
 
-    data class NavigateToMessage(val message: String)
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.dcunloading.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -45,18 +45,18 @@ class DcUnloadingInteractorImpl(
                 val updatedAt = timeManager.getOffsetLocalTime()
 
                 val flightId = when (flight) {
-                    is SuccessOrEmptyData.Success -> flight.data.id
-                    is SuccessOrEmptyData.Empty -> 0
+                    is Optional.Success -> flight.data.id
+                    is Optional.Empty -> 0
                 }
                 // TODO: 29.04.2021 добавить конвертер состояния в случае 0 рейса
 
                 when {
-                    findDcUnloadedBox is SuccessOrEmptyData.Success -> //коробка уже выгружена из машины
+                    findDcUnloadedBox is Optional.Success -> //коробка уже выгружена из машины
                         return@flatMap Observable.just(with(findDcUnloadedBox.data) {
                             DcUnloadingData.BoxAlreadyUnloaded(barcode)
                         })
 
-                    findReturnBox is SuccessOrEmptyData.Success -> {//коробка найдена в списке возврата
+                    findReturnBox is Optional.Success -> {//коробка найдена в списке возврата
                         val attachAt = timeManager.getOffsetLocalTime()
                         val dstOfficeId = findReturnBox.data.currentOffice.id
                         val dcUnloadedReturnBoxEntity = DcUnloadedReturnBoxEntity(
@@ -84,7 +84,7 @@ class DcUnloadingInteractorImpl(
                             .andThen(dcUnloadingAdded)
                     }
 
-                    findAttachedBox is SuccessOrEmptyData.Success -> { //коробка в списке доставки и не была выгружена на ПВЗ
+                    findAttachedBox is Optional.Success -> { //коробка в списке доставки и не была выгружена на ПВЗ
                         val attachAt = timeManager.getOffsetLocalTime()
                         val dstOfficeId = findAttachedBox.data.dstOffice.id
                         val dcUnloadedBoxEntity = DcUnloadedBoxEntity(

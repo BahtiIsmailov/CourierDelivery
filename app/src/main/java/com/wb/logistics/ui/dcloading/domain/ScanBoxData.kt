@@ -21,7 +21,7 @@ sealed class ScanBoxData {
         val gate: String,
     ) : ScanBoxData()
 
-    class BoxDoesNotBelongInfo(val barcode: String) : ScanBoxData()
+    class BoxDoesNotBelongInfoEmpty(val barcode: String) : ScanBoxData()
 
     object Empty : ScanBoxData()
 

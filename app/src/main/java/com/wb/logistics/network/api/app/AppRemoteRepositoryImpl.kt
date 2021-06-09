@@ -1,6 +1,6 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.boxinfo.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
@@ -208,27 +208,11 @@ class AppRemoteRepositoryImpl(
         return remote.getTime(tokenManager.apiVersion())
     }
 
-    override fun boxInfo(barcode: String): Single<SuccessOrEmptyData<BoxInfoEntity>> {
+    override fun boxInfo(barcode: String): Single<Optional<BoxInfoEntity>> {
         return remote.boxInfo(tokenManager.apiVersion(), barcode)
             .map { covertBoxInfoToFlight(it) }
-            .map<SuccessOrEmptyData<BoxInfoEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
-    }
-
-
-    private fun BoxInfoRemote.convertBoxInfoFlightEntity() =
-        BoxInfoFlightEntity(
-            id = flight.id,
-            gate = flight.gate,
-            plannedDate = flight.plannedDate,
-            isAttached = flight.isAttached)
-
-    private fun BoxInfoRemote.convertBoxEntity(boxRemote: com.wb.logistics.network.api.app.remote.boxinfo.BoxRemote): BoxEntity {
-        return BoxEntity(
-            barcode = box.barcode,
-            srcOffice = convertBoxInfoSrcOfficeEntity(boxRemote.srcOffice),
-            dstOffice = convertBoxInfoDstOfficeEntity(boxRemote.dstOffice),
-            smID = box.smID)
+            .map<Optional<BoxInfoEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     private fun convertBoxInfoDstOfficeEntity(dstOffice: DstOfficeRemote) =
@@ -268,7 +252,7 @@ class AppRemoteRepositoryImpl(
                                 fullAddress = dstOffice.fullAddress,
                                 longitude = dstOffice.long,
                                 latitude = dstOffice.lat),
-                            )
+                        )
                     })
                 }
                 matchingBoxesEntity
@@ -283,6 +267,21 @@ class AppRemoteRepositoryImpl(
             )
         }
     }
+
+    private fun BoxInfoRemote.convertBoxEntity(boxRemote: com.wb.logistics.network.api.app.remote.boxinfo.BoxRemote): BoxEntity {
+        return BoxEntity(
+            barcode = box.barcode,
+            srcOffice = convertBoxInfoSrcOfficeEntity(boxRemote.srcOffice),
+            dstOffice = convertBoxInfoDstOfficeEntity(boxRemote.dstOffice),
+            smID = box.smID)
+    }
+
+    private fun BoxInfoRemote.convertBoxInfoFlightEntity() =
+        BoxInfoFlightEntity(
+            id = flight.id,
+            gate = flight.gate,
+            plannedDate = flight.plannedDate,
+            isAttached = flight.isAttached)
 
     override fun flightStatuses(): Single<FlightStatusesRemote> {
         return remote.flightStatuses(tokenManager.apiVersion())

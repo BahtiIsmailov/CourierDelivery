@@ -6,6 +6,7 @@ sealed class DcLoadingBoxNotBelongState {
         val title: String,
         val code: String,
         val address: String,
+        val isShowAddress: Boolean
     ) :
         DcLoadingBoxNotBelongState()
 }

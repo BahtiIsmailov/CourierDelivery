@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.dcloading.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
@@ -51,13 +51,13 @@ class DcLoadingInteractorImpl(
                 val barcodeScanned = boxDefinition.barcode
 
                 when {
-                    flightBoxHasBeenScanned is SuccessOrEmptyData.Success -> //коробка уже была отсканирована
+                    flightBoxHasBeenScanned is Optional.Success -> //коробка уже была отсканирована
                         return@flatMap Observable.just(with(flightBoxHasBeenScanned.data) {
                             ScanBoxData.BoxHasBeenAdded(barcode, gate.toString())
                         })
-                    flight is SuccessOrEmptyData.Success -> //данные по рейсу актуальны
+                    flight is Optional.Success -> //данные по рейсу актуальны
                         when (matchingBox) {
-                            is SuccessOrEmptyData.Success ->  //коробка принадлежит рейсу
+                            is Optional.Success ->  //коробка принадлежит рейсу
                                 return@flatMap saveBoxToBalance(
                                     flightId = flight.data.id,
                                     barcode = matchingBox.data.barcode,
@@ -65,8 +65,8 @@ class DcLoadingInteractorImpl(
                                     officeId = matchingBox.data.srcOffice.id,
                                     matchingBox = matchingBox.data,
                                     gate = flight.data.gate)
-                            is SuccessOrEmptyData.Empty -> { //коробка не принадлежит рейсу
-                                return@flatMap notBelongBox(barcodeScanned, flight)
+                            is Optional.Empty -> { //коробка не принадлежит рейсу
+                                return@flatMap boxDoesNotBelongDc(barcodeScanned, flight)
                             }
                         }
                     else -> return@flatMap ObservableSource { ScanBoxData.Empty }
@@ -78,26 +78,25 @@ class DcLoadingInteractorImpl(
             }.compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-
-    private fun notBelongBox(
+    private fun boxDoesNotBelongDc(
         barcodeScanned: String,
-        flight: SuccessOrEmptyData.Success<FlightEntity>,
-    ) = infoBox(barcodeScanned).map { boxInfo ->
+        optionalFlight: Optional.Success<FlightEntity>,
+    ) = boxInfo(barcodeScanned).map { boxInfo ->
         when (boxInfo) {
-            is SuccessOrEmptyData.Empty -> {
-                ScanBoxData.BoxDoesNotBelongInfo(barcodeScanned)
-            }
-            is SuccessOrEmptyData.Success -> {
-                if (boxInfo.data.box.srcOffice.id == flight.data.dc.id)  //не принадлежит рейсу
-                    ScanBoxData.BoxDoesNotBelongFlight(
+            is Optional.Empty -> ScanBoxData.BoxDoesNotBelongInfoEmpty(barcodeScanned)
+            is Optional.Success -> {
+                with(boxInfo.data) {
+                    if (box.srcOffice.id == optionalFlight.data.dc.id)  //не принадлежит рейсу
+                        ScanBoxData.BoxDoesNotBelongFlight(
+                            barcodeScanned,
+                            box.srcOffice.fullAddress,
+                            flight.gate.toString())
+                    else ScanBoxData.BoxDoesNotBelongDc( //не принадлежит РЦ
                         barcodeScanned,
-                        boxInfo.data.box.srcOffice.fullAddress,
-                        boxInfo.data.flight.gate.toString())
-                else ScanBoxData.BoxDoesNotBelongDc( //не принадлежит РЦ
-                    barcodeScanned,
-                    boxInfo.data.box.srcOffice.fullAddress,
-                    boxInfo.data.flight.gate.toString()
-                )
+                        box.srcOffice.fullAddress,
+                        flight.gate.toString()
+                    )
+                }
             }
         }
     }
@@ -288,7 +287,7 @@ class DcLoadingInteractorImpl(
     private fun boxAdded(barcode: String, gate: String) =
         Single.just<ScanBoxData>(ScanBoxData.BoxAdded(barcode, gate))
 
-    private fun infoBox(barcode: String) = appRemoteRepository.boxInfo(barcode)
+    private fun boxInfo(barcode: String) = appRemoteRepository.boxInfo(barcode)
 
     override fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>> {
         return appLocalRepository.observeAttachedBoxes()
@@ -299,8 +298,8 @@ class DcLoadingInteractorImpl(
     override fun sendAwaitBoxesCount(): Single<Int> {
         return flight().flatMap {
             when (it) {
-                is SuccessOrEmptyData.Empty -> Single.error(Throwable())
-                is SuccessOrEmptyData.Success -> Single.just(it.data.id)
+                is Optional.Empty -> Single.error(Throwable())
+                is Optional.Success -> Single.just(it.data.id)
             }
         }
             .map { it.toString() }

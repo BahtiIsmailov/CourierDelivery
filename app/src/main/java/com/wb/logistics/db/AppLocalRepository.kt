@@ -28,13 +28,13 @@ interface AppLocalRepository {
         notUnloadingCause: String,
     ): Completable
 
-    fun observeFlightWrap(): Flowable<SuccessOrEmptyData<FlightData>>
+    fun observeFlightWrap(): Flowable<Optional<FlightData>>
 
     fun observeFlight(): Flowable<FlightData>
 
-    fun readFlight(): Single<SuccessOrEmptyData<FlightEntity>>
+    fun readFlight(): Single<Optional<FlightEntity>>
 
-    fun readFlightData(): Single<SuccessOrEmptyData<FlightData>>
+    fun readFlightData(): Single<Optional<FlightData>>
 
     fun deleteAllFlight()
 
@@ -43,7 +43,7 @@ interface AppLocalRepository {
     //==============================================================================================
     fun saveFlightBoxes(flightMatchingBoxes: List<FlightBoxEntity>): Completable
 
-    fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>>
+    fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
     fun deleteAllFlightBoxes()
 
@@ -56,7 +56,7 @@ interface AppLocalRepository {
 
     fun deleteMatchingBox(matchingBox: MatchingBoxEntity): Completable
 
-    fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>>
+    fun findMatchingBox(barcode: String): Single<Optional<MatchingBoxEntity>>
 
     fun deleteAllMatchingBox()
 
@@ -75,7 +75,7 @@ interface AppLocalRepository {
 
     fun readAttachedBoxes(): Single<List<AttachedBoxEntity>>
 
-    fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>>
+    fun findAttachedBox(barcode: String): Single<Optional<AttachedBoxEntity>>
 
     fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
 
@@ -94,7 +94,7 @@ interface AppLocalRepository {
 
     fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
 
-    fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>>
+    fun findUnloadedBox(barcode: String): Single<Optional<UnloadedBoxEntity>>
 
     fun deleteAllUnloadedBox()
 
@@ -105,7 +105,7 @@ interface AppLocalRepository {
 
     fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable
 
-    fun findDcUnloadedBox(barcode: String): Single<SuccessOrEmptyData<DcUnloadedBoxEntity>>
+    fun findDcUnloadedBox(barcode: String): Single<Optional<DcUnloadedBoxEntity>>
 
     fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>>
 
@@ -140,7 +140,7 @@ interface AppLocalRepository {
 
     fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>>
 
-    fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>>
+    fun findReturnBox(barcode: String): Single<Optional<ReturnBoxEntity>>
 
     fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
 

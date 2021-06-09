@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -15,7 +16,7 @@ import org.koin.core.parameter.parametersOf
 
 class DcLoadingBoxNotBelongFragment : Fragment() {
 
-    private val viewModel by viewModel<DcLoadingBoxNotBelongModel> {
+    private val viewModel by viewModel<DcLoadingBoxNotBelongViewModel> {
         parametersOf(requireArguments().getParcelable<DcLoadingBoxNotBelongParameters>(
             BOX_NOT_BELONG_KEY))
     }
@@ -40,6 +41,10 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
                     binding.title.text = it.title
                     binding.code.text = it.code
                     binding.address.text = it.address
+                    if (it.isShowAddress) {
+                        binding.titleAddress.visibility = VISIBLE
+                        binding.address.visibility = VISIBLE
+                    }
                 }
             }
         }

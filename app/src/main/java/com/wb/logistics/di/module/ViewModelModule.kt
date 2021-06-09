@@ -42,7 +42,7 @@ val viewModelModule = module {
         CreatePasswordViewModel(parameters, get(), get(), get())
     }
     viewModel { (parameters: DcLoadingBoxNotBelongParameters) ->
-        DcLoadingBoxNotBelongModel(parameters)
+        DcLoadingBoxNotBelongViewModel(parameters)
     }
 
     viewModel { FlightLoaderViewModel(get(), get(), get()) }
@@ -53,7 +53,7 @@ val viewModelModule = module {
     viewModel { DcLoadingScanViewModel(get(), get(), get()) }
     viewModel { DcLoadingHandleViewModel(get(), get()) }
 
-    viewModel { DcLoadingBoxesViewModel(get(), get()) }
+    viewModel { DcLoadingBoxesViewModel(get(), get(), get()) }
 
     viewModel { FlightPickPointViewModel(get(), get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get(), get()) }

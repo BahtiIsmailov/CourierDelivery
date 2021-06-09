@@ -1,6 +1,6 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
@@ -16,7 +16,7 @@ interface AppRemoteRepository {
 
     fun matchingBoxes(flightId: String): Single<List<MatchingBoxEntity>>
 
-    fun boxInfo(barcode: String): Single<SuccessOrEmptyData<BoxInfoEntity>>
+    fun boxInfo(barcode: String): Single<Optional<BoxInfoEntity>>
 
     fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>>
 

@@ -2,6 +2,8 @@ package com.wb.logistics.ui.dcloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
@@ -12,7 +14,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 class DcLoadingScanViewModel(
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: DcLoadingScanResourceProvider,
+    private val resourceProvider: DcLoadingResourceProvider,
     private val interactor: DcLoadingInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -26,6 +28,10 @@ class DcLoadingScanViewModel(
     val toastEvent: LiveData<DcLoadingScanToastState>
         get() = _toastEvent
 
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
+
     private val _beepEvent =
         SingleLiveEvent<DcLoadingScanBeepState>()
     val beepEvent: LiveData<DcLoadingScanBeepState>
@@ -36,9 +42,6 @@ class DcLoadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        // TODO: 19.05.2021 addMockScannedBox
-        //addMockScannedBox()
-        // TODO: 08.06.2021 инициализация виджетов
         addSubscription(interactor.observeScannedBoxes().subscribe {
             boxStateUI.value = if (it.isEmpty()) DcLoadingScanBoxState.Empty
             else {
@@ -49,15 +52,13 @@ class DcLoadingScanViewModel(
                     lastBox.barcode)
             }
         })
-
-        addSubscription(interactor.observeScanProcess().subscribe { addBoxToFlightComplete(it) })
+        addSubscription(interactor.observeScanProcess()
+            .subscribe(
+                { addBoxToFlightComplete(it) },
+                { addBoxToFlightError(it) }
+            )
+        )
     }
-
-//    private fun addMockScannedBox() {
-//        addSubscription(interactor.addMockScannedBox()
-//            .subscribe({ LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() complete") } },
-//                { LogUtils { logDebugApp("receptionInteractor.addMockScannedBox() error") } }))
-//    }
 
     private fun addBoxToFlightComplete(scanProcess: ScanProcessData) {
         val scanBoxData = scanProcess.scanBoxData
@@ -121,15 +122,15 @@ class DcLoadingScanViewModel(
                         scanBoxData.barcode))
             }
             ScanBoxData.Empty -> boxStateUI.value = DcLoadingScanBoxState.Empty
-            is ScanBoxData.BoxDoesNotBelongInfo -> {
-                _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
-                _navigationEvent.value =
-                    DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
-                        resourceProvider.getBoxNotBelongFlightToolbarTitle(),
-                        resourceProvider.getBoxNotBelongFlightTitle(),
-                        scanBoxData.barcode,
-                        resourceProvider.getBoxNotBelongAddress())
-            }
+//            is ScanBoxData.BoxDoesNotBelongInfo -> {
+//                _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
+//                _navigationEvent.value =
+//                    DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
+//                        resourceProvider.getBoxNotBelongFlightToolbarTitle(),
+//                        resourceProvider.getBoxNotBelongFlightTitle(),
+//                        scanBoxData.barcode,
+//                        resourceProvider.getBoxNotBelongAddress())
+//            }
         }
     }
 
@@ -142,10 +143,6 @@ class DcLoadingScanViewModel(
     }
 
     fun onCompleteClicked() {
-        toFlightDeliveries()
-    }
-
-    private fun toFlightDeliveries() {
         bottomProgressEvent.value = true
         addSubscription(interactor.sendAwaitBoxesCount().subscribe(
             {
@@ -172,6 +169,18 @@ class DcLoadingScanViewModel(
         )
     }
 
+    private fun addBoxToFlightError(throwable: Throwable) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> resourceProvider.getScanDialogMessage()
+        }
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getScanDialogTitle(),
+            message,
+            resourceProvider.getScanDialogButton())
+    }
+
     fun onStopScanner() {
         interactor.scannerAction(ScannerAction.Stop)
     }
@@ -179,5 +188,7 @@ class DcLoadingScanViewModel(
     fun onStartScanner() {
         interactor.scannerAction(ScannerAction.Start)
     }
+
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

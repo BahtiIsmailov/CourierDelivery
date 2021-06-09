@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.flightpickpoint.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -28,8 +28,8 @@ class FlightPickPointInteractorImpl(
         return appLocalRepository.observeFlightWrap()
             .map {
                 when (it) {
-                    is SuccessOrEmptyData.Empty -> 0
-                    is SuccessOrEmptyData.Success -> it.data.flightId
+                    is Optional.Empty -> 0
+                    is Optional.Success -> it.data.flightId
                 }
             }.firstOrError()
             .compose(rxSchedulerFactory.applySingleSchedulers())

@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.flights
 
 import com.wb.logistics.db.FlightData
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flights.delegates.items.FlightItem
 import com.wb.logistics.ui.flights.delegates.items.FlightProgressItem
@@ -15,7 +15,7 @@ class FlightsDataBuilderImpl(
     private val resourceProvider: FlightsResourceProvider,
 ) : FlightsDataBuilder {
 
-    override fun buildSuccessItem(flightEntity: SuccessOrEmptyData.Success<FlightData>): BaseItem {
+    override fun buildSuccessItem(flightEntity: Optional.Success<FlightData>): BaseItem {
         return with(flightEntity.data) {
             val flightOffices =
                 if (offices.isEmpty()) listOf(resourceProvider.getRoutesEmpty())

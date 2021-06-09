@@ -122,12 +122,10 @@ val interactorModule = module {
 
     fun provideFlightDeliveriesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightDeliveriesInteractor {
         return FlightDeliveriesInteractorImpl(rxSchedulerFactory,
-            networkMonitorRepository,
             appLocalRepository,
             screenManager)
     }
@@ -226,7 +224,7 @@ val interactorModule = module {
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get(), get()) }
     single { provideFlightPickPointInteractor(get(), get(), get()) }
-    single { provideFlightDeliveriesInteractor(get(), get(), get(), get()) }
+    single { provideFlightDeliveriesInteractor(get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }

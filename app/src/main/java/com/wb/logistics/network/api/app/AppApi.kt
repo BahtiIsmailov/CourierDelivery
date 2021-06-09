@@ -33,7 +33,7 @@ interface AppApi {
     fun boxInfo(
         @Path(value = "version", encoded = true) version: String,
         @Path("barcode") barcode: String,
-    ): Single<BoxInfoRemote>
+    ): Single<BoxInfoRemote?>
 
     @GET("{version}/flights/{flightID}/boxes")
     fun flightBoxes(

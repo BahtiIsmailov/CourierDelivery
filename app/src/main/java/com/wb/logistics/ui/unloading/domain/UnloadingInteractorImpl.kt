@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.unloading.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnCurrentOfficeEntity
@@ -50,23 +50,23 @@ class UnloadingInteractorImpl(
                 val updatedAt = timeManager.getOffsetLocalTime()
 
                 val flightId = when (flight) {
-                    is SuccessOrEmptyData.Success -> flight.data.id
-                    is SuccessOrEmptyData.Empty -> 0
+                    is Optional.Success -> flight.data.id
+                    is Optional.Empty -> 0
                 }
                 // TODO: 29.04.2021 добавить конвертер состояния в случае 0 рейса
 
                 when {
-                    findUnloadedBox is SuccessOrEmptyData.Success -> //коробка уже выгружена из машины
+                    findUnloadedBox is Optional.Success -> //коробка уже выгружена из машины
                         return@flatMap Observable.just(with(findUnloadedBox.data) {
                             UnloadingData.BoxAlreadyUnloaded(barcode)
                         })
 
-                    findReturnBox is SuccessOrEmptyData.Success -> //коробка уже добавлена к возврату
+                    findReturnBox is Optional.Success -> //коробка уже добавлена к возврату
                         return@flatMap Observable.just(with(findReturnBox.data) {
                             UnloadingData.BoxAlreadyReturn(barcode)
                         })
 
-                    findAttachedBox is SuccessOrEmptyData.Success -> { //коробка в списке доставки
+                    findAttachedBox is Optional.Success -> { //коробка в списке доставки
                         with(findAttachedBox) {
                             if (dstOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ
                                 // TODO: 27.04.2021 добавить коробку в базу
@@ -103,7 +103,7 @@ class UnloadingInteractorImpl(
                         }
                     }
 
-                    findAttachedBox is SuccessOrEmptyData.Empty -> { //коробки нет в списке доставки - принятие на возврат
+                    findAttachedBox is Optional.Empty -> { //коробки нет в списке доставки - принятие на возврат
                         val saveReturnBox = saveReturnBox(flightId,
                             isManualInput,
                             barcodeScanned,

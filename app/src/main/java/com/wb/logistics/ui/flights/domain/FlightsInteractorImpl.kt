@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flights.domain
 
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.FlightData
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -15,7 +15,7 @@ class FlightsInteractorImpl(
     private val appLocalRepository: AppLocalRepository,
 ) : FlightsInteractor {
 
-    override fun observeFlight(): Flowable<SuccessOrEmptyData<FlightData>> {
+    override fun observeFlight(): Flowable<Optional<FlightData>> {
         return appLocalRepository.observeFlightWrap()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }

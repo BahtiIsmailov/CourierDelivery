@@ -44,7 +44,7 @@ class AppLocalRepositoryImpl(
         return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
     }
 
-    override fun observeFlightWrap(): Flowable<SuccessOrEmptyData<FlightData>> {
+    override fun observeFlightWrap(): Flowable<Optional<FlightData>> {
         return flightDao.observeFlight().map { convertFlight(it) }
     }
 
@@ -52,19 +52,19 @@ class AppLocalRepositoryImpl(
         return flightDao.observeFlight().map { convertFlightData(it) }
     }
 
-    override fun readFlight(): Single<SuccessOrEmptyData<FlightEntity>> {
+    override fun readFlight(): Single<Optional<FlightEntity>> {
         return flightDao.readFlight()
-            .map<SuccessOrEmptyData<FlightEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<FlightEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
-    override fun readFlightData(): Single<SuccessOrEmptyData<FlightData>> {
+    override fun readFlightData(): Single<Optional<FlightData>> {
         return flightDao.readFlightData().map { convertFlight(it) }
     }
 
-    private fun convertFlight(flightData: FlightDataEntity?): SuccessOrEmptyData<FlightData> {
+    private fun convertFlight(flightData: FlightDataEntity?): Optional<FlightData> {
         return if (flightData == null) {
-            SuccessOrEmptyData.Empty()
+            Optional.Empty()
         } else {
             successFlightData(flightData)
         }
@@ -87,11 +87,11 @@ class AppLocalRepositoryImpl(
     }
 
     // TODO: 09.04.2021 вынести в конвертер
-    private fun successFlightData(flightDataEntity: FlightDataEntity): SuccessOrEmptyData<FlightData> {
+    private fun successFlightData(flightDataEntity: FlightDataEntity): Optional<FlightData> {
         return with(flightDataEntity) {
             val addressesName = mutableListOf<String>()
             officeEntity.forEach { addresses -> addressesName.add(addresses.name) }
-            SuccessOrEmptyData.Success(
+            Optional.Success(
                 with(flightEntity) {
                     FlightData(
                         id,
@@ -117,10 +117,10 @@ class AppLocalRepositoryImpl(
         return flightMatchingDao.insertFlightBoxes(flightMatchingBoxes)
     }
 
-    override fun findFlightBox(barcode: String): Single<SuccessOrEmptyData<FlightBoxEntity>> {
+    override fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
         return flightMatchingDao.findFlightBox(barcode)
-            .map<SuccessOrEmptyData<FlightBoxEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAllFlightBoxes() {
@@ -140,10 +140,10 @@ class AppLocalRepositoryImpl(
         return flightDao.deleteMatchingBox(matchingBox)
     }
 
-    override fun findMatchingBox(barcode: String): Single<SuccessOrEmptyData<MatchingBoxEntity>> {
+    override fun findMatchingBox(barcode: String): Single<Optional<MatchingBoxEntity>> {
         return flightDao.findMatchingBox(barcode)
-            .map<SuccessOrEmptyData<MatchingBoxEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<MatchingBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAllMatchingBox() {
@@ -177,10 +177,10 @@ class AppLocalRepositoryImpl(
         return attachedBoxDao.readAttachedBox()
     }
 
-    override fun findAttachedBox(barcode: String): Single<SuccessOrEmptyData<AttachedBoxEntity>> {
+    override fun findAttachedBox(barcode: String): Single<Optional<AttachedBoxEntity>> {
         return attachedBoxDao.findAttachedBox(barcode)
-            .map<SuccessOrEmptyData<AttachedBoxEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<AttachedBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable {
@@ -215,10 +215,10 @@ class AppLocalRepositoryImpl(
         return unloadingBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
     }
 
-    override fun findUnloadedBox(barcode: String): Single<SuccessOrEmptyData<UnloadedBoxEntity>> {
+    override fun findUnloadedBox(barcode: String): Single<Optional<UnloadedBoxEntity>> {
         return unloadingBoxDao.findUnloadedBox(barcode)
-            .map<SuccessOrEmptyData<UnloadedBoxEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<UnloadedBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAllUnloadedBox() {
@@ -236,10 +236,10 @@ class AppLocalRepositoryImpl(
         return dcUnloadingBoxDao.insertDcUnloadingReturnBox(dcUnloadedReturnBoxEntity)
     }
 
-    override fun findDcUnloadedBox(barcode: String): Single<SuccessOrEmptyData<DcUnloadedBoxEntity>> {
+    override fun findDcUnloadedBox(barcode: String): Single<Optional<DcUnloadedBoxEntity>> {
         return dcUnloadingBoxDao.findDcUnloadedBox(barcode)
-            .map<SuccessOrEmptyData<DcUnloadedBoxEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<DcUnloadedBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     override fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>> {
@@ -302,10 +302,10 @@ class AppLocalRepositoryImpl(
         return returnBoxDao.observeFilterByOfficeIdReturnBoxes(dstOfficeId)
     }
 
-    override fun findReturnBox(barcode: String): Single<SuccessOrEmptyData<ReturnBoxEntity>> {
+    override fun findReturnBox(barcode: String): Single<Optional<ReturnBoxEntity>> {
         return returnBoxDao.findReturnBox(barcode)
-            .map<SuccessOrEmptyData<ReturnBoxEntity>> { SuccessOrEmptyData.Success(it) }
-            .onErrorReturn { SuccessOrEmptyData.Empty() }
+            .map<Optional<ReturnBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
     }
 
     override fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>> {

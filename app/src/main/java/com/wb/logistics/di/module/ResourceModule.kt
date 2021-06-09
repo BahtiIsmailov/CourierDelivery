@@ -4,7 +4,7 @@ import android.app.Application
 import com.wb.logistics.ui.auth.AuthResourceProvider
 import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsResourceProvider
 import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationResourceProvider
-import com.wb.logistics.ui.dcloading.DcLoadingScanResourceProvider
+import com.wb.logistics.ui.dcloading.DcLoadingResourceProvider
 import com.wb.logistics.ui.dcunloading.DcUnloadingScanResourceProvider
 import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
@@ -38,8 +38,8 @@ val resourceModule = module {
         return FlightsEmptyResourceProvider(application)
     }
 
-    fun provideReceptionResourceProvider(application: Application): DcLoadingScanResourceProvider {
-        return DcLoadingScanResourceProvider(application)
+    fun provideReceptionResourceProvider(application: Application): DcLoadingResourceProvider {
+        return DcLoadingResourceProvider(application)
     }
 
     fun provideFlightPickPointResourceProvider(application: Application): FlightPickPointResourceProvider {

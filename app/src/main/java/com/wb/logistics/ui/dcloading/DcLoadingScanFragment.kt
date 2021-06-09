@@ -20,6 +20,7 @@ import com.wb.logistics.ui.dcloading.DcLoadingHandleFragment.Companion.HANDLE_BA
 import com.wb.logistics.ui.dcloading.views.ReceptionAcceptedMode
 import com.wb.logistics.ui.dcloading.views.ReceptionInfoMode
 import com.wb.logistics.ui.dcloading.views.ReceptionParkingMode
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -46,6 +47,11 @@ class DcLoadingFragment : Fragment() {
     }
 
     private fun initObserver() {
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
         val navigationObserver = Observer<DcLoadingScanNavAction> { state ->
             when (state) {
                 is DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong -> {

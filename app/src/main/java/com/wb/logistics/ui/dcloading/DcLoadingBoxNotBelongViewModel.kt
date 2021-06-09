@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class DcLoadingBoxNotBelongModel(
-    private val parameters: DcLoadingBoxNotBelongParameters,
-) : ViewModel() {
+class DcLoadingBoxNotBelongViewModel(parameters: DcLoadingBoxNotBelongParameters) : ViewModel() {
 
     private val _belongInfo = MutableLiveData<DcLoadingBoxNotBelongState>()
     val belongInfo: LiveData<DcLoadingBoxNotBelongState>
@@ -18,11 +16,15 @@ class DcLoadingBoxNotBelongModel(
 
     init {
         _belongInfo.value =
-            DcLoadingBoxNotBelongState.BelongInfo(
-                parameters.toolbarTitle,
-                parameters.title,
-                parameters.box,
-                parameters.address)
+            with(parameters) {
+                DcLoadingBoxNotBelongState.BelongInfo(
+                    toolbarTitle,
+                    title,
+                    box,
+                    address,
+                    (address.isNotEmpty())
+                )
+            }
     }
 
     fun onUnderstandClick() {

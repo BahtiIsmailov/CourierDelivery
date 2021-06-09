@@ -3,7 +3,7 @@ package com.wb.logistics.utils.managers
 import androidx.navigation.NavDirections
 import com.wb.logistics.app.AppPreffsKeys
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.SuccessOrEmptyData
+import com.wb.logistics.db.Optional
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusLocationEntity
@@ -52,7 +52,7 @@ class ScreenManagerImpl(
     override fun saveState(flightStatus: FlightStatus, isGetFromGPS: Boolean): Completable {
         return appLocalRepository.readFlight()
             .flatMapCompletable {
-                if (it is SuccessOrEmptyData.Success)
+                if (it is Optional.Success)
                     with(it.data) {
                         val flightId = id.toString()
                         val officeId = dc.id
@@ -94,7 +94,7 @@ class ScreenManagerImpl(
     ): Completable {
         return appLocalRepository.readFlight()
             .flatMapCompletable {
-                if (it is SuccessOrEmptyData.Success)
+                if (it is Optional.Success)
                     with(it.data) {
                         val flightId = id.toString()
                         val updatedAt = timeManager.getOffsetLocalTime()
