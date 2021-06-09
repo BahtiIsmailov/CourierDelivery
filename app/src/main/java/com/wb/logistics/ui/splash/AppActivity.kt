@@ -94,6 +94,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
     private fun initListener() {
         binding.logoutLayout.setOnClickListener {
             viewModel.onExitClick()
+            panMode()
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             Navigation.findNavController(this, R.id.nav_auth_host_fragment)
                 .navigate(R.id.load_navigation)
@@ -208,6 +209,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     }
 
+    override fun panMode() {
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
+
 }
 
 interface NavToolbarListener {
@@ -226,6 +231,7 @@ interface NavDrawerListener {
 
 interface KeyboardListener {
     fun adjustMode()
+    fun panMode()
 }
 
 interface OnUserInfo {
