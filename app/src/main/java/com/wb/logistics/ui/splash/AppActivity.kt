@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -26,7 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnUserInfo, NavDrawerListener {
+class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnUserInfo, NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -200,32 +201,31 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
 
     override fun unlock() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+
+    }
+
+    override fun adjustMode() {
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     }
 
 }
 
 interface NavToolbarListener {
-
     fun leftIcon(@DrawableRes resId: Int)
-
     fun backButtonIcon(@DrawableRes resId: Int)
-
     fun hideBackButton()
-
     fun updateTitle(title: String)
-
     fun hideToolbar()
-
     fun showToolbar()
-
 }
 
 interface NavDrawerListener {
-
     fun lock()
-
     fun unlock()
+}
 
+interface KeyboardListener {
+    fun adjustMode()
 }
 
 interface OnUserInfo {
