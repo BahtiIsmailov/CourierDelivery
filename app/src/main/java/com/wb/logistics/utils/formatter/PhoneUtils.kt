@@ -3,12 +3,10 @@ package com.wb.logistics.utils.formatter
 import com.wb.logistics.R
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Observable
-import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 object PhoneUtils {
 
-    private const val TIME_OUT_DEBOUNCE = 10
     private const val MAX_PHONE_FORMAT_DIGITS = R.integer.max_phone_string
     private const val MAX_PHONE_DIGITS = R.integer.max_phone_digits
     private const val PHONE_DIGIT_FORMAT = "[^\\d.]"
@@ -50,9 +48,8 @@ object PhoneUtils {
     ): Observable<String> {
         return observablePhone
             .map { it.toString() }
-            .debounce(TIME_OUT_DEBOUNCE.toLong(), TimeUnit.MILLISECONDS)
-            .map { phoneFormat(it) }
             .distinctUntilChanged()
+            .map { phoneFormat(it) }
             .map {
                 it.substring(0, min(it.length, MAX_PHONE_FORMAT_DIGITS))
             }

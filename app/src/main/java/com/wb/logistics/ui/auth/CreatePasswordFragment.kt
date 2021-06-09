@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthCreatePasswordFragmentBinding
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -41,13 +42,19 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        initKeyboard()
         initListener()
         initStateObserve()
     }
 
     private fun initViews() {
+        binding.password.requestFocus()
         binding.password.isEnabled = true
         binding.next.setState(ProgressImageButtonMode.ENABLED)
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.password) }
     }
 
     private fun initListener() {

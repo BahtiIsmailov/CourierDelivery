@@ -17,7 +17,7 @@ import com.wb.logistics.databinding.FlightPickPointFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightpickpoint.delegates.FlightPickPointDelegate
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -123,7 +123,7 @@ class FlightPickPointFragment : Fragment() {
     }
 
     private fun updateToolbarLabel(toolbarTitle: String) {
-        (activity as NavToolbarTitleListener).updateTitle(toolbarTitle)
+        (activity as NavToolbarListener).updateTitle(toolbarTitle)
     }
 
     private fun updateStatus(status: String) {

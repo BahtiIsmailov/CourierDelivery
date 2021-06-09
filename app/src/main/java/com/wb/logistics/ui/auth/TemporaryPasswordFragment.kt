@@ -22,6 +22,7 @@ import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthTemporaryPasswordFragmentBinding
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -48,6 +49,7 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        initKeyboard()
         initListener()
         initInputMethod()
         initStateObserver()
@@ -57,6 +59,10 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
         binding.repeatPasswordTimer.visibility = GONE
         binding.repeatPassword.visibility = GONE
         binding.next.setState(ProgressImageButtonMode.PROGRESS)
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.password) }
     }
 
     private fun initListener() {

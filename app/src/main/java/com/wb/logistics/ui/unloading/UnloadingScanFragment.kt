@@ -17,7 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
@@ -67,11 +67,11 @@ class UnloadingScanFragment : Fragment() {
     private fun initObserver() {
 
         viewModel.toolbarBackState.observe(viewLifecycleOwner) {
-            (activity as NavToolbarTitleListener).hideBackButton()
+            (activity as NavToolbarListener).hideBackButton()
         }
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            (activity as NavToolbarTitleListener).updateTitle(it.label)
+            (activity as NavToolbarListener).updateTitle(it.label)
         }
 
         val eventObserver = Observer<UnloadingScanNavAction> { state ->

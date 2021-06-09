@@ -26,7 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount, OnUserInfo {
+class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnUserInfo, NavDrawerListener {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -73,7 +73,7 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
     private fun initObserver() {
 
         viewModel.networkState.observe(this) {
-            networkIcon.visibility = if (it) View.GONE else View.VISIBLE
+            networkIcon.visibility = if (it) GONE else VISIBLE
             val header: View = binding.navView.getHeaderView(0)
             val status = when (it) {
                 true -> getString(R.string.inet_ok)
@@ -194,9 +194,17 @@ class AppActivity : AppCompatActivity(), NavToolbarTitleListener, OnFlightsCount
         header.findViewById<TextView>(R.id.nav_header_company).text = company
     }
 
+    override fun lock() {
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+    }
+
+    override fun unlock() {
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
+
 }
 
-interface NavToolbarTitleListener {
+interface NavToolbarListener {
 
     fun leftIcon(@DrawableRes resId: Int)
 
@@ -209,6 +217,14 @@ interface NavToolbarTitleListener {
     fun hideToolbar()
 
     fun showToolbar()
+
+}
+
+interface NavDrawerListener {
+
+    fun lock()
+
+    fun unlock()
 
 }
 

@@ -1,7 +1,9 @@
 package com.wb.logistics.utils
 
 import android.app.Activity
+import android.app.Service
 import android.content.Context
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 object SoftKeyboard {
@@ -14,4 +16,10 @@ object SoftKeyboard {
             focusedView.clearFocus()
         } else imm.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
     }
+
+    fun showKeyboard(activity: Activity, view: View) {
+        val imm = activity?.getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, 0)
+    }
+
 }

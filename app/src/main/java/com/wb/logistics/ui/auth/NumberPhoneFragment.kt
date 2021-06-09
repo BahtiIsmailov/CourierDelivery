@@ -13,8 +13,10 @@ import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthPhoneFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavDrawerListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,10 +38,35 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        initKeyboard()
         initListener()
         initStateObserve()
+        initFormatter()
+    }
 
-        (activity as NavToolbarTitleListener).hideBackButton()
+    private fun initViews() {
+        binding.phoneNumber.requestFocus()
+        binding.next.setState(ProgressImageButtonMode.DISABLED)
+        (activity as NavToolbarListener).hideBackButton()
+        (activity as NavDrawerListener).lock()
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.phoneNumber) }
+    }
+
+    private fun initListener() {
+        binding.loginLayout.setOnLongClickListener {
+            viewModel.action(NumberPhoneUIAction.LongTitle)
+            true
+        }
+
+        with(binding.phoneNumber) {
+            binding.next.setOnClickListener {
+                viewModel.action(NumberPhoneUIAction.CheckPhone(text.toString()))
+            }
+        }
+
     }
 
     private fun initStateObserve() {
@@ -70,11 +97,15 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             LogUtils{logDebugApp(state.toString())}
             when (state) {
+                is NumberPhoneUIState.NumberFormatInit -> {
+                    binding.phoneNumber.setText(state.number)
+                    binding.phoneNumber.setSelection(state.number.length)
+                    viewModel.action(NumberPhoneUIAction.NumberChanges(binding.phoneNumber.textChanges()))
+                }
                 NumberPhoneUIState.PhoneCheck -> {
                     binding.phoneNumber.isEnabled = false
                     binding.numberNotFound.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.PROGRESS)
-                    //inputMethod.hideSoftInputFromWindow(binding.next.windowToken, 0)
                 }
                 is NumberPhoneUIState.NumberFormat -> {
                     val phoneNumber = state.number
@@ -111,14 +142,13 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                     binding.numberNotFound.visibility = GONE
                     binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
-                is NumberPhoneUIState.NumberFormatInit -> {
-                    binding.phoneNumber.setText(state.number)
-                    binding.phoneNumber.setSelection(state.number.length)
-                    viewModel.action(NumberPhoneUIAction.NumberChanges(binding.phoneNumber.textChanges()))
-                }
             }
 
         })
+    }
+
+    private fun initFormatter() {
+        viewModel.initFormatter()
     }
 
     private fun setErrorBorderInput() {
@@ -138,24 +168,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
     private fun showBarMessage(state: String) {
         Snackbar.make(binding.next, state, Snackbar.LENGTH_LONG).show()
-    }
-
-    private fun initListener() {
-        binding.loginLayout.setOnLongClickListener {
-            viewModel.action(NumberPhoneUIAction.LongTitle)
-            true
-        }
-
-        with(binding.phoneNumber) {
-            binding.next.setOnClickListener {
-                viewModel.action(NumberPhoneUIAction.CheckPhone(text.toString()))
-            }
-        }
-
-    }
-
-    private fun initViews() {
-        binding.next.setState(ProgressImageButtonMode.DISABLED)
     }
 
 }

@@ -8,7 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.FlightLoaderFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavDrawerListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.splash.OnFlightsCount
 import com.wb.logistics.ui.splash.OnUserInfo
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,9 +31,13 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObserver()
+    }
 
-        (activity as NavToolbarTitleListener).hideBackButton()
+    private fun initView() {
+        (activity as NavToolbarListener).hideBackButton()
+        (activity as NavDrawerListener).unlock()
         viewModel.update()
     }
 

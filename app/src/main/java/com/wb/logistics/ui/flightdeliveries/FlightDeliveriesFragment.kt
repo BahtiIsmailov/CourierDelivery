@@ -18,7 +18,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -109,13 +109,13 @@ class FlightDeliveriesFragment : Fragment() {
     }
 
     private fun updateToolbarLabel(toolbarTitle: String) {
-        (activity as NavToolbarTitleListener).updateTitle(toolbarTitle)
+        (activity as NavToolbarListener).updateTitle(toolbarTitle)
     }
 
     private fun updateToolbarDeliveryIcon() {
         // TODO: 03.06.2021 реализовать ТТН
 //        (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
-        (activity as NavToolbarTitleListener).hideBackButton()
+        (activity as NavToolbarListener).hideBackButton()
     }
 
     private fun updateBottom(isComplete: Boolean) {

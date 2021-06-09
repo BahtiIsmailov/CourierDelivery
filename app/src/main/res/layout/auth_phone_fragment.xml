@@ -29,9 +29,10 @@
             style="@style/MediumRegularDarkText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/input_height"
+            android:ems="10"
             android:background="@android:color/transparent"
             android:importantForAutofill="noExcludeDescendants"
-            android:inputType="phone"
+            android:inputType="number|textVisiblePassword"
             android:maxLength="@integer/max_phone_string"
             tools:text="+7 (111) 111-11-11" />
 

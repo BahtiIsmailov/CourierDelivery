@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcForcedTerminationDetailsFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DcForcedTerminationDetailsFragment : Fragment() {
@@ -44,7 +44,7 @@ class DcForcedTerminationDetailsFragment : Fragment() {
         viewModel.boxesState.observe(viewLifecycleOwner) {
             when (it) {
                 is DcForcedTerminationDetailsState.Title ->
-                    (activity as NavToolbarTitleListener).updateTitle(it.toolbarTitle)
+                    (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                 is DcForcedTerminationDetailsState.BoxesComplete -> initBoxes(it.boxes)
             }
         }

@@ -27,9 +27,12 @@ class LoaderFragment : Fragment(R.layout.auth_loader_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObserver()
+    }
 
-        (activity as NavToolbarTitleListener).hideBackButton()
+    private fun initView() {
+        (activity as NavToolbarListener).hideBackButton()
     }
 
     private fun initObserver() {

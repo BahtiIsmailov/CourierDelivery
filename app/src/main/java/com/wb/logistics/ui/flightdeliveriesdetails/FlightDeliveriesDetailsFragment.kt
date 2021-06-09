@@ -16,7 +16,7 @@ import com.wb.logistics.databinding.FlightDeliveriesDetailsFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsDelegate
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsTitleDelegate
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -81,7 +81,7 @@ class FlightDeliveriesDetailsFragment : Fragment() {
     private fun initObserver() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            (activity as NavToolbarTitleListener).updateTitle(it.label)
+            (activity as NavToolbarListener).updateTitle(it.label)
         }
 
         viewModel.itemsState.observe(viewLifecycleOwner) {

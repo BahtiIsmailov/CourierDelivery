@@ -29,7 +29,7 @@ class NumberPhoneViewModel(
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
 
-    init {
+    fun initFormatter() {
         addSubscription(
             PhoneUtils.phoneFormatter(Observable.just(authRepository.userPhone()), rxSchedulerFactory)
                 .subscribe { number -> _stateUI.value = NumberFormatInit(number) })

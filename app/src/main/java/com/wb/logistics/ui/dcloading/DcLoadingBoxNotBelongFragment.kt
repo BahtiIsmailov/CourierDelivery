@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcLoadingBoxNotBelongFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -37,7 +37,7 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is DcLoadingBoxNotBelongState.BelongInfo -> {
-                    (activity as NavToolbarTitleListener).updateTitle(it.toolbarTitle)
+                    (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                     binding.title.text = it.title
                     binding.code.text = it.code
                     binding.address.text = it.address
@@ -62,11 +62,11 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
     }
 
     private fun hideToolbar() {
-        (activity as NavToolbarTitleListener).hideToolbar()
+        (activity as NavToolbarListener).hideToolbar()
     }
 
     private fun showToolbar() {
-        (activity as NavToolbarTitleListener).showToolbar()
+        (activity as NavToolbarListener).showToolbar()
     }
 
     override fun onDestroyView() {

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcUnloadingBoxNotBelongFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import kotlinx.android.parcel.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -36,7 +36,7 @@ class DcUnloadingBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is DcUnloadingBoxNotBelongState.BelongInfo -> {
-                    (activity as NavToolbarTitleListener).updateTitle(it.toolbarTitle)
+                    (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                 }
             }
         }

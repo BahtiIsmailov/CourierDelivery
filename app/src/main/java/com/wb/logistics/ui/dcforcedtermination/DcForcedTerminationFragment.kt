@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcForcedTerminationFragmentBinding
-import com.wb.logistics.ui.splash.NavToolbarTitleListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -41,7 +41,7 @@ class DcForcedTerminationFragment : Fragment() {
         viewModel.boxesState.observe(viewLifecycleOwner) {
             when (it) {
                 is DcForcedTerminationState.Title ->
-                    (activity as NavToolbarTitleListener).updateTitle(it.toolbarTitle)
+                    (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                 is DcForcedTerminationState.BoxesUnloadCount -> initTitleBoxes(it.countBoxes)
             }
         }
