@@ -7,6 +7,7 @@ import com.wb.logistics.network.exceptions.ErrorResolutionStrategy;
 import java.lang.reflect.Type;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Call;
@@ -39,8 +40,10 @@ public class RxWrapperCallAdapter<R> implements CallAdapter<R, Object> {
             return errorResolutionStrategy.apply((Single) adaptedCall);
         } else if (adaptedCall instanceof Completable) {
             return errorResolutionStrategy.apply((Completable) adaptedCall);
+        } else if (adaptedCall instanceof Maybe) {
+            return errorResolutionStrategy.apply((Maybe) adaptedCall);
         }
-        throw new UnsupportedOperationException("Only Observable or Single or Completable supported");
+        throw new UnsupportedOperationException("Only Observable or Single or Completable or Maybe supported");
     }
 
 }

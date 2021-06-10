@@ -76,7 +76,6 @@ class DcLoadingScanViewModel(
                 _navigationEvent.call()
                 _navigationEvent.value =
                     DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
-                        resourceProvider.getBoxNotBelongDcToolbarTitle(),
                         resourceProvider.getBoxNotBelongDcTitle(),
                         scanBoxData.barcode,
                         scanBoxData.address)
@@ -93,7 +92,6 @@ class DcLoadingScanViewModel(
                 _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
                 _navigationEvent.value =
                     DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
-                        resourceProvider.getBoxNotBelongFlightToolbarTitle(),
                         resourceProvider.getBoxNotBelongFlightTitle(),
                         scanBoxData.barcode,
                         scanBoxData.address)
@@ -122,15 +120,14 @@ class DcLoadingScanViewModel(
                         scanBoxData.barcode))
             }
             ScanBoxData.Empty -> boxStateUI.value = DcLoadingScanBoxState.Empty
-//            is ScanBoxData.BoxDoesNotBelongInfo -> {
-//                _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
-//                _navigationEvent.value =
-//                    DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
-//                        resourceProvider.getBoxNotBelongFlightToolbarTitle(),
-//                        resourceProvider.getBoxNotBelongFlightTitle(),
-//                        scanBoxData.barcode,
-//                        resourceProvider.getBoxNotBelongAddress())
-//            }
+            is ScanBoxData.BoxDoesNotBelongInfoEmpty -> {
+                _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
+                _navigationEvent.value =
+                    DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
+                        resourceProvider.getBoxNotBelongInfoTitle(),
+                        scanBoxData.barcode,
+                        resourceProvider.getBoxNotBelongAddress())
+            }
         }
     }
 

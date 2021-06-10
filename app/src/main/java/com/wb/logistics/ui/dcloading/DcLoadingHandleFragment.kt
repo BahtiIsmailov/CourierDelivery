@@ -18,6 +18,7 @@ import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 class DcLoadingHandleFragment : BottomSheetDialogFragment() {
 
     private val viewModel by viewModel<DcLoadingHandleViewModel>()
@@ -31,6 +32,11 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
         }
 
         const val HANDLE_BARCODE_RESULT = "HANDLE_INPUT_RESULT"
+    }
+
+    override fun onPause() {
+        super.onPause()
+        onResult(RESULT_CANCELED, "")
     }
 
     override fun onCreateView(
@@ -51,7 +57,6 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onResult(RESULT_CANCELED, "")
         initListener()
         initStateObserve()
         initKeyboard()

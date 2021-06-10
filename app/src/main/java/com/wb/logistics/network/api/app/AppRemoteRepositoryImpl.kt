@@ -213,6 +213,7 @@ class AppRemoteRepositoryImpl(
             .map { covertBoxInfoToFlight(it) }
             .map<Optional<BoxInfoEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
+            .toSingle()
     }
 
     private fun convertBoxInfoDstOfficeEntity(dstOffice: DstOfficeRemote) =

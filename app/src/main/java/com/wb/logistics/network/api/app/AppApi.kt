@@ -13,6 +13,7 @@ import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemo
 import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.http.*
 
@@ -33,7 +34,7 @@ interface AppApi {
     fun boxInfo(
         @Path(value = "version", encoded = true) version: String,
         @Path("barcode") barcode: String,
-    ): Single<BoxInfoRemote?>
+    ): Maybe<BoxInfoRemote?>
 
     @GET("{version}/flights/{flightID}/boxes")
     fun flightBoxes(

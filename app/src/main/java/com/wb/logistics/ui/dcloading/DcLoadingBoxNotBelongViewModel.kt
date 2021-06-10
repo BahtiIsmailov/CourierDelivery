@@ -18,7 +18,6 @@ class DcLoadingBoxNotBelongViewModel(parameters: DcLoadingBoxNotBelongParameters
         _belongInfo.value =
             with(parameters) {
                 DcLoadingBoxNotBelongState.BelongInfo(
-                    toolbarTitle,
                     title,
                     box,
                     address,

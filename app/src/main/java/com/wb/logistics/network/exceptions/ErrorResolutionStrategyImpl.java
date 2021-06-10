@@ -18,6 +18,7 @@ import javax.net.ssl.SSLException;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Unit;
@@ -54,6 +55,12 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
     @NotNull
     @Override
     public Completable apply(@NonNull Completable call) {
+        return call.retryWhen(this::retryWhenUnauthorized);
+    }
+
+    @NotNull
+    @Override
+    public Maybe<?> apply(@NotNull Maybe<?> call) {
         return call.retryWhen(this::retryWhenUnauthorized);
     }
 

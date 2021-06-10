@@ -37,7 +37,7 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is DcLoadingBoxNotBelongState.BelongInfo -> {
-                    (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
+                    //(activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                     binding.title.text = it.title
                     binding.code.text = it.code
                     binding.address.text = it.address
@@ -82,5 +82,5 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
 
 @Parcelize
 data class DcLoadingBoxNotBelongParameters(
-    val toolbarTitle: String, val title: String, val box: String, val address: String,
+    val title: String, val box: String, val address: String,
 ) : Parcelable

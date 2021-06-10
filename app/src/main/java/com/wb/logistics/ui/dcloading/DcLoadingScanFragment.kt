@@ -57,9 +57,7 @@ class DcLoadingFragment : Fragment() {
                 is DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong -> {
                     findNavController().navigate(
                         DcLoadingFragmentDirections.actionReceptionFragmentToReceptionBoxNotBelongFragment(
-                            with(state) {
-                                DcLoadingBoxNotBelongParameters(toolbarTitle, title, box, address)
-                            }
+                            with(state) { DcLoadingBoxNotBelongParameters(title, box, address) }
                         )
                     )
                 }
