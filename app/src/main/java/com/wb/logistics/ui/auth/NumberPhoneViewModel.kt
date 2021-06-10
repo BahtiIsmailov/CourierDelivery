@@ -6,6 +6,7 @@ import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.rx.RxSchedulerFactory
+import com.wb.logistics.network.token.UserManager
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.NumberPhoneUIState.*
@@ -18,6 +19,7 @@ class NumberPhoneViewModel(
     private val authRepository: AuthRemoteRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val resourceProvider: AuthResourceProvider,
+    private val userManager: UserManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -40,6 +42,7 @@ class NumberPhoneViewModel(
             is NumberPhoneUIAction.NumberChanges -> fetchPhoneNumberFormat(actionView)
             is NumberPhoneUIAction.CheckPhone -> fetchPhoneNumber(actionView.number)
             NumberPhoneUIAction.LongTitle -> navigateToConfig()
+            NumberPhoneUIAction.NumberClear -> userManager.clear()
         }
     }
 

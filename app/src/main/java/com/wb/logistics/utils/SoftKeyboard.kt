@@ -18,7 +18,8 @@ object SoftKeyboard {
     }
 
     fun showKeyboard(activity: Activity, view: View) {
-        val imm = activity?.getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
+        view.requestFocus()
+        val imm = activity.getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, 0)
     }
 

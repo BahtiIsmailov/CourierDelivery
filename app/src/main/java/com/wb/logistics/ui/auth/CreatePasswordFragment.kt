@@ -48,7 +48,6 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
     }
 
     private fun initViews() {
-        binding.password.requestFocus()
         binding.password.isEnabled = true
         binding.next.setState(ProgressImageButtonMode.ENABLED)
     }

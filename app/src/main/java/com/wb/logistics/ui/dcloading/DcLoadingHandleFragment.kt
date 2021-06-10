@@ -9,9 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.databinding.DcLoadingHandleFragmentBinding
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -34,6 +37,15 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = DcLoadingHandleFragmentBinding.inflate(inflater, container, false)
+        dialog?.setOnShowListener {
+            val bottomSheetDialog = it as BottomSheetDialog
+            val bottomSheetInternal =
+                bottomSheetDialog.findViewById<View>(com.wb.logistics.R.id.design_bottom_sheet)
+            if (bottomSheetInternal != null) {
+                BottomSheetBehavior.from(bottomSheetInternal).state =
+                    BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
         return binding.root
     }
 
@@ -42,6 +54,11 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
         onResult(RESULT_CANCELED, "")
         initListener()
         initStateObserve()
+        initKeyboard()
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.codeBox) }
     }
 
     private fun initStateObserve() {

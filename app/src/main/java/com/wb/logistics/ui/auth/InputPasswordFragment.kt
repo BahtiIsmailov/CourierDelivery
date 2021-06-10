@@ -38,21 +38,21 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
         initKeyboard()
+        initViews()
         initListener()
         initStateObserve()
     }
 
     private fun initViews() {
-        binding.password.requestFocus()
         binding.password.isEnabled = true
         binding.remindPassword.isEnabled = true
         binding.next.setState(ProgressImageButtonMode.ENABLED)
     }
 
     private fun initKeyboard() {
-        activity?.let { SoftKeyboard.showKeyboard(it, binding.password) }
+        activity?.let { binding.password.postDelayed( {
+            SoftKeyboard.showKeyboard(it, binding.password) } , 500) }
     }
 
     private fun initListener() {

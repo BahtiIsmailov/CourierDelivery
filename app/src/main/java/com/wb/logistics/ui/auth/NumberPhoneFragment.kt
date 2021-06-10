@@ -45,7 +45,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initViews() {
-        binding.phoneNumber.requestFocus()
         binding.next.setState(ProgressImageButtonMode.DISABLED)
         (activity as NavToolbarListener).hideBackButton()
         (activity as NavDrawerListener).lock()
@@ -65,6 +64,11 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
             binding.next.setOnClickListener {
                 viewModel.action(NumberPhoneUIAction.CheckPhone(text.toString()))
             }
+        }
+
+        binding.phoneLayout.setEndIconOnClickListener {
+            binding.phoneNumber.setText(R.string.auth_number_phone_phone_default)
+            viewModel.action(NumberPhoneUIAction.NumberClear)
         }
 
     }
@@ -114,9 +118,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                     } else {
                         binding.phoneLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                         binding.phoneLayout.setEndIconDrawable(R.drawable.ic_clear_text)
-                        binding.phoneLayout.setEndIconOnClickListener {
-                            binding.phoneNumber.setText(R.string.auth_number_phone_phone_default)
-                        }
                     }
                     setNormalBorderInput()
                     binding.phoneNumber.isEnabled = true

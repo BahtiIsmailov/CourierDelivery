@@ -29,7 +29,6 @@
             style="@style/MediumRegularDarkText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/input_height"
-            android:ems="10"
             android:background="@android:color/transparent"
             android:importantForAutofill="noExcludeDescendants"
             android:inputType="number|textVisiblePassword"
