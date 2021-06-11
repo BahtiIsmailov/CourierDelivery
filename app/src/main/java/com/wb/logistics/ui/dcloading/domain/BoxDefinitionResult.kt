@@ -7,8 +7,8 @@ import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 
 data class BoxDefinitionResult(
     val flight: Optional<FlightEntity>,
-    val flightBoxHasBeenScanned: Optional<AttachedBoxEntity>,
     val matchingBox: Optional<MatchingBoxEntity>,
+    val attachedBox: Optional<AttachedBoxEntity>,
     val barcode: String,
     val isManual: Boolean,
 )

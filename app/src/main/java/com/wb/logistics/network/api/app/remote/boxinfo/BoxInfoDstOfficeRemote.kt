@@ -1,6 +1,6 @@
 package com.wb.logistics.network.api.app.remote.boxinfo
 
-data class SrcOfficeRemote(
+data class BoxInfoDstOfficeRemote(
     val id: Int,
     val name: String,
     val fullAddress: String,

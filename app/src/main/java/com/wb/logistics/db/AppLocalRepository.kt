@@ -28,7 +28,9 @@ interface AppLocalRepository {
         notUnloadingCause: String,
     ): Completable
 
-    fun observeFlightWrap(): Flowable<Optional<FlightData>>
+    fun findFlightOffice(id: Int): Single<Optional<FlightOfficeEntity>>
+
+    fun observeFlightData(): Flowable<Optional<FlightData>>
 
     fun observeFlight(): Flowable<FlightData>
 

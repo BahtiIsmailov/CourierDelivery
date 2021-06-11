@@ -44,7 +44,13 @@ class AppLocalRepositoryImpl(
         return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
     }
 
-    override fun observeFlightWrap(): Flowable<Optional<FlightData>> {
+    override fun findFlightOffice(id: Int): Single<Optional<FlightOfficeEntity>> {
+        return flightDao.findFlightOffice(id)
+            .map<Optional<FlightOfficeEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
+    }
+
+    override fun observeFlightData(): Flowable<Optional<FlightData>> {
         return flightDao.observeFlight().map { convertFlight(it) }
     }
 

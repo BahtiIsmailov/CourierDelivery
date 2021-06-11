@@ -98,7 +98,7 @@
     <fragment
         android:id="@+id/flightPickPointFragment"
         android:name="com.wb.logistics.ui.flightpickpoint.FlightPickPointFragment"
-        android:label="FlightPickPointFragment"
+        android:label="@string/flight_deliveries_label"
         tools:layout="@layout/flight_pick_point_fragment">
         <action
             android:id="@+id/action_flightPickPointFragment_to_flightDeliveriesFragment"

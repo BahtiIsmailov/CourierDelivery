@@ -46,6 +46,9 @@ interface FlightDao {
         notUnloadingCause: String,
     ): Completable
 
+    @Query("SELECT * FROM FlightOfficeEntity WHERE office_id = :id")
+    fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
+
     //==============================================================================================
     //matching boxes
     //==============================================================================================

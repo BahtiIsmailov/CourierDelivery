@@ -25,7 +25,7 @@ class FlightPickPointInteractorImpl(
     }
 
     override fun flightId(): Single<Int> {
-        return appLocalRepository.observeFlightWrap()
+        return appLocalRepository.observeFlightData()
             .map {
                 when (it) {
                     is Optional.Empty -> 0
