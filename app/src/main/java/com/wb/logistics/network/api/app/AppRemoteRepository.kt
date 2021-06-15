@@ -1,9 +1,8 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.db.Optional
-import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
+import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateEntity
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
@@ -16,7 +15,7 @@ interface AppRemoteRepository {
 
     fun matchingBoxes(flightId: String): Single<List<MatchingBoxEntity>>
 
-    fun boxInfo(barcode: String): Single<Optional<BoxInfoEntity>>
+    fun boxInfo(barcode: String): Single<BoxInfoDataEntity>
 
     fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>>
 

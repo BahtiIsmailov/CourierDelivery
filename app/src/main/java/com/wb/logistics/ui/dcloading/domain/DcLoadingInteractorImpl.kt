@@ -7,14 +7,14 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxCurrentOfficeEntity
-import com.wb.logistics.db.entity.boxinfo.BoxEntity
-import com.wb.logistics.db.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
+import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoEntity
+import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoFlightEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -86,12 +86,14 @@ class DcLoadingInteractorImpl(
         val boxDoesNotBelongInfoEmpty = Single.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
         return boxInfo(barcode)
             .flatMap { boxInfoOptional ->
-                when (boxInfoOptional) {
-                    is Optional.Empty ->
-                        boxDoesNotBelongInfoEmpty //запрос завершился с 200 кодом, но пустым телом ответа
-                    is Optional.Success ->
-                        boxInfoSuccess(flightOptional.data, boxInfoOptional.data, barcode, isManual)
-                }
+                val flight = boxInfoOptional.flight
+                val box = boxInfoOptional.box
+
+                if (flight is Optional.Empty && box is Optional.Empty)
+                    boxDoesNotBelongInfoEmpty //запрос завершился с 200 кодом, но пустым телом ответа
+                if (flight is Optional.Success && box is Optional.Success)
+                    boxInfoSuccess(flightOptional.data, flight.data, box.data, barcode, isManual)
+                boxDoesNotBelongInfoEmpty
             }
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -99,18 +101,19 @@ class DcLoadingInteractorImpl(
 
     private fun boxInfoSuccess(
         flightEntity: FlightEntity,
+        boxInfoFlightEntity: BoxInfoFlightEntity,
         boxInfoEntity: BoxInfoEntity,
         barcode: String,
         isManual: Boolean,
-    ) = findFlightOffice(boxInfoEntity.box.dstOffice.id)
+    ) = findFlightOffice(boxInfoEntity.dstOffice.id)
         .flatMap { officeOptional ->
             when (officeOptional) {
                 is Optional.Empty ->
                     SingleSource {
                         ScanBoxData.BoxDoesNotBelongFlight( //id dst office не найден среди офисов назначения рейса. Не принадлежит рейсу
                             barcode,
-                            boxInfoEntity.box.srcOffice.fullAddress,
-                            boxInfoEntity.flight.gate.toString())
+                            boxInfoEntity.srcOffice.fullAddress,
+                            boxInfoFlightEntity.gate.toString())
                     }
                 is Optional.Success ->
                     saveBoxToBalanceByInfo(flightEntity,
@@ -127,7 +130,7 @@ class DcLoadingInteractorImpl(
         isManual: Boolean,
     ): Single<ScanBoxData> {
         val updatedAt = timeManager.getOffsetLocalTime()
-        return with(boxInfoEntity.box) {
+        return with(boxInfoEntity) {
             saveBoxToBalanceByInfo(
                 flightId = flightEntity.id,
                 barcode = barcode,
@@ -141,7 +144,7 @@ class DcLoadingInteractorImpl(
         }
     }
 
-    private fun BoxEntity.convertAttachedBoxEntity(
+    private fun BoxInfoEntity.convertAttachedBoxEntity(
         flightEntity: FlightEntity,
         barcode: String,
         isManual: Boolean,
@@ -156,7 +159,7 @@ class DcLoadingInteractorImpl(
         dstFullAddress = dstOffice.fullAddress,
         updatedAt = updatedAt)
 
-    private fun BoxEntity.convertAttachedDstOfficeEntity() =
+    private fun BoxInfoEntity.convertAttachedDstOfficeEntity() =
         AttachedDstOfficeEntity(
             id = dstOffice.id,
             name = dstOffice.name,
@@ -165,7 +168,7 @@ class DcLoadingInteractorImpl(
             latitude = dstOffice.latitude,
         )
 
-    private fun BoxEntity.convertAttachedSrcOfficeEntity() =
+    private fun BoxInfoEntity.convertAttachedSrcOfficeEntity() =
         AttachedSrcOfficeEntity(
             id = srcOffice.id,
             name = srcOffice.name,

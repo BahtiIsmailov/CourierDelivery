@@ -1,7 +1,6 @@
 package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.Optional
-import com.wb.logistics.db.entity.boxinfo.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
@@ -9,6 +8,7 @@ import com.wb.logistics.db.entity.flight.*
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
+import com.wb.logistics.network.api.app.entity.boxinfo.*
 import com.wb.logistics.network.api.app.remote.PutBoxCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
@@ -206,10 +206,11 @@ class AppRemoteRepositoryImpl(
         return remote.getTime(tokenManager.apiVersion())
     }
 
-    override fun boxInfo(barcode: String): Single<Optional<BoxInfoEntity>> {
+    override fun boxInfo(barcode: String): Single<BoxInfoDataEntity> {
         return remote.boxInfo(tokenManager.apiVersion(), barcode)
             .map { covertBoxInfoToFlight(it) }
-            .toSingle()
+            .doOnError { LogUtils { logDebugApp(it.toString()) } }
+//            .toSingle()
     }
 
     private fun convertBoxInfoDstOfficeEntity(dstOffice: BoxInfoDstOfficeRemote) =
@@ -256,17 +257,20 @@ class AppRemoteRepositoryImpl(
             }
     }
 
-    private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): Optional<BoxInfoEntity> {
+    private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): BoxInfoDataEntity {
         val flight = boxInfoRemote.flight
         val box = boxInfoRemote.box
-        return if (flight == null || box == null) Optional.Empty()
-        else Optional.Success(BoxInfoEntity(convertBoxEntity(box),
-            convertBoxInfoFlightEntity(flight)))
+        if (flight == null && box != null)
+            return BoxInfoDataEntity(Optional.Success(convertBoxEntity(box)), Optional.Empty())
+        if (flight != null && box != null)
+            return BoxInfoDataEntity(Optional.Success(convertBoxEntity(box)),
+                Optional.Success(convertBoxInfoFlightEntity(flight)))
+        return BoxInfoDataEntity(Optional.Empty(), Optional.Empty())
     }
 
     private fun convertBoxEntity(boxInfoItemRemote: BoxInfoItemRemote) =
         with(boxInfoItemRemote) {
-            BoxEntity(
+            BoxInfoEntity(
                 barcode = barcode,
                 srcOffice = convertBoxInfoSrcOfficeEntity(srcOffice),
                 dstOffice = convertBoxInfoDstOfficeEntity(dstOffice),
