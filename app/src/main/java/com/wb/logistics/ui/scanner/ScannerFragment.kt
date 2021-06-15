@@ -35,7 +35,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private var _binding: ScannerFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var scannerView: ZXingScannerView
-    private var isFlight = false
+    private var isFlash = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -55,7 +55,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun initState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
-            isFlight = savedInstanceState.getBoolean(FLASH_STATE)
+            isFlash = savedInstanceState.getBoolean(FLASH_STATE)
         }
     }
 
@@ -87,7 +87,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(FLASH_STATE, isFlight)
+        outState.putBoolean(FLASH_STATE, isFlash)
     }
 
     private fun initScanner() {
@@ -115,14 +115,18 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun initListener() {
         binding.sun.setOnClickListener {
-            isFlight = !isFlight
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val camManager =
-                    requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager?
-                camManager?.apply {
-                    val cameraId = camManager.cameraIdList[0]
-                    camManager.setTorchMode(cameraId, isFlight)
-                }
+            //flash()
+        }
+    }
+
+    private fun flash() {
+        isFlash = !isFlash
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val camManager =
+                requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager?
+            camManager?.apply {
+                val cameraId = camManager.cameraIdList[0]
+                camManager.setTorchMode(cameraId, isFlash)
             }
         }
     }
