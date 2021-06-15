@@ -21,5 +21,7 @@ class DcLoadingResourceProvider(private val context: Context) {
     fun getBoxesDialogMessage() : String = context.getString(R.string.dc_loading_boxes_dialog_remove_error)
     fun getBoxPositiveButton() = context.getString(R.string.dc_loading_boxes_remove_dialog_positive_button_error)
 
+    fun getEmptyGate() : String = context.getString(R.string.dc_loading_box_not_belong_empty_gate)
+
 
 }

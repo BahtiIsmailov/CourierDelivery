@@ -99,7 +99,7 @@ class DcLoadingScanViewModel(
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxDeny(
                             accepted,
-                            gate,
+                            resourceProvider.getEmptyGate(),
                             barcode)
                     }
             }
