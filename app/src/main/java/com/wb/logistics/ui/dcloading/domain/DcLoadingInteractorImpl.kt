@@ -14,7 +14,6 @@ import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoEntity
-import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoFlightEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -86,14 +85,12 @@ class DcLoadingInteractorImpl(
         val boxDoesNotBelongInfoEmpty = Single.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
         return boxInfo(barcode)
             .flatMap { boxInfoOptional ->
-                val flight = boxInfoOptional.flight
                 val box = boxInfoOptional.box
-
-                if (flight is Optional.Empty && box is Optional.Empty)
+                if (box is Optional.Success)
+                    boxInfoSuccess(flightOptional.data, box.data, barcode, isManual)
+                else {
                     boxDoesNotBelongInfoEmpty //запрос завершился с 200 кодом, но пустым телом ответа
-                if (flight is Optional.Success && box is Optional.Success)
-                    boxInfoSuccess(flightOptional.data, flight.data, box.data, barcode, isManual)
-                boxDoesNotBelongInfoEmpty
+                }
             }
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -101,7 +98,6 @@ class DcLoadingInteractorImpl(
 
     private fun boxInfoSuccess(
         flightEntity: FlightEntity,
-        boxInfoFlightEntity: BoxInfoFlightEntity,
         boxInfoEntity: BoxInfoEntity,
         barcode: String,
         isManual: Boolean,
@@ -113,7 +109,7 @@ class DcLoadingInteractorImpl(
                         ScanBoxData.BoxDoesNotBelongFlight( //id dst office не найден среди офисов назначения рейса. Не принадлежит рейсу
                             barcode,
                             boxInfoEntity.srcOffice.fullAddress,
-                            boxInfoFlightEntity.gate.toString())
+                            flightEntity.gate.toString())
                     }
                 is Optional.Success ->
                     saveBoxToBalanceByInfo(flightEntity,
