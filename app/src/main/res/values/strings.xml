@@ -233,6 +233,7 @@
     <string name="dc_forced_termination_details_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
     <string name="dc_forced_termination_details_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
 
-    dcForcedTerminationFragment
+
+    <string name="permdesc_flashlight">permdesc_flashlight</string>
 
 </resources>
