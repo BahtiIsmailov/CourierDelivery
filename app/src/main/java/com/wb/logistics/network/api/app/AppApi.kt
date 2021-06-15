@@ -97,4 +97,11 @@ interface AppApi {
     @GET("{version}/time")
     fun getTime(@Path(value = "version", encoded = true) version: String): Single<TimeRemote>
 
+    @POST("{version}/flights/{flightID}/warehouse/scan")
+    fun warehouseScan(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: FlightBoxScannedRemote,
+    ): Completable
+
 }

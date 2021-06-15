@@ -260,15 +260,18 @@ class AppRemoteRepositoryImpl(
     private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): BoxInfoDataEntity {
         val flight = boxInfoRemote.flight
         val box = boxInfoRemote.box
-        if (flight == null && box != null)
-            return BoxInfoDataEntity(Optional.Success(convertBoxEntity(box)), Optional.Empty())
+        if (flight == null && box != null) {
+            val boxEntityOptional = Optional.Success(convertBoxInfoEntity(box))
+            return BoxInfoDataEntity(boxEntityOptional, Optional.Empty())
+        }
+
         if (flight != null && box != null)
-            return BoxInfoDataEntity(Optional.Success(convertBoxEntity(box)),
+            return BoxInfoDataEntity(Optional.Success(convertBoxInfoEntity(box)),
                 Optional.Success(convertBoxInfoFlightEntity(flight)))
         return BoxInfoDataEntity(Optional.Empty(), Optional.Empty())
     }
 
-    private fun convertBoxEntity(boxInfoItemRemote: BoxInfoItemRemote) =
+    private fun convertBoxInfoEntity(boxInfoItemRemote: BoxInfoItemRemote) =
         with(boxInfoItemRemote) {
             BoxInfoEntity(
                 barcode = barcode,

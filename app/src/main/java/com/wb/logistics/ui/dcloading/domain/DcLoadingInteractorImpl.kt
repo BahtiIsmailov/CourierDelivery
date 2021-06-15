@@ -105,12 +105,12 @@ class DcLoadingInteractorImpl(
         .flatMap { officeOptional ->
             when (officeOptional) {
                 is Optional.Empty ->
-                    SingleSource {
+                    Single.just(
                         ScanBoxData.BoxDoesNotBelongFlight( //id dst office не найден среди офисов назначения рейса. Не принадлежит рейсу
                             barcode,
                             boxInfoEntity.srcOffice.fullAddress,
                             flightEntity.gate.toString())
-                    }
+                    )
                 is Optional.Success ->
                     saveBoxToBalanceByInfo(flightEntity,
                         boxInfoEntity,
