@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
+import android.hardware.camera2.CameraManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -33,6 +35,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private var _binding: ScannerFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var scannerView: ZXingScannerView
+    private var isFlash = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -43,10 +46,17 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initState(savedInstanceState)
         initPermission()
         initScanner()
         initListener()
         initObserver()
+    }
+
+    private fun initState(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            isFlash = savedInstanceState.getBoolean(FLASH_STATE)
+        }
     }
 
     private fun initPermission() {
@@ -75,6 +85,11 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(FLASH_STATE, isFlash)
+    }
+
     private fun initScanner() {
         scannerView = object : ZXingScannerView(context) {
             override fun createViewFinderView(context: Context): IViewFinder {
@@ -99,7 +114,21 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun initListener() {
-        binding.sun.setOnClickListener {}
+        binding.sun.setOnClickListener {
+            //flash()
+        }
+    }
+
+    private fun flash() {
+        isFlash = !isFlash
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val camManager =
+                requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager?
+            camManager?.apply {
+                val cameraId = camManager.cameraIdList[0]
+                camManager.setTorchMode(cameraId, isFlash)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -142,6 +171,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA_NO_ACTION = 1
         const val HOLD_SCANNER = 1000L
+        const val FLASH_STATE = "FLASH_STATE"
     }
 
     private class CustomViewFinderView : ViewFinderView {
@@ -191,7 +221,8 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
 }
 
-fun Fragment.hasPermissions(vararg permissions: String): Boolean = permissions.all(::hasPermission)
+fun Fragment.hasPermissions(vararg permissions: String): Boolean =
+    permissions.all(::hasPermission)
 
 fun Fragment.hasPermission(permission: String): Boolean {
     return ActivityCompat.checkSelfPermission(

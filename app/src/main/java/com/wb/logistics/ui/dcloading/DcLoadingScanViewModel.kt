@@ -83,7 +83,7 @@ class DcLoadingScanViewModel(
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxDeny(
                             accepted,
-                            gate,
+                            resourceProvider.getEmptyGate(),
                             barcode)
                     }
                 _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
@@ -99,12 +99,9 @@ class DcLoadingScanViewModel(
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxDeny(
                             accepted,
-                            gate,
+                            resourceProvider.getEmptyGate(),
                             barcode)
                     }
-            }
-            is ScanBoxData.BoxDoesNotBelongGate -> {
-                // TODO: 07.04.2021 Не принадлежит Gate реализовать
             }
             is ScanBoxData.BoxHasBeenAdded -> {
                 _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
@@ -141,26 +138,14 @@ class DcLoadingScanViewModel(
 
     fun onCompleteClicked() {
         bottomProgressEvent.value = true
-        addSubscription(interactor.sendAwaitBoxesCount().subscribe(
+        addSubscription(interactor.switchScreen().subscribe(
             {
-                if (it > 0) {
-                    // TODO: 30.05.2021 Добавить сообщение что коробки не были добавлены в базу
-                    bottomProgressEvent.value = false
-                } else {
-                    addSubscription(interactor.switchScreen().subscribe(
-                        {
-                            _navigationEvent.value =
-                                DcLoadingScanNavAction.NavigateToFlightDeliveries
-                            bottomProgressEvent.value = false
-                        },
-                        {
-                            // TODO: 30.05.2021 реализовать сообщение
-                            bottomProgressEvent.value = false
-                        })
-                    )
-                }
+                _navigationEvent.value =
+                    DcLoadingScanNavAction.NavigateToFlightDeliveries
+                bottomProgressEvent.value = false
             },
             {
+                // TODO: 30.05.2021 реализовать сообщение
                 bottomProgressEvent.value = false
             })
         )
@@ -173,9 +158,7 @@ class DcLoadingScanViewModel(
             else -> resourceProvider.getScanDialogMessage()
         }
         _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(),
-            message,
-            resourceProvider.getScanDialogButton())
+            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
     fun onStopScanner() {

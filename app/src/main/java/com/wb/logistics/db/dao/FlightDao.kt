@@ -1,7 +1,6 @@
 package com.wb.logistics.db.dao
 
 import androidx.room.*
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -66,23 +65,5 @@ interface FlightDao {
 
     @Query("DELETE FROM MatchingBoxEntity")
     fun deleteAllMatchingBox()
-
-    //==============================================================================================
-    //box balance await
-    //==============================================================================================
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
-
-    @Query("SELECT * FROM AttachedBoxBalanceAwaitEntity")
-    fun observeFlightBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>>
-
-    @Query("SELECT * FROM AttachedBoxBalanceAwaitEntity")
-    fun attachedBoxesBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
-
-    @Delete
-    fun deleteFlightBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
-
-    @Query("DELETE FROM AttachedBoxBalanceAwaitEntity")
-    fun deleteAllFlightBoxBalanceAwait()
 
 }

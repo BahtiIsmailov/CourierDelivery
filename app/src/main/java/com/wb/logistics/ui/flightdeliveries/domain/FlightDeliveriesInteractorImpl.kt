@@ -32,7 +32,7 @@ class FlightDeliveriesInteractorImpl(
     }
 
     override fun flightId(): Single<Int> {
-        return appLocalRepository.observeFlightData()
+        return appLocalRepository.observeFlightDataOptional()
             .map {
                 when (it) {
                     is Optional.Empty -> 0

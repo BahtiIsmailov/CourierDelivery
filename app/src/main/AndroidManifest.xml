@@ -9,6 +9,14 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
 
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+
+<!--    <permission android:name="android.permission.FLASHLIGHT"-->
+<!--        android:permissionGroup="android.permission-group.HARDWARE_CONTROLS"-->
+<!--        android:protectionLevel="normal"-->
+<!--        android:label="@string/permlab_flashlight"-->
+<!--        android:description="@string/permdesc_flashlight" />-->
+
     <application
         android:name="com.wb.logistics.app.App"
         android:allowBackup="true"

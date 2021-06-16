@@ -1,7 +1,7 @@
 package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.Optional
-import com.wb.logistics.db.entity.boxinfo.*
+import com.wb.logistics.db.entity.flighboxes.BoxStatus
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
@@ -9,6 +9,10 @@ import com.wb.logistics.db.entity.flight.*
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
+import com.wb.logistics.network.api.app.entity.boxinfo.*
+import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
+import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
+import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
 import com.wb.logistics.network.api.app.remote.PutBoxCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
 import com.wb.logistics.network.api.app.remote.boxinfo.*
@@ -22,6 +26,9 @@ import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScann
 import com.wb.logistics.network.api.app.remote.flightsstatus.*
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScanRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScannedBoxCurrentOfficeRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScannedBoxRemote
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
@@ -33,7 +40,7 @@ class AppRemoteRepositoryImpl(
 ) : AppRemoteRepository {
 
     override fun flight(): Single<FlightDataEntity> {
-        return remote.flight(tokenManager.apiVersion())
+        return remote.flight(token())
             .map { FlightDataEntity(convertFlight(it), convertOffices(it.offices, it.id)) }
     }
 
@@ -114,34 +121,18 @@ class AppRemoteRepositoryImpl(
             }
         }
 
-    override fun warehouseBoxToBalance(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOffice: Int,
-    ): Completable {
-        return remote.warehouseBoxToBalance(
-            tokenManager.apiVersion(),
-            flightId,
-            FlightBoxScannedRemote(barcode,
-                isManualInput,
-                updatedAt,
-                CurrentOfficeRemote(currentOffice)))
-    }
-
     override fun pvzBoxToBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
-        currentOffice: Int,
+        currentOfficeId: Int,
     ): Completable {
         return remote.pvzBoxToBalance(tokenManager.apiVersion(), flightId,
             FlightBoxScannedRemote(barcode,
                 isManualInput,
                 updatedAt,
-                CurrentOfficeRemote(currentOffice)))
+                CurrentOfficeRemote(currentOfficeId)))
     }
 
     override fun removeBoxFromFlight(
@@ -151,7 +142,7 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         officeId: Int,
     ): Completable {
-        return remote.deleteBoxFromFlight(tokenManager.apiVersion(), flightId,
+        return remote.deleteBoxFromFlight(token(), flightId,
             barcode,
             DeleteBoxFromFlightRemote(isManualInput,
                 updatedAt,
@@ -175,23 +166,22 @@ class AppRemoteRepositoryImpl(
                 barcodes = barcodes))
     }
 
-
     override fun removeBoxFromBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
-        currentOffice: Int,
+        currentOfficeId: Int,
     ): Completable {
-        return remote.removeFromBalance(tokenManager.apiVersion(), flightId,
+        return remote.removeFromBalance(token(), flightId,
             barcode,
             PutBoxFromFlightRemote(isManualInput,
                 updatedAt,
-                PutBoxCurrentOfficeRemote(currentOffice)))
+                PutBoxCurrentOfficeRemote(currentOfficeId)))
     }
 
     override fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>> {
-        return remote.flightBoxes(tokenManager.apiVersion(), flightId)
+        return remote.flightBoxes(token(), flightId)
             .map {
                 val boxesEntity = mutableListOf<FlightBoxEntity>()
                 it.data.forEach { box ->
@@ -222,13 +212,11 @@ class AppRemoteRepositoryImpl(
 
 
     override fun time(): Single<TimeRemote> {
-        return remote.getTime(tokenManager.apiVersion())
+        return remote.getTime(token())
     }
 
-    override fun boxInfo(barcode: String): Single<Optional<BoxInfoEntity>> {
-        return remote.boxInfo(tokenManager.apiVersion(), barcode)
-            .map { covertBoxInfoToFlight(it) }
-            .toSingle()
+    override fun boxInfo(barcode: String): Single<BoxInfoDataEntity> {
+        return remote.boxInfo(token(), barcode).map { covertBoxInfoToFlight(it) }
     }
 
     private fun convertBoxInfoDstOfficeEntity(dstOffice: BoxInfoDstOfficeRemote) =
@@ -249,7 +237,7 @@ class AppRemoteRepositoryImpl(
         }
 
     override fun matchingBoxes(flightId: String): Single<List<MatchingBoxEntity>> {
-        return remote.matchingBoxes(tokenManager.apiVersion(), flightId)
+        return remote.matchingBoxes(token(), flightId)
             .map {
                 val matchingBoxesEntity = mutableListOf<MatchingBoxEntity>()
                 it.data.forEach { box ->
@@ -275,17 +263,23 @@ class AppRemoteRepositoryImpl(
             }
     }
 
-    private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): Optional<BoxInfoEntity> {
+    private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoRemote): BoxInfoDataEntity {
         val flight = boxInfoRemote.flight
         val box = boxInfoRemote.box
-        return if (flight == null || box == null) Optional.Empty()
-        else Optional.Success(BoxInfoEntity(convertBoxEntity(box),
-            convertBoxInfoFlightEntity(flight)))
+        if (flight == null && box != null) {
+            val boxEntityOptional = Optional.Success(convertBoxInfoEntity(box))
+            return BoxInfoDataEntity(boxEntityOptional, Optional.Empty())
+        }
+
+        if (flight != null && box != null)
+            return BoxInfoDataEntity(Optional.Success(convertBoxInfoEntity(box)),
+                Optional.Success(convertBoxInfoFlightEntity(flight)))
+        return BoxInfoDataEntity(Optional.Empty(), Optional.Empty())
     }
 
-    private fun convertBoxEntity(boxInfoItemRemote: BoxInfoItemRemote) =
+    private fun convertBoxInfoEntity(boxInfoItemRemote: BoxInfoItemRemote) =
         with(boxInfoItemRemote) {
-            BoxEntity(
+            BoxInfoEntity(
                 barcode = barcode,
                 srcOffice = convertBoxInfoSrcOfficeEntity(srcOffice),
                 dstOffice = convertBoxInfoDstOfficeEntity(dstOffice),
@@ -302,7 +296,7 @@ class AppRemoteRepositoryImpl(
         }
 
     override fun flightStatuses(): Single<FlightStatusesRemote> {
-        return remote.flightStatuses(tokenManager.apiVersion())
+        return remote.flightStatuses(token())
     }
 
     override fun putFlightStatus(
@@ -312,13 +306,13 @@ class AppRemoteRepositoryImpl(
         isGetFromGPS: Boolean,
         updatedAt: String,
     ): Completable {
-        return remote.putFlightStatus(tokenManager.apiVersion(), flightId,
+        return remote.putFlightStatus(token(), flightId,
             StatusRemote(flightStatus.status, StatusLocationRemote(
                 StatusOfficeLocationRemote(officeId), isGetFromGPS), updatedAt))
     }
 
-    override fun getFlightStatus(flightID: String): Single<StatusStateEntity> {
-        return remote.getFlightStatus(tokenManager.apiVersion(), flightID).map {
+    override fun getFlightStatus(flightId: String): Single<StatusStateEntity> {
+        return remote.getFlightStatus(token(), flightId).map {
             with(it) {
                 StatusStateEntity(
                     status = status,
@@ -327,6 +321,45 @@ class AppRemoteRepositoryImpl(
             }
         }
     }
+
+    override fun warehouseScan(
+        flightId: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+    ): Single<WarehouseScanEntity> {
+        return remote.warehouseScan(token(), flightId,
+            WarehouseScannedBoxRemote(
+                barcode = barcode,
+                isManualInput = isManualInput,
+                updatedAt = updatedAt,
+                WarehouseScannedBoxCurrentOfficeRemote(currentOfficeId)))
+            .map { convertWarehouseScannedBox(it) }
+    }
+
+    private fun convertWarehouseScannedBox(warehouseScanRemote: WarehouseScanRemote): WarehouseScanEntity {
+        return with(warehouseScanRemote) {
+            WarehouseScanEntity(
+                srcOffice = WarehouseScanSrcOfficeEntity(
+                    id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    longitude = dstOffice.long,
+                    latitude = dstOffice.lat),
+                dstOffice = WarehouseScanDstOfficeEntity(
+                    id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    longitude = dstOffice.long,
+                    latitude = dstOffice.lat),
+                barcode = barcode,
+                updatedAt = updatedAt,
+                status = BoxStatus.values()[status])
+        }
+    }
+
+    private fun token() = tokenManager.apiVersion()
 
 }
 

@@ -13,8 +13,9 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScanRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScannedBoxRemote
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.http.*
 
@@ -35,20 +36,13 @@ interface AppApi {
     fun boxInfo(
         @Path(value = "version", encoded = true) version: String,
         @Path("barcode") barcode: String,
-    ): Maybe<BoxInfoRemote?>
+    ): Single<BoxInfoRemote?>
 
     @GET("{version}/flights/{flightID}/boxes")
     fun flightBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
     ): Single<FlightBoxesRemote>
-
-    @POST("{version}/flights/{flightID}/warehouse/boxes")
-    fun warehouseBoxToBalance(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Body box: FlightBoxScannedRemote,
-    ): Completable
 
     @POST("{version}/flights/{flightID}/pvz/boxes")
     fun pvzBoxToBalance(
@@ -105,5 +99,12 @@ interface AppApi {
 
     @GET("{version}/time")
     fun getTime(@Path(value = "version", encoded = true) version: String): Single<TimeRemote>
+
+    @POST("{version}/flights/{flightID}/warehouse/scan")
+    fun warehouseScan(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: WarehouseScannedBoxRemote,
+    ): Single<WarehouseScanRemote>
 
 }

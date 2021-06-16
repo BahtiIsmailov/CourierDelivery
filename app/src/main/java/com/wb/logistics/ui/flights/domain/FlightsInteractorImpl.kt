@@ -16,7 +16,7 @@ class FlightsInteractorImpl(
 ) : FlightsInteractor {
 
     override fun observeFlight(): Flowable<Optional<FlightData>> {
-        return appLocalRepository.observeFlightData()
+        return appLocalRepository.observeFlightDataOptional()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 

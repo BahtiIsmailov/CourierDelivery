@@ -45,25 +45,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/address">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="10dp"
-                android:src="@drawable/ic_flight_delivery_redo"
-                app:tint="#642CA3" />
-
             <TextView
                 android:id="@+id/redo_count"
                 style="@style/BaseRegularLightText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
                 android:textColor="#642CA3"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/flight_text"
-                tools:text="Сдать 4 шт." />
+                tools:text="Доставить 4 шт." />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
