@@ -245,24 +245,20 @@ class DcLoadingInteractorImpl(
     }
 
     override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
-        // TODO: 16.06.2021 Переработать во время слияния dev
-        return flight().flatMapCompletable {
-            when (it) {
-                is Optional.Success -> {
-                    appRemoteRepository.removeBoxesFromFlight(it.data.id.toString(),
-                        false,
-                        timeManager.getOffsetLocalTime(),
-                        it.data.dc.id,
-                        checkedBoxes)
-                }
-                is Optional.Empty -> Completable.complete()
-            }
-        }.andThen(appLocalRepository.findAttachedBoxes(checkedBoxes))
+        return flight().flatMapCompletable { removeBoxes(it, checkedBoxes) }
+            .andThen(appLocalRepository.findAttachedBoxes(checkedBoxes))
             .flatMap { appLocalRepository.deleteAttachedBoxes(it).andThen(Single.just(it)) }
             .flatMap { convertAttachedBoxesToMatchingBox(it) }
             .flatMapCompletable { appLocalRepository.saveMatchingBoxes(it) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
+
+    private fun removeBoxes(flightEntity: FlightEntity, checkedBoxes: List<String>) =
+        appRemoteRepository.removeBoxesFromFlight(flightEntity.id.toString(),
+            false,
+            timeManager.getOffsetLocalTime(),
+            flightEntity.dc.id,
+            checkedBoxes)
 
     private fun convertAttachedBoxesToMatchingBox(attachedBoxes: List<AttachedBoxEntity>) =
         Observable.fromIterable(attachedBoxes).map { convertToMatchingBox(it) }.toList()
