@@ -6,20 +6,9 @@ sealed class ScanBoxData {
 
     data class BoxAdded(val barcode: String, val gate: String) : ScanBoxData()
 
-    data class BoxDoesNotBelongGate(
-        val barcode: String,
-        val gate: String,
-        val accepted: String,
-    ) : ScanBoxData()
+    data class BoxDoesNotBelongDc(val barcode: String, val address: String) : ScanBoxData()
 
-    data class BoxDoesNotBelongDc(val barcode: String, val address: String, val gate: String) :
-        ScanBoxData()
-
-    class BoxDoesNotBelongFlight(
-        val barcode: String,
-        val address: String,
-        val gate: String,
-    ) : ScanBoxData()
+    class BoxDoesNotBelongFlight(val barcode: String, val address: String) : ScanBoxData()
 
     class BoxDoesNotBelongInfoEmpty(val barcode: String) : ScanBoxData()
 

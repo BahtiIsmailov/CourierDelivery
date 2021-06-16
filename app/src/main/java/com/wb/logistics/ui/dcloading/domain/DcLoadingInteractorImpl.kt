@@ -5,15 +5,14 @@ import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxCurrentOfficeEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
-import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoEntity
+import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
+import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -38,37 +37,74 @@ class DcLoadingInteractorImpl(
     }
 
     override fun observeScanProcess(): Observable<ScanProcessData> {
-        return actionBarcodeScannedSubject.flatMapSingle {
-            boxDefinitionResult(it.first, it.second)
-        }
+        return actionBarcodeScannedSubject
+            .flatMapSingle { boxDefinitionResult(it.first, it.second) }
+            .flatMap { warehouseScanOptional(it) }
             .flatMap { boxDefinition ->
 
                 val flight = boxDefinition.flight
-                val boxMatching = boxDefinition.matchingBox
-                val boxAttached = boxDefinition.attachedBox
+                val matchingBoxOptional = boxDefinition.matchingBoxOptional
+                val attachedBoxOptional = boxDefinition.attachedBoxOptional
+                val warehouseScanOptional = boxDefinition.warehouseScanOptional
                 val barcode = boxDefinition.barcode
                 val isManual = boxDefinition.isManual
+                val updatedAt = boxDefinition.updatedAt
+                val codeError = boxDefinition.codeError
 
                 when {
-                    boxAttached is Optional.Success -> //коробка уже была отсканирована
-                        return@flatMap Observable.just(with(boxAttached.data) {
+                    attachedBoxOptional is Optional.Success -> //коробка уже была добавлена
+                        return@flatMap Observable.just(with(attachedBoxOptional.data) {
                             ScanBoxData.BoxHasBeenAdded(barcode, gate.toString())
                         })
-                    flight is Optional.Success -> //данные по рейсу актуальны
-                        when (boxMatching) {
-                            is Optional.Success ->  //коробка принадлежит рейсу
-                                return@flatMap saveBoxToBalanceByMatching(
-                                    flightId = flight.data.id,
-                                    barcode = boxMatching.data.barcode,
-                                    isManual = isManual,
-                                    officeId = boxMatching.data.srcOffice.id,
-                                    matchingBox = boxMatching.data,
-                                    gate = flight.data.gate)
-                            is Optional.Empty -> { //коробка не найдена в matching box
-                                return@flatMap boxDoesNotFindMatching(barcode, flight, isManual)
+                    matchingBoxOptional is Optional.Success -> { //коробка принадлежит рейсу
+                        val matchingBox = matchingBoxOptional.data
+                        return@flatMap saveBoxToBalanceByMatching(
+                            flightId = flight.id,
+                            barcode = matchingBox.barcode,
+                            isManual = isManual,
+                            matchingBox = matchingBox,
+                            gate = flight.gate,
+                            updatedAt = updatedAt)
+                    }
+                    matchingBoxOptional is Optional.Empty -> { //коробка не найдена в matching box
+                        return@flatMap when (warehouseScanOptional) {
+                            is Optional.Success -> { //информация по коробке получена
+                                if (warehouseScanOptional.data.srcOffice.id != flight.dc.id) {
+                                    Observable.just(ScanBoxData.BoxDoesNotBelongDc(
+                                        warehouseScanOptional.data.barcode,
+                                        warehouseScanOptional.data.dstOffice.fullAddress))
+                                } else {
+                                    findFlightOffice(warehouseScanOptional.data.dstOffice.id)
+                                        .flatMap { officeOptional ->
+                                            when (officeOptional) {
+                                                is Optional.Empty ->  //id dst office не найден среди офисов назначения рейса. Не принадлежит рейсу
+                                                    Single.just(
+                                                        ScanBoxData.BoxDoesNotBelongFlight(
+                                                            warehouseScanOptional.data.barcode,
+                                                            warehouseScanOptional.data.dstOffice.fullAddress)
+                                                    )
+                                                is Optional.Success -> saveBoxToBalanceByWarehouse( //id dst office найден среди офисов назначения рейса. Добавляем коробку в рейс
+                                                    flight,
+                                                    warehouseScanOptional.data,
+                                                    barcode,
+                                                    isManual,
+                                                    updatedAt)
+                                            }
+                                        }.toObservable()
+                                }
+                            }
+                            is Optional.Empty -> { //запрос завершился с 400 кодом - определяем код ошибки
+                                if (codeError == "BOX_DOES_NOT_FIT_FLIGHT") {
+                                    Observable.just(ScanBoxData.BoxDoesNotBelongFlight(barcode, ""))
+                                } else if (codeError == "BOX_INFO_DOES_NOT_EXIST") {
+                                    Observable.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
+                                } else {
+                                    Observable.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
+                                }
                             }
                         }
-                    else -> return@flatMap ObservableSource { ScanBoxData.Empty }
+                    }
+                    else -> return@flatMap Observable.just(ScanBoxData.Empty)
                 }
             }.flatMap { scanBoxData ->
                 appLocalRepository.readAttachedBoxes()
@@ -77,70 +113,42 @@ class DcLoadingInteractorImpl(
             }.compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun boxDoesNotFindMatching(
-        barcode: String,
-        flightOptional: Optional.Success<FlightEntity>,
-        isManual: Boolean,
-    ): Observable<ScanBoxData> {
-        val boxDoesNotBelongInfoEmpty = Single.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
-        return boxInfo(barcode)
-            .flatMap { boxInfoOptional ->
-                val box = boxInfoOptional.box
-                if (box is Optional.Success)
-                    boxInfoSuccess(flightOptional.data, box.data, barcode, isManual)
-                else {
-                    boxDoesNotBelongInfoEmpty //запрос завершился с 200 кодом, но пустым телом ответа
+    private fun warehouseScanOptional(boxDefinitionResult: BoxDefinitionResult): Observable<BoxDefinitionResult> {
+        return with(boxDefinitionResult) {
+            warehouseScan(flight.id.toString(), barcode, isManual, updatedAt, flight.dc.id)
+                .map { boxDefinitionResult.copy(warehouseScanOptional = Optional.Success(it)) }
+                .onErrorReturn {
+                    if (it is BadRequestException) {
+                        boxDefinitionResult.copy(
+                            warehouseScanOptional = Optional.Empty(),
+                            codeError = it.error.code)
+                    } else throw it
                 }
-            }
+        }
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun boxInfoSuccess(
+    private fun saveBoxToBalanceByWarehouse(
         flightEntity: FlightEntity,
-        boxInfoEntity: BoxInfoEntity,
+        warehouseScanEntity: WarehouseScanEntity,
         barcode: String,
         isManual: Boolean,
-    ) = findFlightOffice(boxInfoEntity.dstOffice.id)
-        .flatMap { officeOptional ->
-            when (officeOptional) {
-                is Optional.Empty ->
-                    Single.just(
-                        ScanBoxData.BoxDoesNotBelongFlight( //id dst office не найден среди офисов назначения рейса. Не принадлежит рейсу
-                            barcode,
-                            boxInfoEntity.srcOffice.fullAddress,
-                            flightEntity.gate.toString())
-                    )
-                is Optional.Success ->
-                    saveBoxToBalanceByInfo(flightEntity,
-                        boxInfoEntity,
-                        barcode,
-                        isManual) //id dst office найден среди офисов назначения рейса. Добавляем коробку в рейс
-            }
-        }
-
-    private fun saveBoxToBalanceByInfo(
-        flightEntity: FlightEntity,
-        boxInfoEntity: BoxInfoEntity,
-        barcode: String,
-        isManual: Boolean,
+        updatedAt: String,
     ): Single<ScanBoxData> {
-        val updatedAt = timeManager.getOffsetLocalTime()
-        return with(boxInfoEntity) {
+        return with(warehouseScanEntity) {
             saveBoxToBalanceByInfo(
-                flightId = flightEntity.id,
                 barcode = barcode,
-                isManual = isManual,
-                officeId = srcOffice.id,
-                attachedBoxEntity = convertAttachedBoxEntity(flightEntity,
+                attachedBoxEntity = convertToAttachedBoxEntity(flightEntity,
                     barcode,
                     isManual,
                     updatedAt),
-                gate = flightEntity.gate)
+                gate = flightEntity.gate,
+            )
         }
     }
 
-    private fun BoxInfoEntity.convertAttachedBoxEntity(
+    private fun WarehouseScanEntity.convertToAttachedBoxEntity(
         flightEntity: FlightEntity,
         barcode: String,
         isManual: Boolean,
@@ -155,7 +163,7 @@ class DcLoadingInteractorImpl(
         dstFullAddress = dstOffice.fullAddress,
         updatedAt = updatedAt)
 
-    private fun BoxInfoEntity.convertAttachedDstOfficeEntity() =
+    private fun WarehouseScanEntity.convertAttachedDstOfficeEntity() =
         AttachedDstOfficeEntity(
             id = dstOffice.id,
             name = dstOffice.name,
@@ -164,7 +172,7 @@ class DcLoadingInteractorImpl(
             latitude = dstOffice.latitude,
         )
 
-    private fun BoxInfoEntity.convertAttachedSrcOfficeEntity() =
+    private fun WarehouseScanEntity.convertAttachedSrcOfficeEntity() =
         AttachedSrcOfficeEntity(
             id = srcOffice.id,
             name = srcOffice.name,
@@ -174,23 +182,13 @@ class DcLoadingInteractorImpl(
         )
 
     private fun saveBoxToBalanceByInfo(
-        flightId: Int,
-        barcode: String,
-        isManual: Boolean,
-        officeId: Int,
-        attachedBoxEntity: AttachedBoxEntity,
-        gate: Int,
+        barcode: String, attachedBoxEntity: AttachedBoxEntity, gate: Int,
     ): Single<ScanBoxData> {
-        val updatedAt = timeManager.getOffsetLocalTime()
         val switchScreen = switchScreen()
         val saveBoxScanned = saveAttachedBox(attachedBoxEntity)
-        val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId, updatedAt)
         val boxAdded = boxAdded(barcode, gate.toString())
-
         return switchScreen
             .andThen(saveBoxScanned)
-            .andThen(saveBoxBalanceAwait)
-            .andThen(sendBoxBalanceAwait(flightId.toString()))
             .andThen(boxAdded)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
@@ -199,44 +197,22 @@ class DcLoadingInteractorImpl(
         flightId: Int,
         barcode: String,
         isManual: Boolean,
-        officeId: Int,
         matchingBox: MatchingBoxEntity,
         gate: Int,
+        updatedAt: String,
     ): Observable<ScanBoxData> {
-        val updatedAt = timeManager.getOffsetLocalTime()
         val switchScreen = switchScreen()
         val saveBoxScanned =
-            saveAttachedBox(convertAttachedBox(flightId,
-                matchingBox,
-                gate,
-                isManual,
-                updatedAt))
-        val saveBoxBalanceAwait = boxBalanceAwait(barcode, isManual, officeId, updatedAt)
+            saveAttachedBox(convertAttachedBox(flightId, matchingBox, gate, isManual, updatedAt))
         val boxAdded = boxAdded(barcode, gate.toString())
 
         return switchScreen
             .andThen(saveBoxScanned)
-            .andThen(saveBoxBalanceAwait)
-            .andThen(sendBoxBalanceAwait(flightId.toString()))
             .andThen(deleteMatchingBox(matchingBox))
             .andThen(boxAdded)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
-
-    private fun sendBoxBalanceAwait(flightId: String) =
-        appLocalRepository.attachedBoxesBalanceAwait()
-            .flatMapCompletable { boxesBalanceAwait ->
-                Observable.fromIterable(boxesBalanceAwait)
-                    .flatMapCompletable {
-                        warehouseBoxToBalanceRemote(flightId,
-                            it.barcode,
-                            it.isManualInput,
-                            it.updatedAt,
-                            it.dstOffice.id)
-                            .andThen(deleteFlightBoxBalanceAwait(it)).onErrorComplete()
-                    }
-            }
 
     private fun convertAttachedBox(
         flightId: Int,
@@ -321,10 +297,6 @@ class DcLoadingInteractorImpl(
     private fun saveMatchingBox(matchingBoxEntity: MatchingBoxEntity) =
         appLocalRepository.saveMatchingBox(matchingBoxEntity).onErrorComplete()
 
-    private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity) =
-        appLocalRepository.deleteAttachedBoxBalanceAwait(flightBoxBalanceAwaitEntity)
-            .onErrorComplete()
-
     private fun boxDefinitionResult(
         barcode: String,
         isManual: Boolean,
@@ -333,43 +305,39 @@ class DcLoadingInteractorImpl(
             flight(), //рейс
             findMatchingBox(barcode), //коробка привязана к рейсу
             findAttachedBox(barcode), //коробка уже добавлена
-            { flight, findMatchingBox, findAttachedBox ->
-                BoxDefinitionResult(flight, findMatchingBox, findAttachedBox, barcode, isManual)
+            updatedAt(),
+            { flight, findMatchingBox, findAttachedBox, updatedAt ->
+                BoxDefinitionResult(flight,
+                    findMatchingBox,
+                    findAttachedBox,
+                    barcode,
+                    isManual,
+                    updatedAt)
             }
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     private fun flight() = appLocalRepository.readFlight()
 
-    private fun findFlightOffice(id: Int) = appLocalRepository.findFlightOffice(id)
+    private fun findMatchingBox(barcode: String) = appLocalRepository.findMatchingBox(barcode)
 
     private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 
-    private fun findMatchingBox(barcode: String) = appLocalRepository.findMatchingBox(barcode)
+    private fun updatedAt() = Single.just(timeManager.getOffsetLocalTime())
 
-    private fun warehouseBoxToBalanceRemote(
+    private fun warehouseScan(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
-        currentOffice: Int,
-    ) = appRemoteRepository.warehouseBoxToBalance(
-        flightId,
+        currentOfficeId: Int,
+    ) = appRemoteRepository.warehouseScan(flightId,
         barcode,
         isManualInput,
         updatedAt,
-        currentOffice)
+        currentOfficeId)
 
-    private fun boxBalanceAwait(
-        barcode: String,
-        isManualInput: Boolean,
-        currentOffice: Int,
-        updatedAt: String,
-    ) = appLocalRepository.saveAttachedBoxBalanceAwait(
-        AttachedBoxBalanceAwaitEntity(barcode,
-            isManualInput,
-            AttachedBoxCurrentOfficeEntity(currentOffice),
-            updatedAt))
+    private fun findFlightOffice(id: Int) = appLocalRepository.findFlightOfficeOptional(id)
 
     private fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity) =
         appLocalRepository.saveAttachedBox(attachedBoxEntity)
@@ -377,24 +345,10 @@ class DcLoadingInteractorImpl(
     private fun boxAdded(barcode: String, gate: String) =
         Single.just<ScanBoxData>(ScanBoxData.BoxAdded(barcode, gate))
 
-    private fun boxInfo(barcode: String) = appRemoteRepository.boxInfo(barcode)
-
     override fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>> {
         return appLocalRepository.observeAttachedBoxes()
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
-
-    override fun sendAwaitBoxesCount(): Single<Int> {
-        return flight().flatMap {
-            when (it) {
-                is Optional.Empty -> Single.error(Throwable())
-                is Optional.Success -> Single.just(it.data.id)
-            }
-        }
-            .map { it.toString() }
-            .flatMapCompletable { sendBoxBalanceAwait(it) }
-            .andThen(appLocalRepository.attachedBoxesBalanceAwait().map { it.size })
     }
 
     override fun switchScreen(): Completable {

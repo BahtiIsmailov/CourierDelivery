@@ -4,7 +4,6 @@ import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
@@ -44,13 +43,13 @@ class AppLocalRepositoryImpl(
         return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
     }
 
-    override fun findFlightOffice(id: Int): Single<Optional<FlightOfficeEntity>> {
+    override fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>> {
         return flightDao.findFlightOffice(id)
             .map<Optional<FlightOfficeEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
-    override fun observeFlightData(): Flowable<Optional<FlightData>> {
+    override fun observeFlightDataOptional(): Flowable<Optional<FlightData>> {
         return flightDao.observeFlight().map { convertFlight(it) }
     }
 
@@ -58,13 +57,17 @@ class AppLocalRepositoryImpl(
         return flightDao.observeFlight().map { convertFlightData(it) }
     }
 
-    override fun readFlight(): Single<Optional<FlightEntity>> {
+    override fun readFlightOptional(): Single<Optional<FlightEntity>> {
         return flightDao.readFlight()
             .map<Optional<FlightEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
-    override fun readFlightData(): Single<Optional<FlightData>> {
+    override fun readFlight(): Single<FlightEntity> {
+        return flightDao.readFlight()
+    }
+
+    override fun readFlightDataOptional(): Single<Optional<FlightData>> {
         return flightDao.readFlightData().map { convertFlight(it) }
     }
 
@@ -270,30 +273,6 @@ class AppLocalRepositoryImpl(
 
     override fun deleteAllDcUnloadedBox() {
         TODO("Not yet implemented")
-    }
-
-    //==============================================================================================
-    //balance box
-    //==============================================================================================
-
-    override fun saveAttachedBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable {
-        return flightDao.insertFlightBoxBalanceAwait(flightBoxBalanceEntity)
-    }
-
-    override fun observeAttachedBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>> {
-        return flightDao.observeFlightBoxBalanceAwait()
-    }
-
-    override fun attachedBoxesBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>> {
-        return flightDao.attachedBoxesBalanceAwait()
-    }
-
-    override fun deleteAttachedBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable {
-        return flightDao.deleteFlightBoxBalanceAwait(flightBoxBalanceEntity)
-    }
-
-    override fun deleteAllAttachedBoxBalanceAwait() {
-        flightDao.deleteAllFlightBoxBalanceAwait()
     }
 
     //==============================================================================================

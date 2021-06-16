@@ -6,7 +6,6 @@ import com.wb.logistics.app.EXPORT_SCHEMA_DATABASE
 import com.wb.logistics.app.VERSION_DATABASE
 import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadedBoxEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadedReturnBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
@@ -22,7 +21,6 @@ import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
         MatchingBoxEntity::class,
         FlightBoxEntity::class,
         AttachedBoxEntity::class,
-        AttachedBoxBalanceAwaitEntity::class,
         UnloadedBoxEntity::class,
         ReturnBoxEntity::class,
         DcUnloadedBoxEntity::class,

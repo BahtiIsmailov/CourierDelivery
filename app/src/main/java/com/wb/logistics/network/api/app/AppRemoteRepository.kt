@@ -3,6 +3,7 @@ package com.wb.logistics.network.api.app
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoDataEntity
+import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateEntity
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
@@ -21,24 +22,16 @@ interface AppRemoteRepository {
 
     fun time(): Single<TimeRemote>
 
-    fun warehouseBoxToBalance(
-        flightID: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOffice: Int,
-    ): Completable
-
     fun pvzBoxToBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
-        currentOffice: Int,
+        currentOfficeId: Int,
     ): Completable
 
     fun removeBoxFromFlight(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
@@ -46,11 +39,11 @@ interface AppRemoteRepository {
     ): Completable
 
     fun removeBoxFromBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
-        currentOffice: Int,
+        currentOfficeId: Int,
     ): Completable
 
     fun flightStatuses(): Single<FlightStatusesRemote>
@@ -63,6 +56,14 @@ interface AppRemoteRepository {
         updatedAt: String,
     ): Completable
 
-    fun getFlightStatus(flightID: String): Single<StatusStateEntity>
+    fun getFlightStatus(flightId: String): Single<StatusStateEntity>
+
+    fun warehouseScan(
+        flightId: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+    ): Single<WarehouseScanEntity>
 
 }

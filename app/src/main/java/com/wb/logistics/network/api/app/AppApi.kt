@@ -12,6 +12,8 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
 import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScanRemote
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScannedBoxRemote
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
@@ -40,13 +42,6 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
     ): Single<FlightBoxesRemote>
-
-    @POST("{version}/flights/{flightID}/warehouse/boxes")
-    fun warehouseBoxToBalance(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Body box: FlightBoxScannedRemote,
-    ): Completable
 
     @POST("{version}/flights/{flightID}/pvz/boxes")
     fun pvzBoxToBalance(
@@ -101,7 +96,7 @@ interface AppApi {
     fun warehouseScan(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-        @Body box: FlightBoxScannedRemote,
-    ): Completable
+        @Body box: WarehouseScannedBoxRemote,
+    ): Single<WarehouseScanRemote>
 
 }

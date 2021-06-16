@@ -3,7 +3,6 @@ package com.wb.logistics.db
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
-import com.wb.logistics.db.entity.attachedboxesawait.AttachedBoxBalanceAwaitEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -28,15 +27,17 @@ interface AppLocalRepository {
         notUnloadingCause: String,
     ): Completable
 
-    fun findFlightOffice(id: Int): Single<Optional<FlightOfficeEntity>>
-
-    fun observeFlightData(): Flowable<Optional<FlightData>>
+    fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>>
 
     fun observeFlight(): Flowable<FlightData>
 
-    fun readFlight(): Single<Optional<FlightEntity>>
+    fun observeFlightDataOptional(): Flowable<Optional<FlightData>>
 
-    fun readFlightData(): Single<Optional<FlightData>>
+    fun readFlightOptional(): Single<Optional<FlightEntity>>
+
+    fun readFlight(): Single<FlightEntity>
+
+    fun readFlightDataOptional(): Single<Optional<FlightData>>
 
     fun deleteAllFlight()
 
@@ -120,19 +121,6 @@ interface AppLocalRepository {
     fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
 
     fun deleteAllDcUnloadedBox()
-
-    //==============================================================================================
-    //attached box balance await
-    //==============================================================================================
-    fun saveAttachedBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
-
-    fun observeAttachedBoxBalanceAwait(): Flowable<List<AttachedBoxBalanceAwaitEntity>>
-
-    fun attachedBoxesBalanceAwait(): Single<List<AttachedBoxBalanceAwaitEntity>>
-
-    fun deleteAttachedBoxBalanceAwait(flightBoxBalanceEntity: AttachedBoxBalanceAwaitEntity): Completable
-
-    fun deleteAllAttachedBoxBalanceAwait()
 
     //==============================================================================================
     //return box

@@ -208,7 +208,7 @@ class UnloadingInteractorImpl(
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun flight() = appLocalRepository.readFlight()
+    private fun flight() = appLocalRepository.readFlightOptional()
 
     private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 

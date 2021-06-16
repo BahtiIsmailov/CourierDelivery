@@ -146,7 +146,7 @@ class DcUnloadingInteractorImpl(
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun flight() = appLocalRepository.readFlight()
+    private fun flight() = appLocalRepository.readFlightOptional()
 
     private fun findDcUnloadedBox(barcode: String) = appLocalRepository.findDcUnloadedBox(barcode)
 

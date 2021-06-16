@@ -50,7 +50,7 @@ class ScreenManagerImpl(
         }
 
     override fun saveState(flightStatus: FlightStatus, isGetFromGPS: Boolean): Completable {
-        return appLocalRepository.readFlight()
+        return appLocalRepository.readFlightOptional()
             .flatMapCompletable {
                 if (it is Optional.Success)
                     with(it.data) {
@@ -92,7 +92,7 @@ class ScreenManagerImpl(
         officeId: Int,
         isGetFromGPS: Boolean,
     ): Completable {
-        return appLocalRepository.readFlight()
+        return appLocalRepository.readFlightOptional()
             .flatMapCompletable {
                 if (it is Optional.Success)
                     with(it.data) {
