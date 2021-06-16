@@ -23,4 +23,5 @@ class DcLoadingResourceProvider(private val context: Context) {
 
     fun getEmptyGate() : String = context.getString(R.string.dc_loading_box_not_belong_empty_gate)
 
+
 }
