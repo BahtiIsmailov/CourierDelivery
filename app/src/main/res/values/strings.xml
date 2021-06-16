@@ -121,7 +121,6 @@
     <string name="dc_loading_box_not_belong_flight_title">Коробка не принадлежит рейсу</string>
     <string name="dc_loading_box_not_belong_empty_gate">-</string>
     <string name="dc_loading_box_not_belong_info_title">Информация по ШК не найдена</string>
-    <string name="dc_loading_box_not_belong_empty_gate">-</string>
     <string name="dc_loading_box_not_belong_address_title" />
 
     <string name="dc_loading_box_not_code_title">ШК</string>
