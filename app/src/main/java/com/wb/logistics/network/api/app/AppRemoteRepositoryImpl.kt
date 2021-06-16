@@ -11,9 +11,11 @@ import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
 import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.remote.PutBoxCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
-import com.wb.logistics.network.api.app.remote.boxdeletefromflight.BoxDeleteFromFlightRemote
-import com.wb.logistics.network.api.app.remote.boxdeletefromflight.DeleteCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.boxinfo.*
+import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
+import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.DeleteBoxesFromFlightRemote
+import com.wb.logistics.network.api.app.remote.deleteboxfromflight.DeleteBoxCurrentOfficeRemote
+import com.wb.logistics.network.api.app.remote.deleteboxfromflight.DeleteBoxFromFlightRemote
 import com.wb.logistics.network.api.app.remote.flight.*
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.CurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScannedRemote
@@ -113,7 +115,7 @@ class AppRemoteRepositoryImpl(
         }
 
     override fun warehouseBoxToBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
@@ -121,7 +123,7 @@ class AppRemoteRepositoryImpl(
     ): Completable {
         return remote.warehouseBoxToBalance(
             tokenManager.apiVersion(),
-            flightID,
+            flightId,
             FlightBoxScannedRemote(barcode,
                 isManualInput,
                 updatedAt,
@@ -129,13 +131,13 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun pvzBoxToBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
     ): Completable {
-        return remote.pvzBoxToBalance(tokenManager.apiVersion(), flightID,
+        return remote.pvzBoxToBalance(tokenManager.apiVersion(), flightId,
             FlightBoxScannedRemote(barcode,
                 isManualInput,
                 updatedAt,
@@ -143,28 +145,45 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun removeBoxFromFlight(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         officeId: Int,
     ): Completable {
-        return remote.deleteBoxFromFlight(tokenManager.apiVersion(), flightID,
+        return remote.deleteBoxFromFlight(tokenManager.apiVersion(), flightId,
             barcode,
-            BoxDeleteFromFlightRemote(isManualInput,
+            DeleteBoxFromFlightRemote(isManualInput,
                 updatedAt,
-                DeleteCurrentOfficeRemote(officeId)))
+                DeleteBoxCurrentOfficeRemote(officeId)))
             .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
+    override fun removeBoxesFromFlight(
+        flightId: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+        barcodes: List<String>,
+    ): Completable {
+        return remote.deleteBoxesFromFlight(tokenManager.apiVersion(),
+            flightId,
+            DeleteBoxesFromFlightRemote(
+                isManualInput = isManualInput,
+                updatedAt = updatedAt,
+                currentOffice = DeleteBoxesCurrentOfficeRemote(currentOfficeId),
+                barcodes = barcodes))
+    }
+
+
     override fun removeBoxFromBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
     ): Completable {
-        return remote.removeFromBalance(tokenManager.apiVersion(), flightID,
+        return remote.removeFromBalance(tokenManager.apiVersion(), flightId,
             barcode,
             PutBoxFromFlightRemote(isManualInput,
                 updatedAt,
@@ -287,13 +306,13 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun putFlightStatus(
-        flightID: String,
+        flightId: String,
         flightStatus: FlightStatus,
         officeId: Int,
         isGetFromGPS: Boolean,
         updatedAt: String,
     ): Completable {
-        return remote.putFlightStatus(tokenManager.apiVersion(), flightID,
+        return remote.putFlightStatus(tokenManager.apiVersion(), flightId,
             StatusRemote(flightStatus.status, StatusLocationRemote(
                 StatusOfficeLocationRemote(officeId), isGetFromGPS), updatedAt))
     }

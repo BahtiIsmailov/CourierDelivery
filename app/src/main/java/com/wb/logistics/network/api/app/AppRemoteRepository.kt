@@ -23,7 +23,7 @@ interface AppRemoteRepository {
     fun time(): Single<TimeRemote>
 
     fun warehouseBoxToBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
@@ -31,7 +31,7 @@ interface AppRemoteRepository {
     ): Completable
 
     fun pvzBoxToBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
@@ -39,15 +39,23 @@ interface AppRemoteRepository {
     ): Completable
 
     fun removeBoxFromFlight(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         officeId: Int,
     ): Completable
 
+    fun removeBoxesFromFlight(
+        flightId: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+        barcodes: List<String>
+    ): Completable
+
     fun removeBoxFromBalance(
-        flightID: String,
+        flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
@@ -57,7 +65,7 @@ interface AppRemoteRepository {
     fun flightStatuses(): Single<FlightStatusesRemote>
 
     fun putFlightStatus(
-        flightID: String,
+        flightId: String,
         flightStatus: FlightStatus,
         officeId: Int,
         isGetFromGPS: Boolean,

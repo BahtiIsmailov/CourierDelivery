@@ -81,6 +81,8 @@ interface AppLocalRepository {
 
     fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
 
+    fun deleteAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
+
     fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
 
     fun groupAttachedBox(): Single<AttachedBoxResultEntity>

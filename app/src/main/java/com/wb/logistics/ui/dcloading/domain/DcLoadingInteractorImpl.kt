@@ -270,16 +270,27 @@ class DcLoadingInteractorImpl(
     }
 
     override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
-        return appLocalRepository.findAttachedBoxes(checkedBoxes)
-            .flatMapCompletable { flightBoxScanned ->
-                Observable.fromIterable(flightBoxScanned)
-                    .flatMapCompletable {
-                        deleteAttachedBoxRemote(it)
-                            .andThen(deleteAttachedBox(it))
-                            .andThen(saveMatchingBox(convertToMatchingBox(it)))
-                    }
-            }.compose(rxSchedulerFactory.applyCompletableSchedulers())
+        // TODO: 16.06.2021 Переработать во время слияния dev
+        return flight().flatMapCompletable {
+            when (it) {
+                is Optional.Success -> {
+                    appRemoteRepository.removeBoxesFromFlight(it.data.id.toString(),
+                        false,
+                        timeManager.getOffsetLocalTime(),
+                        it.data.dc.id,
+                        checkedBoxes)
+                }
+                is Optional.Empty -> Completable.complete()
+            }
+        }.andThen(appLocalRepository.findAttachedBoxes(checkedBoxes))
+            .flatMap { appLocalRepository.deleteAttachedBoxes(it).andThen(Single.just(it)) }
+            .flatMap { convertAttachedBoxesToMatchingBox(it) }
+            .flatMapCompletable { appLocalRepository.saveMatchingBoxes(it) }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
+
+    private fun convertAttachedBoxesToMatchingBox(attachedBoxes: List<AttachedBoxEntity>) =
+        Observable.fromIterable(attachedBoxes).map { convertToMatchingBox(it) }.toList()
 
     private fun convertToMatchingBox(attachedBoxEntity: AttachedBoxEntity) =
         with(attachedBoxEntity) {
@@ -302,25 +313,9 @@ class DcLoadingInteractorImpl(
             )
         }
 
-    private fun deleteAttachedBoxRemote(attachedBoxEntity: AttachedBoxEntity) =
-        with(attachedBoxEntity) {
-            appRemoteRepository.removeBoxFromFlight(
-                flightId.toString(),
-                barcode,
-                isManualInput,
-                updatedAt,
-                srcOffice.id)
-        }
-
 
     private fun deleteMatchingBox(matchingBoxEntity: MatchingBoxEntity) =
         appLocalRepository.deleteMatchingBox(matchingBoxEntity).onErrorComplete()
-
-    private fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity) =
-        appLocalRepository.deleteAttachedBox(attachedBoxEntity).onErrorComplete()
-
-    private fun saveMatchingBox(matchingBoxEntity: MatchingBoxEntity) =
-        appLocalRepository.saveMatchingBox(matchingBoxEntity).onErrorComplete()
 
     private fun deleteFlightBoxBalanceAwait(flightBoxBalanceAwaitEntity: AttachedBoxBalanceAwaitEntity) =
         appLocalRepository.deleteAttachedBoxBalanceAwait(flightBoxBalanceAwaitEntity)

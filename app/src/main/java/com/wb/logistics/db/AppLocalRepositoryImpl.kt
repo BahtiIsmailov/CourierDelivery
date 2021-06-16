@@ -193,6 +193,10 @@ class AppLocalRepositoryImpl(
         return attachedBoxDao.deleteAttachedBox(attachedBoxEntity)
     }
 
+    override fun deleteAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable {
+        return attachedBoxDao.deleteAttachedBoxes(attachedBoxesEntity)
+    }
+
     override fun deleteAllAttachedBox() {
         attachedBoxDao.deleteAllAttachedBox()
     }

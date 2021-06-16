@@ -35,6 +35,9 @@ interface AttachedBoxDao {
     @Delete
     fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
 
+    @Delete
+    fun deleteAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
+
     @Query("DELETE FROM AttachedBoxEntity")
     fun deleteAllAttachedBox()
 
