@@ -1,110 +1,137 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.network.api.app.remote.PutBoxFromFlightRemote
-import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoRemote
-import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.DeleteBoxesFromFlightRemote
-import com.wb.logistics.network.api.app.remote.deleteboxfromflight.DeleteBoxFromFlightRemote
-import com.wb.logistics.network.api.app.remote.flight.FlightRemote
-import com.wb.logistics.network.api.app.remote.flightboxes.FlightBoxesRemote
-import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxScannedRemote
-import com.wb.logistics.network.api.app.remote.flightsstatus.StatusRemote
-import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateRemote
-import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
-import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
-import com.wb.logistics.network.api.app.remote.time.TimeRemote
-import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxesRemote
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScanRemote
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScannedBoxRemote
+import com.wb.logistics.network.api.app.remote.BoxFromWarehouseBalanceResponse
+import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoResponse
+import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
+import com.wb.logistics.network.api.app.remote.deleteboxfromflight.RemoveBoxFromFlightRequest
+import com.wb.logistics.network.api.app.remote.flight.FlightResponse
+import com.wb.logistics.network.api.app.remote.flightboxes.FlightBoxesResponse
+import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceRequest
+import com.wb.logistics.network.api.app.remote.flightsstatus.StatusResponse
+import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateResponse
+import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateResponse
+import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import com.wb.logistics.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxesResponse
+import com.wb.logistics.network.api.app.remote.time.TimeResponse
+import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxesResponse
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxRequest
+import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
 
 interface AppApi {
 
+    //==============================================================================================
+    //time
+    //==============================================================================================
+
     @GET("{version}/flight")
     fun flight(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<FlightRemote?>
+    ): Single<FlightResponse?>
+
+    //==============================================================================================
+    //boxes
+    //==============================================================================================
 
     @GET("{version}/flights/{flightID}/warehouse/matching-boxes")
     fun warehouseMatchingBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-    ): Single<WarehouseMatchingBoxesRemote>
+    ): Single<WarehouseMatchingBoxesResponse>
+
+    @GET("{version}/flights/{flightID}/pvz/matching-boxes")
+    fun pvzMatchingBoxes(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+    ): Single<PvzMatchingBoxesResponse>
 
     @GET("{version}/boxes/{barcode}")
     fun boxInfo(
         @Path(value = "version", encoded = true) version: String,
         @Path("barcode") barcode: String,
-    ): Single<BoxInfoRemote?>
+    ): Single<BoxInfoResponse?>
 
     @GET("{version}/flights/{flightID}/boxes")
     fun flightBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-    ): Single<FlightBoxesRemote>
+    ): Single<FlightBoxesResponse>
 
-    @POST("{version}/flights/{flightID}/pvz/boxes")
-    fun pvzBoxToBalance(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Body box: FlightBoxScannedRemote,
-    ): Completable
-
+    @Deprecated("")
     @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes/{barcode}", hasBody = true)
-    fun deleteBoxFromFlight(
+    fun removeBoxFromFlight(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Path("barcode") barcode: String,
-        @Body box: DeleteBoxFromFlightRemote,
+        @Body box: RemoveBoxFromFlightRequest,
     ): Completable
 
     @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes", hasBody = true)
-    fun deleteBoxesFromFlight(
+    fun removeBoxesFromFlight(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-        @Body box: DeleteBoxesFromFlightRemote,
+        @Body box: RemoveBoxesFromFlightRequest,
     ): Completable
+
+    //==============================================================================================
+    //boxes pvz
+    //==============================================================================================
+
+    @POST("{version}/flights/{flightID}/pvz/scan")
+    fun pvzBoxToBalance(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: FlightBoxToBalanceRequest,
+    ): Completable
+
+    //==============================================================================================
+    //boxes warehouse
+    //==============================================================================================
+    @POST("{version}/flights/{flightID}/warehouse/scan")
+    fun addBoxToWarehouseBalance(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: WarehouseBalanceBoxRequest,
+    ): Single<WarehouseBalanceBoxResponse>
+
+    @PUT("{version}/flights/{flightID}/warehouse/scan")
+    fun deleteBoxFromWarehouseBalance(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: BoxFromWarehouseBalanceResponse,
+    ): Completable
+
+
 
     @PUT("{version}/flight-statuses")
     fun getFlightStatus(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<StatusesStateRemote>
-
-    @PUT("{version}/flights/{flightID}/boxes/{barcode}")
-    fun removeFromBalance(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Path("barcode") barcode: String,
-        @Body box: PutBoxFromFlightRemote,
-    ): Completable
+    ): Single<StatusesStateResponse>
 
     @GET("{version}/flight-statuses")
     fun flightStatuses(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<FlightStatusesRemote>
+    ): Single<FlightStatusesResponse>
 
     @PUT("{version}/flights/{flightID}/status")
     fun putFlightStatus(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-        @Body statusRemote: StatusRemote,
+        @Body statusRemote: StatusResponse,
     ): Completable
 
     @GET("{version}/flights/{flightID}/status")
     fun getFlightStatus(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-    ): Single<StatusStateRemote>
+    ): Single<StatusStateResponse>
 
+    //==============================================================================================
+    //time
+    //==============================================================================================
     @GET("{version}/time")
-    fun getTime(@Path(value = "version", encoded = true) version: String): Single<TimeRemote>
-
-    @POST("{version}/flights/{flightID}/warehouse/scan")
-    fun warehouseScan(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Body box: WarehouseScannedBoxRemote,
-    ): Single<WarehouseScanRemote>
+    fun getTime(@Path(value = "version", encoded = true) version: String): Single<TimeResponse>
 
 }

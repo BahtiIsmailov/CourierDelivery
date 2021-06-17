@@ -5,8 +5,8 @@ import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnt
 import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateEntity
-import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
-import com.wb.logistics.network.api.app.remote.time.TimeRemote
+import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import com.wb.logistics.network.api.app.remote.time.TimeResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -20,7 +20,7 @@ interface AppRemoteRepository {
 
     fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>>
 
-    fun time(): Single<TimeRemote>
+    fun time(): Single<TimeResponse>
 
     fun pvzBoxToBalance(
         flightId: String,
@@ -54,7 +54,7 @@ interface AppRemoteRepository {
         currentOfficeId: Int,
     ): Completable
 
-    fun flightStatuses(): Single<FlightStatusesRemote>
+    fun flightStatuses(): Single<FlightStatusesResponse>
 
     fun putFlightStatus(
         flightId: String,
