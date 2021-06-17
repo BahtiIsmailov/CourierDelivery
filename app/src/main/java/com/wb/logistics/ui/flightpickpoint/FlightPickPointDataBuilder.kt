@@ -5,13 +5,9 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 
 interface FlightPickPointDataBuilder {
     fun buildSuccessItem(
-        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
-        isEnabled: Boolean,
-        index: Int
+        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity, index: Int,
     ): BaseItem
 
-    fun buildEmptyItem(): BaseItem
-    fun buildProgressItem(): BaseItem
     fun buildErrorItem(): BaseItem
     fun buildErrorMessageItem(message: String): BaseItem
 }

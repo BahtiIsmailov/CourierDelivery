@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import com.google.android.material.snackbar.Snackbar
 import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightPickPointFragmentBinding
@@ -102,6 +104,20 @@ class FlightPickPointFragment : Fragment() {
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
+        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                is FlightPickPointUIState.Error -> {
+                    showBarMessage(state.message)
+                    binding.goToDelivery.setState(ProgressImageButtonMode.ENABLED)
+                }
+            }
+
+        })
+
+    }
+
+    private fun showBarMessage(state: String) {
+        Snackbar.make(binding.main, state, Snackbar.LENGTH_LONG).show()
     }
 
     private fun showDeliveryDialog() {
@@ -109,7 +125,9 @@ class FlightPickPointFragment : Fragment() {
             getString(R.string.flight_deliveries_dialog_title),
             getString(R.string.flight_deliveries_dialog_description),
             getString(R.string.flight_deliveries_dialog_positive_button),
-            getString(R.string.flight_deliveries_dialog_negative_button)
+            getString(R.string.flight_deliveries_dialog_negative_button),
+            ContextCompat.getColor(requireContext(), R.color.accept),
+            ContextCompat.getColor(requireContext(), R.color.primary)
         )
         dialog.setTargetFragment(this, GO_DELIVERY_REQUEST_CODE)
         dialog.show(parentFragmentManager, GO_DELIVERY_TAG)

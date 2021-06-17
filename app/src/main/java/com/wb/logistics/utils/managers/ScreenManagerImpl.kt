@@ -29,7 +29,7 @@ class ScreenManagerImpl(
         return appRemoteRepository.getFlightStatus(flightId)
             .doOnSuccess { worker.save(AppPreffsKeys.SCREEN_KEY, it) }
             .map {
-                navDirectionsByStatus(FlightStatus.valueOf(it.status.toUpperCase()),
+                navDirectionsByStatus(FlightStatus.valueOf(it.status.uppercase()),
                     it.location.office.id)
             }
             .onErrorReturn { navDirectionsByStatus(FlightStatus.CLOSED, 0) }
@@ -50,16 +50,14 @@ class ScreenManagerImpl(
         }
 
     override fun saveState(flightStatus: FlightStatus, isGetFromGPS: Boolean): Completable {
-        return appLocalRepository.readFlightOptional()
+        return appLocalRepository.readFlight()
             .flatMapCompletable {
-                if (it is Optional.Success)
-                    with(it.data) {
-                        val flightId = id.toString()
-                        val officeId = dc.id
-                        val updatedAt = timeManager.getOffsetLocalTime()
-                        saveState(flightId, flightStatus, officeId, updatedAt, isGetFromGPS)
-                    }
-                else Completable.error(Throwable())
+                with(it) {
+                    val flightId = id.toString()
+                    val officeId = dc.id
+                    val updatedAt = timeManager.getOffsetLocalTime()
+                    saveState(flightId, flightStatus, officeId, updatedAt, isGetFromGPS)
+                }
             }
     }
 
@@ -72,7 +70,7 @@ class ScreenManagerImpl(
     ): Completable {
         val statusStateEntity = loadStatusStateEntity()
         if (statusStateEntity != null
-            && flightStatus == FlightStatus.valueOf(statusStateEntity.status.toUpperCase())
+            && flightStatus == FlightStatus.valueOf(statusStateEntity.status.uppercase())
         ) return Completable.complete()
         val putStatus =
             appRemoteRepository.putFlightStatus(flightId,

@@ -55,7 +55,7 @@ val viewModelModule = module {
 
     viewModel { DcLoadingBoxesViewModel(get(), get(), get()) }
 
-    viewModel { FlightPickPointViewModel(get(), get(), get(), get(), get()) }
+    viewModel { FlightPickPointViewModel(get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get(), get()) }
     viewModel { (parameters: FlightDeliveriesDetailsParameters) ->
         FlightDeliveriesDetailsViewModel(parameters,

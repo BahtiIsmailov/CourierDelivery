@@ -1,7 +1,6 @@
 package com.wb.logistics.ui.flightpickpoint.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -20,18 +19,12 @@ class FlightPickPointInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun switchScreen(): Completable {
+    override fun switchScreenToDelivery(): Completable {
         return screenManager.saveState(FlightStatus.INTRANSIT)
     }
 
     override fun flightId(): Single<Int> {
-        return appLocalRepository.observeFlightDataOptional()
-            .map {
-                when (it) {
-                    is Optional.Empty -> 0
-                    is Optional.Success -> it.data.flightId
-                }
-            }.firstOrError()
+        return appLocalRepository.readFlight().map { it.id }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

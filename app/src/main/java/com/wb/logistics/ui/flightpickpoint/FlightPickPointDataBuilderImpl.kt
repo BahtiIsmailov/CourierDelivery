@@ -2,7 +2,6 @@ package com.wb.logistics.ui.flightpickpoint
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesProgressItem
 import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesRefreshItem
 import com.wb.logistics.ui.flightpickpoint.delegates.items.FlightPickPointItem
 
@@ -11,9 +10,7 @@ class FlightPickPointDataBuilderImpl(
 ) : FlightPickPointDataBuilder {
 
     override fun buildSuccessItem(
-        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
-        isEnabled: Boolean,
-        index: Int,
+        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity, index: Int,
     ): BaseItem {
         return FlightPickPointItem(
             address = scannedBoxGroupByAddressEntity.dstFullAddress,
@@ -24,15 +21,9 @@ class FlightPickPointDataBuilderImpl(
         )
     }
 
-    override fun buildEmptyItem(): BaseItem =
-        FlightDeliveriesRefreshItem("Список пуст")
+    override fun buildErrorItem() =
+        FlightDeliveriesRefreshItem(resourceProvider.getFlightListError())
 
-    override fun buildProgressItem(): BaseItem = FlightDeliveriesProgressItem()
-
-    override fun buildErrorItem(): BaseItem =
-        FlightDeliveriesRefreshItem("Ошибка получения данных")
-
-    override fun buildErrorMessageItem(message: String): BaseItem =
-        FlightDeliveriesRefreshItem(message)
+    override fun buildErrorMessageItem(message: String) = FlightDeliveriesRefreshItem(message)
 
 }

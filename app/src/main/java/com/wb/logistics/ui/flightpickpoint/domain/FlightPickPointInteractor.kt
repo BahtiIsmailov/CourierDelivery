@@ -10,6 +10,6 @@ interface FlightPickPointInteractor {
 
     fun getAttachedBoxesGroupByOffice() : Single<List<AttachedBoxGroupByOfficeEntity>>
 
-    fun switchScreen(): Completable
+    fun switchScreenToDelivery(): Completable
 
 }

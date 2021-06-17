@@ -4,11 +4,13 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.wb.logistics.R
 import com.wb.logistics.app.AppExtras
+import kotlin.properties.Delegates
 
 class SimpleResultDialogFragment : DialogFragment() {
 
@@ -16,6 +18,9 @@ class SimpleResultDialogFragment : DialogFragment() {
     private lateinit var description: String
     private lateinit var positiveButtonName: String
     private lateinit var negativeButtonName: String
+
+    private var positiveButtonColor by Delegates.notNull<Int>()
+    private var negativeButtonColor by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,8 @@ class SimpleResultDialogFragment : DialogFragment() {
                 arguments.getString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, "")
             negativeButtonName =
                 arguments.getString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, "")
+            positiveButtonColor = arguments.getInt(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_COLOR, positiveTextColorButtonDefault)
+            negativeButtonColor = arguments.getInt(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_COLOR, negativeTextColorButtonDefault)
         }
     }
 
@@ -59,16 +66,16 @@ class SimpleResultDialogFragment : DialogFragment() {
         context?.let {
             (dialog as AlertDialog)
                 .getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(positiveTextColorButton)
+                .setTextColor( positiveButtonColor)
             (dialog as AlertDialog)
                 .getButton(AlertDialog.BUTTON_NEGATIVE)
-                .setTextColor(negativeTextColorButton)
+                .setTextColor(negativeButtonColor)
         }
     }
 
-    private val positiveTextColorButton: Int
+    private val positiveTextColorButtonDefault: Int
         get() = ContextCompat.getColor(requireContext(), R.color.danger)
-    private val negativeTextColorButton: Int
+    private val negativeTextColorButtonDefault: Int
         get() = ContextCompat.getColor(requireContext(), R.color.primary)
 
     companion object {
@@ -83,6 +90,26 @@ class SimpleResultDialogFragment : DialogFragment() {
             args.putString(AppExtras.EXTRA_DIALOG_DESCRIPTION, description)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
             args.putString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, negativeButtonName)
+            val fragment = SimpleResultDialogFragment()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(
+            title: String,
+            description: String,
+            positiveButtonName: String,
+            negativeButtonName: String,
+            @ColorInt positiveTextColorButton: Int,
+            @ColorInt negativeTextColorButton: Int,
+        ): SimpleResultDialogFragment {
+            val args = Bundle()
+            args.putString(AppExtras.EXTRA_DIALOG_TITLE, title)
+            args.putString(AppExtras.EXTRA_DIALOG_DESCRIPTION, description)
+            args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
+            args.putString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, negativeButtonName)
+            args.putInt(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_COLOR, positiveTextColorButton)
+            args.putInt(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_COLOR, negativeTextColorButton)
             val fragment = SimpleResultDialogFragment()
             fragment.arguments = args
             return fragment
