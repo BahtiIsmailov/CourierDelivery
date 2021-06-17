@@ -13,8 +13,8 @@ import com.wb.logistics.network.api.app.entity.boxinfo.*
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
-import com.wb.logistics.network.api.app.remote.BoxFromWarehouseBalanceCurrentOfficeRemote
-import com.wb.logistics.network.api.app.remote.BoxFromWarehouseBalanceResponse
+import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceCurrentOfficeRequest
+import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceRequest
 import com.wb.logistics.network.api.app.remote.boxinfo.*
 import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
@@ -26,9 +26,9 @@ import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBal
 import com.wb.logistics.network.api.app.remote.flightsstatus.*
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
 import com.wb.logistics.network.api.app.remote.time.TimeResponse
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxResponse
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxCurrentOfficeRequest
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxRequest
+import com.wb.logistics.network.api.app.remote.warehouse.BoxToWarehouseBalanceResponse
+import com.wb.logistics.network.api.app.remote.warehouse.BoxToWarehouseBalanceCurrentOfficeRequest
+import com.wb.logistics.network.api.app.remote.warehouse.BoxToWarehouseBalanceRequest
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
@@ -173,12 +173,12 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         currentOfficeId: Int,
     ): Completable {
-        return remote.deleteBoxFromWarehouseBalance(token(), flightId,
-            BoxFromWarehouseBalanceResponse(
+        return remote.removeBoxFromWarehouseBalance(token(), flightId,
+            BoxFromWarehouseBalanceRequest(
                 barcode,
                 isManualInput,
                 updatedAt,
-                BoxFromWarehouseBalanceCurrentOfficeRemote(currentOfficeId)))
+                BoxFromWarehouseBalanceCurrentOfficeRequest(currentOfficeId)))
     }
 
     override fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>> {
@@ -331,15 +331,15 @@ class AppRemoteRepositoryImpl(
         currentOfficeId: Int,
     ): Single<WarehouseScanEntity> {
         return remote.addBoxToWarehouseBalance(token(), flightId,
-            WarehouseBalanceBoxRequest(
+            BoxToWarehouseBalanceRequest(
                 barcode = barcode,
                 isManualInput = isManualInput,
                 updatedAt = updatedAt,
-                WarehouseBalanceBoxCurrentOfficeRequest(currentOfficeId)))
+                BoxToWarehouseBalanceCurrentOfficeRequest(currentOfficeId)))
             .map { convertWarehouseScannedBox(it) }
     }
 
-    private fun convertWarehouseScannedBox(warehouseScanRemote: WarehouseBalanceBoxResponse): WarehouseScanEntity {
+    private fun convertWarehouseScannedBox(warehouseScanRemote: BoxToWarehouseBalanceResponse): WarehouseScanEntity {
         return with(warehouseScanRemote) {
             WarehouseScanEntity(
                 srcOffice = WarehouseScanSrcOfficeEntity(

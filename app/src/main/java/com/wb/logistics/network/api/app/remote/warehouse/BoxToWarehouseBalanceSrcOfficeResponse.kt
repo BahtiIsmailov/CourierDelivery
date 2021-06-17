@@ -1,6 +1,6 @@
-package com.wb.logistics.network.api.app.remote.warehousescan
+package com.wb.logistics.network.api.app.remote.warehouse
 
-data class WarehouseBalanceBoxDstOfficeResponse(
+data class BoxToWarehouseBalanceSrcOfficeResponse(
     val id: Int,
     val name: String,
     val fullAddress: String,

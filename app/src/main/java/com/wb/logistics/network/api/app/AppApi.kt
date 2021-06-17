@@ -1,6 +1,5 @@
 package com.wb.logistics.network.api.app
 
-import com.wb.logistics.network.api.app.remote.BoxFromWarehouseBalanceResponse
 import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoResponse
 import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
 import com.wb.logistics.network.api.app.remote.deleteboxfromflight.RemoveBoxFromFlightRequest
@@ -13,9 +12,11 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRespon
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
 import com.wb.logistics.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxesResponse
 import com.wb.logistics.network.api.app.remote.time.TimeResponse
+import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceRequest
+import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceResponse
+import com.wb.logistics.network.api.app.remote.warehouse.BoxToWarehouseBalanceRequest
+import com.wb.logistics.network.api.app.remote.warehouse.BoxToWarehouseBalanceResponse
 import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxesResponse
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxRequest
-import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseBalanceBoxResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
@@ -93,18 +94,19 @@ interface AppApi {
     fun addBoxToWarehouseBalance(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-        @Body box: WarehouseBalanceBoxRequest,
-    ): Single<WarehouseBalanceBoxResponse>
+        @Body box: BoxToWarehouseBalanceRequest,
+    ): Single<BoxToWarehouseBalanceResponse>
 
     @PUT("{version}/flights/{flightID}/warehouse/scan")
-    fun deleteBoxFromWarehouseBalance(
+    fun removeBoxFromWarehouseBalance(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-        @Body box: BoxFromWarehouseBalanceResponse,
-    ): Completable
+        @Body box: BoxFromWarehouseBalanceRequest,
+    ): Single<BoxFromWarehouseBalanceResponse>
 
-
-
+    //==============================================================================================
+    //flight status
+    //==============================================================================================
     @PUT("{version}/flight-statuses")
     fun getFlightStatus(
         @Path(value = "version", encoded = true) version: String,
