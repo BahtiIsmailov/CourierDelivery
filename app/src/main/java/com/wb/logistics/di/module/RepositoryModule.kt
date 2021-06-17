@@ -50,6 +50,7 @@ val deliveryRepositoryModule = module {
         returnBoxDao: ReturnBoxDao,
         dcUnloadingBox: DcUnloadingBoxDao,
         flightMatchingDao: FlightBoxDao,
+        warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
     ): AppLocalRepository {
         return AppLocalRepositoryImpl(appDatabase,
             flightDao,
@@ -57,7 +58,8 @@ val deliveryRepositoryModule = module {
             unloadingBox,
             returnBoxDao,
             dcUnloadingBox,
-            flightMatchingDao)
+            flightMatchingDao,
+            warehouseMatchingBoxDao)
     }
 
     fun provideScannerRepository(): ScannerRepository {
@@ -71,7 +73,7 @@ val deliveryRepositoryModule = module {
     single { provideAuthRemoteRepository(get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
-    single { provideLocalRepository(get(), get(), get(), get(), get(), get(), get()) }
+    single { provideLocalRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
 

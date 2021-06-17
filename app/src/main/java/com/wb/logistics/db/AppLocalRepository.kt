@@ -7,10 +7,10 @@ import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -53,13 +53,13 @@ interface AppLocalRepository {
     //==============================================================================================
     //matching boxes
     //==============================================================================================
-    fun saveMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
+    fun saveMatchingBoxes(matchingBoxes: List<WarehouseMatchingBoxEntity>): Completable
 
-    fun saveMatchingBox(matchingBox: MatchingBoxEntity): Completable
+    fun saveMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable
 
-    fun deleteMatchingBox(matchingBox: MatchingBoxEntity): Completable
+    fun deleteMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable
 
-    fun findMatchingBox(barcode: String): Single<Optional<MatchingBoxEntity>>
+    fun findMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>>
 
     fun deleteAllMatchingBox()
 

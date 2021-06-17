@@ -4,7 +4,6 @@ import androidx.room.*
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -47,23 +46,5 @@ interface FlightDao {
 
     @Query("SELECT * FROM FlightOfficeEntity WHERE office_id = :id")
     fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
-
-    //==============================================================================================
-    //matching boxes
-    //==============================================================================================
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMatchingBox(matchingBox: MatchingBoxEntity): Completable
-
-    @Delete
-    fun deleteMatchingBox(matchingBox: MatchingBoxEntity): Completable
-
-    @Query("SELECT * FROM MatchingBoxEntity WHERE barcode = :barcode")
-    fun findMatchingBox(barcode: String): Single<MatchingBoxEntity>
-
-    @Query("DELETE FROM MatchingBoxEntity")
-    fun deleteAllMatchingBox()
 
 }

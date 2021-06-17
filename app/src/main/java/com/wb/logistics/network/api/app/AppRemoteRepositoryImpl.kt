@@ -6,9 +6,9 @@ import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
 import com.wb.logistics.db.entity.flight.*
-import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.entity.boxinfo.*
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
@@ -236,21 +236,21 @@ class AppRemoteRepositoryImpl(
                 latitude = lat)
         }
 
-    override fun matchingBoxes(flightId: String): Single<List<MatchingBoxEntity>> {
-        return remote.matchingBoxes(token(), flightId)
+    override fun warehouseMatchingBoxes(flightId: String): Single<List<WarehouseMatchingBoxEntity>> {
+        return remote.warehouseMatchingBoxes(token(), flightId)
             .map {
-                val matchingBoxesEntity = mutableListOf<MatchingBoxEntity>()
+                val matchingBoxesEntity = mutableListOf<WarehouseMatchingBoxEntity>()
                 it.data.forEach { box ->
                     matchingBoxesEntity.add(with(box) {
-                        MatchingBoxEntity(
+                        WarehouseMatchingBoxEntity(
                             barcode = barcode,
-                            srcOffice = MatchingSrcOfficeEntity(
+                            srcOffice = WarehouseMatchingSrcOfficeEntity(
                                 id = srcOffice.id,
                                 name = srcOffice.name,
                                 fullAddress = srcOffice.fullAddress,
                                 longitude = srcOffice.long,
                                 latitude = srcOffice.lat),
-                            dstOffice = MatchingDstOfficeEntity(
+                            dstOffice = WarehouseMatchingDstOfficeEntity(
                                 id = dstOffice.id,
                                 name = dstOffice.name,
                                 fullAddress = dstOffice.fullAddress,

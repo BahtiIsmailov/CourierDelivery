@@ -1,6 +1,6 @@
-package com.wb.logistics.network.api.app.remote.matchingboxes
+package com.wb.logistics.network.api.app.remote.warehousematchingboxes
 
-data class MatchingSrcOfficeRemote(
+data class WarehouseMatchingDstOfficeRemote(
     val id: Int,
     val name: String,
     val fullAddress: String,

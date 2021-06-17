@@ -41,6 +41,10 @@ val databaseModule = module {
         return database.dcUnloadingBoxDao
     }
 
+    fun provideWarehouseMatchingBoxDao(database: AppDatabase): WarehouseMatchingBoxDao {
+        return database.warehouseMatchingBoxDao
+    }
+
     single { provideDatabase(androidApplication()) }
     single { provideFlightDao(get()) }
     single { provideFlightMatchingDao(get()) }
@@ -48,4 +52,5 @@ val databaseModule = module {
     single { provideUnloadingBoxDao(get()) }
     single { provideReturnBoxDao(get()) }
     single { provideDcUnloadingBoxDao(get()) }
+    single { provideWarehouseMatchingBoxDao(get()) }
 }

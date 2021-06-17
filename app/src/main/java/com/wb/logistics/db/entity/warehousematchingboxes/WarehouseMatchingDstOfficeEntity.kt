@@ -1,8 +1,8 @@
-package com.wb.logistics.db.entity.matchingboxes
+package com.wb.logistics.db.entity.warehousematchingboxes
 
 import androidx.room.ColumnInfo
 
-data class MatchingDstOfficeEntity(
+data class WarehouseMatchingDstOfficeEntity(
     @ColumnInfo(name = "match_dst_office_id")
     val id: Int,
     @ColumnInfo(name = "match_dst_office_name")

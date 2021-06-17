@@ -6,9 +6,9 @@ import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingDstOfficeEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingSrcOfficeEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
@@ -197,7 +197,7 @@ class DcLoadingInteractorImpl(
         flightId: Int,
         barcode: String,
         isManual: Boolean,
-        matchingBox: MatchingBoxEntity,
+        matchingBox: WarehouseMatchingBoxEntity,
         gate: Int,
         updatedAt: String,
     ): Observable<ScanBoxData> {
@@ -216,7 +216,7 @@ class DcLoadingInteractorImpl(
 
     private fun convertAttachedBox(
         flightId: Int,
-        matchingBoxEntity: MatchingBoxEntity,
+        matchingBoxEntity: WarehouseMatchingBoxEntity,
         gate: Int,
         isManual: Boolean,
         updatedAt: String,
@@ -265,16 +265,16 @@ class DcLoadingInteractorImpl(
 
     private fun convertToMatchingBox(attachedBoxEntity: AttachedBoxEntity) =
         with(attachedBoxEntity) {
-            MatchingBoxEntity(
+            WarehouseMatchingBoxEntity(
                 barcode = barcode,
-                srcOffice = MatchingSrcOfficeEntity(
+                srcOffice = WarehouseMatchingSrcOfficeEntity(
                     id = srcOffice.id,
                     name = srcOffice.name,
                     fullAddress = srcOffice.fullAddress,
                     longitude = srcOffice.longitude,
                     latitude = srcOffice.latitude,
                 ),
-                dstOffice = MatchingDstOfficeEntity(
+                dstOffice = WarehouseMatchingDstOfficeEntity(
                     id = dstOffice.id,
                     name = dstOffice.name,
                     fullAddress = dstOffice.fullAddress,
@@ -285,13 +285,13 @@ class DcLoadingInteractorImpl(
         }
 
 
-    private fun deleteMatchingBox(matchingBoxEntity: MatchingBoxEntity) =
+    private fun deleteMatchingBox(matchingBoxEntity: WarehouseMatchingBoxEntity) =
         appLocalRepository.deleteMatchingBox(matchingBoxEntity).onErrorComplete()
 
     private fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity) =
         appLocalRepository.deleteAttachedBox(attachedBoxEntity).onErrorComplete()
 
-    private fun saveMatchingBox(matchingBoxEntity: MatchingBoxEntity) =
+    private fun saveMatchingBox(matchingBoxEntity: WarehouseMatchingBoxEntity) =
         appLocalRepository.saveMatchingBox(matchingBoxEntity).onErrorComplete()
 
     private fun boxDefinitionResult(

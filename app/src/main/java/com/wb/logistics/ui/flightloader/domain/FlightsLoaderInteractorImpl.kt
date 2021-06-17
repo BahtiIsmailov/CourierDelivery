@@ -45,12 +45,12 @@ class FlightsLoaderInteractorImpl(
 
     private fun saveBoxes(flightData: FlightData): Single<String> {
         val flightId = flightData.flightId.toString()
-        return Completable.mergeArray(saveMatchingBoxes(flightId), saveFlightBoxes(flightData))
+        return Completable.mergeArray(saveWarehouseMatchingBoxes(flightId), saveFlightBoxes(flightData))
             .toSingle { flightId }
     }
 
-    private fun saveMatchingBoxes(flightId: String): Completable {
-        return appRemoteRepository.matchingBoxes(flightId)
+    private fun saveWarehouseMatchingBoxes(flightId: String): Completable {
+        return appRemoteRepository.warehouseMatchingBoxes(flightId)
             .flatMapCompletable { appLocalRepository.saveMatchingBoxes(it) }
     }
 

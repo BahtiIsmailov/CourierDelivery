@@ -9,10 +9,10 @@ import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
-import com.wb.logistics.db.entity.matchingboxes.MatchingBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
+import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -25,6 +25,7 @@ class AppLocalRepositoryImpl(
     private val returnBoxDao: ReturnBoxDao,
     private val dcUnloadingBoxDao: DcUnloadingBoxDao,
     private val flightMatchingDao: FlightBoxDao,
+    private val warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
 ) : AppLocalRepository {
 
     override fun saveFlightAndOffices(
@@ -137,26 +138,26 @@ class AppLocalRepositoryImpl(
     }
 
     //==============================================================================================
-    override fun saveMatchingBoxes(matchingBoxes: List<MatchingBoxEntity>): Completable {
-        return flightDao.insertMatchingBoxes(matchingBoxes)
+    override fun saveMatchingBoxes(matchingBoxes: List<WarehouseMatchingBoxEntity>): Completable {
+        return warehouseMatchingBoxDao.insertMatchingBoxes(matchingBoxes)
     }
 
-    override fun saveMatchingBox(matchingBox: MatchingBoxEntity): Completable {
-        return flightDao.insertMatchingBox(matchingBox)
+    override fun saveMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable {
+        return warehouseMatchingBoxDao.insertMatchingBox(matchingBox)
     }
 
-    override fun deleteMatchingBox(matchingBox: MatchingBoxEntity): Completable {
-        return flightDao.deleteMatchingBox(matchingBox)
+    override fun deleteMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable {
+        return warehouseMatchingBoxDao.deleteMatchingBox(matchingBox)
     }
 
-    override fun findMatchingBox(barcode: String): Single<Optional<MatchingBoxEntity>> {
-        return flightDao.findMatchingBox(barcode)
-            .map<Optional<MatchingBoxEntity>> { Optional.Success(it) }
+    override fun findMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>> {
+        return warehouseMatchingBoxDao.findMatchingBox(barcode)
+            .map<Optional<WarehouseMatchingBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAllMatchingBox() {
-        flightDao.deleteAllMatchingBox()
+        warehouseMatchingBoxDao.deleteAllMatchingBox()
     }
 
     //==============================================================================================

@@ -11,8 +11,8 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateRemote
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateRemote
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesRemote
-import com.wb.logistics.network.api.app.remote.matchingboxes.MatchingBoxesRemote
 import com.wb.logistics.network.api.app.remote.time.TimeRemote
+import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxesRemote
 import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScanRemote
 import com.wb.logistics.network.api.app.remote.warehousescan.WarehouseScannedBoxRemote
 import io.reactivex.Completable
@@ -26,11 +26,11 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
     ): Single<FlightRemote?>
 
-    @GET("{version}/flights/{flightID}/matching-boxes")
-    fun matchingBoxes(
+    @GET("{version}/flights/{flightID}/warehouse/matching-boxes")
+    fun warehouseMatchingBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
-    ): Single<MatchingBoxesRemote>
+    ): Single<WarehouseMatchingBoxesRemote>
 
     @GET("{version}/boxes/{barcode}")
     fun boxInfo(
