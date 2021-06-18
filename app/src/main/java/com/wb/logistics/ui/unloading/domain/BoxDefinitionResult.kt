@@ -7,7 +7,7 @@ import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 
 data class BoxDefinitionResult(
-    val flight: Optional<FlightEntity>,
+    val flight: FlightEntity,
     val findUnloadedBox: Optional<UnloadedBoxEntity>,
     val findReturnBox: Optional<ReturnBoxEntity>,
     val findAttachedBox: Optional<AttachedBoxEntity>,

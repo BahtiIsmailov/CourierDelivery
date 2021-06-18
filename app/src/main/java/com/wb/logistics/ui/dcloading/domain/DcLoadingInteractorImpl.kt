@@ -43,7 +43,7 @@ class DcLoadingInteractorImpl(
             .flatMap { boxDefinition ->
 
                 val flight = boxDefinition.flight
-                val matchingBoxOptional = boxDefinition.matchingBoxOptional
+                val warehouseMatchingBoxOptional = boxDefinition.warehouseMatchingBoxOptional
                 val attachedBoxOptional = boxDefinition.attachedBoxOptional
                 val warehouseScanOptional = boxDefinition.warehouseScanOptional
                 val barcode = boxDefinition.barcode
@@ -54,17 +54,21 @@ class DcLoadingInteractorImpl(
                 when {
                     attachedBoxOptional is Optional.Success -> //коробка уже была добавлена
                         return@flatMap flight().map { it.gate.toString() }
-                            .flatMapObservable { Observable.just(ScanBoxData.BoxHasBeenAdded(barcode, it)) }
-                    matchingBoxOptional is Optional.Success -> { //коробка принадлежит рейсу
-                        val matchingBox = matchingBoxOptional.data
-                        return@flatMap saveBoxToBalanceByMatching(
-                            barcode = matchingBox.barcode,
+                            .flatMapObservable {
+                                Observable.just(ScanBoxData.BoxHasBeenAdded(barcode, it))
+                            }
+
+                    warehouseMatchingBoxOptional is Optional.Success -> { //коробка принадлежит рейсу
+                        val warehouseMatchingBox = warehouseMatchingBoxOptional.data
+                        return@flatMap saveBoxToBalanceByWarehouseMatching(
+                            barcode = warehouseMatchingBox.barcode,
                             isManual = isManual,
-                            matchingBox = matchingBox,
+                            warehouseMatchingBox = warehouseMatchingBox,
                             gate = flight.gate,
                             updatedAt = updatedAt)
                     }
-                    matchingBoxOptional is Optional.Empty -> { //коробка не найдена в matching box
+
+                    warehouseMatchingBoxOptional is Optional.Empty -> { //коробка не найдена в warehouse matching box
                         return@flatMap when (warehouseScanOptional) {
                             is Optional.Success -> { //информация по коробке получена
                                 if (warehouseScanOptional.data.srcOffice.id != flight.dc.id) {
@@ -185,21 +189,21 @@ class DcLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun saveBoxToBalanceByMatching(
+    private fun saveBoxToBalanceByWarehouseMatching(
         barcode: String,
         isManual: Boolean,
-        matchingBox: WarehouseMatchingBoxEntity,
+        warehouseMatchingBox: WarehouseMatchingBoxEntity,
         gate: Int,
         updatedAt: String,
     ): Observable<ScanBoxData> {
         val switchScreen = switchScreen()
         val saveBoxScanned =
-            saveAttachedBox(convertAttachedBox(matchingBox, isManual, updatedAt))
+            saveAttachedBox(convertAttachedBox(warehouseMatchingBox, isManual, updatedAt))
         val boxAdded = boxAdded(barcode, gate.toString())
 
         return switchScreen
             .andThen(saveBoxScanned)
-            .andThen(deleteMatchingBox(matchingBox))
+            .andThen(deleteMatchingBox(warehouseMatchingBox))
             .andThen(boxAdded)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -287,12 +291,12 @@ class DcLoadingInteractorImpl(
     ): Single<BoxDefinitionResult> {
         return Single.zip(
             flight(), //рейс
-            findMatchingBox(barcode), //коробка привязана к рейсу
+            findWarehouseMatchingBox(barcode), //коробка привязана к рейсу
             findAttachedBox(barcode), //коробка уже добавлена
             updatedAt(),
-            { flight, findMatchingBox, findAttachedBox, updatedAt ->
+            { flight, findWarehouseMatchingBox, findAttachedBox, updatedAt ->
                 BoxDefinitionResult(flight,
-                    findMatchingBox,
+                    findWarehouseMatchingBox,
                     findAttachedBox,
                     barcode,
                     isManual,
@@ -303,7 +307,8 @@ class DcLoadingInteractorImpl(
 
     private fun flight() = appLocalRepository.readFlight()
 
-    private fun findMatchingBox(barcode: String) = appLocalRepository.findWarehouseMatchingBox(barcode)
+    private fun findWarehouseMatchingBox(barcode: String) =
+        appLocalRepository.findWarehouseMatchingBox(barcode)
 
     private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 

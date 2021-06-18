@@ -8,7 +8,7 @@ import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
 
 data class BoxDefinitionResult(
     val flight: FlightEntity,
-    val matchingBoxOptional: Optional<WarehouseMatchingBoxEntity>,
+    val warehouseMatchingBoxOptional: Optional<WarehouseMatchingBoxEntity>,
     val attachedBoxOptional: Optional<AttachedBoxEntity>,
     val warehouseScanOptional: Optional<WarehouseScanEntity>,
     val barcode: String,
@@ -18,13 +18,13 @@ data class BoxDefinitionResult(
 ) {
     constructor(
         flight: FlightEntity,
-        matchingBoxOptional: Optional<WarehouseMatchingBoxEntity>,
+        warehouseMatchingBoxOptional: Optional<WarehouseMatchingBoxEntity>,
         attachedBoxOptional: Optional<AttachedBoxEntity>,
         barcode: String,
         isManual: Boolean,
         updatedAt: String,
     ) : this(flight,
-        matchingBoxOptional,
+        warehouseMatchingBoxOptional,
         attachedBoxOptional,
         Optional.Empty(),
         barcode,

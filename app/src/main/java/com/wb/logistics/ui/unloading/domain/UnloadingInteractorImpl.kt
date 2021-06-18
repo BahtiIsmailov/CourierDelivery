@@ -48,12 +48,7 @@ class UnloadingInteractorImpl(
                 val barcodeScanned = boxDefinition.barcodeScanned
                 val isManualInput = boxDefinition.isManualInput
                 val updatedAt = timeManager.getOffsetLocalTime()
-
-                val flightId = when (flight) {
-                    is Optional.Success -> flight.data.id
-                    is Optional.Empty -> 0
-                }
-                // TODO: 29.04.2021 добавить конвертер состояния в случае 0 рейса
+                val flightId = flight.id
 
                 when {
                     findUnloadedBox is Optional.Success -> //коробка уже выгружена из машины
@@ -208,7 +203,7 @@ class UnloadingInteractorImpl(
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun flight() = appLocalRepository.readFlightOptional()
+    private fun flight() = appLocalRepository.readFlight()
 
     private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 
