@@ -6,6 +6,9 @@ import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
 import com.wb.logistics.db.entity.flight.*
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingDstOfficeEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
@@ -23,11 +26,14 @@ import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBal
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceRequest
 import com.wb.logistics.network.api.app.remote.flightsstatus.*
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import com.wb.logistics.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxResponse
 import com.wb.logistics.network.api.app.remote.time.TimeResponse
 import com.wb.logistics.network.api.app.remote.warehouse.*
+import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxResponse
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class AppRemoteRepositoryImpl(
@@ -235,29 +241,62 @@ class AppRemoteRepositoryImpl(
 
     override fun warehouseMatchingBoxes(flightId: String): Single<List<WarehouseMatchingBoxEntity>> {
         return remote.warehouseMatchingBoxes(token(), flightId)
-            .map {
-                val matchingBoxesEntity = mutableListOf<WarehouseMatchingBoxEntity>()
-                it.data.forEach { box ->
-                    matchingBoxesEntity.add(with(box) {
-                        WarehouseMatchingBoxEntity(
-                            barcode = barcode,
-                            srcOffice = WarehouseMatchingSrcOfficeEntity(
-                                id = srcOffice.id,
-                                name = srcOffice.name,
-                                fullAddress = srcOffice.fullAddress,
-                                longitude = srcOffice.long,
-                                latitude = srcOffice.lat),
-                            dstOffice = WarehouseMatchingDstOfficeEntity(
-                                id = dstOffice.id,
-                                name = dstOffice.name,
-                                fullAddress = dstOffice.fullAddress,
-                                longitude = dstOffice.long,
-                                latitude = dstOffice.lat),
-                        )
-                    })
-                }
-                matchingBoxesEntity
+            .map { it.data }
+            .flatMap {
+                Observable.fromIterable(it)
+                    .map { box -> convertWarehouseMatchingBoxesEntity(box) }
+                    .toList()
             }
+    }
+
+    private fun convertWarehouseMatchingBoxesEntity(warehouseMatchingBoxResponse: WarehouseMatchingBoxResponse): WarehouseMatchingBoxEntity {
+        return with(warehouseMatchingBoxResponse) {
+            WarehouseMatchingBoxEntity(
+                barcode = barcode,
+                srcOffice = WarehouseMatchingSrcOfficeEntity(
+                    id = srcOffice.id,
+                    name = srcOffice.name,
+                    fullAddress = srcOffice.fullAddress,
+                    longitude = srcOffice.long,
+                    latitude = srcOffice.lat),
+                dstOffice = WarehouseMatchingDstOfficeEntity(
+                    id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    longitude = dstOffice.long,
+                    latitude = dstOffice.lat),
+            )
+        }
+    }
+
+    override fun pvzMatchingBoxes(flightId: String): Single<List<PvzMatchingBoxEntity>> {
+        return remote.pvzMatchingBoxes(token(), flightId)
+            .map { it.data }
+            .flatMap {
+                Observable.fromIterable(it)
+                    .map { box -> convertPvzMatchingBoxesEntity(box) }
+                    .toList()
+            }
+    }
+
+    private fun convertPvzMatchingBoxesEntity(pvzMatchingBoxResponse: PvzMatchingBoxResponse): PvzMatchingBoxEntity {
+        return with(pvzMatchingBoxResponse) {
+            PvzMatchingBoxEntity(
+                barcode = barcode,
+                srcOffice = PvzMatchingSrcOfficeEntity(
+                    id = srcOffice.id,
+                    name = srcOffice.name,
+                    fullAddress = srcOffice.fullAddress,
+                    longitude = srcOffice.long,
+                    latitude = srcOffice.lat),
+                dstOffice = PvzMatchingDstOfficeEntity(
+                    id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    longitude = dstOffice.long,
+                    latitude = dstOffice.lat),
+            )
+        }
     }
 
     private fun covertBoxInfoToFlight(boxInfoRemote: BoxInfoResponse): BoxInfoDataEntity {

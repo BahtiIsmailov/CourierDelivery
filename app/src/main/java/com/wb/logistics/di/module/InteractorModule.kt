@@ -112,20 +112,24 @@ val interactorModule = module {
 
     fun provideFlightPickPointInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightPickPointInteractor {
         return FlightPickPointInteractorImpl(rxSchedulerFactory,
+            appRemoteRepository,
             appLocalRepository,
             screenManager)
     }
 
     fun provideFlightDeliveriesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightDeliveriesInteractor {
         return FlightDeliveriesInteractorImpl(rxSchedulerFactory,
+            appRemoteRepository,
             appLocalRepository,
             screenManager)
     }
@@ -223,8 +227,8 @@ val interactorModule = module {
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get(), get()) }
-    single { provideFlightPickPointInteractor(get(), get(), get()) }
-    single { provideFlightDeliveriesInteractor(get(), get(), get()) }
+    single { provideFlightPickPointInteractor(get(), get(), get(), get()) }
+    single { provideFlightDeliveriesInteractor(get(), get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }

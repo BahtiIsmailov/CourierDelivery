@@ -54,6 +54,8 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
+
+        //pvzMatchingBoxes
         observeScanProcess()
         observeUnloadedBoxes()
         observeReturnBoxes()

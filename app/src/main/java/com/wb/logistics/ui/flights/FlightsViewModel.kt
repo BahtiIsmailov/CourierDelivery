@@ -71,7 +71,7 @@ class FlightsViewModel(
     }
 
     private fun observeFlight() {
-        addSubscription(interactor.observeFlight()
+        addSubscription(interactor.observeFlightData()
             .map {
                 when (it) {
                     is Optional.Empty -> FlightsUIListState.UpdateFlight(

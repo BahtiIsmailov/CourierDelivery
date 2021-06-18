@@ -14,4 +14,6 @@ interface FlightDeliveriesInteractor {
 
     fun switchScreen(): Completable
 
+    fun updatePvzAttachedBoxes(): Completable
+
 }

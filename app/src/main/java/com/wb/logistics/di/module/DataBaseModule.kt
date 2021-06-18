@@ -45,6 +45,10 @@ val databaseModule = module {
         return database.warehouseMatchingBoxDao
     }
 
+    fun providePvzMatchingBoxDao(database: AppDatabase): PvzMatchingBoxDao {
+        return database.pvzMatchingBoxDao
+    }
+
     single { provideDatabase(androidApplication()) }
     single { provideFlightDao(get()) }
     single { provideFlightMatchingDao(get()) }
@@ -53,4 +57,5 @@ val databaseModule = module {
     single { provideReturnBoxDao(get()) }
     single { provideDcUnloadingBoxDao(get()) }
     single { provideWarehouseMatchingBoxDao(get()) }
+    single { providePvzMatchingBoxDao(get()) }
 }

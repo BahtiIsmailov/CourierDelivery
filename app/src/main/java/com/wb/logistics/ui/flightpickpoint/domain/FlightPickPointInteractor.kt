@@ -8,8 +8,8 @@ interface FlightPickPointInteractor {
 
     fun flightId(): Single<Int>
 
-    fun getAttachedBoxesGroupByOffice() : Single<List<AttachedBoxGroupByOfficeEntity>>
+    fun getAttachedBoxesGroupByOffice(): Single<List<AttachedBoxGroupByOfficeEntity>>
 
-    fun switchScreenToDelivery(): Completable
+    fun createTTN(): Completable
 
 }

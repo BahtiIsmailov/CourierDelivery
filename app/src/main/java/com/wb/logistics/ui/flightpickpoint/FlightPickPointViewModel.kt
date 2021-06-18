@@ -51,15 +51,17 @@ class FlightPickPointViewModel(
 
     private fun goToDelivery() {
         bottomProgressEvent.value = true
-        addSubscription(interactor.switchScreenToDelivery().subscribe(
-            {
-                _stateUINav.value = FlightPickPointUINavState.NavigateToDelivery
-                bottomProgressEvent.value = false
-            }) { switchScreenToDeliveryError(it) }
+        addSubscription(interactor.createTTN()
+            .subscribe({ createTTNComplete() }, { crateTTNError(it) })
         )
     }
 
-    private fun switchScreenToDeliveryError(throwable: Throwable) {
+    private fun createTTNComplete() {
+        _stateUINav.value = FlightPickPointUINavState.NavigateToDelivery
+        bottomProgressEvent.value = false
+    }
+
+    private fun crateTTNError(throwable: Throwable) {
         _stateUI.value = FlightPickPointUIState.Error(when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> resourceProvider.getFlightListError()

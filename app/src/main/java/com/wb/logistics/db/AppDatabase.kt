@@ -11,6 +11,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadedReturnBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
@@ -19,6 +20,7 @@ import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnt
     entities = [FlightEntity::class,
         FlightOfficeEntity::class,
         WarehouseMatchingBoxEntity::class,
+        PvzMatchingBoxEntity::class,
         FlightBoxEntity::class,
         AttachedBoxEntity::class,
         UnloadedBoxEntity::class,
@@ -37,4 +39,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val dcUnloadingBoxDao: DcUnloadingBoxDao
     abstract val flightMatchingDao: FlightBoxDao
     abstract val warehouseMatchingBoxDao: WarehouseMatchingBoxDao
+    abstract val pvzMatchingBoxDao: PvzMatchingBoxDao
 }

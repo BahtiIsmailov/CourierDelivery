@@ -7,6 +7,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
@@ -31,13 +32,15 @@ interface AppLocalRepository {
 
     fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
 
-    fun observeFlight(): Flowable<FlightData>
+    fun observeFlightData(): Flowable<FlightData>
 
     fun observeFlightDataOptional(): Flowable<Optional<FlightData>>
 
     fun readFlightOptional(): Single<Optional<FlightEntity>>
 
     fun readFlight(): Single<FlightEntity>
+
+    fun readFlightId(): Single<String>
 
     fun readFlightDataOptional(): Single<Optional<FlightData>>
 
@@ -53,17 +56,32 @@ interface AppLocalRepository {
     fun deleteAllFlightBoxes()
 
     //==============================================================================================
-    //matching boxes
+    //warehouse matching boxes
     //==============================================================================================
-    fun saveMatchingBoxes(matchingBoxes: List<WarehouseMatchingBoxEntity>): Completable
+    fun saveWarehouseMatchingBoxes(warehouseMatchingBoxes: List<WarehouseMatchingBoxEntity>): Completable
 
-    fun saveMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable
+    fun saveWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable
 
-    fun deleteMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable
+    fun deleteWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable
 
-    fun findMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>>
+    fun findWarehouseMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>>
 
-    fun deleteAllMatchingBox()
+    fun deleteAllWarehouseMatchingBox()
+
+    //==============================================================================================
+    //pvz matching boxes
+    //==============================================================================================
+    fun savePvzMatchingBoxes(pvzMatchingBoxes: List<PvzMatchingBoxEntity>): Completable
+
+    fun savePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable
+
+    fun readPvzMatchingBoxes(): Single<List<PvzMatchingBoxEntity>>
+
+    fun deletePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable
+
+    fun findPvzMatchingBox(barcode: String): Single<Optional<PvzMatchingBoxEntity>>
+
+    fun deleteAllPvzMatchingBox()
 
     //==============================================================================================
     //attached box

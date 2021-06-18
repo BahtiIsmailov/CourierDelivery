@@ -19,7 +19,7 @@ interface FlightDao {
 
     @Transaction
     @Query("SELECT * FROM FlightEntity")
-    fun observeFlight(): Flowable<FlightDataEntity>
+    fun observeFlightData(): Flowable<FlightDataEntity>
 
     @Query("SELECT * FROM FlightEntity")
     fun readFlight(): Single<FlightEntity>

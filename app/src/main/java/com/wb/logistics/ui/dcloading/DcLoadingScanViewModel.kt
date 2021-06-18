@@ -10,6 +10,7 @@ import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.ui.dcloading.domain.ScanBoxData
 import com.wb.logistics.ui.dcloading.domain.ScanProcessData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class DcLoadingScanViewModel(
@@ -42,15 +43,20 @@ class DcLoadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        addSubscription(interactor.observeScannedBoxes().subscribe {
-            boxStateUI.value = if (it.isEmpty()) DcLoadingScanBoxState.Empty
-            else {
-                val lastBox = it.last()
-                DcLoadingScanBoxState.BoxInit(
-                    it.size.toString(),
-                    lastBox.gate.toString(),
-                    lastBox.barcode)
-            }
+        addSubscription(Observable.zip(interactor.gate().toObservable(),
+            interactor.observeScannedBoxes(),
+            { gate, list ->
+                if (list.isEmpty()) DcLoadingScanBoxState.Empty
+                else {
+                    val lastBox = list.last()
+                    DcLoadingScanBoxState.BoxInit(
+                        list.size.toString(),
+                        gate,
+                        lastBox.barcode)
+                }
+
+            }).subscribe {
+            boxStateUI.value = it
         })
         addSubscription(interactor.observeScanProcess()
             .subscribe(

@@ -34,6 +34,10 @@ class FlightDeliveriesViewModel(
 
     private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
 
+    init {
+        addSubscription(interactor.updatePvzAttachedBoxes().subscribe({}, {}))
+    }
+
     fun update() {
         fetchFlightId()
         fetchAttachedBoxesGroupByOfficeId()

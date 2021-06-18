@@ -2,7 +2,6 @@ package com.wb.logistics.ui.flightloader.domain
 
 import androidx.navigation.NavDirections
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.FlightData
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
@@ -33,56 +32,47 @@ class FlightsLoaderInteractorImpl(
 
     override fun navigateTo(): Single<NavDirections> {
         return updateFlightAndTime()
-            .andThen(flightData())
-            .flatMap { saveBoxes(it) }
+            .andThen(appLocalRepository.readFlightId())
+            .flatMap { flightId ->
+                Completable.mergeArray(
+                    saveWarehouseMatchingBoxes(flightId),
+                    saveFlightBoxes(flightId))
+                    .toSingle { flightId }
+            }
             .flatMap { navDirection(it) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     private fun navDirection(flightId: String) = screenManager.navDirection(flightId)
 
-    private fun flightData() = appLocalRepository.observeFlight().firstOrError()
-
-    private fun saveBoxes(flightData: FlightData): Single<String> {
-        val flightId = flightData.flightId.toString()
-        return Completable.mergeArray(saveWarehouseMatchingBoxes(flightId), saveFlightBoxes(flightData))
-            .toSingle { flightId }
-    }
-
     private fun saveWarehouseMatchingBoxes(flightId: String): Completable {
         return appRemoteRepository.warehouseMatchingBoxes(flightId)
-            .flatMapCompletable { appLocalRepository.saveMatchingBoxes(it) }
+            .flatMapCompletable { appLocalRepository.saveWarehouseMatchingBoxes(it) }
     }
 
-    private fun saveFlightBoxes(flightData: FlightData): Completable {
-        return appRemoteRepository.flightBoxes(flightData.flightId.toString())
+    private fun saveFlightBoxes(flightId: String): Completable {
+        return appRemoteRepository.flightBoxes(flightId)
             .flatMapCompletable {
-                Completable.mergeArray(saveFlightBoxes(it),
-                    deleteAndUpdateAttachedBoxes(flightData.flightId, flightData.gate, it))
+                Completable.mergeArray(saveFlightBoxes(it), deleteAndUpdateAttachedBoxes(it))
             }
     }
 
     private fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>) =
         appLocalRepository.saveFlightBoxes(flightBoxesEntity)
 
-    private fun deleteAndUpdateAttachedBoxes(
-        flightId: Int,
-        gate: Int,
-        flightBoxesEntity: List<FlightBoxEntity>,
-    ): Completable {
+    private fun deleteAndUpdateAttachedBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
         appLocalRepository.deleteAllAttachedBox()
         return Observable.fromIterable(flightBoxesEntity)
             .filter { it.status == BoxStatus.TAKE_ON_FLIGHT.ordinal }
-            .map { convertToAttachedBox(it, flightId, gate) }
+            .map { convertToAttachedBox(it) }
             .toList()
             .flatMapCompletable { appLocalRepository.saveAttachedBoxes(it) }
     }
 
-    private fun convertToAttachedBox(flightBoxEntity: FlightBoxEntity, flightId: Int, gate: Int) =
+    private fun convertToAttachedBox(flightBoxEntity: FlightBoxEntity) =
         with(flightBoxEntity) {
-            AttachedBoxEntity(flightId = flightId,
+            AttachedBoxEntity(
                 barcode = flightBoxEntity.barcode,
-                gate = gate,
                 srcOffice = AttachedSrcOfficeEntity(
                     id = srcOffice.id,
                     name = srcOffice.name,

@@ -9,6 +9,7 @@ import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
@@ -26,6 +27,7 @@ class AppLocalRepositoryImpl(
     private val dcUnloadingBoxDao: DcUnloadingBoxDao,
     private val flightMatchingDao: FlightBoxDao,
     private val warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
+    private val pvzMatchingBoxDao: PvzMatchingBoxDao,
 ) : AppLocalRepository {
 
     override fun saveFlightAndOffices(
@@ -55,11 +57,11 @@ class AppLocalRepositoryImpl(
     }
 
     override fun observeFlightDataOptional(): Flowable<Optional<FlightData>> {
-        return flightDao.observeFlight().map { convertFlight(it) }
+        return flightDao.observeFlightData().map { convertFlight(it) }
     }
 
-    override fun observeFlight(): Flowable<FlightData> {
-        return flightDao.observeFlight().map { convertFlightData(it) }
+    override fun observeFlightData(): Flowable<FlightData> {
+        return flightDao.observeFlightData().map { convertFlightData(it) }
     }
 
     override fun readFlightOptional(): Single<Optional<FlightEntity>> {
@@ -70,6 +72,10 @@ class AppLocalRepositoryImpl(
 
     override fun readFlight(): Single<FlightEntity> {
         return flightDao.readFlight()
+    }
+
+    override fun readFlightId(): Single<String> {
+        return flightDao.readFlight().map { it.id.toString() }
     }
 
     override fun readFlightDataOptional(): Single<Optional<FlightData>> {
@@ -142,26 +148,53 @@ class AppLocalRepositoryImpl(
     }
 
     //==============================================================================================
-    override fun saveMatchingBoxes(matchingBoxes: List<WarehouseMatchingBoxEntity>): Completable {
-        return warehouseMatchingBoxDao.insertMatchingBoxes(matchingBoxes)
+    override fun saveWarehouseMatchingBoxes(warehouseMatchingBoxes: List<WarehouseMatchingBoxEntity>): Completable {
+        return warehouseMatchingBoxDao.insertMatchingBoxes(warehouseMatchingBoxes)
     }
 
-    override fun saveMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable {
-        return warehouseMatchingBoxDao.insertMatchingBox(matchingBox)
+    override fun saveWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable {
+        return warehouseMatchingBoxDao.insertMatchingBox(warehouseMatchingBox)
     }
 
-    override fun deleteMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable {
-        return warehouseMatchingBoxDao.deleteMatchingBox(matchingBox)
+    override fun deleteWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable {
+        return warehouseMatchingBoxDao.deleteMatchingBox(warehouseMatchingBox)
     }
 
-    override fun findMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>> {
+    override fun findWarehouseMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>> {
         return warehouseMatchingBoxDao.findMatchingBox(barcode)
             .map<Optional<WarehouseMatchingBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
-    override fun deleteAllMatchingBox() {
+    override fun deleteAllWarehouseMatchingBox() {
         warehouseMatchingBoxDao.deleteAllMatchingBox()
+    }
+
+    //==============================================================================================
+    override fun savePvzMatchingBoxes(pvzMatchingBoxes: List<PvzMatchingBoxEntity>): Completable {
+        return pvzMatchingBoxDao.insertBoxes(pvzMatchingBoxes)
+    }
+
+    override fun savePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable {
+        return pvzMatchingBoxDao.insertBox(pvzMatchingBox)
+    }
+
+    override fun readPvzMatchingBoxes(): Single<List<PvzMatchingBoxEntity>> {
+        return pvzMatchingBoxDao.readBoxes()
+    }
+
+    override fun deletePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable {
+        return pvzMatchingBoxDao.deleteBox(pvzMatchingBox)
+    }
+
+    override fun findPvzMatchingBox(barcode: String): Single<Optional<PvzMatchingBoxEntity>> {
+        return pvzMatchingBoxDao.findBox(barcode)
+            .map<Optional<PvzMatchingBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
+    }
+
+    override fun deleteAllPvzMatchingBox() {
+        pvzMatchingBoxDao.deleteAllBox()
     }
 
     //==============================================================================================

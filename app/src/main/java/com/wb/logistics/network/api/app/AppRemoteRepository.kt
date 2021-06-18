@@ -1,6 +1,7 @@
 package com.wb.logistics.network.api.app
 
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
@@ -16,6 +17,8 @@ interface AppRemoteRepository {
 
     fun warehouseMatchingBoxes(flightId: String): Single<List<WarehouseMatchingBoxEntity>>
 
+    fun pvzMatchingBoxes(flightId: String): Single<List<PvzMatchingBoxEntity>>
+
     fun boxInfo(barcode: String): Single<BoxInfoDataEntity>
 
     fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>>
@@ -30,6 +33,7 @@ interface AppRemoteRepository {
         currentOfficeId: Int,
     ): Completable
 
+    @Deprecated("")
     fun removeBoxFromFlight(
         flightId: String,
         barcode: String,
