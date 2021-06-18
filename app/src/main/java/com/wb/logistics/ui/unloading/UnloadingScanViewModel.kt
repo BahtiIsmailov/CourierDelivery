@@ -8,7 +8,6 @@ import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.utils.LogUtils
-import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class UnloadingScanViewModel(
@@ -16,7 +15,6 @@ class UnloadingScanViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: UnloadingScanResourceProvider,
     private val interactor: UnloadingInteractor,
-    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarBackState = MutableLiveData<BackButtonState>()
@@ -106,28 +104,30 @@ class UnloadingScanViewModel(
     }
 
     private fun observeUnloadedBoxes() {
-        addSubscription(interactor.observeUnloadedAndAttachedBoxes(parameters.dstOfficeId).subscribe({
-            val uploadedList = it.first
-            val listAttached = it.second
-            val accepted = "" + uploadedList.size + "/" + (listAttached.size + uploadedList.size)
+        addSubscription(interactor.observeUnloadedAndAttachedBoxes(parameters.dstOfficeId)
+            .subscribe({
+                val uploadedList = it.first
+                val listAttached = it.second
+                val accepted =
+                    "" + uploadedList.size + "/" + (listAttached.size + uploadedList.size)
 
-            if (uploadedList.isEmpty() && listAttached.isEmpty()) {
+                if (uploadedList.isEmpty() && listAttached.isEmpty()) {
+                    _unloadedState.value =
+                        UnloadingScanBoxState.UnloadedBoxesEmpty(accepted)
+                    return@subscribe
+                }
+                if (uploadedList.isEmpty()) {
+                    _unloadedState.value =
+                        UnloadingScanBoxState.UnloadedBoxesComplete(accepted)
+                    return@subscribe
+                }
+                // TODO: 28.04.2021 выключено до реализации события завершения выгрузки
+                _toolbarBackState.value = BackButtonState
                 _unloadedState.value =
-                    UnloadingScanBoxState.UnloadedBoxesEmpty(accepted)
-                return@subscribe
-            }
-            if (uploadedList.isEmpty()) {
-                _unloadedState.value =
-                    UnloadingScanBoxState.UnloadedBoxesComplete(accepted)
-                return@subscribe
-            }
-            // TODO: 28.04.2021 выключено до реализации события завершения выгрузки
-            _toolbarBackState.value = BackButtonState
-            _unloadedState.value =
-                UnloadingScanBoxState.UnloadedBoxesActive(accepted, uploadedList.last().barcode)
-        }, {
-            LogUtils { logDebugApp(it.toString()) }
-        }))
+                    UnloadingScanBoxState.UnloadedBoxesActive(accepted, uploadedList.last().barcode)
+            }, {
+                LogUtils { logDebugApp(it.toString()) }
+            }))
     }
 
     private fun observeReturnBoxes() {
@@ -140,8 +140,16 @@ class UnloadingScanViewModel(
     }
 
     fun update() {
-        _toolbarBackState.value = BackButtonState
-        _toolbarLabelState.value = Label("Address")
+        // TODO: 18.06.2021 реализовать логику отображения кнопки назад
+        //_toolbarBackState.value = BackButtonState
+        addSubscription(interactor.officeNameById(parameters.dstOfficeId).subscribe(
+            {
+                _toolbarLabelState.value = Label(it)
+            },
+            {
+                _toolbarLabelState.value =
+                    Label(resourceProvider.getOfficeEmpty(parameters.dstOfficeId))
+            }))
     }
 
     fun onBoxHandleInput(barcode: String) {

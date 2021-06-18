@@ -66,11 +66,7 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: UnloadingScanParameters) ->
-        UnloadingScanViewModel(parameters,
-            get(),
-            get(),
-            get(),
-            get())
+        UnloadingScanViewModel(parameters, get(), get(), get())
     }
 
     viewModel { (parameters: UnloadingBoxNotBelongParameters) ->

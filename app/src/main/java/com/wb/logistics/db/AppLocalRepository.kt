@@ -29,6 +29,8 @@ interface AppLocalRepository {
 
     fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>>
 
+    fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
+
     fun observeFlight(): Flowable<FlightData>
 
     fun observeFlightDataOptional(): Flowable<Optional<FlightData>>

@@ -14,4 +14,7 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getBoxNotBelongPointTitle(): String =
         context.getString(R.string.unloading_box_not_belong_dc_title)
 
+    fun getOfficeEmpty(officeId: Int): String =
+        context.getString(R.string.unloading_boxes_office_empty, officeId)
+
 }

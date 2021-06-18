@@ -257,6 +257,11 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
+    override fun officeNameById(dstOfficeId: Int): Single<String> {
+        return appLocalRepository.findFlightOffice(dstOfficeId).map { it.name }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
     private fun switchScreenInTransit(): Completable {
         return screenManager.saveState(FlightStatus.INTRANSIT)
     }

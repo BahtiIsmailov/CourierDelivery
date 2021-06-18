@@ -6,6 +6,7 @@ import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 
 interface UnloadingInteractor {
 
@@ -26,5 +27,7 @@ interface UnloadingInteractor {
     fun scannerAction(scannerAction: ScannerAction)
 
     fun completeUnloading(dstOfficeId: Int): Completable
+
+    fun officeNameById(dstOfficeId: Int): Single<String>
 
 }

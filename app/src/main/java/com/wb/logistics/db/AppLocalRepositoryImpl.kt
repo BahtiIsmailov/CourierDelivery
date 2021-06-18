@@ -50,6 +50,10 @@ class AppLocalRepositoryImpl(
             .onErrorReturn { Optional.Empty() }
     }
 
+    override fun findFlightOffice(id: Int): Single<FlightOfficeEntity> {
+        return flightDao.findFlightOffice(id)
+    }
+
     override fun observeFlightDataOptional(): Flowable<Optional<FlightData>> {
         return flightDao.observeFlight().map { convertFlight(it) }
     }
