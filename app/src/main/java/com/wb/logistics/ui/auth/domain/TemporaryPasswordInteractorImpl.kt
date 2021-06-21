@@ -33,7 +33,7 @@ class TemporaryPasswordInteractorImpl(
         this.durationTime = durationTime
         if (timerDisposable == null) {
             timerDisposable = Observable.interval(PERIOD, TimeUnit.MILLISECONDS)
-                .subscribe({ onTimeConfirmCode(it) }) { throwable: Throwable? -> }
+                .subscribe({ onTimeConfirmCode(it) }) { }
         }
     }
 

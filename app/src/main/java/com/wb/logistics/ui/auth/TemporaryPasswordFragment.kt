@@ -24,7 +24,7 @@ import com.wb.logistics.databinding.AuthTemporaryPasswordFragmentBinding
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

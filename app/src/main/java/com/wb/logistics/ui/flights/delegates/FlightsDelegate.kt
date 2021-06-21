@@ -60,9 +60,9 @@ class FlightsDelegate(context: Context) :
         }
 
         private fun initListener() {
-            binding.showRouteImage.setOnClickListener { v: View? ->
-                val animId =
-                    if (isViewExpanded) R.anim.rotate_center_top_to_bottom else R.anim.rotate_center_bottom_to_top
+            binding.showRouteImage.setOnClickListener {
+//                val animId =
+//                    if (isViewExpanded) R.anim.rotate_center_top_to_bottom else R.anim.rotate_center_bottom_to_top
                 val animationRotateCenter =
                     AnimationUtils.loadAnimation(context, R.anim.rotate_center_circle)
                 animationRotateCenter.fillAfter = true

@@ -10,6 +10,8 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusResponse
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateResponse
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateResponse
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import com.wb.logistics.network.api.app.remote.pvz.BoxFromPvzBalanceRequest
+import com.wb.logistics.network.api.app.remote.pvz.BoxFromPvzBalanceResponse
 import com.wb.logistics.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxesResponse
 import com.wb.logistics.network.api.app.remote.time.TimeResponse
 import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceRequest
@@ -24,7 +26,7 @@ import retrofit2.http.*
 interface AppApi {
 
     //==============================================================================================
-    //time
+    //flight
     //==============================================================================================
 
     @GET("{version}/flight")
@@ -60,6 +62,13 @@ interface AppApi {
         @Path("flightID") flightID: String,
     ): Single<FlightBoxesResponse>
 
+    @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes", hasBody = true)
+    fun removeBoxesFromFlight(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: RemoveBoxesFromFlightRequest,
+    ): Completable
+
     @Deprecated("")
     @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes/{barcode}", hasBody = true)
     fun removeBoxFromFlight(
@@ -69,23 +78,22 @@ interface AppApi {
         @Body box: RemoveBoxFromFlightRequest,
     ): Completable
 
-    @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes", hasBody = true)
-    fun removeBoxesFromFlight(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Body box: RemoveBoxesFromFlightRequest,
-    ): Completable
-
     //==============================================================================================
     //boxes pvz
     //==============================================================================================
-
     @POST("{version}/flights/{flightID}/pvz/scan")
     fun pvzBoxToBalance(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: FlightBoxToBalanceRequest,
     ): Completable
+
+    @PUT("{version}/flights/{flightID}/pvz/scan")
+    fun pvzBoxFromBalance(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("flightID") flightID: String,
+        @Body box: BoxFromPvzBalanceRequest,
+    ): Single<BoxFromPvzBalanceResponse>
 
     //==============================================================================================
     //boxes warehouse

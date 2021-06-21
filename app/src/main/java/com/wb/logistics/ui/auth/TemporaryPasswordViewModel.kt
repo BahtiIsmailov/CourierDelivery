@@ -57,14 +57,14 @@ class TemporaryPasswordViewModel(
     private fun subscribeTimer() {
         addSubscription(interactor.timer
             .subscribe({ onHandleSignUpState(it) })
-            { onHandleSignUpError(it) })
+            { onHandleSignUpError() })
     }
 
     private fun onHandleSignUpState(timerState: TimerState) {
         timerState.handle(this)
     }
 
-    private fun onHandleSignUpError(throwable: Throwable) {}
+    private fun onHandleSignUpError() {}
 
     private fun fetchInitTmpPassword() {
         addSubscription(

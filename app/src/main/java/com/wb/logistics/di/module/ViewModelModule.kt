@@ -90,6 +90,7 @@ val viewModelModule = module {
         UnloadingHandleViewModel(parameters,
             get(),
             get(),
+            get(),
             get())
     }
 

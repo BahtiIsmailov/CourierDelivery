@@ -5,18 +5,19 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.databinding.UnloadingHandleFragmentBinding
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -44,46 +45,32 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
         const val UNLOADING_HANDLE_KEY = "unloading_handle_key"
     }
 
-
-//    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-//        val dialog = super.onCreateDialog(savedInstanceState)
-//
-//        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-////        dialog.setOnShowListener {
-////            Handler().post {
-////                val bottomSheet =
-////                    (dialog as? BottomSheetDialog)?.findViewById<View>(R.id.design_bottom_sheet) as? FrameLayout
-////                bottomSheet?.let {
-////                    BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
-////                }
-////            }
-////        }
-//
-//        return dialog
-//    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         _binding = UnloadingHandleFragmentBinding.inflate(inflater, container, false)
+        dialog?.setOnShowListener {
+            val bottomSheetDialog = it as BottomSheetDialog
+            val bottomSheetInternal =
+                bottomSheetDialog.findViewById<View>(com.wb.logistics.R.id.design_bottom_sheet)
+            if (bottomSheetInternal != null) {
+                BottomSheetBehavior.from(bottomSheetInternal).state =
+                    BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO: 30.03.2021 реализовать отображение view на весь экран
-//        dialog?.setOnShowListener {
-//            val dialog = it as BottomSheetDialog
-//            val bottomSheet = dialog.findViewById<View>(android.support.design.R.id.design_bottom_sheet)
-//            bottomSheet?.let { sheet ->
-//                dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-//                sheet.parent.parent.requestLayout()
-//            }
-//        }
-        //onResult(RESULT_CANCELED, "")
         initListener()
         initStateObserve()
+        initKeyboard()
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.codeBox) }
     }
 
     private fun initBoxes(routeItems: List<String>) {
@@ -104,10 +91,10 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
                 }
                 is UnloadingHandleUIState.BoxesComplete -> {
                     initBoxes(state.boxes)
-                    binding.boxesLayout.visibility = VISIBLE
+                    //binding.boxesLayout.visibility = VISIBLE
                 }
                 UnloadingHandleUIState.BoxesEmpty -> {
-                    binding.boxesLayout.visibility = GONE
+                    //binding.boxesLayout.visibility = GONE
                 }
             }
         }
@@ -145,6 +132,10 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun getTheme(): Int {
+        return com.wb.logistics.R.style.HandleInputBottomSheetDialog
     }
 
 }

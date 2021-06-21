@@ -14,20 +14,25 @@ class UnloadingHandleViewModel(
     compositeDisposable: CompositeDisposable,
     private val rxSchedulerFactory: RxSchedulerFactory,
     interactor: UnloadingInteractor,
+    resourceProvider: UnloadingScanResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _stateUI = MutableLiveData<UnloadingHandleUIState<String>>()
-    val stateUI: LiveData<UnloadingHandleUIState<String>>
+    private val _stateUI = MutableLiveData<UnloadingHandleUIState>()
+    val stateUI: LiveData<UnloadingHandleUIState>
         get() = _stateUI
 
     init {
         addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
             .switchMap {
                 Observable.fromIterable(it.withIndex())
-                    .map {
-                        "" + (it.index + 1) + ". " + it.value.barcode.take(4) + "....." + it.value.barcode.takeLast(
-                            4)
-                    }.toList().toObservable()
+                    .map { box ->
+                        with(box) {
+                            resourceProvider.getHandleFormatBox(index + 1,
+                                value.barcode.take(4),
+                                value.barcode.takeLast(4))
+                        }
+                    }.toList()
+                    .toObservable()
             }
             .subscribe {
                 _stateUI.value = if (it.isEmpty()) UnloadingHandleUIState.BoxesEmpty

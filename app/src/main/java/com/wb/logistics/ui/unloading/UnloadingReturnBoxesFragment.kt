@@ -17,7 +17,7 @@ import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

@@ -25,7 +25,7 @@ import com.wb.logistics.ui.unloading.views.UnloadingAcceptedMode
 import com.wb.logistics.ui.unloading.views.UnloadingInfoMode
 import com.wb.logistics.ui.unloading.views.UnloadingReturnMode
 import com.wb.logistics.views.ProgressImageButtonMode
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

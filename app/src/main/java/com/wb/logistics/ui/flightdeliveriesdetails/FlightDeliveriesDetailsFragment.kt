@@ -17,7 +17,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsDelegate
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsTitleDelegate
 import com.wb.logistics.ui.splash.NavToolbarListener
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
