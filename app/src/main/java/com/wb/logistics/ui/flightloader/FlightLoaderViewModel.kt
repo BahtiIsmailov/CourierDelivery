@@ -7,6 +7,7 @@ import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightloader.domain.FlightsLoaderInteractor
+import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightLoaderViewModel(
@@ -35,7 +36,7 @@ class FlightLoaderViewModel(
         addSubscription(interactor.sessionInfo().subscribe({ _navHeader.value = it }, {}))
         addSubscription(interactor.navigateTo().subscribe(
             { navigateToOnComplete(it) },
-            { navigateToOnError() })
+            { navigateToOnError(it) })
         )
     }
 
@@ -44,7 +45,8 @@ class FlightLoaderViewModel(
         _navState.value = NavigateTo(navDirections)
     }
 
-    private fun navigateToOnError() {
+    private fun navigateToOnError(throwable: Throwable) {
+        LogUtils{logDebugApp(this.javaClass.name + " navigateToOnError " +  throwable.toString())}
         _countFlightsState.value = CountFlights(flightLoaderProvider.getEmptyFlight())
         _navState.value = NavigateTo(
             FlightLoaderFragmentDirections.actionFlightLoaderFragmentToFlightsEmptyFragment())
