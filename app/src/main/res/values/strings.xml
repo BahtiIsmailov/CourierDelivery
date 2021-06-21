@@ -26,6 +26,8 @@
     <string name="selector_title">Выбор</string>
 
     <string name="auth_load" />
+    <string name="unloading_empty_title" />
+
 
     <string name="inet_text">наличие интернета</string>
     <string name="inet_ok">Есть</string>
@@ -190,7 +192,7 @@
     <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
     <string name="unloading_handle_empty_list">Список пуст</string>
 
-    <string name="unloading_return_boxes_label">Возврат</string>
+    <string name="unloading_return_boxes_label">Взятые на возврат</string>
     <string name="unloading_return_dialog_title">Удалить возвратные коробки?</string>
     <string name="unloading_return_dialog_description">Убедитесь, что вы не забрали коробки в машину</string>
     <string name="unloading_return_dialog_positive_button">Удалить</string>

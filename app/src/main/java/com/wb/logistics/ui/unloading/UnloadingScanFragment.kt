@@ -51,8 +51,6 @@ class UnloadingScanFragment : Fragment() {
         initListener()
         initObserver()
 
-        viewModel.update()
-
         setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)

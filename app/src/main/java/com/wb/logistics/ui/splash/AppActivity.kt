@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.NavController.OnDestinationChangedListener
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -27,14 +30,17 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnUserInfo, NavDrawerListener, KeyboardListener {
+class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnUserInfo,
+    NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
 
     private lateinit var binding: SplashActivityBinding
     private lateinit var networkIcon: ImageView
 
+    private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var onDestinationChangedListener: OnDestinationChangedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -61,14 +67,27 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         binding.navView.itemIconTintList = null
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            updateTitle(destination.label.toString())
-        }
+
+        navController = navHostFragment.navController
+        onDestinationChangedListener =
+            OnDestinationChangedListener { navController: NavController, navDestination: NavDestination, bundle: Bundle? ->
+                when (navDestination.id) {
+                    R.id.unloadingScanFragment, R.id.unloadingHandleFragment -> ignoreChangeToolbar()
+                    else -> {
+                        updateTitle(navDestination.label.toString())
+                    }
+                }
+            }
+        navController.addOnDestinationChangedListener(onDestinationChangedListener)
+
         appBarConfiguration =
             AppBarConfiguration(setOf(R.id.flightsFragment, R.id.flightsEmptyFragment),
                 binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
+    }
+
+    private fun ignoreChangeToolbar() {
+
     }
 
     private fun initObserver() {

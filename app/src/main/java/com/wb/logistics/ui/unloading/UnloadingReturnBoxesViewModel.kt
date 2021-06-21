@@ -18,6 +18,10 @@ class UnloadingReturnBoxesViewModel(
     private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
 
+    private val _toolbarLabelState = MutableLiveData<Label>()
+    val toolbarLabelState: LiveData<Label>
+        get() = _toolbarLabelState
+
     private val _boxes = MutableLiveData<UnloadingReturnBoxesUIState<Nothing>>()
     val boxes: LiveData<UnloadingReturnBoxesUIState<Nothing>>
         get() = _boxes
@@ -130,5 +134,7 @@ class UnloadingReturnBoxesViewModel(
     object NavigateToBack
 
     data class NavigateToMessage(val message: String)
+
+    data class Label(val label: String)
 
 }

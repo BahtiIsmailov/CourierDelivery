@@ -62,6 +62,13 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    override fun onPause() {
+        super.onPause()
+        setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
+            bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
+        findNavController().navigateUp()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListener()
@@ -109,13 +116,13 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
         binding.close.setOnClickListener {
             setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
                 bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
-            findNavController().navigateUp()
+            dismiss()
         }
         viewModel.action(UnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
             setFragmentResult(UNLOADING_HANDLE_BARCODE_COMPLETE,
                 bundleOf(HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
-            findNavController().navigateUp()
+            dismiss()
         }
     }
 

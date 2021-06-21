@@ -54,8 +54,17 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
+        // TODO: 18.06.2021 реализовать логику отображения кнопки назад
+        //_toolbarBackState.value = BackButtonState
+        addSubscription(interactor.officeNameById(parameters.dstOfficeId).subscribe(
+            {
+                _toolbarLabelState.value = Label(it)
+            },
+            {
+                _toolbarLabelState.value =
+                    Label(resourceProvider.getOfficeEmpty(parameters.dstOfficeId))
+            }))
 
-        //pvzMatchingBoxes
         observeScanProcess()
         observeUnloadedBoxes()
         observeReturnBoxes()
@@ -100,6 +109,7 @@ class UnloadingScanViewModel(
 
                 UnloadingData.Empty -> {
                 }
+                is UnloadingData.BoxSaveRemoteError -> TODO()
             }
 
         })
@@ -141,18 +151,9 @@ class UnloadingScanViewModel(
         })
     }
 
-    fun update() {
-        // TODO: 18.06.2021 реализовать логику отображения кнопки назад
-        //_toolbarBackState.value = BackButtonState
-        addSubscription(interactor.officeNameById(parameters.dstOfficeId).subscribe(
-            {
-                _toolbarLabelState.value = Label(it)
-            },
-            {
-                _toolbarLabelState.value =
-                    Label(resourceProvider.getOfficeEmpty(parameters.dstOfficeId))
-            }))
-    }
+//    fun update() {
+//
+//    }
 
     fun onBoxHandleInput(barcode: String) {
         interactor.barcodeManualInput(barcode.replace("-", ""))

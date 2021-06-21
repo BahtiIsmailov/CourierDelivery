@@ -8,15 +8,16 @@
     android:background="@color/delivery_flight_background"
     tools:context=".ui.flights.FlightsFragment">
 
-    <fragment class="com.wb.logistics.ui.scanner.ScannerFragment"
+    <fragment
         android:id="@+id/scanner"
+        class="com.wb.logistics.ui.scanner.ScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/guideline_center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/scanner_fragment"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/scanner_fragment" />
 
     <ImageView
         android:layout_width="match_parent"
@@ -82,7 +83,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/guideline_center_vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
+        app:layout_constraintTop_toTopOf="@+id/divider1" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#DBD7E0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline_button" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/complete"
@@ -99,16 +109,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
-
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="#DBD7E0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
+        app:layout_constraintTop_toTopOf="@+id/guideline_button" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/section_button"
@@ -136,7 +137,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.500684" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_center_info"
