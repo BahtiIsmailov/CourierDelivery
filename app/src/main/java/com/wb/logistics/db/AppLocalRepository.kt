@@ -158,6 +158,8 @@ interface AppLocalRepository {
 
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
+    fun deleteReturnBoxes(returnBoxesEntity: List<ReturnBoxEntity>): Completable
+
     fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
 
     fun deleteAllReturnBox()

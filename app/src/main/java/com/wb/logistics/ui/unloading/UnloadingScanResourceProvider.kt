@@ -20,4 +20,16 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getHandleFormatBox(index: Int, suffix: String, postfix: String) =
         context.getString(R.string.unloading_handle_box_format, index, suffix, postfix)
 
+    fun getAlreadyReturned(barcode: String) =
+        context.getString(R.string.unloading_box_already_returned, barcode)
+
+    fun getAlreadyDelivery(barcode: String) =
+        context.getString(R.string.unloading_box_already_delivery, barcode)
+
+    fun getReturned(barcode: String) =
+        context.getString(R.string.unloading_box_returned, barcode)
+
+    fun getDelivered(barcode: String) =
+        context.getString(R.string.unloading_box_delivered, barcode)
+
 }

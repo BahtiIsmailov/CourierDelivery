@@ -1,54 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/box_layout"
-    android:layout_width="wrap_content"
+    android:id="@+id/route_legend_layout"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:paddingStart="16dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
     <TextView
-        android:id="@+id/number"
-        style="@style/SmallRegularLightText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/box"
-        android:layout_alignBottom="@+id/box"
-        android:gravity="center_vertical"
-        tools:text="1." />
-
-    <TextView
-        android:id="@+id/box"
+        android:id="@+id/barcode"
         style="@style/SMediumRegularDarkText"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/checked"
-        android:layout_toEndOf="@+id/number"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        tools:text="TRBX994827463" />
-
-    <TextView
-        android:id="@+id/address"
-        style="@style/SmallRegularLightText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/box"
-        android:layout_toStartOf="@+id/checked"
-        android:layout_toEndOf="@+id/number"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        tools:text="23.04.2021•20:00" />
-
-    <CheckBox
-        android:id="@+id/checked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/box"
-        android:layout_alignBottom="@+id/address"
-        android:layout_alignParentEnd="true" />
+        android:layout_marginStart="10dp"
+        tools:text="1. TRBX113256565" />
 
 </RelativeLayout>

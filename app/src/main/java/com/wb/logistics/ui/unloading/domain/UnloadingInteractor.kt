@@ -10,11 +10,13 @@ import io.reactivex.Single
 
 interface UnloadingInteractor {
 
-    fun removeReturnBoxes(checkedBoxes: List<String>): Completable
+    fun removeReturnBoxes(dstOfficeId: Int, checkedBoxes: List<String>): Completable
 
     fun barcodeManualInput(barcode: String)
 
     fun observeScanProcess(dstOfficeId: Int): Observable<UnloadingData>
+
+    fun observeCountUnloadReturnedBox(dstOfficeId: Int): Observable<Int>
 
     fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>>
 

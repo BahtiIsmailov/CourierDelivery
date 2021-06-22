@@ -29,18 +29,7 @@ class FlightsViewModel(
                 FlightsUINavState.NavigateToReturnBalanceDialog
             is FlightsUIAction.ContinueAcceptanceClick ->
                 FlightsUINavState.NavigateToReceptionBox
-            FlightsUIAction.RemoveBoxesClick ->
-                addSubscription(interactor.deleteFlightBoxes()
-                    .subscribe({ removeFlightBoxesComplete() }, { removeFlightBoxesError(it) }))
         }
-    }
-
-    private fun removeFlightBoxesComplete() {
-        // TODO: 09.04.2021 реализовать
-    }
-
-    private fun removeFlightBoxesError(throwable: Throwable) {
-        // TODO: 09.04.2021 реализовать
     }
 
     fun update() {

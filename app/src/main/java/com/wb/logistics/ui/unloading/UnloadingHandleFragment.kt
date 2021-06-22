@@ -81,7 +81,7 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
     }
 
     private fun initBoxes(routeItems: List<String>) {
-        val chartLegendAdapter = UnloadingBoxesAdapter(requireContext(), routeItems)
+        val chartLegendAdapter = UnloadingHandleAdapter(requireContext(), routeItems)
         binding.boxes.adapter = chartLegendAdapter
     }
 

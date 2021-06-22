@@ -10,7 +10,7 @@ interface DcLoadingInteractor {
 
     fun boxScanned(barcode: String, isManualInput: Boolean)
 
-    fun deleteScannedBoxes(checkedBoxes: List<String>): Completable
+    fun removeScannedBoxes(checkedBoxes: List<String>): Completable
 
     fun observeScanProcess(): Observable<ScanProcessData>
 

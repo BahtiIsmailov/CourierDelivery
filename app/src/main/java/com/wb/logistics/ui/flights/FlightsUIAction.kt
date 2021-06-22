@@ -7,6 +7,5 @@ sealed class FlightsUIAction {
     object ReceptionBoxesClick : FlightsUIAction()
     object ReturnToBalanceClick : FlightsUIAction()
     object ContinueAcceptanceClick : FlightsUIAction()
-    object RemoveBoxesClick : FlightsUIAction()
 
 }

@@ -19,7 +19,7 @@
             android:layout_height="0dp"
             android:divider="@drawable/divider_line"
             android:dividerHeight="1dp"
-            tools:listitem="@layout/dc_unloading_boxes_legend" />
+            tools:listitem="@layout/dc_unloading_boxes_item_layout" />
 
     </ScrollView>
 

@@ -2,7 +2,6 @@ package com.wb.logistics.network.api.app
 
 import com.wb.logistics.network.api.app.remote.boxinfo.BoxInfoResponse
 import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
-import com.wb.logistics.network.api.app.remote.deleteboxfromflight.RemoveBoxFromFlightRequest
 import com.wb.logistics.network.api.app.remote.flight.FlightResponse
 import com.wb.logistics.network.api.app.remote.flightboxes.FlightBoxesResponse
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceRequest
@@ -67,15 +66,6 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: RemoveBoxesFromFlightRequest,
-    ): Completable
-
-    @Deprecated("")
-    @HTTP(method = "DELETE", path = "{version}/flights/{flightID}/boxes/{barcode}", hasBody = true)
-    fun removeBoxFromFlight(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("flightID") flightID: String,
-        @Path("barcode") barcode: String,
-        @Body box: RemoveBoxFromFlightRequest,
     ): Completable
 
     //==============================================================================================

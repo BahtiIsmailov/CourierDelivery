@@ -1,13 +1,17 @@
 package com.wb.logistics.ui.unloading
 
-sealed class UnloadingReturnBoxesUIState<out R> {
+sealed class UnloadingReturnBoxesUIState {
 
-    data class ReceptionBoxesItem(val items : List<UnloadingReturnBoxesItem>) : UnloadingReturnBoxesUIState<Nothing>()
+    data class ReceptionBoxesItem(val items: MutableList<UnloadingReturnBoxesItem>) :
+        UnloadingReturnBoxesUIState()
 
-    object Empty : UnloadingReturnBoxesUIState<Nothing>()
+    data class ReceptionBoxItem(val index: Int, val item: UnloadingReturnBoxesItem) :
+        UnloadingReturnBoxesUIState()
 
-    object Progress : UnloadingReturnBoxesUIState<Nothing>()
+    object Empty : UnloadingReturnBoxesUIState()
 
-    object ProgressComplete : UnloadingReturnBoxesUIState<Nothing>()
+    object Progress : UnloadingReturnBoxesUIState()
+
+    object ProgressComplete : UnloadingReturnBoxesUIState()
 
 }

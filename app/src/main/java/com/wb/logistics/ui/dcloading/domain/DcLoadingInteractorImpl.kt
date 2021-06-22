@@ -235,7 +235,7 @@ class DcLoadingInteractorImpl(
             updatedAt = updatedAt)
     }
 
-    override fun deleteScannedBoxes(checkedBoxes: List<String>): Completable {
+    override fun removeScannedBoxes(checkedBoxes: List<String>): Completable {
         return flight().flatMapCompletable { removeBoxes(it, checkedBoxes) }
             .andThen(appLocalRepository.findAttachedBoxes(checkedBoxes))
             .flatMap { appLocalRepository.deleteAttachedBoxes(it).andThen(Single.just(it)) }

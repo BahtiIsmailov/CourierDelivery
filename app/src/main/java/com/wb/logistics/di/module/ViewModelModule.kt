@@ -84,6 +84,7 @@ val viewModelModule = module {
         UnloadingReturnBoxesViewModel(parameters,
             get(),
             get(),
+            get(),
             get())
     }
     viewModel { (parameters: UnloadingHandleParameters) ->

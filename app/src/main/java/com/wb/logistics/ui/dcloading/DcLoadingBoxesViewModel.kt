@@ -73,26 +73,24 @@ class DcLoadingBoxesViewModel(
         _boxes.value = DcLoadingBoxesUIState.Progress
         val dcLoadingBoxes =
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
-        addSubscription(receptionInteractor.deleteScannedBoxes(dcLoadingBoxes)
+        addSubscription(receptionInteractor.removeScannedBoxes(dcLoadingBoxes)
             .subscribe(
-                { deleteScannedBoxesComplete() },
-                { deleteScannedBoxesError(it, dcLoadingBoxes.size) }
+                { removeScannedBoxesComplete() },
+                { removeScannedBoxesError(it) }
             )
         )
     }
 
-    private fun deleteScannedBoxesComplete() {
+    private fun removeScannedBoxesComplete() {
         _boxes.value = DcLoadingBoxesUIState.ProgressComplete
         _navigateToBack.value = NavigateToBack
     }
 
-    private fun deleteScannedBoxesError(throwable: Throwable, countBox: Int) {
+    private fun removeScannedBoxesError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message
-            else ->
-                if (countBox > 1) resourceProvider.getBoxesDialogMessage()
-                else resourceProvider.getBoxDialogMessage()
+            else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getBoxDialogTitle(),

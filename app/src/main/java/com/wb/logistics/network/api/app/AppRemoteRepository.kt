@@ -33,15 +33,6 @@ interface AppRemoteRepository {
         currentOfficeId: Int,
     ): Completable
 
-    @Deprecated("")
-    fun removeBoxFromFlight(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        officeId: Int,
-    ): Completable
-
     fun removeBoxesFromFlight(
         flightId: String,
         isManualInput: Boolean,

@@ -120,7 +120,7 @@ class FlightsFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == RETURN_BALANCE_REQUEST_CODE) {
-            viewModel.action(FlightsUIAction.RemoveBoxesClick)
+            //viewModel.action(FlightsUIAction.RemoveBoxesClick)
         }
     }
 

@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.wb.logistics.databinding.UnloadingBoxesFragmentBinding
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,6 +24,10 @@ class UnloadingBoxesFragment : Fragment() {
     private var _binding: UnloadingBoxesFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var adapter: UnloadingBoxesAdapter
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var smoothScroller: RecyclerView.SmoothScroller
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -31,12 +38,29 @@ class UnloadingBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRecyclerView()
         initObserver()
+        initListener()
     }
 
-    private fun initBoxes(routeItems: List<String>) {
-        val chartLegendAdapter = UnloadingBoxesAdapter(requireContext(), routeItems)
-        binding.boxes.adapter = chartLegendAdapter
+    private fun initBoxes(routeItems: MutableList<String>) {
+        adapter = UnloadingBoxesAdapter(requireContext(), routeItems)
+        binding.boxes.adapter = adapter
+    }
+
+    private fun initRecyclerView() {
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.boxes.layoutManager = layoutManager
+        binding.boxes.setHasFixedSize(true)
+        initSmoothScroller()
+    }
+
+    private fun initSmoothScroller() {
+        smoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+        }
     }
 
     private fun initObserver() {
@@ -44,17 +68,16 @@ class UnloadingBoxesFragment : Fragment() {
         viewModel.boxesState.observe(viewLifecycleOwner) {
             when (it) {
                 is UnloadingBoxesState.BoxesComplete -> initBoxes(it.boxes)
-                UnloadingBoxesState.BoxesEmpty -> TODO()
             }
         }
 
         viewModel.navigateToBack.observe(viewLifecycleOwner) {
             findNavController().popBackStack()
         }
+    }
 
-        binding.complete.setOnClickListener {
-            viewModel.onCompleteClick()
-        }
+    private fun initListener() {
+        binding.complete.setOnClickListener { viewModel.onCompleteClick() }
     }
 
     override fun onDestroyView() {

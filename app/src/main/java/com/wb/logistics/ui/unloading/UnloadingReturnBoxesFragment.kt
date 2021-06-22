@@ -11,11 +11,14 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingReturnBoxesFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
-import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -31,6 +34,10 @@ class UnloadingReturnBoxesFragment : Fragment() {
     private var _binding: UnloadingReturnBoxesFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var adapter: UnloadingReturnBoxesAdapter
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var smoothScroller: RecyclerView.SmoothScroller
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -41,8 +48,26 @@ class UnloadingReturnBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRecyclerView()
         initObserver()
         initListener()
+    }
+
+    private fun initRecyclerView() {
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.boxes.layoutManager = layoutManager
+        binding.boxes.addItemDecoration(DividerItemDecoration(activity,
+            DividerItemDecoration.VERTICAL))
+        binding.boxes.setHasFixedSize(true)
+        initSmoothScroller()
+    }
+
+    private fun initSmoothScroller() {
+        smoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+        }
     }
 
     private fun initListener() {
@@ -51,17 +76,9 @@ class UnloadingReturnBoxesFragment : Fragment() {
 
     private fun initObserver() {
 
-        // TODO: 29.04.2021 отладочный код
         viewModel.navigateToMessage.observe(viewLifecycleOwner) {
-            val dialog = InformationDialogFragment.newInstance(
-                "Log remove boxing",
-                it.message,
-                "Ok"
-            )
-            dialog.setTargetFragment(this, 10101)
-            dialog.show(parentFragmentManager, "START_DELIVERY_TAG")
-
-            (activity as NavToolbarListener).updateTitle("Возврат")
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
         }
 
         viewModel.boxes.observe(viewLifecycleOwner) {
@@ -70,10 +87,12 @@ class UnloadingReturnBoxesFragment : Fragment() {
                     binding.emptyList.visibility = GONE
                     binding.boxes.visibility = VISIBLE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
-                    val adapter =
-                        UnloadingReturnBoxesAdapter(
-                            requireContext(), it.items
-                        ) { index, isChecked -> viewModel.onItemClick(index, isChecked) }
+                    val callback = object : UnloadingReturnBoxesAdapter.OnItemClickCallBack {
+                        override fun onItemClick(index: Int, isChecked: Boolean) {
+                            viewModel.onItemClick(index, isChecked)
+                        }
+                    }
+                    adapter = UnloadingReturnBoxesAdapter(requireContext(), it.items, callback)
                     binding.boxes.adapter = adapter
                 }
                 UnloadingReturnBoxesUIState.Empty -> {
@@ -81,10 +100,18 @@ class UnloadingReturnBoxesFragment : Fragment() {
                     binding.boxes.visibility = GONE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
                 }
-                UnloadingReturnBoxesUIState.Progress ->
+                UnloadingReturnBoxesUIState.Progress -> {
+                    binding.overlayBoxes.visibility = VISIBLE
                     binding.remove.setState(ProgressImageButtonMode.PROGRESS)
-                UnloadingReturnBoxesUIState.ProgressComplete ->
+                }
+                UnloadingReturnBoxesUIState.ProgressComplete -> {
+                    binding.overlayBoxes.visibility = GONE
                     binding.remove.setState(ProgressImageButtonMode.DISABLED)
+                }
+                is UnloadingReturnBoxesUIState.ReceptionBoxItem -> {
+                    adapter.setItem(it.index, it.item)
+                    adapter.notifyItemChanged(it.index, it.item)
+                }
             }
         }
 

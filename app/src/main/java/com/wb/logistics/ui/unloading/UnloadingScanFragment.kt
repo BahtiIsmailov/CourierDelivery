@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -111,8 +112,8 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingScanMessageEvent.BoxAdded -> showToastBoxAdded(state.message)
-                is UnloadingScanMessageEvent.BoxHasBeenAdded -> showToastBoxHasBeenAdded(state.message)
+                is UnloadingScanMessageEvent.BoxDelivery -> showToastBoxDelivery(state.message)
+                is UnloadingScanMessageEvent.BoxReturned -> showToastBoxReturned(state.message)
             }
         }
 
@@ -163,10 +164,12 @@ class UnloadingScanFragment : Fragment() {
 
     }
 
-    private fun showToastBoxAdded(message: String) {
+    private fun showToastBoxDelivery(message: String) {
         val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
         val layout: ViewGroup =
             layoutInflater.inflate(R.layout.dc_loading_added_box_toast, container) as ViewGroup
+        val icon: ImageView = layout.findViewById(R.id.icon)
+        icon.setImageResource(R.drawable.ic_box_unloading_delivery)
         val text: TextView = layout.findViewById(R.id.text)
         text.text = message
         with(Toast(context)) {
@@ -177,11 +180,13 @@ class UnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showToastBoxHasBeenAdded(message: String) {
+    private fun showToastBoxReturned(message: String) {
         val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
         val layout: ViewGroup =
             layoutInflater.inflate(R.layout.dc_loading_has_been_added_box_toast,
                 container) as ViewGroup
+        val icon: ImageView = layout.findViewById(R.id.icon)
+        icon.setImageResource(R.drawable.ic_box_unloading_return)
         val text: TextView = layout.findViewById(R.id.text)
         text.text = message
         with(Toast(context)) {

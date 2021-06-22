@@ -343,6 +343,10 @@ class AppLocalRepositoryImpl(
         return returnBoxDao.deleteReturnBox(returnBoxEntity)
     }
 
+    override fun deleteReturnBoxes(returnBoxesEntity: List<ReturnBoxEntity>): Completable {
+        return returnBoxDao.deleteReturnBoxes(returnBoxesEntity)
+    }
+
     override fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>> {
         return returnBoxDao.groupByDstAddressReturnBox(dstOfficeId)
     }

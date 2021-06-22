@@ -7,16 +7,17 @@
     android:layout_height="match_parent"
     android:background="@color/delivery_background">
 
-    <com.wb.logistics.views.WrapContentListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/boxes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
+        android:clipToPadding="false"
         android:divider="@drawable/divider_line"
         android:dividerHeight="1dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_button"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/unloading_boxes_legend" />
+        tools:listitem="@layout/unloading_boxes_item_layout" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/complete"

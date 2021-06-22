@@ -19,8 +19,6 @@ import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanSrcOff
 import com.wb.logistics.network.api.app.remote.boxinfo.*
 import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
 import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
-import com.wb.logistics.network.api.app.remote.deleteboxfromflight.DeleteBoxCurrentOfficeRemote
-import com.wb.logistics.network.api.app.remote.deleteboxfromflight.RemoveBoxFromFlightRequest
 import com.wb.logistics.network.api.app.remote.flight.*
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceCurrentOfficeRequest
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceRequest
@@ -135,21 +133,6 @@ class AppRemoteRepositoryImpl(
                 isManualInput,
                 updatedAt,
                 FlightBoxToBalanceCurrentOfficeRequest(currentOfficeId)))
-    }
-
-    override fun removeBoxFromFlight(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        officeId: Int,
-    ): Completable {
-        return remote.removeBoxFromFlight(token(), flightId,
-            barcode,
-            RemoveBoxFromFlightRequest(isManualInput,
-                updatedAt,
-                DeleteBoxCurrentOfficeRemote(officeId)))
-            .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
     override fun removeBoxesFromFlight(

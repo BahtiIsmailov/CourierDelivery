@@ -3,6 +3,7 @@ package com.wb.logistics.ui.unloading.domain
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
 import com.wb.logistics.db.entity.returnboxes.ReturnCurrentOfficeEntity
 import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
@@ -121,6 +122,16 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
+    override fun observeCountUnloadReturnedBox(dstOfficeId: Int): Observable<Int> {
+        return Flowable.zip(
+            appLocalRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
+            appLocalRepository.observedReturnBoxesByDstOfficeId(dstOfficeId),
+            { unloadedBoxes, returnBoxes -> unloadedBoxes.size + returnBoxes.size })
+            .toObservable()
+            .filter { it > 0 }
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
     private fun pvzBoxToBalanceRemote(
         flightId: String,
         barcode: String,
@@ -160,29 +171,19 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun removeReturnBoxes(checkedBoxes: List<String>): Completable {
-        return appLocalRepository.findReturnBoxes(checkedBoxes)
-            .flatMapCompletable { returnBoxes ->
-                Observable.fromIterable(returnBoxes)
-                    .flatMapCompletable {
-                        removeReturnBoxRemote(it).andThen(deleteReturnBox(it))
-                    }
-            }.compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override fun removeReturnBoxes(dstOfficeId: Int, checkedBoxes: List<String>): Completable {
+        return flight().flatMapCompletable { removeBoxes(it, dstOfficeId, checkedBoxes) }
+            .andThen(appLocalRepository.findReturnBoxes(checkedBoxes))
+            .flatMapCompletable { appLocalRepository.deleteReturnBoxes(it) }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun removeReturnBoxRemote(returnBoxEntity: ReturnBoxEntity) =
-        with(returnBoxEntity) {
-            appRemoteRepository.removeBoxFromFlight(
-                flightId.toString(),
-                barcode,
-                isManualInput,
-                updatedAt,
-                currentOffice.id)
-                .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
-        }
-
-    private fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity) =
-        appLocalRepository.deleteReturnBox(returnBoxEntity).onErrorComplete()
+    private fun removeBoxes(flightEntity: FlightEntity, dstOfficeId: Int, checkedBoxes: List<String>) =
+        appRemoteRepository.removeBoxesFromFlight(flightEntity.id.toString(),
+            false,
+            timeManager.getOffsetLocalTime(),
+            dstOfficeId,
+            checkedBoxes)
 
     private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
         val barcode = param.first

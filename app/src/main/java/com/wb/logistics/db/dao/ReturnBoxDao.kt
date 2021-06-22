@@ -25,6 +25,9 @@ interface ReturnBoxDao {
     @Delete
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
+    @Delete
+    fun deleteReturnBoxes(returnBoxesEntity: List<ReturnBoxEntity>): Completable
+
     @Query("SELECT barcode AS barcode, updatedAt AS updatedAt, (SELECT fullAddress FROM FlightOfficeEntity WHERE ReturnBoxEntity.current_office_id = FlightOfficeEntity.office_id) AS address FROM ReturnBoxEntity WHERE current_office_id = :dstOfficeId")
     fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
 

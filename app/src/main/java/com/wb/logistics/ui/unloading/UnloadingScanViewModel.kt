@@ -17,8 +17,8 @@ class UnloadingScanViewModel(
     private val interactor: UnloadingInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _toolbarBackState = MutableLiveData<BackButtonState>()
-    val toolbarBackState: LiveData<BackButtonState>
+    private val _toolbarBackState = MutableLiveData<HideBackButtonState>()
+    val toolbarBackState: LiveData<HideBackButtonState>
         get() = _toolbarBackState
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -54,8 +54,19 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        // TODO: 18.06.2021 реализовать логику отображения кнопки назад
-        //_toolbarBackState.value = BackButtonState
+        initTitleToolbar()
+        observeBackButton()
+        observeScanProcess()
+        observeUnloadedBoxes()
+        observeReturnBoxes()
+    }
+
+    private fun observeBackButton() {
+        addSubscription(interactor.observeCountUnloadReturnedBox(parameters.dstOfficeId)
+            .subscribe({ _toolbarBackState.value = HideBackButtonState }, {}))
+    }
+
+    private fun initTitleToolbar() {
         addSubscription(interactor.officeNameById(parameters.dstOfficeId).subscribe(
             {
                 _toolbarLabelState.value = Label(it)
@@ -64,10 +75,6 @@ class UnloadingScanViewModel(
                 _toolbarLabelState.value =
                     Label(resourceProvider.getOfficeEmpty(parameters.dstOfficeId))
             }))
-
-        observeScanProcess()
-        observeUnloadedBoxes()
-        observeReturnBoxes()
     }
 
     private fun observeScanProcess() {
@@ -75,25 +82,27 @@ class UnloadingScanViewModel(
             when (it) {
                 is UnloadingData.BoxAlreadyUnloaded -> {
                     _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxHasBeenAdded("Коробка ${it.barcode} уже выгружена")
+                        UnloadingScanMessageEvent.BoxDelivery(
+                            resourceProvider.getAlreadyDelivery(it.barcode))
                     _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
                 }
 
                 is UnloadingData.BoxAlreadyReturn -> {
                     _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxHasBeenAdded("Коробка ${it.barcode}\nуже добавлена к возврату")
+                        UnloadingScanMessageEvent.BoxReturned(
+                            resourceProvider.getAlreadyReturned(it.barcode))
                     _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
                 }
 
                 is UnloadingData.BoxUnloadAdded -> {
                     _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxAdded("Коробка ${it.barcode}\nготова к выгрузке")
+                        UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
                     _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
                 }
 
                 is UnloadingData.BoxReturnAdded -> {
                     _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxAdded("Коробка ${it.barcode}\nготова к возврату")
+                        UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
                     _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
                 }
 
@@ -109,7 +118,8 @@ class UnloadingScanViewModel(
 
                 UnloadingData.Empty -> {
                 }
-                is UnloadingData.BoxSaveRemoteError -> TODO()
+                is UnloadingData.BoxSaveRemoteError -> {
+                }
             }
 
         })
@@ -119,11 +129,11 @@ class UnloadingScanViewModel(
         addSubscription(interactor.observeUnloadedAndAttachedBoxes(parameters.dstOfficeId)
             .subscribe({
                 val uploadedList = it.first
-                val listAttached = it.second
+                val attachedList = it.second
                 val accepted =
-                    "" + uploadedList.size + "/" + (listAttached.size + uploadedList.size)
+                    "" + uploadedList.size + "/" + (attachedList.size + uploadedList.size)
 
-                if (uploadedList.isEmpty() && listAttached.isEmpty()) {
+                if (uploadedList.isEmpty() && attachedList.isEmpty()) {
                     _unloadedState.value =
                         UnloadingScanBoxState.UnloadedBoxesEmpty(accepted)
                     return@subscribe
@@ -134,7 +144,7 @@ class UnloadingScanViewModel(
                     return@subscribe
                 }
                 // TODO: 28.04.2021 выключено до реализации события завершения выгрузки
-                _toolbarBackState.value = BackButtonState
+
                 _unloadedState.value =
                     UnloadingScanBoxState.UnloadedBoxesActive(accepted, uploadedList.last().barcode)
             }, {
@@ -150,10 +160,6 @@ class UnloadingScanViewModel(
                     UnloadingReturnState.ReturnBoxesComplete(it.size.toString(), it.last().barcode)
         })
     }
-
-//    fun update() {
-//
-//    }
 
     fun onBoxHandleInput(barcode: String) {
         interactor.barcodeManualInput(barcode.replace("-", ""))
@@ -193,10 +199,11 @@ class UnloadingScanViewModel(
     }
 
     fun onStartScanner() {
+        observeBackButton()
         interactor.scannerAction(ScannerAction.Start)
     }
 
-    object BackButtonState
+    object HideBackButtonState
 
     data class Label(val label: String)
 
