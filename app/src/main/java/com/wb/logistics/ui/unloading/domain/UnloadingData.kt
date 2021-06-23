@@ -10,10 +10,10 @@ sealed class UnloadingData {
 
     data class BoxReturnAdded(val barcode: String) : UnloadingData()
 
-    data class BoxDoesNotBelongPoint(val barcode: String, val address: String) : UnloadingData()
+    data class BoxDoesNotBelongPvz(val barcode: String, val address: String) : UnloadingData()
 
     data class BoxSaveRemoteError(val message: String) : UnloadingData()
 
-    object Empty : UnloadingData()
+    data class BoxEmptyInfo(val barcode: String) : UnloadingData()
 
 }

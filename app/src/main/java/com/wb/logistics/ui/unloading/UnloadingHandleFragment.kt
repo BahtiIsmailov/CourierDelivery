@@ -1,27 +1,29 @@
 package com.wb.logistics.ui.unloading
 
-import android.R
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jakewharton.rxbinding3.widget.textChanges
+import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingHandleFragmentBinding
+import com.wb.logistics.ui.splash.KeyboardListener
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class UnloadingHandleFragment : BottomSheetDialogFragment() {
+class UnloadingHandleFragment : Fragment() {
 
     private val viewModel by viewModel<UnloadingHandleViewModel> {
         parametersOf(requireArguments().getParcelable<UnloadingHandleParameters>(
@@ -36,8 +38,8 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
             return UnloadingHandleFragment()
         }
 
-        const val UNLOADING_HANDLE_BARCODE_CANCEL = "UNLOADING_HANDLE_BARCODE_RESULT1"
-        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
+        //      const val UNLOADING_HANDLE_BARCODE_CANCEL = "UNLOADING_HANDLE_BARCODE_RESULT1"
+//        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
 
         const val UNLOADING_HANDLE_BARCODE_COMPLETE = "UNLOADING_HANDLE_BARCODE_RESULT2"
         const val HANDLE_BARCODE_COMPLETE_KEY = "HANDLE_BARCODE_COMPLETE_KEY"
@@ -50,34 +52,27 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = UnloadingHandleFragmentBinding.inflate(inflater, container, false)
-        dialog?.setOnShowListener {
-            val bottomSheetDialog = it as BottomSheetDialog
-            val bottomSheetInternal =
-                bottomSheetDialog.findViewById<View>(com.wb.logistics.R.id.design_bottom_sheet)
-            if (bottomSheetInternal != null) {
-                BottomSheetBehavior.from(bottomSheetInternal).state =
-                    BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
         return binding.root
     }
 
-    override fun onPause() {
-        super.onPause()
-        setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
-            bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
-        findNavController().navigateUp()
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
+//            bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
+//        findNavController().navigateUp()
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initListener()
         initStateObserve()
         initKeyboard()
     }
 
-    private fun initKeyboard() {
-        activity?.let { SoftKeyboard.showKeyboard(it, binding.codeBox) }
+    private fun initView() {
+        (activity as NavToolbarListener).backButtonIcon(R.drawable.ic_close_dialog)
+        (activity as KeyboardListener).panMode()
     }
 
     private fun initBoxes(routeItems: List<String>) {
@@ -98,13 +93,17 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
                 }
                 is UnloadingHandleUIState.BoxesComplete -> {
                     initBoxes(state.boxes)
-                    //binding.boxesLayout.visibility = VISIBLE
+                    binding.listEmpty.visibility = GONE
                 }
                 UnloadingHandleUIState.BoxesEmpty -> {
-                    //binding.boxesLayout.visibility = GONE
+                    binding.listEmpty.visibility = VISIBLE
                 }
             }
         }
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.codeBox) }
     }
 
     private fun setFormatCodeBox(number: String) {
@@ -113,16 +112,11 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
     }
 
     private fun initListener() {
-        binding.close.setOnClickListener {
-            setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
-                bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
-            dismiss()
-        }
         viewModel.action(UnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
             setFragmentResult(UNLOADING_HANDLE_BARCODE_COMPLETE,
                 bundleOf(HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
-            dismiss()
+            findNavController().navigateUp()
         }
     }
 
@@ -131,7 +125,7 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
         (requireView().parent as View).setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
-                R.color.transparent
+                android.R.color.transparent
             )
         )
     }
@@ -139,10 +133,6 @@ class UnloadingHandleFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun getTheme(): Int {
-        return com.wb.logistics.R.style.HandleInputBottomSheetDialog
     }
 
 }

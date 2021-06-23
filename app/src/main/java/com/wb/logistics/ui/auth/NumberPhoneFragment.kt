@@ -118,6 +118,9 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                     } else {
                         binding.phoneLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                         binding.phoneLayout.setEndIconDrawable(R.drawable.ic_clear_text)
+                        binding.phoneLayout.setEndIconOnClickListener {
+                            binding.phoneNumber.setText(R.string.auth_number_phone_phone_default)
+                        }
                     }
                     setNormalBorderInput()
                     binding.phoneNumber.isEnabled = true

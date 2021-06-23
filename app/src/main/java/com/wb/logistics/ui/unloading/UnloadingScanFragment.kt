@@ -18,13 +18,14 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
 import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
+import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
 import com.wb.logistics.ui.unloading.views.UnloadingAcceptedMode
 import com.wb.logistics.ui.unloading.views.UnloadingInfoMode
 import com.wb.logistics.ui.unloading.views.UnloadingReturnMode
+import com.wb.logistics.utils.SoftKeyboard.hideKeyBoard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -52,15 +53,22 @@ class UnloadingScanFragment : Fragment() {
         initListener()
         initObserver()
 
+        initResultListener()
+
+        (activity as KeyboardListener).adjustMode()
+        hideKeyBoard(requireActivity())
+    }
+
+    private fun initResultListener() {
         setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
-            viewModel.onStartScanner()
+            //viewModel.onStartScanner()
         }
 
-        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_CANCEL) { _, _ ->
-            viewModel.onStartScanner()
-        }
+//        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_CANCEL) { _, _ ->
+//            //viewModel.onStartScanner()
+//        }
     }
 
     private fun initObserver() {
@@ -79,7 +87,10 @@ class UnloadingScanFragment : Fragment() {
                     findNavController().navigate(
                         UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloading(
                             with(state) {
-                                UnloadingBoxNotBelongParameters(toolbarTitle, title, box, address)
+                                UnloadingBoxNotBelongParameters(title,
+                                    description,
+                                    box,
+                                    address)
                             }
                         )
                     )

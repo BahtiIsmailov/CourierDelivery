@@ -2,8 +2,8 @@ package com.wb.logistics.ui.unloading
 
 sealed class UnloadingScanNavAction {
     data class NavigateToUnloadingBoxNotBelongPoint(
-        val toolbarTitle: String,
         val title: String,
+        val description: String,
         val box: String,
         val address: String,
     ) :

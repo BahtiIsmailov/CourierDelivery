@@ -36,23 +36,36 @@ class UnloadingBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is UnloadingBoxNotBelongState.BelongInfo -> {
-
-                    (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
-
                     binding.title.text = it.title
+                    binding.description.text = it.description
                     binding.code.text = it.code
                     binding.address.text = it.address
+                    if (it.isShowAddress) {
+                        binding.titleAddress.visibility = View.GONE
+                        binding.address.visibility = View.GONE
+                    }
                 }
             }
         }
 
         viewModel.navigateToBack.observe(viewLifecycleOwner) {
+            showToolbar()
             findNavController().popBackStack()
         }
 
         binding.understand.setOnClickListener {
             viewModel.onUnderstandClick()
         }
+
+        hideToolbar()
+    }
+
+    private fun hideToolbar() {
+        (activity as NavToolbarListener).hideToolbar()
+    }
+
+    private fun showToolbar() {
+        (activity as NavToolbarListener).showToolbar()
     }
 
     override fun onDestroyView() {
@@ -68,5 +81,5 @@ class UnloadingBoxNotBelongFragment : Fragment() {
 
 @Parcelize
 data class UnloadingBoxNotBelongParameters(
-    val toolbarTitle: String, val title: String, val box: String, val address: String,
+    val title: String, val description: String, val box: String, val address: String,
 ) : Parcelable

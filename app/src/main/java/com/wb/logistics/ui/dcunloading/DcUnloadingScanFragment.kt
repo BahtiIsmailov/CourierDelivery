@@ -19,7 +19,7 @@ import com.wb.logistics.ui.dcunloading.views.DcUnloadingAcceptedMode
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingInfoMode
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
+//import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -49,10 +49,6 @@ class DcUnloadingScanFragment : Fragment() {
         setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
-            viewModel.onStartScanner()
-        }
-
-        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_CANCEL) { _, _ ->
             viewModel.onStartScanner()
         }
     }

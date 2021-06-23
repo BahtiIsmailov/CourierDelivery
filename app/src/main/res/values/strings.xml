@@ -37,6 +37,8 @@
     <string name="exit_app_ok">Ok</string>
     <string name="exit_app_cancel">Отмена</string>
 
+    <string name="empty_list">Список пуст</string>
+
     <string name="auth_number_phone_toolbar_label">Вход</string>
     <string name="auth_number_phone_phone_hint">Номер телефона</string>
     <string name="auth_number_phone_phone_not_found">Номер не найден, обратитесь к ответственному</string>
@@ -185,9 +187,13 @@
     <string name="unloading_box_returned">%1$s принята</string>
     <string name="unloading_box_delivered">%1$s доставлена</string>
 
+    <string name="unloading_handle_label">Ручной ввод</string>
+
     <string name="unloading_box_not_belong_point_toolbar_label">Не принадлежит ПВЗ</string>
     <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>
-    <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ,\nверните её в машину</string>
+    <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ</string>
+    <string name="unloading_box_not_belong_dc_return_car">верните её в машину</string>
+    <string name="unloading_box_not_belong_info_title">Информация по ШК не найдена</string>
 
     <string name="dc_unloading_box_not_found_title">ШК не найден</string>
     <string name="dc_unloading_box_already_unloaded">Коробка %1$s\nуже выгружена на РЦ</string>

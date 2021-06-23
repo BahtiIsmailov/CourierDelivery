@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class UnloadingBoxNotBelongModel(
-    private val parameters: UnloadingBoxNotBelongParameters,
+    parameters: UnloadingBoxNotBelongParameters,
 ) : ViewModel() {
 
     private val _belongInfo = MutableLiveData<UnloadingBoxNotBelongState>()
@@ -18,11 +18,14 @@ class UnloadingBoxNotBelongModel(
 
     init {
         _belongInfo.value =
-            UnloadingBoxNotBelongState.BelongInfo(
-                parameters.toolbarTitle,
-                parameters.title,
-                parameters.box,
-                parameters.address)
+            with(parameters) {
+                UnloadingBoxNotBelongState.BelongInfo(
+                    title,
+                    description,
+                    box,
+                    address,
+                    address.isNotEmpty())
+            }
     }
 
     fun onUnderstandClick() {

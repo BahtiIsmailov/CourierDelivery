@@ -13,6 +13,7 @@ import com.wb.logistics.network.api.app.remote.pvz.BoxFromPvzBalanceRequest
 import com.wb.logistics.network.api.app.remote.pvz.BoxFromPvzBalanceResponse
 import com.wb.logistics.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxesResponse
 import com.wb.logistics.network.api.app.remote.time.TimeResponse
+import com.wb.logistics.network.api.app.remote.tracker.BoxTrackerRequest
 import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceRequest
 import com.wb.logistics.network.api.app.remote.warehouse.BoxFromWarehouseBalanceResponse
 import com.wb.logistics.network.api.app.remote.warehouse.BoxToWarehouseBalanceRequest
@@ -72,14 +73,14 @@ interface AppApi {
     //boxes pvz
     //==============================================================================================
     @POST("{version}/flights/{flightID}/pvz/scan")
-    fun pvzBoxToBalance(
+    fun putBoxToPvzBalance(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: FlightBoxToBalanceRequest,
     ): Completable
 
     @PUT("{version}/flights/{flightID}/pvz/scan")
-    fun pvzBoxFromBalance(
+    fun removeBoxFromPvzBalance(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: BoxFromPvzBalanceRequest,
@@ -89,7 +90,7 @@ interface AppApi {
     //boxes warehouse
     //==============================================================================================
     @POST("{version}/flights/{flightID}/warehouse/scan")
-    fun addBoxToWarehouseBalance(
+    fun putBoxToWarehouseBalance(
         @Path(value = "version", encoded = true) version: String,
         @Path("flightID") flightID: String,
         @Body box: BoxToWarehouseBalanceRequest,
@@ -133,5 +134,14 @@ interface AppApi {
     //==============================================================================================
     @GET("{version}/time")
     fun getTime(@Path(value = "version", encoded = true) version: String): Single<TimeResponse>
+
+    //==============================================================================================
+    //boxtracker
+    //==============================================================================================
+    @POST("{version}/boxtracker/scan")
+    fun boxTracker(
+        @Path(value = "version", encoded = true) version: String,
+        @Body box: BoxTrackerRequest,
+    ): Completable
 
 }

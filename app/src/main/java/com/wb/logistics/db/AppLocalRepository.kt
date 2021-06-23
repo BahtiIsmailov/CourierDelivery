@@ -49,11 +49,25 @@ interface AppLocalRepository {
     //==============================================================================================
     //flight boxes
     //==============================================================================================
-    fun saveFlightBoxes(flightMatchingBoxes: List<FlightBoxEntity>): Completable
+    fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
+
+    fun saveFlightBox(flightBoxEntity: FlightBoxEntity): Completable
 
     fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
     fun deleteAllFlightBoxes()
+
+    fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
+
+    fun findUnloadedFlightBox(barcode: String, currentOfficeId: Int): Single<Optional<FlightBoxEntity>>
+
+    fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
+
+    fun findReturnedFlightBox(barcode: String, currentOfficeId: Int): Single<Optional<FlightBoxEntity>>
+
+    fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
+
+    fun findReturnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>>
 
     //==============================================================================================
     //warehouse matching boxes
@@ -113,14 +127,19 @@ interface AppLocalRepository {
     //==============================================================================================
     //unloaded box
     //==============================================================================================
+    @Deprecated("")
     fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable
 
+    @Deprecated("")
     fun observeUnloadedBoxes(): Flowable<List<UnloadedBoxEntity>>
 
+    @Deprecated("")
     fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
 
+    @Deprecated("")
     fun findUnloadedBox(barcode: String): Single<Optional<UnloadedBoxEntity>>
 
+    @Deprecated("")
     fun deleteAllUnloadedBox()
 
     //==============================================================================================
@@ -148,20 +167,28 @@ interface AppLocalRepository {
     //return box
     //==============================================================================================
 
+    @Deprecated("")
     fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
+    @Deprecated("")
     fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>>
 
+    @Deprecated("")
     fun findReturnBox(barcode: String): Single<Optional<ReturnBoxEntity>>
 
+    @Deprecated("")
     fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
 
+    @Deprecated("")
     fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
 
+    @Deprecated("")
     fun deleteReturnBoxes(returnBoxesEntity: List<ReturnBoxEntity>): Completable
 
+    @Deprecated("")
     fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
 
+    @Deprecated("")
     fun deleteAllReturnBox()
 
     //==============================================================================================

@@ -37,7 +37,6 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
         viewModel.belongInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is DcLoadingBoxNotBelongState.BelongInfo -> {
-                    //(activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                     binding.title.text = it.title
                     binding.code.text = it.code
                     binding.address.text = it.address

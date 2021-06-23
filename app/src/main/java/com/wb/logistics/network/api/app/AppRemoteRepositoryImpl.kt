@@ -24,8 +24,13 @@ import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBal
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceRequest
 import com.wb.logistics.network.api.app.remote.flightsstatus.*
 import com.wb.logistics.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import com.wb.logistics.network.api.app.remote.pvz.BoxFromPvzBalanceCurrentOfficeRequest
+import com.wb.logistics.network.api.app.remote.pvz.BoxFromPvzBalanceRequest
 import com.wb.logistics.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxResponse
 import com.wb.logistics.network.api.app.remote.time.TimeResponse
+import com.wb.logistics.network.api.app.remote.tracker.BoxTrackerCurrentOfficeRequest
+import com.wb.logistics.network.api.app.remote.tracker.BoxTrackerFlightRequest
+import com.wb.logistics.network.api.app.remote.tracker.BoxTrackerRequest
 import com.wb.logistics.network.api.app.remote.warehouse.*
 import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxResponse
 import com.wb.logistics.network.token.TokenManager
@@ -121,14 +126,14 @@ class AppRemoteRepositoryImpl(
             }
         }
 
-    override fun pvzBoxToBalance(
+    override fun putBoxToPvzBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOfficeId: Int,
     ): Completable {
-        return remote.pvzBoxToBalance(tokenManager.apiVersion(), flightId,
+        return remote.putBoxToPvzBalance(tokenManager.apiVersion(), flightId,
             FlightBoxToBalanceRequest(barcode,
                 isManualInput,
                 updatedAt,
@@ -151,7 +156,7 @@ class AppRemoteRepositoryImpl(
                 barcodes = barcodes))
     }
 
-    override fun removeBoxFromBalance(
+    override fun removeBoxFromWarehouseBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
@@ -164,6 +169,21 @@ class AppRemoteRepositoryImpl(
                 isManualInput,
                 updatedAt,
                 BoxFromWarehouseBalanceCurrentOfficeRequest(currentOfficeId))).toCompletable()
+    }
+
+    override fun removeBoxFromPvzBalance(
+        flightId: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+    ): Completable {
+        return remote.removeBoxFromPvzBalance(token(), flightId,
+            BoxFromPvzBalanceRequest(
+                barcode,
+                isManualInput,
+                updatedAt,
+                BoxFromPvzBalanceCurrentOfficeRequest(currentOfficeId))).toCompletable()
     }
 
     override fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>> {
@@ -348,13 +368,30 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         currentOfficeId: Int,
     ): Single<WarehouseScanEntity> {
-        return remote.addBoxToWarehouseBalance(token(), flightId,
+        return remote.putBoxToWarehouseBalance(token(), flightId,
             BoxToWarehouseBalanceRequest(
                 barcode = barcode,
                 isManualInput = isManualInput,
                 updatedAt = updatedAt,
                 BoxToWarehouseBalanceCurrentOfficeRequest(currentOfficeId)))
             .map { convertWarehouseScannedBox(it) }
+    }
+
+    override fun putBoxTracker(
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+        flightId: Int,
+    ): Completable {
+        return remote.boxTracker(tokenManager.apiVersion(),
+            BoxTrackerRequest(barcode,
+                isManualInput,
+                updatedAt,
+                BoxTrackerCurrentOfficeRequest(currentOfficeId),
+                BoxTrackerFlightRequest(flightId)
+            )
+        )
     }
 
     private fun convertWarehouseScannedBox(warehouseScanRemote: BoxToWarehouseBalanceResponse): WarehouseScanEntity {

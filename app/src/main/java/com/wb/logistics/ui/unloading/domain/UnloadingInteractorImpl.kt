@@ -3,13 +3,12 @@ package com.wb.logistics.ui.unloading.domain
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.*
 import com.wb.logistics.db.entity.flight.FlightEntity
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
-import com.wb.logistics.db.entity.returnboxes.ReturnCurrentOfficeEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedCurrentOfficeEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
+import com.wb.logistics.network.api.app.entity.boxinfo.BoxInfoEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -37,15 +36,16 @@ class UnloadingInteractorImpl(
         return scannerRepository.observeBarcodeScanned().map { Pair(it, false) }
     }
 
-    override fun observeScanProcess(dstOfficeId: Int): Observable<UnloadingData> {
+    override fun observeScanProcess(currentOfficeId: Int): Observable<UnloadingData> {
         return Observable.merge(barcodeManualInput, barcodeScannerInput())
-            .flatMapSingle { boxDefinitionResult(it) }
+            .flatMapSingle { boxDefinitionResult(it.first, it.second, currentOfficeId) }
             .flatMap { boxDefinition ->
 
                 val flight = boxDefinition.flight
                 val findUnloadedBox = boxDefinition.findUnloadedBox
                 val findReturnBox = boxDefinition.findReturnBox
                 val findAttachedBox = boxDefinition.findAttachedBox
+                val findPvzMatchingBox = boxDefinition.findPvzMatchingBox
                 val barcodeScanned = boxDefinition.barcodeScanned
                 val isManualInput = boxDefinition.isManualInput
                 val updatedAt = timeManager.getOffsetLocalTime()
@@ -53,151 +53,360 @@ class UnloadingInteractorImpl(
 
                 when {
                     findUnloadedBox is Optional.Success -> //коробка уже выгружена из машины
-                        return@flatMap Observable.just(with(findUnloadedBox.data) {
-                            UnloadingData.BoxAlreadyUnloaded(barcode)
-                        })
+                        return@flatMap boxAlreadyUnloaded(findUnloadedBox)
 
                     findReturnBox is Optional.Success -> //коробка уже добавлена к возврату
-                        return@flatMap Observable.just(with(findReturnBox.data) {
-                            UnloadingData.BoxAlreadyReturn(barcode)
-                        })
+                        return@flatMap boxAlreadyReturn(findReturnBox)
 
                     findAttachedBox is Optional.Success -> { //коробка в списке доставки
                         with(findAttachedBox) {
-                            if (dstOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ
-                                // TODO: 27.04.2021 добавить коробку в базу
-                                val attachAt = findAttachedBox.data.updatedAt
-                                val saveUnloadedBox =
-                                    appLocalRepository.saveUnloadedBox(UnloadedBoxEntity(
-                                        flightId,
-                                        isManualInput,
-                                        barcodeScanned,
-                                        updatedAt,
-                                        attachAt,
-                                        UnloadedCurrentOfficeEntity(dstOfficeId)))
-                                val removeBoxFromBalance =
-                                    removeBoxFromBalance(flightId.toString(), //снятие с баланса
-                                        data.barcode,
-                                        isManualInput,
-                                        updatedAt,
-                                        dstOfficeId)
-                                val deleteAttachedBox = appLocalRepository.deleteAttachedBox(data)
-                                val boxUnloadAdded =
-                                    Observable.just(UnloadingData.BoxUnloadAdded(data.barcode))
-                                val switchScreen = switchScreenUnloading(dstOfficeId)
-
-                                return@flatMap saveUnloadedBox
-                                    .andThen(removeBoxFromBalance)
-                                    .andThen(deleteAttachedBox)
-                                    .andThen(switchScreen)
-                                    .andThen(boxUnloadAdded)
+                            if (currentOfficeId == data.dstOffice.id) { //коробка принадлежит ПВЗ для выгрузки
+                                return@flatMap loadUnloadBoxByList(barcodeScanned,
+                                    updatedAt,
+                                    flightId,
+                                    isManualInput,
+                                    currentOfficeId)
                             } else {
-                                return@flatMap Observable.just(UnloadingData.BoxDoesNotBelongPoint(
-                                    data.barcode,
-                                    data.dstFullAddress))
+                                return@flatMap boxNotBelongPvz(barcodeScanned,
+                                    isManualInput,
+                                    updatedAt,
+                                    currentOfficeId,
+                                    flightId,
+                                    data.dstOffice.fullAddress)
                             }
                         }
                     }
 
-                    findAttachedBox is Optional.Empty -> { //коробки нет в списке доставки - принятие на возврат
-                        val saveReturnBox = saveReturnBox(flightId,
-                            isManualInput,
-                            barcodeScanned,
-                            updatedAt,
-                            dstOfficeId)
-                        val pvzBoxToBalanceRemote = pvzBoxToBalanceRemote(flightId.toString(),
-                            barcodeScanned,
-                            isManualInput,
-                            updatedAt,
-                            dstOfficeId)
-                        val boxReturnAdded =
-                            Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned))
-
-                        return@flatMap saveReturnBox.andThen(pvzBoxToBalanceRemote)
-                            .andThen(boxReturnAdded)
+                    findPvzMatchingBox is Optional.Success -> { //коробка в списке на возврат с ПВЗ
+                        with(findPvzMatchingBox) {
+                            if (currentOfficeId == data.srcOffice.id) { //коробка принадлежит ПВЗ принимаем коробку
+                                return@flatMap loadReturnBoxByList(barcodeScanned,
+                                    updatedAt,
+                                    flightId,
+                                    isManualInput,
+                                    currentOfficeId)
+                            } else { //коробка в списке для возврата, но не принадлежит ПВЗ
+                                return@flatMap boxNotBelongPvz(barcodeScanned,
+                                    isManualInput,
+                                    updatedAt,
+                                    currentOfficeId,
+                                    flightId,
+                                    data.dstOffice.fullAddress)
+                            }
+                        }
                     }
-                    else -> return@flatMap Observable.just(UnloadingData.Empty)
+
+                    else -> {
+                        return@flatMap appRemoteRepository.boxInfo(flightId.toString())
+                            .flatMapObservable {
+                                if (it.box is Optional.Success) { //получена информация по коробке
+                                    if (currentOfficeId == it.box.data.dstOffice.id) { //коробку нужно выгрузить на ПВЗ
+                                        it.box.loadUnloadBoxByInfo(barcodeScanned,
+                                            updatedAt,
+                                            flightId,
+                                            isManualInput,
+                                            currentOfficeId)
+                                    } else if (currentOfficeId == it.box.data.srcOffice.id) { //коробку нужно забрать с ПВЗ
+                                        it.box.loadReturnBoxByInfo(barcodeScanned,
+                                            updatedAt,
+                                            flightId,
+                                            isManualInput,
+                                            currentOfficeId)
+                                    } else { //коробка не принадлежит ПВЗ
+                                        boxNotBelongPvz(barcodeScanned,
+                                            isManualInput,
+                                            updatedAt,
+                                            currentOfficeId,
+                                            flightId,
+                                            it.box.data.dstOffice.fullAddress)
+                                    }
+                                } else { //информация по коробке не найдена
+                                    appRemoteRepository.putBoxTracker(barcodeScanned,
+                                        isManualInput,
+                                        updatedAt,
+                                        currentOfficeId,
+                                        flightId)
+                                        .onErrorComplete()
+                                        .andThen(Observable.just(UnloadingData.BoxEmptyInfo(
+                                            barcodeScanned)))
+
+                                }
+                            }
+                            .compose(rxSchedulerFactory.applyObservableSchedulers())
+                    }
                 }
             }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun observeCountUnloadReturnedBox(dstOfficeId: Int): Observable<Int> {
-        return Flowable.zip(
-            appLocalRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId),
-            appLocalRepository.observedReturnBoxesByDstOfficeId(dstOfficeId),
+    private fun boxNotBelongPvz(
+        barcodeScanned: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+        flightId: Int,
+        fullAddress: String,
+    ) = appRemoteRepository.putBoxTracker(barcodeScanned,
+        isManualInput,
+        updatedAt,
+        currentOfficeId,
+        flightId)
+        .onErrorComplete() // TODO: 23.06.2021 реализовать обработчик ошибок
+        .andThen(Observable.just(UnloadingData.BoxDoesNotBelongPvz(
+            barcodeScanned,
+            fullAddress)))
+
+    private fun Optional.Success<AttachedBoxEntity>.loadUnloadBoxByList(
+        barcodeScanned: String,
+        updatedAt: String,
+        flightId: Int,
+        isManualInput: Boolean,
+        currentOfficeId: Int,
+    ): Observable<UnloadingData.BoxUnloadAdded> {
+        val saveUnloadedBox =
+            appLocalRepository.saveFlightBox(convertToFlightBoxEntity(barcodeScanned, updatedAt))
+        val removeBoxFromBalance =
+            removeBoxFromPvzBalance(flightId.toString(), //снятие с баланса
+                data.barcode,
+                isManualInput,
+                updatedAt,
+                currentOfficeId)
+        val deleteAttachedBox = appLocalRepository.deleteAttachedBox(data)
+        val boxUnloadAdded =
+            Observable.just(UnloadingData.BoxUnloadAdded(data.barcode))
+        val switchScreenUnloading = switchScreenUnloading(currentOfficeId)
+
+        return saveUnloadedBox
+            .andThen(removeBoxFromBalance)
+            .andThen(deleteAttachedBox)
+            .andThen(switchScreenUnloading)
+            .andThen(boxUnloadAdded)
+    }
+
+    private fun Optional.Success<AttachedBoxEntity>.convertToFlightBoxEntity(
+        barcodeScanned: String,
+        updatedAt: String,
+    ) = FlightBoxEntity(
+        barcode = barcodeScanned,
+        updatedAt = updatedAt,
+        status = BoxStatus.REMOVED_FROM_FLIGHT.ordinal,
+        onBoard = false,
+        srcOffice = FlightSrcOfficeEntity(
+            id = data.srcOffice.id,
+            name = data.srcOffice.name,
+            fullAddress = data.srcOffice.fullAddress,
+            longitude = data.srcOffice.longitude,
+            latitude = data.srcOffice.latitude),
+        dstOffice = FlightDstOfficeEntity(
+            id = data.dstOffice.id,
+            name = data.dstOffice.name,
+            fullAddress = data.dstOffice.fullAddress,
+            longitude = data.dstOffice.longitude,
+            latitude = data.dstOffice.latitude)
+    )
+
+    private fun Optional.Success<BoxInfoEntity>.loadUnloadBoxByInfo(
+        barcodeScanned: String,
+        updatedAt: String,
+        flightId: Int,
+        isManualInput: Boolean,
+        currentOfficeId: Int,
+    ): Observable<UnloadingData.BoxUnloadAdded> {
+        val saveUnloadedBox =
+            appLocalRepository.saveFlightBox(convertToFlightBoxEntityFromInfoEntity(barcodeScanned,
+                updatedAt))
+        val removeBoxFromBalance =
+            removeBoxFromPvzBalance(flightId.toString(), //снятие с баланса
+                data.barcode,
+                isManualInput,
+                updatedAt,
+                currentOfficeId)
+        val boxUnloadAdded =
+            Observable.just(UnloadingData.BoxUnloadAdded(data.barcode))
+        val switchScreenUnloading = switchScreenUnloading(currentOfficeId)
+
+        return saveUnloadedBox
+            .andThen(removeBoxFromBalance)
+            .andThen(switchScreenUnloading)
+            .andThen(boxUnloadAdded)
+    }
+
+    private fun Optional.Success<BoxInfoEntity>.convertToFlightBoxEntityFromInfoEntity(
+        barcodeScanned: String,
+        updatedAt: String,
+    ) = FlightBoxEntity(
+        barcode = barcodeScanned,
+        updatedAt = updatedAt,
+        status = BoxStatus.REMOVED_FROM_FLIGHT.ordinal,
+        onBoard = false,
+        srcOffice = FlightSrcOfficeEntity(
+            id = data.srcOffice.id,
+            name = data.srcOffice.name,
+            fullAddress = data.srcOffice.fullAddress,
+            longitude = data.srcOffice.longitude,
+            latitude = data.srcOffice.latitude),
+        dstOffice = FlightDstOfficeEntity(
+            id = data.dstOffice.id,
+            name = data.dstOffice.name,
+            fullAddress = data.dstOffice.fullAddress,
+            longitude = data.dstOffice.longitude,
+            latitude = data.dstOffice.latitude)
+    )
+
+    private fun Optional.Success<PvzMatchingBoxEntity>.loadReturnBoxByList(
+        barcodeScanned: String,
+        updatedAt: String,
+        flightId: Int,
+        isManualInput: Boolean,
+        currentOfficeId: Int,
+    ): Observable<UnloadingData.BoxReturnAdded> {
+        val saveUnloadedBox =
+            appLocalRepository.saveFlightBox(FlightBoxEntity(
+                barcode = barcodeScanned,
+                updatedAt = updatedAt,
+                status = BoxStatus.REMOVED_FROM_FLIGHT.ordinal,
+                onBoard = false,
+                srcOffice = FlightSrcOfficeEntity(
+                    id = data.srcOffice.id,
+                    name = data.srcOffice.name,
+                    fullAddress = data.srcOffice.fullAddress,
+                    longitude = data.srcOffice.longitude,
+                    latitude = data.srcOffice.latitude),
+                dstOffice = FlightDstOfficeEntity(
+                    id = data.dstOffice.id,
+                    name = data.dstOffice.name,
+                    fullAddress = data.dstOffice.fullAddress,
+                    longitude = data.dstOffice.longitude,
+                    latitude = data.dstOffice.latitude)
+            ))
+        val putBoxToPvzBalance =
+            putBoxToPvzBalance(flightId.toString(), //постановка на баланс коробки с ПВЗ
+                data.barcode,
+                isManualInput,
+                updatedAt,
+                currentOfficeId)
+        val deletePvzMatchingBox =
+            appLocalRepository.deletePvzMatchingBox(data)
+        val boxReturnAdded =
+            Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned))
+        val switchScreenUnloading = switchScreenUnloading(currentOfficeId)
+
+        return saveUnloadedBox
+            .andThen(putBoxToPvzBalance)
+            .andThen(deletePvzMatchingBox)
+            .andThen(switchScreenUnloading)
+            .andThen(boxReturnAdded)
+    }
+
+    private fun Optional.Success<BoxInfoEntity>.loadReturnBoxByInfo(
+        barcodeScanned: String,
+        updatedAt: String,
+        flightId: Int,
+        isManualInput: Boolean,
+        currentOfficeId: Int,
+    ): Observable<UnloadingData.BoxReturnAdded> {
+        val saveUnloadedBox =
+            appLocalRepository.saveFlightBox(FlightBoxEntity(
+                barcode = barcodeScanned,
+                updatedAt = updatedAt,
+                status = BoxStatus.REMOVED_FROM_FLIGHT.ordinal,
+                onBoard = false,
+                srcOffice = FlightSrcOfficeEntity(
+                    id = data.srcOffice.id,
+                    name = data.srcOffice.name,
+                    fullAddress = data.srcOffice.fullAddress,
+                    longitude = data.srcOffice.longitude,
+                    latitude = data.srcOffice.latitude),
+                dstOffice = FlightDstOfficeEntity(
+                    id = data.dstOffice.id,
+                    name = data.dstOffice.name,
+                    fullAddress = data.dstOffice.fullAddress,
+                    longitude = data.dstOffice.longitude,
+                    latitude = data.dstOffice.latitude)
+            ))
+        val putBoxToPvzBalance =
+            putBoxToPvzBalance(flightId.toString(), //постановка на баланс коробки с ПВЗ
+                data.barcode,
+                isManualInput,
+                updatedAt,
+                currentOfficeId)
+        val boxReturnAdded =
+            Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned))
+        val switchScreenUnloading = switchScreenUnloading(currentOfficeId)
+
+        return saveUnloadedBox
+            .andThen(putBoxToPvzBalance)
+            .andThen(switchScreenUnloading)
+            .andThen(boxReturnAdded)
+    }
+
+    private fun boxAlreadyReturn(findReturnBox: Optional.Success<FlightBoxEntity>) =
+        Observable.just(with(findReturnBox.data) {
+            UnloadingData.BoxAlreadyReturn(barcode)
+        })
+
+    private fun boxAlreadyUnloaded(findUnloadedBox: Optional.Success<FlightBoxEntity>) =
+        Observable.just(with(findUnloadedBox.data) {
+            UnloadingData.BoxAlreadyUnloaded(barcode)
+        })
+
+    override fun observeCountUnloadReturnedBox(currentOfficeId: Int): Observable<Int> {
+        return Flowable.combineLatest(
+            appLocalRepository.observeUnloadedFlightBoxesByOfficeId(currentOfficeId),
+            appLocalRepository.observeReturnedFlightBoxesByOfficeId(currentOfficeId),
             { unloadedBoxes, returnBoxes -> unloadedBoxes.size + returnBoxes.size })
             .toObservable()
             .filter { it > 0 }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun pvzBoxToBalanceRemote(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOffice: Int,
-    ) = appRemoteRepository.pvzBoxToBalance(
-        flightId,
-        barcode,
-        isManualInput,
-        updatedAt,
-        currentOffice)
-        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
-        .compose(rxSchedulerFactory.applyCompletableSchedulers())
-
-    private fun saveReturnBox(
-        flightId: Int,
-        isManualInput: Boolean,
-        barcodeScanned: String,
-        updateAt: String,
-        dstOfficeId: Int,
-    ) = appLocalRepository.saveReturnBox(ReturnBoxEntity(flightId,
-        isManualInput,
-        barcodeScanned,
-        updateAt,
-        ReturnCurrentOfficeEntity(dstOfficeId)))
-
-    override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
-        return appLocalRepository.observeAttachedBoxes(dstOfficeId)
+    override fun observeAttachedBoxes(currentOfficeId: Int): Observable<List<AttachedBoxEntity>> {
+        return appLocalRepository.observeAttachedBoxes(currentOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun observeUnloadedBoxes(dstOfficeId: Int): Observable<List<UnloadedBoxEntity>> {
-        return appLocalRepository.observeUnloadedBoxesByDstOfficeId(dstOfficeId)
+    override fun observeUnloadedBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>> {
+        return appLocalRepository.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun removeReturnBoxes(dstOfficeId: Int, checkedBoxes: List<String>): Completable {
-        return flight().flatMapCompletable { removeBoxes(it, dstOfficeId, checkedBoxes) }
-            .andThen(appLocalRepository.findReturnBoxes(checkedBoxes))
-            .flatMapCompletable { appLocalRepository.deleteReturnBoxes(it) }
+    override fun removeReturnBoxes(currentOfficeId: Int, checkedBoxes: List<String>): Completable {
+        return flight().flatMapCompletable { removeBoxes(it, currentOfficeId, checkedBoxes) }
+            .andThen(appLocalRepository.findReturnFlightBoxes(checkedBoxes))
+            .flatMapCompletable { appLocalRepository.deleteReturnFlightBoxes(it) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun removeBoxes(flightEntity: FlightEntity, dstOfficeId: Int, checkedBoxes: List<String>) =
+    private fun removeBoxes(
+        flightEntity: FlightEntity,
+        dstOfficeId: Int,
+        checkedBoxes: List<String>,
+    ) =
         appRemoteRepository.removeBoxesFromFlight(flightEntity.id.toString(),
             false,
             timeManager.getOffsetLocalTime(),
             dstOfficeId,
             checkedBoxes)
 
-    private fun boxDefinitionResult(param: Pair<String, Boolean>): Single<BoxDefinitionResult> {
-        val barcode = param.first
-        val isManual = param.second
+    private fun boxDefinitionResult(
+        barcode: String,
+        isManual: Boolean,
+        currentOfficeId: Int,
+    ): Single<BoxDefinitionResult> {
         return Single.zip(
             flight(), //рейс
-            findUnloadedBox(barcode), //коробка есть в списке выгруженных
-            findReturnBox(barcode), //коробка есть в списке на возврат
+            findUnloadedBox(barcode, currentOfficeId), //коробка есть в списке выгруженных
+            findReturnedBox(barcode, currentOfficeId), //коробка есть в списке на возврат
             findAttachedBox(barcode), //коробка есть в списке доставки
-            { flight, findUnloadedBox, findReturnBox, findAttachedBox ->
+            findPvzMatchingBox(barcode), //коробка есть в списке возвратных коробок ПВЗ
+            { flight, findUnloadedBox, findReturnBox, findAttachedBox, findPvzMatchingBox ->
                 BoxDefinitionResult(flight,
                     findUnloadedBox,
                     findReturnBox,
                     findAttachedBox,
+                    findPvzMatchingBox,
                     barcode,
                     isManual)
             }
@@ -206,19 +415,23 @@ class UnloadingInteractorImpl(
 
     private fun flight() = appLocalRepository.readFlight()
 
+    private fun findUnloadedBox(barcode: String, currentOfficeId: Int) =
+        appLocalRepository.findUnloadedFlightBox(barcode, currentOfficeId)
+
+    private fun findReturnedBox(barcode: String, currentOfficeId: Int) =
+        appLocalRepository.findReturnedFlightBox(barcode, currentOfficeId)
+
     private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 
-    private fun findUnloadedBox(barcode: String) = appLocalRepository.findUnloadedBox(barcode)
+    private fun findPvzMatchingBox(barcode: String) = appLocalRepository.findPvzMatchingBox(barcode)
 
-    private fun findReturnBox(barcode: String) = appLocalRepository.findReturnBox(barcode)
-
-    private fun removeBoxFromBalance(
+    private fun removeBoxFromPvzBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
-    ) = appRemoteRepository.removeBoxFromBalance(
+    ) = appRemoteRepository.removeBoxFromPvzBalance(
         flightId,
         barcode,
         isManualInput,
@@ -227,17 +440,33 @@ class UnloadingInteractorImpl(
         .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
-    override fun observeUnloadedAndAttachedBoxes(dstOfficeId: Int): Observable<Pair<List<UnloadedBoxEntity>, List<AttachedBoxEntity>>> {
-        return Flowable.combineLatest(appLocalRepository.observeUnloadedBoxesByDstOfficeId(
-            dstOfficeId),
-            appLocalRepository.observeAttachedBoxes(dstOfficeId),
+    private fun putBoxToPvzBalance(
+        flightId: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOffice: Int,
+    ) = appRemoteRepository.putBoxToPvzBalance(
+        flightId,
+        barcode,
+        isManualInput,
+        updatedAt,
+        currentOffice)
+        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
+        .compose(rxSchedulerFactory.applyCompletableSchedulers())
+
+    override fun observeUnloadedAndAttachedBoxes(currentOfficeId: Int): Observable<Pair<List<FlightBoxEntity>, List<AttachedBoxEntity>>> {
+        return Flowable.combineLatest(appLocalRepository.observeUnloadedFlightBoxesByOfficeId(
+            currentOfficeId),
+            appLocalRepository.observeAttachedBoxes(currentOfficeId),
             { unloaded, attached -> Pair(unloaded, attached) })
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun observeReturnBoxes(dstOfficeId: Int): Observable<List<ReturnBoxEntity>> {
-        return appLocalRepository.observedReturnBoxesByDstOfficeId(dstOfficeId).toObservable()
+    override fun observeReturnBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>> {
+        return appLocalRepository.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
+            .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
@@ -245,16 +474,16 @@ class UnloadingInteractorImpl(
         scannerRepository.scannerAction(scannerAction)
     }
 
-    override fun completeUnloading(dstOfficeId: Int): Completable {
+    override fun completeUnloading(currentOfficeId: Int): Completable {
         return switchScreenInTransit().andThen(appLocalRepository.changeFlightOfficeUnloading(
-            dstOfficeId,
+            currentOfficeId,
             true,
             ""))
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun officeNameById(dstOfficeId: Int): Single<String> {
-        return appLocalRepository.findFlightOffice(dstOfficeId).map { it.name }
+    override fun officeNameById(currentOfficeId: Int): Single<String> {
+        return appLocalRepository.findFlightOffice(currentOfficeId).map { it.name }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

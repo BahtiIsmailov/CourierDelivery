@@ -26,23 +26,23 @@ class UnloadingScanViewModel(
         get() = _toolbarLabelState
 
     private val _messageEvent =
-        SingleLiveEvent<UnloadingScanMessageEvent<Nothing>>()
-    val toastEvent: LiveData<UnloadingScanMessageEvent<Nothing>>
+        SingleLiveEvent<UnloadingScanMessageEvent>()
+    val toastEvent: LiveData<UnloadingScanMessageEvent>
         get() = _messageEvent
 
     private val _soundEvent =
-        SingleLiveEvent<UnloadingScanSoundEvent<Nothing>>()
-    val soundEvent: LiveData<UnloadingScanSoundEvent<Nothing>>
+        SingleLiveEvent<UnloadingScanSoundEvent>()
+    val soundEvent: LiveData<UnloadingScanSoundEvent>
         get() = _soundEvent
 
     private val _unloadedState =
-        MutableLiveData<UnloadingScanBoxState<Nothing>>()
-    val unloadedState: LiveData<UnloadingScanBoxState<Nothing>>
+        MutableLiveData<UnloadingScanBoxState>()
+    val unloadedState: LiveData<UnloadingScanBoxState>
         get() = _unloadedState
 
     private val _returnState =
-        MutableLiveData<UnloadingReturnState<Nothing>>()
-    val returnState: LiveData<UnloadingReturnState<Nothing>>
+        MutableLiveData<UnloadingReturnState>()
+    val returnState: LiveData<UnloadingReturnState>
         get() = _returnState
 
     private val _navigationEvent =
@@ -106,17 +106,25 @@ class UnloadingScanViewModel(
                     _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
                 }
 
-                is UnloadingData.BoxDoesNotBelongPoint -> {
+                is UnloadingData.BoxDoesNotBelongPvz -> {
                     _navigationEvent.value =
                         UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPoint(
-                            resourceProvider.getBoxNotBelongPointToolbarTitle(),
                             resourceProvider.getBoxNotBelongPointTitle(),
+                            resourceProvider.getBoxNotBelongPointDescription(),
                             it.barcode,
                             it.address)
                     _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
                 }
 
-                UnloadingData.Empty -> {
+                is UnloadingData.BoxEmptyInfo -> {
+                    _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                    _navigationEvent.value =
+                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPoint(
+                            resourceProvider.getBoxNotBelongInfoTitle(),
+                            "Верните коробку туда, где взяли \n" +
+                                    "(СЦ/РЦ или ПВЗ)",
+                            it.barcode,
+                            resourceProvider.getBoxNotBelongAddress())
                 }
                 is UnloadingData.BoxSaveRemoteError -> {
                 }
@@ -199,7 +207,7 @@ class UnloadingScanViewModel(
     }
 
     fun onStartScanner() {
-        observeBackButton()
+        //observeBackButton()
         interactor.scannerAction(ScannerAction.Start)
     }
 

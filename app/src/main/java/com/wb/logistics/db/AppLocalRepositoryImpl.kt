@@ -133,8 +133,12 @@ class AppLocalRepositoryImpl(
     //scanned box
     //==============================================================================================
 
-    override fun saveFlightBoxes(flightMatchingBoxes: List<FlightBoxEntity>): Completable {
-        return flightMatchingDao.insertFlightBoxes(flightMatchingBoxes)
+    override fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
+        return flightMatchingDao.insertFlightBoxes(flightBoxesEntity)
+    }
+
+    override fun saveFlightBox(flightBoxEntity: FlightBoxEntity): Completable {
+        return flightMatchingDao.insertFlightBox(flightBoxEntity)
     }
 
     override fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
@@ -145,6 +149,40 @@ class AppLocalRepositoryImpl(
 
     override fun deleteAllFlightBoxes() {
         return flightMatchingDao.deleteAllFlightBox()
+    }
+
+    override fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
+        return flightMatchingDao.deleteReturnFlightBoxes(flightBoxesEntity)
+    }
+
+    override fun findUnloadedFlightBox(
+        barcode: String,
+        currentOfficeId: Int,
+    ): Single<Optional<FlightBoxEntity>> {
+        return flightMatchingDao.findUnloadedFlightBox(barcode, currentOfficeId)
+            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
+    }
+
+    override fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
+        return flightMatchingDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
+    }
+
+    override fun findReturnedFlightBox(
+        barcode: String,
+        currentOfficeId: Int,
+    ): Single<Optional<FlightBoxEntity>> {
+        return flightMatchingDao.findReturnedFlightBox(barcode, currentOfficeId)
+            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
+    }
+
+    override fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
+        return flightMatchingDao.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
+    }
+
+    override fun findReturnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>> {
+        return flightMatchingDao.findReturnedFlightBoxes(barcodes)
     }
 
     //==============================================================================================

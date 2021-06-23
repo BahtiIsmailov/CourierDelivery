@@ -1,8 +1,8 @@
 package com.wb.logistics.ui.unloading
 
-sealed class UnloadingScanSoundEvent<out R> {
+sealed class UnloadingScanSoundEvent {
 
-    object BoxAdded : UnloadingScanSoundEvent<Nothing>()
-    object BoxSkipAdded : UnloadingScanSoundEvent<Nothing>()
+    object BoxAdded : UnloadingScanSoundEvent()
+    object BoxSkipAdded : UnloadingScanSoundEvent()
 
 }

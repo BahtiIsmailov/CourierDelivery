@@ -160,7 +160,7 @@ class DcUnloadingInteractorImpl(
         isManualInput: Boolean,
         updatedAt: String,
         currentOffice: Int,
-    ) = appRemoteRepository.removeBoxFromBalance(
+    ) = appRemoteRepository.removeBoxFromWarehouseBalance(
         flightId,
         barcode,
         isManualInput,

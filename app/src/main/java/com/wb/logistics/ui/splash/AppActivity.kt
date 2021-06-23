@@ -70,9 +70,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
 
         navController = navHostFragment.navController
         onDestinationChangedListener =
-            OnDestinationChangedListener { navController: NavController, navDestination: NavDestination, bundle: Bundle? ->
+            OnDestinationChangedListener { _: NavController, navDestination: NavDestination, _: Bundle? ->
                 when (navDestination.id) {
-                    R.id.unloadingScanFragment, R.id.unloadingHandleFragment -> ignoreChangeToolbar()
+                    R.id.unloadingScanFragment -> ignoreChangeToolbar()
                     else -> {
                         updateTitle(navDestination.label.toString())
                     }

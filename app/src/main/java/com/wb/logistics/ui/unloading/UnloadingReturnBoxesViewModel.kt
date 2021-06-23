@@ -2,7 +2,7 @@ package com.wb.logistics.ui.unloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
@@ -52,13 +52,13 @@ class UnloadingReturnBoxesViewModel(
                 { changeBoxesError(it) }))
     }
 
-    private fun convertBoxes(boxes: List<ReturnBoxEntity>) =
+    private fun convertBoxes(boxes: List<FlightBoxEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map(receptionBoxItem)
             .toList()
             .toObservable()
 
-    private val receptionBoxItem = { (index, item): IndexedValue<ReturnBoxEntity> ->
+    private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxEntity> ->
         // TODO: 29.04.2021 переработать
         val date = timeFormatter.dateTimeWithTimezoneFromString(item.updatedAt)
         val timeFormat =

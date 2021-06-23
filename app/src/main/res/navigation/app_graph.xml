@@ -200,16 +200,16 @@
             app:nullable="false" />
     </fragment>
 
-    <dialog
+    <fragment
         android:id="@+id/unloadingHandleFragment"
         android:name="com.wb.logistics.ui.unloading.UnloadingHandleFragment"
-        android:label="@string/unloading_empty_title"
+        android:label="@string/unloading_handle_label"
         tools:layout="@layout/unloading_handle_fragment">
         <argument
             android:name="unloading_handle_key"
             app:argType="com.wb.logistics.ui.unloading.UnloadingHandleParameters"
             app:nullable="false" />
-    </dialog>
+    </fragment>
 
     <fragment
         android:id="@+id/forcedTerminationFragment"

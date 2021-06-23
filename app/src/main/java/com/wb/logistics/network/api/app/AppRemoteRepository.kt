@@ -25,7 +25,7 @@ interface AppRemoteRepository {
 
     fun time(): Single<TimeResponse>
 
-    fun pvzBoxToBalance(
+    fun putBoxToPvzBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
@@ -41,7 +41,15 @@ interface AppRemoteRepository {
         barcodes: List<String>
     ): Completable
 
-    fun removeBoxFromBalance(
+    fun removeBoxFromWarehouseBalance(
+        flightId: String,
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+    ): Completable
+
+    fun removeBoxFromPvzBalance(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
@@ -68,5 +76,13 @@ interface AppRemoteRepository {
         updatedAt: String,
         currentOfficeId: Int,
     ): Single<WarehouseScanEntity>
+
+    fun putBoxTracker(
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+        flightId: Int,
+    ): Completable
 
 }
