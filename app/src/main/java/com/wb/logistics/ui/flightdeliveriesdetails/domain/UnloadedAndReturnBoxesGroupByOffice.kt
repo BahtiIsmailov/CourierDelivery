@@ -1,9 +1,8 @@
 package com.wb.logistics.ui.flightdeliveriesdetails.domain
 
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 
 data class UnloadedAndReturnBoxesGroupByOffice(
-    val unloadedBoxes: List<UnloadedBoxEntity>,
-    val returnBoxes: List<ReturnBoxByAddressEntity>,
+    val unloadedBoxes: List<FlightBoxEntity>,
+    val returnBoxes: List<FlightBoxEntity>,
 )

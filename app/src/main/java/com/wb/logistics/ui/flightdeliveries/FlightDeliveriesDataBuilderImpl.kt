@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveries.delegates.items.*
 
@@ -8,14 +8,14 @@ class FlightDeliveriesDataBuilderImpl(
     private val resourceProvider: FlightDeliveriesResourceProvider,
 ) : FlightDeliveriesDataBuilder {
 
-    override fun buildSuccessItem(
+    override fun buildPvzSuccessItem(
         index: Int,
-        scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
+        scannedBoxGroupByAddressEntity: DeliveryBoxGroupByOfficeEntity,
     ): BaseItem {
         val attachedCount = scannedBoxGroupByAddressEntity.attachedCount
         val returnCount = scannedBoxGroupByAddressEntity.returnCount
         val unloadedCount = scannedBoxGroupByAddressEntity.unloadedCount
-        if (scannedBoxGroupByAddressEntity.isUnloading) {
+        if (returnCount > 0 || unloadedCount > 0) {
             val returnCountText =
                 if (returnCount > 0) resourceProvider.getReturnCount(returnCount)
                 else resourceProvider.getEmptyCount()

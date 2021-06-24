@@ -23,8 +23,9 @@ class DcForcedTerminationInteractorImpl(
     }
 
     override fun completeUnloading(dstOfficeId: Int, cause: String): Completable {
-        return appLocalRepository.changeFlightOfficeUnloading(dstOfficeId, true, cause)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        return Completable.complete()
+//        return appLocalRepository.changeFlightOfficeUnloading(dstOfficeId, true, cause)
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     override fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>> {

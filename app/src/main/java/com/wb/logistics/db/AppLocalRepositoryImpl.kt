@@ -2,8 +2,8 @@ package com.wb.logistics.db
 
 import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
@@ -38,13 +38,13 @@ class AppLocalRepositoryImpl(
             .andThen(flightDao.insertFlightOffice(flightOfficesEntity))
     }
 
-    override fun changeFlightOfficeUnloading(
-        dstOfficeId: Int,
-        isUnloading: Boolean,
-        notUnloadingCause: String,
-    ): Completable {
-        return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
-    }
+//    override fun changeFlightOfficeUnloading(
+//        dstOfficeId: Int,
+//        isUnloading: Boolean,
+//        notUnloadingCause: String,
+//    ): Completable {
+//        return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
+//    }
 
     override fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>> {
         return flightDao.findFlightOffice(id)
@@ -280,12 +280,12 @@ class AppLocalRepositoryImpl(
         attachedBoxDao.deleteAllAttachedBox()
     }
 
-    override fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>> {
-        return attachedBoxDao.groupAttachedBoxByDstAddress()
+    override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {
+        return attachedBoxDao.groupDeliveryBoxByOffice()
     }
 
-    override fun groupAttachedBox(): Single<AttachedBoxResultEntity> {
-        return attachedBoxDao.groupAttachedBox()
+    override fun groupDeliveryBox(): Single<AttachedBoxResultEntity> {
+        return attachedBoxDao.groupDeliveryBoxIsUnloading()
     }
 
     //==============================================================================================

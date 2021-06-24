@@ -11,7 +11,7 @@ class CongratulationInteractorImpl(
 ) : CongratulationInteractor {
 
     override fun groupAttachedBox(): Single<AttachedBoxResultEntity> {
-        return appLocalRepository.groupAttachedBox().compose(rxSchedulerFactory.applySingleSchedulers())
+        return appLocalRepository.groupDeliveryBox().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
 }

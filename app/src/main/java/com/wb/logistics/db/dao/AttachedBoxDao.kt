@@ -2,8 +2,8 @@ package com.wb.logistics.db.dao
 
 import androidx.room.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -41,10 +41,10 @@ interface AttachedBoxDao {
     @Query("DELETE FROM AttachedBoxEntity")
     fun deleteAllAttachedBox()
 
-    @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, isUnloading AS isUnloading, (SELECT COUNT(*) FROM AttachedBoxEntity WHERE FlightOfficeEntity.office_id = AttachedBoxEntity.dst_office_id) AS attachedCount, (SELECT COUNT(*) FROM ReturnBoxEntity WHERE FlightOfficeEntity.office_id = ReturnBoxEntity.current_office_id) AS returnCount, (SELECT COUNT(*) FROM UnloadedBoxEntity WHERE FlightOfficeEntity.office_id = UnloadedBoxEntity.current_office_id) AS unloadedCount FROM FlightOfficeEntity")
-    fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
+    @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM AttachedBoxEntity WHERE FlightOfficeEntity.office_id = AttachedBoxEntity.dst_office_id) AS attachedCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_src_office_id AND FlightBoxEntity.onBoard = 1) AS returnCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_dst_office_id AND FlightBoxEntity.onBoard = 0) AS unloadedCount FROM FlightOfficeEntity")
+    fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>
 
-    @Query("SELECT COUNT(isUnloading) AS pickPointCount, (SELECT COUNT(*) FROM AttachedBoxEntity) AS attachedCount, (SELECT COUNT(*) FROM UnloadedBoxEntity) AS unloadedCount FROM FlightOfficeEntity WHERE isUnloading = :isUnloading")
-    fun groupAttachedBox(isUnloading: Boolean = true): Single<AttachedBoxResultEntity>
+    @Query("SELECT 0 AS pickPointCount, (SELECT COUNT(*) FROM AttachedBoxEntity) AS attachedCount, (SELECT COUNT(*) FROM UnloadedBoxEntity) AS unloadedCount FROM FlightOfficeEntity")
+    fun groupDeliveryBoxIsUnloading(): Single<AttachedBoxResultEntity>
 
 }

@@ -475,10 +475,9 @@ class UnloadingInteractorImpl(
     }
 
     override fun completeUnloading(currentOfficeId: Int): Completable {
-        return switchScreenInTransit().andThen(appLocalRepository.changeFlightOfficeUnloading(
-            currentOfficeId,
-            true,
-            ""))
+        return switchScreenInTransit()
+            // TODO: 24.06.2021 вызывать метод  POST /api/v1/flights-logs
+            //.andThen(appLocalRepository.changeFlightOfficeUnloading(currentOfficeId, true, ""))
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

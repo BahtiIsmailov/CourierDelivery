@@ -47,7 +47,7 @@ public class FlightDeliveriesNotUnloadDelegate extends BaseAdapterDelegate<Fligh
         binding.deliveryCount.setText(item.getUnloadedCount());
 
         binding.tookCount.setText(item.getReturnCount());
-        binding.took.setVisibility(item.getReturnCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        binding.tookCount.setVisibility(item.getReturnCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
     }
 
     class NotUnloadViewHolder extends RecyclerView.ViewHolder {

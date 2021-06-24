@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flightdeliveries
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
@@ -30,7 +30,7 @@ class FlightDeliveriesViewModel(
 
     val stateUIList = MutableLiveData<FlightDeliveriesUIListState>()
 
-    private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
+    private var copyScannedBoxes = mutableListOf<DeliveryBoxGroupByOfficeEntity>()
 
     init {
         addSubscription(interactor.updatePvzAttachedBoxes().subscribe({}, {}))
@@ -38,7 +38,7 @@ class FlightDeliveriesViewModel(
 
     fun update() {
         fetchFlightId()
-        fetchAttachedBoxesGroupByOfficeId()
+        fetchDeliveryBoxesGroupByOfficeId()
     }
 
     private fun fetchFlightId() {
@@ -56,11 +56,11 @@ class FlightDeliveriesViewModel(
             FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbarEmpty())
     }
 
-    private fun fetchAttachedBoxesGroupByOfficeId() {
-        addSubscription(interactor.getAttachedBoxesGroupByOffice()
+    private fun fetchDeliveryBoxesGroupByOfficeId() {
+        addSubscription(interactor.getDeliveryBoxesGroupByOffice()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
-                Single.zip(build(boxes),
+                Single.zip(buildPvzItem(boxes),
                     isComplete(boxes),
                     { build, isComplete ->
                         FlightDeliveriesUIListState.ShowFlight(build, isComplete)
@@ -70,17 +70,17 @@ class FlightDeliveriesViewModel(
                 { fetchScannedBoxGroupByAddressError(it) }))
     }
 
-    private fun build(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+    private fun buildPvzItem(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes.withIndex())
-            .map { (index, item): IndexedValue<AttachedBoxGroupByOfficeEntity> ->
-                dataBuilder.buildSuccessItem(index, item)
+            .map { (index, item): IndexedValue<DeliveryBoxGroupByOfficeEntity> ->
+                dataBuilder.buildPvzSuccessItem(index, item)
             }
             .toList()
 
-    private fun isComplete(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+    private fun isComplete(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
-            .filter { it.isUnloading }
-            .map { it.isUnloading }
+            .filter { it.unloadedCount > 0 || it.returnCount > 0 }
+            .map { true }
             .defaultIfEmpty(false)
             .firstOrError()
 
@@ -99,7 +99,7 @@ class FlightDeliveriesViewModel(
 
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
-        if (item.isUnloading) {
+        if (item.unloadedCount > 0 || item.returnCount > 0) {
             _stateUINav.value =
                 FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
         } else {

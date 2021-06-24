@@ -47,7 +47,7 @@ public class FlightDeliveriesDelegate extends BaseAdapterDelegate<FlightDeliveri
         binding.redoCount.setText(item.getRedoCount());
 
         binding.undoCount.setText(item.getUndoCount());
-        binding.undo.setVisibility(item.getUndoCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        binding.undoCount.setVisibility(item.getUndoCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
 
         boolean isEnabled = item.isEnabled();
         binding.main.setEnabled(isEnabled);

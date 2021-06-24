@@ -81,8 +81,6 @@ class AppRemoteRepositoryImpl(
                     fullAddress = fullAddress,
                     longitude = long,
                     latitude = lat,
-                    isUnloading = false,
-                    notUnloadingCause = ""
                 )
             })
         }

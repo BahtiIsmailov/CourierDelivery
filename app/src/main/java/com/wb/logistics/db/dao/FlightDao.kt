@@ -37,13 +37,6 @@ interface FlightDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFlightOffice(flightOfficeEntity: List<FlightOfficeEntity>): Completable
 
-    @Query("UPDATE FlightOfficeEntity SET isUnloading=:isUnloading, notUnloadingCause=:notUnloadingCause WHERE office_id = :dstOfficeId")
-    fun changeFlightOfficeUnloading(
-        dstOfficeId: Int,
-        isUnloading: Boolean,
-        notUnloadingCause: String,
-    ): Completable
-
     @Query("SELECT * FROM FlightOfficeEntity WHERE office_id = :id")
     fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
 

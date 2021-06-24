@@ -1,11 +1,11 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 
 interface FlightDeliveriesDataBuilder {
-    fun buildSuccessItem(
-        index: Int, scannedBoxGroupByAddressEntity: AttachedBoxGroupByOfficeEntity,
+    fun buildPvzSuccessItem(
+        index: Int, scannedBoxGroupByAddressEntity: DeliveryBoxGroupByOfficeEntity,
     ): BaseItem
 
     fun buildEmptyItem(): BaseItem

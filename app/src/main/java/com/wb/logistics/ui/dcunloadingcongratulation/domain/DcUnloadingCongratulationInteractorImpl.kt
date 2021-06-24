@@ -17,7 +17,7 @@ class DcUnloadingCongratulationInteractorImpl(
     }
 
     override fun groupAttachedBox(): Single<AttachedBoxResultEntity> {
-        return appLocalRepository.groupAttachedBox()
+        return appLocalRepository.groupDeliveryBox()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

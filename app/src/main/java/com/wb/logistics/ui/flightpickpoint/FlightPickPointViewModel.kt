@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flightpickpoint
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException
@@ -36,7 +36,7 @@ class FlightPickPointViewModel(
 
     val stateUIList = MutableLiveData<FlightPickPointUIListState>()
 
-    private var copyScannedBoxes = mutableListOf<AttachedBoxGroupByOfficeEntity>()
+    private var copyScannedBoxes = mutableListOf<DeliveryBoxGroupByOfficeEntity>()
 
     fun action(actionView: FlightPickPointUIAction) {
         when (actionView) {
@@ -98,18 +98,18 @@ class FlightPickPointViewModel(
             { fetchScannedBoxGroupByAddressError(it) })
     }
 
-    private fun convertToFlightPickPointUIListState(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+    private fun convertToFlightPickPointUIListState(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Single.zip(buildItems(boxes), count(boxes),
             { items, countBox -> FlightPickPointUIListState.ShowFlight(items, countBox) })
 
-    private fun buildItems(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+    private fun buildItems(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes.withIndex())
-            .map { (index, item): IndexedValue<AttachedBoxGroupByOfficeEntity> ->
+            .map { (index, item): IndexedValue<DeliveryBoxGroupByOfficeEntity> ->
                 dataBuilder.buildSuccessItem(item, index)
             }
             .toList()
 
-    private fun count(boxes: List<AttachedBoxGroupByOfficeEntity>) =
+    private fun count(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
             .map { it.attachedCount }
             .scan { v1, v2 -> v1 + v2 }

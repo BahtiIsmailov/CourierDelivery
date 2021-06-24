@@ -1,7 +1,6 @@
 package com.wb.logistics.ui.flightdeliveriesdetails
 
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.items.FlightDeliveriesDetailsItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.items.FlightDeliveriesDetailsTitleItem
@@ -19,13 +18,13 @@ class FlightDeliveriesDetailsDataBuilderImpl(
         val items = mutableListOf<BaseItem>()
         var idx = 0
         idx = buildUnloadedItems(items, value.unloadedBoxes, idx)
-        buildReturnItems(items, value.returnBoxes,  idx)
+        buildReturnItems(items, value.returnBoxes, idx)
         return items
     }
 
     private fun buildUnloadedItems(
         items: MutableList<BaseItem>,
-        unloadedBoxes: List<UnloadedBoxEntity>,
+        unloadedBoxes: List<FlightBoxEntity>,
         idx: Int,
     ): Int {
         var idx1 = idx
@@ -38,7 +37,7 @@ class FlightDeliveriesDetailsDataBuilderImpl(
             for ((index, unloadedBox) in unloadedBoxes.withIndex()) {
                 items.add(FlightDeliveriesDetailsItem(upIndex(index),
                     unloadedBox.barcode,
-                    getDeliveryDate(unloadedBox.attachAt),
+                    getDeliveryDate(unloadedBox.updatedAt),
                     ++idx1))
             }
         }
@@ -47,7 +46,7 @@ class FlightDeliveriesDetailsDataBuilderImpl(
 
     private fun buildReturnItems(
         items: MutableList<BaseItem>,
-        returnBoxes: List<ReturnBoxByAddressEntity>,
+        returnBoxes: List<FlightBoxEntity>,
         idx: Int,
     ) {
         var idx1 = idx
@@ -60,7 +59,7 @@ class FlightDeliveriesDetailsDataBuilderImpl(
             for ((index, returnBox) in returnBoxes.withIndex()) {
                 items.add(FlightDeliveriesDetailsItem(upIndex(index),
                     returnBox.barcode,
-                    getReturnDate(returnBox.updatedAt, returnBox.address ),
+                    getReturnDate(returnBox.updatedAt, returnBox.updatedAt),
                     ++idx1))
             }
         }

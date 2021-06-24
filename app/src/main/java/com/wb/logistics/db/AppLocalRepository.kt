@@ -1,8 +1,8 @@
 package com.wb.logistics.db
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
+import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.*
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -22,11 +22,11 @@ interface AppLocalRepository {
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
     ): Completable
 
-    fun changeFlightOfficeUnloading(
-        dstOfficeId: Int,
-        isUnloading: Boolean,
-        notUnloadingCause: String,
-    ): Completable
+//    fun changeFlightOfficeUnloading(
+//        dstOfficeId: Int,
+//        isUnloading: Boolean,
+//        notUnloadingCause: String,
+//    ): Completable
 
     fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>>
 
@@ -118,9 +118,9 @@ interface AppLocalRepository {
 
     fun deleteAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
 
-    fun groupAttachedBoxByDstAddress(): Single<List<AttachedBoxGroupByOfficeEntity>>
+    fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>
 
-    fun groupAttachedBox(): Single<AttachedBoxResultEntity>
+    fun groupDeliveryBox(): Single<AttachedBoxResultEntity>
 
     fun deleteAllAttachedBox()
 

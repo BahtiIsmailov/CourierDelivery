@@ -22,7 +22,7 @@ class ForcedTerminationInteractorImpl(
 
     override fun completeUnloading(dstOfficeId: Int, cause: String): Completable {
         return screenManager.saveState(FlightStatus.INTRANSIT)
-            .andThen(appLocalRepository.changeFlightOfficeUnloading(dstOfficeId, true, cause))
+            //.andThen(appLocalRepository.changeFlightOfficeUnloading(dstOfficeId, true, cause))
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
