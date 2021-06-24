@@ -1,9 +1,9 @@
-package com.wb.logistics.ui.forcedtermination
+package com.wb.logistics.ui.unloadingforcedtermination
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.forcedtermination.domain.ForcedTerminationInteractor
+import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
@@ -40,18 +40,21 @@ class ForcedTerminationViewModel(
             })
     }
 
-
     fun onCompleteClick(idx: Int) {
-        val cause = when (idx) {
-            0 -> resourceProvider.getBoxNotFound()
-            1 -> resourceProvider.getNotPickupPoint()
-            else -> resourceProvider.getEmpty()
-        }
-        addSubscription(interactor.completeUnloading(parameters.dstOfficeId, cause)
+        addSubscription(interactor.completeUnloading(
+            resourceProvider.getDataLogFormat(parameters.dstOfficeId.toString(),
+                getCauseMessage(idx)))
             .subscribe(
                 { _navigateToBack.value = ForcedTerminationNavAction.NavigateToFlightDeliveries },
-                { _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack }))
+                {
+                    it.toString()
+                    _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack }))
     }
 
+    private fun getCauseMessage(idx: Int) = when (idx) {
+        0 -> resourceProvider.getBoxNotFound()
+        1 -> resourceProvider.getNotPickupPoint()
+        else -> resourceProvider.getEmpty()
+    }
 
 }

@@ -121,8 +121,7 @@ class UnloadingScanViewModel(
                     _navigationEvent.value =
                         UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPoint(
                             resourceProvider.getBoxNotBelongInfoTitle(),
-                            "Верните коробку туда, где взяли \n" +
-                                    "(СЦ/РЦ или ПВЗ)",
+                            resourceProvider.getBoxEmptyInfoDescription(),
                             it.barcode,
                             resourceProvider.getBoxNotBelongAddress())
                 }
@@ -192,8 +191,7 @@ class UnloadingScanViewModel(
         addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
             .subscribe({
                 if (it.isEmpty()) {
-                    addSubscription(interactor.completeUnloading(parameters.dstOfficeId).subscribe {
-                        // TODO: 31.05.2021 уточнить навигацию
+                    addSubscription(interactor.completeUnloading().subscribe {
                         _navigationEvent.value = UnloadingScanNavAction.NavigateToBack
                     })
                 } else _navigationEvent.value =
@@ -204,11 +202,6 @@ class UnloadingScanViewModel(
 
     fun onStopScanner() {
         interactor.scannerAction(ScannerAction.Stop)
-    }
-
-    fun onStartScanner() {
-        //observeBackButton()
-        interactor.scannerAction(ScannerAction.Start)
     }
 
     object HideBackButtonState

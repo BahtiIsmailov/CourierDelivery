@@ -15,6 +15,8 @@ interface AppRemoteRepository {
 
     fun flight(): Single<FlightDataEntity>
 
+    fun flightsLogs(flightId: Int, createdAt: String, data: String): Completable
+
     fun warehouseMatchingBoxes(flightId: String): Single<List<WarehouseMatchingBoxEntity>>
 
     fun pvzMatchingBoxes(flightId: String): Single<List<PvzMatchingBoxEntity>>
@@ -38,7 +40,7 @@ interface AppRemoteRepository {
         isManualInput: Boolean,
         updatedAt: String,
         currentOfficeId: Int,
-        barcodes: List<String>
+        barcodes: List<String>,
     ): Completable
 
     fun removeBoxFromWarehouseBalance(

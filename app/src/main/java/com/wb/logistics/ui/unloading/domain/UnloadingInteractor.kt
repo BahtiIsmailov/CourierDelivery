@@ -27,7 +27,7 @@ interface UnloadingInteractor {
 
     fun scannerAction(scannerAction: ScannerAction)
 
-    fun completeUnloading(currentOfficeId: Int): Completable
+    fun completeUnloading(): Completable
 
     fun officeNameById(currentOfficeId: Int): Single<String>
 

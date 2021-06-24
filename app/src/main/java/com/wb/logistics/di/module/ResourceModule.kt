@@ -13,11 +13,11 @@ import com.wb.logistics.ui.flightloader.FlightLoaderProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.flightsempty.FlightsEmptyResourceProvider
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationResourceProvider
 import com.wb.logistics.ui.scanner.ScannerResourceProvider
 import com.wb.logistics.ui.splash.AppResourceProvider
 import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
 import org.koin.dsl.module
 
 val resourceModule = module {

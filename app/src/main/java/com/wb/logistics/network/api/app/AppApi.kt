@@ -5,6 +5,7 @@ import com.wb.logistics.network.api.app.remote.deleteboxesfromflight.RemoveBoxes
 import com.wb.logistics.network.api.app.remote.flight.FlightResponse
 import com.wb.logistics.network.api.app.remote.flightboxes.FlightBoxesResponse
 import com.wb.logistics.network.api.app.remote.flightboxtobalance.FlightBoxToBalanceRequest
+import com.wb.logistics.network.api.app.remote.flightlog.FlightLogRequest
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusResponse
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateResponse
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusesStateResponse
@@ -33,6 +34,12 @@ interface AppApi {
     fun flight(
         @Path(value = "version", encoded = true) version: String,
     ): Single<FlightResponse?>
+
+    @POST("{version}/flights-logs")
+    fun flightsLogs(
+        @Path(value = "version", encoded = true) version: String,
+        @Body flightsLogsRequest: List<FlightLogRequest>
+    ): Completable
 
     //==============================================================================================
     //boxes
@@ -143,5 +150,6 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Body box: BoxTrackerRequest,
     ): Completable
+
 
 }

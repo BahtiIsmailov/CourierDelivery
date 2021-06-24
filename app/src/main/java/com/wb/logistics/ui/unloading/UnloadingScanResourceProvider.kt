@@ -35,10 +35,16 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getDelivered(barcode: String) =
         context.getString(R.string.unloading_box_delivered, barcode)
 
-    fun getBoxNotBelongTitle() : String = context.getString(R.string.unloading_box_not_belong_dc_title)
+    fun getBoxNotBelongTitle(): String =
+        context.getString(R.string.unloading_box_not_belong_dc_title)
 
-    fun getBoxNotBelongInfoTitle() : String = context.getString(R.string.unloading_box_not_belong_info_title)
+    fun getBoxNotBelongInfoTitle(): String =
+        context.getString(R.string.unloading_box_not_belong_info_title)
 
-    fun getBoxNotBelongAddress() : String = context.getString(R.string.dc_loading_box_not_belong_address_title)
+    fun getBoxEmptyInfoDescription(): String =
+        context.getString(R.string.unloading_box_not_belong_info_title)
+
+    fun getBoxNotBelongAddress(): String =
+        context.getString(R.string.dc_loading_box_not_belong_address_title)
 
 }

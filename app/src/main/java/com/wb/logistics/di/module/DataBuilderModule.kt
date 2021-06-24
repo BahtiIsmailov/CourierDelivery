@@ -15,9 +15,9 @@ import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsDataBuilder
 import com.wb.logistics.ui.flights.FlightsDataBuilderImpl
 import com.wb.logistics.ui.flights.FlightsResourceProvider
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationDataBuilder
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationDataBuilderImpl
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationResourceProvider
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationDataBuilder
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationDataBuilderImpl
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
 import com.wb.logistics.utils.time.TimeFormatter
 import org.koin.dsl.module
 

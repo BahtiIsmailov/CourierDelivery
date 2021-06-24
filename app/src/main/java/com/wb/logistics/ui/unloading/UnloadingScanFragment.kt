@@ -17,7 +17,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
@@ -25,6 +24,7 @@ import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING
 import com.wb.logistics.ui.unloading.views.UnloadingAcceptedMode
 import com.wb.logistics.ui.unloading.views.UnloadingInfoMode
 import com.wb.logistics.ui.unloading.views.UnloadingReturnMode
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationParameters
 import com.wb.logistics.utils.SoftKeyboard.hideKeyBoard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize

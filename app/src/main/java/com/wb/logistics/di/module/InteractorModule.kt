@@ -25,8 +25,6 @@ import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractor
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractorImpl
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.flights.domain.FlightsInteractorImpl
-import com.wb.logistics.ui.forcedtermination.domain.ForcedTerminationInteractor
-import com.wb.logistics.ui.forcedtermination.domain.ForcedTerminationInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
@@ -35,6 +33,8 @@ import com.wb.logistics.ui.splash.domain.AppInteractorImpl
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
+import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
+import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractorImpl
 import com.wb.logistics.utils.managers.ScreenManager
 import org.koin.dsl.module
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
@@ -171,11 +171,15 @@ val interactorModule = module {
 
     fun provideForcedTerminationInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
+        timeManager: TimeManager,
         screenManager: ScreenManager,
     ): ForcedTerminationInteractor {
         return ForcedTerminationInteractorImpl(rxSchedulerFactory,
+            appRemoteRepository,
             appLocalRepository,
+            timeManager,
             screenManager)
     }
 
@@ -229,7 +233,7 @@ val interactorModule = module {
     single { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideForcedTerminationInteractor(get(), get(), get()) }
+    single { provideForcedTerminationInteractor(get(), get(), get(), get(), get()) }
     single { provideCongratulationInteractor(get(), get()) }
     single { provideDcUnloadingInteractor(get(), get(), get(), get(), get()) }
     single { provideDcForcedTerminationInteractor(get(), get(), get()) }

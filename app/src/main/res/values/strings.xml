@@ -168,6 +168,7 @@
     <string name="flight_deliveries_details_return_title">Возврат</string>
     <string name="flight_deliveries_details_title_count">%1$d шт.</string>
 
+    <string name="flights_deliveries_details_proceed">Продолжить выгрузку</string>
 
     <string name="unloading_scan_label" />
 
@@ -195,6 +196,8 @@
     <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ</string>
     <string name="unloading_box_not_belong_dc_return_car">верните её в машину</string>
     <string name="unloading_box_not_belong_info_title">Информация по ШК не найдена</string>
+    <string name="unloading_box_not_belong_info_empty_description">Оставте ее на своем месте</string>
+    <string name="unloading_box_log_data">{\"k1\": %1$s, \"k2\": %2$s}</string>
 
     <string name="dc_unloading_box_not_found_title">ШК не найден</string>
     <string name="dc_unloading_box_already_unloaded">Коробка %1$s\nуже выгружена на РЦ</string>

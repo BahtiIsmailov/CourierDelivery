@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.forcedtermination
+package com.wb.logistics.ui.unloadingforcedtermination
 
 data class ForcedTerminationItem(
     val number: String,

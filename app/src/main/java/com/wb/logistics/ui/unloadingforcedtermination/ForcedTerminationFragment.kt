@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.forcedtermination
+package com.wb.logistics.ui.unloadingforcedtermination
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.wb.logistics.databinding.ForcedTerminationFragmentBinding
+import com.wb.logistics.databinding.UnloadingForcedTerminationFragmentBinding
 import com.wb.logistics.ui.splash.NavToolbarListener
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -20,14 +20,14 @@ class ForcedTerminationFragment : Fragment() {
             FORCED_TERMINATION_KEY))
     }
 
-    private var _binding: ForcedTerminationFragmentBinding? = null
+    private var _binding: UnloadingForcedTerminationFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = ForcedTerminationFragmentBinding.inflate(inflater, container, false)
+        _binding = UnloadingForcedTerminationFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 

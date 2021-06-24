@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.forcedtermination;
+package com.wb.logistics.ui.unloadingforcedtermination;
 
 import android.content.Context;
 import android.view.LayoutInflater;

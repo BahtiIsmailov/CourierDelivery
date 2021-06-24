@@ -4,4 +4,3 @@ data class FlightCarResponse(
     val id: Int,
     val plateNumber: String,
 )
-

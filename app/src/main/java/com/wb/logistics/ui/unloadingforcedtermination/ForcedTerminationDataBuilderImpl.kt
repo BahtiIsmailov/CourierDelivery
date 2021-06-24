@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.forcedtermination
+package com.wb.logistics.ui.unloadingforcedtermination
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_DATE

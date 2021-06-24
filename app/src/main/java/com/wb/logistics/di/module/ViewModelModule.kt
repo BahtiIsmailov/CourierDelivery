@@ -14,13 +14,13 @@ import com.wb.logistics.ui.flightloader.FlightLoaderViewModel
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointViewModel
 import com.wb.logistics.ui.flights.FlightsViewModel
 import com.wb.logistics.ui.flightsempty.FlightsEmptyViewModel
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationViewModel
 import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
 import com.wb.logistics.ui.splash.LoaderViewModel
 import com.wb.logistics.ui.unloading.*
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationViewModel
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationParameters
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

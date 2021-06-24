@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.wb.logistics.R;
 import com.wb.logistics.databinding.DcForcedTerminationDetailsLegendBinding;
-import com.wb.logistics.ui.forcedtermination.ForcedTerminationItem;
+import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationItem;
 
 import java.util.List;
 

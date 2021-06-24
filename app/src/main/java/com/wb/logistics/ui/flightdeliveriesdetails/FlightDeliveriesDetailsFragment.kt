@@ -1,13 +1,12 @@
 package com.wb.logistics.ui.flightdeliveriesdetails
 
-import android.media.AudioManager
-import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +16,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsDelegate
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsTitleDelegate
 import com.wb.logistics.ui.splash.NavToolbarListener
+import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -47,6 +47,13 @@ class FlightDeliveriesDetailsFragment : Fragment() {
         initRecyclerView()
         initAdapter()
         initObserver()
+        initListener()
+    }
+
+    private fun initListener() {
+        binding.proceedBoxes.setOnClickListener {
+            viewModel.onCompleteClick()
+        }
     }
 
     private fun displayItems(items: List<BaseItem>) {
@@ -89,21 +96,20 @@ class FlightDeliveriesDetailsFragment : Fragment() {
                 is FlightDeliveriesDetailsItemsState.Items -> displayItems(it.items)
             }
         }
+
+        viewModel.stateUINav.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                is FlightDeliveriesDetailsUINavState.NavigateToUpload -> {
+                    findNavController().navigate(FlightDeliveriesDetailsFragmentDirections.actionFlightDeliveriesDetailsFragmentToUnloadingScanFragment(
+                        UnloadingScanParameters(state.currentOfficeId)))
+                }
+            }
+        })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun beepAdded() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
-    }
-
-    private fun beepSkip() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
     }
 
     companion object {
@@ -113,4 +119,5 @@ class FlightDeliveriesDetailsFragment : Fragment() {
 }
 
 @Parcelize
-data class FlightDeliveriesDetailsParameters(val dstOfficeId: Int, val shortAddress: String) : Parcelable
+data class FlightDeliveriesDetailsParameters(val currentOfficeId: Int, val shortAddress: String) :
+    Parcelable

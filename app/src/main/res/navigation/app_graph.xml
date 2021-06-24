@@ -12,24 +12,48 @@
         tools:layout="@layout/flight_loader_fragment">
         <action
             android:id="@+id/action_flightLoaderFragment_to_flightsEmptyFragment"
-            app:destination="@id/flightsEmptyFragment" />
+            app:destination="@id/flightsEmptyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightLoaderFragment_to_flightsFragment"
             app:destination="@id/flightsFragment"
             app:popUpTo="@+id/flightLoaderFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightLoaderFragment_to_dcLoadingFragment"
-            app:destination="@id/dcLoadingFragment" />
+            app:destination="@id/dcLoadingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightLoaderFragment_to_flightDeliveriesFragment"
-            app:destination="@id/flightDeliveriesFragment" />
+            app:destination="@id/flightDeliveriesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightLoaderFragment_to_unloadingScanFragment"
-            app:destination="@id/unloadingScanFragment" />
+            app:destination="@id/unloadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightLoaderFragment_to_congratulationFragment"
-            app:destination="@id/congratulationFragment" />
+            app:destination="@id/congratulationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
@@ -75,7 +99,11 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_receptionFragment_to_flightPickPointFragment"
-            app:destination="@id/flightPickPointFragment" />
+            app:destination="@id/flightPickPointFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -102,7 +130,11 @@
         tools:layout="@layout/flight_pick_point_fragment">
         <action
             android:id="@+id/action_flightPickPointFragment_to_flightDeliveriesFragment"
-            app:destination="@id/flightDeliveriesFragment" />
+            app:destination="@id/flightDeliveriesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -119,10 +151,18 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_flightDeliveriesFragment_to_congratulationFragment"
-            app:destination="@id/congratulationFragment" />
+            app:destination="@id/congratulationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_flightDeliveriesFragment_to_flightDeliveriesDetailsFragment"
-            app:destination="@id/flightDeliveriesDetailsFragment" />
+            app:destination="@id/flightDeliveriesDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -164,7 +204,11 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_unloadingScanFragment_to_forcedTerminationFragment"
-            app:destination="@id/forcedTerminationFragment" />
+            app:destination="@id/unloadingForcedTerminationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -212,19 +256,23 @@
     </fragment>
 
     <fragment
-        android:id="@+id/forcedTerminationFragment"
-        android:name="com.wb.logistics.ui.forcedtermination.ForcedTerminationFragment"
+        android:id="@+id/unloadingForcedTerminationFragment"
+        android:name="com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationFragment"
         android:label="@string/force_termination_label"
-        tools:layout="@layout/forced_termination_fragment">
+        tools:layout="@layout/unloading_forced_termination_fragment">
 
         <argument
             android:name="forced_termination_key"
-            app:argType="com.wb.logistics.ui.forcedtermination.ForcedTerminationParameters"
+            app:argType="com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_forcedTerminationFragment_to_flightDeliveriesFragment"
             app:destination="@id/flightDeliveriesFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
@@ -235,7 +283,11 @@
         tools:layout="@layout/unloading_congratulation_fragment">
         <action
             android:id="@+id/action_congratulationFragment_to_dcUnloadingScanFragment"
-            app:destination="@id/dcUnloadingScanFragment" />
+            app:destination="@id/dcUnloadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
@@ -248,6 +300,13 @@
             android:name="flight_deliveries_details_key"
             app:argType="com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_flightDeliveriesDetailsFragment_to_unloadingScanFragment"
+            app:destination="@id/unloadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
@@ -258,19 +317,39 @@
         tools:layout="@layout/dc_unloading_scan_fragment">
         <action
             android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingBoxesFragment"
-            app:destination="@id/dcUnloadingBoxesFragment" />
+            app:destination="@id/dcUnloadingBoxesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_dcUnloadingScanFragment_to_dcForcedTerminationFragment"
-            app:destination="@id/dcForcedTerminationFragment" />
+            app:destination="@id/dcForcedTerminationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingCongratulationFragment"
-            app:destination="@id/dcUnloadingCongratulationFragment" />
+            app:destination="@id/dcUnloadingCongratulationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingBoxNotBelongFragment"
-            app:destination="@id/dcUnloadingBoxNotBelongFragment" />
+            app:destination="@id/dcUnloadingBoxNotBelongFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_dcUnloadingScanFragment_to_dcUnloadingHandleFragment"
-            app:destination="@id/dcUnloadingHandleFragment" />
+            app:destination="@id/dcUnloadingHandleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -304,7 +383,11 @@
         tools:layout="@layout/dc_unloading_congratulation_fragment">
         <action
             android:id="@+id/action_dcUnloadingCongratulationFragment_to_flightLoaderFragment"
-            app:destination="@id/flightLoaderFragment" />
+            app:destination="@id/flightLoaderFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -314,10 +397,18 @@
         tools:layout="@layout/dc_forced_termination_fragment">
         <action
             android:id="@+id/action_dcForcedTerminationFragment_to_dcForcedTerminationDetailsFragment"
-            app:destination="@id/dcForcedTerminationDetailsFragment" />
+            app:destination="@id/dcForcedTerminationDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_dcForcedTerminationFragment_to_dcUnloadingCongratulationFragment"
-            app:destination="@id/dcUnloadingCongratulationFragment" />
+            app:destination="@id/dcUnloadingCongratulationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
