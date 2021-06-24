@@ -6,8 +6,11 @@ import kotlin.math.abs
 
 class FlightDeliveriesResourceProvider(private val context: Context) {
 
-    fun getDeliveryToolbar(id: Int) =
-        context.getString(R.string.flight_deliveries_delivery_toolbar_title, id)
+    fun getDeliveryToolbar(flightId: String) =
+        context.getString(R.string.flight_deliveries_delivery_toolbar_title, flightId)
+
+    fun getDeliveryToolbarEmpty() =
+        context.getString(R.string.flight_deliveries_delivery_toolbar_empty_title)
 
     fun getRedoCount(count: Int) = context.getString(R.string.flight_deliveries_redo_count, count)
 

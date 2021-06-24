@@ -150,7 +150,8 @@
     <string name="flight_deliveries_flight_toolbar_title">Рейс №%1$d</string>
     <string name="flight_deliveries_flight_list_error">Ошибка получения данных</string>
     <string name="flight_deliveries_flight_not_define_toolbar_title">Не определен</string>
-    <string name="flight_deliveries_delivery_toolbar_title">Доставка №%1$d</string>
+    <string name="flight_deliveries_delivery_toolbar_title">Доставка №%1$s</string>
+    <string name="flight_deliveries_delivery_toolbar_empty_title">Доставка</string>
     <string name="flight_deliveries_title_empty">Рейс</string>
     <string name="flight_deliveries_redo_count">Доставить %1$d шт.</string>
     <string name="flight_deliveries_undo_count">Вернуть %1$d шт.</string>

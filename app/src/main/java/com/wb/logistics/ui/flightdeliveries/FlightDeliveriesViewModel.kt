@@ -7,7 +7,6 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
-import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -17,7 +16,6 @@ class FlightDeliveriesViewModel(
     private val resourceProvider: FlightDeliveriesResourceProvider,
     private val interactor: FlightDeliveriesInteractor,
     private val dataBuilder: FlightDeliveriesDataBuilder,
-    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _stateUIToolBar = MutableLiveData<FlightDeliveriesUIToolbarState>()
@@ -45,16 +43,17 @@ class FlightDeliveriesViewModel(
 
     private fun fetchFlightId() {
         addSubscription(interactor.flightId()
-            .subscribe({ fetchFlightIdComplete(it) }, { fetchFlightIdError(it) }))
+            .map { resourceProvider.getDeliveryToolbar(it) }
+            .subscribe({ fetchFlightIdComplete(it) }, { fetchFlightIdError() }))
     }
 
-    private fun fetchFlightIdComplete(flightId: Int) {
+    private fun fetchFlightIdComplete(title: String) {
+        _stateUIToolBar.value = FlightDeliveriesUIToolbarState.Delivery(title)
+    }
+
+    private fun fetchFlightIdError() {
         _stateUIToolBar.value =
-            FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbar(flightId))
-    }
-
-    private fun fetchFlightIdError(throwable: Throwable) {
-
+            FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbarEmpty())
     }
 
     private fun fetchAttachedBoxesGroupByOfficeId() {
@@ -63,9 +62,10 @@ class FlightDeliveriesViewModel(
             .flatMap { boxes ->
                 Single.zip(build(boxes),
                     isComplete(boxes),
-                    { build, isComplete -> Pair(build, isComplete) })
+                    { build, isComplete ->
+                        FlightDeliveriesUIListState.ShowFlight(build, isComplete)
+                    })
             }
-            .map { FlightDeliveriesUIListState.ShowFlight(it.first, it.second) }
             .subscribe({ fetchScannedBoxGroupByAddressComplete(it) },
                 { fetchScannedBoxGroupByAddressError(it) }))
     }
@@ -118,7 +118,7 @@ class FlightDeliveriesViewModel(
 
     fun onCompleteConfirm() {
         bottomProgressEvent.value = true
-        addSubscription(interactor.switchScreen().subscribe(
+        addSubscription(interactor.switchScreenDcUnloading().subscribe(
             {
                 _stateUINav.value = FlightDeliveriesUINavState.NavigateToCongratulation
             },
