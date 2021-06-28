@@ -152,6 +152,8 @@
         <action
             android:id="@+id/action_flightDeliveriesFragment_to_congratulationFragment"
             app:destination="@id/congratulationFragment"
+            app:popUpTo="@+id/flightLoaderFragment"
+            app:popUpToInclusive="true"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"

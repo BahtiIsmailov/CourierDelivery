@@ -105,11 +105,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        CongratulationViewModel(
-            get(),
-            get(),
-            get(),
-            get())
+        CongratulationViewModel(get(), get(), get())
     }
 
     viewModel {

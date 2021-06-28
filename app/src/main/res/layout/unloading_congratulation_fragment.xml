@@ -18,31 +18,30 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:gravity="center"
-        android:layout_marginTop="25dp"
         style="@style/MediumRegularDarkText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
         android:text="@string/congratulation_title"
         app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
     <TextView
         android:id="@+id/info"
-        android:layout_marginTop="12dp"
         style="@style/SMediumRegularLightText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:gravity="center"
-        android:text="@string/congratulation_title"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        tools:text="Вы доставили 14 из 16 коробок в 4 пункта" />
+        android:text="@string/congratulation_info"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
-        app:app_background="@drawable/progress_image_button_warning"
+        app:app_background="@drawable/progress_image_button_default"
         app:app_icon="@drawable/ic_redo_congratulation"
         app:app_state="enable"
         app:app_text="@string/congratulation_complete_delivery"
@@ -60,6 +59,48 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="50dp" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginBottom="68dp"
+        android:background="#EDEEF0"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ic_delivered"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:src="@drawable/ic_congratulation_delivered"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider1" />
+
+    <TextView
+        android:id="@+id/delivered"
+        style="@style/SMediumRegularLightText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/dc_congratulation_delivered_info"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_button"
+        app:layout_constraintStart_toEndOf="@+id/ic_delivered"
+        app:layout_constraintTop_toTopOf="@+id/divider1" />
+
+    <TextView
+        android:id="@+id/delivered_count"
+        style="@style/SMediumRegularDarkText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_button"
+        app:layout_constraintStart_toEndOf="@+id/delivered"
+        app:layout_constraintTop_toTopOf="@+id/divider1"
+        tools:text="4 / 9" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_button"

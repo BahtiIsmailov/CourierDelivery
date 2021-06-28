@@ -16,8 +16,8 @@
         android:background="@color/background_content_light"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:text="@string/flight_deliveries_activated"
         android:paddingEnd="16dp"
+        android:text="@string/flight_deliveries_activated"
         android:textColor="#642CA3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,14 +30,31 @@
         android:layout_gravity="center_vertical"
         android:background="@color/delivery_flight_background"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/complete"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status"
         tools:listitem="@layout/flight_deliveries_layout_route" />
 
+    <View
+        android:id="@+id/overlay_boxes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_barrier"
+        app:layout_constraintTop_toBottomOf="@+id/status" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/bottom_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="complete_delivery_negative, complete_delivery_positive" />
+
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/complete"
+        android:id="@+id/complete_delivery_negative"
         android:layout_width="0dp"
         android:layout_height="72dp"
         android:visibility="gone"
@@ -51,5 +68,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.wb.logistics.views.ProgressImageButtonView
+        android:id="@+id/complete_delivery_positive"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:visibility="gone"
+        app:app_background="@drawable/progress_image_button_default"
+        app:app_icon="@drawable/ic_complete_delivery"
+        app:app_state="enable"
+        app:app_text="@string/flights_deliveries_complete"
+        app:app_text_color_disable="@color/button_default_text_disable"
+        app:app_text_color_enable="@color/button_default_text_enable"
+        app:app_text_color_progress="@color/button_default_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

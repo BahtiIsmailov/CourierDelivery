@@ -15,11 +15,13 @@ import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
+import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FlightDeliveriesFragment : Fragment() {
@@ -56,8 +58,11 @@ class FlightDeliveriesFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener {
-            viewModel.onCompleteClick()
+        binding.completeDeliveryPositive.setOnClickListener {
+            viewModel.onCompleteDeliveryPositiveClick()
+        }
+        binding.completeDeliveryNegative.setOnClickListener {
+            viewModel.onCompleteDeliveryNegativeClick()
         }
     }
 
@@ -79,10 +84,12 @@ class FlightDeliveriesFragment : Fragment() {
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToUnloadingScanFragment(
                         UnloadingScanParameters(state.dstOfficeId)))
                 }
-                FlightDeliveriesUINavState.NavigateToCongratulation ->
+                FlightDeliveriesUINavState.NavigateToCongratulation -> {
+                    (activity as NavToolbarListener).hideToolbar()
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToCongratulationFragment())
-                is FlightDeliveriesUINavState.NavigateToDialogComplete -> showDialogReturnBalance(
-                    state.description)
+                }
+                is FlightDeliveriesUINavState.NavigateToDialogComplete ->
+                    showDialogReturnBalance(state.description)
                 is FlightDeliveriesUINavState.NavigateToUnloadDetails ->
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToFlightDeliveriesDetailsFragment(
                         FlightDeliveriesDetailsParameters(state.dstOfficeId, state.officeName)))
@@ -92,18 +99,41 @@ class FlightDeliveriesFragment : Fragment() {
         viewModel.stateUIList.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is FlightDeliveriesUIListState.ShowFlight -> {
-                    updateBottom(state.isComplete)
+                    updateBottom(state.bottomState)
                     displayItems(state.items)
                 }
                 is FlightDeliveriesUIListState.ProgressFlight -> {
-                    updateBottom(state.isComplete)
+                    updateBottom(state.bottomState)
                     displayItems(state.items)
                 }
                 is FlightDeliveriesUIListState.UpdateFlight -> {
-                    updateBottom(state.isComplete)
+                    updateBottom(state.bottomState)
                     displayItems(state.items)
                 }
             }
+        }
+
+        viewModel.stateUIProgress.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                FlightDeliveriesUIProgressState.CompleteDeliveryNormal -> {
+                    binding.overlayBoxes.visibility = GONE
+                    binding.completeDeliveryNegative.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDeliveryPositive.setState(ProgressImageButtonMode.ENABLED)
+                }
+                FlightDeliveriesUIProgressState.CompleteNegativeDeliveryProgress -> {
+                    binding.overlayBoxes.visibility = VISIBLE
+                    binding.completeDeliveryNegative.setState(ProgressImageButtonMode.PROGRESS)
+                }
+                FlightDeliveriesUIProgressState.CompletePositiveDeliveryProgress -> {
+                    binding.overlayBoxes.visibility = VISIBLE
+                    binding.completeDeliveryPositive.setState(ProgressImageButtonMode.PROGRESS)
+                }
+            }
+        }
+
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
         }
 
     }
@@ -118,8 +148,21 @@ class FlightDeliveriesFragment : Fragment() {
         (activity as NavToolbarListener).hideBackButton()
     }
 
-    private fun updateBottom(isComplete: Boolean) {
-        binding.complete.visibility = if (isComplete) VISIBLE else GONE
+    private fun updateBottom(state: FlightDeliveriesUIBottomState) {
+        when (state) {
+            FlightDeliveriesUIBottomState.ShowCompleteNegativeDelivery -> {
+                binding.completeDeliveryNegative.visibility = VISIBLE
+                binding.completeDeliveryPositive.visibility = GONE
+            }
+            FlightDeliveriesUIBottomState.ShowCompletePositiveDelivery -> {
+                binding.completeDeliveryNegative.visibility = GONE
+                binding.completeDeliveryPositive.visibility = VISIBLE
+            }
+            FlightDeliveriesUIBottomState.Empty -> {
+                binding.completeDeliveryNegative.visibility = GONE
+                binding.completeDeliveryPositive.visibility = GONE
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -185,7 +228,7 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun showDialogReturnBalance(description: String) {
         val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.dc_loading_return_dialog_title),
+            getString(R.string.flight_deliveries_dialog_negative_title),
             description,
             getString(R.string.flight_deliveries_dialog_force_positive_button),
             getString(R.string.flight_deliveries_dialog_force_negative_button)

@@ -3,6 +3,8 @@ package com.wb.logistics.ui.flightdeliveries
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
@@ -26,11 +28,17 @@ class FlightDeliveriesViewModel(
     val stateUINav: LiveData<FlightDeliveriesUINavState>
         get() = _stateUINav
 
-    val bottomProgressEvent = MutableLiveData<Boolean>()
+    private val _stateUIProgress = SingleLiveEvent<FlightDeliveriesUIProgressState>()
+    val stateUIProgress: LiveData<FlightDeliveriesUIProgressState>
+        get() = _stateUIProgress
 
     val stateUIList = MutableLiveData<FlightDeliveriesUIListState>()
 
     private var copyScannedBoxes = mutableListOf<DeliveryBoxGroupByOfficeEntity>()
+
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
 
     init {
         addSubscription(interactor.updatePvzAttachedBoxes().subscribe({}, {}))
@@ -61,9 +69,9 @@ class FlightDeliveriesViewModel(
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
                 Single.zip(buildPvzItem(boxes),
-                    isComplete(boxes),
-                    { build, isComplete ->
-                        FlightDeliveriesUIListState.ShowFlight(build, isComplete)
+                    completeDeliveryState(boxes),
+                    { build, completeDeliveryState ->
+                        FlightDeliveriesUIListState.ShowFlight(build, completeDeliveryState)
                     })
             }
             .subscribe({ fetchScannedBoxGroupByAddressComplete(it) },
@@ -77,12 +85,14 @@ class FlightDeliveriesViewModel(
             }
             .toList()
 
-    private fun isComplete(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
+    private fun completeDeliveryState(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
-            .filter { it.unloadedCount > 0 || it.returnCount > 0 }
-            .map { true }
-            .defaultIfEmpty(false)
-            .firstOrError()
+            .map { it.attachedCount }
+            .reduce(0, { accumulator, attachedCount -> accumulator + attachedCount })
+            .map {
+                if (it == 0) FlightDeliveriesUIBottomState.ShowCompletePositiveDelivery
+                else FlightDeliveriesUIBottomState.ShowCompleteNegativeDelivery
+            }
 
     private fun fetchScannedBoxGroupByAddressComplete(flight: FlightDeliveriesUIListState) {
         stateUIList.value = flight
@@ -91,9 +101,10 @@ class FlightDeliveriesViewModel(
     private fun fetchScannedBoxGroupByAddressError(throwable: Throwable) {
         stateUIList.value = when (throwable) {
             is UnauthorizedException -> FlightDeliveriesUIListState.UpdateFlight(
-                listOf(dataBuilder.buildErrorMessageItem(throwable.message)), false)
+                listOf(dataBuilder.buildErrorMessageItem(throwable.message)),
+                FlightDeliveriesUIBottomState.Empty)
             else -> FlightDeliveriesUIListState.UpdateFlight(
-                listOf(dataBuilder.buildErrorItem()), false)
+                listOf(dataBuilder.buildErrorItem()), FlightDeliveriesUIBottomState.Empty)
         }
     }
 
@@ -107,26 +118,54 @@ class FlightDeliveriesViewModel(
         }
     }
 
-    fun onCompleteClick() {
-        addSubscription(interactor.getAttachedBoxes().subscribe({
-            _stateUINav.value =
-                FlightDeliveriesUINavState.NavigateToDialogComplete(resourceProvider.getDescriptionDialog(
-                    it))
-        },
-            {}))
+    fun onCompleteDeliveryNegativeClick() {
+        addSubscription(interactor.getDeliveryBoxesGroupByOffice()
+            .flatMap { boxes ->
+                Observable.fromIterable(boxes)
+                    .map { it.attachedCount }
+                    .reduce(0, { accumulator, attachedCount -> accumulator + attachedCount })
+            }
+            .subscribe({
+                _stateUINav.value =
+                    FlightDeliveriesUINavState.NavigateToDialogComplete(
+                        resourceProvider.getDescriptionDialog(it))
+            }) { }
+        )
+    }
+
+    fun onCompleteDeliveryPositiveClick() {
+        _stateUIProgress.value = FlightDeliveriesUIProgressState.CompletePositiveDeliveryProgress
+        toCongratulation()
     }
 
     fun onCompleteConfirm() {
-        bottomProgressEvent.value = true
-        addSubscription(interactor.switchScreenDcUnloading().subscribe(
-            {
-                _stateUINav.value = FlightDeliveriesUINavState.NavigateToCongratulation
-            },
-            {
-                // TODO: 31.05.2021 реализовать сообщение
-                bottomProgressEvent.value = false
-            }))
-
+        _stateUIProgress.value = FlightDeliveriesUIProgressState.CompleteNegativeDeliveryProgress
+        toCongratulation()
     }
+
+    private fun toCongratulation() {
+        addSubscription(interactor.switchScreenToDcUnloading().subscribe(
+            { switchScreenToDcUnloadingComplete() }) { switchScreenToDcUnloadingError(it) })
+    }
+
+    private fun switchScreenToDcUnloadingComplete() {
+        _stateUIProgress.value = FlightDeliveriesUIProgressState.CompleteDeliveryNormal
+        _stateUINav.value = FlightDeliveriesUINavState.NavigateToCongratulation
+    }
+
+    private fun switchScreenToDcUnloadingError(throwable: Throwable) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> resourceProvider.getCompleteDeliveryDialogMessage()
+        }
+        _stateUIProgress.value = FlightDeliveriesUIProgressState.CompleteDeliveryNormal
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getCompleteDeliveryDialogTitle(),
+            message,
+            resourceProvider.getCompleteDeliveryDialogButton())
+    }
+
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

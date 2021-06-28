@@ -10,9 +10,7 @@ interface FlightDeliveriesInteractor {
 
     fun getDeliveryBoxesGroupByOffice() : Single<List<DeliveryBoxGroupByOfficeEntity>>
 
-    fun getAttachedBoxes(): Single<Int>
-
-    fun switchScreenDcUnloading(): Completable
+    fun switchScreenToDcUnloading(): Completable
 
     fun updatePvzAttachedBoxes(): Completable
 

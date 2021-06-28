@@ -32,9 +32,7 @@ class CongratulationFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.infoState.observe(viewLifecycleOwner) {
-            binding.info.text = it
-        }
+        viewModel.infoState.observe(viewLifecycleOwner) { binding.deliveredCount.text = it }
 
         viewModel.navigateToBack.observe(viewLifecycleOwner) {
             findNavController().navigate(CongratulationFragmentDirections.actionCongratulationFragmentToDcUnloadingScanFragment())

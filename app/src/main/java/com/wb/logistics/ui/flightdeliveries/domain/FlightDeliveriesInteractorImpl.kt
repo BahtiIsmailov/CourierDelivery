@@ -25,14 +25,7 @@ class FlightDeliveriesInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun getAttachedBoxes(): Single<Int> {
-        return appLocalRepository.observeAttachedBoxes()
-            .map { it.size }
-            .firstOrError()
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-
-    override fun switchScreenDcUnloading(): Completable {
+    override fun switchScreenToDcUnloading(): Completable {
         return screenManager.saveState(FlightStatus.DCUNLOADING)
     }
 

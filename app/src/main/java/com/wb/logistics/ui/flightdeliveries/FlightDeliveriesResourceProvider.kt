@@ -6,6 +6,10 @@ import kotlin.math.abs
 
 class FlightDeliveriesResourceProvider(private val context: Context) {
 
+    fun getCompleteDeliveryDialogTitle() = context.getString(R.string.flight_deliveries_dialog_title_error)
+    fun getCompleteDeliveryDialogMessage() = context.getString(R.string.flight_deliveries_dialog_message_error)
+    fun getCompleteDeliveryDialogButton() = context.getString(R.string.flight_deliveries_dialog_positive_button_error)
+
     fun getDeliveryToolbar(flightId: String) =
         context.getString(R.string.flight_deliveries_delivery_toolbar_title, flightId)
 
