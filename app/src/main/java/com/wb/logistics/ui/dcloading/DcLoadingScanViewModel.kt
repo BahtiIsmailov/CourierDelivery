@@ -135,7 +135,7 @@ class DcLoadingScanViewModel(
     }
 
     fun onBoxHandleInput(barcode: String) {
-        interactor.boxScanned(barcode, true)
+        interactor.barcodeManualInput(barcode)
     }
 
     fun onListClicked() {

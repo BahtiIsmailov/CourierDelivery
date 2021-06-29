@@ -8,7 +8,7 @@ import io.reactivex.Single
 
 interface DcLoadingInteractor {
 
-    fun boxScanned(barcode: String, isManualInput: Boolean)
+    fun barcodeManualInput(barcode: String)
 
     fun removeScannedBoxes(checkedBoxes: List<String>): Completable
 

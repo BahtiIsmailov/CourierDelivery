@@ -32,12 +32,16 @@ class DcLoadingInteractorImpl(
 
     private val actionBarcodeScannedSubject = PublishSubject.create<Pair<String, Boolean>>()
 
-    override fun boxScanned(barcode: String, isManualInput: Boolean) {
-        actionBarcodeScannedSubject.onNext(Pair(barcode, isManualInput))
+    override fun barcodeManualInput(barcode: String) {
+        actionBarcodeScannedSubject.onNext(Pair(barcode, true))
+    }
+
+    private fun barcodeScannerInput(): Observable<Pair<String, Boolean>> {
+        return scannerRepository.observeBarcodeScanned().map { Pair(it, false) }
     }
 
     override fun observeScanProcess(): Observable<ScanProcessData> {
-        return actionBarcodeScannedSubject
+        return Observable.merge(actionBarcodeScannedSubject, barcodeScannerInput())
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
             .flatMap { warehouseScanOptional(it) }
             .flatMap { boxDefinition ->
