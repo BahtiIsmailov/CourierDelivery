@@ -91,7 +91,7 @@
     <string name="dc_loading_manual_input_button">Ручной ввод</string>
     <string name="dc_loading_complete_button">Завершить</string>
     <string name="dc_loading_current_box">Текущая коробка</string>
-    <string name="dc_loading_code_pref_box">TRBX</string>
+    <string name="dc_loading_code_pref_box" />
     <string name="dc_loading_code_box_divider">TRBX%1$s</string>
     <string name="dc_loading_code_box">TRBX%1$s</string>
     <string name="dc_loading_code_added_box">TRBX%1$s добавлена</string>
