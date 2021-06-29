@@ -43,7 +43,12 @@ class DcLoadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        addSubscription(Observable.zip(interactor.gate().toObservable(),
+        observeInitScanProcess()
+        observeScanProcess()
+    }
+
+    private fun observeInitScanProcess() {
+        addSubscription(Observable.combineLatest(interactor.gate().toObservable(),
             interactor.observeScannedBoxes(),
             { gate, list ->
                 if (list.isEmpty()) DcLoadingScanBoxState.Empty
@@ -55,9 +60,10 @@ class DcLoadingScanViewModel(
                         lastBox.barcode)
                 }
 
-            }).subscribe {
-            boxStateUI.value = it
-        })
+            }).subscribe { boxStateUI.value = it })
+    }
+
+    private fun observeScanProcess() {
         addSubscription(interactor.observeScanProcess()
             .subscribe(
                 { addBoxToFlightComplete(it) },
