@@ -26,7 +26,7 @@ class DcUnloadingCongratulationViewModel(
         addSubscription(interactor.congratulation().subscribe({
             with(it) {
                 val delivered =
-                    resourceProvider.getInfo(dcUnloadingCount, attachedCount + dcUnloadingCount)
+                    resourceProvider.getInfo(dcUnloadingCount, unloadingCount + dcUnloadingCount)
                 val returned = resourceProvider.getInfo(dcUnloadingReturnCount,
                     returnCount + dcUnloadingReturnCount)
                 _infoState.value = InfoComplete(delivered, returned)

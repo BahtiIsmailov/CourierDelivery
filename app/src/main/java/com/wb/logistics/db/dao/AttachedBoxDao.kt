@@ -2,7 +2,6 @@ package com.wb.logistics.db.dao
 
 import androidx.room.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -43,8 +42,5 @@ interface AttachedBoxDao {
 
     @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM AttachedBoxEntity WHERE FlightOfficeEntity.office_id = AttachedBoxEntity.dst_office_id) AS attachedCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_src_office_id AND FlightBoxEntity.onBoard = 1) AS returnCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_dst_office_id AND FlightBoxEntity.onBoard = 0) AS unloadedCount FROM FlightOfficeEntity")
     fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>
-
-    @Query("SELECT 0 AS pickPointCount, (SELECT COUNT(*) FROM AttachedBoxEntity) AS attachedCount, 0 AS unloadedCount FROM FlightOfficeEntity") //(SELECT COUNT(*) FROM UnloadedBoxEntity)
-    fun groupDeliveryBoxIsUnloading(): Single<AttachedBoxResultEntity>
 
 }

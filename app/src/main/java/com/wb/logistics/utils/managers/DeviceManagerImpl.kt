@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings.Secure
 import com.wb.logistics.utils.LogUtils
-import java.util.regex.Pattern
 import kotlin.system.exitProcess
 
 class DeviceManagerImpl(private val context: Context) : DeviceManager {
@@ -23,11 +22,7 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
             var packageInfo: PackageInfo? = null
             try {
                 packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                val pattern = Pattern.compile(VERSION_NAME_REGEX)
-                val matcher = pattern.matcher(packageInfo.versionName)
-                if (matcher.find()) {
-                    packageInfo.versionName = matcher.group()
-                }
+                packageInfo.versionName = packageInfo.versionName
             } catch (e: PackageManager.NameNotFoundException) {
                 LogUtils { logError(this, "Can't get application version") }
             }
@@ -77,7 +72,6 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
         }
 
     companion object {
-        private const val VERSION_NAME_REGEX = "\\d\\.\\d\\.\\d|\\d\\.\\d"
         private const val PENDING_INTENT_ID = 223344
         private const val SYSTEM_TIME_OFFSET = 10
         private const val RESTART_DELAY_TIME = 100L

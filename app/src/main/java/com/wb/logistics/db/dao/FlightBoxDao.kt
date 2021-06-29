@@ -58,13 +58,13 @@ interface FlightBoxDao {
     @Query("DELETE FROM FlightBoxEntity")
     fun deleteAllFlightBox()
 
-    @Query("SELECT COUNT(*) AS dcUnloadingCount, (SELECT COUNT(*) FROM AttachedBoxEntity) AS attachedCount, (SELECT COUNT(*) FROM FlightBoxEntity) AS dcUnloadingReturnCount, (SELECT COUNT(*) FROM FlightBoxEntity) AS returnCount FROM FlightBoxEntity")
-    fun congratulation(): Single<DcCongratulationEntity>
-
     @Query("SELECT barcode AS barcode, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0) AS dcUnloadingCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 1) AS dcReturnCount FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0 ORDER BY updatedAt DESC LIMIT 1")
     fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 1")
     fun findDcReturnBoxes(currentOfficeId: Int): Single<List<FlightBoxEntity>>
+
+    @Query("SELECT COUNT(*) AS dcUnloadingCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0) AS unloadingCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0) AS dcUnloadingReturnCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 1) AS returnCount FROM FlightBoxEntity")
+    fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity>
 
 }

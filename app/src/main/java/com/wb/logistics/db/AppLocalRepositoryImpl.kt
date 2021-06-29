@@ -2,7 +2,6 @@ package com.wb.logistics.db
 
 import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
@@ -323,12 +322,8 @@ class AppLocalRepositoryImpl(
         return attachedBoxDao.groupDeliveryBoxByOffice()
     }
 
-    override fun groupDeliveryBox(): Single<AttachedBoxResultEntity> {
-        return attachedBoxDao.groupDeliveryBoxIsUnloading()
-    }
-
-    override fun congratulation(): Single<DcCongratulationEntity> {
-        return flightBoxDao.congratulation()
+    override fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity> {
+        return flightBoxDao.dcUnloadingCongratulation(currentOfficeId)
     }
 
     override fun deleteAll() {

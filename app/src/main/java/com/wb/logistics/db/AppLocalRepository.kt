@@ -1,7 +1,6 @@
 package com.wb.logistics.db
 
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
@@ -120,8 +119,6 @@ interface AppLocalRepository {
 
     fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>
 
-    fun groupDeliveryBox(): Single<AttachedBoxResultEntity>
-
     fun deleteAllAttachedBox()
 
     //==============================================================================================
@@ -145,7 +142,7 @@ interface AppLocalRepository {
 
     fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
 
-    fun congratulation(): Single<DcCongratulationEntity>
+    fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity>
 
     //==============================================================================================
 
