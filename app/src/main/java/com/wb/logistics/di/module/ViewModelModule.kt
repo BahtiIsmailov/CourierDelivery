@@ -2,11 +2,11 @@ package com.wb.logistics.di.module
 
 import com.wb.logistics.ui.auth.*
 import com.wb.logistics.ui.config.ConfigViewModel
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsViewModel
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationViewModel
 import com.wb.logistics.ui.dcloading.*
 import com.wb.logistics.ui.dcunloading.*
 import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationViewModel
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsViewModel
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationViewModel
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
@@ -109,25 +109,18 @@ val viewModelModule = module {
     }
 
     viewModel {
-        DcUnloadingScanViewModel(
-            get(),
-            get(),
-            get(),
-            get())
+        DcUnloadingScanViewModel(get(), get(), get())
     }
 
     viewModel {
-        DcUnloadingHandleViewModel(
-            get(),
-            get(),
-            get())
+        DcUnloadingHandleViewModel(get(), get(), get())
     }
 
     viewModel { (parameters: DcUnloadingBoxNotBelongParameters) ->
         DcUnloadingBoxNotBelongModel(parameters)
     }
 
-    viewModel { DcUnloadingBoxesViewModel(get(), get()) }
+    viewModel { DcUnloadingBoxesViewModel(get(), get(), get()) }
 
     viewModel { DcForcedTerminationViewModel(get(), get(), get()) }
 

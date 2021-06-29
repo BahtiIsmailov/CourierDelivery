@@ -48,6 +48,12 @@ class DcUnloadingBoxNotBelongFragment : Fragment() {
         binding.understand.setOnClickListener {
             viewModel.onUnderstandClick()
         }
+
+        hideToolbar()
+    }
+
+    private fun hideToolbar() {
+        (activity as NavToolbarListener).hideToolbar()
     }
 
     override fun onDestroyView() {

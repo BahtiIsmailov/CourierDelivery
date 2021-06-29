@@ -357,13 +357,13 @@
     <fragment
         android:id="@+id/dcUnloadingBoxesFragment"
         android:name="com.wb.logistics.ui.dcunloading.DcUnloadingBoxesFragment"
-        android:label="DcUnloadingBoxesFragment"
+        android:label=""
         tools:layout="@layout/dc_unloading_boxes_fragment" />
 
     <fragment
         android:id="@+id/dcUnloadingBoxNotBelongFragment"
         android:name="com.wb.logistics.ui.dcunloading.DcUnloadingBoxNotBelongFragment"
-        android:label="DcUnloadingBoxNotBelongFragment"
+        android:label=""
         tools:layout="@layout/dc_unloading_box_not_belong_fragment">
 
         <argument
@@ -372,7 +372,7 @@
             app:nullable="false" />
     </fragment>
 
-    <dialog
+    <fragment
         android:id="@+id/dcUnloadingHandleFragment"
         android:name="com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment"
         android:label="@string/dc_unloading_handle_label"
@@ -381,7 +381,7 @@
     <fragment
         android:id="@+id/dcUnloadingCongratulationFragment"
         android:name="com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationFragment"
-        android:label="@string/dc_forced_termination_label"
+        android:label=""
         tools:layout="@layout/dc_unloading_congratulation_fragment">
         <action
             android:id="@+id/action_dcUnloadingCongratulationFragment_to_flightLoaderFragment"
@@ -394,8 +394,8 @@
 
     <fragment
         android:id="@+id/dcForcedTerminationFragment"
-        android:name="com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationFragment"
-        android:label="@string/dc_forced_termination_label"
+        android:name="com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationFragment"
+        android:label="@string/dc_unloading_forced_termination_label"
         tools:layout="@layout/dc_forced_termination_fragment">
         <action
             android:id="@+id/action_dcForcedTerminationFragment_to_dcForcedTerminationDetailsFragment"
@@ -415,8 +415,8 @@
 
     <fragment
         android:id="@+id/dcForcedTerminationDetailsFragment"
-        android:name="com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsFragment"
-        android:label="@string/dc_forced_termination_details_label"
+        android:name="com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsFragment"
+        android:label="@string/dc_unloading_forced_termination_details_label"
         tools:layout="@layout/dc_forced_termination_details_fragment" />
     <fragment
         android:id="@+id/flightsEmptyFragment"

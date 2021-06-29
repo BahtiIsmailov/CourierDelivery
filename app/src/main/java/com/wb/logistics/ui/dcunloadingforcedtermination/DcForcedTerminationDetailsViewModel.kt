@@ -1,9 +1,9 @@
-package com.wb.logistics.ui.dcforcedtermination
+package com.wb.logistics.ui.dcunloadingforcedtermination
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.dcforcedtermination.domain.DcForcedTerminationInteractor
+import com.wb.logistics.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractor
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 

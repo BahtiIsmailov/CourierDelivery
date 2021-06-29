@@ -1,8 +1,8 @@
 package com.wb.logistics.di.module
 
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsDataBuilder
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsDataBuilderImpl
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsResourceProvider
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsDataBuilder
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsDataBuilderImpl
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilder
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesDataBuilderImpl
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider

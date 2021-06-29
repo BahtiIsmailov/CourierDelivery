@@ -49,7 +49,7 @@ interface AppRemoteRepository {
         isManualInput: Boolean,
         updatedAt: String,
         currentOfficeId: Int,
-    ): Completable
+    ): Single<FlightBoxEntity>
 
     fun removeBoxFromPvzBalance(
         flightId: String,

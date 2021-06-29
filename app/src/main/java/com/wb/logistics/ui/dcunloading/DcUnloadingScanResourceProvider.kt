@@ -14,5 +14,8 @@ class DcUnloadingScanResourceProvider(private val context: Context) {
     fun getBoxUnloaded(barcode: String): String =
         context.getString(R.string.dc_unloading_box_unloaded, barcode)
 
+    fun getBoxUnloadedCount(returnCount: Int, fromCount: Int) =
+        context.getString(R.string.dc_unloading_box_unloaded_count, returnCount, fromCount)
+
 
 }

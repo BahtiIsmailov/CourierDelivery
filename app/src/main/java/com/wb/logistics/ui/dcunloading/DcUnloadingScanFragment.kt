@@ -17,10 +17,12 @@ import com.wb.logistics.R
 import com.wb.logistics.databinding.DcUnloadingScanFragmentBinding
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingAcceptedMode
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingInfoMode
+import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
 //import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -43,14 +45,23 @@ class DcUnloadingScanFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initObserver()
-
+        initKeyboard()
         viewModel.update()
+        (activity as NavToolbarListener).showToolbar()
+        initReturnResult()
+    }
 
+    private fun initReturnResult() {
         setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
             viewModel.onStartScanner()
         }
+    }
+
+    private fun initKeyboard() {
+        (activity as KeyboardListener).adjustMode()
+        SoftKeyboard.hideKeyBoard(requireActivity())
     }
 
     private fun initObserver() {
@@ -114,8 +125,12 @@ class DcUnloadingScanFragment : Fragment() {
                     binding.info.setCodeBox(DcUnloadingInfoMode.EMPTY)
                 }
                 is DcUnloadingScanBoxState.DcUnloadedBoxesComplete -> {
-                    binding.unloadingBox.setCountBox(state.accepted, DcUnloadingAcceptedMode.COMPLETE)
+                    binding.unloadingBox.setCountBox(state.accepted,
+                        DcUnloadingAcceptedMode.COMPLETE)
                     binding.info.setCodeBox(state.barcode, DcUnloadingInfoMode.UNLOADING)
+                }
+                is DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong -> {
+                    // TODO: 29.06.2021 реализовать
                 }
             }
         }

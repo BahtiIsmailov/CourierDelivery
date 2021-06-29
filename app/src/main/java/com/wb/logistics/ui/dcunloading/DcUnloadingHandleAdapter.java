@@ -10,17 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.wb.logistics.R;
-import com.wb.logistics.databinding.DcUnloadingBoxesItemLayoutBinding;
+import com.wb.logistics.databinding.DcUnloadingBoxesHandleItemLayoutBinding;
 
 import java.util.List;
 
-public class DcUnloadingBoxesAdapter extends ArrayAdapter<DcUnloadingBoxesItem> {
+public class DcUnloadingHandleAdapter extends ArrayAdapter<String> {
 
     @NonNull
-    private final List<DcUnloadingBoxesItem> items;
+    private final List<String> items;
 
-    public DcUnloadingBoxesAdapter(@NonNull Context context, @NonNull List<DcUnloadingBoxesItem> items) {
-        super(context, R.layout.dc_unloading_boxes_item_layout);
+    public DcUnloadingHandleAdapter(@NonNull Context context, @NonNull List<String> items) {
+        super(context, R.layout.dc_unloading_boxes_handle_item_layout);
         this.items = items;
     }
 
@@ -29,15 +29,14 @@ public class DcUnloadingBoxesAdapter extends ArrayAdapter<DcUnloadingBoxesItem> 
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.dc_unloading_boxes_item_layout, null);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.dc_unloading_boxes_handle_item_layout, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        DcUnloadingBoxesItem item = items.get(position);
-        holder.binding.barcode.setText(item.getBarcode());
-        holder.binding.time.setText(item.getTime());
+        String item = items.get(position);
+        holder.binding.barcode.setText(item);
         return convertView;
     }
 
@@ -48,10 +47,10 @@ public class DcUnloadingBoxesAdapter extends ArrayAdapter<DcUnloadingBoxesItem> 
 
     private class ViewHolder {
 
-        DcUnloadingBoxesItemLayoutBinding binding;
+        DcUnloadingBoxesHandleItemLayoutBinding binding;
 
         protected ViewHolder(View rootView) {
-            binding = DcUnloadingBoxesItemLayoutBinding.bind(rootView);
+            binding = DcUnloadingBoxesHandleItemLayoutBinding.bind(rootView);
         }
 
     }

@@ -22,17 +22,18 @@
 
     <TextView
         android:id="@+id/code"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumRegularDarkText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/dc_unloading_not_belong_title"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/return_danger" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/SMediumRegularLightText"
+        style="@style/MediumRegularLightText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

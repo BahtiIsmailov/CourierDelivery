@@ -4,15 +4,15 @@ import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
-import com.wb.logistics.db.entity.dcunloadedboxes.*
+import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -22,10 +22,7 @@ class AppLocalRepositoryImpl(
     private val appDatabase: AppDatabase,
     private val flightDao: FlightDao,
     private val attachedBoxDao: AttachedBoxDao,
-    private val unloadingBoxDao: UnloadingBoxDao,
-    private val returnBoxDao: ReturnBoxDao,
-    private val dcUnloadingBoxDao: DcUnloadingBoxDao,
-    private val flightMatchingDao: FlightBoxDao,
+    private val flightBoxDao: FlightBoxDao,
     private val warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
     private val pvzMatchingBoxDao: PvzMatchingBoxDao,
 ) : AppLocalRepository {
@@ -37,14 +34,6 @@ class AppLocalRepositoryImpl(
         return flightDao.insertFlight(flightEntity)
             .andThen(flightDao.insertFlightOffice(flightOfficesEntity))
     }
-
-//    override fun changeFlightOfficeUnloading(
-//        dstOfficeId: Int,
-//        isUnloading: Boolean,
-//        notUnloadingCause: String,
-//    ): Completable {
-//        return flightDao.changeFlightOfficeUnloading(dstOfficeId, isUnloading, notUnloadingCause)
-//    }
 
     override fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>> {
         return flightDao.findFlightOffice(id)
@@ -134,55 +123,55 @@ class AppLocalRepositoryImpl(
     //==============================================================================================
 
     override fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
-        return flightMatchingDao.insertFlightBoxes(flightBoxesEntity)
+        return flightBoxDao.insertFlightBoxes(flightBoxesEntity)
     }
 
     override fun saveFlightBox(flightBoxEntity: FlightBoxEntity): Completable {
-        return flightMatchingDao.insertFlightBox(flightBoxEntity)
+        return flightBoxDao.insertFlightBox(flightBoxEntity)
     }
 
     override fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
-        return flightMatchingDao.findFlightBox(barcode)
+        return flightBoxDao.findFlightBox(barcode)
             .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAllFlightBoxes() {
-        return flightMatchingDao.deleteAllFlightBox()
+        return flightBoxDao.deleteAllFlightBox()
     }
 
     override fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
-        return flightMatchingDao.deleteReturnFlightBoxes(flightBoxesEntity)
+        return flightBoxDao.deleteReturnFlightBoxes(flightBoxesEntity)
     }
 
     override fun findUnloadedFlightBox(
         barcode: String,
         currentOfficeId: Int,
     ): Single<Optional<FlightBoxEntity>> {
-        return flightMatchingDao.findUnloadedFlightBox(barcode, currentOfficeId)
+        return flightBoxDao.findUnloadedFlightBox(barcode, currentOfficeId)
             .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
     override fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
-        return flightMatchingDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
+        return flightBoxDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
     }
 
     override fun findReturnedFlightBox(
         barcode: String,
         currentOfficeId: Int,
     ): Single<Optional<FlightBoxEntity>> {
-        return flightMatchingDao.findReturnedFlightBox(barcode, currentOfficeId)
+        return flightBoxDao.findReturnedFlightBox(barcode, currentOfficeId)
             .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
 
     override fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
-        return flightMatchingDao.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
+        return flightBoxDao.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
     }
 
     override fun findReturnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>> {
-        return flightMatchingDao.findReturnedFlightBoxes(barcodes)
+        return flightBoxDao.findReturnedFlightBoxes(barcodes)
     }
 
     //==============================================================================================
@@ -280,6 +269,56 @@ class AppLocalRepositoryImpl(
         attachedBoxDao.deleteAllAttachedBox()
     }
 
+    //==============================================================================================
+    //dcunloaded boxes
+    //==============================================================================================
+
+    override fun saveDcUnloadedBox(dcUnloadedBoxEntity: FlightBoxEntity): Completable {
+        return flightBoxDao.insertFlightBox(dcUnloadedBoxEntity)
+    }
+
+    override fun saveDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable {
+        return flightBoxDao.insertFlightBox(flightBoxEntity)
+    }
+
+    override fun findDcReturnHandleBoxes(currentOfficeId: Int): Single<List<DcReturnHandleBarcodeEntity>> {
+        return flightBoxDao.findDcReturnHandleBoxes(currentOfficeId)
+    }
+
+    override fun findDcUnloadedBarcodes(currentOfficeId: Int): Single<List<DcUnloadingBarcodeEntity>> {
+        return flightBoxDao.findDcUnloadedBarcodes(currentOfficeId)
+    }
+
+    override fun findDcUnloadedBox(
+        barcode: String,
+        currentOfficeId: Int,
+    ): Single<Optional<FlightBoxEntity>> {
+        return flightBoxDao.findDcUnloadedBox(barcode, currentOfficeId)
+            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
+    }
+
+    override fun findDcReturnBox(
+        barcode: String,
+        currentOfficeId: Int,
+    ): Single<Optional<FlightBoxEntity>> {
+        return flightBoxDao.findDcReturnBox(barcode, currentOfficeId)
+            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
+            .onErrorReturn { Optional.Empty() }
+    }
+
+    override fun findDcReturnBoxes(currentOfficeId: Int): Single<List<FlightBoxEntity>> {
+        return flightBoxDao.findDcReturnBoxes(currentOfficeId)
+    }
+
+    override fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity> {
+        return flightBoxDao.observeDcUnloadingScanBox(currentOfficeId)
+    }
+
+    override fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable {
+        return flightBoxDao.deleteReturnFlightBox(flightBoxEntity)
+    }
+
     override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {
         return attachedBoxDao.groupDeliveryBoxByOffice()
     }
@@ -288,109 +327,8 @@ class AppLocalRepositoryImpl(
         return attachedBoxDao.groupDeliveryBoxIsUnloading()
     }
 
-    //==============================================================================================
-    //unloaded boxes
-    //==============================================================================================
-
-    override fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable {
-        return unloadingBoxDao.insertUnloadingBox(unloadedBoxEntity)
-    }
-
-    override fun observeUnloadedBoxes(): Flowable<List<UnloadedBoxEntity>> {
-        return unloadingBoxDao.observeUnloadingBox()
-    }
-
-    override fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>> {
-        return unloadingBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
-    }
-
-    override fun findUnloadedBox(barcode: String): Single<Optional<UnloadedBoxEntity>> {
-        return unloadingBoxDao.findUnloadedBox(barcode)
-            .map<Optional<UnloadedBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
-    }
-
-    override fun deleteAllUnloadedBox() {
-        TODO("Not yet implemented")
-    }
-
-    //==============================================================================================
-    //dcunloaded boxes
-    //==============================================================================================
-    override fun saveDcUnloadedBox(dcUnloadedBoxEntity: DcUnloadedBoxEntity): Completable {
-        return dcUnloadingBoxDao.insertDcUnloadingBox(dcUnloadedBoxEntity)
-    }
-
-    override fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable {
-        return dcUnloadingBoxDao.insertDcUnloadingReturnBox(dcUnloadedReturnBoxEntity)
-    }
-
-    override fun findDcUnloadedBox(barcode: String): Single<Optional<DcUnloadedBoxEntity>> {
-        return dcUnloadingBoxDao.findDcUnloadedBox(barcode)
-            .map<Optional<DcUnloadedBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
-    }
-
-    override fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>> {
-        return dcUnloadingBoxDao.findDcUnloadedHandleBoxes()
-    }
-
-    override fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>> {
-        return dcUnloadingBoxDao.findDcUnloadedListBoxes()
-    }
-
-    override fun observeDcUnloadingScanBox(): Flowable<DcUnloadingScanBoxEntity> {
-        return dcUnloadingBoxDao.observeDcUnloadingScanBox()
-    }
-
     override fun congratulation(): Single<DcCongratulationEntity> {
-        return dcUnloadingBoxDao.congratulation()
-    }
-
-    override fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>> {
-        return dcUnloadingBoxDao.notDcUnloadedBoxes()
-    }
-
-    override fun deleteAllDcUnloadedBox() {
-        TODO("Not yet implemented")
-    }
-
-    //==============================================================================================
-    //return box
-    //==============================================================================================
-
-    override fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
-        return returnBoxDao.insertReturnBoxEntity(returnBoxEntity)
-    }
-
-    override fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>> {
-        return returnBoxDao.observeFilterByOfficeIdReturnBoxes(dstOfficeId)
-    }
-
-    override fun findReturnBox(barcode: String): Single<Optional<ReturnBoxEntity>> {
-        return returnBoxDao.findReturnBox(barcode)
-            .map<Optional<ReturnBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
-    }
-
-    override fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>> {
-        return returnBoxDao.findReturnBoxes(barcodes)
-    }
-
-    override fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable {
-        return returnBoxDao.deleteReturnBox(returnBoxEntity)
-    }
-
-    override fun deleteReturnBoxes(returnBoxesEntity: List<ReturnBoxEntity>): Completable {
-        return returnBoxDao.deleteReturnBoxes(returnBoxesEntity)
-    }
-
-    override fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>> {
-        return returnBoxDao.groupByDstAddressReturnBox(dstOfficeId)
-    }
-
-    override fun deleteAllReturnBox() {
-        TODO("Not yet implemented")
+        return flightBoxDao.congratulation()
     }
 
     override fun deleteAll() {

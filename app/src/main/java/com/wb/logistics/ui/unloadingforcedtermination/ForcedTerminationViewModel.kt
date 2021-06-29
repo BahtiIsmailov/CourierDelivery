@@ -47,6 +47,7 @@ class ForcedTerminationViewModel(
             .subscribe(
                 { _navigateToBack.value = ForcedTerminationNavAction.NavigateToFlightDeliveries },
                 {
+                    // TODO: 29.06.2021 реализовать обработку ошибок
                     it.toString()
                     _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack }))
     }

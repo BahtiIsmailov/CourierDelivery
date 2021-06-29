@@ -2,11 +2,11 @@ package com.wb.logistics.di.module
 
 import android.app.Application
 import com.wb.logistics.ui.auth.AuthResourceProvider
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationDetailsResourceProvider
-import com.wb.logistics.ui.dcforcedtermination.DcForcedTerminationResourceProvider
 import com.wb.logistics.ui.dcloading.DcLoadingResourceProvider
 import com.wb.logistics.ui.dcunloading.DcUnloadingScanResourceProvider
 import com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsResourceProvider
+import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
 import com.wb.logistics.ui.flightloader.FlightLoaderProvider

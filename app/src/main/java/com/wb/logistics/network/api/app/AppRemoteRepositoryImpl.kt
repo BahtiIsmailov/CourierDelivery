@@ -165,13 +165,35 @@ class AppRemoteRepositoryImpl(
         isManualInput: Boolean,
         updatedAt: String,
         currentOfficeId: Int,
-    ): Completable {
-        return remote.removeBoxFromWarehouseBalance(apiVersion(), flightId,
-            BoxFromWarehouseBalanceRequest(
-                barcode,
-                isManualInput,
-                updatedAt,
-                BoxFromWarehouseBalanceCurrentOfficeRequest(currentOfficeId))).toCompletable()
+    ): Single<FlightBoxEntity> {
+        val balanceRequest = BoxFromWarehouseBalanceRequest(
+            barcode,
+            isManualInput,
+            updatedAt,
+            BoxFromWarehouseBalanceCurrentOfficeRequest(currentOfficeId))
+        return remote.removeBoxFromWarehouseBalance(apiVersion(), flightId, balanceRequest)
+            .map { convertToFlightBox(it) }
+    }
+
+    private fun convertToFlightBox(it: BoxFromWarehouseBalanceResponse) = with(it) {
+        FlightBoxEntity(
+            barcode = barcode,
+            updatedAt = updatedAt,
+            status = status,
+            onBoard = false,
+            srcOffice = FlightSrcOfficeEntity(
+                id = srcOffice.id ?: 0,
+                name = srcOffice.name ?: "",
+                fullAddress = srcOffice.fullAddress ?: "",
+                longitude = srcOffice.long ?: 0.0,
+                latitude = srcOffice.lat ?: 0.0),
+            dstOffice = FlightDstOfficeEntity(
+                id = dstOffice.id ?: 0,
+                name = dstOffice.name ?: "",
+                fullAddress = dstOffice.fullAddress ?: "",
+                longitude = dstOffice.long ?: 0.0,
+                latitude = dstOffice.lat ?: 0.0)
+        )
     }
 
     override fun removeBoxFromPvzBalance(

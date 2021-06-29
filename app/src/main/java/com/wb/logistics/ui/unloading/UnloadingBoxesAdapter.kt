@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingBoxesItemLayoutBinding
 
-class UnloadingBoxesAdapter(context: Context, private val items: MutableList<String>) :
+class UnloadingBoxesAdapter(context: Context, private val items: MutableList<UnloadingBoxesItem>) :
     RecyclerView.Adapter<UnloadingBoxesAdapter.ViewHolder>() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -18,7 +18,8 @@ class UnloadingBoxesAdapter(context: Context, private val items: MutableList<Str
     }
 
     override fun onBindViewHolder(holder: UnloadingBoxesAdapter.ViewHolder, position: Int) {
-        holder.binding.barcode.text = items[position]
+        holder.binding.barcode.text = items[position].barcode
+        holder.binding.time.text = items[position].time
     }
 
     override fun getItemCount(): Int {

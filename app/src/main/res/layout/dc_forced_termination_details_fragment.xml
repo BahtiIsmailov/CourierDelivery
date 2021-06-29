@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/complete"
         android:layout_alignParentTop="true"
-        android:divider="@null"
-        android:dividerHeight="0dp"
+        android:divider="@drawable/divider_line"
+        android:dividerHeight="1dp"
         tools:listitem="@layout/forced_termination_legend" />
 
     <com.wb.logistics.views.ProgressImageButtonView

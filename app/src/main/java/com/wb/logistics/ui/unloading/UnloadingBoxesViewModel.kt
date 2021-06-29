@@ -28,7 +28,8 @@ class UnloadingBoxesViewModel(
                 Observable.fromIterable(list.withIndex())
                     .map {
                         with(it) {
-                            resourceProvider.getNumericBarcode(index + 1, value.barcode)
+                            UnloadingBoxesItem(resourceProvider.getNumericBarcode(index + 1,
+                                value.barcode), "")
                         }
                     }
                     .toList()

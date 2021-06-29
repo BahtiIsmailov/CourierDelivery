@@ -137,8 +137,7 @@ class UnloadingScanViewModel(
             .subscribe({
                 val uploadedList = it.first
                 val attachedList = it.second
-                val accepted =
-                    "" + uploadedList.size + "/" + (attachedList.size + uploadedList.size)
+                val accepted = "" + uploadedList.size + "/" + (attachedList.size + uploadedList.size)
 
                 if (uploadedList.isEmpty() && attachedList.isEmpty()) {
                     _unloadedState.value =

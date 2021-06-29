@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.dcforcedtermination
+package com.wb.logistics.ui.dcunloadingforcedtermination
 
 sealed class DcForcedTerminationState {
     data class Title(val toolbarTitle: String) : DcForcedTerminationState()

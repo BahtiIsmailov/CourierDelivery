@@ -17,4 +17,14 @@
         android:layout_marginStart="10dp"
         tools:text="1. TRBX113256565" />
 
+    <TextView
+        android:id="@+id/time"
+        style="@style/SmallRegularLightText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/barcode"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        tools:text="20:00" />
+
 </RelativeLayout>

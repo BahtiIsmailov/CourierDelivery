@@ -38,9 +38,6 @@ class UnloadingHandleFragment : Fragment() {
             return UnloadingHandleFragment()
         }
 
-        //      const val UNLOADING_HANDLE_BARCODE_CANCEL = "UNLOADING_HANDLE_BARCODE_RESULT1"
-//        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
-
         const val UNLOADING_HANDLE_BARCODE_COMPLETE = "UNLOADING_HANDLE_BARCODE_RESULT2"
         const val HANDLE_BARCODE_COMPLETE_KEY = "HANDLE_BARCODE_COMPLETE_KEY"
 
@@ -54,13 +51,6 @@ class UnloadingHandleFragment : Fragment() {
         _binding = UnloadingHandleFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-//    override fun onPause() {
-//        super.onPause()
-//        setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
-//            bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
-//        findNavController().navigateUp()
-//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

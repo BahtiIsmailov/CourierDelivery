@@ -52,9 +52,11 @@ class UnloadingScanFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initObserver()
-
         initResultListener()
+        initKeyboard()
+    }
 
+    private fun initKeyboard() {
         (activity as KeyboardListener).adjustMode()
         hideKeyBoard(requireActivity())
     }
@@ -63,12 +65,7 @@ class UnloadingScanFragment : Fragment() {
         setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
-            //viewModel.onStartScanner()
         }
-
-//        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_CANCEL) { _, _ ->
-//            //viewModel.onStartScanner()
-//        }
     }
 
     private fun initObserver() {

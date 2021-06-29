@@ -4,7 +4,6 @@ data class DcUnloadingScanBoxEntity(
 
     val barcode: String = "",
     val dcUnloadingCount: Int,
-    val attachedCount: Int,
-    val returnCount: Int,
+    val dcReturnCount: Int,
 
-)
+    )

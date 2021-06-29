@@ -4,12 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
+import com.wb.logistics.utils.time.TimeFormatType
+import com.wb.logistics.utils.time.TimeFormatter
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class DcUnloadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: DcUnloadingInteractor,
+    private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxesState = MutableLiveData<DcUnloadingBoxesState>()
@@ -29,7 +32,10 @@ class DcUnloadingBoxesViewModel(
         addSubscription(interactor.findDcUnloadedListBoxes()
             .flatMap { list ->
                 Observable.fromIterable(list.withIndex())
-                    .map { "" + (it.index + 1) + ". " + it.value.barcode }.toList()
+                    .map {
+                        val date = timeFormatter.dateTimeWithTimezoneFromString(it.value.updatedAt)
+                        val time = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
+                        DcUnloadingBoxesItem("" + (it.index + 1) + ". " + it.value.barcode, time)}.toList()
             }
             .subscribe({
                 _boxesState.value = if (it.isEmpty()) DcUnloadingBoxesState.BoxesEmpty

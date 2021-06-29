@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.dcforcedtermination
+package com.wb.logistics.ui.dcunloadingforcedtermination
 
 import android.os.Bundle
 import android.view.LayoutInflater

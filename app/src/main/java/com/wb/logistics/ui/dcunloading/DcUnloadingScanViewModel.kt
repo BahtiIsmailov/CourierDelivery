@@ -8,14 +8,12 @@ import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.utils.LogUtils
-import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
 
 class DcUnloadingScanViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: DcUnloadingScanResourceProvider,
     private val interactor: DcUnloadingInteractor,
-    private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarBackState = MutableLiveData<BackButtonState>()
@@ -26,23 +24,19 @@ class DcUnloadingScanViewModel(
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
 
-    private val _messageEvent =
-        SingleLiveEvent<DcUnloadingScanMessageEvent>()
+    private val _messageEvent = SingleLiveEvent<DcUnloadingScanMessageEvent>()
     val toastEvent: LiveData<DcUnloadingScanMessageEvent>
         get() = _messageEvent
 
-    private val _soundEvent =
-        SingleLiveEvent<DcUnloadingScanSoundEvent>()
+    private val _soundEvent = SingleLiveEvent<DcUnloadingScanSoundEvent>()
     val soundEvent: LiveData<DcUnloadingScanSoundEvent>
         get() = _soundEvent
 
-    private val _unloadedState =
-        MutableLiveData<DcUnloadingScanBoxState>()
+    private val _unloadedState = MutableLiveData<DcUnloadingScanBoxState>()
     val unloadedState: LiveData<DcUnloadingScanBoxState>
         get() = _unloadedState
 
-    private val _navigationEvent =
-        SingleLiveEvent<DcUnloadingScanNavAction>()
+    private val _navigationEvent = SingleLiveEvent<DcUnloadingScanNavAction>()
     val navigationEvent: LiveData<DcUnloadingScanNavAction>
         get() = _navigationEvent
 
@@ -64,7 +58,7 @@ class DcUnloadingScanViewModel(
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
                 }
 
-                is DcUnloadingData.BoxUnload -> {
+                is DcUnloadingData.BoxUnloaded -> {
                     _messageEvent.value =
                         DcUnloadingScanMessageEvent.BoxAdded(resourceProvider.getBoxUnloaded(it.barcode))
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxAdded
@@ -75,6 +69,7 @@ class DcUnloadingScanViewModel(
                         DcUnloadingScanNavAction.NavigateToUnloadingBoxNotBelongDc(
                             resourceProvider.getBoxNotFoundTitle())
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
+                    _unloadedState.value = DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong("-")
                 }
 
             }
@@ -84,18 +79,14 @@ class DcUnloadingScanViewModel(
 
     private fun observeDcUnloadedBoxes() {
         addSubscription(interactor.observeDcUnloadedBoxes().subscribe({
-            val accepted =
-                "" + it.dcUnloadingCount + "/" + (it.dcUnloadingCount + it.attachedCount + it.returnCount)
-            if (it.dcUnloadingCount == 0) {
-                _unloadedState.value =
-                    DcUnloadingScanBoxState.DcUnloadedBoxesEmpty(accepted)
-                return@subscribe
-            } else {
-                _unloadedState.value =
-                    DcUnloadingScanBoxState.DcUnloadedBoxesComplete(accepted, it.barcode)
-                return@subscribe
+            val accepted = with(it) {
+                resourceProvider.getBoxUnloadedCount(dcUnloadingCount,
+                    dcUnloadingCount + dcReturnCount)
             }
-            // TODO: 28.04.2021 выполнить переход после выгрузки всех коробок
+            _unloadedState.value = if (it.dcUnloadingCount == 0)
+                DcUnloadingScanBoxState.DcUnloadedBoxesEmpty(accepted)
+            else DcUnloadingScanBoxState.DcUnloadedBoxesComplete(accepted, it.barcode)
+            // TODO: 28.04.2021 выполнить автоматический переход после выгрузки всех коробок
         }, {
             LogUtils { logDebugApp(it.toString()) }
         }))
@@ -119,7 +110,7 @@ class DcUnloadingScanViewModel(
 
     fun onCompleteClicked() {
         addSubscription(interactor.observeDcUnloadedBoxes().subscribe({
-            _navigationEvent.value = if (it.attachedCount == 0 && it.returnCount == 0)
+            _navigationEvent.value = if (it.dcReturnCount == 0)
                 DcUnloadingScanNavAction.NavigateToDcCongratulation
             else DcUnloadingScanNavAction.NavigateToDcForcedTermination
         }, {}))

@@ -30,7 +30,7 @@ class DcUnloadingBoxesFragment : Fragment() {
         initObserver()
     }
 
-    private fun initBoxes(routeItems: List<String>) {
+    private fun initBoxes(routeItems: List<DcUnloadingBoxesItem>) {
         val chartLegendAdapter =
             DcUnloadingBoxesAdapter(
                 requireContext(),

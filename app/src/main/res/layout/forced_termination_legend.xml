@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/number"
-        style="@style/SmallRegularLightText"
+        style="@style/SMediumRegularDarkText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/barcode"
@@ -36,9 +36,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/barcode"
-        android:layout_toEndOf="@+id/number"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         tools:text="12.03.2021 • 08:14 — Вы пытались выгрузить коробку на ПВЗ ПВЗ Москва, ул. Карамазова, 32/3" />
 
 </RelativeLayout>

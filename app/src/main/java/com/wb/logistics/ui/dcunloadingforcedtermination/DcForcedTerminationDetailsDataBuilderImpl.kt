@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.dcforcedtermination
+package com.wb.logistics.ui.dcunloadingforcedtermination
 
 import com.wb.logistics.db.entity.dcunloadedboxes.DcNotUnloadedBoxEntity
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_DATE

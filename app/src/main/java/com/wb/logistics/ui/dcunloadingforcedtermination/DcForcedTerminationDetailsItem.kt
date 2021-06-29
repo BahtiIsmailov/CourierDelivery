@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.dcforcedtermination
+package com.wb.logistics.ui.dcunloadingforcedtermination
 
 data class DcForcedTerminationDetailsItem(
     val number: String,

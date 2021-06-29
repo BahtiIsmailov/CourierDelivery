@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcUnloadingCongratulationFragmentBinding
+import com.wb.logistics.ui.splash.NavToolbarListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DcUnloadingCongratulationFragment : Fragment() {
@@ -28,6 +29,11 @@ class DcUnloadingCongratulationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initObserver()
         initListener()
+        hideToolbar()
+    }
+
+    private fun hideToolbar() {
+        (activity as NavToolbarListener).hideToolbar()
     }
 
     private fun initObserver() {

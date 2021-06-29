@@ -85,7 +85,6 @@ class FlightDeliveriesFragment : Fragment() {
                         UnloadingScanParameters(state.dstOfficeId)))
                 }
                 FlightDeliveriesUINavState.NavigateToCongratulation -> {
-                    (activity as NavToolbarListener).hideToolbar()
                     findNavController().navigate(FlightDeliveriesFragmentDirections.actionFlightDeliveriesFragmentToCongratulationFragment())
                 }
                 is FlightDeliveriesUINavState.NavigateToDialogComplete ->

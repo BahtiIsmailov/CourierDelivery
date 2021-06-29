@@ -43,7 +43,7 @@ class UnloadingBoxesFragment : Fragment() {
         initListener()
     }
 
-    private fun initBoxes(routeItems: MutableList<String>) {
+    private fun initBoxes(routeItems: MutableList<UnloadingBoxesItem>) {
         adapter = UnloadingBoxesAdapter(requireContext(), routeItems)
         binding.boxes.adapter = adapter
     }

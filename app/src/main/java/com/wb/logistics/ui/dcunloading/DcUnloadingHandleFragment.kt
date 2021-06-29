@@ -7,15 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.databinding.DcUnloadingHandleFragmentBinding
+import com.wb.logistics.ui.splash.KeyboardListener
+import com.wb.logistics.ui.splash.NavToolbarListener
+import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DcUnloadingHandleFragment : BottomSheetDialogFragment() {
+class DcUnloadingHandleFragment : Fragment() {
 
     private val viewModel by viewModel<DcUnloadingHandleViewModel>()
 
@@ -44,16 +47,23 @@ class DcUnloadingHandleFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO: 30.03.2021 реализовать отображение view на весь экран
+        initView()
         initListener()
         initStateObserve()
+        initKeyboard()
+    }
+
+    private fun initView() {
+        (activity as NavToolbarListener).backButtonIcon(com.wb.logistics.R.drawable.ic_close_dialog)
+        (activity as KeyboardListener).panMode()
+    }
+
+    private fun initKeyboard() {
+        activity?.let { SoftKeyboard.showKeyboard(it, binding.codeBox) }
     }
 
     private fun initBoxes(routeItems: List<String>) {
-        val chartLegendAdapter =
-            DcUnloadingBoxesAdapter(
-                requireContext(),
-                routeItems)
+        val chartLegendAdapter = DcUnloadingHandleAdapter(requireContext(), routeItems)
         binding.boxes.adapter = chartLegendAdapter
     }
 
@@ -83,11 +93,6 @@ class DcUnloadingHandleFragment : BottomSheetDialogFragment() {
     }
 
     private fun initListener() {
-        binding.close.setOnClickListener {
-            setFragmentResult(UNLOADING_HANDLE_BARCODE_CANCEL,
-                bundleOf(HANDLE_BARCODE_CANCEL_KEY to ""))
-            findNavController().navigateUp()
-        }
         viewModel.action(DcUnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
             setFragmentResult(UNLOADING_HANDLE_BARCODE_COMPLETE,

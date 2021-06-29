@@ -189,10 +189,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
     }
 
     override fun onBackPressed() {
-        showToolbar()
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment -> {
+            R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
                 showExitDialog()
             }
             else -> {

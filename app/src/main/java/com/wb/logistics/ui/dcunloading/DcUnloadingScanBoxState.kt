@@ -6,4 +6,6 @@ sealed class DcUnloadingScanBoxState {
 
     data class DcUnloadedBoxesComplete(val accepted: String, val barcode: String) : DcUnloadingScanBoxState()
 
+    data class DcUnloadedBoxesNotBelong(val barcode: String) : DcUnloadingScanBoxState()
+
 }

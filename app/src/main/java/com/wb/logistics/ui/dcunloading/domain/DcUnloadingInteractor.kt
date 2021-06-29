@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.dcunloading.domain
 
-import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingHandleBoxEntity
-import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingListBoxEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Observable
@@ -13,9 +13,9 @@ interface DcUnloadingInteractor {
 
     fun observeScanProcess(): Observable<DcUnloadingData>
 
-    fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>>
+    fun findDcUnloadedHandleBoxes(): Single<List<DcReturnHandleBarcodeEntity>>
 
-    fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>>
+    fun findDcUnloadedListBoxes(): Single<List<DcUnloadingBarcodeEntity>>
 
     fun observeDcUnloadedBoxes(): Observable<DcUnloadingScanBoxEntity>
 

@@ -3,6 +3,7 @@ package com.wb.logistics.ui.dcunloading.domain
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.dcunloadedboxes.*
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
@@ -18,8 +19,6 @@ class DcUnloadingInteractorImpl(
     private val scannerRepository: ScannerRepository,
     private val timeManager: TimeManager,
 ) : DcUnloadingInteractor {
-
-    private var barcodeScanned = ""
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
 
@@ -38,17 +37,13 @@ class DcUnloadingInteractorImpl(
 
                 val flight = boxDefinition.flight
                 val findDcUnloadedBox = boxDefinition.findDcUnloadedBox
-                val findReturnBox = boxDefinition.findReturnBox
+                val findDcReturnBox = boxDefinition.findDcReturnBox
                 val findAttachedBox = boxDefinition.findAttachedBox
-                barcodeScanned = boxDefinition.barcodeScanned
+                val barcodeScanned = boxDefinition.barcodeScanned
                 val isManualInput = boxDefinition.isManualInput
                 val updatedAt = timeManager.getOffsetLocalTime()
 
-                val flightId = when (flight) {
-                    is Optional.Success -> flight.data.id
-                    is Optional.Empty -> 0
-                }
-                // TODO: 29.04.2021 добавить конвертер состояния в случае 0 рейса
+                val flightId = flight.id
 
                 when {
                     findDcUnloadedBox is Optional.Success -> //коробка уже выгружена из машины
@@ -56,59 +51,75 @@ class DcUnloadingInteractorImpl(
                             DcUnloadingData.BoxAlreadyUnloaded(barcode)
                         })
 
-                    findReturnBox is Optional.Success -> {//коробка найдена в списке возврата
-                        val attachAt = timeManager.getOffsetLocalTime()
-                        val dstOfficeId = findReturnBox.data.currentOffice.id
-                        val dcUnloadedReturnBoxEntity = DcUnloadedReturnBoxEntity(
-                            flightId,
-                            isManualInput,
-                            barcodeScanned,
-                            updatedAt,
-                            attachAt,
-                            DcUnloadedCurrentOfficeEntity(dstOfficeId))
-                        val saveDcUnloadedReturnBox =
-                            appLocalRepository.saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity)
-                        val removeBoxFromBalanceRemote =
-                            removeBoxFromBalanceRemote(flightId.toString(),
+                    findDcReturnBox is Optional.Success -> {//коробка найдена в списке на возврат - выгружаем
+                        val dstOfficeId = findDcReturnBox.data.dstOffice.id
+                        val unloadBoxFromBalanceRemote =
+                            unloadBoxFromBalanceRemote(flightId.toString(),
                                 barcodeScanned,
                                 isManualInput,
                                 updatedAt,
                                 dstOfficeId)
-                        val deleteReturnBox = appLocalRepository.deleteReturnBox(findReturnBox.data)
-                        val dcUnloadingAdded =
-                            Observable.just(DcUnloadingData.BoxUnload(barcodeScanned))
+                        val removeUnloadedReturnBox =
+                            appLocalRepository.removeDcUnloadedReturnBox(findDcReturnBox.data)
+                        val dcUnloadingBoxAdded =
+                            Observable.just(DcUnloadingData.BoxUnloaded(barcodeScanned))
 
-                        return@flatMap saveDcUnloadedReturnBox
-                            .andThen(removeBoxFromBalanceRemote)
-                            .andThen(deleteReturnBox)
-                            .andThen(dcUnloadingAdded)
+                        return@flatMap unloadBoxFromBalanceRemote.flatMapObservable { unloadedBox ->
+                            removeUnloadedReturnBox
+                                .andThen(saveUnloadedBox(unloadedBox.copy(updatedAt = updatedAt)))
+                                .andThen(dcUnloadingBoxAdded)
+                        }
                     }
 
+                    // TODO: 29.06.2021 реализовать
                     findAttachedBox is Optional.Success -> { //коробка в списке доставки и не была выгружена на ПВЗ
-                        val attachAt = timeManager.getOffsetLocalTime()
+                        //val attachAt = timeManager.getOffsetLocalTime()
                         val dstOfficeId = findAttachedBox.data.dstOffice.id
-                        val dcUnloadedBoxEntity = DcUnloadedBoxEntity(
-                            flightId,
-                            isManualInput,
-                            barcodeScanned,
-                            updatedAt,
-                            attachAt,
-                            DcUnloadedCurrentOfficeEntity(dstOfficeId))
-                        val saveDcUnloadedBox = appLocalRepository.saveDcUnloadedBox(dcUnloadedBoxEntity)
-                        val removeBoxFromBalanceRemote =
-                            removeBoxFromBalanceRemote(flightId.toString(),
-                                barcodeScanned,
-                                isManualInput,
-                                updatedAt,
-                                dstOfficeId)
-                        val deleteReturnBox = appLocalRepository.deleteAttachedBox(findAttachedBox.data)
-                        val dcUnloadingAdded =
-                            Observable.just(DcUnloadingData.BoxUnload(barcodeScanned))
+//                        val flightBoxEntity = FlightBoxEntity(
+//                            flightId,
+//                            isManualInput,
+//                            barcodeScanned,
+//                            updatedAt,
+//                            attachAt,
+//                            DcUnloadedCurrentOfficeEntity(dstOfficeId))
 
-                        return@flatMap saveDcUnloadedBox
-                            .andThen(removeBoxFromBalanceRemote)
-                            .andThen(deleteReturnBox)
-                            .andThen(dcUnloadingAdded)
+
+//                        val flightBoxEntity = FlightBoxEntity(
+//                            barcode = barcodeScanned,
+//                            updatedAt = updatedAt,
+//                            status = BoxStatus.DELIVERED.ordinal,
+//                            onBoard = false,
+//                            srcOffice = FlightSrcOfficeEntity(
+//                                id = data.srcOffice.id,
+//                                name = data.srcOffice.name,
+//                                fullAddress = data.srcOffice.fullAddress,
+//                                longitude = data.srcOffice.longitude,
+//                                latitude = data.srcOffice.latitude),
+//                            dstOffice = FlightDstOfficeEntity(
+//                                id = data.dstOffice.id,
+//                                name = data.dstOffice.name,
+//                                fullAddress = data.dstOffice.fullAddress,
+//                                longitude = data.dstOffice.longitude,
+//                                latitude = data.dstOffice.latitude)
+//
+//                            val saveDcUnloadedBox = appLocalRepository . saveDcUnloadedBox (flightBoxEntity)
+//                        val removeBoxFromBalanceRemote =
+//                            unloadBoxFromBalanceRemote(flightId.toString(),
+//                                barcodeScanned,
+//                                isManualInput,
+//                                updatedAt,
+//                                dstOfficeId)
+//                        val deleteReturnBox =
+//                            appLocalRepository.deleteAttachedBox(findAttachedBox.data)
+//                        val dcUnloadingAdded =
+//                            Observable.just(DcUnloadingData.BoxUnloaded(barcodeScanned))
+//
+//                        return@flatMap saveDcUnloadedBox
+//                            .andThen(removeBoxFromBalanceRemote)
+//                            .andThen(deleteReturnBox)
+//                            .andThen(dcUnloadingAdded)
+
+                        return@flatMap Observable.just(DcUnloadingData.BoxDoesNotBelongDc)
                     }
                     else -> return@flatMap Observable.just(DcUnloadingData.BoxDoesNotBelongDc)
                 }
@@ -116,13 +127,18 @@ class DcUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>> {
-        return appLocalRepository.findDcUnloadedHandleBoxes()
+    private fun saveUnloadedBox(removedBox: FlightBoxEntity) =
+        appLocalRepository.saveDcUnloadedReturnBox(removedBox)
+
+    override fun findDcUnloadedHandleBoxes(): Single<List<DcReturnHandleBarcodeEntity>> {
+        return flight().map { it.dc.id }
+            .flatMap { currentOfficeId -> appLocalRepository.findDcReturnHandleBoxes(currentOfficeId) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>> {
-        return appLocalRepository.findDcUnloadedListBoxes()
+    override fun findDcUnloadedListBoxes(): Single<List<DcUnloadingBarcodeEntity>> {
+        return flight().map { it.dc.id }
+            .flatMap { currentOfficeId -> appLocalRepository.findDcUnloadedBarcodes(currentOfficeId) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -130,31 +146,34 @@ class DcUnloadingInteractorImpl(
         barcode: String,
         isManual: Boolean,
     ): Single<DcBoxDefinitionResult> {
-        return Single.zip(
-            flight(), //рейс
-            findDcUnloadedBox(barcode), //коробка есть в списке выгруженных
-            findReturnBox(barcode), //коробка есть в списке на возврат
-            findAttachedBox(barcode), //коробка есть в списке доставки
-            { flight, findDcUnloadedBox, findReturnBox, findAttachedBox ->
-                DcBoxDefinitionResult(flight,
-                    findDcUnloadedBox,
-                    findReturnBox,
-                    findAttachedBox,
-                    barcode,
-                    isManual)
-            }
-        ).compose(rxSchedulerFactory.applySingleSchedulers())
+        return flight().flatMap { flight ->
+            Single.zip(
+                findDcUnloadedBox(barcode, flight.dc.id), //коробка есть в списке выгруженных
+                findDcReturnBox(barcode, flight.dc.id), //коробка есть в списке на возврат
+                findAttachedBox(barcode), //коробка есть в списке доставки
+                { findDcUnloadedBox, findDcReturnBox, findAttachedBox ->
+                    DcBoxDefinitionResult(flight,
+                        findDcUnloadedBox,
+                        findDcReturnBox,
+                        findAttachedBox,
+                        barcode,
+                        isManual)
+                }
+            )
+        }.compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun flight() = appLocalRepository.readFlightOptional()
+    private fun flight() = appLocalRepository.readFlight()
 
-    private fun findDcUnloadedBox(barcode: String) = appLocalRepository.findDcUnloadedBox(barcode)
+    private fun findDcUnloadedBox(barcode: String, currentOfficeId: Int) =
+        appLocalRepository.findDcUnloadedBox(barcode, currentOfficeId)
 
-    private fun findReturnBox(barcode: String) = appLocalRepository.findReturnBox(barcode)
+    private fun findDcReturnBox(barcode: String, currentOfficeId: Int) =
+        appLocalRepository.findDcReturnBox(barcode, currentOfficeId)
 
     private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
 
-    private fun removeBoxFromBalanceRemote(
+    private fun unloadBoxFromBalanceRemote(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
@@ -166,13 +185,13 @@ class DcUnloadingInteractorImpl(
         isManualInput,
         updatedAt,
         currentOffice)
-        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
-        .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        .compose(rxSchedulerFactory.applySingleSchedulers())
 
     override fun observeDcUnloadedBoxes(): Observable<DcUnloadingScanBoxEntity> {
-        return appLocalRepository.observeDcUnloadingScanBox()
-            .toObservable()
-            .map { it.copy(barcode = barcodeScanned) }
+        return flight().map { it.dc.id }
+            .flatMapObservable { currentOfficeId ->
+                appLocalRepository.observeDcUnloadingScanBox(currentOfficeId).toObservable()
+            }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

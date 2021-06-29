@@ -3,14 +3,14 @@ package com.wb.logistics.db
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.AttachedBoxResultEntity
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
-import com.wb.logistics.db.entity.dcunloadedboxes.*
+import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
+import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxByAddressEntity
-import com.wb.logistics.db.entity.returnboxes.ReturnBoxEntity
-import com.wb.logistics.db.entity.unloadedboxes.UnloadedBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -21,12 +21,6 @@ interface AppLocalRepository {
     fun saveFlightAndOffices(
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
     ): Completable
-
-//    fun changeFlightOfficeUnloading(
-//        dstOfficeId: Int,
-//        isUnloading: Boolean,
-//        notUnloadingCause: String,
-//    ): Completable
 
     fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>>
 
@@ -59,11 +53,17 @@ interface AppLocalRepository {
 
     fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
 
-    fun findUnloadedFlightBox(barcode: String, currentOfficeId: Int): Single<Optional<FlightBoxEntity>>
+    fun findUnloadedFlightBox(
+        barcode: String,
+        currentOfficeId: Int,
+    ): Single<Optional<FlightBoxEntity>>
 
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
-    fun findReturnedFlightBox(barcode: String, currentOfficeId: Int): Single<Optional<FlightBoxEntity>>
+    fun findReturnedFlightBox(
+        barcode: String,
+        currentOfficeId: Int,
+    ): Single<Optional<FlightBoxEntity>>
 
     fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
@@ -125,71 +125,27 @@ interface AppLocalRepository {
     fun deleteAllAttachedBox()
 
     //==============================================================================================
-    //unloaded box
-    //==============================================================================================
-    @Deprecated("")
-    fun saveUnloadedBox(unloadedBoxEntity: UnloadedBoxEntity): Completable
-
-    @Deprecated("")
-    fun observeUnloadedBoxes(): Flowable<List<UnloadedBoxEntity>>
-
-    @Deprecated("")
-    fun observeUnloadedBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<UnloadedBoxEntity>>
-
-    @Deprecated("")
-    fun findUnloadedBox(barcode: String): Single<Optional<UnloadedBoxEntity>>
-
-    @Deprecated("")
-    fun deleteAllUnloadedBox()
-
-    //==============================================================================================
     //attached box
     //==============================================================================================
-    fun saveDcUnloadedBox(dcUnloadedBoxEntity: DcUnloadedBoxEntity): Completable
+    fun saveDcUnloadedBox(dcUnloadedBoxEntity: FlightBoxEntity): Completable
 
-    fun saveDcUnloadedReturnBox(dcUnloadedReturnBoxEntity: DcUnloadedReturnBoxEntity): Completable
+    fun saveDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
 
-    fun findDcUnloadedBox(barcode: String): Single<Optional<DcUnloadedBoxEntity>>
+    fun findDcReturnHandleBoxes(currentOfficeId: Int): Single<List<DcReturnHandleBarcodeEntity>>
 
-    fun findDcUnloadedHandleBoxes(): Single<List<DcUnloadingHandleBoxEntity>>
+    fun findDcUnloadedBarcodes(currentOfficeId: Int): Single<List<DcUnloadingBarcodeEntity>>
 
-    fun findDcUnloadedListBoxes(): Single<List<DcUnloadingListBoxEntity>>
+    fun findDcUnloadedBox(barcode: String, currentOfficeId: Int): Single<Optional<FlightBoxEntity>>
 
-    fun observeDcUnloadingScanBox(): Flowable<DcUnloadingScanBoxEntity>
+    fun findDcReturnBox(barcode: String, currentOfficeId: Int): Single<Optional<FlightBoxEntity>>
+
+    fun findDcReturnBoxes(currentOfficeId: Int): Single<List<FlightBoxEntity>>
+
+    fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity>
+
+    fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
 
     fun congratulation(): Single<DcCongratulationEntity>
-
-    fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
-
-    fun deleteAllDcUnloadedBox()
-
-    //==============================================================================================
-    //return box
-    //==============================================================================================
-
-    @Deprecated("")
-    fun saveReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
-
-    @Deprecated("")
-    fun observedReturnBoxesByDstOfficeId(dstOfficeId: Int): Flowable<List<ReturnBoxEntity>>
-
-    @Deprecated("")
-    fun findReturnBox(barcode: String): Single<Optional<ReturnBoxEntity>>
-
-    @Deprecated("")
-    fun findReturnBoxes(barcodes: List<String>): Single<List<ReturnBoxEntity>>
-
-    @Deprecated("")
-    fun deleteReturnBox(returnBoxEntity: ReturnBoxEntity): Completable
-
-    @Deprecated("")
-    fun deleteReturnBoxes(returnBoxesEntity: List<ReturnBoxEntity>): Completable
-
-    @Deprecated("")
-    fun groupByDstAddressReturnBox(dstOfficeId: Int): Single<List<ReturnBoxByAddressEntity>>
-
-    @Deprecated("")
-    fun deleteAllReturnBox()
 
     //==============================================================================================
 

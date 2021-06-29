@@ -206,8 +206,9 @@
     <string name="unloading_box_log_data">{\"k1\": %1$s, \"k2\": %2$s}</string>
 
     <string name="dc_unloading_box_not_found_title">ШК не найден</string>
-    <string name="dc_unloading_box_already_unloaded">Коробка %1$s\nуже выгружена на РЦ</string>
-    <string name="dc_unloading_box_unloaded">"Коробка %1$s\nвыгружена на РЦ"</string>
+    <string name="dc_unloading_box_already_unloaded">%1$s уже выгружена на РЦ</string>
+    <string name="dc_unloading_box_unloaded">"%1$s выгрузите на РЦ"</string>
+    <string name="dc_unloading_box_unloaded_count">%1$d/%2$d</string>
 
     <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
     <string name="unloading_handle_empty_list">Список пуст</string>
@@ -226,9 +227,9 @@
     <string name="force_termination_not_refund">Не взял на возврат</string>
     <string name="force_termination_cause">Причина</string>
     <string name="force_termination_box_not_found">Коробки не найдены</string>
-    <string name="force_termination_pickup_point">Нет возможности выгрузить на ПВЗ</string>
+    <string name="force_termination_pickup_point">Нет возможности выгрузить на РЦ</string>
     <string name="force_termination_confirm">Подтвердить</string>
-    <string name="force_termination_complete_delivery">Завершить доставку</string>
+    <string name="force_termination_complete_delivery">Завершить рейс</string>
     <string name="force_termination_empty" />
 
     <string name="congratulation_label">Завершение доставки</string>
@@ -236,8 +237,6 @@
     <string name="congratulation_info">Осталось вернуть возратные коробки\nна РЦ</string>
     <string name="congratulation_info_count">%1$d / %2$d</string>
     <string name="congratulation_complete_delivery">Перейти к возврату</string>
-
-    <string name="dc_unloading_boxes_title">Возврат</string>
 
     <string name="dc_congratulation_title">Вы завершили рейс</string>
     <string name="dc_congratulation_info">Спасибо за проделанную работу!</string>
@@ -255,12 +254,14 @@
 
     <string name="dc_unloading_handle_label">Ручной ввод</string>
 
-    <string name="dc_forced_termination_label">Рейс завершен</string>
+    <string name="dc_unloading_forced_termination_label">Принудительное завершение</string>
+    <string name="dc_unloading_forced_termination_details_label">Невыгруженные коробки</string>
+    <string name="dc_unloading_forced_termination_details_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
+    <string name="dc_unloading_forced_termination_details_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
 
-    <string name="dc_forced_termination_details_label">Невыгруженные коробки</string>
-    <string name="dc_forced_termination_details_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
-    <string name="dc_forced_termination_details_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
-
+    <string name="dc_unloading_forced_termination_dialog_title_error">Завершение рейса</string>
+    <string name="dc_unloading_forced_termination_dialog_message_error">Рейс не завершен, повторите операцию позднее</string>
+    <string name="dc_unloading_forced_termination_dialog_positive_button_error">Ok</string>
 
     <string name="permdesc_flashlight">permdesc_flashlight</string>
 

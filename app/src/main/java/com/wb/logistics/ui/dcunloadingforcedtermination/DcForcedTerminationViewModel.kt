@@ -1,10 +1,12 @@
-package com.wb.logistics.ui.dcforcedtermination
+package com.wb.logistics.ui.dcunloadingforcedtermination
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
-import com.wb.logistics.ui.dcforcedtermination.domain.DcForcedTerminationInteractor
+import com.wb.logistics.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractor
 import io.reactivex.disposables.CompositeDisposable
 
 class DcForcedTerminationViewModel(
@@ -21,17 +23,19 @@ class DcForcedTerminationViewModel(
     val navigateToBack: LiveData<DcForcedTerminationNavAction>
         get() = _navigateAction
 
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
+
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-
         _boxesState.value = DcForcedTerminationState.Title(resourceProvider.getLabel())
-
         addSubscription(interactor.observeDcUnloadedBoxes()
             .subscribe {
                 _boxesState.value =
                     DcForcedTerminationState.BoxesUnloadCount(
-                        resourceProvider.getNotDeliveryTitle(it.attachedCount + it.returnCount))
+                        resourceProvider.getNotDeliveryTitle(it))
             })
     }
 
@@ -40,21 +44,37 @@ class DcForcedTerminationViewModel(
     }
 
     fun onCompleteClick(idx: Int) {
-        val cause = when (idx) {
-            0 -> resourceProvider.getBoxNotFound()
-            1 -> resourceProvider.getNotPickupPoint()
-            else -> resourceProvider.getEmpty()
-        }
-        // TODO: 24.05.2021 изменить статус рейса
         bottomProgressEvent.value = true
-        addSubscription(interactor.switchScreen().subscribe(
+        addSubscription(interactor.switchScreenToClosed(resourceProvider.getDataLogFormat(
+            getCauseMessage(idx))).subscribe(
             {
                 _navigateAction.value = DcForcedTerminationNavAction.NavigateToCongratulation
                 bottomProgressEvent.value = false
             },
             {
                 bottomProgressEvent.value = false
+                switchScreenToClosedError(it)
             }))
     }
+
+    private fun getCauseMessage(idx: Int) = when (idx) {
+        0 -> resourceProvider.getBoxNotFound()
+        1 -> resourceProvider.getNotPickupPoint()
+        else -> resourceProvider.getEmpty()
+    }
+
+    private fun switchScreenToClosedError(throwable: Throwable) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> resourceProvider.getForcedDialogMessage()
+        }
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getForcedDialogTitle(),
+            message,
+            resourceProvider.getForcedDialogButton())
+    }
+
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }
