@@ -22,7 +22,7 @@ class ScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
-        interactor.barcodeScanned(resourceProvider.getBarCodeBox(barcode))
+        interactor.barcodeScanned(barcode)
     }
 
 }
