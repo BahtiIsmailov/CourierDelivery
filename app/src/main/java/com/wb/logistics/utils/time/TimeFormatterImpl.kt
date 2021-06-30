@@ -118,6 +118,7 @@ class TimeFormatterImpl : TimeFormatter {
     private fun getCalendar(date: String, format: String): Calendar {
         val calendar = Calendar.getInstance()
         val simpleDateFormat = SimpleDateFormat(format, Locale.getDefault())
+        simpleDateFormat.timeZone = TimeZone.getTimeZone(TIME_ZONE_UTC)
         var parseDate: Date? = Date(System.currentTimeMillis())
         try {
             parseDate = simpleDateFormat.parse(date)
@@ -160,7 +161,9 @@ class TimeFormatterImpl : TimeFormatter {
         private const val FULL_DATE_TIME_FORMAT = "%s в %s"
         private const val MILLIS_IN_SECOND = 1000
 
-        private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd HH:mm:ss"
+        private const val TIME_ZONE_UTC = "UTC"
+
+        private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
         private const val PATTERN_CALENDAR_WITH_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
         private const val PATTERN_CALENDAR_WITHOUT_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
     }
