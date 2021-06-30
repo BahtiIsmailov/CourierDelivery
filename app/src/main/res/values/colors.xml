@@ -71,7 +71,7 @@
 
     <color name="base_text">#231D2A</color>
     <color name="dark_text">#17233B</color>
-    <color name="light_text">#8C94A8</color>
+    <color name="light_text">#6F6779</color>
     <color name="bright_text">#ffffff</color>
 
     <color name="nav_delivery_count_background">#FB8C00</color>

@@ -8,6 +8,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -102,6 +103,8 @@ class DcLoadingBoxesFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.boxes.layoutManager = layoutManager
+        binding.boxes.addItemDecoration(DividerItemDecoration(activity,
+            DividerItemDecoration.VERTICAL))
         binding.boxes.setHasFixedSize(true)
         initSmoothScroller()
     }

@@ -66,7 +66,7 @@ class DcLoadingBoxesViewModel(
             false)
     }
 
-    private val singleIncrement = { index: Int -> (index + 1).toString() }
+    private val singleIncrement = { index: Int -> resourceProvider.getIndex(index + 1) }
 
     private fun copyConvertBoxes(boxes: List<DcLoadingBoxesItem>) {
         copyReceptionBoxes = boxes.toMutableList()
