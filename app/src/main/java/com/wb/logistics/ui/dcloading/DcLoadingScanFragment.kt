@@ -104,8 +104,8 @@ class DcLoadingFragment : Fragment() {
                     binding.received.setCountBox(state.accepted,
                         ReceptionAcceptedMode.CONTAINS_HAS_ADDED)
                     binding.parking.setParkingNumber(state.gate,
-                        ReceptionParkingMode.CONTAINS_COMPLETE)
-                    binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
+                        ReceptionParkingMode.CONTAINS_HAS_ADDED)
+                    binding.info.setCodeBox(state.barcode, ReceptionInfoMode.CONTAINS_HAS_ADDED)
                 }
                 is DcLoadingScanBoxState.BoxInit -> {
                     binding.received.setCountBox(state.accepted,

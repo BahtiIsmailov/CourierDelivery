@@ -18,6 +18,8 @@ public class ReceptionInfoView extends FrameLayout {
     private final static String STATUS_BOX_EMPTY_TEXT = "";
     private final static int DEFAULT_STATE = ReceptionInfoMode.EMPTY;
 
+    private TextView emptyBoxTextView;
+    private TextView currentBoxTextView;
     private TextView codeBoxTextView;
     private TextView statusBoxTextView;
 
@@ -48,6 +50,8 @@ public class ReceptionInfoView extends FrameLayout {
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layoutView = inflater.inflate(R.layout.dc_loading_info_box, this, false);
+        emptyBoxTextView = layoutView.findViewById(R.id.empty_box);
+        currentBoxTextView = layoutView.findViewById(R.id.current_box);
         codeBoxTextView = layoutView.findViewById(R.id.count_box);
         statusBoxTextView = layoutView.findViewById(R.id.status_box);
         addView(layoutView);
@@ -84,24 +88,47 @@ public class ReceptionInfoView extends FrameLayout {
             case ReceptionInfoMode.RETURN:
                 returnState();
                 break;
+            case ReceptionInfoMode.CONTAINS_HAS_ADDED:
+                hasAddedState();
+                break;
         }
     }
 
     private void emptyState() {
-        codeBoxTextView.setText(getResources().getString(R.string.dc_loading_code_pref_box));
-        statusBoxTextView.setText(STATUS_BOX_EMPTY_TEXT);
+        emptyBoxTextView.setVisibility(VISIBLE);
+        currentBoxTextView.setVisibility(INVISIBLE);
+        codeBoxTextView.setVisibility(INVISIBLE);
+        statusBoxTextView.setVisibility(INVISIBLE);
     }
 
     private void submergeState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        codeBoxTextView.setVisibility(VISIBLE);
+        statusBoxTextView.setVisibility(VISIBLE);
         codeBoxTextView.setText(codeBox);
         statusBoxTextView.setText(getResources().getString(R.string.dc_loading_status_box_submerge));
         statusBoxTextView.setTextColor(getResources().getColor(R.color.complete));
     }
 
     private void returnState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        codeBoxTextView.setVisibility(VISIBLE);
+        statusBoxTextView.setVisibility(VISIBLE);
         codeBoxTextView.setText(codeBox);
         statusBoxTextView.setText(getResources().getString(R.string.dc_loading_status_box_return));
         statusBoxTextView.setTextColor(getResources().getColor(R.color.error));
+    }
+
+    private void hasAddedState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        codeBoxTextView.setVisibility(VISIBLE);
+        statusBoxTextView.setVisibility(VISIBLE);
+        codeBoxTextView.setText(codeBox);
+        statusBoxTextView.setText(getResources().getString(R.string.dc_loading_status_box_has_added));
+        statusBoxTextView.setTextColor(getResources().getColor(R.color.complete));
     }
 
     public void setCodeBox(String codeBox, int state) {

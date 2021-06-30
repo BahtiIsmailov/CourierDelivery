@@ -8,6 +8,7 @@ class DcLoadingResourceProvider(private val context: Context) {
     fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
     fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
     fun getScanDialogButton() = context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
+    fun getSwitchDialogButton() = context.getString(R.string.dc_loading_scan_switch_dialog_message_error)
 
     fun getShortHasBeenAddedBox(code: String) : String = context.getString(R.string.dc_loading_code_short_has_been_added_box, code)
     fun getBoxNotBelongDcTitle() : String = context.getString(R.string.dc_loading_box_not_belong_dc_title)

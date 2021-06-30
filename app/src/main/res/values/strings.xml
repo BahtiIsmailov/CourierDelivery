@@ -97,9 +97,11 @@
     <string name="dc_loading_code_added_box">TRBX%1$s добавлена</string>
     <string name="dc_loading_code_short_added_box">%1$s добавлена</string>
     <string name="dc_loading_code_short_has_been_added_box">%1$s добавлена ранее</string>
-    <string name="dc_loading_status_box_empty" />
+    <string name="dc_loading_status_box_empty_init" />
+    <string name="dc_loading_status_box_empty">Начните сканирование</string>
     <string name="dc_loading_status_box_submerge">Погрузите в машину</string>
     <string name="dc_loading_status_box_return">Верните коробку</string>
+    <string name="dc_loading_status_box_has_added">Погрузите в машину</string>
     <string name="dc_loading_accepted">Принято</string>
     <string name="dc_loading_parking">Парковка №</string>
     <string name="dc_loading_list"><u>Список</u></string>
@@ -108,6 +110,7 @@
 
     <string name="dc_loading_scan_dialog_title_error">Прием коробок</string>
     <string name="dc_loading_scan_dialog_message_error">Коробка не добавлена, повторите операцию</string>
+    <string name="dc_loading_scan_switch_dialog_message_error">Не удается завершить приемку на РЦ, повторите операцию</string>
     <string name="dc_loading_scan_dialog_positive_button_error">Ok</string>
 
     <string name="dc_loading_return_dialog_title">Вернуть на баланс?</string>

@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({ReceptionInfoMode.EMPTY,
         ReceptionInfoMode.SUBMERGE,
-        ReceptionInfoMode.RETURN})
+        ReceptionInfoMode.RETURN,
+        ReceptionInfoMode.CONTAINS_HAS_ADDED})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ReceptionInfoMode {
 
@@ -16,5 +17,7 @@ public @interface ReceptionInfoMode {
     int SUBMERGE = 1;
 
     int RETURN = 2;
+
+    int CONTAINS_HAS_ADDED = 3;
 
 }

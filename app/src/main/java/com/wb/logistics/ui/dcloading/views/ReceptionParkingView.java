@@ -86,6 +86,9 @@ public class ReceptionParkingView extends FrameLayout {
             case ReceptionAcceptedMode.CONTAINS_DENY:
                 containsDenyState();
                 break;
+            case ReceptionAcceptedMode.CONTAINS_HAS_ADDED:
+                containsHasAddedState();
+                break;
         }
     }
 
@@ -105,6 +108,13 @@ public class ReceptionParkingView extends FrameLayout {
 
     private void containsDenyState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_fill));
+        parkingTitleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.bright_text));
+        parkingNumberTextView.setText(parkingNumber);
+        parkingNumberTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.bright_text));
+    }
+
+    private void containsHasAddedState() {
+        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_complete_fill));
         parkingTitleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.bright_text));
         parkingNumberTextView.setText(parkingNumber);
         parkingNumberTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.bright_text));
