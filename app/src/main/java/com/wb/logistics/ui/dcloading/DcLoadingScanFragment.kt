@@ -5,16 +5,12 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.wb.logistics.R
 import com.wb.logistics.databinding.DcLoadingScanFragmentBinding
 import com.wb.logistics.ui.dcloading.DcLoadingHandleFragment.Companion.HANDLE_BARCODE_RESULT
 import com.wb.logistics.ui.dcloading.views.ReceptionAcceptedMode
@@ -71,13 +67,6 @@ class DcLoadingFragment : Fragment() {
 
         viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
 
-        viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is DcLoadingScanToastState.BoxAdded -> showToastBoxAdded(state.message)
-                is DcLoadingScanToastState.BoxHasBeenAdded -> showToastBoxHasBeenAdded(state.message)
-            }
-        }
-
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is DcLoadingScanBeepState.BoxAdded -> beepAdded()
@@ -126,35 +115,6 @@ class DcLoadingFragment : Fragment() {
                     binding.info.setCodeBox(state.barcode, ReceptionInfoMode.SUBMERGE)
                 }
             }
-        }
-    }
-
-    private fun showToastBoxAdded(message: String) {
-        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
-        val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.dc_loading_added_box_toast, container) as ViewGroup
-        val text: TextView = layout.findViewById(R.id.text)
-        text.text = message
-        with(Toast(context)) {
-            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
-        }
-    }
-
-    private fun showToastBoxHasBeenAdded(message: String) {
-        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
-        val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.dc_loading_has_been_added_box_toast,
-                container) as ViewGroup
-        val text: TextView = layout.findViewById(R.id.text)
-        text.text = message
-        with(Toast(context)) {
-            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
         }
     }
 

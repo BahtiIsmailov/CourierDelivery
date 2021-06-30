@@ -24,11 +24,6 @@ class DcLoadingScanViewModel(
     val navigationEvent: LiveData<DcLoadingScanNavAction>
         get() = _navigationEvent
 
-    private val _toastEvent =
-        SingleLiveEvent<DcLoadingScanToastState>()
-    val toastEvent: LiveData<DcLoadingScanToastState>
-        get() = _toastEvent
-
     private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
     val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
         get() = _navigateToMessageInfo
@@ -80,8 +75,6 @@ class DcLoadingScanViewModel(
                 boxStateUI.value = with(scanBoxData) {
                     DcLoadingScanBoxState.BoxAdded(accepted, gate, barcode)
                 }
-                _toastEvent.value = DcLoadingScanToastState.BoxAdded(
-                    resourceProvider.getShortAddedBox(scanBoxData.barcode))
                 _beepEvent.value = DcLoadingScanBeepState.BoxAdded
             }
             is ScanBoxData.BoxDoesNotBelongDc -> {
@@ -124,9 +117,6 @@ class DcLoadingScanViewModel(
                             gate,
                             barcode)
                     }
-                _toastEvent.value =
-                    DcLoadingScanToastState.BoxHasBeenAdded(resourceProvider.getShortHasBeenAddedBox(
-                        scanBoxData.barcode))
             }
             ScanBoxData.Empty -> boxStateUI.value = DcLoadingScanBoxState.Empty
             is ScanBoxData.BoxDoesNotBelongInfoEmpty -> {

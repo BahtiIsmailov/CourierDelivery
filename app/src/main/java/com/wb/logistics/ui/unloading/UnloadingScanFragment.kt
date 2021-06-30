@@ -4,18 +4,13 @@ import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
@@ -120,8 +115,8 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingScanMessageEvent.BoxDelivery -> showToastBoxDelivery(state.message)
-                is UnloadingScanMessageEvent.BoxReturned -> showToastBoxReturned(state.message)
+//                is UnloadingScanMessageEvent.BoxDelivery -> showToastBoxDelivery(state.message)
+//                is UnloadingScanMessageEvent.BoxReturned -> showToastBoxReturned(state.message)
             }
         }
 
@@ -170,39 +165,6 @@ class UnloadingScanFragment : Fragment() {
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
-    }
-
-    private fun showToastBoxDelivery(message: String) {
-        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
-        val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.dc_loading_added_box_toast, container) as ViewGroup
-        val icon: ImageView = layout.findViewById(R.id.icon)
-        icon.setImageResource(R.drawable.ic_box_unloading_delivery)
-        val text: TextView = layout.findViewById(R.id.text)
-        text.text = message
-        with(Toast(context)) {
-            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
-        }
-    }
-
-    private fun showToastBoxReturned(message: String) {
-        val container: ViewGroup? = activity?.findViewById(R.id.custom_toast_container)
-        val layout: ViewGroup =
-            layoutInflater.inflate(R.layout.dc_loading_has_been_added_box_toast,
-                container) as ViewGroup
-        val icon: ImageView = layout.findViewById(R.id.icon)
-        icon.setImageResource(R.drawable.ic_box_unloading_return)
-        val text: TextView = layout.findViewById(R.id.text)
-        text.text = message
-        with(Toast(context)) {
-            setGravity(Gravity.TOP or Gravity.CENTER, 0, 200)
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
-        }
     }
 
     private fun initListener() {
