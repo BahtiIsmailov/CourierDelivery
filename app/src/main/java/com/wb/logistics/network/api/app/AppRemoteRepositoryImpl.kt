@@ -423,11 +423,11 @@ class AppRemoteRepositoryImpl(
         return with(warehouseScanRemote) {
             WarehouseScanEntity(
                 srcOffice = WarehouseScanSrcOfficeEntity(
-                    id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    longitude = dstOffice.long,
-                    latitude = dstOffice.lat),
+                    id = srcOffice.id,
+                    name = srcOffice.name,
+                    fullAddress = srcOffice.fullAddress,
+                    longitude = srcOffice.long,
+                    latitude = srcOffice.lat),
                 dstOffice = WarehouseScanDstOfficeEntity(
                     id = dstOffice.id,
                     name = dstOffice.name,

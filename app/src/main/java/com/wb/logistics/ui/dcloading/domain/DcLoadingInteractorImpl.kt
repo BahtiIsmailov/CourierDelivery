@@ -127,17 +127,7 @@ class DcLoadingInteractorImpl(
         srcOffice = convertAttachedSrcOfficeEntity(),
         dstOffice = convertAttachedDstOfficeEntity(),
         isManualInput = isManual,
-        dstFullAddress = dstOffice.fullAddress,
         updatedAt = updatedAt)
-
-    private fun WarehouseScanEntity.convertAttachedDstOfficeEntity() =
-        AttachedDstOfficeEntity(
-            id = dstOffice.id,
-            name = dstOffice.name,
-            fullAddress = dstOffice.fullAddress,
-            longitude = dstOffice.longitude,
-            latitude = dstOffice.latitude,
-        )
 
     private fun WarehouseScanEntity.convertAttachedSrcOfficeEntity() =
         AttachedSrcOfficeEntity(
@@ -146,6 +136,15 @@ class DcLoadingInteractorImpl(
             fullAddress = srcOffice.fullAddress,
             longitude = srcOffice.longitude,
             latitude = srcOffice.latitude,
+        )
+
+    private fun WarehouseScanEntity.convertAttachedDstOfficeEntity() =
+        AttachedDstOfficeEntity(
+            id = dstOffice.id,
+            name = dstOffice.name,
+            fullAddress = dstOffice.fullAddress,
+            longitude = dstOffice.longitude,
+            latitude = dstOffice.latitude,
         )
 
     private fun saveBoxToBalanceByInfo(

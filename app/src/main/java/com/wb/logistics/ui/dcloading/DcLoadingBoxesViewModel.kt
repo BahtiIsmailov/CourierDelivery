@@ -8,6 +8,8 @@ import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.time.TimeFormatType
+import com.wb.logistics.utils.time.TimeFormatter
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
@@ -15,6 +17,7 @@ class DcLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val receptionInteractor: DcLoadingInteractor,
     private val resourceProvider: DcLoadingResourceProvider,
+    private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxes = MutableLiveData<DcLoadingBoxesUIState>()
@@ -37,6 +40,10 @@ class DcLoadingBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<DcLoadingBoxesItem>()
 
     init {
+        observeScannedBoxes()
+    }
+
+    private fun observeScannedBoxes() {
         addSubscription(receptionInteractor.observeScannedBoxes()
             .flatMap { convertBoxes(it) }
             .doOnNext { copyConvertBoxes(it) }
@@ -51,7 +58,12 @@ class DcLoadingBoxesViewModel(
             .toObservable()
 
     private val receptionBoxItem = { (index, item): IndexedValue<AttachedBoxEntity> ->
-        DcLoadingBoxesItem(singleIncrement(index), item.barcode, item.dstFullAddress, false)
+        val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
+        val time = timeFormatter.format(date, TimeFormatType.ONLY_FULL_TIME)
+        DcLoadingBoxesItem(singleIncrement(index),
+            item.barcode,
+            resourceProvider.getBoxTimeAndAddress(time, item.dstOffice.fullAddress),
+            false)
     }
 
     private val singleIncrement = { index: Int -> (index + 1).toString() }

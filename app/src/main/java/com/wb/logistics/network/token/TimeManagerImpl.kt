@@ -11,14 +11,12 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
 
     override fun saveNetworkTime(time: String) {
         worker.save(AppPreffsKeys.TIME_NETWORK_KEY,
-            timeFormatter.dateTimeWithTimezoneFromString(time).millis)
+            timeFormatter.dateTimeWithoutTimezoneFromString(time).millis)
         LogUtils { logDebugApp("1. " + time) }
-        LogUtils { logDebugApp("2. " + timeFormatter.dateTimeWithTimezoneFromString(time)) }
+        LogUtils { logDebugApp("2. " + timeFormatter.dateTimeWithoutTimezoneFromString(time)) }
         worker.save(AppPreffsKeys.TIME_LOCAL_KEY, timeFormatter.currentDateTime().millis)
         LogUtils { logDebugApp("3. " + timeFormatter.currentDateTime()) }
     }
-
-
 
     override fun getOffsetLocalTime(): String {
         val networkTime = worker.load(AppPreffsKeys.TIME_NETWORK_KEY, 0L)

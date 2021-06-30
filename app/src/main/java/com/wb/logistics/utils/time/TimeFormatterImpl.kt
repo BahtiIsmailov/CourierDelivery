@@ -41,6 +41,7 @@ class TimeFormatterImpl : TimeFormatter {
                 DAY_LETTER_MONTH_YEAR
             )
             TimeFormatType.ONLY_TIME -> formatDateTime(dateTime, ONLY_TIME)
+            TimeFormatType.ONLY_FULL_TIME -> formatDateTime(dateTime, ONLY_FULL_TIME)
             TimeFormatType.ONLY_MONTH -> formatDateTime(dateTime, ONLY_MONTH)
             TimeFormatType.MIN_AND_SEC -> formatDateTime(dateTime, MIN_AND_SEC)
             TimeFormatType.DAY_AND_LETTER_MONTH -> formatDayLetterMonth(dateTime)
@@ -104,21 +105,36 @@ class TimeFormatterImpl : TimeFormatter {
     }
 
     override fun calendarFromStringSimple(date: String): Calendar {
-        return getCalendar(date, PATTERN_CALENDAR_FORMAT)
+        return getCalendarWithTimeZone(date, PATTERN_CALENDAR_FORMAT)
     }
 
     override fun calendarWithTimezoneFromString(date: String): Calendar {
-        return getCalendar(date, PATTERN_CALENDAR_WITH_TIMEZONE_FORMAT)
+        return getCalendarWithTimeZone(date, PATTERN_CALENDAR_FORMAT)
     }
 
     override fun calendarWithoutTimezoneFromString(date: String): Calendar {
-        return getCalendar(date, PATTERN_CALENDAR_WITHOUT_TIMEZONE_FORMAT)
+        return getCalendarWithoutTimeZone(date, PATTERN_CALENDAR_FORMAT)
     }
 
-    private fun getCalendar(date: String, format: String): Calendar {
+    private fun getCalendarWithTimeZone(date: String, format: String): Calendar {
         val calendar = Calendar.getInstance()
         val simpleDateFormat = SimpleDateFormat(format, Locale.getDefault())
         simpleDateFormat.timeZone = TimeZone.getTimeZone(TIME_ZONE_UTC)
+        var parseDate: Date? = Date(System.currentTimeMillis())
+        try {
+            parseDate = simpleDateFormat.parse(date)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
+        parseDate?.apply {
+            calendar.timeInMillis = parseDate.time
+        }
+        return calendar
+    }
+
+    private fun getCalendarWithoutTimeZone(date: String, format: String): Calendar {
+        val calendar = Calendar.getInstance()
+        val simpleDateFormat = SimpleDateFormat(format, Locale.getDefault())
         var parseDate: Date? = Date(System.currentTimeMillis())
         try {
             parseDate = simpleDateFormat.parse(date)
@@ -153,6 +169,7 @@ class TimeFormatterImpl : TimeFormatter {
         private const val ONLY_DATE = "dd.MM.yyyy"
         private const val ONLY_DATE_YMD = "yyyy-MM-dd"
         private const val ONLY_TIME = "HH:mm"
+        private const val ONLY_FULL_TIME = "HH:mm:ss"
         private const val ONLY_MONTH = "MMMM"
         private const val MIN_AND_SEC = "mm:ss"
         private const val TODAY = "Сегодня"
@@ -164,8 +181,6 @@ class TimeFormatterImpl : TimeFormatter {
         private const val TIME_ZONE_UTC = "UTC"
 
         private const val PATTERN_CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
-        private const val PATTERN_CALENDAR_WITH_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
-        private const val PATTERN_CALENDAR_WITHOUT_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
     }
 
 }

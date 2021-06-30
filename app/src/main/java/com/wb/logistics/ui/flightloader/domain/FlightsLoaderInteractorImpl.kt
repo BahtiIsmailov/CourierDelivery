@@ -88,7 +88,6 @@ class FlightsLoaderInteractorImpl(
                     latitude = dstOffice.latitude,
                 ),
                 isManualInput = false,
-                dstFullAddress = dstOffice.fullAddress,
                 updatedAt = updatedAt)
         }
 

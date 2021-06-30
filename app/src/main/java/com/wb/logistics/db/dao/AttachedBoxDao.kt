@@ -16,7 +16,7 @@ interface AttachedBoxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
 
-    @Query("SELECT * FROM AttachedBoxEntity")
+    @Query("SELECT * FROM AttachedBoxEntity ORDER BY updatedAt")
     fun observeAttachedBox(): Flowable<List<AttachedBoxEntity>>
 
     @Query("SELECT * FROM AttachedBoxEntity WHERE dst_office_id = :dstOfficeId")

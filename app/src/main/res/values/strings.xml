@@ -140,6 +140,7 @@
     <string name="dc_loading_boxes_remove_dialog_title_error">Удаление коробки</string>
     <string name="dc_loading_boxes_remove_dialog_positive_button_error">Ok</string>
     <string name="dc_loading_boxes_dialog_remove_error">Коробки не удалены, повторите операцию позднее</string>
+    <string name="dc_loading_boxes_time">%1$s • %2$s</string>
 
     <string name="confirm_info_dialog_button">Понятно</string>
 

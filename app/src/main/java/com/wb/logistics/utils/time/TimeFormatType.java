@@ -10,6 +10,7 @@ import java.lang.annotation.RetentionPolicy;
         TimeFormatType.ONLY_DATE,
         TimeFormatType.ONLY_DATE_YMD,
         TimeFormatType.ONLY_TIME,
+        TimeFormatType.ONLY_FULL_TIME,
         TimeFormatType.ONLY_MONTH,
         TimeFormatType.MIN_AND_SEC,
         TimeFormatType.DAY_AND_LETTER_MONTH,
@@ -23,6 +24,7 @@ public @interface TimeFormatType {
     String ONLY_DATE = "dd.MM.yyyy";
     String ONLY_DATE_YMD = "yyyy-MM-dd";
     String ONLY_TIME = "HH:mm";
+    String ONLY_FULL_TIME = "HH:mm:ss";
     String ONLY_MONTH = "MMMM";
     String MIN_AND_SEC = "mm:ss";
     String DAY_AND_LETTER_MONTH = "day_letter_month";
