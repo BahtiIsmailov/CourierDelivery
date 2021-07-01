@@ -11,55 +11,65 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
-    def versionPropsFile = file('version.properties')
+//    def versionPropsFile = file('version.properties')
+//
+//    Properties versionProps = new Properties()
+//
+//    if (!versionPropsFile.exists()) {
+//        versionProps['VERSION_NUMBER'] = "0"
+//        versionProps['VERSION_BUILD'] = "8"
+//        versionProps['VERSION_CODE'] = "18"
+//        versionProps.store(versionPropsFile.newWriter(), null)
+//    }
+//
+//    if (versionPropsFile.canRead()) {
+//
+//        versionProps.load(new FileInputStream(versionPropsFile))
+//
+//        def code = versionProps['VERSION_CODE'].toInteger()
+//
+//        def runTasks = gradle.startParameter.taskNames
+//        def releaseNumber = versionProps['VERSION_BUILD'].toInteger()
+//        if (':app:sassembleRelease' in runTasks) {
+//            releaseNumber++
+//        }
+//        print(runTasks)
+//        if (':app:assembleDebug' in runTasks) {
+//            code++
+//        }
+//
+//        versionProps['VERSION_CODE']=code.toString()
+//        versionProps['VERSION_BUILD']=releaseNumber.toString()
+//        versionProps.store(versionPropsFile.newWriter(), null)
+//
+//        defaultConfig {
+//            multiDexEnabled true
+//            applicationId "com.wb.logistics"
+//            minSdkVersion 21
+//            targetSdkVersion 30
+//            versionCode code
+//            versionName "0." + releaseNumber + "." + code
+//
+//            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//            vectorDrawables.useSupportLibrary = true
+//        }
+//
+//    }
+//    else {
+//        throw new GradleException("Could not read version.properties!")
+//    }
 
-    Properties versionProps = new Properties()
+    defaultConfig {
+        multiDexEnabled true
+        applicationId "com.wb.logistics"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "0.8.18"
 
-    if (!versionPropsFile.exists()) {
-        versionProps['VERSION_NUMBER'] = "0"
-        versionProps['VERSION_BUILD'] = "8"
-        versionProps['VERSION_CODE'] = "18"
-        versionProps.store(versionPropsFile.newWriter(), null)
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
-
-    if (versionPropsFile.canRead()) {
-
-        versionProps.load(new FileInputStream(versionPropsFile))
-
-        def code = versionProps['VERSION_CODE'].toInteger()
-
-        def runTasks = gradle.startParameter.taskNames
-        def releaseNumber = versionProps['VERSION_BUILD'].toInteger()
-        if (':app:sassembleRelease' in runTasks) {
-            releaseNumber++
-        }
-        print(runTasks)
-        if (':app:assembleDebug' in runTasks) {
-            code++
-        }
-
-        versionProps['VERSION_CODE']=code.toString()
-        versionProps['VERSION_BUILD']=releaseNumber.toString()
-        versionProps.store(versionPropsFile.newWriter(), null)
-
-        defaultConfig {
-            multiDexEnabled true
-            applicationId "com.wb.logistics"
-            minSdkVersion 21
-            targetSdkVersion 30
-            versionCode code
-            versionName "0." + releaseNumber + "." + code
-
-            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-            vectorDrawables.useSupportLibrary = true
-        }
-
-    }
-    else {
-        throw new GradleException("Could not read version.properties!")
-    }
-
-
 
     buildTypes {
         release {
