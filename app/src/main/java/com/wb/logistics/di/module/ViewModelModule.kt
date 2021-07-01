@@ -49,7 +49,7 @@ val viewModelModule = module {
     viewModel { FlightsViewModel(get(), get(), get()) }
     viewModel { FlightsEmptyViewModel(get()) }
 
-    viewModel { ScannerViewModel(get(), get(), get()) }
+    viewModel { ScannerViewModel(get(), get()) }
     viewModel { DcLoadingScanViewModel(get(), get(), get()) }
     viewModel { DcLoadingHandleViewModel(get(), get()) }
 

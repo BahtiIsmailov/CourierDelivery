@@ -13,7 +13,6 @@ import com.wb.logistics.ui.flightloader.FlightLoaderProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.flightsempty.FlightsEmptyResourceProvider
-import com.wb.logistics.ui.scanner.ScannerResourceProvider
 import com.wb.logistics.ui.splash.AppResourceProvider
 import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
@@ -58,10 +57,6 @@ val resourceModule = module {
         return AuthResourceProvider(application)
     }
 
-    fun provideScannerResourceProvider(application: Application): ScannerResourceProvider {
-        return ScannerResourceProvider(application)
-    }
-
     fun provideUnloadingScanResourceProvider(application: Application): UnloadingScanResourceProvider {
         return UnloadingScanResourceProvider(application)
     }
@@ -99,7 +94,6 @@ val resourceModule = module {
     single { provideFlightDeliveriesResourceProvider(get()) }
     single { provideFlightDeliveriesDetailsResourceProvider(get()) }
     single { provideTemporaryPasswordResourceProvider(get()) }
-    single { provideScannerResourceProvider(get()) }
     single { provideUnloadingScanResourceProvider(get()) }
     single { provideForcedTerminationResourceProvider(get()) }
     single { provideCongratulationResourceProvider(get()) }

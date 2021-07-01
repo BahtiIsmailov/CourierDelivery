@@ -9,7 +9,6 @@ import io.reactivex.disposables.CompositeDisposable
 
 class ScannerViewModel(
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: ScannerResourceProvider,
     private val interactor: ScannerInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -22,7 +21,7 @@ class ScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
-        interactor.barcodeScanned(resourceProvider.getBarCodeBox(barcode))
+        interactor.barcodeScanned(barcode)
     }
 
 }
