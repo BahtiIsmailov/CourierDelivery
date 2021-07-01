@@ -234,7 +234,7 @@
     <string name="force_termination_box_not_found">Коробки не найдены</string>
     <string name="force_termination_pickup_point">Нет возможности выгрузить на РЦ</string>
     <string name="force_termination_confirm">Подтвердить</string>
-    <string name="force_termination_complete_delivery">Завершить рейс</string>
+    <string name="force_termination_complete_delivery">Завершить доставку</string>
     <string name="force_termination_empty" />
 
     <string name="congratulation_label">Завершение доставки</string>

@@ -313,16 +313,16 @@ class AppRemoteRepositoryImpl(
                 barcode = barcode,
                 srcOffice = PvzMatchingSrcOfficeEntity(
                     id = srcOffice.id,
-                    name = srcOffice.name,
-                    fullAddress = srcOffice.fullAddress,
-                    longitude = srcOffice.long,
-                    latitude = srcOffice.lat),
+                    name = srcOffice.name ?: "",
+                    fullAddress = srcOffice.fullAddress ?: "",
+                    longitude = srcOffice.long ?: 0.0,
+                    latitude = srcOffice.lat ?: 0.0),
                 dstOffice = PvzMatchingDstOfficeEntity(
                     id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    longitude = dstOffice.long,
-                    latitude = dstOffice.lat),
+                    name = dstOffice.name ?: "",
+                    fullAddress = dstOffice.fullAddress ?: "",
+                    longitude = dstOffice.long ?: 0.0,
+                    latitude = dstOffice.lat ?: 0.0),
             )
         }
     }
