@@ -53,9 +53,12 @@ class UnloadingInteractorImpl(
 
                 when {
                     findUnloadedBox is Optional.Success -> //коробка уже выгружена из машины
+                        // TODO: 01.07.2021 сравнить с тем ПВЗ где ее выгрузили
+                        // TODO: 01.07.2021 вызвать метод PVZ scan
                         return@flatMap boxAlreadyUnloaded(findUnloadedBox)
 
                     findReturnBox is Optional.Success -> //коробка уже добавлена к возврату
+                        // TODO: 01.07.2021 вызвать метод PVZ scan
                         return@flatMap boxAlreadyReturn(findReturnBox)
 
                     findAttachedBox is Optional.Success -> { //коробка в списке доставки
@@ -77,22 +80,13 @@ class UnloadingInteractorImpl(
                         }
                     }
 
-                    findPvzMatchingBox is Optional.Success -> { //коробка в списке на возврат с ПВЗ
+                    findPvzMatchingBox is Optional.Success -> { //коробка в списке на возврат с ПВЗ - забираем коробку
                         with(findPvzMatchingBox) {
-                            if (currentOfficeId == data.srcOffice.id) { //коробка принадлежит ПВЗ принимаем коробку
-                                return@flatMap loadReturnBoxByList(barcodeScanned,
-                                    updatedAt,
-                                    flightId,
-                                    isManualInput,
-                                    currentOfficeId)
-                            } else { //коробка в списке для возврата, но не принадлежит ПВЗ
-                                return@flatMap boxNotBelongPvz(barcodeScanned,
-                                    isManualInput,
-                                    updatedAt,
-                                    currentOfficeId,
-                                    flightId,
-                                    data.dstOffice.fullAddress)
-                            }
+                            return@flatMap loadReturnBoxByList(barcodeScanned,
+                                updatedAt,
+                                flightId,
+                                isManualInput,
+                                currentOfficeId)
                         }
                     }
 
@@ -291,8 +285,8 @@ class UnloadingInteractorImpl(
             Observable.just(UnloadingData.BoxReturnAdded(barcodeScanned))
         val switchScreenUnloading = switchScreenUnloading(currentOfficeId)
 
-        return saveUnloadedBox
-            .andThen(putBoxToPvzBalance)
+        return putBoxToPvzBalance
+            .andThen(saveUnloadedBox)
             .andThen(deletePvzMatchingBox)
             .andThen(switchScreenUnloading)
             .andThen(boxReturnAdded)
@@ -437,7 +431,6 @@ class UnloadingInteractorImpl(
         isManualInput,
         updatedAt,
         currentOffice)
-        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     private fun putBoxToPvzBalance(
@@ -452,7 +445,6 @@ class UnloadingInteractorImpl(
         isManualInput,
         updatedAt,
         currentOffice)
-        .onErrorComplete() // TODO: 29.04.2021 реализовать конвертер ошибки
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     override fun observeUnloadedAndAttachedBoxes(currentOfficeId: Int): Observable<Pair<List<FlightBoxEntity>, List<AttachedBoxEntity>>> {

@@ -194,7 +194,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
             R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
                 showExitDialog()
             }
+            R.id.unloadingScanFragment -> {
+                // TODO: 01.07.2021 выполнить запрос, получить наличие выгружаемых коробок > 0, то выход иначе super.onBackPressed()
+            }
             else -> {
+
                 super.onBackPressed()
             }
         }

@@ -54,6 +54,7 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
+        // TODO: 01.07.2021 восстанавливать реактивный поток сканирования после ошибки
         initTitleToolbar()
         observeBackButton()
         observeScanProcess()
