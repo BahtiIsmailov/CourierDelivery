@@ -195,10 +195,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
                 showExitDialog()
             }
             R.id.unloadingScanFragment -> {
-                // TODO: 01.07.2021 выполнить запрос, получить наличие выгружаемых коробок > 0, то выход иначе super.onBackPressed()
+                val toolbar = findViewById<Toolbar>(R.id.toolbar)
+                if (toolbar.navigationIcon == null) {
+                    showExitDialog()
+                } else {
+                    super.onBackPressed()
+                }
             }
             else -> {
-
                 super.onBackPressed()
             }
         }
