@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
-import android.hardware.camera2.CameraManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +12,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.google.zxing.Result
@@ -28,14 +28,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
-//    private var cameraZoom: Camera? = null
-
     private val viewModel by viewModel<ScannerViewModel>()
 
     private var _binding: ScannerFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var scannerView: ZXingScannerView
-    private var isFlash = false
+    private lateinit var scannerView: ZXingScannerZoomView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -46,17 +43,10 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initState(savedInstanceState)
         initPermission()
         initScanner()
         initListener()
         initObserver()
-    }
-
-    private fun initState(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            isFlash = savedInstanceState.getBoolean(FLASH_STATE)
-        }
     }
 
     private fun initPermission() {
@@ -85,13 +75,8 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(FLASH_STATE, isFlash)
-    }
-
     private fun initScanner() {
-        scannerView = object : ZXingScannerView(context) {
+        scannerView = object : ZXingScannerZoomView(context) {
             override fun createViewFinderView(context: Context): IViewFinder {
                 return CustomViewFinderView(context)
             }
@@ -114,21 +99,15 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun initListener() {
-        binding.sun.setOnClickListener {
-            //flash()
-        }
+        binding.sun.setOnClickListener { scannerView.toggleFlash() }
     }
 
-    private fun flash() {
-        isFlash = !isFlash
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val camManager =
-                requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager?
-            camManager?.apply {
-                val cameraId = camManager.cameraIdList[0]
-                camManager.setTorchMode(cameraId, isFlash)
-            }
+    var onSeekBarChangeListener: OnSeekBarChangeListener = object : OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            scannerView.zoom(progress)
         }
+        override fun onStartTrackingTouch(seekBar: SeekBar) {}
+        override fun onStopTrackingTouch(seekBar: SeekBar) {}
     }
 
     override fun onDestroyView() {
@@ -139,7 +118,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     override fun handleResult(rawResult: Result?) {
         val barcode = rawResult?.text ?: return
         viewModel.onBarcodeScanned(barcode)
-        LogUtils { logDebugApp("Cod $barcode") }
+        LogUtils { logDebugApp("Barcode scan: $barcode") }
         holdScanner()
     }
 
@@ -157,6 +136,10 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun startScanner() {
         scannerView.setResultHandler(this)
         scannerView.startCamera()
+        scannerView.setCameraCompleteListener {
+            binding.zoom.max = scannerView.maxZoom
+            binding.zoom.setOnSeekBarChangeListener(onSeekBarChangeListener)
+        }
     }
 
     override fun onStop() {
@@ -171,7 +154,6 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     companion object {
         const val PERMISSIONS_REQUEST_CAMERA_NO_ACTION = 1
         const val HOLD_SCANNER = 1000L
-        const val FLASH_STATE = "FLASH_STATE"
     }
 
     private class CustomViewFinderView : ViewFinderView {
