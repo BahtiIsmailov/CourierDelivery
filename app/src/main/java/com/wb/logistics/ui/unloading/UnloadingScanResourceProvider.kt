@@ -47,4 +47,9 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getBoxNotBelongAddress(): String =
         context.getString(R.string.dc_loading_box_not_belong_address_title)
 
+    fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
+    fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
+    fun getScanDialogButton() =
+        context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
+
 }

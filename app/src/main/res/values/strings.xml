@@ -204,6 +204,11 @@
     <string name="unloading_box_returned">%1$s принята</string>
     <string name="unloading_box_delivered">%1$s доставлена</string>
 
+    <string name="unloading_scan_dialog_title_error">Выгрузка на ПВЗ</string>
+    <string name="unloading_scan_dialog_message_error">Коробка не добавлена, повторите операцию</string>
+    <string name="unloading_scan_switch_dialog_message_error">Не удается завершить приемку на ПВЗ, повторите операцию</string>
+    <string name="unloading_scan_dialog_positive_button_error">Ok</string>
+
     <string name="unloading_handle_label">Ручной ввод</string>
 
     <string name="unloading_box_not_belong_point_toolbar_label">Не принадлежит ПВЗ</string>

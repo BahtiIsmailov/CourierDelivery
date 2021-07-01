@@ -2,6 +2,8 @@ package com.wb.logistics.ui.unloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -9,6 +11,7 @@ import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.TimeUnit
 
 class UnloadingScanViewModel(
     private val parameters: UnloadingScanParameters,
@@ -50,6 +53,10 @@ class UnloadingScanViewModel(
     val navigationEvent: LiveData<UnloadingScanNavAction>
         get() = _navigationEvent
 
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
+
 
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
@@ -79,60 +86,71 @@ class UnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        addSubscription(interactor.observeScanProcess(parameters.dstOfficeId).subscribe({
-            when (it) {
-                is UnloadingData.BoxAlreadyUnloaded -> {
-                    _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxDelivery(
-                            resourceProvider.getAlreadyDelivery(it.barcode))
-                    _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+        addSubscription(interactor.observeScanProcess(parameters.dstOfficeId)
+            .doOnError { observeScanProcessError(it) }
+            .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
+            .subscribe({
+                when (it) {
+                    is UnloadingData.BoxAlreadyUnloaded -> {
+                        _messageEvent.value =
+                            UnloadingScanMessageEvent.BoxDelivery(
+                                resourceProvider.getAlreadyDelivery(it.barcode))
+                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                    }
+
+                    is UnloadingData.BoxAlreadyReturn -> {
+                        _messageEvent.value =
+                            UnloadingScanMessageEvent.BoxReturned(
+                                resourceProvider.getAlreadyReturned(it.barcode))
+                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                    }
+
+                    is UnloadingData.BoxUnloadAdded -> {
+                        _messageEvent.value =
+                            UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
+                        _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
+                    }
+
+                    is UnloadingData.BoxReturnAdded -> {
+                        _messageEvent.value =
+                            UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
+                        _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
+                    }
+
+                    is UnloadingData.BoxDoesNotBelongPvz -> {
+                        _navigationEvent.value =
+                            UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+                                resourceProvider.getBoxNotBelongPvzTitle(),
+                                resourceProvider.getBoxNotBelongPvzDescription(),
+                                it.barcode,
+                                it.address)
+                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                    }
+
+                    is UnloadingData.BoxEmptyInfo -> {
+                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                        _navigationEvent.value =
+                            UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+                                resourceProvider.getBoxNotBelongInfoTitle(),
+                                resourceProvider.getBoxEmptyInfoDescription(),
+                                it.barcode,
+                                resourceProvider.getBoxNotBelongAddress())
+                    }
+                    is UnloadingData.BoxSaveRemoteError -> {
+                    }
                 }
 
-                is UnloadingData.BoxAlreadyReturn -> {
-                    _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxReturned(
-                            resourceProvider.getAlreadyReturned(it.barcode))
-                    _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                }
+            }) { observeScanProcessError(it) })
+    }
 
-                is UnloadingData.BoxUnloadAdded -> {
-                    _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
-                    _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
-                }
-
-                is UnloadingData.BoxReturnAdded -> {
-                    _messageEvent.value =
-                        UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
-                    _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
-                }
-
-                is UnloadingData.BoxDoesNotBelongPvz -> {
-                    _navigationEvent.value =
-                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
-                            resourceProvider.getBoxNotBelongPvzTitle(),
-                            resourceProvider.getBoxNotBelongPvzDescription(),
-                            it.barcode,
-                            it.address)
-                    _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                }
-
-                is UnloadingData.BoxEmptyInfo -> {
-                    _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                    _navigationEvent.value =
-                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
-                            resourceProvider.getBoxNotBelongInfoTitle(),
-                            resourceProvider.getBoxEmptyInfoDescription(),
-                            it.barcode,
-                            resourceProvider.getBoxNotBelongAddress())
-                }
-                is UnloadingData.BoxSaveRemoteError -> {
-                }
-            }
-
-        }) {
-            LogUtils { logDebugApp(it.toString()) }
-        })
+    private fun observeScanProcessError(throwable: Throwable) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> resourceProvider.getScanDialogMessage()
+        }
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
     private fun observeUnloadedBoxes() {
@@ -210,5 +228,7 @@ class UnloadingScanViewModel(
     object HideBackButtonState
 
     data class Label(val label: String)
+
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

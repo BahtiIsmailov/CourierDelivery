@@ -12,6 +12,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
@@ -64,6 +65,11 @@ class UnloadingScanFragment : Fragment() {
     }
 
     private fun initObserver() {
+
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
 
         viewModel.toolbarBackState.observe(viewLifecycleOwner) {
             (activity as NavToolbarListener).hideBackButton()
