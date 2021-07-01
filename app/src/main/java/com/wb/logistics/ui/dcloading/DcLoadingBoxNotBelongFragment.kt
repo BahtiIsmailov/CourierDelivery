@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcLoadingBoxNotBelongFragmentBinding
 import com.wb.logistics.ui.splash.NavToolbarListener
+import com.wb.logistics.utils.LogUtils
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -38,6 +39,7 @@ class DcLoadingBoxNotBelongFragment : Fragment() {
             when (it) {
                 is DcLoadingBoxNotBelongState.BelongInfo -> {
                     binding.title.text = it.title
+                    LogUtils{logDebugApp("DcLoadingBoxNotBelongState " + it.code)}
                     binding.code.text = it.code
                     binding.address.text = it.address
                     if (it.isShowAddress) {

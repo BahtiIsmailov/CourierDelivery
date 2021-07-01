@@ -17,6 +17,7 @@ import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
@@ -203,6 +204,7 @@ class DcLoadingInteractorImpl(
         barcode: String,
         isManual: Boolean,
     ): Single<BoxDefinitionResult> {
+        LogUtils { logDebugApp("boxDefinitionResult barcode " + barcode + " input mode isManual " + isManual) }
         return Single.zip(
             flight(), //рейс
             findAttachedBox(barcode), //коробка уже добавлена
