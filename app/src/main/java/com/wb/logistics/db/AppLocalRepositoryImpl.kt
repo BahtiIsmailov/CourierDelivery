@@ -135,19 +135,20 @@ class AppLocalRepositoryImpl(
             .onErrorReturn { Optional.Empty() }
     }
 
+    override fun deleteFlightBox(flightBoxEntity: FlightBoxEntity): Completable {
+        return flightBoxDao.deleteFlightBox(flightBoxEntity)
+    }
+
     override fun deleteAllFlightBoxes() {
         return flightBoxDao.deleteAllFlightBox()
     }
 
     override fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
-        return flightBoxDao.deleteReturnFlightBoxes(flightBoxesEntity)
+        return flightBoxDao.deleteFlightBoxes(flightBoxesEntity)
     }
 
-    override fun findUnloadedFlightBox(
-        barcode: String,
-        currentOfficeId: Int,
-    ): Single<Optional<FlightBoxEntity>> {
-        return flightBoxDao.findUnloadedFlightBox(barcode, currentOfficeId)
+    override fun findUnloadedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
+        return flightBoxDao.findUnloadedFlightBox(barcode)
             .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
@@ -156,11 +157,8 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
     }
 
-    override fun findReturnedFlightBox(
-        barcode: String,
-        currentOfficeId: Int,
-    ): Single<Optional<FlightBoxEntity>> {
-        return flightBoxDao.findReturnedFlightBox(barcode, currentOfficeId)
+    override fun findReturnedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
+        return flightBoxDao.findReturnedFlightBox(barcode)
             .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
             .onErrorReturn { Optional.Empty() }
     }
@@ -315,7 +313,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable {
-        return flightBoxDao.deleteReturnFlightBox(flightBoxEntity)
+        return flightBoxDao.deleteFlightBox(flightBoxEntity)
     }
 
     override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {

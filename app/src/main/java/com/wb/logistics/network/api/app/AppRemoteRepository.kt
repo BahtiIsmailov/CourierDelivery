@@ -27,7 +27,7 @@ interface AppRemoteRepository {
 
     fun time(): Single<TimeResponse>
 
-    fun putBoxToPvzBalance(
+    fun loadPvzScan(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
@@ -51,7 +51,7 @@ interface AppRemoteRepository {
         currentOfficeId: Int,
     ): Single<FlightBoxEntity>
 
-    fun removeBoxFromPvzBalance(
+    fun unloadPvzScan(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,

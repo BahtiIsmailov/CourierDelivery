@@ -33,6 +33,7 @@ class DcLoadingResourceProvider(private val context: Context) {
         context.getString(R.string.dc_loading_box_not_belong_address_title)
 
     fun getBoxDialogTitle() = context.getString(R.string.dc_loading_boxes_remove_dialog_title_error)
+
     fun getErrorRemovedBoxesDialogMessage(): String =
         context.getString(R.string.dc_loading_boxes_dialog_remove_error)
 

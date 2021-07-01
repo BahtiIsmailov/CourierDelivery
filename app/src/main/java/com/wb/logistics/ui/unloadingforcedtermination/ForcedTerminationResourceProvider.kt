@@ -15,7 +15,7 @@ class ForcedTerminationResourceProvider(private val context: Context) {
         context.getString(R.string.force_termination_box_not_found)
 
     fun getNotPickupPoint() =
-        context.getString(R.string.force_termination_pickup_point)
+        context.getString(R.string.force_termination_pvz)
 
     fun getEmpty() =
         context.getString(R.string.force_termination_empty)
@@ -25,5 +25,14 @@ class ForcedTerminationResourceProvider(private val context: Context) {
 
     fun getDataLogFormat(event: String, message: String): String =
         context.getString(R.string.unloading_box_log_data, event, message)
+
+    fun getBoxDialogTitle(): String =
+        context.getString(R.string.unloading_boxes_dialog_complete_title)
+
+    fun getErrorCompleteUnloading(): String =
+        context.getString(R.string.unloading_boxes_dialog_complete_error)
+
+    fun getBoxPositiveButton() =
+        context.getString(R.string.unloading_boxes_dialog_complete_ok)
 
 }

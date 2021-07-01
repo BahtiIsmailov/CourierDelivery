@@ -11,10 +11,10 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getBoxNotBelongPointToolbarTitle(): String =
         context.getString(R.string.unloading_box_not_belong_point_toolbar_label)
 
-    fun getBoxNotBelongPointTitle(): String =
+    fun getBoxNotBelongPvzTitle(): String =
         context.getString(R.string.unloading_box_not_belong_dc_title)
 
-    fun getBoxNotBelongPointDescription(): String =
+    fun getBoxNotBelongPvzDescription(): String =
         context.getString(R.string.unloading_box_not_belong_dc_return_car)
 
     fun getOfficeEmpty(officeId: Int) =
@@ -42,7 +42,7 @@ class UnloadingScanResourceProvider(private val context: Context) {
         context.getString(R.string.unloading_box_not_belong_info_title)
 
     fun getBoxEmptyInfoDescription(): String =
-        context.getString(R.string.unloading_box_not_belong_info_title)
+        context.getString(R.string.unloading_box_not_belong_info_empty_description)
 
     fun getBoxNotBelongAddress(): String =
         context.getString(R.string.dc_loading_box_not_belong_address_title)

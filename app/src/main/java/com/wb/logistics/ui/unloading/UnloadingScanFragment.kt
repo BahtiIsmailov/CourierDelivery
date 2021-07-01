@@ -75,7 +75,7 @@ class UnloadingScanFragment : Fragment() {
 
         val eventObserver = Observer<UnloadingScanNavAction> { state ->
             when (state) {
-                is UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPoint -> {
+                is UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz -> {
                     findNavController().navigate(
                         UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloading(
                             with(state) {

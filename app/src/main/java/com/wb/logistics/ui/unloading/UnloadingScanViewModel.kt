@@ -79,7 +79,7 @@ class UnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        addSubscription(interactor.observeScanProcess(parameters.dstOfficeId).subscribe {
+        addSubscription(interactor.observeScanProcess(parameters.dstOfficeId).subscribe({
             when (it) {
                 is UnloadingData.BoxAlreadyUnloaded -> {
                     _messageEvent.value =
@@ -109,9 +109,9 @@ class UnloadingScanViewModel(
 
                 is UnloadingData.BoxDoesNotBelongPvz -> {
                     _navigationEvent.value =
-                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPoint(
-                            resourceProvider.getBoxNotBelongPointTitle(),
-                            resourceProvider.getBoxNotBelongPointDescription(),
+                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+                            resourceProvider.getBoxNotBelongPvzTitle(),
+                            resourceProvider.getBoxNotBelongPvzDescription(),
                             it.barcode,
                             it.address)
                     _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
@@ -120,7 +120,7 @@ class UnloadingScanViewModel(
                 is UnloadingData.BoxEmptyInfo -> {
                     _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
                     _navigationEvent.value =
-                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPoint(
+                        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
                             resourceProvider.getBoxNotBelongInfoTitle(),
                             resourceProvider.getBoxEmptyInfoDescription(),
                             it.barcode,
@@ -130,6 +130,8 @@ class UnloadingScanViewModel(
                 }
             }
 
+        }) {
+            LogUtils { logDebugApp(it.toString()) }
         })
     }
 
@@ -138,7 +140,8 @@ class UnloadingScanViewModel(
             .subscribe({
                 val uploadedList = it.first
                 val attachedList = it.second
-                val accepted = "" + uploadedList.size + "/" + (attachedList.size + uploadedList.size)
+                val accepted =
+                    "" + uploadedList.size + "/" + (attachedList.size + uploadedList.size)
 
                 if (uploadedList.isEmpty() && attachedList.isEmpty()) {
                     _unloadedState.value =

@@ -129,7 +129,7 @@ class AppRemoteRepositoryImpl(
             }
         }
 
-    override fun putBoxToPvzBalance(
+    override fun loadPvzScan(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,
@@ -196,7 +196,7 @@ class AppRemoteRepositoryImpl(
         )
     }
 
-    override fun removeBoxFromPvzBalance(
+    override fun unloadPvzScan(
         flightId: String,
         barcode: String,
         isManualInput: Boolean,

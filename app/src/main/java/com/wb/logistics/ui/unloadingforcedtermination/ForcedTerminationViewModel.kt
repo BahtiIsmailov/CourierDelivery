@@ -2,6 +2,8 @@ package com.wb.logistics.ui.unloadingforcedtermination
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
 import io.reactivex.Observable
@@ -22,6 +24,10 @@ class ForcedTerminationViewModel(
     private val _navigateToBack = MutableLiveData<ForcedTerminationNavAction>()
     val navigateToBack: LiveData<ForcedTerminationNavAction>
         get() = _navigateToBack
+
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
+    val navigateToMessage: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
 
     init {
 
@@ -46,10 +52,20 @@ class ForcedTerminationViewModel(
                 getCauseMessage(idx)))
             .subscribe(
                 { _navigateToBack.value = ForcedTerminationNavAction.NavigateToFlightDeliveries },
-                {
-                    // TODO: 29.06.2021 реализовать обработку ошибок
-                    it.toString()
-                    _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack }))
+                { completeUnloadingError(it) }))
+    }
+
+    private fun completeUnloadingError(throwable: Throwable) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> resourceProvider.getErrorCompleteUnloading()
+        }
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getBoxDialogTitle(),
+            message,
+            resourceProvider.getBoxPositiveButton())
+        _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack
     }
 
     private fun getCauseMessage(idx: Int) = when (idx) {
@@ -57,5 +73,7 @@ class ForcedTerminationViewModel(
         1 -> resourceProvider.getNotPickupPoint()
         else -> resourceProvider.getEmpty()
     }
+
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

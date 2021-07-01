@@ -10,8 +10,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="120dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider1">
+        android:layout_marginTop="120dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/return_danger"

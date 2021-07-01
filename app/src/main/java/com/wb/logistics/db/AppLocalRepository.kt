@@ -48,21 +48,17 @@ interface AppLocalRepository {
 
     fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
+    fun deleteFlightBox(flightBoxEntity: FlightBoxEntity): Completable
+
     fun deleteAllFlightBoxes()
 
     fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
 
-    fun findUnloadedFlightBox(
-        barcode: String,
-        currentOfficeId: Int,
-    ): Single<Optional<FlightBoxEntity>>
+    fun findUnloadedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
-    fun findReturnedFlightBox(
-        barcode: String,
-        currentOfficeId: Int,
-    ): Single<Optional<FlightBoxEntity>>
+    fun findReturnedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
     fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 

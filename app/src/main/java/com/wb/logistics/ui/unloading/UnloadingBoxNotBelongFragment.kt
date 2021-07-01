@@ -41,8 +41,8 @@ class UnloadingBoxNotBelongFragment : Fragment() {
                     binding.code.text = it.code
                     binding.address.text = it.address
                     if (it.isShowAddress) {
-                        binding.titleAddress.visibility = View.GONE
-                        binding.address.visibility = View.GONE
+                        binding.titleAddress.visibility = View.VISIBLE
+                        binding.address.visibility = View.VISIBLE
                     }
                 }
             }

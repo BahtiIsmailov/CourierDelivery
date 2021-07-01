@@ -195,6 +195,10 @@
     <string name="unloading_boxes_office_empty">ПВЗ %1$d</string>
     <string name="unloading_handle_box_format">%1$d. %2$s.....%3$s</string>
 
+    <string name="unloading_boxes_dialog_complete_title">Выгрузка на ПВЗ</string>
+    <string name="unloading_boxes_dialog_complete_error">Выгрузка не завершена, повторите операцию позднее</string>
+    <string name="unloading_boxes_dialog_complete_ok">OK</string>
+
     <string name="unloading_box_already_returned">%1$s уже принята</string>
     <string name="unloading_box_already_delivery">%1$s уже доставлена</string>
     <string name="unloading_box_returned">%1$s принята</string>
@@ -207,7 +211,7 @@
     <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ</string>
     <string name="unloading_box_not_belong_dc_return_car">верните её в машину</string>
     <string name="unloading_box_not_belong_info_title">Информация по ШК не найдена</string>
-    <string name="unloading_box_not_belong_info_empty_description">Оставте ее на своем месте</string>
+    <string name="unloading_box_not_belong_info_empty_description">Оставте коробку на том же месте</string>
     <string name="unloading_box_log_data">{\"k1\": %1$s, \"k2\": %2$s}</string>
 
     <string name="dc_unloading_box_not_found_title">ШК не найден</string>
@@ -232,7 +236,7 @@
     <string name="force_termination_not_refund">Не взял на возврат</string>
     <string name="force_termination_cause">Причина</string>
     <string name="force_termination_box_not_found">Коробки не найдены</string>
-    <string name="force_termination_pickup_point">Нет возможности выгрузить на РЦ</string>
+    <string name="force_termination_pvz">Нет возможности выгрузить на ПВЗ</string>
     <string name="force_termination_confirm">Подтвердить</string>
     <string name="force_termination_complete_delivery">Завершить доставку</string>
     <string name="force_termination_empty" />

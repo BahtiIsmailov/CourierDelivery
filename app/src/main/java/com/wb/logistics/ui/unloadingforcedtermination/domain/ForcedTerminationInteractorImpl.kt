@@ -33,6 +33,7 @@ class ForcedTerminationInteractorImpl(
 
     private fun flightsLogs(it: Int, data: String) =
         appRemoteRepository.flightsLogs(it, timeManager.getOffsetLocalTime(), data)
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     private fun getFlightId() = appLocalRepository.readFlight().map { it.id }
 

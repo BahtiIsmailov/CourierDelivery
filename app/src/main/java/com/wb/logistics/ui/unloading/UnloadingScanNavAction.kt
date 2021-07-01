@@ -1,11 +1,11 @@
 package com.wb.logistics.ui.unloading
 
 sealed class UnloadingScanNavAction {
-    data class NavigateToUnloadingBoxNotBelongPoint(
+    data class NavigateToUnloadingBoxNotBelongPvz(
         val title: String,
         val description: String,
         val box: String,
-        val address: String,
+        val address: String
     ) :
         UnloadingScanNavAction()
 

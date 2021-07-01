@@ -2,7 +2,7 @@ package com.wb.logistics.ui.unloading.domain
 
 sealed class UnloadingData {
 
-    data class BoxAlreadyUnloaded(val barcode: String) : UnloadingData()
+    data class BoxAlreadyUnloaded(val barcode: String, val address: String) : UnloadingData()
 
     data class BoxAlreadyReturn(val barcode: String) : UnloadingData()
 
