@@ -1,13 +1,13 @@
 package com.wb.logistics.ui.dcloading.domain
 
 import com.wb.logistics.db.Optional
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
 
 data class BoxDefinitionResult(
     val flight: FlightEntity,
-    val attachedBoxOptional: Optional<AttachedBoxEntity>,
+    val flightBoxOptional: Optional<FlightBoxEntity>,
     val warehouseScanOptional: Optional<WarehouseScanEntity>,
     val barcode: String,
     val isManual: Boolean,
@@ -16,12 +16,12 @@ data class BoxDefinitionResult(
 ) {
     constructor(
         flight: FlightEntity,
-        attachedBoxOptional: Optional<AttachedBoxEntity>,
+        flightBoxOptional: Optional<FlightBoxEntity>,
         barcode: String,
         isManual: Boolean,
         updatedAt: String,
     ) : this(flight,
-        attachedBoxOptional,
+        flightBoxOptional,
         Optional.Empty(),
         barcode,
         isManual,

@@ -1,6 +1,5 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
@@ -52,7 +51,9 @@ interface AppLocalRepository {
 
     fun deleteAllFlightBoxes()
 
-    fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
+    fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
+
+    fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable
 
     fun findUnloadedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
@@ -73,6 +74,8 @@ interface AppLocalRepository {
 
     fun deleteWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable
 
+    fun deleteWarehouseByBarcode(barcode: String): Completable
+
     fun findWarehouseMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>>
 
     fun deleteAllWarehouseMatchingBox()
@@ -90,35 +93,28 @@ interface AppLocalRepository {
 
     fun findPvzMatchingBox(barcode: String): Single<Optional<PvzMatchingBoxEntity>>
 
+    fun observePvzMatchingBoxByOfficeId(currentOfficeId: Int): Flowable<List<PvzMatchingBoxEntity>>
+
     fun deleteAllPvzMatchingBox()
 
     //==============================================================================================
-    //attached box
+    //TakeOnFlightBox
+    //=============================================================================================
+
+    fun findTakeOnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>>
+
+    fun observeTakeOnFlightBoxesByOfficeId(): Flowable<List<FlightBoxEntity>>
+
+    fun observeTakeOnFlightBoxesByOfficeId(dstOfficeId: Int): Flowable<List<FlightBoxEntity>>
+
+    fun readAllTakeOnFlightBox(): Single<List<FlightBoxEntity>>
+
     //==============================================================================================
-    fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
-
-    fun saveAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
-
-    fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>>
-
-    fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>>
-
-    fun observeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>>
-
-    fun readAttachedBoxes(): Single<List<AttachedBoxEntity>>
-
-    fun findAttachedBox(barcode: String): Single<Optional<AttachedBoxEntity>>
-
-    fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable
-
-    fun deleteAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable
 
     fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>
 
-    fun deleteAllAttachedBox()
-
     //==============================================================================================
-    //attached box
+    //DcUnloadedBox
     //==============================================================================================
     fun saveDcUnloadedBox(dcUnloadedBoxEntity: FlightBoxEntity): Completable
 

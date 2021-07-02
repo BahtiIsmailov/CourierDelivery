@@ -8,10 +8,10 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class UnloadingBoxesViewModel(
-    private val parameters: UnloadingBoxesParameters,
+    parameters: UnloadingBoxesParameters,
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: UnloadingScanResourceProvider,
-    private val interactor: UnloadingInteractor,
+    interactor: UnloadingInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxesState = MutableLiveData<UnloadingBoxesState>()

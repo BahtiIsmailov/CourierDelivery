@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.unloadingforcedtermination
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 
 interface ForcedTerminationDataBuilder {
-    fun buildForcedTerminationItem(value: IndexedValue<AttachedBoxEntity>): ForcedTerminationItem
+    fun buildForcedTerminationItem(value: IndexedValue<FlightBoxEntity>): ForcedTerminationItem
 }

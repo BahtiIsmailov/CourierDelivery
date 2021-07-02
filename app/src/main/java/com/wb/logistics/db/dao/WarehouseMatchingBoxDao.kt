@@ -17,6 +17,9 @@ interface WarehouseMatchingBoxDao {
     @Delete
     fun deleteMatchingBox(matchingBox: WarehouseMatchingBoxEntity): Completable
 
+    @Query("DELETE FROM WarehouseMatchingBoxEntity WHERE barcode = :barcode")
+    fun deleteByBarcode(barcode: String): Completable
+
     @Query("SELECT * FROM WarehouseMatchingBoxEntity WHERE barcode = :barcode")
     fun findMatchingBox(barcode: String): Single<WarehouseMatchingBoxEntity>
 

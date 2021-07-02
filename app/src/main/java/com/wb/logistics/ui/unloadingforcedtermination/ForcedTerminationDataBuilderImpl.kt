@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.unloadingforcedtermination
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_DATE
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_TIME
 import com.wb.logistics.utils.time.TimeFormatter
@@ -10,7 +10,7 @@ class ForcedTerminationDataBuilderImpl(
     private val resourceProvider: ForcedTerminationResourceProvider,
 ) : ForcedTerminationDataBuilder {
 
-    override fun buildForcedTerminationItem(value: IndexedValue<AttachedBoxEntity>): ForcedTerminationItem {
+    override fun buildForcedTerminationItem(value: IndexedValue<FlightBoxEntity>): ForcedTerminationItem {
         val item = value.value
         val date = item.updatedAt
         val data = resourceProvider.getNotDeliveryDate(

@@ -1,7 +1,9 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.dao.*
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.dao.FlightBoxDao
+import com.wb.logistics.db.dao.FlightDao
+import com.wb.logistics.db.dao.PvzMatchingBoxDao
+import com.wb.logistics.db.dao.WarehouseMatchingBoxDao
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
@@ -20,7 +22,6 @@ import io.reactivex.Single
 class AppLocalRepositoryImpl(
     private val appDatabase: AppDatabase,
     private val flightDao: FlightDao,
-    private val attachedBoxDao: AttachedBoxDao,
     private val flightBoxDao: FlightBoxDao,
     private val warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
     private val pvzMatchingBoxDao: PvzMatchingBoxDao,
@@ -139,12 +140,32 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.deleteFlightBox(flightBoxEntity)
     }
 
+    override fun readAllTakeOnFlightBox(): Single<List<FlightBoxEntity>> {
+        return flightBoxDao.readAllBox()
+    }
+
+    override fun findTakeOnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>> {
+        return flightBoxDao.loadBox(barcodes)
+    }
+
+    override fun observeTakeOnFlightBoxesByOfficeId(): Flowable<List<FlightBoxEntity>> {
+        return flightBoxDao.observeAttachedBox()
+    }
+
+    override fun observeTakeOnFlightBoxesByOfficeId(dstOfficeId: Int): Flowable<List<FlightBoxEntity>> {
+        return flightBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
+    }
+
     override fun deleteAllFlightBoxes() {
         return flightBoxDao.deleteAllFlightBox()
     }
 
-    override fun deleteReturnFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
+    override fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
         return flightBoxDao.deleteFlightBoxes(flightBoxesEntity)
+    }
+
+    override fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable {
+        return flightBoxDao.deleteFlightBoxesByBarcodes(barcodes)
     }
 
     override fun findUnloadedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
@@ -184,6 +205,10 @@ class AppLocalRepositoryImpl(
         return warehouseMatchingBoxDao.deleteMatchingBox(warehouseMatchingBox)
     }
 
+    override fun deleteWarehouseByBarcode(barcode: String): Completable {
+        return warehouseMatchingBoxDao.deleteByBarcode(barcode)
+    }
+
     override fun findWarehouseMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>> {
         return warehouseMatchingBoxDao.findMatchingBox(barcode)
             .map<Optional<WarehouseMatchingBoxEntity>> { Optional.Success(it) }
@@ -217,53 +242,12 @@ class AppLocalRepositoryImpl(
             .onErrorReturn { Optional.Empty() }
     }
 
+    override fun observePvzMatchingBoxByOfficeId(currentOfficeId: Int): Flowable<List<PvzMatchingBoxEntity>> {
+        return pvzMatchingBoxDao.observePvzMatchingBoxByOfficeId(currentOfficeId)
+    }
+
     override fun deleteAllPvzMatchingBox() {
         pvzMatchingBoxDao.deleteAllBox()
-    }
-
-    //==============================================================================================
-    //scanned box
-    //==============================================================================================
-    override fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable {
-        return attachedBoxDao.insertAttachedBox(attachedBoxEntity)
-    }
-
-    override fun saveAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable {
-        return attachedBoxDao.insertAttachedBoxes(attachedBoxesEntity)
-    }
-
-    override fun findAttachedBoxes(barcodes: List<String>): Single<List<AttachedBoxEntity>> {
-        return attachedBoxDao.loadAttachedBox(barcodes)
-    }
-
-    override fun observeAttachedBoxes(): Flowable<List<AttachedBoxEntity>> {
-        return attachedBoxDao.observeAttachedBox()
-    }
-
-    override fun observeAttachedBoxes(dstOfficeId: Int): Flowable<List<AttachedBoxEntity>> {
-        return attachedBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
-    }
-
-    override fun readAttachedBoxes(): Single<List<AttachedBoxEntity>> {
-        return attachedBoxDao.readAttachedBox()
-    }
-
-    override fun findAttachedBox(barcode: String): Single<Optional<AttachedBoxEntity>> {
-        return attachedBoxDao.findAttachedBox(barcode)
-            .map<Optional<AttachedBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
-    }
-
-    override fun deleteAttachedBox(attachedBoxEntity: AttachedBoxEntity): Completable {
-        return attachedBoxDao.deleteAttachedBox(attachedBoxEntity)
-    }
-
-    override fun deleteAttachedBoxes(attachedBoxesEntity: List<AttachedBoxEntity>): Completable {
-        return attachedBoxDao.deleteAttachedBoxes(attachedBoxesEntity)
-    }
-
-    override fun deleteAllAttachedBox() {
-        attachedBoxDao.deleteAllAttachedBox()
     }
 
     //==============================================================================================
@@ -317,7 +301,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {
-        return attachedBoxDao.groupDeliveryBoxByOffice()
+        return flightBoxDao.groupDeliveryBoxByOffice()
     }
 
     override fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity> {

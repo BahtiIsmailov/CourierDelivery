@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.dcloading.domain
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -14,7 +14,7 @@ interface DcLoadingInteractor {
 
     fun observeScanProcess(): Observable<ScanProcessData>
 
-    fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>>
+    fun observeScannedBoxes(): Observable<List<FlightBoxEntity>>
 
     fun gate(): Single<String>
 

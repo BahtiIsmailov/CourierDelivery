@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.unloadingforcedtermination.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -18,8 +18,8 @@ class ForcedTerminationInteractorImpl(
     private val screenManager: ScreenManager,
 ) : ForcedTerminationInteractor {
 
-    override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>> {
-        return appLocalRepository.observeAttachedBoxes(dstOfficeId)
+    override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<FlightBoxEntity>> {
+        return appLocalRepository.observeTakeOnFlightBoxesByOfficeId(dstOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }

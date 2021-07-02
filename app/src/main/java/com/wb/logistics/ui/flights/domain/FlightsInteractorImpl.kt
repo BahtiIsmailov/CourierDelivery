@@ -19,7 +19,7 @@ class FlightsInteractorImpl(
     }
 
     override fun observeFlightBoxScanned(): Flowable<Int> {
-        return appLocalRepository.observeAttachedBoxes().map { it.size }
+        return appLocalRepository.observeTakeOnFlightBoxesByOfficeId().map { it.size }
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 

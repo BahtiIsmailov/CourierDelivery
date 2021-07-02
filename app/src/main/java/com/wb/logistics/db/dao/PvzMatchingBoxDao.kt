@@ -3,6 +3,7 @@ package com.wb.logistics.db.dao
 import androidx.room.*
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -25,5 +26,8 @@ interface PvzMatchingBoxDao {
 
     @Query("DELETE FROM PvzMatchingBoxEntity")
     fun deleteAllBox()
+
+    @Query("SELECT * FROM PvzMatchingBoxEntity WHERE pvz_match_src_office_id = :currentOfficeId")
+    fun observePvzMatchingBoxByOfficeId(currentOfficeId: Int): Flowable<List<PvzMatchingBoxEntity>>
 
 }

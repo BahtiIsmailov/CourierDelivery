@@ -2,9 +2,9 @@ package com.wb.logistics.ui.dcloading.domain
 
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.Optional
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
+import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
@@ -47,7 +47,7 @@ class DcLoadingInteractorImpl(
             .flatMap { boxDefinition ->
 
                 val flight = boxDefinition.flight
-                val attachedBoxOptional = boxDefinition.attachedBoxOptional
+                val attachedBoxOptional = boxDefinition.flightBoxOptional
                 val warehouseScanOptional = boxDefinition.warehouseScanOptional
                 val barcode = boxDefinition.barcode
                 val isManual = boxDefinition.isManual
@@ -65,7 +65,6 @@ class DcLoadingInteractorImpl(
                             flight,
                             warehouseScanOptional.data,
                             barcode,
-                            isManual,
                             updatedAt)
                     }
                     is Optional.Empty -> { //запрос завершился с 400 кодом - определяем код ошибки
@@ -81,7 +80,7 @@ class DcLoadingInteractorImpl(
                     }
                 }
             }.flatMap { scanBoxData ->
-                appLocalRepository.readAttachedBoxes()
+                appLocalRepository.readAllTakeOnFlightBox()
                     .map { ScanProcessData(scanBoxData, it.size) }
                     .toObservable()
             }
@@ -108,29 +107,26 @@ class DcLoadingInteractorImpl(
         flightEntity: FlightEntity,
         warehouseScanEntity: WarehouseScanEntity,
         barcode: String,
-        isManual: Boolean,
         updatedAt: String,
-    ) = with(warehouseScanEntity) {
-        saveBoxToBalanceByInfo(
-            barcode = barcode,
-            attachedBoxEntity = convertToAttachedBoxEntity(barcode, isManual, updatedAt),
-            gate = flightEntity.gate,
-        ).toObservable()
-    }
-
-    private fun WarehouseScanEntity.convertToAttachedBoxEntity(
-        barcode: String,
-        isManual: Boolean,
-        updatedAt: String,
-    ) = AttachedBoxEntity(
+    ) = saveBoxToBalanceByInfo(
         barcode = barcode,
-        srcOffice = convertAttachedSrcOfficeEntity(),
-        dstOffice = convertAttachedDstOfficeEntity(),
-        isManualInput = isManual,
-        updatedAt = updatedAt)
+        warehouseScanEntity = warehouseScanEntity,
+        updatedAt = updatedAt,
+        gate = flightEntity.gate,
+    ).toObservable()
 
-    private fun WarehouseScanEntity.convertAttachedSrcOfficeEntity() =
-        AttachedSrcOfficeEntity(
+    private fun WarehouseScanEntity.convertToFlightBoxEntity(barcode: String, updatedAt: String) =
+        FlightBoxEntity(
+            barcode = barcode,
+            updatedAt = updatedAt,
+            status = 0,
+            onBoard = true,
+            srcOffice = convertFlightSrcOfficeEntity(),
+            dstOffice = convertFlightDstOfficeEntity(),
+        )
+
+    private fun WarehouseScanEntity.convertFlightSrcOfficeEntity() =
+        FlightSrcOfficeEntity(
             id = srcOffice.id,
             name = srcOffice.name,
             fullAddress = srcOffice.fullAddress,
@@ -138,8 +134,8 @@ class DcLoadingInteractorImpl(
             latitude = srcOffice.latitude,
         )
 
-    private fun WarehouseScanEntity.convertAttachedDstOfficeEntity() =
-        AttachedDstOfficeEntity(
+    private fun WarehouseScanEntity.convertFlightDstOfficeEntity() =
+        FlightDstOfficeEntity(
             id = dstOffice.id,
             name = dstOffice.name,
             fullAddress = dstOffice.fullAddress,
@@ -148,21 +144,25 @@ class DcLoadingInteractorImpl(
         )
 
     private fun saveBoxToBalanceByInfo(
-        barcode: String, attachedBoxEntity: AttachedBoxEntity, gate: Int,
+        barcode: String, warehouseScanEntity: WarehouseScanEntity, updatedAt: String, gate: Int,
     ): Single<ScanBoxData> {
+        val flightBoxEntity =
+            with(warehouseScanEntity) { convertToFlightBoxEntity(barcode, updatedAt) }
         val switchScreen = switchScreen()
-        val saveBoxScanned = saveAttachedBox(attachedBoxEntity)
+        val saveFlightBox = saveFlightBox(flightBoxEntity)
+        val removeWarehouseMatchingBox = removeWarehouseByBarcode(barcode)
         val boxAdded = boxAdded(barcode, gate.toString())
         return switchScreen
-            .andThen(saveBoxScanned)
+            .andThen(saveFlightBox)
+            .andThen(removeWarehouseMatchingBox)
             .andThen(boxAdded)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun removeScannedBoxes(checkedBoxes: List<String>): Completable {
         return flight().flatMapCompletable { removeBoxes(it, checkedBoxes) }
-            .andThen(appLocalRepository.findAttachedBoxes(checkedBoxes))
-            .flatMap { appLocalRepository.deleteAttachedBoxes(it).andThen(Single.just(it)) }
+            .andThen(appLocalRepository.findTakeOnFlightBoxes(checkedBoxes)) // TODO: 02.07.2021 переработать
+            .flatMap { appLocalRepository.deleteFlightBoxes(it).andThen(Single.just(it)) }
             .flatMap { convertAttachedBoxesToMatchingBox(it) }
             .flatMapCompletable { appLocalRepository.saveWarehouseMatchingBoxes(it) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
@@ -175,10 +175,10 @@ class DcLoadingInteractorImpl(
             flightEntity.dc.id,
             checkedBoxes)
 
-    private fun convertAttachedBoxesToMatchingBox(attachedBoxes: List<AttachedBoxEntity>) =
+    private fun convertAttachedBoxesToMatchingBox(attachedBoxes: List<FlightBoxEntity>) =
         Observable.fromIterable(attachedBoxes).map { convertToMatchingBox(it) }.toList()
 
-    private fun convertToMatchingBox(attachedBoxEntity: AttachedBoxEntity) =
+    private fun convertToMatchingBox(attachedBoxEntity: FlightBoxEntity) =
         with(attachedBoxEntity) {
             WarehouseMatchingBoxEntity(
                 barcode = barcode,
@@ -219,7 +219,7 @@ class DcLoadingInteractorImpl(
 
     private fun flight() = appLocalRepository.readFlight()
 
-    private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
+    private fun findAttachedBox(barcode: String) = appLocalRepository.findFlightBox(barcode)
 
     private fun updatedAt() = Single.just(timeManager.getOffsetLocalTime())
 
@@ -235,14 +235,17 @@ class DcLoadingInteractorImpl(
         updatedAt,
         currentOfficeId)
 
-    private fun saveAttachedBox(attachedBoxEntity: AttachedBoxEntity) =
-        appLocalRepository.saveAttachedBox(attachedBoxEntity)
+    private fun saveFlightBox(attachedBoxEntity: FlightBoxEntity) =
+        appLocalRepository.saveFlightBox(attachedBoxEntity)
+
+    private fun removeWarehouseByBarcode(barcode: String) =
+        appLocalRepository.deleteWarehouseByBarcode(barcode)
 
     private fun boxAdded(barcode: String, gate: String) =
         Single.just<ScanBoxData>(ScanBoxData.BoxAdded(barcode, gate))
 
-    override fun observeScannedBoxes(): Observable<List<AttachedBoxEntity>> {
-        return appLocalRepository.observeAttachedBoxes().toObservable()
+    override fun observeScannedBoxes(): Observable<List<FlightBoxEntity>> {
+        return appLocalRepository.observeTakeOnFlightBoxesByOfficeId().toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

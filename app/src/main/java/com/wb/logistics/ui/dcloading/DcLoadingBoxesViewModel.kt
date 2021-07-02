@@ -2,7 +2,7 @@ package com.wb.logistics.ui.dcloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
@@ -51,13 +51,13 @@ class DcLoadingBoxesViewModel(
                 { changeBoxesError(it) }))
     }
 
-    private fun convertBoxes(boxes: List<AttachedBoxEntity>) =
+    private fun convertBoxes(boxes: List<FlightBoxEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map(receptionBoxItem)
             .toList()
             .toObservable()
 
-    private val receptionBoxItem = { (index, item): IndexedValue<AttachedBoxEntity> ->
+    private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxEntity> ->
         val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
         val time = timeFormatter.format(date, TimeFormatType.ONLY_FULL_TIME)
         DcLoadingBoxesItem(singleIncrement(index),

@@ -92,7 +92,7 @@ class UnloadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(it: UnloadingData) {
-        LogUtils {logDebugApp("observeScanProcessComplete " + it)}
+        LogUtils { logDebugApp("observeScanProcessComplete " + it) }
         when (it) {
             is UnloadingData.BoxAlreadyUnloaded -> {
 //                _messageEvent.value =
@@ -121,7 +121,7 @@ class UnloadingScanViewModel(
             }
 
             is UnloadingData.BoxDoesNotBelongPvz -> {
-                LogUtils {logDebugApp("UnloadingData.BoxDoesNotBelongPvz " + it)}
+                LogUtils { logDebugApp("UnloadingData.BoxDoesNotBelongPvz " + it) }
                 _navigationEvent.value =
                     UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
                         resourceProvider.getBoxNotBelongPvzTitle(),
@@ -153,7 +153,7 @@ class UnloadingScanViewModel(
     }
 
     private fun observeUnloadedBoxes() {
-        addSubscription(interactor.observeUnloadedAndAttachedBoxes(parameters.dstOfficeId)
+        addSubscription(interactor.observeUnloadedAndTakeOnFlightBoxes(parameters.dstOfficeId)
             .subscribe({
                 val uploadedList = it.first
                 val attachedList = it.second
@@ -170,8 +170,6 @@ class UnloadingScanViewModel(
                         UnloadingScanBoxState.UnloadedBoxesComplete(accepted)
                     return@subscribe
                 }
-                // TODO: 28.04.2021 выключено до реализации события завершения выгрузки
-
                 _unloadedState.value =
                     UnloadingScanBoxState.UnloadedBoxesActive(accepted, uploadedList.last().barcode)
             }, {
@@ -180,12 +178,17 @@ class UnloadingScanViewModel(
     }
 
     private fun observeReturnBoxes() {
-        addSubscription(interactor.observeReturnBoxes(parameters.dstOfficeId).subscribe {
-            _returnState.value =
-                if (it.isEmpty()) UnloadingReturnState.ReturnBoxesEmpty("0")
-                else
-                    UnloadingReturnState.ReturnBoxesComplete(it.size.toString(), it.last().barcode)
-        })
+        addSubscription(interactor.observeReturnedAndMatchingBoxes(parameters.dstOfficeId)
+            .subscribe({
+                val returnedList = it.first
+                val pvzMatchingList = it.second
+                val accepted = "" + returnedList.size + "/" + pvzMatchingList.size
+
+                _returnState.value =
+                    if (returnedList.isEmpty()) UnloadingReturnState.ReturnBoxesEmpty(accepted)
+                    else UnloadingReturnState.ReturnBoxesComplete(accepted,
+                        returnedList.last().barcode)
+            }) {})
     }
 
     fun onBoxHandleInput(barcode: String) {

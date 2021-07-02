@@ -70,7 +70,6 @@ class DcUnloadingInteractorImpl(
                                 .andThen(dcUnloadingBoxAdded)
                         }
                     }
-
                     // TODO: 29.06.2021 реализовать
                     findAttachedBox is Optional.Success -> { //коробка в списке доставки и не была выгружена на ПВЗ
                         //val attachAt = timeManager.getOffsetLocalTime()
@@ -171,7 +170,7 @@ class DcUnloadingInteractorImpl(
     private fun findDcReturnBox(barcode: String, currentOfficeId: Int) =
         appLocalRepository.findDcReturnBox(barcode, currentOfficeId)
 
-    private fun findAttachedBox(barcode: String) = appLocalRepository.findAttachedBox(barcode)
+    private fun findAttachedBox(barcode: String) = appLocalRepository.findFlightBox(barcode)
 
     private fun unloadBoxFromBalanceRemote(
         flightId: String,

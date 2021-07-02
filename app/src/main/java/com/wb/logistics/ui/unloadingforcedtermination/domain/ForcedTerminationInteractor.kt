@@ -1,12 +1,12 @@
 package com.wb.logistics.ui.unloadingforcedtermination.domain
 
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Observable
 
 interface ForcedTerminationInteractor {
 
-    fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<AttachedBoxEntity>>
+    fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<FlightBoxEntity>>
 
     fun completeUnloading(data: String): Completable
 

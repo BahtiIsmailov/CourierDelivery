@@ -2,10 +2,6 @@ package com.wb.logistics.ui.flightloader.domain
 
 import androidx.navigation.NavDirections
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.entity.attachedboxes.AttachedBoxEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedDstOfficeEntity
-import com.wb.logistics.db.entity.attachedboxes.AttachedSrcOfficeEntity
-import com.wb.logistics.db.entity.flighboxes.BoxStatus
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
@@ -14,7 +10,6 @@ import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 
 class FlightsLoaderInteractorImpl(
@@ -37,6 +32,7 @@ class FlightsLoaderInteractorImpl(
             .flatMap { flightId ->
                 Completable.mergeArray(
                     saveWarehouseMatchingBoxes(flightId),
+                    savePvzMatchingBoxes(flightId),
                     saveFlightBoxes(flightId))
                     .toSingle { flightId }
             }
@@ -51,46 +47,28 @@ class FlightsLoaderInteractorImpl(
             .flatMapCompletable { appLocalRepository.saveWarehouseMatchingBoxes(it) }
     }
 
+    private fun savePvzMatchingBoxes(flightId: String): Completable {
+        return Completable.fromSingle(appLocalRepository.readPvzMatchingBoxes()
+            .map { it.isNotEmpty() }
+            .filter { it }
+            .switchIfEmpty(reloadPvzAttachedBoxes(flightId)))
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun reloadPvzAttachedBoxes(flightId: String) =
+        appRemoteRepository.pvzMatchingBoxes(flightId)
+            .flatMapCompletable { appLocalRepository.savePvzMatchingBoxes(it) }
+            .toSingle { true }
+
+
     private fun saveFlightBoxes(flightId: String): Completable {
-        return appRemoteRepository.flightBoxes(flightId)
-            .flatMapCompletable {
-                Completable.mergeArray(saveFlightBoxes(it), deleteAndUpdateAttachedBoxes(it))
-            }
+        return appRemoteRepository.flightBoxes(flightId).flatMapCompletable { saveFlightBoxes(it) }
     }
 
-    private fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>) =
-        appLocalRepository.saveFlightBoxes(flightBoxesEntity)
-
-    private fun deleteAndUpdateAttachedBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
-        appLocalRepository.deleteAllAttachedBox()
-        return Observable.fromIterable(flightBoxesEntity)
-            .filter { it.status == BoxStatus.TAKE_ON_FLIGHT.ordinal }
-            .map { convertToAttachedBox(it) }
-            .toList()
-            .flatMapCompletable { appLocalRepository.saveAttachedBoxes(it) }
+    private fun saveFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
+        appLocalRepository.deleteAllFlightBoxes()
+        return appLocalRepository.saveFlightBoxes(flightBoxesEntity)
     }
-
-    private fun convertToAttachedBox(flightBoxEntity: FlightBoxEntity) =
-        with(flightBoxEntity) {
-            AttachedBoxEntity(
-                barcode = flightBoxEntity.barcode,
-                srcOffice = AttachedSrcOfficeEntity(
-                    id = srcOffice.id,
-                    name = srcOffice.name,
-                    fullAddress = srcOffice.fullAddress,
-                    longitude = srcOffice.longitude,
-                    latitude = srcOffice.latitude,
-                ),
-                dstOffice = AttachedDstOfficeEntity(
-                    id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    longitude = dstOffice.longitude,
-                    latitude = dstOffice.latitude,
-                ),
-                isManualInput = false,
-                updatedAt = updatedAt)
-        }
 
     private fun updateFlightAndTime() = Completable.mergeArray(flight(), time())
 
