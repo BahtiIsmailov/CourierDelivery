@@ -59,7 +59,7 @@ class FlightDeliveriesDetailsDataBuilderImpl(
             for ((index, returnBox) in returnBoxes.withIndex()) {
                 items.add(FlightDeliveriesDetailsItem(upIndex(index),
                     returnBox.barcode,
-                    getReturnDate(returnBox.updatedAt, returnBox.updatedAt),
+                    getReturnDate(returnBox.updatedAt, returnBox.srcOffice.fullAddress),
                     ++idx1))
             }
         }

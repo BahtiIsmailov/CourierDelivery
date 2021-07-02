@@ -15,7 +15,7 @@ interface UnloadingInteractor {
 
     fun observeScanProcess(currentOfficeId: Int): Observable<UnloadingData>
 
-    fun observeCountUnloadReturnedBox(currentOfficeId: Int): Observable<Int>
+    fun observeCountUnloadReturnedBoxAndSwitchScreen(currentOfficeId: Int): Observable<Int>
 
     fun observeAttachedBoxes(currentOfficeId: Int): Observable<List<AttachedBoxEntity>>
 

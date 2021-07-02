@@ -57,7 +57,6 @@ class UnloadingScanViewModel(
     val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
         get() = _navigateToMessageInfo
 
-
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
@@ -70,7 +69,7 @@ class UnloadingScanViewModel(
     }
 
     private fun observeBackButton() {
-        addSubscription(interactor.observeCountUnloadReturnedBox(parameters.dstOfficeId)
+        addSubscription(interactor.observeCountUnloadReturnedBoxAndSwitchScreen(parameters.dstOfficeId)
             .subscribe({ _toolbarBackState.value = HideBackButtonState }, {}))
     }
 
@@ -89,58 +88,59 @@ class UnloadingScanViewModel(
         addSubscription(interactor.observeScanProcess(parameters.dstOfficeId)
             .doOnError { observeScanProcessError(it) }
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
-            .subscribe({
-                when (it) {
-                    is UnloadingData.BoxAlreadyUnloaded -> {
-                        _messageEvent.value =
-                            UnloadingScanMessageEvent.BoxDelivery(
-                                resourceProvider.getAlreadyDelivery(it.barcode))
-                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                    }
+            .subscribe({ observeScanProcessComplete(it) }) { observeScanProcessError(it) })
+    }
 
-                    is UnloadingData.BoxAlreadyReturn -> {
-                        _messageEvent.value =
-                            UnloadingScanMessageEvent.BoxReturned(
-                                resourceProvider.getAlreadyReturned(it.barcode))
-                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                    }
+    private fun observeScanProcessComplete(it: UnloadingData) {
+        when (it) {
+            is UnloadingData.BoxAlreadyUnloaded -> {
+                _messageEvent.value =
+                    UnloadingScanMessageEvent.BoxDelivery(
+                        resourceProvider.getAlreadyDelivery(it.barcode))
+                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+            }
 
-                    is UnloadingData.BoxUnloadAdded -> {
-                        _messageEvent.value =
-                            UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
-                        _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
-                    }
+            is UnloadingData.BoxAlreadyReturn -> {
+                _messageEvent.value =
+                    UnloadingScanMessageEvent.BoxReturned(
+                        resourceProvider.getAlreadyReturned(it.barcode))
+                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+            }
 
-                    is UnloadingData.BoxReturnAdded -> {
-                        _messageEvent.value =
-                            UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
-                        _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
-                    }
+            is UnloadingData.BoxUnloadAdded -> {
+                _messageEvent.value =
+                    UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
+                _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
+            }
 
-                    is UnloadingData.BoxDoesNotBelongPvz -> {
-                        _navigationEvent.value =
-                            UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
-                                resourceProvider.getBoxNotBelongPvzTitle(),
-                                resourceProvider.getBoxNotBelongPvzDescription(),
-                                it.barcode,
-                                it.address)
-                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                    }
+            is UnloadingData.BoxReturnAdded -> {
+                _messageEvent.value =
+                    UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
+                _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
+            }
 
-                    is UnloadingData.BoxEmptyInfo -> {
-                        _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                        _navigationEvent.value =
-                            UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
-                                resourceProvider.getBoxNotBelongInfoTitle(),
-                                resourceProvider.getBoxEmptyInfoDescription(),
-                                it.barcode,
-                                resourceProvider.getBoxNotBelongAddress())
-                    }
-                    is UnloadingData.BoxSaveRemoteError -> {
-                    }
-                }
+            is UnloadingData.BoxDoesNotBelongPvz -> {
+                _navigationEvent.value =
+                    UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+                        resourceProvider.getBoxNotBelongPvzTitle(),
+                        resourceProvider.getBoxNotBelongPvzDescription(),
+                        it.barcode,
+                        it.address)
+                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+            }
 
-            }) { observeScanProcessError(it) })
+            is UnloadingData.BoxEmptyInfo -> {
+                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                _navigationEvent.value =
+                    UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+                        resourceProvider.getBoxNotBelongInfoTitle(),
+                        resourceProvider.getBoxEmptyInfoDescription(),
+                        it.barcode,
+                        resourceProvider.getBoxNotBelongAddress())
+            }
+            is UnloadingData.BoxSaveRemoteError -> {
+            }
+        }
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
