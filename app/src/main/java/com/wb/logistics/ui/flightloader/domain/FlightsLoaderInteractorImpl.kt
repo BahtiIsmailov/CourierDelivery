@@ -31,6 +31,7 @@ class FlightsLoaderInteractorImpl(
     }
 
     override fun navigateTo(): Single<NavDirections> {
+        appLocalRepository.deleteAll()
         return updateFlightAndTime()
             .andThen(appLocalRepository.readFlightId())
             .flatMap { flightId ->

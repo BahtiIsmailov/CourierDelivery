@@ -12,8 +12,6 @@ sealed class UnloadingData {
 
     data class BoxDoesNotBelongPvz(val barcode: String, val address: String) : UnloadingData()
 
-    data class BoxSaveRemoteError(val message: String) : UnloadingData()
-
     data class BoxEmptyInfo(val barcode: String) : UnloadingData()
 
 }

@@ -119,12 +119,12 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.navigationEvent.observe(viewLifecycleOwner, eventObserver)
 
-        viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
-            when (state) {
-//                is UnloadingScanMessageEvent.BoxDelivery -> showToastBoxDelivery(state.message)
-//                is UnloadingScanMessageEvent.BoxReturned -> showToastBoxReturned(state.message)
-            }
-        }
+//        viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
+//            when (state) {
+////                is UnloadingScanMessageEvent.BoxDelivery -> showToastBoxDelivery(state.message)
+////                is UnloadingScanMessageEvent.BoxReturned -> showToastBoxReturned(state.message)
+//            }
+//        }
 
         viewModel.soundEvent.observe(viewLifecycleOwner) { state ->
             when (state) {

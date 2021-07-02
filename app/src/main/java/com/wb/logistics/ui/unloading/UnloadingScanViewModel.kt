@@ -28,10 +28,10 @@ class UnloadingScanViewModel(
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
 
-    private val _messageEvent =
-        SingleLiveEvent<UnloadingScanMessageEvent>()
-    val toastEvent: LiveData<UnloadingScanMessageEvent>
-        get() = _messageEvent
+//    private val _messageEvent =
+//        SingleLiveEvent<UnloadingScanMessageEvent>()
+//    val toastEvent: LiveData<UnloadingScanMessageEvent>
+//        get() = _messageEvent
 
     private val _soundEvent =
         SingleLiveEvent<UnloadingScanSoundEvent>()
@@ -92,34 +92,36 @@ class UnloadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(it: UnloadingData) {
+        LogUtils {logDebugApp("observeScanProcessComplete " + it)}
         when (it) {
             is UnloadingData.BoxAlreadyUnloaded -> {
-                _messageEvent.value =
-                    UnloadingScanMessageEvent.BoxDelivery(
-                        resourceProvider.getAlreadyDelivery(it.barcode))
+//                _messageEvent.value =
+//                    UnloadingScanMessageEvent.BoxDelivery(
+//                        resourceProvider.getAlreadyDelivery(it.barcode))
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
             }
 
             is UnloadingData.BoxAlreadyReturn -> {
-                _messageEvent.value =
-                    UnloadingScanMessageEvent.BoxReturned(
-                        resourceProvider.getAlreadyReturned(it.barcode))
+//                _messageEvent.value =
+//                    UnloadingScanMessageEvent.BoxReturned(
+//                        resourceProvider.getAlreadyReturned(it.barcode))
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
             }
 
             is UnloadingData.BoxUnloadAdded -> {
-                _messageEvent.value =
-                    UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
+//                _messageEvent.value =
+//                    UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
                 _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
             }
 
             is UnloadingData.BoxReturnAdded -> {
-                _messageEvent.value =
-                    UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
+//                _messageEvent.value =
+//                    UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
                 _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
             }
 
             is UnloadingData.BoxDoesNotBelongPvz -> {
+                LogUtils {logDebugApp("UnloadingData.BoxDoesNotBelongPvz " + it)}
                 _navigationEvent.value =
                     UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
                         resourceProvider.getBoxNotBelongPvzTitle(),
@@ -128,7 +130,6 @@ class UnloadingScanViewModel(
                         it.address)
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
             }
-
             is UnloadingData.BoxEmptyInfo -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
                 _navigationEvent.value =
@@ -137,8 +138,6 @@ class UnloadingScanViewModel(
                         resourceProvider.getBoxEmptyInfoDescription(),
                         it.barcode,
                         resourceProvider.getBoxNotBelongAddress())
-            }
-            is UnloadingData.BoxSaveRemoteError -> {
             }
         }
     }

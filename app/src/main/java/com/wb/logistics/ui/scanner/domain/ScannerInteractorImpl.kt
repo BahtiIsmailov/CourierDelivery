@@ -9,7 +9,8 @@ class ScannerInteractorImpl(
 ) : ScannerInteractor {
 
     override fun barcodeScanned(barcode: String) {
-        scannerRepository.barcodeScanned(barcode)
+        if (barcode.startsWith("TRBX"))
+            scannerRepository.barcodeScanned(barcode)
     }
 
     override fun observeScannerAction(): Observable<ScannerAction> {
