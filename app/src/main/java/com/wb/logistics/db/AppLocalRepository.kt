@@ -6,6 +6,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
@@ -59,6 +60,8 @@ interface AppLocalRepository {
 
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
+    fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity>
+
     fun findReturnedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
     fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
@@ -105,7 +108,7 @@ interface AppLocalRepository {
 
     fun observeTakeOnFlightBoxesByOfficeId(): Flowable<List<FlightBoxEntity>>
 
-    fun observeTakeOnFlightBoxesByOfficeId(dstOfficeId: Int): Flowable<List<FlightBoxEntity>>
+    fun observeTakeOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
     fun readAllTakeOnFlightBox(): Single<List<FlightBoxEntity>>
 

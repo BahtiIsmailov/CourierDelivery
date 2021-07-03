@@ -7,9 +7,7 @@ import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 
 data class BoxDefinitionResult(
     val flight: FlightEntity,
-    val findUnloadedPvzBox: Optional<FlightBoxEntity>,
-    val findReturnedPvzBox: Optional<FlightBoxEntity>,
-    val findTakeOnFlightBox: Optional<FlightBoxEntity>,
+    val findFlightBox: Optional<FlightBoxEntity>,
     val findPvzMatchingBox: Optional<PvzMatchingBoxEntity>,
     val barcodeScanned: String,
     val isManualInput: Boolean,

@@ -54,7 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical"
         app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal"
-        app:unloading_return_box="0"
+        app:unloading_return_box="0/0"
         app:unloading_return_state="empty_box" />
 
     <com.wb.logistics.ui.unloading.views.UnloadingInfoView
@@ -65,7 +65,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_center_info"
-        app:unloading_info_box="TRBX"
+        app:unloading_info_box="TRBX12345678"
         app:unloading_info_state="empty_box" />
 
     <com.wb.logistics.views.ProgressImageButtonView

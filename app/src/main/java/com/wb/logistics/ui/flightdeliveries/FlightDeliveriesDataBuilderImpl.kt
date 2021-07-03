@@ -12,9 +12,9 @@ class FlightDeliveriesDataBuilderImpl(
         index: Int,
         scannedBoxGroupByAddressEntity: DeliveryBoxGroupByOfficeEntity,
     ): BaseItem {
+        val unloadedCount = scannedBoxGroupByAddressEntity.unloadedCount
         val attachedCount = scannedBoxGroupByAddressEntity.attachedCount
         val returnCount = scannedBoxGroupByAddressEntity.returnCount
-        val unloadedCount = scannedBoxGroupByAddressEntity.unloadedCount
         if (returnCount > 0 || unloadedCount > 0) {
             val returnCountText =
                 if (returnCount > 0) resourceProvider.getReturnCount(returnCount)

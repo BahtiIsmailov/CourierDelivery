@@ -22,6 +22,7 @@ public class UnloadingReturnView extends FrameLayout {
 
     private int enableColor;
     private int disableColor;
+    private int denyColor;
 
     private View background;
     private TextView countBoxTextView;
@@ -70,6 +71,7 @@ public class UnloadingReturnView extends FrameLayout {
                 currentState = array.getInteger(R.styleable.UnloadingReturnView_unloading_return_state, DEFAULT_CURRENT_STATE);
                 disableColor = getResources().getColor(R.color.icon_default);
                 enableColor = getResources().getColor(R.color.icon_warning);
+                denyColor = getResources().getColor(R.color.icon_deny);
             } catch (NullPointerException exception) {
                 initDefaultState();
             } finally {
@@ -91,6 +93,9 @@ public class UnloadingReturnView extends FrameLayout {
             case UnloadingReturnMode.ACTIVE:
                 containsCompleteActiveState();
                 break;
+            case UnloadingReturnMode.DENY:
+                containsDenyState();
+                break;
         }
     }
 
@@ -106,7 +111,18 @@ public class UnloadingReturnView extends FrameLayout {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_has_added_trans));
         undoIcon.setColorFilter(enableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
-        listBoxTextView.setVisibility(VISIBLE);
+        listBoxTextView.setVisibility(listVisible());
+    }
+
+    private void containsDenyState() {
+        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_trans));
+        undoIcon.setColorFilter(denyColor, PorterDuff.Mode.SRC_ATOP);
+        countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(listVisible());
+    }
+
+    private int listVisible() {
+        return (countBox.equals("0") || countBox.equals("0/0")) ? GONE : VISIBLE;
     }
 
     public void setCountBox(String countBox, int currentState) {

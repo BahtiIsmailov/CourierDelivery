@@ -30,9 +30,15 @@ class ForcedTerminationViewModel(
         get() = _navigateToMessageInfo
 
     init {
+        initTitle()
+        initAttachedBox()
+    }
 
+    private fun initTitle() {
         _boxesState.value = ForcedTerminationState.Title(resourceProvider.getLabel())
+    }
 
+    private fun initAttachedBox() {
         addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
             .switchMap { list ->
                 Observable.fromIterable(list.withIndex())

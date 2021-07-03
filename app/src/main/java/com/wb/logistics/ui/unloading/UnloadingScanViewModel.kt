@@ -44,9 +44,14 @@ class UnloadingScanViewModel(
         get() = _unloadedState
 
     private val _returnState =
-        MutableLiveData<UnloadingReturnState>()
-    val returnState: LiveData<UnloadingReturnState>
+        MutableLiveData<UnloadingScanReturnState>()
+    val returnState: LiveData<UnloadingScanReturnState>
         get() = _returnState
+
+    private val _errorState =
+        MutableLiveData<UnloadingScanErrorState>()
+    val errorState: LiveData<UnloadingScanErrorState>
+        get() = _errorState
 
     private val _navigationEvent =
         SingleLiveEvent<UnloadingScanNavAction>()
@@ -94,20 +99,6 @@ class UnloadingScanViewModel(
     private fun observeScanProcessComplete(it: UnloadingData) {
         LogUtils { logDebugApp("observeScanProcessComplete " + it) }
         when (it) {
-            is UnloadingData.BoxAlreadyUnloaded -> {
-//                _messageEvent.value =
-//                    UnloadingScanMessageEvent.BoxDelivery(
-//                        resourceProvider.getAlreadyDelivery(it.barcode))
-                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-            }
-
-            is UnloadingData.BoxAlreadyReturn -> {
-//                _messageEvent.value =
-//                    UnloadingScanMessageEvent.BoxReturned(
-//                        resourceProvider.getAlreadyReturned(it.barcode))
-                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-            }
-
             is UnloadingData.BoxUnloadAdded -> {
 //                _messageEvent.value =
 //                    UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
@@ -129,9 +120,11 @@ class UnloadingScanViewModel(
                         it.barcode,
                         it.address)
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                _errorState.value = UnloadingScanErrorState.BoxDoesNotBelongPvz(it.barcode)
             }
-            is UnloadingData.BoxEmptyInfo -> {
+            is UnloadingData.BoxInfoEmpty -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                _errorState.value = UnloadingScanErrorState.BoxInfoEmpty(it.barcode)
                 _navigationEvent.value =
                     UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
                         resourceProvider.getBoxNotBelongInfoTitle(),
@@ -155,23 +148,24 @@ class UnloadingScanViewModel(
     private fun observeUnloadedBoxes() {
         addSubscription(interactor.observeUnloadedAndTakeOnFlightBoxes(parameters.dstOfficeId)
             .subscribe({
-                val uploadedList = it.first
-                val attachedList = it.second
+//                val uploadedList = it.first
+//                val attachedList = it.second
                 val accepted =
-                    "" + uploadedList.size + "/" + (attachedList.size + uploadedList.size)
+                    "" + it.unloadedCount + "/" + (it.unloadedCount + it.unloadCount)
 
-                if (uploadedList.isEmpty() && attachedList.isEmpty()) {
+                if (it.unloadedCount == 0 && it.unloadCount == 0) {
                     _unloadedState.value =
                         UnloadingScanBoxState.UnloadedBoxesEmpty(accepted)
                     return@subscribe
                 }
-                if (uploadedList.isEmpty()) {
+                if (it.unloadedCount == 0) {
                     _unloadedState.value =
                         UnloadingScanBoxState.UnloadedBoxesComplete(accepted)
                     return@subscribe
                 }
                 _unloadedState.value =
-                    UnloadingScanBoxState.UnloadedBoxesActive(accepted, uploadedList.last().barcode)
+                    UnloadingScanBoxState.UnloadedBoxesActive(accepted,
+                        it.barcode ?: "") //uploadedList.last().barcode
             }, {
                 LogUtils { logDebugApp(it.toString()) }
             }))
@@ -185,8 +179,8 @@ class UnloadingScanViewModel(
                 val accepted = "" + returnedList.size + "/" + pvzMatchingList.size
 
                 _returnState.value =
-                    if (returnedList.isEmpty()) UnloadingReturnState.ReturnBoxesEmpty(accepted)
-                    else UnloadingReturnState.ReturnBoxesComplete(accepted,
+                    if (returnedList.isEmpty()) UnloadingScanReturnState.ReturnBoxesEmpty(accepted)
+                    else UnloadingScanReturnState.ReturnBoxesComplete(accepted,
                         returnedList.last().barcode)
             }) {})
     }
@@ -215,7 +209,8 @@ class UnloadingScanViewModel(
             .subscribe({
                 if (it.isEmpty()) {
                     addSubscription(interactor.completeUnloading().subscribe {
-                        _navigationEvent.value = UnloadingScanNavAction.NavigateToBack
+                        _navigationEvent.value = //UnloadingScanNavAction.NavigateToBack
+                            UnloadingScanNavAction.NavigateToDelivery
                     })
                 } else _navigationEvent.value =
                     UnloadingScanNavAction.NavigateToForcedTermination(parameters.dstOfficeId)

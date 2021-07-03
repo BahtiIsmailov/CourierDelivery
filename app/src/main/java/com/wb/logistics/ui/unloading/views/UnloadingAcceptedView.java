@@ -22,6 +22,7 @@ public class UnloadingAcceptedView extends FrameLayout {
 
     private int enableColor;
     private int disableColor;
+    private int denyColor;
 
     private View background;
     private TextView countBoxTextView;
@@ -70,6 +71,7 @@ public class UnloadingAcceptedView extends FrameLayout {
                 currentState = array.getInteger(R.styleable.UnloadingAcceptedView_unloading_accepted_state, DEFAULT_CURRENT_STATE);
                 enableColor = getResources().getColor(R.color.icon_success);
                 disableColor = getResources().getColor(R.color.icon_default);
+                denyColor = getResources().getColor(R.color.icon_deny);
             } catch (NullPointerException exception) {
                 initDefaultState();
             } finally {
@@ -94,6 +96,9 @@ public class UnloadingAcceptedView extends FrameLayout {
             case UnloadingAcceptedMode.ACTIVE:
                 containsCompleteActiveState();
                 break;
+            case UnloadingAcceptedMode.DENY:
+                containsDenyState();
+                break;
         }
     }
 
@@ -116,6 +121,17 @@ public class UnloadingAcceptedView extends FrameLayout {
         redoIcon.setColorFilter(enableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
         listBoxTextView.setVisibility(VISIBLE);
+    }
+
+    private void containsDenyState() {
+        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_trans));
+        redoIcon.setColorFilter(denyColor, PorterDuff.Mode.SRC_ATOP);
+        countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(listVisible());
+    }
+
+    private int listVisible() {
+        return (countBox.equals("-") || countBox.equals("0/0")) ? GONE : VISIBLE;
     }
 
     public void setCountBox(String countBox, int currentState) {

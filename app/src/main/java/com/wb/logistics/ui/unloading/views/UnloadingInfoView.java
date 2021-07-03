@@ -84,6 +84,12 @@ public class UnloadingInfoView extends FrameLayout {
             case UnloadingInfoMode.RETURN:
                 returnState();
                 break;
+            case UnloadingInfoMode.UNLOAD_DENY:
+                containsUnloadDenyState();
+                break;
+            case UnloadingInfoMode.NOT_INFO_DENY:
+                containsNotInfoDenyState();
+                break;
         }
     }
 
@@ -102,6 +108,19 @@ public class UnloadingInfoView extends FrameLayout {
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.unloading_boxes_info_box_return));
         status.setTextColor(getResources().getColor(R.color.icon_warning));
+    }
+
+    private void containsUnloadDenyState() {
+        barcode.setText(codeBox);
+        status.setText(getResources().getString(R.string.unloading_boxes_info_box_return_on_car));
+        status.setTextColor(getResources().getColor(R.color.icon_deny));
+    }
+
+
+    private void containsNotInfoDenyState() {
+        barcode.setText(codeBox);
+        status.setText(getResources().getString(R.string.unloading_boxes_info_box_drop));
+        status.setTextColor(getResources().getColor(R.color.icon_deny));
     }
 
     public void setCodeBox(String codeBox, int state) {

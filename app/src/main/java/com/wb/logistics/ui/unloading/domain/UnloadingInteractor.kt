@@ -1,6 +1,7 @@
 package com.wb.logistics.ui.unloading.domain
 
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Completable
@@ -21,7 +22,7 @@ interface UnloadingInteractor {
 
     fun observeUnloadedBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>>
 
-    fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Observable<Pair<List<FlightBoxEntity>, List<FlightBoxEntity>>>
+    fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Observable<FlightUnloadedAndUnloadCountEntity>
 
     fun observeReturnBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>>
 

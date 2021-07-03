@@ -70,8 +70,7 @@ class FlightDeliveriesViewModel(
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
                 LogUtils{logDebugApp("fetchDeliveryBoxesGroupByOfficeId " + boxes)}
-                Single.zip(buildPvzItem(boxes),
-                    completeDeliveryState(boxes),
+                Single.zip(buildPvzItem(boxes), completeDeliveryState(boxes),
                     { build, completeDeliveryState ->
                         FlightDeliveriesUIListState.ShowFlight(build, completeDeliveryState)
                     })

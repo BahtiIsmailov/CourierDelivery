@@ -190,6 +190,8 @@
     <string name="unloading_boxes_return_empty_count">0/0</string>
     <string name="unloading_boxes_info_box_unload">Выгрузите на ПВЗ</string>
     <string name="unloading_boxes_info_box_return">Погрузите в машину</string>
+    <string name="unloading_boxes_info_box_return_on_car">Верните в машину</string>
+    <string name="unloading_boxes_info_box_drop">Оставте коробку на том же месте</string>
     <string name="unloading_boxes_numeric_barcode">%1$d. %2$s</string>
     <string name="unloading_boxes_complete">Ok</string>
     <string name="unloading_boxes_office_empty">ПВЗ %1$d</string>

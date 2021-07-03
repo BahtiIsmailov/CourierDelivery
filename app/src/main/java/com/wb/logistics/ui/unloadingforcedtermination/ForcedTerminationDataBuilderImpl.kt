@@ -12,10 +12,10 @@ class ForcedTerminationDataBuilderImpl(
 
     override fun buildForcedTerminationItem(value: IndexedValue<FlightBoxEntity>): ForcedTerminationItem {
         val item = value.value
-        val date = item.updatedAt
+        val dateFormat = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
         val data = resourceProvider.getNotDeliveryDate(
-            timeFormatter.format(date, ONLY_DATE),
-            timeFormatter.format(date, ONLY_TIME))
+            timeFormatter.format(dateFormat, ONLY_DATE),
+            timeFormatter.format(dateFormat, ONLY_TIME))
         return ForcedTerminationItem((value.index + 1).toString(), item.barcode, data)
     }
 

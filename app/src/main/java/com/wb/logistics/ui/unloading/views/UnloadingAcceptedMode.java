@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({UnloadingAcceptedMode.EMPTY,
         UnloadingAcceptedMode.COMPLETE,
-        UnloadingAcceptedMode.ACTIVE})
+        UnloadingAcceptedMode.ACTIVE,
+        UnloadingAcceptedMode.DENY})
 @Retention(RetentionPolicy.SOURCE)
 public @interface UnloadingAcceptedMode {
 
@@ -16,5 +17,7 @@ public @interface UnloadingAcceptedMode {
     int COMPLETE = 1;
 
     int ACTIVE = 2;
+
+    int DENY = 3;
 
 }

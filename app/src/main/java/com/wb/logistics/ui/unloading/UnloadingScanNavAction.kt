@@ -19,4 +19,6 @@ sealed class UnloadingScanNavAction {
 
     object NavigateToBack : UnloadingScanNavAction()
 
+    object NavigateToDelivery : UnloadingScanNavAction()
+
 }

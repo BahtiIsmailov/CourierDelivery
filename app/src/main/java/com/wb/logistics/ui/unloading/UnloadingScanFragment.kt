@@ -94,6 +94,9 @@ class UnloadingScanFragment : Fragment() {
                     )
                 }
 
+                is UnloadingScanNavAction.NavigateToDelivery -> findNavController().navigate(
+                    UnloadingScanFragmentDirections.actionUnloadingScanFragmentToFlightDeliveriesFragment())
+
                 is UnloadingScanNavAction.NavigateToUploadedBoxes -> findNavController().navigate(
                     UnloadingScanFragmentDirections.actionUnloadingScanFragmentToUnloadingBoxesFragment(
                         UnloadingBoxesParameters(state.dstOfficeId)))
@@ -153,16 +156,31 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.returnState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingReturnState.ReturnBoxesActive -> {
+                is UnloadingScanReturnState.ReturnBoxesActive -> {
                     binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.ACTIVE)
                     binding.info.setCodeBox(state.barcode, UnloadingInfoMode.RETURN)
                 }
-                is UnloadingReturnState.ReturnBoxesComplete -> {
+                is UnloadingScanReturnState.ReturnBoxesComplete -> {
                     binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.ACTIVE)
                     binding.info.setCodeBox(state.barcode, UnloadingInfoMode.RETURN)
                 }
-                is UnloadingReturnState.ReturnBoxesEmpty ->
+                is UnloadingScanReturnState.ReturnBoxesEmpty ->
                     binding.returnBox.setState(UnloadingReturnMode.EMPTY)
+            }
+        }
+
+        viewModel.errorState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UnloadingScanErrorState.BoxDoesNotBelongPvz -> {
+                    binding.unloadingBox.setState(UnloadingAcceptedMode.DENY)
+                    binding.returnBox.setState(UnloadingReturnMode.DENY)
+                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.UNLOAD_DENY)
+                }
+                is UnloadingScanErrorState.BoxInfoEmpty -> {
+                    binding.unloadingBox.setState(UnloadingAcceptedMode.DENY)
+                    binding.returnBox.setState(UnloadingReturnMode.DENY)
+                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.NOT_INFO_DENY)
+                }
             }
         }
 

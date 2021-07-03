@@ -23,7 +23,7 @@ class UnloadingBoxesViewModel(
         get() = _navigateToBack
 
     init {
-        addSubscription(interactor.observeUnloadedBoxes(parameters.dstOfficeId)
+        addSubscription(interactor.observeUnloadedBoxes(parameters.currentOfficeId)
             .switchMap { list ->
                 Observable.fromIterable(list.withIndex())
                     .map {

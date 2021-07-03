@@ -92,4 +92,4 @@ class UnloadingBoxesFragment : Fragment() {
 }
 
 @Parcelize
-data class UnloadingBoxesParameters(val dstOfficeId: Int) : Parcelable
+data class UnloadingBoxesParameters(val currentOfficeId: Int) : Parcelable

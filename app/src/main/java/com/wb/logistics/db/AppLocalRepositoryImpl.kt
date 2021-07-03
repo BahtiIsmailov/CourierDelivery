@@ -10,6 +10,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
+import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -152,8 +153,8 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.observeAttachedBox()
     }
 
-    override fun observeTakeOnFlightBoxesByOfficeId(dstOfficeId: Int): Flowable<List<FlightBoxEntity>> {
-        return flightBoxDao.observeFilterByOfficeIdAttachedBoxes(dstOfficeId)
+    override fun observeTakeOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
+        return flightBoxDao.observeFilterByOfficeIdAttachedBoxes(currentOfficeId)
     }
 
     override fun deleteAllFlightBoxes() {
@@ -176,6 +177,10 @@ class AppLocalRepositoryImpl(
 
     override fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
         return flightBoxDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
+    }
+
+    override fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity> {
+        return flightBoxDao.observeUnloadedAndUnloadFlightBoxes(currentOfficeId)
     }
 
     override fun findReturnedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
