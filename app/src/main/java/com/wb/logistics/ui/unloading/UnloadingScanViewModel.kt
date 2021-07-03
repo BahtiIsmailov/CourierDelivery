@@ -148,8 +148,6 @@ class UnloadingScanViewModel(
     private fun observeUnloadedBoxes() {
         addSubscription(interactor.observeUnloadedAndTakeOnFlightBoxes(parameters.dstOfficeId)
             .subscribe({
-//                val uploadedList = it.first
-//                val attachedList = it.second
                 val accepted =
                     "" + it.unloadedCount + "/" + (it.unloadedCount + it.unloadCount)
 
@@ -165,7 +163,7 @@ class UnloadingScanViewModel(
                 }
                 _unloadedState.value =
                     UnloadingScanBoxState.UnloadedBoxesActive(accepted,
-                        it.barcode ?: "") //uploadedList.last().barcode
+                        it.barcode ?: "")
             }, {
                 LogUtils { logDebugApp(it.toString()) }
             }))
@@ -209,7 +207,7 @@ class UnloadingScanViewModel(
             .subscribe({
                 if (it.isEmpty()) {
                     addSubscription(interactor.completeUnloading().subscribe {
-                        _navigationEvent.value = //UnloadingScanNavAction.NavigateToBack
+                        _navigationEvent.value =
                             UnloadingScanNavAction.NavigateToDelivery
                     })
                 } else _navigationEvent.value =
