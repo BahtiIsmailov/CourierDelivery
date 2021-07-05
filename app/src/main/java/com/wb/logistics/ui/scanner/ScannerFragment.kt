@@ -46,12 +46,18 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun initPermission() {
         if (hasPermissions(Manifest.permission.CAMERA)) {
             binding.permissionInfo.visibility = View.GONE
+            binding.requestPermission.visibility = View.GONE
         } else {
             binding.permissionInfo.visibility = View.VISIBLE
-            requestPermissions(
-                arrayOf(Manifest.permission.CAMERA), PERMISSIONS_REQUEST_CAMERA_NO_ACTION
-            )
+            binding.requestPermission.visibility = View.VISIBLE
+            requestPermission()
         }
+    }
+
+    private fun requestPermission() {
+        requestPermissions(
+            arrayOf(Manifest.permission.CAMERA), PERMISSIONS_REQUEST_CAMERA_NO_ACTION
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -65,6 +71,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
             && grantResults.first() == PackageManager.PERMISSION_GRANTED
         ) {
             binding.permissionInfo.visibility = View.GONE
+            binding.requestPermission.visibility = View.GONE
             startScanner()
         }
     }
@@ -90,6 +97,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun initListener() {
         binding.sun.setOnClickListener { scannerView.toggleFlash() }
+        binding.requestPermission.setOnClickListener { requestPermission() }
     }
 
     private fun vibrate() {
