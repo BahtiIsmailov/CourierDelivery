@@ -2,7 +2,6 @@ package com.wb.logistics.db
 
 import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
-import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
@@ -271,7 +270,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun findDcUnloadedBarcodes(currentOfficeId: Int): Single<List<DcUnloadingBarcodeEntity>> {
-        return flightBoxDao.findDcUnloadedBarcodes(currentOfficeId)
+        return flightBoxDao.findDcUnloadedBarcodes()
     }
 
     override fun findDcUnloadedBox(
@@ -301,7 +300,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun observeDcUnloadingBarcodeBox(currentOfficeId: Int): Flowable<String> {
-        return flightBoxDao.observeDcUnloadingBarcodeBox(currentOfficeId)
+        return flightBoxDao.observeDcUnloadingBarcodeBox()
     }
 
     override fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable {
@@ -310,10 +309,6 @@ class AppLocalRepositoryImpl(
 
     override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {
         return flightBoxDao.groupDeliveryBoxByOffice()
-    }
-
-    override fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity> {
-        return flightBoxDao.dcUnloadingCongratulation(currentOfficeId)
     }
 
     override fun deleteAll() {

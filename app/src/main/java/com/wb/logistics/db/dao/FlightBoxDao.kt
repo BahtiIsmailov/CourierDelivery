@@ -2,7 +2,6 @@ package com.wb.logistics.db.dao
 
 import androidx.room.*
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
-import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
@@ -54,8 +53,8 @@ interface FlightBoxDao {
     @Query("SELECT barcode AS barcode FROM FlightBoxEntity WHERE onBoard = 1")
     fun findDcReturnHandleBoxes(): Single<List<DcReturnHandleBarcodeEntity>>
 
-    @Query("SELECT barcode AS barcode, updatedAt AS updatedAt FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0")
-    fun findDcUnloadedBarcodes(currentOfficeId: Int): Single<List<DcUnloadingBarcodeEntity>>
+    @Query("SELECT barcode AS barcode, updatedAt AS updatedAt FROM FlightBoxEntity WHERE onBoard = 0 AND status = 6")
+    fun findDcUnloadedBarcodes(): Single<List<DcUnloadingBarcodeEntity>>
 
     @Delete
     fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
@@ -72,14 +71,11 @@ interface FlightBoxDao {
     @Query("SELECT COUNT(*) AS dcUnloadingCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE onBoard = 1) AS dcReturnCount FROM FlightBoxEntity WHERE ((flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0) OR ((flight_src_office_id = :currentOfficeId OR flight_src_office_id <= 0) AND onBoard = 0 AND status = 6)") //ORDER BY updatedAt DESC LIMIT 1
     fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity>
 
-    @Query("SELECT barcode FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 0 ORDER BY updatedAt DESC LIMIT 1")
-    fun observeDcUnloadingBarcodeBox(currentOfficeId: Int): Flowable<String>
+    @Query("SELECT barcode FROM FlightBoxEntity WHERE onBoard = 0 AND status = 6 ORDER BY updatedAt DESC LIMIT 1")
+    fun observeDcUnloadingBarcodeBox(): Flowable<String>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE onBoard = 1")
     fun findDcReturnBoxes(): Single<List<FlightBoxEntity>>
-
-    @Query("SELECT COUNT(*) AS dcUnloadingCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId) AND onBoard = 0) AS unloadingCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId) AND onBoard = 0) AS dcUnloadingReturnCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE (flight_dst_office_id = :currentOfficeId OR flight_dst_office_id <= 0) AND onBoard = 1) AS returnCount FROM FlightBoxEntity")
-    fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity>
 
     @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_dst_office_id AND FlightBoxEntity.status = 3) AS attachedCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_dst_office_id AND FlightBoxEntity.onBoard = 0 AND status = 5) AS unloadedCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.flight_src_office_id AND FlightBoxEntity.onBoard = 1) AS returnCount FROM FlightOfficeEntity")
     fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>

@@ -263,6 +263,9 @@
     <string name="dc_congratulation_returned_info">Вернул</string>
     <string name="dc_congratulation_count">%1$d / %2$d</string>
     <string name="dc_congratulation_complete">Понятно</string>
+    <string name="dc_congratulation_dialog_title_error">Завершение рейса</string>
+    <string name="dc_congratulation_dialog_message_error">Рейс не завершен, повторите операцию</string>
+    <string name="dc_congratulation_dialog_positive_button_error">Ok</string>
 
     <string name="dc_unloading_boxes_label">Возврат</string>
     <string name="dc_unloading_boxes_title_list">Список коробок для выгрузки</string>

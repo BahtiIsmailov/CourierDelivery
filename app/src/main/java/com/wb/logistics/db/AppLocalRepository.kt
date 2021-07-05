@@ -1,7 +1,6 @@
 package com.wb.logistics.db
 
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
-import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
@@ -139,8 +138,6 @@ interface AppLocalRepository {
     fun observeDcUnloadingBarcodeBox(currentOfficeId: Int): Flowable<String>
 
     fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
-
-    fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity>
 
     //==============================================================================================
 

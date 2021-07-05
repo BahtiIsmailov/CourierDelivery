@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcUnloadingCongratulationFragmentBinding
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.NavToolbarListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,6 +38,11 @@ class DcUnloadingCongratulationFragment : Fragment() {
     }
 
     private fun initObserver() {
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
         viewModel.infoState.observe(viewLifecycleOwner) {
             binding.deliveredCount.text = it.deliveredCount
             binding.returnedCount.text = it.returnCount

@@ -33,7 +33,7 @@ class DcUnloadingBoxesViewModel(
             .flatMap { list ->
                 Observable.fromIterable(list.withIndex())
                     .map {
-                        val date = timeFormatter.dateTimeWithTimezoneFromString(it.value.updatedAt)
+                        val date = timeFormatter.dateTimeWithoutTimezoneFromString(it.value.updatedAt)
                         val time = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
                         DcUnloadingBoxesItem("" + (it.index + 1) + ". " + it.value.barcode, time)}.toList()
             }
