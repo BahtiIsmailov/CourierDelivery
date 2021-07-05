@@ -25,9 +25,9 @@ interface FlightBoxDao {
 
     @Query("SELECT * FROM FlightBoxEntity")
     fun readAllBox(): Single<List<FlightBoxEntity>>
-
-    @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode AND onBoard = 0 AND status = 5")
-    fun findUnloadedFlightBox(barcode: String): Single<FlightBoxEntity>
+//
+//    @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode AND onBoard = 0 AND status = 5")
+//    fun findUnloadedFlightBox(barcode: String): Single<FlightBoxEntity>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE flight_dst_office_id = :currentOfficeId AND onBoard = 0")
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
@@ -35,8 +35,8 @@ interface FlightBoxDao {
     @Query("SELECT COUNT(*) AS unloadCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE flight_dst_office_id = :currentOfficeId AND onBoard = 0 AND status = 5) AS unloadedCount, (SELECT barcode FROM FlightBoxEntity WHERE flight_dst_office_id = :currentOfficeId AND onBoard = 0 AND status = 5 ORDER BY updatedAt DESC LIMIT 1) AS barcode FROM FlightBoxEntity WHERE flight_dst_office_id = :currentOfficeId AND onBoard = 1 AND status = 3")
     fun observeUnloadedAndUnloadFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity>
 
-    @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode AND onBoard = 1")
-    fun findReturnedFlightBox(barcode: String): Single<FlightBoxEntity>
+//    @Query("SELECT * FROM FlightBoxEntity WHERE barcode = :barcode AND onBoard = 1")
+//    fun findReturnedFlightBox(barcode: String): Single<FlightBoxEntity>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE flight_src_office_id = :currentOfficeId AND onBoard = 1")
     fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
@@ -59,8 +59,8 @@ interface FlightBoxDao {
     @Delete
     fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
 
-    @Query("delete from FlightBoxEntity where barcode in (:barcodes)")
-    fun deleteFlightBoxesByBarcodes(barcodes: List<String>): Completable
+//    @Query("delete from FlightBoxEntity where barcode in (:barcodes)")
+//    fun deleteFlightBoxesByBarcodes(barcodes: List<String>): Completable
 
     @Delete
     fun deleteFlightBox(flightBoxesEntity: FlightBoxEntity): Completable

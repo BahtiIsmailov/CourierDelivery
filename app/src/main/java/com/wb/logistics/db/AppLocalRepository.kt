@@ -21,11 +21,7 @@ interface AppLocalRepository {
         flightEntity: FlightEntity, flightOfficesEntity: List<FlightOfficeEntity>,
     ): Completable
 
-    fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>>
-
     fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
-
-    fun observeFlightData(): Flowable<FlightData>
 
     fun observeFlightDataOptional(): Flowable<Optional<FlightData>>
 
@@ -34,8 +30,6 @@ interface AppLocalRepository {
     fun readFlight(): Single<FlightEntity>
 
     fun readFlightId(): Single<String>
-
-    fun readFlightDataOptional(): Single<Optional<FlightData>>
 
     fun deleteAllFlight()
 
@@ -48,21 +42,13 @@ interface AppLocalRepository {
 
     fun findFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
-    fun deleteFlightBox(flightBoxEntity: FlightBoxEntity): Completable
-
     fun deleteAllFlightBoxes()
 
     fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
 
-    fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable
-
-    fun findUnloadedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
-
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
     fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity>
-
-    fun findReturnedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>>
 
     fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
@@ -73,13 +59,7 @@ interface AppLocalRepository {
     //==============================================================================================
     fun saveWarehouseMatchingBoxes(warehouseMatchingBoxes: List<WarehouseMatchingBoxEntity>): Completable
 
-    fun saveWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable
-
-    fun deleteWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable
-
     fun deleteWarehouseByBarcode(barcode: String): Completable
-
-    fun findWarehouseMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>>
 
     fun deleteAllWarehouseMatchingBox()
 
@@ -88,11 +68,7 @@ interface AppLocalRepository {
     //==============================================================================================
     fun savePvzMatchingBoxes(pvzMatchingBoxes: List<PvzMatchingBoxEntity>): Completable
 
-    fun savePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable
-
     fun readPvzMatchingBoxes(): Single<List<PvzMatchingBoxEntity>>
-
-    fun deletePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable
 
     fun findPvzMatchingBox(barcode: String): Single<Optional<PvzMatchingBoxEntity>>
 
@@ -119,7 +95,6 @@ interface AppLocalRepository {
     //==============================================================================================
     //DcUnloadedBox
     //==============================================================================================
-    fun saveDcUnloadedBox(dcUnloadedBoxEntity: FlightBoxEntity): Completable
 
     fun saveDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
 
@@ -141,11 +116,12 @@ interface AppLocalRepository {
 
     //==============================================================================================
 
-    fun deleteAll()
-    //==============================================================================================
-
     fun insertDeliveryErrorBoxEntity(deliveryErrorBoxEntity: DeliveryErrorBoxEntity): Completable
 
     fun findDeliveryErrorBoxByOfficeId(currentOfficeId: Int): Single<List<DeliveryErrorBoxEntity>>
+
+    //==============================================================================================
+
+    fun deleteAll()
 
 }

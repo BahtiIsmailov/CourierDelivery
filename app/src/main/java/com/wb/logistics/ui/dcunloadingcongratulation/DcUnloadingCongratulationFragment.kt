@@ -37,6 +37,10 @@ class DcUnloadingCongratulationFragment : Fragment() {
         (activity as NavToolbarListener).hideToolbar()
     }
 
+    private fun showToolbar() {
+        (activity as NavToolbarListener).showToolbar()
+    }
+
     private fun initObserver() {
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             InformationDialogFragment.newInstance(it.title, it.message, it.button)
@@ -49,6 +53,7 @@ class DcUnloadingCongratulationFragment : Fragment() {
         }
 
         viewModel.navigateToBack.observe(viewLifecycleOwner) {
+            showToolbar()
             findNavController().navigate(DcUnloadingCongratulationFragmentDirections.actionDcUnloadingCongratulationFragmentToFlightLoaderFragment())
         }
     }

@@ -34,22 +34,12 @@ class AppLocalRepositoryImpl(
             .andThen(flightDao.insertFlightOffice(flightOfficesEntity))
     }
 
-    override fun findFlightOfficeOptional(id: Int): Single<Optional<FlightOfficeEntity>> {
-        return flightDao.findFlightOffice(id)
-            .map<Optional<FlightOfficeEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
-    }
-
     override fun findFlightOffice(id: Int): Single<FlightOfficeEntity> {
         return flightDao.findFlightOffice(id)
     }
 
     override fun observeFlightDataOptional(): Flowable<Optional<FlightData>> {
         return flightDao.observeFlightData().map { convertFlight(it) }
-    }
-
-    override fun observeFlightData(): Flowable<FlightData> {
-        return flightDao.observeFlightData().map { convertFlightData(it) }
     }
 
     override fun readFlightOptional(): Single<Optional<FlightEntity>> {
@@ -66,31 +56,11 @@ class AppLocalRepositoryImpl(
         return flightDao.readFlight().map { it.id.toString() }
     }
 
-    override fun readFlightDataOptional(): Single<Optional<FlightData>> {
-        return flightDao.readFlightData().map { convertFlight(it) }
-    }
-
     private fun convertFlight(flightData: FlightDataEntity?): Optional<FlightData> {
         return if (flightData == null) {
             Optional.Empty()
         } else {
             successFlightData(flightData)
-        }
-    }
-
-    private fun convertFlightData(flightDataEntity: FlightDataEntity): FlightData {
-        return with(flightDataEntity) {
-            val addressesName = mutableListOf<String>()
-            officeEntity.forEach { addresses -> addressesName.add(addresses.name) }
-            with(flightEntity) {
-                FlightData(
-                    id,
-                    gate,
-                    plannedDate,
-                    dc.name,
-                    addressesName
-                )
-            }
         }
     }
 
@@ -135,10 +105,6 @@ class AppLocalRepositoryImpl(
             .onErrorReturn { Optional.Empty() }
     }
 
-    override fun deleteFlightBox(flightBoxEntity: FlightBoxEntity): Completable {
-        return flightBoxDao.deleteFlightBox(flightBoxEntity)
-    }
-
     override fun readAllTakeOnFlightBox(): Single<List<FlightBoxEntity>> {
         return flightBoxDao.readAllBox()
     }
@@ -163,28 +129,12 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.deleteFlightBoxes(flightBoxesEntity)
     }
 
-    override fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable {
-        return flightBoxDao.deleteFlightBoxesByBarcodes(barcodes)
-    }
-
-    override fun findUnloadedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
-        return flightBoxDao.findUnloadedFlightBox(barcode)
-            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
-    }
-
     override fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
         return flightBoxDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
     }
 
     override fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity> {
         return flightBoxDao.observeUnloadedAndUnloadFlightBoxes(currentOfficeId)
-    }
-
-    override fun findReturnedFlightBox(barcode: String): Single<Optional<FlightBoxEntity>> {
-        return flightBoxDao.findReturnedFlightBox(barcode)
-            .map<Optional<FlightBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
     }
 
     override fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
@@ -200,22 +150,8 @@ class AppLocalRepositoryImpl(
         return warehouseMatchingBoxDao.insertMatchingBoxes(warehouseMatchingBoxes)
     }
 
-    override fun saveWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable {
-        return warehouseMatchingBoxDao.insertMatchingBox(warehouseMatchingBox)
-    }
-
-    override fun deleteWarehouseMatchingBox(warehouseMatchingBox: WarehouseMatchingBoxEntity): Completable {
-        return warehouseMatchingBoxDao.deleteMatchingBox(warehouseMatchingBox)
-    }
-
     override fun deleteWarehouseByBarcode(barcode: String): Completable {
         return warehouseMatchingBoxDao.deleteByBarcode(barcode)
-    }
-
-    override fun findWarehouseMatchingBox(barcode: String): Single<Optional<WarehouseMatchingBoxEntity>> {
-        return warehouseMatchingBoxDao.findMatchingBox(barcode)
-            .map<Optional<WarehouseMatchingBoxEntity>> { Optional.Success(it) }
-            .onErrorReturn { Optional.Empty() }
     }
 
     override fun deleteAllWarehouseMatchingBox() {
@@ -227,16 +163,8 @@ class AppLocalRepositoryImpl(
         return pvzMatchingBoxDao.insertBoxes(pvzMatchingBoxes)
     }
 
-    override fun savePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable {
-        return pvzMatchingBoxDao.insertBox(pvzMatchingBox)
-    }
-
     override fun readPvzMatchingBoxes(): Single<List<PvzMatchingBoxEntity>> {
         return pvzMatchingBoxDao.readBoxes()
-    }
-
-    override fun deletePvzMatchingBox(pvzMatchingBox: PvzMatchingBoxEntity): Completable {
-        return pvzMatchingBoxDao.deleteBox(pvzMatchingBox)
     }
 
     override fun findPvzMatchingBox(barcode: String): Single<Optional<PvzMatchingBoxEntity>> {
@@ -256,10 +184,6 @@ class AppLocalRepositoryImpl(
     //==============================================================================================
     //dcunloaded boxes
     //==============================================================================================
-
-    override fun saveDcUnloadedBox(dcUnloadedBoxEntity: FlightBoxEntity): Completable {
-        return flightBoxDao.insertFlightBox(dcUnloadedBoxEntity)
-    }
 
     override fun saveDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable {
         return flightBoxDao.insertFlightBox(flightBoxEntity)

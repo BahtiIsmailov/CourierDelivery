@@ -280,19 +280,19 @@ class AppRemoteRepositoryImpl(
     private fun convertWarehouseMatchingBoxesEntity(warehouseMatchingBoxResponse: WarehouseMatchingBoxResponse): WarehouseMatchingBoxEntity {
         return with(warehouseMatchingBoxResponse) {
             WarehouseMatchingBoxEntity(
-                barcode = barcode,
+                barcode = barcode?: "",
                 srcOffice = WarehouseMatchingSrcOfficeEntity(
-                    id = srcOffice.id,
-                    name = srcOffice.name,
-                    fullAddress = srcOffice.fullAddress,
-                    longitude = srcOffice.long,
-                    latitude = srcOffice.lat),
+                    id = srcOffice.id?: 0,
+                    name = srcOffice.name?: "",
+                    fullAddress = srcOffice.fullAddress?: "",
+                    longitude = srcOffice.long?: 0.0,
+                    latitude = srcOffice.lat?: 0.0),
                 dstOffice = WarehouseMatchingDstOfficeEntity(
-                    id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    longitude = dstOffice.long,
-                    latitude = dstOffice.lat),
+                    id = dstOffice.id?: 0,
+                    name = dstOffice.name?: "",
+                    fullAddress = dstOffice.fullAddress?: "",
+                    longitude = dstOffice.long?: 0.0,
+                    latitude = dstOffice.lat?: 0.0),
             )
         }
     }

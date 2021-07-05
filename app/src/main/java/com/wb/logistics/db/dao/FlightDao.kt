@@ -24,10 +24,6 @@ interface FlightDao {
     @Query("SELECT * FROM FlightEntity")
     fun readFlight(): Single<FlightEntity>
 
-    @Transaction
-    @Query("SELECT * FROM FlightEntity")
-    fun readFlightData(): Single<FlightDataEntity>
-
     @Query("DELETE FROM FlightEntity")
     fun deleteAllFlight()
 
