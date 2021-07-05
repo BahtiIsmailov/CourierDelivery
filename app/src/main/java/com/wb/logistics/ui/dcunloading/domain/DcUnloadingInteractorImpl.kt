@@ -186,13 +186,26 @@ class DcUnloadingInteractorImpl(
         currentOffice)
         .compose(rxSchedulerFactory.applySingleSchedulers())
 
-    override fun observeDcUnloadedBoxes(): Observable<DcUnloadingScanBoxEntity> {
+    override fun observeDcUnloadedBoxes(): Observable<Pair<DcUnloadingScanBoxEntity, String>> {
         return flight().map { it.dc.id }
             .flatMapObservable { currentOfficeId ->
-                appLocalRepository.observeDcUnloadingScanBox(currentOfficeId).toObservable()
+                Observable.combineLatest(
+                    appLocalRepository.observeDcUnloadingScanBox(currentOfficeId).toObservable(),
+                    appLocalRepository.observeDcUnloadingBarcodeBox(currentOfficeId).toObservable(),
+                    { counter, barcode -> Pair(counter, barcode) }
+                )
             }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
+
+//    override fun observeDcUnloadingBarcodeBox(): Observable<String> {
+//        return flight().map { it.dc.id }
+//            .flatMapObservable { currentOfficeId ->
+//                appLocalRepository.observeDcUnloadingBarcodeBox(currentOfficeId).toObservable()
+//            }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
+
 
     override fun scannerAction(scannerAction: ScannerAction) {
         scannerRepository.scannerAction(scannerAction)

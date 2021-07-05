@@ -2,6 +2,8 @@ package com.wb.logistics.ui.dcunloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
@@ -9,6 +11,7 @@ import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.TimeUnit
 
 class DcUnloadingScanViewModel(
     compositeDisposable: CompositeDisposable,
@@ -36,9 +39,17 @@ class DcUnloadingScanViewModel(
     val unloadedState: LiveData<DcUnloadingScanBoxState>
         get() = _unloadedState
 
+    private val _unloadedCounterState = MutableLiveData<DcUnloadingScanCounterBoxState>()
+    val unloadedCounterState: LiveData<DcUnloadingScanCounterBoxState>
+        get() = _unloadedCounterState
+
     private val _navigationEvent = SingleLiveEvent<DcUnloadingScanNavAction>()
     val navigationEvent: LiveData<DcUnloadingScanNavAction>
         get() = _navigationEvent
+
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+        get() = _navigateToMessageInfo
 
 
     val bottomProgressEvent = MutableLiveData<Boolean>()
@@ -49,7 +60,15 @@ class DcUnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        addSubscription(interactor.observeScanProcess().subscribe {
+        addSubscription(interactor.observeScanProcess()
+            .doOnError { observeScanProcessError(it) }
+            .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
+            .subscribe(observeScanProcessComplete()) { observeScanProcessError(it) }
+        )
+    }
+
+    private fun observeScanProcessComplete(): (t: DcUnloadingData) -> Unit =
+        {
             when (it) {
                 is DcUnloadingData.BoxAlreadyUnloaded -> {
                     _messageEvent.value =
@@ -69,23 +88,34 @@ class DcUnloadingScanViewModel(
                         DcUnloadingScanNavAction.NavigateToUnloadingBoxNotBelongDc(
                             resourceProvider.getBoxNotFoundTitle())
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
-                    _unloadedState.value = DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong("-")
+                    _unloadedState.value =
+                        DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong("неизвестный ШК")
                 }
 
             }
+        }
 
-        })
+    private fun observeScanProcessError(throwable: Throwable) {
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> resourceProvider.getScanDialogMessage()
+        }
+        _navigateToMessageInfo.value = NavigateToMessageInfo(
+            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
     private fun observeDcUnloadedBoxes() {
         addSubscription(interactor.observeDcUnloadedBoxes().subscribe({
-            val accepted = with(it) {
+            val counter = it.first
+            val barcode = it.second
+            val accepted = with(counter) {
                 resourceProvider.getBoxUnloadedCount(dcUnloadingCount,
                     dcUnloadingCount + dcReturnCount)
             }
-            _unloadedState.value = if (it.dcUnloadingCount == 0)
-                DcUnloadingScanBoxState.DcUnloadedBoxesEmpty(accepted)
-            else DcUnloadingScanBoxState.DcUnloadedBoxesComplete(accepted, it.barcode)
+            _unloadedCounterState.value = if (counter.dcUnloadingCount == 0)
+                DcUnloadingScanCounterBoxState.DcUnloadedBoxesEmpty(accepted)
+            else DcUnloadingScanCounterBoxState.DcUnloadedBoxesComplete(accepted, barcode)
             // TODO: 28.04.2021 выполнить автоматический переход после выгрузки всех коробок
         }, {
             LogUtils { logDebugApp(it.toString()) }
@@ -110,7 +140,7 @@ class DcUnloadingScanViewModel(
 
     fun onCompleteClicked() {
         addSubscription(interactor.observeDcUnloadedBoxes().subscribe({
-            _navigationEvent.value = if (it.dcReturnCount == 0)
+            _navigationEvent.value = if (it.first.dcReturnCount == 0)
                 DcUnloadingScanNavAction.NavigateToDcCongratulation
             else DcUnloadingScanNavAction.NavigateToDcForcedTermination
         }, {}))
@@ -127,5 +157,7 @@ class DcUnloadingScanViewModel(
     object BackButtonState
 
     data class Label(val label: String)
+
+    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

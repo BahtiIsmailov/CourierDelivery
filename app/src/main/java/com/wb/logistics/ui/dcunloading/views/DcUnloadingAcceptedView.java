@@ -22,6 +22,7 @@ public class DcUnloadingAcceptedView extends FrameLayout {
 
     private int enableColor;
     private int disableColor;
+    private int denyColor;
 
     private View background;
     private TextView countBoxTextView;
@@ -70,6 +71,7 @@ public class DcUnloadingAcceptedView extends FrameLayout {
                 currentState = array.getInteger(R.styleable.DcUnloadingAcceptedView_dc_unloading_accepted_state, DEFAULT_CURRENT_STATE);
                 enableColor = getResources().getColor(R.color.icon_success);
                 disableColor = getResources().getColor(R.color.icon_default);
+                denyColor = getResources().getColor(R.color.icon_deny);
             } catch (NullPointerException exception) {
                 initDefaultState();
             } finally {
@@ -91,12 +93,15 @@ public class DcUnloadingAcceptedView extends FrameLayout {
             case DcUnloadingAcceptedMode.COMPLETE:
                 containsCompleteState();
                 break;
+            case DcUnloadingAcceptedMode.DENY:
+                containsDenyState();
+                break;
         }
     }
 
     private void emptyState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
-        countBoxTextView.setText(countBox); //getResources().getString(R.string.unloading_boxes_empty_count)
+        countBoxTextView.setText(countBox);
         undoIcon.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);
         listBoxTextView.setVisibility(INVISIBLE);
     }
@@ -105,7 +110,18 @@ public class DcUnloadingAcceptedView extends FrameLayout {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_complete_trans));
         undoIcon.setColorFilter(enableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
-        listBoxTextView.setVisibility(VISIBLE);
+        listBoxTextView.setVisibility(listVisible());
+    }
+
+    private void containsDenyState() {
+        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_deny_trans));
+        undoIcon.setColorFilter(denyColor, PorterDuff.Mode.SRC_ATOP);
+        countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(listVisible());
+    }
+
+    private int listVisible() {
+        return (countBox.equals("-") || countBox.equals("0/0")) ? GONE : VISIBLE;
     }
 
     public void setCountBox(String countBox, int currentState) {

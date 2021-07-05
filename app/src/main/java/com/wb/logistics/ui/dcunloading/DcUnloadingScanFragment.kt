@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.DcUnloadingScanFragmentBinding
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingAcceptedMode
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingInfoMode
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
@@ -61,6 +62,11 @@ class DcUnloadingScanFragment : Fragment() {
     }
 
     private fun initObserver() {
+
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
 
         viewModel.toolbarBackState.observe(viewLifecycleOwner) {
             (activity as NavToolbarListener).hideBackButton()
@@ -114,19 +120,26 @@ class DcUnloadingScanFragment : Fragment() {
             }
         }
 
-        viewModel.unloadedState.observe(viewLifecycleOwner) { state ->
+
+        viewModel.unloadedCounterState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is DcUnloadingScanBoxState.DcUnloadedBoxesEmpty -> {
+                is DcUnloadingScanCounterBoxState.DcUnloadedBoxesEmpty -> {
                     binding.unloadingBox.setCountBox(state.accepted, DcUnloadingAcceptedMode.EMPTY)
                     binding.info.setCodeBox(DcUnloadingInfoMode.EMPTY)
                 }
-                is DcUnloadingScanBoxState.DcUnloadedBoxesComplete -> {
+                is DcUnloadingScanCounterBoxState.DcUnloadedBoxesComplete -> {
                     binding.unloadingBox.setCountBox(state.accepted,
                         DcUnloadingAcceptedMode.COMPLETE)
                     binding.info.setCodeBox(state.barcode, DcUnloadingInfoMode.UNLOADING)
                 }
+            }
+        }
+
+        viewModel.unloadedState.observe(viewLifecycleOwner) { state ->
+            when (state) {
                 is DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong -> {
-                    // TODO: 29.06.2021 реализовать
+                    binding.unloadingBox.setState(DcUnloadingAcceptedMode.DENY)
+                    binding.info.setCodeBox(state.barcode, DcUnloadingInfoMode.NOT_INFO_DENY)
                 }
             }
         }

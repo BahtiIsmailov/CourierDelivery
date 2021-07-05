@@ -23,6 +23,7 @@
         android:id="@+id/barcode"
         style="@style/BaseRegularDarkText"
         android:layout_width="0dp"
+        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="4dp"
@@ -46,7 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal"
         app:layout_constraintVertical_bias="0"
-        tool:text="Выгрузите на ПВЗ" />
+        tool:text="Выгрузите на РЦ" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_center_vertical"

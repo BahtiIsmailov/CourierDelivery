@@ -17,7 +17,7 @@ interface DcUnloadingInteractor {
 
     fun findDcUnloadedListBoxes(): Single<List<DcUnloadingBarcodeEntity>>
 
-    fun observeDcUnloadedBoxes(): Observable<DcUnloadingScanBoxEntity>
+    fun observeDcUnloadedBoxes(): Observable<Pair<DcUnloadingScanBoxEntity, String>>
 
     fun scannerAction(scannerAction: ScannerAction)
 

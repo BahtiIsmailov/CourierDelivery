@@ -267,7 +267,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun findDcReturnHandleBoxes(currentOfficeId: Int): Single<List<DcReturnHandleBarcodeEntity>> {
-        return flightBoxDao.findDcReturnHandleBoxes(currentOfficeId)
+        return flightBoxDao.findDcReturnHandleBoxes()
     }
 
     override fun findDcUnloadedBarcodes(currentOfficeId: Int): Single<List<DcUnloadingBarcodeEntity>> {
@@ -293,11 +293,15 @@ class AppLocalRepositoryImpl(
     }
 
     override fun findDcReturnBoxes(currentOfficeId: Int): Single<List<FlightBoxEntity>> {
-        return flightBoxDao.findDcReturnBoxes(currentOfficeId)
+        return flightBoxDao.findDcReturnBoxes()
     }
 
     override fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity> {
         return flightBoxDao.observeDcUnloadingScanBox(currentOfficeId)
+    }
+
+    override fun observeDcUnloadingBarcodeBox(currentOfficeId: Int): Flowable<String> {
+        return flightBoxDao.observeDcUnloadingBarcodeBox(currentOfficeId)
     }
 
     override fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable {

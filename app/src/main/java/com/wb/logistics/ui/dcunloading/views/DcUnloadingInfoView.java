@@ -81,6 +81,9 @@ public class DcUnloadingInfoView extends FrameLayout {
             case DcUnloadingInfoMode.UNLOADING:
                 unloadingState();
                 break;
+            case DcUnloadingInfoMode.NOT_INFO_DENY:
+                notInfoState();
+                break;
         }
     }
 
@@ -93,6 +96,12 @@ public class DcUnloadingInfoView extends FrameLayout {
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.dc_unloading_boxes_info_box_unload));
         status.setTextColor(getResources().getColor(R.color.icon_success));
+    }
+
+    private void notInfoState() {
+        barcode.setText(codeBox);
+        status.setText(getResources().getString(R.string.dc_unloading_boxes_not_info_box_unload));
+        status.setTextColor(getResources().getColor(R.color.icon_deny));
     }
 
     public void setCodeBox(String codeBox, int state) {

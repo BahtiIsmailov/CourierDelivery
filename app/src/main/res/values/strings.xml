@@ -267,6 +267,7 @@
     <string name="dc_unloading_boxes_label">Возврат</string>
     <string name="dc_unloading_boxes_title_list">Список коробок для выгрузки</string>
     <string name="dc_unloading_boxes_info_box_unload">Выгрузите на РЦ</string>
+    <string name="dc_unloading_boxes_not_info_box_unload">Оставте коробку на РЦ</string>
 
     <string name="dc_unloading_not_belong_title">Информация по ШК не найдена</string>
     <string name="dc_unloading_not_belong_info">Данная коробка не является\nвозвратной, оставьте её на РЦ</string>
@@ -283,5 +284,10 @@
     <string name="dc_unloading_forced_termination_dialog_positive_button_error">Ok</string>
 
     <string name="permdesc_flashlight">permdesc_flashlight</string>
+
+    <string name="dc_loading_scan_dialog_title_return_error">Возврат коробок</string>
+    <string name="dc_loading_scan_dialog_message_return_error">Коробка не возвращена, повторите операцию</string>
+    <string name="dc_loading_scan_switch_dialog_message_return_error">Не удается завершить возврат на РЦ, повторите операцию</string>
+    <string name="dc_loading_scan_dialog_positive_button_return_error">Ok</string>
 
 </resources>

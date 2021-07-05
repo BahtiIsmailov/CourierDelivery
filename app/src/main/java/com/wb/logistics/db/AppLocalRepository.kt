@@ -136,6 +136,8 @@ interface AppLocalRepository {
 
     fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity>
 
+    fun observeDcUnloadingBarcodeBox(currentOfficeId: Int): Flowable<String>
+
     fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
 
     fun dcUnloadingCongratulation(currentOfficeId: Int): Single<DcCongratulationEntity>
