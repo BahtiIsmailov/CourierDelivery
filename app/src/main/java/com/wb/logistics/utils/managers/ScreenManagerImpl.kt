@@ -50,16 +50,16 @@ class ScreenManagerImpl(
         }
 
     override fun saveState(flightStatus: FlightStatus, isGetFromGPS: Boolean): Completable {
-//        return appLocalRepository.readFlight()
-//            .flatMapCompletable {
-//                with(it) {
-//                    val flightId = id.toString()
-//                    val officeId = dc.id
-//                    val updatedAt = timeManager.getOffsetLocalTime()
-//                    saveState(flightId, flightStatus, officeId, updatedAt, isGetFromGPS)
-//                }
-//            }
-        return Completable.complete()
+        return appLocalRepository.readFlight()
+            .flatMapCompletable {
+                with(it) {
+                    val flightId = id.toString()
+                    val officeId = dc.id
+                    val updatedAt = timeManager.getOffsetLocalTime()
+                    saveState(flightId, flightStatus, officeId, updatedAt, isGetFromGPS)
+                }
+            }
+//        return Completable.complete()
     }
 
     private fun saveState(
