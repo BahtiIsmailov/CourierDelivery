@@ -3,10 +3,7 @@ package com.wb.logistics.di.module
 import com.wb.logistics.db.AppDatabase
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.AppLocalRepositoryImpl
-import com.wb.logistics.db.dao.FlightBoxDao
-import com.wb.logistics.db.dao.FlightDao
-import com.wb.logistics.db.dao.PvzMatchingBoxDao
-import com.wb.logistics.db.dao.WarehouseMatchingBoxDao
+import com.wb.logistics.db.dao.*
 import com.wb.logistics.network.api.app.AppApi
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.AppRemoteRepositoryImpl
@@ -51,12 +48,14 @@ val deliveryRepositoryModule = module {
         flightMatchingDao: FlightBoxDao,
         warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
         pvzMatchingBoxDao: PvzMatchingBoxDao,
+        deliveryErrorBoxDao: DeliveryErrorBoxDao,
     ): AppLocalRepository {
         return AppLocalRepositoryImpl(appDatabase,
             flightDao,
             flightMatchingDao,
             warehouseMatchingBoxDao,
-            pvzMatchingBoxDao)
+            pvzMatchingBoxDao,
+            deliveryErrorBoxDao)
     }
 
     fun provideScannerRepository(): ScannerRepository {
@@ -70,7 +69,7 @@ val deliveryRepositoryModule = module {
     single { provideAuthRemoteRepository(get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
-    single { provideLocalRepository(get(), get(), get(), get(), get()) }
+    single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
 

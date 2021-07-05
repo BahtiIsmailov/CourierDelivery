@@ -4,6 +4,6 @@ import io.reactivex.Single
 
 interface FlightDeliveriesDetailsInteractor {
 
-    fun getUnloadedAndReturnBoxesGroupByOffice(dstOfficeId: Int) : Single<UnloadedAndReturnBoxesGroupByOffice>
+    fun getUnloadedAndReturnBoxesGroupByOffice(currentOfficeId: Int) : Single<UnloadedAndReturnBoxesGroupByOffice>
 
 }

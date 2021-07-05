@@ -2,6 +2,7 @@ package com.wb.logistics.ui.unloading.domain
 
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.Optional
+import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.*
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
@@ -52,12 +53,12 @@ class UnloadingInteractorImpl(
                 when {
                     findFlightBox is Optional.Success -> {
                         with(findFlightBox) {
-                            if (currentOfficeId == data.dstOffice.id) { // коробка для выгрузки на ПВЗ снятие с баланса
+                            if (currentOfficeId == data.dstOffice.id) { //если это коробка для выгрузки на ПВЗ снятие с баланса
                                 return@flatMap unloadTakeOnFlightBox(updatedAt,
                                     flightId,
                                     isManualInput,
                                     currentOfficeId)
-                            } else if (currentOfficeId == data.srcOffice.id) { //возвратная коробка значит это повторное сканирование постановка на баланс
+                            } else if (currentOfficeId == data.srcOffice.id) { //если это возвратная коробка значит это повторное сканирование постановка на баланс
                                 val putBoxToPvzBalance =
                                     loadPvzScanRemote(flightId.toString(), //постановка на баланс коробки с ПВЗ
                                         data.barcode,
@@ -86,7 +87,7 @@ class UnloadingInteractorImpl(
                                     flightId,
                                     isManualInput,
                                     currentOfficeId)
-                            } else { //коробка в списке для возврата, но не принадлежит ПВЗ
+                            } else { //если это коробка в списке для возврата, но не принадлежит ПВЗ
                                 return@flatMap boxNotBelongPvzTracker(barcodeScanned,
                                     isManualInput,
                                     updatedAt,
@@ -128,6 +129,12 @@ class UnloadingInteractorImpl(
                                         currentOfficeId,
                                         flightId)
                                         .onErrorComplete()
+                                        .andThen(appLocalRepository.insertDeliveryErrorBoxEntity(
+                                            DeliveryErrorBoxEntity(
+                                                barcode = barcodeScanned,
+                                                currentOfficeId = currentOfficeId,
+                                                updatedAt = updatedAt,
+                                                fullAddress = "")))
                                         .andThen(Observable.just(UnloadingData.BoxInfoEmpty(
                                             barcodeScanned)))
 
@@ -141,13 +148,13 @@ class UnloadingInteractorImpl(
     }
 
     private fun boxNotBelongPvzTracker(
-        barcodeScanned: String,
+        barcode: String,
         isManualInput: Boolean,
         updatedAt: String,
         currentOfficeId: Int,
         flightId: Int,
         fullAddress: String,
-    ) = appRemoteRepository.putBoxTracker(barcodeScanned,
+    ) = appRemoteRepository.putBoxTracker(barcode,
         isManualInput,
         updatedAt,
         currentOfficeId,
@@ -156,7 +163,13 @@ class UnloadingInteractorImpl(
             if (it is BadRequestException) Completable.complete()
             else throw it
         }
-        .andThen(boxDoesNotBelongPvz(barcodeScanned, fullAddress))
+        .andThen(appLocalRepository.insertDeliveryErrorBoxEntity(
+            DeliveryErrorBoxEntity(
+                barcode = barcode,
+                currentOfficeId = currentOfficeId,
+                updatedAt = updatedAt,
+                fullAddress = fullAddress)))
+        .andThen(boxDoesNotBelongPvz(barcode, fullAddress))
         .compose(rxSchedulerFactory.applyObservableSchedulers())
 
     private fun boxDoesNotBelongPvz(barcodeScanned: String, fullAddress: String) =

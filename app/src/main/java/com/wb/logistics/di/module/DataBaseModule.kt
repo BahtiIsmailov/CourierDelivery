@@ -4,10 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.wb.logistics.app.DATABASE_NAME
 import com.wb.logistics.db.AppDatabase
-import com.wb.logistics.db.dao.FlightBoxDao
-import com.wb.logistics.db.dao.FlightDao
-import com.wb.logistics.db.dao.PvzMatchingBoxDao
-import com.wb.logistics.db.dao.WarehouseMatchingBoxDao
+import com.wb.logistics.db.dao.*
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -36,9 +33,15 @@ val databaseModule = module {
         return database.pvzMatchingBoxDao
     }
 
+    fun provideDeliveryErrorBoxDao(database: AppDatabase): DeliveryErrorBoxDao {
+        return database.deliveryErrorBoxDao
+    }
+
     single { provideDatabase(androidApplication()) }
     single { provideFlightDao(get()) }
     single { provideFlightMatchingDao(get()) }
     single { provideWarehouseMatchingBoxDao(get()) }
     single { providePvzMatchingBoxDao(get()) }
+    single { provideDeliveryErrorBoxDao(get()) }
+
 }

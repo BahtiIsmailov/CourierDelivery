@@ -1,14 +1,12 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.dao.FlightBoxDao
-import com.wb.logistics.db.dao.FlightDao
-import com.wb.logistics.db.dao.PvzMatchingBoxDao
-import com.wb.logistics.db.dao.WarehouseMatchingBoxDao
+import com.wb.logistics.db.dao.*
 import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcCongratulationEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
+import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
@@ -26,6 +24,7 @@ class AppLocalRepositoryImpl(
     private val flightBoxDao: FlightBoxDao,
     private val warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
     private val pvzMatchingBoxDao: PvzMatchingBoxDao,
+    private val deliveryErrorBoxDao: DeliveryErrorBoxDao,
 ) : AppLocalRepository {
 
     override fun saveFlightAndOffices(
@@ -315,6 +314,14 @@ class AppLocalRepositoryImpl(
 
     override fun deleteAll() {
         appDatabase.clearAllTables()
+    }
+    //==============================================================================================
+    override fun insertDeliveryErrorBoxEntity(deliveryErrorBoxEntity: DeliveryErrorBoxEntity): Completable {
+        return deliveryErrorBoxDao.insert(deliveryErrorBoxEntity)
+    }
+
+    override fun findDeliveryErrorBoxByOfficeId(currentOfficeId: Int): Single<List<DeliveryErrorBoxEntity>> {
+        return deliveryErrorBoxDao.findDeliveryErrorBoxByOfficeId(currentOfficeId)
     }
 
 }

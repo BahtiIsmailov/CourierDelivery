@@ -58,11 +58,7 @@ val viewModelModule = module {
     viewModel { FlightPickPointViewModel(get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: FlightDeliveriesDetailsParameters) ->
-        FlightDeliveriesDetailsViewModel(parameters,
-            get(),
-            get(),
-            get(),
-            get())
+        FlightDeliveriesDetailsViewModel(parameters, get(), get(), get())
     }
 
     viewModel { (parameters: UnloadingScanParameters) ->
@@ -74,34 +70,18 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: UnloadingBoxesParameters) ->
-        UnloadingBoxesViewModel(parameters,
-            get(),
-            get(),
-            get())
+        UnloadingBoxesViewModel(parameters, get(), get(), get())
     }
 
     viewModel { (parameters: UnloadingReturnParameters) ->
-        UnloadingReturnBoxesViewModel(parameters,
-            get(),
-            get(),
-            get(),
-            get())
+        UnloadingReturnBoxesViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: UnloadingHandleParameters) ->
-        UnloadingHandleViewModel(parameters,
-            get(),
-            get(),
-            get(),
-            get())
+        UnloadingHandleViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { (parameters: ForcedTerminationParameters) ->
-        ForcedTerminationViewModel(parameters,
-            get(),
-            get(),
-            get(),
-            get()
-        )
+        ForcedTerminationViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel {

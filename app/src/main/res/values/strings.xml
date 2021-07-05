@@ -240,6 +240,9 @@
     <string name="force_termination_not_delivery_count">%1$d шт.</string>
     <string name="force_termination_not_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
     <string name="force_termination_not_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
+    <string name="force_termination_info_empty_data">%1$s • %2$s - Коробка не найдена при выгрузке на ПВЗ</string>
+    <string name="force_termination_not_belong_data">%1$s • %2$s - Вы пытались выгрузить коробку на %3$s</string>
+
     <string name="force_termination_not_refund">Не взял на возврат</string>
     <string name="force_termination_cause">Причина</string>
     <string name="force_termination_box_not_found">Коробки не найдены</string>

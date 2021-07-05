@@ -15,6 +15,7 @@ import com.wb.logistics.databinding.FlightDeliveriesDetailsFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsDelegate
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsTitleDelegate
+import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesErrorDelegate
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import kotlinx.parcelize.Parcelize
@@ -79,6 +80,7 @@ class FlightDeliveriesDetailsFragment : Fragment() {
 
     private fun initAdapter() {
         adapter = with(DefaultAdapterDelegate()) {
+            addDelegate(FlightDeliveriesErrorDelegate(requireContext()))
             addDelegate(FlightDeliveriesDetailsTitleDelegate(requireContext()))
             addDelegate(FlightDeliveriesDetailsDelegate(requireContext()))
         }

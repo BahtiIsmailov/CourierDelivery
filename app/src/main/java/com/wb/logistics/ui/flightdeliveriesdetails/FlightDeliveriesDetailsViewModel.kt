@@ -10,8 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 class FlightDeliveriesDetailsViewModel(
     private val parameters: FlightDeliveriesDetailsParameters,
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: FlightDeliveriesDetailsResourceProvider,
-    private val interactor: FlightDeliveriesDetailsInteractor,
+    interactor: FlightDeliveriesDetailsInteractor,
     private val dataBuilder: FlightDeliveriesDetailsDataBuilder,
 ) : NetworkViewModel(compositeDisposable) {
 

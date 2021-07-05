@@ -9,12 +9,13 @@ class FlightDeliveriesDetailsInteractorImpl(
     private val appLocalRepository: AppLocalRepository,
 ) : FlightDeliveriesDetailsInteractor {
 
-    override fun getUnloadedAndReturnBoxesGroupByOffice(dstOfficeId: Int): Single<UnloadedAndReturnBoxesGroupByOffice> {
+    override fun getUnloadedAndReturnBoxesGroupByOffice(currentOfficeId: Int): Single<UnloadedAndReturnBoxesGroupByOffice> {
         return Single.zip(
-            appLocalRepository.observeUnloadedFlightBoxesByOfficeId(dstOfficeId).firstOrError(),
-            appLocalRepository.observeReturnedFlightBoxesByOfficeId(dstOfficeId).firstOrError(),
-            { unloadedBoxes, returnBoxes ->
-                UnloadedAndReturnBoxesGroupByOffice(unloadedBoxes, returnBoxes)
+            appLocalRepository.findDeliveryErrorBoxByOfficeId(currentOfficeId),
+            appLocalRepository.observeUnloadedFlightBoxesByOfficeId(currentOfficeId).firstOrError(),
+            appLocalRepository.observeReturnedFlightBoxesByOfficeId(currentOfficeId).firstOrError(),
+            { errorBoxes, unloadedBoxes, returnBoxes ->
+                UnloadedAndReturnBoxesGroupByOffice(errorBoxes, unloadedBoxes, returnBoxes)
             }
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }
