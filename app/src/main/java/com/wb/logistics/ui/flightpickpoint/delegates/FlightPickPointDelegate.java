@@ -39,7 +39,9 @@ public class FlightPickPointDelegate extends BaseAdapterDelegate<FlightPickPoint
         holder.itemView.setTag(item);
         FlightPickPointDelegteBinding binding = holder.binding;
         binding.address.setText(item.getAddress());
-        binding.redoCount.setText(item.getRedoCount());
+        binding.deliverCount.setText(item.getDeliverCount());
+        binding.pickupCount.setText(item.getPickupCount());
+        binding.pickupCount.setVisibility(item.isPickupPoint() ? View.VISIBLE : View.GONE);
     }
 
     class RouterViewHolder extends RecyclerView.ViewHolder {

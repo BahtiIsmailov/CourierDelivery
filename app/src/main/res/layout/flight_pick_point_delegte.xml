@@ -33,31 +33,43 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="ПВЗ Москва, ул. 2-ая Владимирская, д.6, к1, 32/3" />
 
-        <LinearLayout
-            android:id="@+id/redo"
+        <TextView
+            android:id="@+id/deliver_count"
+            style="@style/BaseRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/ic_flight_delivery_redo_background"
+            android:padding="10dp"
+            android:textColor="#642CA3"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/address">
+            app:layout_constraintTop_toBottomOf="@+id/address"
+            tools:text="Доставить 4 шт." />
 
-            <TextView
-                android:id="@+id/redo_count"
-                style="@style/BaseRegularLightText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
-                android:textColor="#642CA3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/flight_text"
-                tools:text="Доставить 4 шт." />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/pickup_count"
+            style="@style/BaseRegularLightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/ic_flight_delivery_undo_background"
+            android:padding="10dp"
+            android:textColor="#D38119"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/deliver_count"
+            app:layout_constraintTop_toBottomOf="@+id/address"
+            tools:text="Забрать 4 шт." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

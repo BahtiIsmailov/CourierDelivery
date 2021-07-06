@@ -53,7 +53,6 @@ class FlightPickPointFragment : Fragment() {
         initAdapter()
         initListener()
         initStateObserve()
-        viewModel.update()
     }
 
     private fun initListener() {

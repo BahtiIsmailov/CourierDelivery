@@ -12,6 +12,7 @@ import com.wb.logistics.ui.dcloading.domain.ScanProcessData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.exceptions.CompositeException
 import java.util.concurrent.TimeUnit
 
 class DcLoadingScanViewModel(
@@ -173,6 +174,13 @@ class DcLoadingScanViewModel(
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
+        val error = if (throwable is CompositeException) {
+            throwable.exceptions[0]
+        } else throwable
+        scanProcessError(error)
+    }
+
+    private fun scanProcessError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message

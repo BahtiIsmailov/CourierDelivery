@@ -5,6 +5,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import io.reactivex.Completable
@@ -76,6 +77,9 @@ interface FlightBoxDao {
 
     @Query("SELECT * FROM FlightBoxEntity WHERE onBoard = 1")
     fun findDcReturnBoxes(): Single<List<FlightBoxEntity>>
+
+    @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.dst_office_id AND onBoard = 1) AS deliverCount, (SELECT COUNT(*) FROM PvzMatchingBoxEntity WHERE FlightOfficeEntity.office_id = PvzMatchingBoxEntity.src_office_id) AS pickUpCount FROM FlightOfficeEntity")
+    fun groupFlightPickupPointBoxGroupByOffice(): Single<List<FlightPickupPointBoxGroupByOfficeEntity>>
 
     @Query("SELECT office_id AS officeId, office_name AS officeName, fullAddress AS dstFullAddress, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.dst_office_id AND FlightBoxEntity.status = 3) AS attachedCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.dst_office_id AND FlightBoxEntity.onBoard = 0 AND status = 5) AS unloadedCount, (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightOfficeEntity.office_id = FlightBoxEntity.src_office_id AND FlightBoxEntity.onBoard = 1) AS returnCount FROM FlightOfficeEntity")
     fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>

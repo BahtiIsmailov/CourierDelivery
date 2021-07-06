@@ -14,9 +14,9 @@ class FlightPickPointResourceProvider(private val context: Context) {
 
     fun getFlightListError() = context.getString(R.string.flight_deliveries_flight_list_error)
 
-    fun getRedoCount(count: Int) = context.getString(R.string.flight_deliveries_redo_count, count)
+    fun getDeliverCount(count: Int) = context.getString(R.string.flight_deliveries_deliver_count, count)
 
-    fun getUndoCount(count: Int) = context.getString(R.string.flight_deliveries_undo_count, count)
+    fun getPickupCount(count: Int) = context.getString(R.string.flight_deliveries_pickup_count, count)
 
     fun getCountBox(count: Int) =
         context.resources.getQuantityString(R.plurals.reception_box_count, abs(count), count)

@@ -27,6 +27,7 @@ class FlightsLoaderInteractorImpl(
 
     override fun navigateTo(): Single<NavDirections> {
         appLocalRepository.deleteAllFlight()
+        appLocalRepository.deleteFlightOffices()
         appLocalRepository.deleteAllFlightBoxes()
         appLocalRepository.deleteAllWarehouseMatchingBox()
         appLocalRepository.deleteAllPvzMatchingBox()

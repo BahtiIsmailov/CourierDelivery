@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flightpickpoint
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException
@@ -36,7 +36,7 @@ class FlightPickPointViewModel(
 
     val stateUIList = MutableLiveData<FlightPickPointUIListState>()
 
-    private var copyScannedBoxes = mutableListOf<DeliveryBoxGroupByOfficeEntity>()
+    private var copyScannedBoxes = mutableListOf<FlightPickupPointBoxGroupByOfficeEntity>()
 
     fun action(actionView: FlightPickPointUIAction) {
         when (actionView) {
@@ -70,7 +70,7 @@ class FlightPickPointViewModel(
 
     }
 
-    fun update() {
+    init {
         fetchFlightId()
         fetchAttachedBoxesGroupByOfficeId()
     }
@@ -98,20 +98,20 @@ class FlightPickPointViewModel(
             { fetchScannedBoxGroupByAddressError(it) })
     }
 
-    private fun convertToFlightPickPointUIListState(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
+    private fun convertToFlightPickPointUIListState(boxes: List<FlightPickupPointBoxGroupByOfficeEntity>) =
         Single.zip(buildItems(boxes), count(boxes),
             { items, countBox -> FlightPickPointUIListState.ShowFlight(items, countBox) })
 
-    private fun buildItems(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
+    private fun buildItems(boxes: List<FlightPickupPointBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes.withIndex())
-            .map { (index, item): IndexedValue<DeliveryBoxGroupByOfficeEntity> ->
+            .map { (index, item): IndexedValue<FlightPickupPointBoxGroupByOfficeEntity> ->
                 dataBuilder.buildSuccessItem(item, index)
             }
             .toList()
 
-    private fun count(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
+    private fun count(boxes: List<FlightPickupPointBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
-            .map { it.attachedCount }
+            .map { it.deliverCount }
             .scan { v1, v2 -> v1 + v2 }
             .last(0)
             .map { resourceProvider.getCountBox(it) }

@@ -5,6 +5,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
@@ -36,6 +37,10 @@ class AppLocalRepositoryImpl(
 
     override fun findFlightOffice(id: Int): Single<FlightOfficeEntity> {
         return flightDao.findFlightOffice(id)
+    }
+
+    override fun deleteFlightOffices() {
+        return flightDao.deleteAllFlightOffices()
     }
 
     override fun observeFlightDataOptional(): Flowable<Optional<FlightData>> {
@@ -231,6 +236,10 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.deleteFlightBox(flightBoxEntity)
     }
 
+    override fun groupFlightPickupPointBoxGroupByOffice(): Single<List<FlightPickupPointBoxGroupByOfficeEntity>> {
+        return flightBoxDao.groupFlightPickupPointBoxGroupByOffice()
+    }
+
     override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {
         return flightBoxDao.groupDeliveryBoxByOffice()
     }
@@ -238,6 +247,7 @@ class AppLocalRepositoryImpl(
     override fun deleteAll() {
         appDatabase.clearAllTables()
     }
+
     //==============================================================================================
     override fun insertDeliveryErrorBoxEntity(deliveryErrorBoxEntity: DeliveryErrorBoxEntity): Completable {
         return deliveryErrorBoxDao.insert(deliveryErrorBoxEntity)
