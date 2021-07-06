@@ -6,4 +6,5 @@ data class FlightOfficeResponse(
     val fullAddress: String,
     val long: Double,
     val lat: Double,
+    val visitedAt: String?
 )

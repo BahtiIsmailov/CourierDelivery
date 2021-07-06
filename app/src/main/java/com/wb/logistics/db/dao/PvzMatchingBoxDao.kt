@@ -24,7 +24,7 @@ interface PvzMatchingBoxDao {
     @Query("DELETE FROM PvzMatchingBoxEntity")
     fun deleteAllBox()
 
-    @Query("SELECT * FROM PvzMatchingBoxEntity WHERE pvz_match_src_office_id = :currentOfficeId")
+    @Query("SELECT * FROM PvzMatchingBoxEntity WHERE src_office_id = :currentOfficeId")
     fun observePvzMatchingBoxByOfficeId(currentOfficeId: Int): Flowable<List<PvzMatchingBoxEntity>>
 
 }

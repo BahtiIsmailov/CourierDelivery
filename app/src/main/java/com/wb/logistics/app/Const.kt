@@ -6,5 +6,5 @@ const val APP_JSON = "application/json"
 
 const val VERSION_API = "/api/v1"
 
-const val VERSION_DATABASE = 7
+const val VERSION_DATABASE = 10
 const val EXPORT_SCHEMA_DATABASE = false

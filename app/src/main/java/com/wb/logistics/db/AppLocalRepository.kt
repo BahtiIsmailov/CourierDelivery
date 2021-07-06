@@ -1,9 +1,9 @@
 package com.wb.logistics.db
 
-import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
+import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity

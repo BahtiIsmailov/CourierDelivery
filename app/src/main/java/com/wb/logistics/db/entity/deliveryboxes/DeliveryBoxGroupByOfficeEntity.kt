@@ -1,4 +1,4 @@
-package com.wb.logistics.db.entity.attachedboxes
+package com.wb.logistics.db.entity.deliveryboxes
 
 data class DeliveryBoxGroupByOfficeEntity(
 

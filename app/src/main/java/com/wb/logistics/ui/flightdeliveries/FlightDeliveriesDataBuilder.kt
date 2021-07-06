@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 
 interface FlightDeliveriesDataBuilder {

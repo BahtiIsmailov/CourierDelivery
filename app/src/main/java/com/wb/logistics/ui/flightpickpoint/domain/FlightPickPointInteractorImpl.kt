@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.flightpickpoint.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.rx.RxSchedulerFactory

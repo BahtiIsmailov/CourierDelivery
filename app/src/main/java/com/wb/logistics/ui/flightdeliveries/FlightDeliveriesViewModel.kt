@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flightdeliveries
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException

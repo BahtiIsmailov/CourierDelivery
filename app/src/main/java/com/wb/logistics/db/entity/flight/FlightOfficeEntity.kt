@@ -16,5 +16,5 @@ data class FlightOfficeEntity(
     val fullAddress: String,
     val longitude: Double,
     val latitude: Double,
-
+    val visitedAt: String,
 )

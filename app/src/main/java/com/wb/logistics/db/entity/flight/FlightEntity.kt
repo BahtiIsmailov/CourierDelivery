@@ -11,10 +11,14 @@ data class FlightEntity(
     @ColumnInfo(name = "flight_id")
     val id: Int,
     val gate: Int,
-    @Embedded val dc: DcEntity,
-    @Embedded val driver: DriverEntity,
-    @Embedded val route: RouteEntity?,
-    @Embedded val car: CarEntity,
+    @Embedded
+    val dc: DcEntity,
+    @Embedded
+    val driver: DriverEntity,
+    @Embedded
+    val route: RouteEntity?,
+    @Embedded
+    val car: CarEntity,
     val plannedDate: String,
     val startedDate: String,
     val status: String,

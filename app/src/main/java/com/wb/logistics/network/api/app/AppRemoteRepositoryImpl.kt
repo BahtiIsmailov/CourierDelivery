@@ -86,6 +86,7 @@ class AppRemoteRepositoryImpl(
                     fullAddress = fullAddress,
                     longitude = long,
                     latitude = lat,
+                    visitedAt = visitedAt ?: ""
                 )
             })
         }
@@ -280,19 +281,19 @@ class AppRemoteRepositoryImpl(
     private fun convertWarehouseMatchingBoxesEntity(warehouseMatchingBoxResponse: WarehouseMatchingBoxResponse): WarehouseMatchingBoxEntity {
         return with(warehouseMatchingBoxResponse) {
             WarehouseMatchingBoxEntity(
-                barcode = barcode?: "",
+                barcode = barcode ?: "",
                 srcOffice = WarehouseMatchingSrcOfficeEntity(
-                    id = srcOffice.id?: 0,
-                    name = srcOffice.name?: "",
-                    fullAddress = srcOffice.fullAddress?: "",
-                    longitude = srcOffice.long?: 0.0,
-                    latitude = srcOffice.lat?: 0.0),
+                    id = srcOffice.id ?: 0,
+                    name = srcOffice.name ?: "",
+                    fullAddress = srcOffice.fullAddress ?: "",
+                    longitude = srcOffice.long ?: 0.0,
+                    latitude = srcOffice.lat ?: 0.0),
                 dstOffice = WarehouseMatchingDstOfficeEntity(
-                    id = dstOffice.id?: 0,
-                    name = dstOffice.name?: "",
-                    fullAddress = dstOffice.fullAddress?: "",
-                    longitude = dstOffice.long?: 0.0,
-                    latitude = dstOffice.lat?: 0.0),
+                    id = dstOffice.id ?: 0,
+                    name = dstOffice.name ?: "",
+                    fullAddress = dstOffice.fullAddress ?: "",
+                    longitude = dstOffice.long ?: 0.0,
+                    latitude = dstOffice.lat ?: 0.0),
             )
         }
     }

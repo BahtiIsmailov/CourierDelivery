@@ -3,14 +3,14 @@ package com.wb.logistics.db.entity.flighboxes
 import androidx.room.ColumnInfo
 
 data class FlightDstOfficeEntity(
-    @ColumnInfo(name = "flight_dst_office_id")
+    @ColumnInfo(name = "dst_office_id")
     val id: Int,
-    @ColumnInfo(name = "flight_dst_office_name")
+    @ColumnInfo(name = "dst_office_name")
     val name: String,
-    @ColumnInfo(name = "flight_dst_office_full_address")
+    @ColumnInfo(name = "dst_office_full_address")
     val fullAddress: String,
-    @ColumnInfo(name = "flight_dst_office_longitude")
+    @ColumnInfo(name = "dst_office_longitude")
     val longitude: Double,
-    @ColumnInfo(name = "flight_dst_office_latitude")
+    @ColumnInfo(name = "dst_office_latitude")
     val latitude: Double,
 )

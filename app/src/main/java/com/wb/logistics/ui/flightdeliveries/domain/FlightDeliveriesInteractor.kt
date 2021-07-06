@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.flightdeliveries.domain
 
-import com.wb.logistics.db.entity.attachedboxes.DeliveryBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import io.reactivex.Completable
 import io.reactivex.Single
 
