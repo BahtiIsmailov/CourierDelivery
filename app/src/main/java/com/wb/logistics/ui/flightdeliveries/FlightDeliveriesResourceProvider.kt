@@ -16,9 +16,9 @@ class FlightDeliveriesResourceProvider(private val context: Context) {
     fun getDeliveryToolbarEmpty() =
         context.getString(R.string.flight_deliveries_delivery_toolbar_empty_title)
 
-    fun getRedoCount(count: Int) = context.getString(R.string.flight_deliveries_deliver_count, count)
+    fun getDeliverCount(count: Int) = context.getString(R.string.flight_deliveries_deliver_count, count)
 
-    fun getUndoCount(count: Int) = context.getString(R.string.flight_deliveries_pickup_count, count)
+    fun getReturnCount(count: Int) = context.getString(R.string.flight_deliveries_pickup_count, count)
 
     fun getEmptyCount(): String = context.getString(R.string.flight_deliveries_empty_count)
 
@@ -28,7 +28,7 @@ class FlightDeliveriesResourceProvider(private val context: Context) {
     fun getDelivery(delivery: Int): String =
         context.getString(R.string.flight_deliveries_delivery, delivery)
 
-    fun getReturnCount(count: Int): String =
+    fun getReturnedCount(count: Int): String =
         context.getString(R.string.flight_deliveries_return_count,
             count)
 

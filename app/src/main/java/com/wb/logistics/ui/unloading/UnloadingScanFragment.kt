@@ -122,13 +122,6 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.navigationEvent.observe(viewLifecycleOwner, eventObserver)
 
-//        viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
-//            when (state) {
-////                is UnloadingScanMessageEvent.BoxDelivery -> showToastBoxDelivery(state.message)
-////                is UnloadingScanMessageEvent.BoxReturned -> showToastBoxReturned(state.message)
-//            }
-//        }
-
         viewModel.soundEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UnloadingScanSoundEvent.BoxAdded -> beepAdded()
@@ -138,49 +131,42 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.unloadedState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingScanBoxState.UnloadedBoxesEmpty -> {
+                is UnloadingScanBoxState.Empty ->
                     binding.unloadingBox.setCountBox(state.accepted, UnloadingAcceptedMode.EMPTY)
-                    binding.info.setCodeBox(UnloadingInfoMode.EMPTY)
-                }
-                is UnloadingScanBoxState.UnloadedBoxesComplete -> {
+                is UnloadingScanBoxState.Complete ->
                     binding.unloadingBox.setCountBox(state.accepted, UnloadingAcceptedMode.COMPLETE)
-                    binding.info.setCodeBox(UnloadingInfoMode.EMPTY)
-                }
-                is UnloadingScanBoxState.UnloadedBoxesActive -> {
+                is UnloadingScanBoxState.Active ->
                     binding.unloadingBox.setCountBox(state.accepted, UnloadingAcceptedMode.ACTIVE)
-                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.UNLOADING)
-                }
-
+                is UnloadingScanBoxState.Error ->
+                    binding.unloadingBox.setCountBox(state.accepted, UnloadingReturnMode.DENY)
             }
         }
 
         viewModel.returnState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingScanReturnState.ReturnBoxesActive -> {
-                    binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.ACTIVE)
-                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.RETURN)
-                }
-                is UnloadingScanReturnState.ReturnBoxesComplete -> {
-                    binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.ACTIVE)
-                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.RETURN)
-                }
-                is UnloadingScanReturnState.ReturnBoxesEmpty ->
+                is UnloadingScanReturnState.Empty ->
                     binding.returnBox.setState(UnloadingReturnMode.EMPTY)
+                is UnloadingScanReturnState.Complete ->
+                    binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.COMPLETE)
+                is UnloadingScanReturnState.Active ->
+                    binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.ACTIVE)
+                is UnloadingScanReturnState.Error ->
+                    binding.returnBox.setCountBox(state.accepted, UnloadingReturnMode.DENY)
             }
         }
 
-        viewModel.errorState.observe(viewLifecycleOwner) { state ->
+        viewModel.infoState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingScanErrorState.BoxDoesNotBelongPvz -> {
-                    binding.unloadingBox.setState(UnloadingAcceptedMode.DENY)
-                    binding.returnBox.setState(UnloadingReturnMode.DENY)
-                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.UNLOAD_DENY)
-                }
-                is UnloadingScanErrorState.BoxInfoEmpty -> {
-                    binding.unloadingBox.setState(UnloadingAcceptedMode.DENY)
-                    binding.returnBox.setState(UnloadingReturnMode.DENY)
-                    binding.info.setCodeBox(state.barcode, UnloadingInfoMode.NOT_INFO_DENY)
-                }
+                is UnloadingScanInfoState.Empty ->
+                    binding.info.setState(UnloadingInfoMode.EMPTY)
+                is UnloadingScanInfoState.Unloading ->
+                    binding.info.setState(state.barcode, UnloadingInfoMode.UNLOADING)
+                is UnloadingScanInfoState.Return ->
+                    binding.info.setState(state.barcode, UnloadingInfoMode.RETURN)
+                is UnloadingScanInfoState.UnloadDeny ->
+                    binding.info.setState(state.barcode, UnloadingInfoMode.UNLOAD_DENY)
+                is UnloadingScanInfoState.NotInfoDeny ->
+                    binding.info.setState(state.barcode, UnloadingInfoMode.NOT_INFO_DENY)
             }
         }
 

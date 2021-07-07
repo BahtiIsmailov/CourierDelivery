@@ -15,9 +15,10 @@ import com.wb.logistics.R;
 public class UnloadingInfoView extends FrameLayout {
 
     private final static String DEFAULT_CODE_BOX_TEXT = "";
-    private final static String STATUS_BOX_EMPTY_TEXT = "";
     private final static int DEFAULT_STATE = UnloadingInfoMode.EMPTY;
 
+    private TextView emptyBoxTextView;
+    private TextView currentBoxTextView;
     private TextView barcode;
     private TextView status;
 
@@ -48,6 +49,8 @@ public class UnloadingInfoView extends FrameLayout {
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layoutView = inflater.inflate(R.layout.unloading_info_box, this, false);
+        emptyBoxTextView = layoutView.findViewById(R.id.empty_box);
+        currentBoxTextView = layoutView.findViewById(R.id.current_box);
         barcode = layoutView.findViewById(R.id.barcode);
         status = layoutView.findViewById(R.id.status);
         addView(layoutView);
@@ -94,42 +97,59 @@ public class UnloadingInfoView extends FrameLayout {
     }
 
     private void emptyState() {
-        barcode.setText(getResources().getString(R.string.dc_loading_code_pref_box));
-        status.setText(STATUS_BOX_EMPTY_TEXT);
+        emptyBoxTextView.setVisibility(VISIBLE);
+        currentBoxTextView.setVisibility(INVISIBLE);
+        barcode.setVisibility(INVISIBLE);
+        status.setVisibility(INVISIBLE);
     }
 
     private void unloadingState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        barcode.setVisibility(VISIBLE);
+        status.setVisibility(VISIBLE);
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.unloading_boxes_info_box_unload));
         status.setTextColor(getResources().getColor(R.color.icon_success));
     }
 
     private void returnState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        barcode.setVisibility(VISIBLE);
+        status.setVisibility(VISIBLE);
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.unloading_boxes_info_box_return));
         status.setTextColor(getResources().getColor(R.color.icon_warning));
     }
 
     private void containsUnloadDenyState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        barcode.setVisibility(VISIBLE);
+        status.setVisibility(VISIBLE);
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.unloading_boxes_info_box_return_on_car));
         status.setTextColor(getResources().getColor(R.color.icon_deny));
     }
 
-
     private void containsNotInfoDenyState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        barcode.setVisibility(VISIBLE);
+        status.setVisibility(VISIBLE);
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.unloading_boxes_info_box_drop));
         status.setTextColor(getResources().getColor(R.color.icon_deny));
     }
 
-    public void setCodeBox(String codeBox, int state) {
+    public void setState(String codeBox, int state) {
         this.codeBox = codeBox;
         this.state = state;
         initState();
     }
 
-    public void setCodeBox(int state) {
+    public void setState(int state) {
         this.state = state;
         initState();
     }

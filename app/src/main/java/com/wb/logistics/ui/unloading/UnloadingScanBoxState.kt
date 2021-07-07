@@ -2,11 +2,12 @@ package com.wb.logistics.ui.unloading
 
 sealed class UnloadingScanBoxState {
 
-    data class UnloadedBoxesEmpty(val accepted: String) : UnloadingScanBoxState()
+    data class Empty(val accepted: String) : UnloadingScanBoxState()
 
-    data class UnloadedBoxesComplete(val accepted: String) : UnloadingScanBoxState()
+    data class Complete(val accepted: String) : UnloadingScanBoxState()
 
-    data class UnloadedBoxesActive(val accepted: String, val barcode: String) :
-        UnloadingScanBoxState()
+    data class Active(val accepted: String) : UnloadingScanBoxState()
+
+    data class  Error(val accepted: String) : UnloadingScanBoxState()
 
 }

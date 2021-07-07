@@ -44,10 +44,10 @@ public class FlightDeliveriesDelegate extends BaseAdapterDelegate<FlightDeliveri
         FlightDeliveriesLayoutRouteBinding binding = holder.binding;
 
         binding.address.setText(item.getAddress());
-        binding.redoCount.setText(item.getRedoCount());
+        binding.redoCount.setText(item.getDeliverCount());
 
-        binding.undoCount.setText(item.getUndoCount());
-        binding.undoCount.setVisibility(item.getUndoCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        binding.undoCount.setText(item.getReturnedCount());
+        binding.undoCount.setVisibility(item.getReturnedCount().isEmpty() ? View.INVISIBLE : View.VISIBLE);
 
         boolean isEnabled = item.isEnabled();
         binding.main.setEnabled(isEnabled);

@@ -8,11 +8,12 @@ import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
-import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
+import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
+import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -111,7 +112,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun readAllTakeOnFlightBox(): Single<List<FlightBoxEntity>> {
-        return flightBoxDao.readAllBox()
+        return flightBoxDao.readAllFlightBox()
     }
 
     override fun findTakeOnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>> {
@@ -135,15 +136,19 @@ class AppLocalRepositoryImpl(
     }
 
     override fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
-        return flightBoxDao.observeUnloadedFlightBoxesByOfficeId(currentOfficeId)
+        return flightBoxDao.observeUnloadingUnloadedBoxesByOfficeId(currentOfficeId)
     }
 
-    override fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity> {
-        return flightBoxDao.observeUnloadedAndUnloadFlightBoxes(currentOfficeId)
+    override fun observeUnloadedAndUnloadOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<UnloadingUnloadedAndUnloadCountEntity> {
+        return flightBoxDao.observeUnloadingUnloadedAndUnloadBoxes(currentOfficeId)
+    }
+
+    override fun observeTookAndPickupOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<UnloadingTookAndPickupCountEntity> {
+        return flightBoxDao.observeUnloadingTookAndPickupBoxesByOfficeId(currentOfficeId)
     }
 
     override fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
-        return flightBoxDao.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
+        return flightBoxDao.observeUnloadingReturnedBoxesByOfficeId(currentOfficeId)
     }
 
     override fun findReturnFlightBoxes(barcodes: List<String>): Single<List<FlightBoxEntity>> {
@@ -180,6 +185,10 @@ class AppLocalRepositoryImpl(
 
     override fun observePvzMatchingBoxByOfficeId(currentOfficeId: Int): Flowable<List<PvzMatchingBoxEntity>> {
         return pvzMatchingBoxDao.observePvzMatchingBoxByOfficeId(currentOfficeId)
+    }
+
+    override fun deletePvzMatchingBox(pvzMatchingBoxEntity: PvzMatchingBoxEntity): Completable {
+        return pvzMatchingBoxDao.deletePvzMatchingBox(pvzMatchingBoxEntity)
     }
 
     override fun deleteAllPvzMatchingBox() {

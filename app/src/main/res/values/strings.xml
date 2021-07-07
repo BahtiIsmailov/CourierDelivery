@@ -148,7 +148,7 @@
 
     <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>
     <string name="flight_deliveries_dialog_title">Начать доставку?</string>
-    <string name="flight_deliveries_dialog_description">Перейдя к доставке, вы больше не сможете погрузить коробки в машину</string>
+    <string name="flight_deliveries_dialog_description">После перехода к доставке, вы больше не сможете погрузить коробки в машину</string>
     <string name="flight_deliveries_dialog_positive_button">Начать</string>
     <string name="flight_deliveries_dialog_negative_button">Отмена</string>
     <string name="flight_deliveries_dialog_negative_title">Принудительное завершение</string>
@@ -221,6 +221,7 @@
     <string name="unloading_box_not_belong_info_title">Информация по ШК не найдена</string>
     <string name="unloading_box_not_belong_info_empty_description">Оставте коробку на том же месте</string>
     <string name="unloading_box_log_data">{\"k1\": %1$s, \"k2\": %2$s}</string>
+    <string name="unloading_box_accepted">%1$d / %2$d</string>
 
     <string name="dc_unloading_box_not_found_title">ШК не найден</string>
     <string name="dc_unloading_box_already_unloaded">%1$s уже выгружена на РЦ</string>

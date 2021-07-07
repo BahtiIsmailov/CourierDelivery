@@ -131,7 +131,7 @@ public class UnloadingAcceptedView extends FrameLayout {
     }
 
     private int listVisible() {
-        return (countBox.equals("-") || countBox.equals("0/0")) ? GONE : VISIBLE;
+        return (countBox.startsWith("0")) ? GONE : VISIBLE;
     }
 
     public void setCountBox(String countBox, int currentState) {

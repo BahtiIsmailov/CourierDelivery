@@ -212,14 +212,6 @@ class FlightDeliveriesFragment : Fragment() {
                         viewModel.onItemClicked(idItem)
                     }
                 }))
-
-            addDelegate(
-                FlightDeliveriesRefreshDelegate(
-                    requireContext(),
-                    object : OnFlightDeliveriesUpdateCallback {
-                        override fun onUpdateRouteClick() {}
-                    })
-            )
             addDelegate(FlightDeliveriesProgressDelegate(requireContext()))
         }
         binding.recyclerView.adapter = adapter

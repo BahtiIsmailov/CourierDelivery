@@ -7,10 +7,11 @@ import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
-import com.wb.logistics.db.entity.flighboxes.FlightUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
+import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
+import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -51,7 +52,9 @@ interface AppLocalRepository {
 
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
-    fun observeUnloadedAndTakeOnFlightBoxes(currentOfficeId: Int): Flowable<FlightUnloadedAndUnloadCountEntity>
+    fun observeUnloadedAndUnloadOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<UnloadingUnloadedAndUnloadCountEntity>
+
+    fun observeTookAndPickupOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<UnloadingTookAndPickupCountEntity>
 
     fun observeReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
@@ -76,6 +79,8 @@ interface AppLocalRepository {
     fun findPvzMatchingBox(barcode: String): Single<Optional<PvzMatchingBoxEntity>>
 
     fun observePvzMatchingBoxByOfficeId(currentOfficeId: Int): Flowable<List<PvzMatchingBoxEntity>>
+
+    fun deletePvzMatchingBox(pvzMatchingBoxEntity: PvzMatchingBoxEntity): Completable
 
     fun deleteAllPvzMatchingBox()
 

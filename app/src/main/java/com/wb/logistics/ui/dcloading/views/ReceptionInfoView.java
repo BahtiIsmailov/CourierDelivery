@@ -15,7 +15,6 @@ import com.wb.logistics.R;
 public class ReceptionInfoView extends FrameLayout {
 
     private final static String DEFAULT_CODE_BOX_TEXT = "";
-    private final static String STATUS_BOX_EMPTY_TEXT = "";
     private final static int DEFAULT_STATE = ReceptionInfoMode.EMPTY;
 
     private TextView emptyBoxTextView;

@@ -44,8 +44,10 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getBoxEmptyInfoDescription(): String =
         context.getString(R.string.unloading_box_not_belong_info_empty_description)
 
-    fun getBoxNotBelongAddress(): String =
+    fun getBoxNotInfoAddress(): String =
         context.getString(R.string.dc_loading_box_not_belong_address_title)
+
+    fun getAccepted(count: Int, total: Int) = context.getString(R.string.unloading_box_accepted, count, total)
 
     fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
     fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)

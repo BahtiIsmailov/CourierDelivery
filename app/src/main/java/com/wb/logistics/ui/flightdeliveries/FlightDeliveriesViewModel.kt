@@ -88,7 +88,7 @@ class FlightDeliveriesViewModel(
 
     private fun completeDeliveryState(boxes: List<DeliveryBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
-            .map { it.attachedCount }
+            .map { it.deliverCount }
             .reduce(0, { accumulator, attachedCount -> accumulator + attachedCount })
             .map {
                 if (it == 0) FlightDeliveriesUIBottomState.ShowCompletePositiveDelivery
@@ -111,7 +111,7 @@ class FlightDeliveriesViewModel(
 
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
-        if (item.unloadedCount > 0 || item.returnCount > 0) {
+        if (item.deliveredCount > 0 || item.returnedCount > 0) {
             _stateUINav.value =
                 FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
         } else {
@@ -123,7 +123,7 @@ class FlightDeliveriesViewModel(
         addSubscription(interactor.getDeliveryBoxesGroupByOffice()
             .flatMap { boxes ->
                 Observable.fromIterable(boxes)
-                    .map { it.attachedCount }
+                    .map { it.deliverCount }
                     .reduce(0, { accumulator, attachedCount -> accumulator + attachedCount })
             }
             .subscribe({

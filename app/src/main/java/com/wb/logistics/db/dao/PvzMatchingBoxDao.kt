@@ -1,9 +1,6 @@
 package com.wb.logistics.db.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -20,6 +17,9 @@ interface PvzMatchingBoxDao {
 
     @Query("SELECT * FROM PvzMatchingBoxEntity WHERE barcode = :barcode")
     fun findBox(barcode: String): Single<PvzMatchingBoxEntity>
+
+    @Delete
+    fun deletePvzMatchingBox(pvzMatchingBoxEntity: PvzMatchingBoxEntity): Completable
 
     @Query("DELETE FROM PvzMatchingBoxEntity")
     fun deleteAllBox()

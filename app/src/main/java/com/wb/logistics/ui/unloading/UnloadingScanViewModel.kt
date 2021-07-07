@@ -7,6 +7,7 @@ import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.ui.unloading.domain.UnloadingAction
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.utils.LogUtils
@@ -28,11 +29,6 @@ class UnloadingScanViewModel(
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
 
-//    private val _messageEvent =
-//        SingleLiveEvent<UnloadingScanMessageEvent>()
-//    val toastEvent: LiveData<UnloadingScanMessageEvent>
-//        get() = _messageEvent
-
     private val _soundEvent =
         SingleLiveEvent<UnloadingScanSoundEvent>()
     val soundEvent: LiveData<UnloadingScanSoundEvent>
@@ -48,10 +44,10 @@ class UnloadingScanViewModel(
     val returnState: LiveData<UnloadingScanReturnState>
         get() = _returnState
 
-    private val _errorState =
-        MutableLiveData<UnloadingScanErrorState>()
-    val errorState: LiveData<UnloadingScanErrorState>
-        get() = _errorState
+    private val _infoState =
+        MutableLiveData<UnloadingScanInfoState>()
+    val infoState: LiveData<UnloadingScanInfoState>
+        get() = _infoState
 
     private val _navigationEvent =
         SingleLiveEvent<UnloadingScanNavAction>()
@@ -65,12 +61,9 @@ class UnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
-        // TODO: 01.07.2021 восстанавливать реактивный поток сканирования после ошибки
         initTitleToolbar()
         observeBackButton()
-        observeScanProcess()
-        observeUnloadedBoxes()
-        observeReturnBoxes()
+        observeUnloadProcess()
     }
 
     private fun observeBackButton() {
@@ -89,8 +82,8 @@ class UnloadingScanViewModel(
             }))
     }
 
-    private fun observeScanProcess() {
-        addSubscription(interactor.observeScanProcess(parameters.dstOfficeId)
+    private fun observeUnloadProcess() {
+        addSubscription(interactor.observeUnloadingProcess(parameters.dstOfficeId)
             .doOnError { observeScanProcessError(it) }
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe({ observeScanProcessComplete(it) }) { observeScanProcessError(it) })
@@ -98,42 +91,78 @@ class UnloadingScanViewModel(
 
     private fun observeScanProcessComplete(it: UnloadingData) {
         LogUtils { logDebugApp("observeScanProcessComplete " + it) }
-        when (it) {
-            is UnloadingData.BoxUnloadAdded -> {
-//                _messageEvent.value =
-//                    UnloadingScanMessageEvent.BoxDelivery(resourceProvider.getDelivered(it.barcode))
+        val unloadingAccepted =
+            resourceProvider.getAccepted(it.flightUnloadedAndUnloadCountEntity.unloadedCount,
+                it.flightUnloadedAndUnloadCountEntity.unloadCount)
+        val returnAccepted =
+            resourceProvider.getAccepted(it.flightTookAndPickupCountEntity.tookCount,
+                it.flightTookAndPickupCountEntity.pickupCount)
+        when (it.unloadingAction) {
+            is UnloadingAction.BoxUnloadAdded -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
+                _unloadedState.value = UnloadingScanBoxState.Active(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.Unloading(it.unloadingAction.barcode)
             }
-
-            is UnloadingData.BoxReturnAdded -> {
-//                _messageEvent.value =
-//                    UnloadingScanMessageEvent.BoxReturned(resourceProvider.getReturned(it.barcode))
+            is UnloadingAction.BoxReturnAdded -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
+                _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.Unloading(it.unloadingAction.barcode)
             }
-
-            is UnloadingData.BoxDoesNotBelongPvz -> {
-                LogUtils { logDebugApp("UnloadingData.BoxDoesNotBelongPvz " + it) }
-                _navigationEvent.value =
-                    UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
-                        resourceProvider.getBoxNotBelongPvzTitle(),
-                        resourceProvider.getBoxNotBelongPvzDescription(),
-                        it.barcode,
-                        it.address)
+            is UnloadingAction.BoxDoesNotBelongPvz -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                _errorState.value = UnloadingScanErrorState.BoxDoesNotBelongPvz(it.barcode)
+                _navigationEvent.value = navigateToUnloadingBoxNotBelongPvz(it.unloadingAction)
+                _unloadedState.value = UnloadingScanBoxState.Error(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.UnloadDeny(it.unloadingAction.barcode)
             }
-            is UnloadingData.BoxInfoEmpty -> {
+            is UnloadingAction.BoxInfoEmpty -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
-                _errorState.value = UnloadingScanErrorState.BoxInfoEmpty(it.barcode)
-                _navigationEvent.value =
-                    UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
-                        resourceProvider.getBoxNotBelongInfoTitle(),
-                        resourceProvider.getBoxEmptyInfoDescription(),
-                        it.barcode,
-                        resourceProvider.getBoxNotBelongAddress())
+                _navigationEvent.value = navigateToUnloadingBoxInfoEmpty(it.unloadingAction)
+                _unloadedState.value = UnloadingScanBoxState.Error(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Error(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.NotInfoDeny(it.unloadingAction.barcode)
+            }
+            UnloadingAction.Init -> {
+                val updatedAtUnloading = it.flightUnloadedAndUnloadCountEntity.updatedAt ?: ""
+                val updatedAtTook = it.flightTookAndPickupCountEntity.updatedAt ?: ""
+                if (updatedAtUnloading.isEmpty() && updatedAtTook.isEmpty()) {
+                    _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
+                    _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+                    _infoState.value = UnloadingScanInfoState.Empty
+                } else {
+                    if (updatedAtUnloading >= updatedAtTook) {
+                        _unloadedState.value = UnloadingScanBoxState.Active(unloadingAccepted)
+                        _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+                        _infoState.value =
+                            UnloadingScanInfoState.Unloading(it.flightUnloadedAndUnloadCountEntity.barcode
+                                ?: "")
+                    } else {
+                        _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
+                        _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
+                        _infoState.value =
+                            UnloadingScanInfoState.Return(it.flightTookAndPickupCountEntity.barcode
+                                ?: "")
+                    }
+                }
             }
         }
     }
+
+    private fun navigateToUnloadingBoxNotBelongPvz(unloadingAction: UnloadingAction.BoxDoesNotBelongPvz) =
+        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+            resourceProvider.getBoxNotBelongPvzTitle(),
+            resourceProvider.getBoxNotBelongPvzDescription(),
+            unloadingAction.barcode,
+            unloadingAction.address)
+
+    private fun navigateToUnloadingBoxInfoEmpty(unloadingAction: UnloadingAction.BoxInfoEmpty) =
+        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+            resourceProvider.getBoxNotBelongInfoTitle(),
+            resourceProvider.getBoxEmptyInfoDescription(),
+            unloadingAction.barcode,
+            resourceProvider.getBoxNotInfoAddress())
 
     private fun observeScanProcessError(throwable: Throwable) {
         val message = when (throwable) {
@@ -143,44 +172,6 @@ class UnloadingScanViewModel(
         }
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
-    }
-
-    private fun observeUnloadedBoxes() {
-        addSubscription(interactor.observeUnloadedAndTakeOnFlightBoxes(parameters.dstOfficeId)
-            .subscribe({
-                val accepted =
-                    "" + it.unloadedCount + "/" + (it.unloadedCount + it.unloadCount)
-
-                if (it.unloadedCount == 0 && it.unloadCount == 0) {
-                    _unloadedState.value =
-                        UnloadingScanBoxState.UnloadedBoxesEmpty(accepted)
-                    return@subscribe
-                }
-                if (it.unloadedCount == 0) {
-                    _unloadedState.value =
-                        UnloadingScanBoxState.UnloadedBoxesComplete(accepted)
-                    return@subscribe
-                }
-                _unloadedState.value =
-                    UnloadingScanBoxState.UnloadedBoxesActive(accepted,
-                        it.barcode ?: "")
-            }, {
-                LogUtils { logDebugApp(it.toString()) }
-            }))
-    }
-
-    private fun observeReturnBoxes() {
-        addSubscription(interactor.observeReturnedAndMatchingBoxes(parameters.dstOfficeId)
-            .subscribe({
-                val returnedList = it.first
-                val pvzMatchingList = it.second
-                val accepted = "" + returnedList.size + "/" + pvzMatchingList.size
-
-                _returnState.value =
-                    if (returnedList.isEmpty()) UnloadingScanReturnState.ReturnBoxesEmpty(accepted)
-                    else UnloadingScanReturnState.ReturnBoxesComplete(accepted,
-                        returnedList.last().barcode)
-            }) {})
     }
 
     fun onBoxHandleInput(barcode: String) {

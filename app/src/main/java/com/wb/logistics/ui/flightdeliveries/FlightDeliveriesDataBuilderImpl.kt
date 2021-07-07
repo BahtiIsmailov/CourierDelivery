@@ -10,41 +10,40 @@ class FlightDeliveriesDataBuilderImpl(
 
     override fun buildPvzSuccessItem(
         index: Int,
-        scannedBoxGroupByAddressEntity: DeliveryBoxGroupByOfficeEntity,
+        deliveryBoxGroupByOfficeEntity: DeliveryBoxGroupByOfficeEntity,
     ): BaseItem {
-        val unloadedCount = scannedBoxGroupByAddressEntity.unloadedCount
-        val attachedCount = scannedBoxGroupByAddressEntity.attachedCount
-        val returnCount = scannedBoxGroupByAddressEntity.returnCount
-        if (returnCount > 0 || unloadedCount > 0) {
-            val returnCountText =
-                if (returnCount > 0) resourceProvider.getReturnCount(returnCount)
-                else resourceProvider.getEmptyCount()
-            return if (attachedCount > 0) {
-                FlightDeliveriesNotUnloadItem(
-                    address = scannedBoxGroupByAddressEntity.dstFullAddress,
-                    unloadedCount = resourceProvider.getNotDelivery(unloadedCount, unloadedCount + attachedCount),
-                    returnCount = returnCountText,
-                    idView = index)
+        with(deliveryBoxGroupByOfficeEntity) {
+            if (returnedCount > 0 || deliveredCount > 0) {
+                val returnCountText =
+                    if (returnedCount > 0) resourceProvider.getReturnedCount(returnedCount)
+                    else resourceProvider.getEmptyCount()
+                return if (deliverCount > 0) {
+                    FlightDeliveriesNotUnloadItem(
+                        address = dstFullAddress,
+                        unloadedCount = resourceProvider.getNotDelivery(deliveredCount,
+                            deliveredCount + deliverCount),
+                        returnCount = returnCountText,
+                        idView = index)
+
+                } else {
+                    FlightDeliveriesUnloadItem(
+                        address = dstFullAddress,
+                        unloadedCount = resourceProvider.getDelivery(deliveredCount),
+                        returnCount = returnCountText,
+                        idView = index)
+                }
 
             } else {
-                FlightDeliveriesUnloadItem(
-                    address = scannedBoxGroupByAddressEntity.dstFullAddress,
-                    unloadedCount = resourceProvider.getDelivery(unloadedCount),
-                    returnCount = returnCountText,
-                    idView = index)
+                return FlightDeliveriesItem(
+                    address = dstFullAddress,
+                    deliverCount = resourceProvider.getDeliverCount(deliverCount),
+                    returnedCount =
+                    if (returnCount > 0) resourceProvider.getReturnCount(returnCount)
+                    else resourceProvider.getEmptyCount(),
+                    isEnabled = true,
+                    idView = index
+                )
             }
-
-        } else {
-            return FlightDeliveriesItem(
-                address = scannedBoxGroupByAddressEntity.dstFullAddress,
-                redoCount = resourceProvider.getRedoCount(attachedCount),
-                undoCount = if (returnCount == 0) resourceProvider.getEmptyCount()
-                else resourceProvider.getUndoCount(returnCount),
-                isShowBoxes = false,
-                isEnabled = true,
-                boxes = listOf(),
-                idView = index
-            )
         }
     }
 

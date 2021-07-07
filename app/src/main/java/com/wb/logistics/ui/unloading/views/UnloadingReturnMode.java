@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @IntDef({UnloadingReturnMode.EMPTY,
+        UnloadingReturnMode.COMPLETE,
         UnloadingReturnMode.ACTIVE,
         UnloadingReturnMode.DENY})
 @Retention(RetentionPolicy.SOURCE)
@@ -13,9 +14,11 @@ public @interface UnloadingReturnMode {
 
     int EMPTY = 0;
 
-    int ACTIVE = 1;
+    int COMPLETE = 1;
 
-    int DENY = 2;
+    int ACTIVE = 2;
+
+    int DENY = 3;
 
 
 

@@ -15,8 +15,8 @@ class CongratulationInteractorImpl(
             .flatMap { boxes ->
                 Observable.fromIterable(boxes)
                     .map {
-                        DeliveryResult(it.unloadedCount,
-                            it.attachedCount)
+                        DeliveryResult(it.deliveredCount,
+                            it.deliverCount)
                     }
                     .reduce(DeliveryResult(0, 0),
                         { accumulator, item ->
