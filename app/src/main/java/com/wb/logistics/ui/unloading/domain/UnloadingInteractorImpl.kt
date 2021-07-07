@@ -472,8 +472,17 @@ class UnloadingInteractorImpl(
         scannerRepository.scannerAction(scannerAction)
     }
 
-    override fun completeUnloading(): Completable {
-        return switchScreenInTransit().compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override fun isUnloadingComplete(currentOfficeId: Int): Single<Boolean> {
+        return observeAttachedBoxes(currentOfficeId)
+            .map { it.isEmpty() }
+            .firstOrError()
+            .flatMap { switchForced(it, currentOfficeId) }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    private fun switchForced(isEmpty: Boolean, currentOfficeId: Int): Single<Boolean> {
+        return (if (isEmpty) switchScreenInTransit(currentOfficeId)
+        else Completable.complete()).andThen(Single.just(isEmpty))
     }
 
     override fun officeNameById(currentOfficeId: Int): Single<String> {
@@ -481,12 +490,12 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun switchScreenInTransit(): Completable {
-        return screenManager.saveState(FlightStatus.INTRANSIT)
+    private fun switchScreenInTransit(currentOfficeId: Int): Completable {
+        return screenManager.saveState(FlightStatus.INTRANSIT, currentOfficeId)
     }
 
-    private fun switchScreenUnloading(dstOfficeId: Int): Completable {
-        return screenManager.saveState(FlightStatus.UNLOADING, dstOfficeId)
+    private fun switchScreenUnloading(currentOfficeId: Int): Completable {
+        return screenManager.saveState(FlightStatus.UNLOADING, currentOfficeId)
     }
 
 }

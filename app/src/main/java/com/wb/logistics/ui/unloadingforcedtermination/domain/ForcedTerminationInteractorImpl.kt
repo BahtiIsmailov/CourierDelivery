@@ -24,8 +24,9 @@ class ForcedTerminationInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun completeUnloading(data: String): Completable {
-        return switchScreenInTransit()
+    override fun completeUnloading(currentOfficeId: Int, data: String): Completable {
+        return switchScreenUnloading(currentOfficeId)
+            .andThen(switchScreenInTransit(currentOfficeId))
             .andThen(getFlightId())
             .flatMapCompletable { flightsLogs(it, data) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
@@ -37,8 +38,12 @@ class ForcedTerminationInteractorImpl(
 
     private fun getFlightId() = appLocalRepository.readFlight().map { it.id }
 
-    private fun switchScreenInTransit(): Completable {
-        return screenManager.saveState(FlightStatus.INTRANSIT)
+    private fun switchScreenInTransit(currentOfficeId: Int): Completable {
+        return screenManager.saveState(FlightStatus.INTRANSIT, currentOfficeId)
+    }
+
+    private fun switchScreenUnloading(currentOfficeId: Int): Completable {
+        return screenManager.saveState(FlightStatus.UNLOADING, currentOfficeId)
     }
 
 }

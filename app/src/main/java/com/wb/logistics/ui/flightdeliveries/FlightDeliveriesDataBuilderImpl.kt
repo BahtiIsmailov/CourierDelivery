@@ -13,7 +13,17 @@ class FlightDeliveriesDataBuilderImpl(
         deliveryBoxGroupByOfficeEntity: DeliveryBoxGroupByOfficeEntity,
     ): BaseItem {
         with(deliveryBoxGroupByOfficeEntity) {
-            if (returnedCount > 0 || deliveredCount > 0) {
+            if (visitedAt.isEmpty()) {
+                return FlightDeliveriesItem(
+                    address = dstFullAddress,
+                    deliverCount = resourceProvider.getDeliverCount(deliverCount),
+                    returnedCount =
+                    if (returnCount > 0) resourceProvider.getReturnCount(returnCount)
+                    else resourceProvider.getEmptyCount(),
+                    isEnabled = true,
+                    idView = index
+                )
+            } else {
                 val returnCountText =
                     if (returnedCount > 0) resourceProvider.getReturnedCount(returnedCount)
                     else resourceProvider.getEmptyCount()
@@ -32,17 +42,6 @@ class FlightDeliveriesDataBuilderImpl(
                         returnCount = returnCountText,
                         idView = index)
                 }
-
-            } else {
-                return FlightDeliveriesItem(
-                    address = dstFullAddress,
-                    deliverCount = resourceProvider.getDeliverCount(deliverCount),
-                    returnedCount =
-                    if (returnCount > 0) resourceProvider.getReturnCount(returnCount)
-                    else resourceProvider.getEmptyCount(),
-                    isEnabled = true,
-                    idView = index
-                )
             }
         }
     }

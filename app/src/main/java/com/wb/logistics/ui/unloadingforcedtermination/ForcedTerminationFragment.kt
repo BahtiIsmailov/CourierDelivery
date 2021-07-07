@@ -100,4 +100,4 @@ class ForcedTerminationFragment : Fragment() {
 }
 
 @Parcelize
-data class ForcedTerminationParameters(val dstOfficeId: Int) : Parcelable
+data class ForcedTerminationParameters(val currentOfficeId: Int) : Parcelable

@@ -1,6 +1,6 @@
 package com.wb.logistics.db.entity.deliveryboxes
 
-data class FlightPickupPointBoxGroupByOfficeEntity(
+data class PickupPointBoxGroupByOfficeEntity(
 
     val officeName: String,
     val officeId: Int,

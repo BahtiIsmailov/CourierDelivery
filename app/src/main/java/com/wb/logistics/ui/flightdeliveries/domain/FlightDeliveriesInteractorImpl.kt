@@ -16,8 +16,13 @@ class FlightDeliveriesInteractorImpl(
     private val screenManager: ScreenManager,
 ) : FlightDeliveriesInteractor {
 
+    override fun updateFlight() = appRemoteRepository.flight()
+        .flatMapCompletable { appLocalRepository.saveFlightAndOffices(it.flight, it.offices) }
+        .compose(rxSchedulerFactory.applyCompletableSchedulers())
+
     override fun flightId(): Single<String> {
-        return appLocalRepository.readFlightId().compose(rxSchedulerFactory.applySingleSchedulers())
+        return appLocalRepository.readFlightId()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun getDeliveryBoxesGroupByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {

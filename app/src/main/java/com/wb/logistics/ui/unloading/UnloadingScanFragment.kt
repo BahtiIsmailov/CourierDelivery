@@ -219,4 +219,4 @@ class UnloadingScanFragment : Fragment() {
 }
 
 @Parcelize
-data class UnloadingScanParameters(val dstOfficeId: Int) : Parcelable
+data class UnloadingScanParameters(val currentOfficeId: Int) : Parcelable

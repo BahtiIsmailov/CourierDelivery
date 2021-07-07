@@ -36,6 +36,9 @@ interface FlightDao {
     @Query("SELECT * FROM FlightOfficeEntity WHERE office_id = :id")
     fun findFlightOffice(id: Int): Single<FlightOfficeEntity>
 
+    @Query("UPDATE FlightOfficeEntity SET visitedAt = :visitedAt WHERE office_id = :id")
+    fun updateFlightOfficeVisited(visitedAt: String, id: Int): Completable
+
     @Query("DELETE FROM FlightOfficeEntity")
     fun deleteAllFlightOffices()
 

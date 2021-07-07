@@ -9,5 +9,6 @@ data class DeliveryBoxGroupByOfficeEntity(
     val returnCount: Int,
     val deliveredCount: Int,
     val returnedCount: Int,
+    val visitedAt: String
 
     )

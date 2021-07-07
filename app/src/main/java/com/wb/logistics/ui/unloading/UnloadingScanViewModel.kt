@@ -67,23 +67,23 @@ class UnloadingScanViewModel(
     }
 
     private fun observeBackButton() {
-        addSubscription(interactor.observeCountUnloadReturnedBoxAndSwitchScreen(parameters.dstOfficeId)
+        addSubscription(interactor.observeCountUnloadReturnedBoxAndSwitchScreen(parameters.currentOfficeId)
             .subscribe({ _toolbarBackState.value = HideBackButtonState }, {}))
     }
 
     private fun initTitleToolbar() {
-        addSubscription(interactor.officeNameById(parameters.dstOfficeId).subscribe(
+        addSubscription(interactor.officeNameById(parameters.currentOfficeId).subscribe(
             {
                 _toolbarLabelState.value = Label(it)
             },
             {
                 _toolbarLabelState.value =
-                    Label(resourceProvider.getOfficeEmpty(parameters.dstOfficeId))
+                    Label(resourceProvider.getOfficeEmpty(parameters.currentOfficeId))
             }))
     }
 
     private fun observeUnloadProcess() {
-        addSubscription(interactor.observeUnloadingProcess(parameters.dstOfficeId)
+        addSubscription(interactor.observeUnloadingProcess(parameters.currentOfficeId)
             .doOnError { observeScanProcessError(it) }
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe({ observeScanProcessComplete(it) }) { observeScanProcessError(it) })
@@ -180,31 +180,26 @@ class UnloadingScanViewModel(
 
     fun onUnloadingListClicked() {
         _navigationEvent.value =
-            UnloadingScanNavAction.NavigateToUploadedBoxes(parameters.dstOfficeId)
+            UnloadingScanNavAction.NavigateToUploadedBoxes(parameters.currentOfficeId)
     }
 
     fun onReturnListClicked() {
         _navigationEvent.value =
-            UnloadingScanNavAction.NavigateToReturnBoxes(parameters.dstOfficeId)
+            UnloadingScanNavAction.NavigateToReturnBoxes(parameters.currentOfficeId)
     }
 
     fun onaHandleClicked() {
         _navigationEvent.value =
-            UnloadingScanNavAction.NavigateToHandleInput(parameters.dstOfficeId)
+            UnloadingScanNavAction.NavigateToHandleInput(parameters.currentOfficeId)
     }
 
     fun onCompleteClicked() {
-        addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
-            .subscribe({
-                if (it.isEmpty()) {
-                    addSubscription(interactor.completeUnloading().subscribe {
-                        _navigationEvent.value =
-                            UnloadingScanNavAction.NavigateToDelivery
-                    })
-                } else _navigationEvent.value =
-                    UnloadingScanNavAction.NavigateToForcedTermination(parameters.dstOfficeId)
-            }, {})
-        )
+        addSubscription(interactor.isUnloadingComplete(parameters.currentOfficeId)
+            .map {
+                if (it) UnloadingScanNavAction.NavigateToDelivery
+                else UnloadingScanNavAction.NavigateToForcedTermination(parameters.currentOfficeId)
+            }
+            .subscribe({ _navigationEvent.value = it }, {}))
     }
 
     fun onStopScanner() {

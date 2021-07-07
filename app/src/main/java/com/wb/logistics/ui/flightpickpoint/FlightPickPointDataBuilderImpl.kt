@@ -1,6 +1,6 @@
 package com.wb.logistics.ui.flightpickpoint
 
-import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveries.delegates.items.FlightDeliveriesRefreshItem
 import com.wb.logistics.ui.flightpickpoint.delegates.items.FlightPickPointItem
@@ -10,7 +10,7 @@ class FlightPickPointDataBuilderImpl(
 ) : FlightPickPointDataBuilder {
 
     override fun buildSuccessItem(
-        flightPickupPointBoxGroupByOffice: FlightPickupPointBoxGroupByOfficeEntity,
+        flightPickupPointBoxGroupByOffice: PickupPointBoxGroupByOfficeEntity,
         index: Int,
     ): BaseItem {
         with(flightPickupPointBoxGroupByOffice) {

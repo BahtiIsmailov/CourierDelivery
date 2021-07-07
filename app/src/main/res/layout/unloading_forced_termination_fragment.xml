@@ -90,7 +90,7 @@
         app:app_background="@drawable/progress_image_button_danger"
         app:app_icon="@drawable/ic_force_delivery"
         app:app_state="enable"
-        app:app_text="@string/force_termination_complete_delivery"
+        app:app_text="@string/force_termination_complete"
         app:app_text_color_disable="@color/button_gray_text_disable"
         app:app_text_color_enable="@color/button_gray_text_enable"
         app:app_text_color_progress="@color/button_gray_text_progress" />

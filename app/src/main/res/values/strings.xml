@@ -250,8 +250,10 @@
     <string name="force_termination_box_not_found">Коробки не найдены</string>
     <string name="force_termination_pvz">Нет возможности выгрузить на ПВЗ</string>
     <string name="force_termination_confirm">Подтвердить</string>
-    <string name="force_termination_complete_delivery">Завершить доставку</string>
+    <string name="force_termination_complete">Завершить</string>
     <string name="force_termination_empty" />
+
+    <string name="force_termination_complete_delivery">Завершить доставку</string>
 
     <string name="congratulation_label">Завершение доставки</string>
     <string name="congratulation_title">Вы завершили доставку</string>

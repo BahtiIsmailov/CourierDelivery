@@ -1,7 +1,7 @@
 package com.wb.logistics.ui.flightpickpoint.domain
 
 import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.rx.RxSchedulerFactory
@@ -21,7 +21,7 @@ class FlightPickPointInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun getAttachedBoxesGroupByOffice(): Single<List<FlightPickupPointBoxGroupByOfficeEntity>> {
+    override fun getAttachedBoxesGroupByOffice(): Single<List<PickupPointBoxGroupByOfficeEntity>> {
         return appLocalRepository.groupFlightPickupPointBoxGroupByOffice()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }

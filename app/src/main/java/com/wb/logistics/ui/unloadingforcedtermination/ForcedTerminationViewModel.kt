@@ -39,7 +39,7 @@ class ForcedTerminationViewModel(
     }
 
     private fun initAttachedBox() {
-        addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
+        addSubscription(interactor.observeAttachedBoxes(parameters.currentOfficeId)
             .switchMap { list ->
                 Observable.fromIterable(list.withIndex())
                     .map { dataBuilder.buildForcedTerminationItem(it) }.toList().toObservable()
@@ -53,8 +53,8 @@ class ForcedTerminationViewModel(
     }
 
     fun onCompleteClick(idx: Int) {
-        addSubscription(interactor.completeUnloading(
-            resourceProvider.getDataLogFormat(parameters.dstOfficeId.toString(),
+        addSubscription(interactor.completeUnloading(parameters.currentOfficeId,
+            resourceProvider.getDataLogFormat(parameters.currentOfficeId.toString(),
                 getCauseMessage(idx)))
             .subscribe(
                 { _navigateToBack.value = ForcedTerminationNavAction.NavigateToFlightDeliveries },

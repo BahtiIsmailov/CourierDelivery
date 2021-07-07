@@ -6,6 +6,8 @@ import io.reactivex.Single
 
 interface FlightDeliveriesInteractor {
 
+    fun updateFlight(): Completable
+
     fun flightId(): Single<String>
 
     fun getDeliveryBoxesGroupByOffice() : Single<List<DeliveryBoxGroupByOfficeEntity>>

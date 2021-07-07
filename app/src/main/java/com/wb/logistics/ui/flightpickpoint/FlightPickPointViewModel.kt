@@ -2,7 +2,7 @@ package com.wb.logistics.ui.flightpickpoint
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.wb.logistics.db.entity.deliveryboxes.FlightPickupPointBoxGroupByOfficeEntity
+import com.wb.logistics.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException
@@ -36,7 +36,7 @@ class FlightPickPointViewModel(
 
     val stateUIList = MutableLiveData<FlightPickPointUIListState>()
 
-    private var copyScannedBoxes = mutableListOf<FlightPickupPointBoxGroupByOfficeEntity>()
+    private var copyScannedBoxes = mutableListOf<PickupPointBoxGroupByOfficeEntity>()
 
     fun action(actionView: FlightPickPointUIAction) {
         when (actionView) {
@@ -98,18 +98,18 @@ class FlightPickPointViewModel(
             { fetchScannedBoxGroupByAddressError(it) })
     }
 
-    private fun convertToFlightPickPointUIListState(boxes: List<FlightPickupPointBoxGroupByOfficeEntity>) =
+    private fun convertToFlightPickPointUIListState(boxes: List<PickupPointBoxGroupByOfficeEntity>) =
         Single.zip(buildItems(boxes), count(boxes),
             { items, countBox -> FlightPickPointUIListState.ShowFlight(items, countBox) })
 
-    private fun buildItems(boxes: List<FlightPickupPointBoxGroupByOfficeEntity>) =
+    private fun buildItems(boxes: List<PickupPointBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes.withIndex())
-            .map { (index, item): IndexedValue<FlightPickupPointBoxGroupByOfficeEntity> ->
+            .map { (index, item): IndexedValue<PickupPointBoxGroupByOfficeEntity> ->
                 dataBuilder.buildSuccessItem(item, index)
             }
             .toList()
 
-    private fun count(boxes: List<FlightPickupPointBoxGroupByOfficeEntity>) =
+    private fun count(boxes: List<PickupPointBoxGroupByOfficeEntity>) =
         Observable.fromIterable(boxes)
             .map { it.deliverCount }
             .scan { v1, v2 -> v1 + v2 }

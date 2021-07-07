@@ -8,6 +8,6 @@ interface ForcedTerminationInteractor {
 
     fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<FlightBoxEntity>>
 
-    fun completeUnloading(data: String): Completable
+    fun completeUnloading(currentOfficeId: Int, data: String): Completable
 
 }
