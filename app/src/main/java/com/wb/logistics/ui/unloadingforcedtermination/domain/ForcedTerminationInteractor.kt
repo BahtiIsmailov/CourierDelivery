@@ -6,8 +6,8 @@ import io.reactivex.Observable
 
 interface ForcedTerminationInteractor {
 
-    fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<FlightBoxEntity>>
+    fun observeNotUnloadedBoxBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>>
 
-    fun completeUnloading(currentOfficeId: Int, data: String): Completable
+    fun completeUnloading(currentOfficeId: Int, dataLog: String): Completable
 
 }

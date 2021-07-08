@@ -18,22 +18,27 @@ class ForcedTerminationInteractorImpl(
     private val screenManager: ScreenManager,
 ) : ForcedTerminationInteractor {
 
-    override fun observeAttachedBoxes(dstOfficeId: Int): Observable<List<FlightBoxEntity>> {
-        return appLocalRepository.observeTakeOnFlightBoxesByOfficeId(dstOfficeId)
+    override fun observeNotUnloadedBoxBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>> {
+        return appLocalRepository.observeTakeOnFlightBoxesByOfficeId(currentOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun completeUnloading(currentOfficeId: Int, data: String): Completable {
-        return switchScreenUnloading(currentOfficeId)
+    override fun completeUnloading(currentOfficeId: Int, dataLog: String): Completable {
+        val date = timeManager.getOffsetLocalTime()
+        return insertNotUnloadingBoxToDeliveryError(currentOfficeId)
+            .andThen(switchScreenUnloading(currentOfficeId))
             .andThen(switchScreenInTransit(currentOfficeId))
             .andThen(getFlightId())
-            .flatMapCompletable { flightsLogs(it, data) }
+            .flatMapCompletable { flightsLogs(it, date, dataLog) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun flightsLogs(it: Int, data: String) =
-        appRemoteRepository.flightsLogs(it, timeManager.getOffsetLocalTime(), data)
+    private fun insertNotUnloadingBoxToDeliveryError(currentOfficeId: Int) =
+        appLocalRepository.insertNotUnloadingBoxToDeliveryErrorByOfficeId(currentOfficeId)
+
+    private fun flightsLogs(it: Int, date: String, dataLog: String) =
+        appRemoteRepository.flightsLogs(it, date, dataLog)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     private fun getFlightId() = appLocalRepository.readFlight().map { it.id }

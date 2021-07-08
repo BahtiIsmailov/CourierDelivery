@@ -67,28 +67,44 @@ class UnloadingInteractorImpl(
                 when {
                     findFlightBox is Optional.Success -> {
                         with(findFlightBox) {
-                            if (currentOfficeId == data.dstOffice.id) { //если это коробка для выгрузки на ПВЗ снятие с баланса
-                                return@flatMap unloadTakeOnFlightBox(updatedAt,
-                                    flightId,
-                                    isManualInput,
-                                    currentOfficeId)
-                            } else if (currentOfficeId == data.srcOffice.id) { //если это возвратная коробка значит это повторное сканирование постановка на баланс
-                                val putBoxToPvzBalance =
-                                    loadPvzScanRemote(flightId.toString(), //постановка на баланс коробки с ПВЗ
-                                        data.barcode,
+                            when (currentOfficeId) {
+                                data.dstOffice.id -> { //если это коробка для выгрузки на ПВЗ снятие с баланса
+                                    return@flatMap unloadTakeOnFlightBox(updatedAt,
+                                        flightId,
                                         isManualInput,
-                                        updatedAt,
                                         currentOfficeId)
-                                val boxReturnAdded =
-                                    Observable.just(UnloadingAction.BoxReturnAdded(barcodeScanned))
-                                return@flatMap putBoxToPvzBalance.andThen(boxReturnAdded)
-                            } else { //коробка с другого ПВЗ вернуть в машину
-                                return@flatMap boxNotBelongPvzTracker(barcodeScanned,
-                                    isManualInput,
-                                    updatedAt,
-                                    currentOfficeId,
-                                    flightId,
-                                    data.dstOffice.fullAddress)
+                                }
+                                data.srcOffice.id -> { //если это возвратная коробка значит это повторное сканирование постановка на баланс
+                                    val putBoxToPvzBalance =
+                                        loadPvzScanRemote(flightId.toString(), //постановка на баланс коробки с ПВЗ
+                                            data.barcode,
+                                            isManualInput,
+                                            updatedAt,
+                                            currentOfficeId)
+                                    val boxReturnAdded =
+                                        Observable.just(UnloadingAction.BoxReturnAdded(
+                                            barcodeScanned))
+                                    return@flatMap putBoxToPvzBalance.andThen(boxReturnAdded)
+                                }
+                                else -> { //коробка с другого ПВЗ вернуть в машину
+                                    if (findFlightBox.data.onBoard) { // коробка еще в машине - коробка не принадлежит ПВЗ
+                                        return@flatMap boxNotBelongPvzTracker(barcodeScanned,
+                                            isManualInput,
+                                            updatedAt,
+                                            currentOfficeId,
+                                            flightId,
+                                            data.dstOffice.fullAddress)
+                                    } else { // коробку уже выгрузили - коробку уже выгрузили на другом ПВЗ
+                                        return@flatMap boxWasUnloadedAnotherPvzScan(
+                                            barcodeScanned,
+                                            isManualInput,
+                                            updatedAt,
+                                            currentOfficeId,
+                                            flightId,
+                                            data.dstOffice.fullAddress,
+                                            findFlightBox.data)
+                                    }
+                                }
                             }
                         }
                     }
@@ -116,25 +132,29 @@ class UnloadingInteractorImpl(
                         return@flatMap appRemoteRepository.boxInfo(flightId.toString())
                             .flatMapObservable {
                                 if (it.box is Optional.Success) { //получена информация по коробке
-                                    if (currentOfficeId == it.box.data.dstOffice.id) { //коробку нужно выгрузить на ПВЗ
-                                        it.box.loadUnloadBoxByInfo(barcodeScanned,
-                                            updatedAt,
-                                            flightId,
-                                            isManualInput,
-                                            currentOfficeId)
-                                    } else if (currentOfficeId == it.box.data.srcOffice.id) { //коробку нужно забрать с ПВЗ
-                                        it.box.loadReturnBoxByInfo(barcodeScanned,
-                                            updatedAt,
-                                            flightId,
-                                            isManualInput,
-                                            currentOfficeId)
-                                    } else { //коробка не принадлежит ПВЗ
-                                        boxNotBelongPvzTracker(barcodeScanned,
-                                            isManualInput,
-                                            updatedAt,
-                                            currentOfficeId,
-                                            flightId,
-                                            it.box.data.dstOffice.fullAddress)
+                                    when (currentOfficeId) {
+                                        it.box.data.dstOffice.id -> { //коробку нужно выгрузить на ПВЗ
+                                            it.box.loadUnloadBoxByInfo(barcodeScanned,
+                                                updatedAt,
+                                                flightId,
+                                                isManualInput,
+                                                currentOfficeId)
+                                        }
+                                        it.box.data.srcOffice.id -> { //коробку нужно забрать с ПВЗ
+                                            it.box.loadReturnBoxByInfo(barcodeScanned,
+                                                updatedAt,
+                                                flightId,
+                                                isManualInput,
+                                                currentOfficeId)
+                                        }
+                                        else -> { //коробка не принадлежит ПВЗ
+                                            boxNotBelongPvzTracker(barcodeScanned,
+                                                isManualInput,
+                                                updatedAt,
+                                                currentOfficeId,
+                                                flightId,
+                                                it.box.data.dstOffice.fullAddress)
+                                        }
                                     }
                                 } else { //информация по коробке не найдена
                                     appRemoteRepository.putBoxTracker(barcodeScanned,
@@ -143,15 +163,8 @@ class UnloadingInteractorImpl(
                                         currentOfficeId,
                                         flightId)
                                         .onErrorComplete()
-                                        .andThen(appLocalRepository.insertDeliveryErrorBoxEntity(
-                                            DeliveryErrorBoxEntity(
-                                                barcode = barcodeScanned,
-                                                currentOfficeId = currentOfficeId,
-                                                updatedAt = updatedAt,
-                                                fullAddress = "")))
                                         .andThen(Observable.just(UnloadingAction.BoxInfoEmpty(
                                             barcodeScanned)))
-
                                 }
                             }
                             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -160,6 +173,31 @@ class UnloadingInteractorImpl(
             }
             .startWith(UnloadingAction.Init)
     }
+
+    private fun boxWasUnloadedAnotherPvzScan(
+        barcode: String,
+        isManualInput: Boolean,
+        updatedAt: String,
+        currentOfficeId: Int,
+        flightId: Int,
+        fullAddress: String,
+        flightBox: FlightBoxEntity,
+    ) = appRemoteRepository.loadPvzScan(flightId.toString(),
+        barcode,
+        isManualInput,
+        updatedAt,
+        currentOfficeId)
+        .onErrorResumeNext { //оборачиваем сетевую ошибку 400
+            if (it is BadRequestException) Completable.complete()
+            else throw it
+        }
+        .andThen(appLocalRepository.insertDeliveryErrorBoxEntity(
+            DeliveryErrorBoxEntity(barcode = barcode, currentOfficeId = currentOfficeId)))
+        .andThen(appLocalRepository.saveFlightBox(flightBox.copy(updatedAt = updatedAt,
+            onBoard = true,
+            status = BoxStatus.TAKE_ON_FLIGHT.ordinal)))
+        .andThen(boxWasUnloadedAnotherPvz(barcode, fullAddress))
+        .compose(rxSchedulerFactory.applyObservableSchedulers())
 
     private fun boxNotBelongPvzTracker(
         barcode: String,
@@ -177,17 +215,14 @@ class UnloadingInteractorImpl(
             if (it is BadRequestException) Completable.complete()
             else throw it
         }
-        .andThen(appLocalRepository.insertDeliveryErrorBoxEntity(
-            DeliveryErrorBoxEntity(
-                barcode = barcode,
-                currentOfficeId = currentOfficeId,
-                updatedAt = updatedAt,
-                fullAddress = fullAddress)))
         .andThen(boxDoesNotBelongPvz(barcode, fullAddress))
         .compose(rxSchedulerFactory.applyObservableSchedulers())
 
     private fun boxDoesNotBelongPvz(barcodeScanned: String, fullAddress: String) =
         Observable.just(UnloadingAction.BoxDoesNotBelongPvz(barcodeScanned, fullAddress))
+
+    private fun boxWasUnloadedAnotherPvz(barcodeScanned: String, fullAddress: String) =
+        Observable.just(UnloadingAction.BoxWasUnloadedAnotherPvz(barcodeScanned, fullAddress))
 
     private fun Optional.Success<FlightBoxEntity>.unloadTakeOnFlightBox(
         updatedAt: String,

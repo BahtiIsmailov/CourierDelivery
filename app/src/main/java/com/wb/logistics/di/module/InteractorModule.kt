@@ -19,12 +19,12 @@ import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
 import com.wb.logistics.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractor
 import com.wb.logistics.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractorImpl
-import com.wb.logistics.ui.flightloader.domain.FlightsLoaderInteractor
-import com.wb.logistics.ui.flightloader.domain.FlightsLoaderInteractorImpl
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractor
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractorImpl
 import com.wb.logistics.ui.flights.domain.FlightsInteractor
 import com.wb.logistics.ui.flights.domain.FlightsInteractorImpl
+import com.wb.logistics.ui.flightsloader.domain.FlightsLoaderInteractor
+import com.wb.logistics.ui.flightsloader.domain.FlightsLoaderInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerRepository

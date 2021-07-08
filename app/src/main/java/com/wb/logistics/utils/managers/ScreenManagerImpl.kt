@@ -10,7 +10,7 @@ import com.wb.logistics.network.api.app.remote.flightsstatus.StatusOfficeLocatio
 import com.wb.logistics.network.api.app.remote.flightsstatus.StatusStateEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
-import com.wb.logistics.ui.flightloader.FlightLoaderFragmentDirections
+import com.wb.logistics.ui.flightsloader.FlightLoaderFragmentDirections
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import com.wb.logistics.utils.prefs.SharedWorker
 import io.reactivex.Completable

@@ -31,15 +31,15 @@ class ForcedTerminationViewModel(
 
     init {
         initTitle()
-        initAttachedBox()
+        initNotUnloadedBox()
     }
 
     private fun initTitle() {
         _boxesState.value = ForcedTerminationState.Title(resourceProvider.getLabel())
     }
 
-    private fun initAttachedBox() {
-        addSubscription(interactor.observeAttachedBoxes(parameters.currentOfficeId)
+    private fun initNotUnloadedBox() {
+        addSubscription(interactor.observeNotUnloadedBoxBoxes(currentOffice())
             .switchMap { list ->
                 Observable.fromIterable(list.withIndex())
                     .map { dataBuilder.buildForcedTerminationItem(it) }.toList().toObservable()
@@ -53,13 +53,15 @@ class ForcedTerminationViewModel(
     }
 
     fun onCompleteClick(idx: Int) {
-        addSubscription(interactor.completeUnloading(parameters.currentOfficeId,
-            resourceProvider.getDataLogFormat(parameters.currentOfficeId.toString(),
-                getCauseMessage(idx)))
+        val dataLog =
+            resourceProvider.getDataLogFormat(currentOffice().toString(), getCauseMessage(idx))
+        addSubscription(interactor.completeUnloading(currentOffice(), dataLog)
             .subscribe(
                 { _navigateToBack.value = ForcedTerminationNavAction.NavigateToFlightDeliveries },
                 { completeUnloadingError(it) }))
     }
+
+    private fun currentOffice() = parameters.currentOfficeId
 
     private fun completeUnloadingError(throwable: Throwable) {
         val message = when (throwable) {
@@ -76,7 +78,6 @@ class ForcedTerminationViewModel(
 
     private fun getCauseMessage(idx: Int) = when (idx) {
         0 -> resourceProvider.getBoxNotFound()
-        1 -> resourceProvider.getNotPickupPoint()
         else -> resourceProvider.getEmpty()
     }
 

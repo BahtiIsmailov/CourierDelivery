@@ -1,6 +1,5 @@
-package com.wb.logistics.ui.flightloader.domain
+package com.wb.logistics.ui.flightsloader.domain
 
-import androidx.navigation.NavDirections
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
@@ -8,6 +7,7 @@ import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -25,15 +25,33 @@ class FlightsLoaderInteractorImpl(
         return authRemoteRepository.userInfo().compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun navigateTo(): Single<NavDirections> {
+    override fun updateFlight(): Single<FlightDefinitionAction> {
+        clearDB()
+        return appRemoteRepository.flight()
+            .flatMap {
+                if (it.flight.id == 0) {
+                    flightEmpty()
+                } else {
+                    appLocalRepository.saveFlightAndOffices(it.flight, it.offices)
+                        .andThen(navigateTo())
+                }
+            }
+            .doOnError { LogUtils { logDebugApp(it.toString()) } }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    private fun flightEmpty() = Single.just(FlightDefinitionAction.FlightEmpty)
+
+    private fun clearDB() {
         appLocalRepository.deleteAllFlight()
         appLocalRepository.deleteFlightOffices()
         appLocalRepository.deleteAllFlightBoxes()
         appLocalRepository.deleteAllWarehouseMatchingBox()
         appLocalRepository.deleteAllPvzMatchingBox()
+    }
 
-
-        return updateFlightAndTime()
+    private fun navigateTo(): Single<FlightDefinitionAction> {
+        return updateTime()
             .andThen(appLocalRepository.readFlightId())
             .flatMap { flightId ->
                 Completable.mergeArray(
@@ -43,6 +61,7 @@ class FlightsLoaderInteractorImpl(
                     .toSingle { flightId }
             }
             .flatMap { navDirection(it) }
+            .map { FlightDefinitionAction.NavigateComplete(it) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -76,12 +95,8 @@ class FlightsLoaderInteractorImpl(
         return appLocalRepository.saveFlightBoxes(flightBoxesEntity)
     }
 
-    private fun updateFlightAndTime() = Completable.mergeArray(flight(), time())
-
-    private fun time() = appRemoteRepository.time()
+    private fun updateTime() = appRemoteRepository.time()
         .flatMapCompletable { Completable.fromAction { timeManager.saveNetworkTime(it.currentTime) } }
 
-    private fun flight() = appRemoteRepository.flight()
-        .flatMapCompletable { appLocalRepository.saveFlightAndOffices(it.flight, it.offices) }
 
 }

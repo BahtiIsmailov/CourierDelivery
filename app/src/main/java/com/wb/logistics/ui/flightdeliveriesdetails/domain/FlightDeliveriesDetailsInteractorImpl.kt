@@ -11,11 +11,11 @@ class FlightDeliveriesDetailsInteractorImpl(
 
     override fun getUnloadedAndReturnBoxesGroupByOffice(currentOfficeId: Int): Single<UnloadedAndReturnBoxesGroupByOffice> {
         return Single.zip(
-            appLocalRepository.findDeliveryErrorBoxByOfficeId(currentOfficeId),
-            appLocalRepository.observeUnloadedFlightBoxesByOfficeId(currentOfficeId).firstOrError(),
+            appLocalRepository.observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId)
+                .firstOrError(),
             appLocalRepository.observeReturnedFlightBoxesByOfficeId(currentOfficeId).firstOrError(),
-            { errorBoxes, unloadedBoxes, returnBoxes ->
-                UnloadedAndReturnBoxesGroupByOffice(errorBoxes, unloadedBoxes, returnBoxes)
+            { unloadedBoxes, returnBoxes ->
+                UnloadedAndReturnBoxesGroupByOffice(unloadedBoxes, returnBoxes)
             }
         ).compose(rxSchedulerFactory.applySingleSchedulers())
     }

@@ -117,6 +117,13 @@ class UnloadingScanViewModel(
                 _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
                 _infoState.value = UnloadingScanInfoState.UnloadDeny(it.unloadingAction.barcode)
             }
+            is UnloadingAction.BoxWasUnloadedAnotherPvz -> {
+                _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
+                _navigationEvent.value = navigateToUnloadingBoxNotBelongPvz(it.unloadingAction)
+                _unloadedState.value = UnloadingScanBoxState.Error(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.UnloadDeny(it.unloadingAction.barcode)
+            }
             is UnloadingAction.BoxInfoEmpty -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
                 _navigationEvent.value = navigateToUnloadingBoxInfoEmpty(it.unloadingAction)
@@ -157,6 +164,13 @@ class UnloadingScanViewModel(
             unloadingAction.barcode,
             unloadingAction.address)
 
+    private fun navigateToUnloadingBoxNotBelongPvz(unloadingAction: UnloadingAction.BoxWasUnloadedAnotherPvz) =
+        UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
+            resourceProvider.getBoxNotBelongPvzTitle(),
+            resourceProvider.getBoxNotBelongPvzDescription(),
+            unloadingAction.barcode,
+            unloadingAction.address)
+
     private fun navigateToUnloadingBoxInfoEmpty(unloadingAction: UnloadingAction.BoxInfoEmpty) =
         UnloadingScanNavAction.NavigateToUnloadingBoxNotBelongPvz(
             resourceProvider.getBoxNotBelongInfoTitle(),
@@ -165,6 +179,7 @@ class UnloadingScanViewModel(
             resourceProvider.getBoxNotInfoAddress())
 
     private fun observeScanProcessError(throwable: Throwable) {
+        LogUtils { logDebugApp(throwable.toString()) }
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message

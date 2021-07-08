@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.flightloader
+package com.wb.logistics.ui.flightsloader
 
 import android.content.Context
 import com.wb.logistics.R

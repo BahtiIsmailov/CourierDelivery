@@ -89,6 +89,7 @@ interface FlightBoxDao {
     fun observeAttachedBox(): Flowable<List<FlightBoxEntity>>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE dst_office_id = :currentOfficeId AND onBoard = 1 AND status = 3")
-    fun observeFilterByOfficeIdAttachedBoxes(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
+    fun observeTakeOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
+
 
 }

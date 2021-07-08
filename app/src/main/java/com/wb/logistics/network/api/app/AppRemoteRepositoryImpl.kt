@@ -47,7 +47,10 @@ class AppRemoteRepositoryImpl(
 
     override fun flight(): Single<FlightDataEntity> {
         return remote.flight(apiVersion())
-            .map { FlightDataEntity(convertFlight(it), convertOffices(it.offices, it.id)) }
+            .map {
+                FlightDataEntity(convertFlight(it),
+                    convertOffices(it.offices, it.id ?: 0))
+            }
     }
 
     override fun flightsLogs(flightId: Int, createdAt: String, data: String): Completable {
@@ -57,26 +60,26 @@ class AppRemoteRepositoryImpl(
     private fun convertFlight(flightRemote: FlightResponse) = with(flightRemote) {
         with(flightRemote) {
             FlightEntity(
-                id = id,
-                gate = gate,
+                id = id ?: 0,
+                gate = gate ?: 0,
                 dc = convertDc(dc),
                 driver = convertDriver(driver),
                 route = convertRoute(route),
                 car = convertCar(car),
-                plannedDate = plannedDate,
+                plannedDate = plannedDate ?: "",
                 startedDate = startedDate ?: "",
-                status = status,
+                status = status ?: "",
                 location = convertLocation(location)
             )
         }
     }
 
     private fun convertOffices(
-        offices: List<FlightOfficeResponse>,
+        offices: List<FlightOfficeResponse>?,
         flightId: Int,
     ): List<FlightOfficeEntity> {
         val officesEntity = mutableListOf<FlightOfficeEntity>()
-        offices.forEach { office ->
+        offices?.forEach { office ->
             LogUtils { logDebugApp(office.toString()) }
             officesEntity.add(with(office) {
                 FlightOfficeEntity(
@@ -93,17 +96,31 @@ class AppRemoteRepositoryImpl(
         return officesEntity
     }
 
-    private fun convertDc(dc: FlightDcResponse): DcEntity = with(dc) {
-        DcEntity(id = id,
-            name = name,
-            fullAddress = fullAddress,
-            longitude = long,
-            latitude = lat)
-    }
+    private fun convertDc(dc: FlightDcResponse?): DcEntity =
+        if (dc == null) {
+            DcEntity(id = 0,
+                name = "",
+                fullAddress = "",
+                longitude = 0.0,
+                latitude = 0.0)
+        } else {
+            with(dc) {
+                DcEntity(id = id,
+                    name = name,
+                    fullAddress = fullAddress,
+                    longitude = long,
+                    latitude = lat)
+            }
+        }
 
-    private fun convertDriver(driver: FlightDriverResponse): DriverEntity = with(driver) {
-        DriverEntity(id = id, name = name, fullAddress = fullAddress)
-    }
+    private fun convertDriver(driver: FlightDriverResponse?): DriverEntity =
+        if (driver == null) {
+            DriverEntity(id = 0, name = "", fullAddress = "")
+        } else {
+            with(driver) {
+                DriverEntity(id = id, name = name, fullAddress = fullAddress)
+            }
+        }
 
     private fun convertRoute(route: FlightRouteResponse?): RouteEntity? =
         if (route == null) null else with(route) {
@@ -112,9 +129,10 @@ class AppRemoteRepositoryImpl(
                 name = name)
         }
 
-    private fun convertCar(car: FlightCarResponse): CarEntity = with(car) {
-        CarEntity(id = id, plateNumber = plateNumber)
-    }
+    private fun convertCar(car: FlightCarResponse?): CarEntity =
+        if (car == null) CarEntity(id = 0, plateNumber = "") else with(car) {
+            CarEntity(id = id, plateNumber = plateNumber)
+        }
 
     private fun convertOfficeLocation(officeLocation: FlightOfficeLocationResponse?) =
         OfficeLocationEntity(officeLocation?.id ?: 0)

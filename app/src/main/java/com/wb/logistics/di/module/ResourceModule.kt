@@ -9,10 +9,10 @@ import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetai
 import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationResourceProvider
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
-import com.wb.logistics.ui.flightloader.FlightLoaderProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
-import com.wb.logistics.ui.flightsempty.FlightsEmptyResourceProvider
+import com.wb.logistics.ui.flightserror.FlightsErrorResourceProvider
+import com.wb.logistics.ui.flightsloader.FlightLoaderProvider
 import com.wb.logistics.ui.splash.AppResourceProvider
 import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
@@ -33,8 +33,8 @@ val resourceModule = module {
         return FlightsResourceProvider(application)
     }
 
-    fun provideFlightEmptyResourceProvider(application: Application): FlightsEmptyResourceProvider {
-        return FlightsEmptyResourceProvider(application)
+    fun provideFlightEmptyResourceProvider(application: Application): FlightsErrorResourceProvider {
+        return FlightsErrorResourceProvider(application)
     }
 
     fun provideReceptionResourceProvider(application: Application): DcLoadingResourceProvider {

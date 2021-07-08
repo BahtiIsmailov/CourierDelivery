@@ -20,10 +20,10 @@ class FlightDeliveriesDetailsResourceProvider(private val context: Context) {
     fun getCountTitle(count: Int): String =
         context.getString(R.string.flight_deliveries_details_title_count, count)
 
-    fun getInfoEmptyPvzError(date: String, time: String) =
+    fun getNotFoundOnUnloading(date: String, time: String) =
         context.getString(R.string.force_termination_info_empty_data, date, time)
 
-    fun getNotBelongPvzError(date: String, time: String, address: String) =
+    fun getTriedToUnload(date: String, time: String, address: String) =
         context.getString(R.string.force_termination_not_belong_data, date, time, address)
 
 }

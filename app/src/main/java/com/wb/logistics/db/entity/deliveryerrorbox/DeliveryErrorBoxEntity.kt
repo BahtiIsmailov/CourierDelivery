@@ -9,7 +9,5 @@ data class DeliveryErrorBoxEntity(
     @PrimaryKey
     val barcode: String,
     val currentOfficeId: Int,
-    val updatedAt: String,
-    val fullAddress: String,
 
-    )
+)

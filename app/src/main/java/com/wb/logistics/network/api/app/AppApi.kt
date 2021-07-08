@@ -33,7 +33,7 @@ interface AppApi {
     @GET("{version}/flight")
     fun flight(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<FlightResponse?>
+    ): Single<FlightResponse>
 
     @POST("{version}/flights-logs")
     fun flightsLogs(

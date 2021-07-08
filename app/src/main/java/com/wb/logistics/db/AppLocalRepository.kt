@@ -6,6 +6,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
+import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryUnloadingErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.flight.FlightOfficeEntity
@@ -130,7 +131,19 @@ interface AppLocalRepository {
 
     fun insertDeliveryErrorBoxEntity(deliveryErrorBoxEntity: DeliveryErrorBoxEntity): Completable
 
-    fun findDeliveryErrorBoxByOfficeId(currentOfficeId: Int): Single<List<DeliveryErrorBoxEntity>>
+    fun insertNotUnloadingBoxToDeliveryErrorByOfficeId(currentOfficeId: Int): Completable
+
+    @Deprecated("")
+    fun changeNotUnloadingBoxToFlightBoxesByOfficeId(
+        currentOfficeId: Int,
+        updatedAt: String,
+        onBoard: Boolean,
+        status: Int,
+    ): Completable
+
+    fun observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<DeliveryUnloadingErrorBoxEntity>>
+
+    fun observeDeliveryReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
     //==============================================================================================
 

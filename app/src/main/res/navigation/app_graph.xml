@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/flightLoaderFragment"
-        android:name="com.wb.logistics.ui.flightloader.FlightLoaderFragment"
+        android:name="com.wb.logistics.ui.flightsloader.FlightLoaderFragment"
         android:label=""
         tools:layout="@layout/flight_loader_fragment">
         <action
@@ -50,6 +50,13 @@
         <action
             android:id="@+id/action_flightLoaderFragment_to_congratulationFragment"
             app:destination="@id/congratulationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_flightLoaderFragment_to_flightsErrorFragment"
+            app:destination="@id/flightsErrorFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -432,5 +439,15 @@
         android:name="com.wb.logistics.ui.flightsempty.FlightsEmptyFragment"
         android:label="@string/flights_label"
         tools:layout="@layout/flights_empty_fragment" />
+    <fragment
+        android:id="@+id/flightsErrorFragment"
+        android:name="com.wb.logistics.ui.flightserror.FlightsErrorFragment"
+        android:label="@string/flights_label"
+        tools:layout="@layout/flights_error_fragment">
+        <argument
+            android:name="flights_error_key"
+            app:argType="com.wb.logistics.ui.flightserror.FlightsErrorParameters"
+            app:nullable="false" />
+    </fragment>
 
 </navigation>

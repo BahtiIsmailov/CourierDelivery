@@ -7,6 +7,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
 import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
 import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
+import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryUnloadingErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flight.FlightDataEntity
 import com.wb.logistics.db.entity.flight.FlightEntity
@@ -128,7 +129,7 @@ class AppLocalRepositoryImpl(
     }
 
     override fun observeTakeOnFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
-        return flightBoxDao.observeFilterByOfficeIdAttachedBoxes(currentOfficeId)
+        return flightBoxDao.observeTakeOnFlightBoxesByOfficeId(currentOfficeId)
     }
 
     override fun deleteAllFlightBoxes() {
@@ -266,8 +267,28 @@ class AppLocalRepositoryImpl(
         return deliveryErrorBoxDao.insert(deliveryErrorBoxEntity)
     }
 
-    override fun findDeliveryErrorBoxByOfficeId(currentOfficeId: Int): Single<List<DeliveryErrorBoxEntity>> {
-        return deliveryErrorBoxDao.findDeliveryErrorBoxByOfficeId(currentOfficeId)
+    override fun insertNotUnloadingBoxToDeliveryErrorByOfficeId(currentOfficeId: Int): Completable {
+        return deliveryErrorBoxDao.insertNotUnloadingBoToDeliveryErrorByOfficeId(currentOfficeId)
+    }
+
+    override fun changeNotUnloadingBoxToFlightBoxesByOfficeId(
+        currentOfficeId: Int,
+        updatedAt: String,
+        onBoard: Boolean,
+        status: Int,
+    ): Completable {
+        return deliveryErrorBoxDao.changeNotUnloadingBoxToFlightBoxesByOfficeId(currentOfficeId,
+            updatedAt,
+            onBoard,
+            status)
+    }
+
+    override fun observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<DeliveryUnloadingErrorBoxEntity>> {
+        return deliveryErrorBoxDao.observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId)
+    }
+
+    override fun observeDeliveryReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
+        TODO("Not yet implemented")
     }
 
 }

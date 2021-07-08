@@ -14,9 +14,6 @@ class ForcedTerminationResourceProvider(private val context: Context) {
     fun getBoxNotFound() =
         context.getString(R.string.force_termination_box_not_found)
 
-    fun getNotPickupPoint() =
-        context.getString(R.string.force_termination_pvz)
-
     fun getEmpty() =
         context.getString(R.string.force_termination_empty)
 

@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.flightloader
+package com.wb.logistics.ui.flightsloader
 
 import android.os.Bundle
 import android.view.LayoutInflater

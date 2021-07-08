@@ -81,7 +81,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         navController.addOnDestinationChangedListener(onDestinationChangedListener)
 
         appBarConfiguration =
-            AppBarConfiguration(setOf(R.id.flightsFragment, R.id.flightsEmptyFragment),
+            AppBarConfiguration(setOf(R.id.flightsFragment,
+                R.id.flightsErrorFragment,
+                R.id.flightsEmptyFragment),
                 binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
@@ -191,7 +193,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.flightsEmptyFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
+            R.id.flightsEmptyFragment, R.id.flightsErrorFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
                 showExitDialog()
             }
             R.id.unloadingScanFragment -> {

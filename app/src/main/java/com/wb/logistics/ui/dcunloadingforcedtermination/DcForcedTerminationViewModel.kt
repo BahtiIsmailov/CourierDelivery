@@ -59,7 +59,6 @@ class DcForcedTerminationViewModel(
 
     private fun getCauseMessage(idx: Int) = when (idx) {
         0 -> resourceProvider.getBoxNotFound()
-        1 -> resourceProvider.getNotPickupPoint()
         else -> resourceProvider.getEmpty()
     }
 

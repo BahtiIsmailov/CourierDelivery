@@ -10,10 +10,12 @@ import com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationViewM
 import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesViewModel
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
-import com.wb.logistics.ui.flightloader.FlightLoaderViewModel
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointViewModel
 import com.wb.logistics.ui.flights.FlightsViewModel
 import com.wb.logistics.ui.flightsempty.FlightsEmptyViewModel
+import com.wb.logistics.ui.flightserror.FlightsErrorParameters
+import com.wb.logistics.ui.flightserror.FlightsErrorViewModel
+import com.wb.logistics.ui.flightsloader.FlightLoaderViewModel
 import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
 import com.wb.logistics.ui.splash.LoaderViewModel
@@ -48,6 +50,7 @@ val viewModelModule = module {
     viewModel { FlightLoaderViewModel(get(), get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get()) }
     viewModel { FlightsEmptyViewModel(get()) }
+    viewModel { (parameters: FlightsErrorParameters) -> FlightsErrorViewModel(parameters, get()) }
 
     viewModel { ScannerViewModel(get(), get()) }
     viewModel { DcLoadingScanViewModel(get(), get(), get()) }

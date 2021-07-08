@@ -8,6 +8,8 @@ sealed class UnloadingAction {
 
     data class BoxDoesNotBelongPvz(val barcode: String, val address: String) : UnloadingAction()
 
+    data class BoxWasUnloadedAnotherPvz(val barcode: String, val address: String) : UnloadingAction()
+
     data class BoxInfoEmpty(val barcode: String) : UnloadingAction()
 
     object Init : UnloadingAction()
