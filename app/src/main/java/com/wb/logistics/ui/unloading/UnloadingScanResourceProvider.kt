@@ -49,9 +49,9 @@ class UnloadingScanResourceProvider(private val context: Context) {
 
     fun getAccepted(count: Int, total: Int) = context.getString(R.string.unloading_box_accepted, count, total)
 
-    fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
-    fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
+    fun getScanDialogTitle() = context.getString(R.string.unloading_scan_dialog_title_error)
+    fun getScanDialogMessage() = context.getString(R.string.unloading_scan_dialog_message_error)
     fun getScanDialogButton() =
-        context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
+        context.getString(R.string.unloading_scan_dialog_positive_button_error)
 
 }

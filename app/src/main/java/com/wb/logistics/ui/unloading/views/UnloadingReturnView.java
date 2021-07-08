@@ -113,7 +113,7 @@ public class UnloadingReturnView extends FrameLayout {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
         undoIcon.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
-        listBoxTextView.setVisibility(INVISIBLE);
+        listBoxTextView.setVisibility(listVisible());
     }
 
     private void containsActiveState() {

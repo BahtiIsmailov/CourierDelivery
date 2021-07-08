@@ -141,6 +141,8 @@ interface AppLocalRepository {
         status: Int,
     ): Completable
 
+    fun deleteDeliveryErrorBoxByBarcode(barcode: String): Completable
+
     fun observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<DeliveryUnloadingErrorBoxEntity>>
 
     fun observeDeliveryReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>

@@ -84,6 +84,7 @@ class UnloadingScanViewModel(
 
     private fun observeUnloadProcess() {
         addSubscription(interactor.observeUnloadingProcess(parameters.currentOfficeId)
+            .distinctUntilChanged()
             .doOnError { observeScanProcessError(it) }
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe({ observeScanProcessComplete(it) }) { observeScanProcessError(it) })
@@ -179,7 +180,7 @@ class UnloadingScanViewModel(
             resourceProvider.getBoxNotInfoAddress())
 
     private fun observeScanProcessError(throwable: Throwable) {
-        LogUtils { logDebugApp(throwable.toString()) }
+        LogUtils { logDebugApp("observeScanProcessError " + throwable.toString()) }
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message

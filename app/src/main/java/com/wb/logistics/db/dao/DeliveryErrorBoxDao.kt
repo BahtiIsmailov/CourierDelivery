@@ -34,4 +34,7 @@ interface DeliveryErrorBoxDao {
     @Query("SELECT  FlightBox.barcode AS barcode, FlightBox.dst_office_id AS dstOfficeId, FlightBox.updatedAt AS updatedAt, FlightBox.dst_office_full_address as fullAddress, FlightBox.onBoard as onBoard, DeliveryError.currentOfficeId AS errorOfficeId, DeliveryError.fullAddress  as errorOfficeFullAddress FROM (SELECT * FROM FlightBoxEntity WHERE  dst_office_id = :currentOfficeId) AS FlightBox LEFT JOIN  (SELECT * FROM DeliveryErrorBoxEntity LEFT JOIN FlightOfficeEntity ON DeliveryErrorBoxEntity.currentOfficeId = FlightOfficeEntity.office_id) AS DeliveryError ON FlightBox.barcode = DeliveryError.barcode") // (SELECT fullAddress FROM FlightOfficeEntity WHERE FlightOfficeEntity.office_id = ) AS errorFullAddress //(SELECT currentOfficeId FROM DeliveryErrorBoxEntity WHERE DeliveryErrorBoxEntity.barcode = FlightBoxEntity.barcode) AS errorCurrentOfficeId
     fun observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<DeliveryUnloadingErrorBoxEntity>>
 
+    @Query("DELETE FROM DeliveryErrorBoxEntity WHERE barcode = :barcode")
+    fun deleteByBarcode(barcode: String): Completable
+
 }

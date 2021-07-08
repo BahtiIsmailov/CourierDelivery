@@ -6,6 +6,8 @@ import com.wb.logistics.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import com.wb.logistics.db.entity.flighboxes.*
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingDstOfficeEntity
+import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
 import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
@@ -241,12 +243,15 @@ class UnloadingInteractorImpl(
                 updatedAt = updatedAt,
                 status = BoxStatus.DELIVERED.ordinal,
                 onBoard = false))
+        val removeDeliveryErrorBox =
+            appLocalRepository.deleteDeliveryErrorBoxByBarcode(data.barcode)
         val boxUnloadAdded =
             Observable.just(UnloadingAction.BoxUnloadAdded(data.barcode))
         val switchScreenUnloading = switchScreenUnloading(currentOfficeId)
 
         return removeBoxFromBalance
             .andThen(saveFlightBox)
+            .andThen(removeDeliveryErrorBox)
             .andThen(switchScreenUnloading)
             .andThen(boxUnloadAdded)
     }
@@ -418,8 +423,30 @@ class UnloadingInteractorImpl(
     override fun removeReturnBoxes(currentOfficeId: Int, checkedBoxes: List<String>): Completable {
         return flight().flatMapCompletable { removeBoxes(it, currentOfficeId, checkedBoxes) }
             .andThen(appLocalRepository.findReturnFlightBoxes(checkedBoxes))
+            .flatMap { flightBoxes ->
+                Observable.fromIterable(flightBoxes).map { convertToPvzMatchingBox(it) }.toList()
+                    .flatMapCompletable {
+                        appLocalRepository.savePvzMatchingBoxes(it)
+                    }.toSingle { flightBoxes }
+            }
             .flatMapCompletable { appLocalRepository.deleteFlightBoxes(it) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun convertToPvzMatchingBox(flightBoxEntity: FlightBoxEntity): PvzMatchingBoxEntity {
+        return with(flightBoxEntity) {
+            PvzMatchingBoxEntity(barcode = barcode,
+                srcOffice = PvzMatchingSrcOfficeEntity(id = srcOffice.id,
+                    name = srcOffice.name,
+                    fullAddress = srcOffice.fullAddress,
+                    longitude = srcOffice.longitude,
+                    latitude = srcOffice.latitude),
+                dstOffice = PvzMatchingDstOfficeEntity(id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    longitude = dstOffice.longitude,
+                    latitude = dstOffice.latitude))
+        }
     }
 
     private fun removeBoxes(

@@ -113,14 +113,14 @@ public class UnloadingAcceptedView extends FrameLayout {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
         redoIcon.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
-        listBoxTextView.setVisibility(INVISIBLE);
+        listBoxTextView.setVisibility(listVisible());
     }
 
     private void containsCompleteActiveState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_complete_trans));
         redoIcon.setColorFilter(enableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
-        listBoxTextView.setVisibility(VISIBLE);
+        listBoxTextView.setVisibility(listVisible());
     }
 
     private void containsDenyState() {

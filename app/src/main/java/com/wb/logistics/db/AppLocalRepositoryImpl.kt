@@ -283,6 +283,10 @@ class AppLocalRepositoryImpl(
             status)
     }
 
+    override fun deleteDeliveryErrorBoxByBarcode(barcode: String): Completable {
+        return deliveryErrorBoxDao.deleteByBarcode(barcode)
+    }
+
     override fun observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<DeliveryUnloadingErrorBoxEntity>> {
         return deliveryErrorBoxDao.observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId)
     }
