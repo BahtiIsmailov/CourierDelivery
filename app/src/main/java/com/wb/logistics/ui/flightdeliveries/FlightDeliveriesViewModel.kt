@@ -111,12 +111,9 @@ class FlightDeliveriesViewModel(
 
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
-        if (item.deliveredCount > 0 || item.returnedCount > 0) {
-            _stateUINav.value =
-                FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
-        } else {
-            _stateUINav.value = FlightDeliveriesUINavState.NavigateToUpload(item.officeId)
-        }
+        _stateUINav.value = if (item.visitedAt.isEmpty()) {
+             FlightDeliveriesUINavState.NavigateToUpload(item.officeId)
+        } else FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
     }
 
     fun onCompleteDeliveryNegativeClick() {
