@@ -84,7 +84,6 @@ class UnloadingScanViewModel(
 
     private fun observeUnloadProcess() {
         addSubscription(interactor.observeUnloadingProcess(parameters.currentOfficeId)
-            .distinctUntilChanged()
             .doOnError { observeScanProcessError(it) }
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe({ observeScanProcessComplete(it) }) { observeScanProcessError(it) })

@@ -142,7 +142,9 @@
     <string name="dc_loading_boxes_remove_dialog_positive_button_error">Ok</string>
     <string name="dc_loading_boxes_dialog_remove_error">Коробки не удалены, повторите операцию позднее</string>
     <string name="dc_loading_boxes_time">%1$s • %2$s</string>
+    <string name="dc_loading_boxes_date_time">%1$s • %2$s</string>
     <string name="dc_loading_boxes_index">%1$d.</string>
+    <string name="dc_loading_boxes_index_barcode">%1$d. %2$s</string>
 
     <string name="confirm_info_dialog_button">Понятно</string>
 
@@ -227,6 +229,7 @@
     <string name="dc_unloading_box_already_unloaded">%1$s уже выгружена на РЦ</string>
     <string name="dc_unloading_box_unloaded">"%1$s выгрузите на РЦ"</string>
     <string name="dc_unloading_box_unloaded_count">%1$d/%2$d</string>
+    <string name="dc_unloading_box_not_belong">неизвестный ШК</string>
 
     <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
     <string name="unloading_handle_empty_list">Список пуст</string>

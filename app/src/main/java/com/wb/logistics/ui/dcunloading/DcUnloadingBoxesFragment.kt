@@ -45,7 +45,7 @@ class DcUnloadingBoxesFragment : Fragment() {
                 is DcUnloadingBoxesState.Title ->
                     (activity as NavToolbarListener).updateTitle(it.toolbarTitle)
                 is DcUnloadingBoxesState.BoxesComplete -> initBoxes(it.boxes)
-                DcUnloadingBoxesState.BoxesEmpty -> TODO()
+                DcUnloadingBoxesState.BoxesEmpty -> {}
             }
         }
 

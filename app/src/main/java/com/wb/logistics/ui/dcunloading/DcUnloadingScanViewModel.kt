@@ -6,6 +6,7 @@ import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
+import com.wb.logistics.ui.dcunloading.domain.DcUnloadingAction
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -35,13 +36,13 @@ class DcUnloadingScanViewModel(
     val soundEvent: LiveData<DcUnloadingScanSoundEvent>
         get() = _soundEvent
 
-    private val _unloadedState = MutableLiveData<DcUnloadingScanBoxState>()
-    val unloadedState: LiveData<DcUnloadingScanBoxState>
+    private val _unloadedState = MutableLiveData<DcUnloadedState>()
+    val unloadedState: LiveData<DcUnloadedState>
         get() = _unloadedState
 
-    private val _unloadedCounterState = MutableLiveData<DcUnloadingScanCounterBoxState>()
-    val unloadedCounterState: LiveData<DcUnloadingScanCounterBoxState>
-        get() = _unloadedCounterState
+    private val _infoState = MutableLiveData<DcUnloadingInfoState>()
+    val infoState: LiveData<DcUnloadingInfoState>
+        get() = _infoState
 
     private val _navigationEvent = SingleLiveEvent<DcUnloadingScanNavAction>()
     val navigationEvent: LiveData<DcUnloadingScanNavAction>
@@ -51,47 +52,80 @@ class DcUnloadingScanViewModel(
     val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
         get() = _navigateToMessageInfo
 
-
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
         observeScanProcess()
-        observeDcUnloadedBoxes()
     }
 
     private fun observeScanProcess() {
-        addSubscription(interactor.observeScanProcess()
+        addSubscription(interactor.observeUnloadingProcess()
             .doOnError { observeScanProcessError(it) }
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe(observeScanProcessComplete()) { observeScanProcessError(it) }
         )
     }
 
-    private fun observeScanProcessComplete(): (t: DcUnloadingData) -> Unit =
+    private fun observeScanProcessComplete(): (it: DcUnloadingData) -> Unit =
         {
-            when (it) {
-                is DcUnloadingData.BoxAlreadyUnloaded -> {
+            LogUtils { logDebugApp("observeScanProcessComplete " + it.toString()) }
+            val accepted =
+                resourceProvider.getAccepted(it.unloadedCounter.unloadedCount,
+                    it.unloadedCounter.unloadedCount + it.unloadedCounter.leftUnload)
+            when (it.dcUnloadingAction) {
+                is DcUnloadingAction.BoxAlreadyUnloaded -> {
                     _messageEvent.value =
                         DcUnloadingScanMessageEvent.BoxAlreadyUnloaded(
-                            resourceProvider.getBoxAlreadyUnloaded(it.barcode))
+                            resourceProvider.getBoxAlreadyUnloaded(it.dcUnloadingAction.barcode))
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
-                }
 
-                is DcUnloadingData.BoxUnloaded -> {
+                    _unloadedState.value = DcUnloadedState.Complete(accepted)
+                    _infoState.value = DcUnloadingInfoState.Complete(it.dcUnloadingAction.barcode)
+                }
+                is DcUnloadingAction.BoxUnloaded -> {
                     _messageEvent.value =
-                        DcUnloadingScanMessageEvent.BoxAdded(resourceProvider.getBoxUnloaded(it.barcode))
+                        DcUnloadingScanMessageEvent.BoxAdded(resourceProvider.getBoxUnloaded(it.dcUnloadingAction.barcode))
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxAdded
+                    _unloadedState.value = DcUnloadedState.Active(accepted)
+                    _infoState.value = DcUnloadingInfoState.Complete(it.dcUnloadingAction.barcode)
                 }
-
-                is DcUnloadingData.BoxDoesNotBelongDc -> {
+                is DcUnloadingAction.BoxDoesNotBelongDc -> {
                     _navigationEvent.value =
                         DcUnloadingScanNavAction.NavigateToUnloadingBoxNotBelongDc(
                             resourceProvider.getBoxNotFoundTitle())
                     _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
-                    _unloadedState.value =
-                        DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong("неизвестный ШК")
+                    _unloadedState.value = DcUnloadedState.Error(accepted)
+                    _infoState.value =
+                        DcUnloadingInfoState.Error(resourceProvider.getBoxNotBelong())
                 }
-
+                DcUnloadingAction.BoxDoesNotBelongFlight -> {
+                    _navigationEvent.value =
+                        DcUnloadingScanNavAction.NavigateToUnloadingBoxNotBelongDc(
+                            resourceProvider.getBoxNotFoundTitle())
+                    _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
+                    _unloadedState.value = DcUnloadedState.Error(accepted)
+                    _infoState.value =
+                        DcUnloadingInfoState.Error(resourceProvider.getBoxNotBelong())
+                }
+                is DcUnloadingAction.BoxDoesNotBelongInfoEmpty -> {
+                    _navigationEvent.value =
+                        DcUnloadingScanNavAction.NavigateToUnloadingBoxNotBelongDc(
+                            resourceProvider.getBoxNotFoundTitle())
+                    _soundEvent.value = DcUnloadingScanSoundEvent.BoxSkipAdded
+                    _unloadedState.value = DcUnloadedState.Error(accepted)
+                    _infoState.value =
+                        DcUnloadingInfoState.Error(resourceProvider.getBoxNotBelong())
+                }
+                DcUnloadingAction.Init -> {
+                    if (it.unloadedCounter.unloadedCount > 0) {
+                        _unloadedState.value = DcUnloadedState.Active(accepted)
+                        _infoState.value =
+                            DcUnloadingInfoState.Complete(it.unloadedCounter.barcode ?: "")
+                    } else {
+                        _unloadedState.value = DcUnloadedState.Complete(accepted)
+                        _infoState.value = DcUnloadingInfoState.Empty
+                    }
+                }
             }
         }
 
@@ -103,23 +137,6 @@ class DcUnloadingScanViewModel(
         }
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
-    }
-
-    private fun observeDcUnloadedBoxes() {
-        addSubscription(interactor.observeDcUnloadedBoxes().subscribe({
-            val counter = it.first
-            val barcode = it.second
-            val accepted = with(counter) {
-                resourceProvider.getBoxUnloadedCount(dcUnloadingCount,
-                    dcUnloadingCount + dcReturnCount)
-            }
-            _unloadedCounterState.value = if (counter.dcUnloadingCount == 0)
-                DcUnloadingScanCounterBoxState.DcUnloadedBoxesEmpty(accepted)
-            else DcUnloadingScanCounterBoxState.DcUnloadedBoxesComplete(accepted, barcode)
-            // TODO: 28.04.2021 выполнить автоматический переход после выгрузки всех коробок
-        }, {
-            LogUtils { logDebugApp(it.toString()) }
-        }))
     }
 
     fun update() {
@@ -139,10 +156,10 @@ class DcUnloadingScanViewModel(
     }
 
     fun onCompleteClicked() {
-        addSubscription(interactor.observeDcUnloadedBoxes().subscribe({
-            _navigationEvent.value = if (it.first.dcReturnCount == 0)
-                DcUnloadingScanNavAction.NavigateToDcCongratulation
-            else DcUnloadingScanNavAction.NavigateToDcForcedTermination
+        addSubscription(interactor.isBoxesUnloaded().subscribe({
+            _navigationEvent.value =
+                if (it) DcUnloadingScanNavAction.NavigateToDcCongratulation
+                else DcUnloadingScanNavAction.NavigateToDcForcedTermination
         }, {}))
     }
 

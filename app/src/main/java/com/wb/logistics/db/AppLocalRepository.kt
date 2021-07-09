@@ -14,6 +14,8 @@ import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
 import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
+import com.wb.logistics.ui.dcunloading.domain.DcUnloadingCounterEntity
+import com.wb.logistics.ui.unloadingcongratulation.domain.DeliveryResult
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -105,6 +107,10 @@ interface AppLocalRepository {
 
     fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>>
 
+    fun getNotDelivered(): Single<Int>
+
+    fun getCongratulationDelivered(): Single<DeliveryResult>
+
     //==============================================================================================
     //DcUnloadedBox
     //==============================================================================================
@@ -121,11 +127,16 @@ interface AppLocalRepository {
 
     fun findDcReturnBoxes(currentOfficeId: Int): Single<List<FlightBoxEntity>>
 
+    @Deprecated("")
     fun observeDcUnloadingScanBox(currentOfficeId: Int): Flowable<DcUnloadingScanBoxEntity>
 
     fun observeDcUnloadingBarcodeBox(currentOfficeId: Int): Flowable<String>
 
     fun removeDcUnloadedReturnBox(flightBoxEntity: FlightBoxEntity): Completable
+
+    //==============================================================================================
+
+    fun dcUnloadedBoxes(): Single<Int>
 
     //==============================================================================================
 
@@ -146,6 +157,10 @@ interface AppLocalRepository {
     fun observeDeliveryUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<DeliveryUnloadingErrorBoxEntity>>
 
     fun observeDeliveryReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
+
+    //==============================================================================================
+
+    fun observeDcUnloadingCounter(): Flowable<DcUnloadingCounterEntity>
 
     //==============================================================================================
 

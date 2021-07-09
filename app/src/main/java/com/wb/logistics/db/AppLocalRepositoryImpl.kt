@@ -16,6 +16,8 @@ import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
 import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
+import com.wb.logistics.ui.dcunloading.domain.DcUnloadingCounterEntity
+import com.wb.logistics.ui.unloadingcongratulation.domain.DeliveryResult
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -250,12 +252,24 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.deleteFlightBox(flightBoxEntity)
     }
 
+    override fun dcUnloadedBoxes(): Single<Int> {
+        return flightBoxDao.dcUnloadedBoxes()
+    }
+
     override fun groupFlightPickupPointBoxGroupByOffice(): Single<List<PickupPointBoxGroupByOfficeEntity>> {
         return flightBoxDao.groupFlightPickupPointBoxGroupByOffice()
     }
 
     override fun groupDeliveryBoxByOffice(): Single<List<DeliveryBoxGroupByOfficeEntity>> {
         return flightBoxDao.groupDeliveryBoxByOffice()
+    }
+
+    override fun getNotDelivered(): Single<Int> {
+        return flightBoxDao.getNotDelivered()
+    }
+
+    override fun getCongratulationDelivered(): Single<DeliveryResult> {
+        return flightBoxDao.getCongratulationDelivered()
     }
 
     override fun deleteAll() {
@@ -293,6 +307,10 @@ class AppLocalRepositoryImpl(
 
     override fun observeDeliveryReturnedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>> {
         TODO("Not yet implemented")
+    }
+
+    override fun observeDcUnloadingCounter(): Flowable<DcUnloadingCounterEntity> {
+        return flightBoxDao.observeDcUnloadingCounter()
     }
 
 }

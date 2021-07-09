@@ -20,6 +20,12 @@ class DcLoadingResourceProvider(private val context: Context) {
     fun getBoxTimeAndAddress(time: String, address: String): String =
         context.getString(R.string.dc_loading_boxes_time, time, address)
 
+    fun getBoxTimeAndTime(date: String, time: String): String =
+        context.getString(R.string.dc_loading_boxes_date_time, date, time)
+
+    fun getIndexAndBarcode(index: Int, barcode: String): String =
+        context.getString(R.string.dc_loading_boxes_index_barcode, index, barcode)
+
     fun getBoxNotBelongDcTitle(): String =
         context.getString(R.string.dc_loading_box_not_belong_dc_title)
 

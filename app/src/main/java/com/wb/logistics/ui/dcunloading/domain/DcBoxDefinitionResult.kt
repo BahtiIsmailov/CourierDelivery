@@ -6,9 +6,9 @@ import com.wb.logistics.db.entity.flight.FlightEntity
 
 data class DcBoxDefinitionResult(
     val flight: FlightEntity,
-    val findDcUnloadedBox: Optional<FlightBoxEntity>,
-    val findDcReturnBox: Optional<FlightBoxEntity>,
-    val findAttachedBox: Optional<FlightBoxEntity>,
-    val barcodeScanned: String,
-    val isManualInput: Boolean,
+    val warehouseScanOptional: Optional<FlightBoxEntity>,
+    val barcode: String,
+    val isManual: Boolean,
+    val updatedAt: String,
+    val codeError: String
 )

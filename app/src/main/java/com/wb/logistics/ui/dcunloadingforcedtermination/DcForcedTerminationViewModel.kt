@@ -31,7 +31,7 @@ class DcForcedTerminationViewModel(
 
     init {
         _boxesState.value = DcForcedTerminationState.Title(resourceProvider.getLabel())
-        addSubscription(interactor.observeDcUnloadedBoxes()
+        addSubscription(interactor.observeNotDcUnloadedBoxes()
             .subscribe {
                 _boxesState.value =
                     DcForcedTerminationState.BoxesUnloadCount(
@@ -43,10 +43,10 @@ class DcForcedTerminationViewModel(
         _navigateAction.value = DcForcedTerminationNavAction.NavigateToDetails
     }
 
-    fun onCompleteClick(idx: Int) {
+    fun onCompleteClick() {
         bottomProgressEvent.value = true
         addSubscription(interactor.switchScreenToClosed(resourceProvider.getDataLogFormat(
-            getCauseMessage(idx))).subscribe(
+            resourceProvider.getBoxNotFound())).subscribe(
             {
                 _navigateAction.value = DcForcedTerminationNavAction.NavigateToCongratulation
                 bottomProgressEvent.value = false
@@ -55,11 +55,6 @@ class DcForcedTerminationViewModel(
                 bottomProgressEvent.value = false
                 switchScreenToClosedError(it)
             }))
-    }
-
-    private fun getCauseMessage(idx: Int) = when (idx) {
-        0 -> resourceProvider.getBoxNotFound()
-        else -> resourceProvider.getEmpty()
     }
 
     private fun switchScreenToClosedError(throwable: Throwable) {

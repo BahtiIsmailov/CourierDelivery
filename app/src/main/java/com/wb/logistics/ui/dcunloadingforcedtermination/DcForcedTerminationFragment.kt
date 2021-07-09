@@ -69,21 +69,15 @@ class DcForcedTerminationFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.radioGroup.clearCheck()
-
-        binding.radioGroup.setOnCheckedChangeListener { _, _ ->
-            binding.complete.setState(ProgressImageButtonMode.ENABLED)
-        }
-
         binding.icDetails.setOnClickListener { viewModel.onDetailsClick() }
 
-        binding.complete.setOnClickListener {
-            val radioButtonID: Int = binding.radioGroup.checkedRadioButtonId
-            val radioButton: View = binding.radioGroup.findViewById(radioButtonID)
-            val idx: Int = binding.radioGroup.indexOfChild(radioButton)
-            viewModel.onCompleteClick(idx)
+        binding.checkedBoxNotFound.setOnCheckedChangeListener { _, isChecked ->
+            binding.complete.setState(if (isChecked) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
         }
+        binding.complete.setOnClickListener { viewModel.onCompleteClick() }
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

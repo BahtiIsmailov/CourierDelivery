@@ -30,6 +30,11 @@ class FlightDeliveriesInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun getNotDelivered(): Single<Int> {
+        return appLocalRepository.getNotDelivered()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
     override fun switchScreenToDcUnloading(): Completable {
         return screenManager.saveState(FlightStatus.DCUNLOADING)
     }

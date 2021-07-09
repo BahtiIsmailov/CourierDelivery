@@ -59,12 +59,10 @@ class UnloadingReturnBoxesViewModel(
             .toObservable()
 
     private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxEntity> ->
-        // TODO: 29.04.2021 переработать
         val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
-        val timeFormat =
-            timeFormatter.format(date, TimeFormatType.ONLY_DATE) + "\u2022" + timeFormatter.format(
-                date,
-                TimeFormatType.ONLY_TIME)
+        val timeFormat = resourceProvider.getBoxTimeAndTime(
+            timeFormatter.format(date, TimeFormatType.ONLY_DATE),
+            timeFormatter.format(date, TimeFormatType.ONLY_TIME))
         UnloadingReturnBoxesItem(singleIncrement(index),
             item.barcode,
             timeFormat,

@@ -19,7 +19,8 @@ class DcForcedTerminationInteractorImpl(
     private val screenManager: ScreenManager,
 ) : DcForcedTerminationInteractor {
 
-    override fun observeDcUnloadedBoxes(): Observable<Int> {
+    // TODO: 09.07.2021 переработать
+    override fun observeNotDcUnloadedBoxes(): Observable<Int> {
         return appLocalRepository.readFlight().map { it.dc.id }
             .flatMap { appLocalRepository.findDcReturnBoxes(it) }
             .map { it.size }
@@ -27,14 +28,19 @@ class DcForcedTerminationInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
+    // TODO: 09.07.2021 переработать
     override fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>> {
         return appLocalRepository.readFlight().map { it.dc.id }
-            .flatMap { appLocalRepository.findDcReturnBoxes(it) }
+            .flatMap { dcId -> appLocalRepository.findDcReturnBoxes(dcId).map { Pair(dcId, it) } }
             .flatMap { boxes ->
-                Observable.fromIterable(boxes).map {
-                    DcNotUnloadedBoxEntity(barcode = it.barcode,
+                Observable.fromIterable(boxes.second).map {
+                    DcNotUnloadedBoxEntity(
+                        barcode = it.barcode,
                         updatedAt = it.updatedAt,
-                        dstFullAddress = it.dstOffice.fullAddress)
+                        srcFullAddress = it.srcOffice.fullAddress,
+                        currentOffice = boxes.first,
+                        srcOffice = it.srcOffice.id,
+                    )
                 }.toList()
             }
             .compose(rxSchedulerFactory.applySingleSchedulers())

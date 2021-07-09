@@ -40,11 +40,11 @@
         android:id="@+id/ic_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_marginEnd="25dp"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
+        android:padding="10dp"
         android:src="@drawable/ic_arrow_right"
         app:layout_constraintBottom_toTopOf="@id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,22 +91,13 @@
             android:layout_marginTop="20dp"
             android:text="@string/force_termination_cause" />
 
-        <RadioGroup
-            android:id="@+id/radio_group"
+        <CheckBox
+            android:id="@+id/checked_box_not_found"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/box_not_found"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:button="@drawable/radio_button_custom"
-                android:checked="true"
-                android:padding="5dp"
-                android:text="@string/force_termination_box_not_found" />
-
-        </RadioGroup>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/transparent"
+            android:text="@string/force_termination_box_not_found" />
 
     </LinearLayout>
 

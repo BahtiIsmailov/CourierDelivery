@@ -22,22 +22,13 @@
             android:layout_marginTop="20dp"
             android:text="@string/force_termination_cause" />
 
-        <RadioGroup
-            android:id="@+id/radio_group"
+        <CheckBox
+            android:id="@+id/checked_box_not_found"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/box_not_found"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:button="@drawable/radio_button_custom"
-                android:checked="true"
-                android:padding="5dp"
-                android:text="@string/force_termination_box_not_found" />
-
-        </RadioGroup>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/transparent"
+            android:text="@string/force_termination_box_not_found" />
 
     </LinearLayout>
 
@@ -56,10 +47,11 @@
         style="@style/MediumRegularLightText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cause"
+        android:layout_alignTop="@+id/title"
+        android:layout_alignBottom="@+id/title"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
         tools:text="4 шт." />
 
     <com.wb.logistics.views.WrapContentListView
@@ -68,6 +60,7 @@
         android:layout_height="0dp"
         android:layout_above="@+id/complete"
         android:layout_below="@+id/title"
+        android:layout_marginTop="10dp"
         android:divider="@null"
         android:dividerHeight="0dp"
         tools:listitem="@layout/forced_termination_legend" />
@@ -80,7 +73,7 @@
         android:visibility="visible"
         app:app_background="@drawable/progress_image_button_danger"
         app:app_icon="@drawable/ic_force_delivery"
-        app:app_state="enable"
+        app:app_state="disabled"
         app:app_text="@string/force_termination_complete"
         app:app_text_color_disable="@color/button_gray_text_disable"
         app:app_text_color_enable="@color/button_gray_text_enable"

@@ -7,7 +7,7 @@ import io.reactivex.Single
 
 interface DcForcedTerminationInteractor {
 
-    fun observeDcUnloadedBoxes(): Observable<Int>
+    fun observeNotDcUnloadedBoxes(): Observable<Int>
 
     fun notDcUnloadedBoxes(): Single<List<DcNotUnloadedBoxEntity>>
 

@@ -48,8 +48,8 @@ class UnloadingInteractorImpl(
             observeTookAndPickupBoxes(currentOfficeId),
             { scan, unloadedAndUnload, tookAndPickup ->
                 UnloadingData(scan, unloadedAndUnload, tookAndPickup)
-            }
-        )
+            })
+            .distinctUntilChanged()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

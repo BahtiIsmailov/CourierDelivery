@@ -22,11 +22,7 @@ class CongratulationViewModel(
 
     init {
         addSubscription(interactor.getDeliveryBoxesGroupByOffice()
-            .map {
-                with(it) {
-                    resourceProvider.getInfo(unloadedCount, attachedCount + unloadedCount)
-                }
-            }
+            .map { with(it) { resourceProvider.getInfo(unloadedCount, attachedCount) } }
             .subscribe({ _infoState.value = it }) {})
     }
 

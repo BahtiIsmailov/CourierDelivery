@@ -15,9 +15,10 @@ import com.wb.logistics.R;
 public class DcUnloadingInfoView extends FrameLayout {
 
     private final static String DEFAULT_CODE_BOX_TEXT = "";
-    private final static String STATUS_BOX_EMPTY_TEXT = "";
     private final static int DEFAULT_STATE = DcUnloadingInfoMode.EMPTY;
 
+    private TextView emptyBoxTextView;
+    private TextView currentBoxTextView;
     private TextView barcode;
     private TextView status;
 
@@ -48,6 +49,8 @@ public class DcUnloadingInfoView extends FrameLayout {
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layoutView = inflater.inflate(R.layout.dc_unloading_info_box, this, false);
+        emptyBoxTextView = layoutView.findViewById(R.id.empty_box);
+        currentBoxTextView = layoutView.findViewById(R.id.current_box);
         barcode = layoutView.findViewById(R.id.barcode);
         status = layoutView.findViewById(R.id.status);
         addView(layoutView);
@@ -78,8 +81,8 @@ public class DcUnloadingInfoView extends FrameLayout {
             case DcUnloadingInfoMode.EMPTY:
                 emptyState();
                 break;
-            case DcUnloadingInfoMode.UNLOADING:
-                unloadingState();
+            case DcUnloadingInfoMode.COMPLETE:
+                completeState();
                 break;
             case DcUnloadingInfoMode.NOT_INFO_DENY:
                 notInfoState();
@@ -88,17 +91,27 @@ public class DcUnloadingInfoView extends FrameLayout {
     }
 
     private void emptyState() {
-        barcode.setText(getResources().getString(R.string.dc_loading_code_pref_box));
-        status.setText(STATUS_BOX_EMPTY_TEXT);
+        emptyBoxTextView.setVisibility(VISIBLE);
+        currentBoxTextView.setVisibility(INVISIBLE);
+        barcode.setVisibility(INVISIBLE);
+        status.setVisibility(INVISIBLE);
     }
 
-    private void unloadingState() {
+    private void completeState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        barcode.setVisibility(VISIBLE);
+        status.setVisibility(VISIBLE);
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.dc_unloading_boxes_info_box_unload));
         status.setTextColor(getResources().getColor(R.color.icon_success));
     }
 
     private void notInfoState() {
+        emptyBoxTextView.setVisibility(GONE);
+        currentBoxTextView.setVisibility(VISIBLE);
+        barcode.setVisibility(VISIBLE);
+        status.setVisibility(VISIBLE);
         barcode.setText(codeBox);
         status.setText(getResources().getString(R.string.dc_unloading_boxes_not_info_box_unload));
         status.setTextColor(getResources().getColor(R.color.icon_deny));

@@ -52,9 +52,9 @@ class ForcedTerminationViewModel(
             })
     }
 
-    fun onCompleteClick(idx: Int) {
+    fun onCompleteClick() {
         val dataLog =
-            resourceProvider.getDataLogFormat(currentOffice().toString(), getCauseMessage(idx))
+            resourceProvider.getDataLogFormat(currentOffice().toString(), resourceProvider.getBoxNotFound())
         addSubscription(interactor.completeUnloading(currentOffice(), dataLog)
             .subscribe(
                 { _navigateToBack.value = ForcedTerminationNavAction.NavigateToFlightDeliveries },
@@ -74,11 +74,6 @@ class ForcedTerminationViewModel(
             message,
             resourceProvider.getBoxPositiveButton())
         _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack
-    }
-
-    private fun getCauseMessage(idx: Int) = when (idx) {
-        0 -> resourceProvider.getBoxNotFound()
-        else -> resourceProvider.getEmpty()
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

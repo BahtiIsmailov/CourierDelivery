@@ -73,7 +73,7 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: UnloadingBoxesParameters) ->
-        UnloadingBoxesViewModel(parameters, get(), get(), get())
+        UnloadingBoxesViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { (parameters: UnloadingReturnParameters) ->
@@ -103,7 +103,7 @@ val viewModelModule = module {
         DcUnloadingBoxNotBelongModel(parameters)
     }
 
-    viewModel { DcUnloadingBoxesViewModel(get(), get(), get()) }
+    viewModel { DcUnloadingBoxesViewModel(get(), get(), get(), get()) }
 
     viewModel { DcForcedTerminationViewModel(get(), get(), get()) }
 

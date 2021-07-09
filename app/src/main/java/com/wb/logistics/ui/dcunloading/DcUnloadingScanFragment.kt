@@ -1,6 +1,5 @@
 package com.wb.logistics.ui.dcunloading
 
-//import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_CANCEL
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
@@ -19,6 +18,7 @@ import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
 import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -103,7 +103,6 @@ class DcUnloadingScanFragment : Fragment() {
                     DcUnloadingScanFragmentDirections.actionDcUnloadingScanFragmentToDcForcedTerminationFragment())
             }
         }
-
         viewModel.navigationEvent.observe(viewLifecycleOwner, eventObserver)
 
         viewModel.toastEvent.observe(viewLifecycleOwner) { state ->
@@ -120,27 +119,28 @@ class DcUnloadingScanFragment : Fragment() {
             }
         }
 
-
-        viewModel.unloadedCounterState.observe(viewLifecycleOwner) { state ->
+        viewModel.unloadedState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is DcUnloadingScanCounterBoxState.DcUnloadedBoxesEmpty -> {
-                    binding.unloadingBox.setCountBox(state.accepted, DcUnloadingAcceptedMode.EMPTY)
-                    binding.info.setCodeBox(DcUnloadingInfoMode.EMPTY)
-                }
-                is DcUnloadingScanCounterBoxState.DcUnloadedBoxesComplete -> {
-                    binding.unloadingBox.setCountBox(state.accepted,
-                        DcUnloadingAcceptedMode.COMPLETE)
-                    binding.info.setCodeBox(state.barcode, DcUnloadingInfoMode.UNLOADING)
-                }
+                is DcUnloadedState.Empty -> binding.unloadingBox.setCountBox(state.accepted,
+                    DcUnloadingAcceptedMode.EMPTY)
+                is DcUnloadedState.Complete -> binding.unloadingBox.setCountBox(state.accepted,
+                    DcUnloadingAcceptedMode.COMPLETE)
+                is DcUnloadedState.Active -> binding.unloadingBox.setCountBox(state.accepted,
+                    DcUnloadingAcceptedMode.ACTIVE)
+                is DcUnloadedState.Error -> binding.unloadingBox.setCountBox(state.accepted,
+                    DcUnloadingAcceptedMode.DENY)
             }
         }
 
-        viewModel.unloadedState.observe(viewLifecycleOwner) { state ->
+        viewModel.infoState.observe(viewLifecycleOwner) { state ->
+            LogUtils { logDebugApp("viewModel.infoState " + state.toString()) }
             when (state) {
-                is DcUnloadingScanBoxState.DcUnloadedBoxesNotBelong -> {
-                    binding.unloadingBox.setState(DcUnloadingAcceptedMode.DENY)
-                    binding.info.setCodeBox(state.barcode, DcUnloadingInfoMode.NOT_INFO_DENY)
-                }
+                is DcUnloadingInfoState.Empty -> binding.info.setCodeBox(
+                    DcUnloadingInfoMode.EMPTY)
+                is DcUnloadingInfoState.Complete -> binding.info.setCodeBox(state.barcode,
+                    DcUnloadingInfoMode.COMPLETE)
+                is DcUnloadingInfoState.Error -> binding.info.setCodeBox(state.barcode,
+                    DcUnloadingInfoMode.NOT_INFO_DENY)
             }
         }
 

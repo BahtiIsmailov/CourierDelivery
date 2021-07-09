@@ -3,6 +3,7 @@ package com.wb.logistics.ui.dcunloading
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
+import com.wb.logistics.ui.dcloading.DcLoadingResourceProvider
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.utils.time.TimeFormatType
 import com.wb.logistics.utils.time.TimeFormatter
@@ -13,6 +14,7 @@ class DcUnloadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: DcUnloadingInteractor,
     private val timeFormatter: TimeFormatter,
+    private val resourceProvider: DcLoadingResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxesState = MutableLiveData<DcUnloadingBoxesState>()
@@ -33,9 +35,15 @@ class DcUnloadingBoxesViewModel(
             .flatMap { list ->
                 Observable.fromIterable(list.withIndex())
                     .map {
-                        val date = timeFormatter.dateTimeWithoutTimezoneFromString(it.value.updatedAt)
-                        val time = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
-                        DcUnloadingBoxesItem("" + (it.index + 1) + ". " + it.value.barcode, time)}.toList()
+                        val date =
+                            timeFormatter.dateTimeWithoutTimezoneFromString(it.value.updatedAt)
+                        val dateFormat = resourceProvider.getBoxTimeAndTime(
+                            timeFormatter.format(date, TimeFormatType.ONLY_DATE),
+                            timeFormatter.format(date, TimeFormatType.ONLY_TIME))
+                        val indexAndBarcode =
+                            resourceProvider.getIndexAndBarcode(it.index + 1, it.value.barcode)
+                        DcUnloadingBoxesItem(indexAndBarcode, dateFormat)
+                    }.toList()
             }
             .subscribe({
                 _boxesState.value = if (it.isEmpty()) DcUnloadingBoxesState.BoxesEmpty

@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.databinding.UnloadingForcedTerminationFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.NavToolbarListener
+import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -80,12 +81,10 @@ class ForcedTerminationFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener {
-            val radioButtonID: Int = binding.radioGroup.checkedRadioButtonId
-            val radioButton: View = binding.radioGroup.findViewById(radioButtonID)
-            val idx: Int = binding.radioGroup.indexOfChild(radioButton)
-            viewModel.onCompleteClick(idx)
+        binding.checkedBoxNotFound.setOnCheckedChangeListener { _, isChecked ->
+            binding.complete.setState(if (isChecked) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
         }
+        binding.complete.setOnClickListener { viewModel.onCompleteClick() }
     }
 
     override fun onDestroyView() {

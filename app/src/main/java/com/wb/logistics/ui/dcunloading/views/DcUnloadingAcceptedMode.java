@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({DcUnloadingAcceptedMode.EMPTY,
         DcUnloadingAcceptedMode.COMPLETE,
+        DcUnloadingAcceptedMode.ACTIVE,
         DcUnloadingAcceptedMode.DENY})
 @Retention(RetentionPolicy.SOURCE)
 public @interface DcUnloadingAcceptedMode {
@@ -15,6 +16,8 @@ public @interface DcUnloadingAcceptedMode {
 
     int COMPLETE = 1;
 
-    int DENY = 2;
+    int ACTIVE = 2;
+
+    int DENY = 3;
 
 }

@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
+import com.wb.logistics.utils.time.TimeFormatType
+import com.wb.logistics.utils.time.TimeFormatter
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
@@ -11,6 +13,7 @@ class UnloadingBoxesViewModel(
     parameters: UnloadingBoxesParameters,
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: UnloadingScanResourceProvider,
+    private val timeFormatter: TimeFormatter,
     interactor: UnloadingInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -28,8 +31,13 @@ class UnloadingBoxesViewModel(
                 Observable.fromIterable(list.withIndex())
                     .map {
                         with(it) {
+                            val date =
+                                timeFormatter.dateTimeWithoutTimezoneFromString(value.updatedAt)
+                            val timeFormat = resourceProvider.getBoxTimeAndTime(
+                                timeFormatter.format(date, TimeFormatType.ONLY_DATE),
+                                timeFormatter.format(date, TimeFormatType.ONLY_TIME))
                             UnloadingBoxesItem(resourceProvider.getNumericBarcode(index + 1,
-                                value.barcode), "")
+                                value.barcode), timeFormat)
                         }
                     }
                     .toList()

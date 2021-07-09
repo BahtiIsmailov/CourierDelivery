@@ -58,7 +58,7 @@ class ScreenManagerImpl(
                     saveState(flightId, flightStatus, officeId, updatedAt, isGetFromGPS)
                 }
             }
-//        return Completable.complete()
+        //return Completable.complete()
     }
 
     private fun saveState(

@@ -93,6 +93,9 @@ public class DcUnloadingAcceptedView extends FrameLayout {
             case DcUnloadingAcceptedMode.COMPLETE:
                 containsCompleteState();
                 break;
+            case DcUnloadingAcceptedMode.ACTIVE:
+                containsActiveState();
+                break;
             case DcUnloadingAcceptedMode.DENY:
                 containsDenyState();
                 break;
@@ -107,6 +110,13 @@ public class DcUnloadingAcceptedView extends FrameLayout {
     }
 
     private void containsCompleteState() {
+        background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
+        undoIcon.setColorFilter(disableColor, PorterDuff.Mode.SRC_ATOP);
+        countBoxTextView.setText(countBox);
+        listBoxTextView.setVisibility(listVisible());
+    }
+
+    private void containsActiveState() {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.reception_rounded_corner_complete_trans));
         undoIcon.setColorFilter(enableColor, PorterDuff.Mode.SRC_ATOP);
         countBoxTextView.setText(countBox);
@@ -121,7 +131,7 @@ public class DcUnloadingAcceptedView extends FrameLayout {
     }
 
     private int listVisible() {
-        return (countBox.equals("-") || countBox.equals("0/0")) ? GONE : VISIBLE;
+        return (countBox.startsWith("0")) ? GONE : VISIBLE;
     }
 
     public void setCountBox(String countBox, int currentState) {
