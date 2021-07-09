@@ -43,6 +43,7 @@
         android:layout_height="1dip"
         android:layout_marginBottom="68dp"
         android:background="#EDEEF0"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -53,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:src="@drawable/ic_congratulation_delivered"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider1" />
@@ -64,6 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="@string/dc_congratulation_delivered_info"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintStart_toEndOf="@+id/ic_delivered"
         app:layout_constraintTop_toTopOf="@+id/divider1" />
@@ -74,6 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintStart_toEndOf="@+id/delivered"
         app:layout_constraintTop_toTopOf="@+id/divider1"
@@ -85,6 +89,7 @@
         android:layout_height="1dip"
         android:layout_marginBottom="68dp"
         android:background="#EDEEF0"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/guideline_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -95,6 +100,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:src="@drawable/ic_congratulation_returned"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/guideline_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider2" />
@@ -106,6 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="@string/dc_congratulation_returned_info"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/complete"
         app:layout_constraintStart_toEndOf="@+id/ic_returned"
         app:layout_constraintTop_toTopOf="@+id/divider2" />
@@ -116,6 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/complete"
         app:layout_constraintStart_toEndOf="@+id/returned"
         app:layout_constraintTop_toTopOf="@+id/divider2"
