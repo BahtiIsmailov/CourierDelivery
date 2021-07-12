@@ -85,6 +85,7 @@ interface AppRemoteRepository {
         updatedAt: String,
         currentOfficeId: Int,
         flightId: Int,
+        event: String,
     ): Completable
 
 }

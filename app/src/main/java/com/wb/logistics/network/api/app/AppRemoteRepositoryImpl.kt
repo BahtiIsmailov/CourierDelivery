@@ -427,13 +427,15 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         currentOfficeId: Int,
         flightId: Int,
+        event: String,
     ): Completable {
         return remote.boxTracker(tokenManager.apiVersion(),
             BoxTrackerRequest(barcode,
                 isManualInput,
                 updatedAt,
                 BoxTrackerCurrentOfficeRequest(currentOfficeId),
-                BoxTrackerFlightRequest(flightId)
+                BoxTrackerFlightRequest(flightId),
+                event
             )
         )
     }

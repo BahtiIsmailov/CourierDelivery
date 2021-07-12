@@ -145,7 +145,7 @@ interface AppApi {
     //==============================================================================================
     //boxtracker
     //==============================================================================================
-    @POST("{version}/boxtracker/scan")
+    @POST("{version}/scan-log")
     fun boxTracker(
         @Path(value = "version", encoded = true) version: String,
         @Body box: BoxTrackerRequest,

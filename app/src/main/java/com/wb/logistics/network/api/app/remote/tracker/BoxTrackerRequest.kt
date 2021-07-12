@@ -6,4 +6,5 @@ data class BoxTrackerRequest(
     val updatedAt: String,
     val currentOffice: BoxTrackerCurrentOfficeRequest,
     val flight: BoxTrackerFlightRequest,
+    val event: String,
 )

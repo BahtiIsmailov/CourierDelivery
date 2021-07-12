@@ -163,7 +163,8 @@ class UnloadingInteractorImpl(
                                         isManualInput,
                                         updatedAt,
                                         currentOfficeId,
-                                        flightId)
+                                        flightId,
+                                        BoxTracker.EMPB.name)
                                         .onErrorComplete()
                                         .andThen(Observable.just(UnloadingAction.BoxInfoEmpty(
                                             barcodeScanned)))
@@ -212,7 +213,8 @@ class UnloadingInteractorImpl(
         isManualInput,
         updatedAt,
         currentOfficeId,
-        flightId)
+        flightId,
+        BoxTracker.PBVZ.name)
         .onErrorResumeNext { //оборачиваем сетевую ошибку 400
             if (it is BadRequestException) Completable.complete()
             else throw it
