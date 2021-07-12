@@ -22,8 +22,8 @@ object OkHttpClientSafe {
             )
             .addInterceptor(refreshResponseInterceptor)
             .addInterceptor(loggerInterceptor)
-            .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
-            .readTimeout(AppConfig.HTTP_READ_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+            .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
             .build()
     }
 
@@ -38,8 +38,8 @@ object OkHttpClientSafe {
                 certificateStore.x509TrustManager()
             )
             .addInterceptor(loggerInterceptor)
-            .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
-            .readTimeout(AppConfig.HTTP_READ_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+            .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
             .build()
     }
 
