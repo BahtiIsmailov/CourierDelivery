@@ -9,8 +9,10 @@ import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
+import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
@@ -25,6 +27,8 @@ class DcUnloadingInteractorImpl(
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
 
+    private val scanLoaderProgressSubject = PublishSubject.create<ScanProgressData>()
+
     override fun barcodeManualInput(barcode: String) {
         barcodeManualInput.onNext(Pair(barcode, true))
     }
@@ -36,6 +40,10 @@ class DcUnloadingInteractorImpl(
             { scan, unloadedAndUnload -> DcUnloadingData(scan, unloadedAndUnload) })
             .distinctUntilChanged()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun scanLoaderProgress(): Observable<ScanProgressData> {
+        return scanLoaderProgressSubject
     }
 
     private fun barcodeScannerInput(): Observable<Pair<String, Boolean>> {
@@ -85,6 +93,12 @@ class DcUnloadingInteractorImpl(
 
     private fun observeScanProcess(): Observable<DcUnloadingAction> {
         return Observable.merge(barcodeManualInput, barcodeScannerInput())
+            .flatMapSingle {
+                Completable.fromAction {
+                    scanLoaderProgressSubject.onNext(ScanProgressData.Progress)
+                    scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+                }.andThen(Single.just(it))
+            }
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
             .flatMap { warehouseScanOptional(it) }
             .flatMap { boxDefinition ->
@@ -110,7 +124,14 @@ class DcUnloadingInteractorImpl(
                     }
 
                 }
-            }.startWith(Observable.just(DcUnloadingAction.Init))
+            }
+            .flatMap {
+                Completable.fromAction {
+                    scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
+                    scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+                }.andThen(Observable.just(it))
+            }
+            .startWith(Observable.just(DcUnloadingAction.Init))
     }
 
     override fun findDcUnloadedHandleBoxes(): Single<List<DcReturnHandleBarcodeEntity>> {

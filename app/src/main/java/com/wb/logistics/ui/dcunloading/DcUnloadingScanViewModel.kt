@@ -6,6 +6,7 @@ import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
+import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingAction
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
@@ -36,6 +37,11 @@ class DcUnloadingScanViewModel(
     val soundEvent: LiveData<DcUnloadingScanSoundEvent>
         get() = _soundEvent
 
+    private val _progressEvent =
+        SingleLiveEvent<DcUnloadingScanProgress>()
+    val progressEvent: LiveData<DcUnloadingScanProgress>
+        get() = _progressEvent
+
     private val _unloadedState = MutableLiveData<DcUnloadedState>()
     val unloadedState: LiveData<DcUnloadedState>
         get() = _unloadedState
@@ -56,6 +62,17 @@ class DcUnloadingScanViewModel(
 
     init {
         observeScanProcess()
+        observeScanProgress()
+    }
+
+    private fun observeScanProgress() {
+        addSubscription(interactor.scanLoaderProgress()
+            .subscribe {
+                _progressEvent.value = when (it) {
+                    ScanProgressData.Complete -> DcUnloadingScanProgress.LoaderComplete
+                    ScanProgressData.Progress -> DcUnloadingScanProgress.LoaderProgress
+                }
+            })
     }
 
     private fun observeScanProcess() {

@@ -7,6 +7,7 @@ import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.ui.unloading.domain.ScanProgressData
 import com.wb.logistics.ui.unloading.domain.UnloadingAction
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
@@ -33,6 +34,11 @@ class UnloadingScanViewModel(
         SingleLiveEvent<UnloadingScanSoundEvent>()
     val soundEvent: LiveData<UnloadingScanSoundEvent>
         get() = _soundEvent
+
+    private val _progressEvent =
+        SingleLiveEvent<UnloadingScanProgress>()
+    val progressEvent: LiveData<UnloadingScanProgress>
+        get() = _progressEvent
 
     private val _unloadedState =
         MutableLiveData<UnloadingScanBoxState>()
@@ -64,6 +70,17 @@ class UnloadingScanViewModel(
         initTitleToolbar()
         observeBackButton()
         observeUnloadProcess()
+        observeScanProgress()
+    }
+
+    private fun observeScanProgress() {
+        addSubscription(interactor.scanLoaderProgress()
+            .subscribe {
+                _progressEvent.value = when (it) {
+                    ScanProgressData.Complete -> UnloadingScanProgress.LoaderComplete
+                    ScanProgressData.Progress -> UnloadingScanProgress.LoaderProgress
+                }
+            })
     }
 
     private fun observeBackButton() {

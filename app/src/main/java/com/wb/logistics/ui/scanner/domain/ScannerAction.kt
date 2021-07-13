@@ -6,4 +6,8 @@ sealed class ScannerAction {
 
     object Start : ScannerAction()
 
+    object LoaderProgress : ScannerAction()
+
+    object LoaderComplete : ScannerAction()
+
 }

@@ -13,63 +13,90 @@
         class="com.wb.logistics.ui.scanner.ScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/guideline_center_horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/scanner_fragment" />
 
-    <ImageView
+    <View
+        android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/reception_bottom_sheet_info"
-        app:layout_constraintBottom_toTopOf="@+id/complete"
-        app:layout_constraintTop_toBottomOf="@+id/guideline3" />
-
-
-    <com.wb.logistics.ui.unloading.views.UnloadingAcceptedView
-        android:id="@+id/unloading_box"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_center_info"
-        app:layout_constraintEnd_toEndOf="@+id/guideline_center_vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal"
-        app:unloading_accepted_box="0/0"
-        app:unloading_accepted_state="empty_box" />
-
-    <com.wb.logistics.ui.unloading.views.UnloadingReturnView
-        android:id="@+id/return_box"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_center_info"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal"
-        app:unloading_return_box="0/0"
-        app:unloading_return_state="empty_box" />
-
-    <com.wb.logistics.ui.unloading.views.UnloadingInfoView
-        android:id="@+id/info"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_button"
+        android:layout_height="1dip"
+        android:layout_marginTop="12dp"
+        android:background="#EDEEF0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_center_info"
-        app:unloading_info_box="TRBX12345678"
-        app:unloading_info_state="empty_box" />
+        app:layout_constraintTop_toTopOf="@+id/layout_info" />
+
+    <FrameLayout
+        android:id="@+id/layout_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/reception_bottom_sheet_info"
+            tools:context=".ui.flights.FlightsFragment">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_center_info_vertical"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <com.wb.logistics.ui.unloading.views.UnloadingAcceptedView
+                android:id="@+id/unloading_box"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/info"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_center_info_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:unloading_accepted_box="0/0"
+                app:unloading_accepted_state="empty_box" />
+
+            <com.wb.logistics.ui.unloading.views.UnloadingReturnView
+                android:id="@+id/return_box"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/info"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_center_info_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:unloading_return_box="0/0"
+                app:unloading_return_state="empty_box" />
+
+            <com.wb.logistics.ui.unloading.views.UnloadingInfoView
+                android:id="@+id/info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:dc_unloading_info_box="TRBX"
+                app:dc_unloading_info_state="empty_box"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
 
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/manual_input_button"
+        android:id="@+id/manual_input"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
@@ -116,7 +143,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="manual_input_button, complete" />
+        app:constraint_referenced_ids="manual_input, complete" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_center_vertical"
@@ -124,27 +151,6 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.48" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.500684" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_center_info"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.70" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_button"

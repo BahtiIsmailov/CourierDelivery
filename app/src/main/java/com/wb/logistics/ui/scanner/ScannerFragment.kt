@@ -81,8 +81,9 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         scannerView.setBorderColor(Color.WHITE)
         scannerView.setLaserEnabled(true)
         scannerView.setIsBorderCornerRounded(true)
-        scannerView.setBorderCornerRadius(10)
+        scannerView.setBorderCornerRadius(40)
         scannerView.setBorderAlpha(0.5F)
+        scannerView.setSquareViewFinder(false)
         binding.scannerLayout.addView(scannerView)
     }
 
@@ -91,9 +92,24 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
             when (it) {
                 ScannerAction.Start -> startScanner()
                 ScannerAction.Stop -> stopScanner()
+                ScannerAction.LoaderProgress -> loader()
+                ScannerAction.LoaderComplete -> loaderComplete()
             }
         }
     }
+
+    private fun loader() {
+        scannerView.flashLoader()
+        binding.loaderProgress.visibility = View.VISIBLE
+        binding.loader.visibility = View.VISIBLE
+    }
+
+    private fun loaderComplete() {
+        scannerView.flashLoaderComplete()
+        binding.loaderProgress.visibility = View.GONE
+        binding.loader.visibility = View.GONE
+    }
+
 
     private fun initListener() {
         binding.sun.setOnClickListener { scannerView.toggleFlash() }

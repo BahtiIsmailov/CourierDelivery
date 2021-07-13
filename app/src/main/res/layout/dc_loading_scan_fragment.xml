@@ -96,7 +96,7 @@
     </FrameLayout>
 
     <com.wb.logistics.views.ProgressImageButtonView
-        android:id="@+id/manual_input_button"
+        android:id="@+id/manual_input"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
@@ -157,6 +157,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="manual_input_button, complete" />
+        app:constraint_referenced_ids="manual_input, complete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.ui.dcloading.domain.ScanBoxData
 import com.wb.logistics.ui.dcloading.domain.ScanProcessData
+import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -35,6 +36,11 @@ class DcLoadingScanViewModel(
     val beepEvent: LiveData<DcLoadingScanBeepState>
         get() = _beepEvent
 
+    private val _progressEvent =
+        SingleLiveEvent<DcLoadingScanProgress>()
+    val progressEvent: LiveData<DcLoadingScanProgress>
+        get() = _progressEvent
+
     val boxStateUI = MutableLiveData<DcLoadingScanBoxState>()
 
     val bottomProgressEvent = MutableLiveData<Boolean>()
@@ -42,6 +48,7 @@ class DcLoadingScanViewModel(
     init {
         observeInitScanProcess()
         observeScanProcess()
+        observeScanProgress()
     }
 
     private fun observeInitScanProcess() {
@@ -69,6 +76,16 @@ class DcLoadingScanViewModel(
                 { observeScanProcessError(it) }
             )
         )
+    }
+
+    private fun observeScanProgress() {
+        addSubscription(interactor.scanLoaderProgress()
+            .subscribe {
+                _progressEvent.value = when (it) {
+                    ScanProgressData.Complete -> DcLoadingScanProgress.LoaderComplete
+                    ScanProgressData.Progress -> DcLoadingScanProgress.LoaderProgress
+                }
+            })
     }
 
     private fun observeScanProcessComplete(scanProcess: ScanProcessData) {

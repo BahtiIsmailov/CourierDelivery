@@ -33,6 +33,8 @@ class UnloadingInteractorImpl(
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
 
+    private val scanLoaderProgressSubject = PublishSubject.create<ScanProgressData>()
+
     override fun barcodeManualInput(barcode: String) {
         barcodeManualInput.onNext(Pair(barcode, true))
     }
@@ -53,8 +55,18 @@ class UnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
+    override fun scanLoaderProgress(): Observable<ScanProgressData> {
+        return scanLoaderProgressSubject
+    }
+
     private fun observeScanProcess(currentOfficeId: Int): Observable<UnloadingAction> {
         return Observable.merge(barcodeManualInput, barcodeScannerInput())
+            .flatMapSingle {
+                Completable.fromAction {
+                    scanLoaderProgressSubject.onNext(ScanProgressData.Progress)
+                    scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+                }.andThen(Single.just(it))
+            }
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
             .flatMap { boxDefinition ->
 
@@ -173,6 +185,12 @@ class UnloadingInteractorImpl(
                             .compose(rxSchedulerFactory.applyObservableSchedulers())
                     }
                 }
+            }
+            .flatMap {
+                Completable.fromAction {
+                    scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
+                    scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+                }.andThen(Observable.just(it))
             }
             .startWith(UnloadingAction.Init)
     }

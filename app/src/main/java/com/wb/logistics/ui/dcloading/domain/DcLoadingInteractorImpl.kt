@@ -32,6 +32,8 @@ class DcLoadingInteractorImpl(
 
     private val actionBarcodeScannedSubject = PublishSubject.create<Pair<String, Boolean>>()
 
+    private val scanLoaderProgressSubject = PublishSubject.create<ScanProgressData>()
+
     override fun barcodeManualInput(barcode: String) {
         actionBarcodeScannedSubject.onNext(Pair(barcode, true))
     }
@@ -42,6 +44,12 @@ class DcLoadingInteractorImpl(
 
     override fun observeScanProcess(): Observable<ScanProcessData> {
         return Observable.merge(actionBarcodeScannedSubject, barcodeScannerInput())
+            .flatMapSingle {
+                Completable.fromAction {
+                    scanLoaderProgressSubject.onNext(ScanProgressData.Progress)
+                    scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+                }.andThen(Single.just(it))
+            }
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
             .flatMap { warehouseScanOptional(it) }
             .flatMap { boxDefinition ->
@@ -79,12 +87,23 @@ class DcLoadingInteractorImpl(
                         }
                     }
                 }
-            }.flatMap { scanBoxData ->
+            }
+            .flatMap { scanBoxData ->
                 appLocalRepository.readAllTakeOnFlightBox()
                     .map { ScanProcessData(scanBoxData, it.size) }
                     .toObservable()
             }
+            .flatMap {
+                Completable.fromAction {
+                    scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
+                    scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+                }.andThen(Observable.just(it))
+            }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun scanLoaderProgress(): Observable<ScanProgressData> {
+        return scanLoaderProgressSubject
     }
 
     private fun warehouseScanOptional(boxDefinitionResult: BoxDefinitionResult): Observable<BoxDefinitionResult> {

@@ -14,6 +14,8 @@ interface DcLoadingInteractor {
 
     fun observeScanProcess(): Observable<ScanProcessData>
 
+    fun scanLoaderProgress():  Observable<ScanProgressData>
+
     fun observeScannedBoxes(): Observable<List<FlightBoxEntity>>
 
     fun gate(): Single<String>

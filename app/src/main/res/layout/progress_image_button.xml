@@ -40,7 +40,7 @@
         style="?android:attr/progressBarStyleSmallTitle"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:theme="@style/AppProgressBarCircularDark"
+        android:theme="@style/AppProgressBarCircularLight"
         android:visibility="visible"
         tools:ignore="MissingConstraints" />
 

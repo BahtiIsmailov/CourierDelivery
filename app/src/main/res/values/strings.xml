@@ -88,6 +88,7 @@
     <string name="dc_loading_label">Прием</string>
     <string name="dc_loading_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
     <string name="dc_loading_scan_not_permission">Разрешение не установлено</string>
+    <string name="dc_loading_scan_loader">Идет загрузка данных</string>
     <string name="dc_loading_scan_not_permission_request">Запросить</string>
     <string name="dc_loading_manual_input_button">Ручной ввод</string>
     <string name="dc_loading_complete_button">Завершить</string>

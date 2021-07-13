@@ -129,6 +129,23 @@ class UnloadingScanFragment : Fragment() {
             }
         }
 
+        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UnloadingScanProgress.LoaderProgress -> {
+                    binding.unloadingBox.isEnabled = false
+                    binding.returnBox.isEnabled = false
+                    binding.manualInput.setState(ProgressImageButtonMode.DISABLED)
+                    binding.complete.setState(ProgressImageButtonMode.DISABLED)
+                }
+                is UnloadingScanProgress.LoaderComplete -> {
+                    binding.unloadingBox.isEnabled = true
+                    binding.returnBox.isEnabled = true
+                    binding.manualInput.setState(ProgressImageButtonMode.ENABLED)
+                    binding.complete.setState(ProgressImageButtonMode.ENABLED)
+                }
+            }
+        }
+
         viewModel.unloadedState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UnloadingScanBoxState.Empty ->
@@ -187,7 +204,7 @@ class UnloadingScanFragment : Fragment() {
             viewModel.onReturnListClicked()
         }
 
-        binding.manualInputButton.setOnClickListener {
+        binding.manualInput.setOnClickListener {
             viewModel.onaHandleClicked()
         }
 

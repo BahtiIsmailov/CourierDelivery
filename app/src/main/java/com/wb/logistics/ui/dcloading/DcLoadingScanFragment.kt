@@ -74,6 +74,21 @@ class DcLoadingFragment : Fragment() {
             }
         }
 
+        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is DcLoadingScanProgress.LoaderProgress -> {
+                    binding.received.isEnabled = false
+                    binding.manualInput.setState(ProgressImageButtonMode.DISABLED)
+                    binding.complete.setState(ProgressImageButtonMode.DISABLED)
+                }
+                is DcLoadingScanProgress.LoaderComplete -> {
+                    binding.received.isEnabled = true
+                    binding.manualInput.setState(ProgressImageButtonMode.ENABLED)
+                    binding.complete.setState(ProgressImageButtonMode.ENABLED)
+                }
+            }
+        }
+
         viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
             binding.complete.setState(
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
@@ -119,7 +134,7 @@ class DcLoadingFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.manualInputButton.setOnClickListener {
+        binding.manualInput.setOnClickListener {
             // TODO: 22.04.2021 заменить на вызовы
             viewModel.onStopScanner()
             showHandleInput()
