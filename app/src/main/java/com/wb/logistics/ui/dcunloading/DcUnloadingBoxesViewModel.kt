@@ -3,7 +3,6 @@ package com.wb.logistics.ui.dcunloading
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.dcloading.DcLoadingResourceProvider
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.utils.time.TimeFormatType
 import com.wb.logistics.utils.time.TimeFormatter
@@ -14,7 +13,7 @@ class DcUnloadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: DcUnloadingInteractor,
     private val timeFormatter: TimeFormatter,
-    private val resourceProvider: DcLoadingResourceProvider,
+    private val resourceProvider: DcUnloadingScanResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxesState = MutableLiveData<DcUnloadingBoxesState>()
@@ -37,7 +36,7 @@ class DcUnloadingBoxesViewModel(
                     .map {
                         val date =
                             timeFormatter.dateTimeWithoutTimezoneFromString(it.value.updatedAt)
-                        val dateFormat = resourceProvider.getBoxTimeAndTime(
+                        val dateFormat = resourceProvider.getBoxDateAndTime(
                             timeFormatter.format(date, TimeFormatType.ONLY_DATE),
                             timeFormatter.format(date, TimeFormatType.ONLY_TIME))
                         val indexAndBarcode =

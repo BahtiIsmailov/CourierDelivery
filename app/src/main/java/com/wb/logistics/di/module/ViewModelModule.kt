@@ -96,7 +96,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        DcUnloadingHandleViewModel(get(), get(), get())
+        DcUnloadingHandleViewModel(get(), get(), get(), get())
     }
 
     viewModel { (parameters: DcUnloadingBoxNotBelongParameters) ->

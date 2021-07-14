@@ -53,6 +53,8 @@ interface AppLocalRepository {
 
     fun deleteAllFlightBoxes()
 
+    fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable
+
     fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
 
     fun observeUnloadedFlightBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>

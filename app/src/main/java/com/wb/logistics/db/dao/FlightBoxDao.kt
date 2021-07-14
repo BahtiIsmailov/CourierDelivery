@@ -36,6 +36,9 @@ interface FlightBoxDao {
     @Query("DELETE FROM FlightBoxEntity")
     fun deleteAllFlightBox()
 
+    @Query("DELETE FROM FlightBoxEntity WHERE barcode IN (:barcodes)")
+    fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable
+
     @Delete
     fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable
 

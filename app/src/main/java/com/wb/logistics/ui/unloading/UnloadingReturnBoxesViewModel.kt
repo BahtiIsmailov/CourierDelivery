@@ -60,7 +60,7 @@ class UnloadingReturnBoxesViewModel(
 
     private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxEntity> ->
         val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
-        val timeFormat = resourceProvider.getBoxTimeAndTime(
+        val timeFormat = resourceProvider.getBoxDateAndTime(
             timeFormatter.format(date, TimeFormatType.ONLY_DATE),
             timeFormatter.format(date, TimeFormatType.ONLY_TIME))
         UnloadingReturnBoxesItem(singleIncrement(index),

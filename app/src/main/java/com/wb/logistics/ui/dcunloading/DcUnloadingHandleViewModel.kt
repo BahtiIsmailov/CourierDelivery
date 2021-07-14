@@ -13,6 +13,7 @@ class DcUnloadingHandleViewModel(
     compositeDisposable: CompositeDisposable,
     private val rxSchedulerFactory: RxSchedulerFactory,
     interactor: DcUnloadingInteractor,
+    resourceProvider: DcUnloadingScanResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _stateUI = MutableLiveData<DcUnloadingHandleUIState<String>>()
@@ -24,8 +25,7 @@ class DcUnloadingHandleViewModel(
             .flatMap {
                 Observable.fromIterable(it.withIndex())
                     .map { box ->
-                        "" + (box.index + 1) + ". " + box.value.barcode.take(4) + "....." + box.value.barcode.takeLast(
-                            4)
+                        resourceProvider.getUnnamedBarcodeFormat(box.index + 1, box.value.barcode)
                     }.toList()
             }
             .subscribe({

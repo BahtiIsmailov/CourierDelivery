@@ -59,14 +59,16 @@ class DcLoadingBoxesViewModel(
 
     private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxEntity> ->
         val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
-        val time = timeFormatter.format(date, TimeFormatType.ONLY_FULL_TIME)
-        DcLoadingBoxesItem(singleIncrement(index),
-            item.barcode,
-            resourceProvider.getBoxTimeAndAddress(time, item.dstOffice.fullAddress),
+        val dateFormat = resourceProvider.getBoxDateAndTime(
+            timeFormatter.format(date, TimeFormatType.ONLY_DATE),
+            timeFormatter.format(date, TimeFormatType.ONLY_TIME))
+        DcLoadingBoxesItem(
+            resourceProvider.getUnnamedBarcodeFormat(singleIncrement(index), item.barcode),
+            resourceProvider.getBoxTimeAndAddress(dateFormat, item.dstOffice.fullAddress),
             false)
     }
 
-    private val singleIncrement = { index: Int -> resourceProvider.getIndex(index + 1) }
+    private val singleIncrement = { index: Int -> index + 1 }
 
     private fun copyConvertBoxes(boxes: List<DcLoadingBoxesItem>) {
         copyReceptionBoxes = boxes.toMutableList()

@@ -18,7 +18,7 @@ class UnloadingScanResourceProvider(private val context: Context) {
         context.getString(R.string.unloading_boxes_office_empty, officeId)
 
     fun getHandleFormatBox(index: Int, suffix: String, postfix: String) =
-        context.getString(R.string.unloading_handle_box_format, index, suffix, postfix)
+        context.getString(R.string.unnamed_barcode_format, index, suffix, postfix)
 
     fun getBoxNotBelongTitle(): String =
         context.getString(R.string.unloading_box_not_belong_dc_title)
@@ -35,7 +35,7 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getAccepted(count: Int, total: Int) = context.getString(R.string.unloading_box_accepted, count, total)
 
     fun getBoxTimeAndTime(date: String, time: String): String =
-        context.getString(R.string.dc_loading_boxes_date_time, date, time)
+        context.getString(R.string.date_and_time_format, date, time)
 
     fun getScanDialogTitle() = context.getString(R.string.unloading_scan_dialog_title_error)
     fun getScanDialogMessage() = context.getString(R.string.unloading_scan_dialog_message_error)

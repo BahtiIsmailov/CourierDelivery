@@ -7,9 +7,6 @@ import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.ScanProcessStatus
 import com.wb.logistics.db.entity.flight.FlightEntity
-import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
-import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
-import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
@@ -171,54 +168,25 @@ class DcLoadingInteractorImpl(
             with(warehouseScanEntity) { convertToFlightBoxEntity(barcode, updatedAt) }
         val switchScreen = switchScreen()
         val saveFlightBox = saveFlightBox(flightBoxEntity)
-        val removeWarehouseMatchingBox = removeWarehouseByBarcode(barcode)
         val boxAdded = boxAdded(barcode, gate.toString())
         return switchScreen
             .andThen(saveFlightBox)
-            .andThen(removeWarehouseMatchingBox)
             .andThen(boxAdded)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun removeScannedBoxes(checkedBoxes: List<String>): Completable {
-        return flight().flatMapCompletable { removeBoxes(it, checkedBoxes) }
-            .andThen(appLocalRepository.findTakeOnFlightBoxes(checkedBoxes)) // TODO: 02.07.2021 переработать
-            .flatMap { appLocalRepository.deleteFlightBoxes(it).andThen(Single.just(it)) }
-            .flatMap { convertAttachedBoxesToMatchingBox(it) }
-            .flatMapCompletable { appLocalRepository.saveWarehouseMatchingBoxes(it) }
+        return flight().flatMapCompletable { removeBoxesFromFlight(it, checkedBoxes) }
+            .andThen(appLocalRepository.deleteFlightBoxesByBarcode(checkedBoxes))
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun removeBoxes(flightEntity: FlightEntity, checkedBoxes: List<String>) =
+    private fun removeBoxesFromFlight(flightEntity: FlightEntity, checkedBoxes: List<String>) =
         appRemoteRepository.removeBoxesFromFlight(flightEntity.id.toString(),
             false,
             timeManager.getOffsetLocalTime(),
             flightEntity.dc.id,
             checkedBoxes)
-
-    private fun convertAttachedBoxesToMatchingBox(attachedBoxes: List<FlightBoxEntity>) =
-        Observable.fromIterable(attachedBoxes).map { convertToMatchingBox(it) }.toList()
-
-    private fun convertToMatchingBox(attachedBoxEntity: FlightBoxEntity) =
-        with(attachedBoxEntity) {
-            WarehouseMatchingBoxEntity(
-                barcode = barcode,
-                srcOffice = WarehouseMatchingSrcOfficeEntity(
-                    id = srcOffice.id,
-                    name = srcOffice.name,
-                    fullAddress = srcOffice.fullAddress,
-                    longitude = srcOffice.longitude,
-                    latitude = srcOffice.latitude,
-                ),
-                dstOffice = WarehouseMatchingDstOfficeEntity(
-                    id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    longitude = dstOffice.longitude,
-                    latitude = dstOffice.latitude,
-                )
-            )
-        }
 
     private fun boxDefinitionResult(
         barcode: String,
@@ -258,9 +226,6 @@ class DcLoadingInteractorImpl(
 
     private fun saveFlightBox(attachedBoxEntity: FlightBoxEntity) =
         appLocalRepository.saveFlightBox(attachedBoxEntity)
-
-    private fun removeWarehouseByBarcode(barcode: String) =
-        appLocalRepository.deleteWarehouseByBarcode(barcode)
 
     private fun boxAdded(barcode: String, gate: String) =
         Single.just<ScanBoxData>(ScanBoxData.BoxAdded(barcode, gate))

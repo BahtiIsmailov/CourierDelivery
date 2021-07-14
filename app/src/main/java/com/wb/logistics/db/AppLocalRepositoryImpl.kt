@@ -138,6 +138,10 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.deleteAllFlightBox()
     }
 
+    override fun deleteFlightBoxesByBarcode(barcodes: List<String>): Completable {
+        return flightBoxDao.deleteFlightBoxesByBarcode(barcodes)
+    }
+
     override fun deleteFlightBoxes(flightBoxesEntity: List<FlightBoxEntity>): Completable {
         return flightBoxDao.deleteFlightBoxes(flightBoxesEntity)
     }
