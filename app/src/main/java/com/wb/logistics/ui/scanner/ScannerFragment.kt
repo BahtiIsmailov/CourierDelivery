@@ -99,17 +99,20 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun loader() {
-        scannerView.flashLoader()
+        scannerView.setLaserEnabled(false)
+        scannerView.setFlashLoaderEnabled()
         binding.loaderProgress.visibility = View.VISIBLE
         binding.loader.visibility = View.VISIBLE
+        stopScanner()
     }
 
     private fun loaderComplete() {
-        scannerView.flashLoaderComplete()
+        scannerView.setLaserEnabled(true)
+        scannerView.setFlashLoaderComplete()
         binding.loaderProgress.visibility = View.GONE
         binding.loader.visibility = View.GONE
+        startScanner()
     }
-
 
     private fun initListener() {
         binding.sun.setOnClickListener { scannerView.toggleFlash() }

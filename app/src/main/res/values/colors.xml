@@ -29,7 +29,7 @@
 
     <color name="danger">#B00020</color>
     <color name="info">#DBD7E0</color>
-    <color name="complete">#66AF68</color>
+    <color name="complete">#2CA364</color>
     <color name="error">#DF1F00</color>
     <color name="accept">#4BCF85</color>
     <color name="complete_text">#238137</color>

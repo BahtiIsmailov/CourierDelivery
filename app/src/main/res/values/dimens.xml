@@ -42,6 +42,7 @@
     <dimen name="auth_button_height_large">72dp</dimen>
 
     <dimen name="reception_rounded_corner">15dp</dimen>
+    <dimen name="reception_stroke_width">1dp</dimen>
 
     <dimen name="scanner_zoom_button">30dp</dimen>
 

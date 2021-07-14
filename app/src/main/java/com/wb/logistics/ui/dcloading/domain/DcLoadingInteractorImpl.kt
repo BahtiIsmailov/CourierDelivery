@@ -5,6 +5,7 @@ import com.wb.logistics.db.Optional
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.FlightDstOfficeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightSrcOfficeEntity
+import com.wb.logistics.db.entity.flighboxes.ScanProcessStatus
 import com.wb.logistics.db.entity.flight.FlightEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
@@ -76,14 +77,14 @@ class DcLoadingInteractorImpl(
                             updatedAt)
                     }
                     is Optional.Empty -> { //запрос завершился с 400 кодом - определяем код ошибки
-                        if (codeError == "BOX_DOES_NOT_FIT_FLIGHT") {
-                            Observable.just(ScanBoxData.BoxDoesNotBelongFlight(barcode, ""))
-                        } else if (codeError == "BOX_INFO_DOES_NOT_EXIST") {
-                            Observable.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
-                        } else if (codeError == "BOX_NOT_FROM_THIS_WAREHOUSE") {
-                            Observable.just(ScanBoxData.BoxDoesNotBelongDc(barcode, ""))
-                        } else {
-                            Observable.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
+                        when (codeError) {
+                            ScanProcessStatus.BOX_DOES_NOT_FIT_FLIGHT.name ->
+                                Observable.just(ScanBoxData.BoxDoesNotBelongFlight(barcode, ""))
+                            ScanProcessStatus.BOX_INFO_DOES_NOT_EXIST.name ->
+                                Observable.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
+                            ScanProcessStatus.BOX_NOT_FROM_THIS_WAREHOUSE.name ->
+                                Observable.just(ScanBoxData.BoxDoesNotBelongDc(barcode, ""))
+                            else -> Observable.just(ScanBoxData.BoxDoesNotBelongInfoEmpty(barcode))
                         }
                     }
                 }
@@ -93,13 +94,14 @@ class DcLoadingInteractorImpl(
                     .map { ScanProcessData(scanBoxData, it.size) }
                     .toObservable()
             }
-            .flatMap {
-                Completable.fromAction {
-                    scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
-                    scannerRepository.scannerAction(ScannerAction.LoaderComplete)
-                }.andThen(Observable.just(it))
-            }
+            .flatMap { Completable.fromAction { loaderComplete() }.andThen(Observable.just(it)) }
+            .doOnError { loaderComplete() }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    private fun loaderComplete() {
+        scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
+        scannerRepository.scannerAction(ScannerAction.LoaderComplete)
     }
 
     override fun scanLoaderProgress(): Observable<ScanProgressData> {

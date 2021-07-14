@@ -186,13 +186,14 @@ class UnloadingInteractorImpl(
                     }
                 }
             }
-            .flatMap {
-                Completable.fromAction {
-                    scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
-                    scannerRepository.scannerAction(ScannerAction.LoaderComplete)
-                }.andThen(Observable.just(it))
-            }
+            .flatMap { Completable.fromAction { loaderComplete() }.andThen(Observable.just(it)) }
+            .doOnError { loaderComplete() }
             .startWith(UnloadingAction.Init)
+    }
+
+    private fun loaderComplete() {
+        scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
+        scannerRepository.scannerAction(ScannerAction.LoaderComplete)
     }
 
     private fun boxWasUnloadedAnotherPvzScan(

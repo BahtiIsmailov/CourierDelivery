@@ -39,7 +39,7 @@
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <TextView
-        style="@style/SmallRegularLightText"
+        style="@style/SmallRegularBrightText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -58,7 +58,7 @@
         app:layout_constraintBottom_toTopOf="@+id/scanner_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_sun" />
+        app:srcCompat="@drawable/ic_flash_sun" />
 
     <TextView
         android:id="@+id/permission_info"
@@ -100,7 +100,7 @@
 
     <TextView
         android:id="@+id/loader"
-        style="@style/MediumRegularDarkText"
+        style="@style/SMediumRegularDarkText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"

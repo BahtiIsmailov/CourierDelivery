@@ -35,12 +35,12 @@ open class ZXingScannerZoomView : ZXingScannerView {
         this.cameraCompleteListener = cameraCompleteListener
     }
 
-    fun flashLoader() {
+    fun setFlashLoaderEnabled() {
         customViewFinderView?.flashLoader()
     }
 
-    fun flashLoaderComplete() {
-        customViewFinderView?.flashLoader()
+    fun setFlashLoaderComplete() {
+        customViewFinderView?.flashLoaderComplete()
     }
 
     val maxZoom: Int

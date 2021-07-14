@@ -92,7 +92,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginBottom="4dp"
         android:text="@string/dc_loading_box_not_address_title"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/address"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -104,7 +104,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="36dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/understand"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

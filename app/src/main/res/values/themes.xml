@@ -121,6 +121,11 @@
         <item name="android:textColor">@color/light_text</item>>
     </style>
 
+    <style name="SmallRegularBrightText" parent="RegularBaseText">
+        <item name="android:textSize">@dimen/small_text</item>
+        <item name="android:textColor">@color/bright_text</item>
+    </style>
+
     <style name="SMediumRegularBaseText" parent="RegularBaseText">
         <item name="android:textSize">@dimen/smedium_text</item>
         <item name="android:textColor">@color/base_text</item>
