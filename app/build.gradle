@@ -8,67 +8,61 @@ plugins {
 
 android {
 
+    signingConfigs {
+        debugQA {
+        }
+    }
+
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
-//    def versionPropsFile = file('version.properties')
-//
-//    Properties versionProps = new Properties()
-//
-//    if (!versionPropsFile.exists()) {
-//        versionProps['VERSION_NUMBER'] = "0"
-//        versionProps['VERSION_BUILD'] = "8"
-//        versionProps['VERSION_CODE'] = "18"
-//        versionProps.store(versionPropsFile.newWriter(), null)
-//    }
-//
-//    if (versionPropsFile.canRead()) {
-//
-//        versionProps.load(new FileInputStream(versionPropsFile))
-//
-//        def code = versionProps['VERSION_CODE'].toInteger()
-//
-//        def runTasks = gradle.startParameter.taskNames
-//        def releaseNumber = versionProps['VERSION_BUILD'].toInteger()
-//        if (':app:sassembleRelease' in runTasks) {
-//            releaseNumber++
-//        }
-//        print(runTasks)
-//        if (':app:assembleDebug' in runTasks) {
-//            code++
-//        }
-//
-//        versionProps['VERSION_CODE']=code.toString()
-//        versionProps['VERSION_BUILD']=releaseNumber.toString()
-//        versionProps.store(versionPropsFile.newWriter(), null)
-//
-//        defaultConfig {
-//            multiDexEnabled true
-//            applicationId "com.wb.logistics"
-//            minSdkVersion 21
-//            targetSdkVersion 30
-//            versionCode code
-//            versionName "0." + releaseNumber + "." + code
-//
-//            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-//            vectorDrawables.useSupportLibrary = true
-//        }
-//
-//    }
-//    else {
-//        throw new GradleException("Could not read version.properties!")
-//    }
+    def versionPropsFile = file('version.properties')
 
-    defaultConfig {
-        multiDexEnabled true
-        applicationId "com.wb.logistics"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "0.8.48"
+    Properties versionProps = new Properties()
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+    if (!versionPropsFile.exists()) {
+        versionProps['VERSION_MAJOR'] = "0"
+        versionProps['VERSION_MINOR'] = "0"
+        versionProps['VERSION_BUILD'] = "0"
+        versionProps.store(versionPropsFile.newWriter(), null)
+    }
+
+    if (versionPropsFile.canRead()) {
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        def runTasks = gradle.startParameter.taskNames
+        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+        def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+
+        if (':app:sassembleRelease' in runTasks) {
+            versionMinor++
+        }
+        print(runTasks)
+        print("Microdev plugin debug...")
+        if (':app:assembleDebugQA' in runTasks) {
+            versionBuild++
+        }
+
+        versionProps['VERSION_MINOR']=versionMinor.toString()
+        versionProps['VERSION_BUILD']=versionBuild.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+
+        defaultConfig {
+            multiDexEnabled true
+            applicationId "com.wb.logistics"
+            minSdkVersion 21
+            targetSdkVersion 30
+            versionCode 1
+            versionName "0." + versionMinor + "." + versionBuild
+
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            vectorDrawables.useSupportLibrary = true
+        }
+
+    }
+    else {
+        throw new GradleException("Could not read version.properties!")
     }
 
     buildTypes {
@@ -76,6 +70,23 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.debug
+        }
+
+        debugQA {
+            initWith debug
+            debuggable true
+            signingConfig signingConfigs.debug
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
+                    outputFileName = "../../../../../apk/" + fileName
+                }
+            }
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -90,23 +101,16 @@ android {
         viewBinding = true
     }
 
-//    android.applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
-//            outputFileName = "../../../../../apk/" + fileName
-//        }
-//    }
-
 }
 
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation "androidx.fragment:fragment-ktx:1.3.5"
 
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
@@ -114,8 +118,8 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.3.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
