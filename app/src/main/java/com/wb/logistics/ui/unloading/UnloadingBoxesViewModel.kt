@@ -36,8 +36,10 @@ class UnloadingBoxesViewModel(
                             val timeFormat = resourceProvider.getBoxTimeAndTime(
                                 timeFormatter.format(date, TimeFormatType.ONLY_DATE),
                                 timeFormatter.format(date, TimeFormatType.ONLY_TIME))
-                            UnloadingBoxesItem(resourceProvider.getNumericBarcode(index + 1,
-                                value.barcode), timeFormat)
+                            UnloadingBoxesItem(
+                                resourceProvider.getUnnamedBarcodeFormat(singleIncrement(index),
+                                    value.barcode),
+                                timeFormat)
                         }
                     }
                     .toList()
@@ -49,6 +51,8 @@ class UnloadingBoxesViewModel(
                     else UnloadingBoxesState.BoxesComplete(it)
             })
     }
+
+    private val singleIncrement = { index: Int -> index + 1 }
 
     fun onCompleteClick() {
         _navigateToBack.value = NavigateToBack

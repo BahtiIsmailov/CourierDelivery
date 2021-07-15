@@ -11,37 +11,23 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/number"
-        style="@style/SmallRegularLightText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/box"
-        android:layout_alignBottom="@+id/box"
-        android:gravity="center_vertical"
-        tools:text="1." />
-
-    <TextView
         android:id="@+id/box"
         style="@style/SMediumRegularDarkText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/checked"
-        android:layout_toEndOf="@+id/number"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        tools:text="TRBX994827463" />
+        tools:text="1. TRBX994827463" />
 
     <TextView
         android:id="@+id/data"
-        style="@style/SmallRegularLightText"
+        style="@style/SMediumRegularLightText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/box"
-        android:layout_marginTop="4dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="6dp"
         android:layout_toStartOf="@+id/checked"
-        android:layout_toEndOf="@+id/number"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         tools:text="23.04.2021•20:00" />
 
     <CheckBox

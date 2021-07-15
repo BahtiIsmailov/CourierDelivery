@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -51,6 +52,8 @@ class UnloadingBoxesFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.boxes.layoutManager = layoutManager
+        binding.boxes.addItemDecoration(DividerItemDecoration(activity,
+            DividerItemDecoration.VERTICAL))
         binding.boxes.setHasFixedSize(true)
         initSmoothScroller()
     }

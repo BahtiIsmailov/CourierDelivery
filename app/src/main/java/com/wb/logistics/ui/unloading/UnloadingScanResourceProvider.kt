@@ -42,4 +42,11 @@ class UnloadingScanResourceProvider(private val context: Context) {
     fun getScanDialogButton() =
         context.getString(R.string.unloading_scan_dialog_positive_button_error)
 
+    fun getUnnamedBarcodeFormat(index: Int, barcode: String): String {
+        return context.getString(R.string.unnamed_barcode_format,
+            index,
+            barcode.take(4),
+            barcode.takeLast(4))
+    }
+
 }

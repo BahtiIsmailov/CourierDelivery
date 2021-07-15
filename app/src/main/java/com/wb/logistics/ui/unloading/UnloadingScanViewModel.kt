@@ -125,7 +125,7 @@ class UnloadingScanViewModel(
                 _soundEvent.value = UnloadingScanSoundEvent.BoxAdded
                 _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
                 _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
-                _infoState.value = UnloadingScanInfoState.Unloading(it.unloadingAction.barcode)
+                _infoState.value = UnloadingScanInfoState.Return(it.unloadingAction.barcode)
             }
             is UnloadingAction.BoxDoesNotBelongPvz -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded

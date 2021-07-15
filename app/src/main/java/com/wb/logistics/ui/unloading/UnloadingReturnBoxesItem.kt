@@ -1,8 +1,8 @@
 package com.wb.logistics.ui.unloading
 
 data class UnloadingReturnBoxesItem(
-    val number: String,
     val barcode: String,
+    val unnamedBarcode: String,
     val data: String,
     val isChecked: Boolean
 )

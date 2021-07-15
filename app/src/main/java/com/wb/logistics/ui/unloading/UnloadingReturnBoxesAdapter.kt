@@ -25,9 +25,8 @@ class UnloadingReturnBoxesAdapter(
     }
 
     override fun onBindViewHolder(holder: UnloadingReturnBoxesAdapter.ViewHolder, position: Int) {
-        val (number, barcode, data, isChecked) = items[position]
-        holder.binding.number.text = number
-        holder.binding.box.text = barcode
+        val (_, unnamedBarcode, data, isChecked) = items[position]
+        holder.binding.box.text = unnamedBarcode
         holder.binding.data.text = data
         holder.binding.checked.isChecked = isChecked
     }

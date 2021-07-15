@@ -18,6 +18,7 @@ import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
@@ -49,6 +50,7 @@ class UnloadingInteractorImpl(
             observeUnloadedAndUnloadOnFlightBoxes(currentOfficeId),
             observeTookAndPickupBoxes(currentOfficeId),
             { scan, unloadedAndUnload, tookAndPickup ->
+                LogUtils{ logDebugApp("tookAndPickup " + tookAndPickup)}
                 UnloadingData(scan, unloadedAndUnload, tookAndPickup)
             })
             .distinctUntilChanged()

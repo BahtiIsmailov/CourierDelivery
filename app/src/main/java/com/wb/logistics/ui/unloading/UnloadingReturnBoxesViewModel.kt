@@ -63,13 +63,14 @@ class UnloadingReturnBoxesViewModel(
         val timeFormat = resourceProvider.getBoxDateAndTime(
             timeFormatter.format(date, TimeFormatType.ONLY_DATE),
             timeFormatter.format(date, TimeFormatType.ONLY_TIME))
-        UnloadingReturnBoxesItem(singleIncrement(index),
+        UnloadingReturnBoxesItem(
             item.barcode,
+            resourceProvider.getUnnamedBarcodeFormat(singleIncrement(index), item.barcode),
             timeFormat,
             false)
     }
 
-    private val singleIncrement = { index: Int -> (index + 1).toString() }
+    private val singleIncrement = { index: Int -> index + 1 }
 
     private fun copyConvertBoxes(boxes: List<UnloadingReturnBoxesItem>) {
         copyReceptionBoxes = boxes.toMutableList()

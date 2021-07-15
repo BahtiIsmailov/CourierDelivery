@@ -50,7 +50,7 @@ interface FlightBoxDao {
     @Query("SELECT * FROM FlightBoxEntity WHERE dst_office_id = :currentOfficeId AND onBoard = 0 ORDER BY updatedAt")
     fun observeUnloadingUnloadedBoxesByOfficeId(currentOfficeId: Int): Flowable<List<FlightBoxEntity>>
 
-    @Query("SELECT COUNT(*) AS tookCount, barcode AS barcode, updatedAt as updatedAt, (SELECT COUNT(*) FROM PvzMatchingBoxEntity WHERE src_office_id = :currentOfficeId) + COUNT(*) AS pickupCount FROM FlightBoxEntity WHERE src_office_id = :currentOfficeId AND onBoard = 1 ORDER BY updatedAt DESC LIMIT 1")
+    @Query("SELECT LastBarcode.barcode, LastBarcode.updatedAt, TookCount.tookCount, PvzMatching.pvzCount + TookCount.tookCount AS pickupCount  FROM  (SELECT barcode AS barcode , updatedAt as updatedAt FROM FlightBoxEntity WHERE src_office_id = :currentOfficeId AND onBoard = 1 ORDER BY updatedAt DESC LIMIT 1) AS LastBarcode, (SELECT COUNT(*) AS tookCount FROM FlightBoxEntity WHERE src_office_id = :currentOfficeId AND onBoard = 1) AS TookCount, (SELECT COUNT(*) AS pvzCount  FROM PvzMatchingBoxEntity WHERE src_office_id = :currentOfficeId) AS PvzMatching")
     fun observeUnloadingTookAndPickupBoxesByOfficeId(currentOfficeId: Int): Flowable<UnloadingTookAndPickupCountEntity>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE src_office_id = :currentOfficeId AND onBoard = 1 ORDER BY updatedAt")
