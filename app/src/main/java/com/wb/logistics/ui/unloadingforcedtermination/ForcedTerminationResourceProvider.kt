@@ -32,4 +32,11 @@ class ForcedTerminationResourceProvider(private val context: Context) {
     fun getBoxPositiveButton() =
         context.getString(R.string.unloading_boxes_dialog_complete_ok)
 
+    fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
+        return context.getString(R.string.unnamed_barcode_format,
+            index,
+            barcode.take(4),
+            barcode.takeLast(4))
+    }
+
 }

@@ -50,7 +50,6 @@ class UnloadingInteractorImpl(
             observeUnloadedAndUnloadOnFlightBoxes(currentOfficeId),
             observeTookAndPickupBoxes(currentOfficeId),
             { scan, unloadedAndUnload, tookAndPickup ->
-                LogUtils{ logDebugApp("tookAndPickup " + tookAndPickup)}
                 UnloadingData(scan, unloadedAndUnload, tookAndPickup)
             })
             .distinctUntilChanged()
@@ -145,7 +144,7 @@ class UnloadingInteractorImpl(
                     }
 
                     else -> { //информация по ШК не найдена
-                        return@flatMap appRemoteRepository.boxInfo(flightId.toString())
+                        return@flatMap appRemoteRepository.boxInfo(barcodeScanned)
                             .flatMapObservable {
                                 if (it.box is Optional.Success) { //получена информация по коробке
                                     when (currentOfficeId) {
@@ -538,17 +537,16 @@ class UnloadingInteractorImpl(
     private fun observeUnloadedAndUnloadOnFlightBoxes(currentOfficeId: Int): Observable<UnloadingUnloadedAndUnloadCountEntity> {
         return appLocalRepository.observeUnloadedAndUnloadOnFlightBoxesByOfficeId(currentOfficeId)
             .toObservable()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
-
-    override fun observeReturnBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>> {
-        return appLocalRepository.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
-            .toObservable()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     private fun observeTookAndPickupBoxes(currentOfficeId: Int): Observable<UnloadingTookAndPickupCountEntity> {
         return appLocalRepository.observeTookAndPickupOnFlightBoxesByOfficeId(currentOfficeId)
+            .doOnNext { LogUtils { logDebugApp(it.toString()) } }
+            .toObservable()
+    }
+
+    override fun observeReturnBoxes(currentOfficeId: Int): Observable<List<FlightBoxEntity>> {
+        return appLocalRepository.observeReturnedFlightBoxesByOfficeId(currentOfficeId)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }

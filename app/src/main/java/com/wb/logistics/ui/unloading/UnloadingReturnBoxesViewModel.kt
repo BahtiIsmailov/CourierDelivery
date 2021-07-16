@@ -65,7 +65,7 @@ class UnloadingReturnBoxesViewModel(
             timeFormatter.format(date, TimeFormatType.ONLY_TIME))
         UnloadingReturnBoxesItem(
             item.barcode,
-            resourceProvider.getUnnamedBarcodeFormat(singleIncrement(index), item.barcode),
+            resourceProvider.getIndexUnnamedBarcode(singleIncrement(index), item.barcode),
             timeFormat,
             false)
     }

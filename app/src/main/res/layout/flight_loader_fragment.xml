@@ -33,11 +33,24 @@
         android:layout_height="36dp"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:indeterminateTint="@color/color_progress"
-        app:layout_constraintBottom_toBottomOf="@id/content_start"
+        app:layout_constraintBottom_toTopOf="@+id/title"
         app:layout_constraintEnd_toEndOf="@id/content_right"
-        app:layout_constraintStart_toStartOf="@id/content_left"
+        app:layout_constraintStart_toStartOf="@id/content_left" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/SMediumRegularDarkText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_horizontal"
+        android:text="@string/flights_loader"
+        app:layout_constraintBottom_toBottomOf="@id/content_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/content_start" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -63,7 +63,7 @@ class DcLoadingBoxesViewModel(
             timeFormatter.format(date, TimeFormatType.ONLY_DATE),
             timeFormatter.format(date, TimeFormatType.ONLY_TIME))
         DcLoadingBoxesItem(
-            resourceProvider.getUnnamedBarcodeFormat(singleIncrement(index), item.barcode),
+            resourceProvider.getIndexUnnamedBarcode(singleIncrement(index), item.barcode),
             resourceProvider.getBoxTimeAndAddress(dateFormat, item.dstOffice.fullAddress),
             false)
     }

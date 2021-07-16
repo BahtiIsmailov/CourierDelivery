@@ -10,4 +10,6 @@ sealed class ScannerAction {
 
     object LoaderComplete : ScannerAction()
 
+    object BeepScan : ScannerAction()
+
 }

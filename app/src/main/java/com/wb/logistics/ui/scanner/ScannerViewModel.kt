@@ -21,7 +21,10 @@ class ScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
-        interactor.barcodeScanned(barcode)
+        if (barcode.startsWith("TRBX")) {
+            _scannerAction.value = ScannerAction.BeepScan
+            interactor.barcodeScanned(barcode)
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package com.wb.logistics.ui.scanner
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.*
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.zxing.Result
+import com.wb.logistics.R
 import com.wb.logistics.databinding.ScannerFragmentBinding
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.utils.LogUtils
@@ -94,6 +96,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
                 ScannerAction.Stop -> stopScanner()
                 ScannerAction.LoaderProgress -> loader()
                 ScannerAction.LoaderComplete -> loaderComplete()
+                ScannerAction.BeepScan -> beepScan()
             }
         }
     }
@@ -186,6 +189,13 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun stopScanner() {
         scannerView.stopCamera()
+    }
+
+    private fun beepScan() {
+        val mediaPlayer = MediaPlayer.create(
+            context,
+            R.raw.sound_scanner_scan)
+        mediaPlayer.start()
     }
 
     companion object {

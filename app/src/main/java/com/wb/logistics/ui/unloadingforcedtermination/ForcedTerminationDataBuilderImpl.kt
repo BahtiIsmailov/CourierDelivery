@@ -16,7 +16,9 @@ class ForcedTerminationDataBuilderImpl(
         val data = resourceProvider.getNotDeliveryDate(
             timeFormatter.format(dateFormat, ONLY_DATE),
             timeFormatter.format(dateFormat, ONLY_TIME))
-        return ForcedTerminationItem((value.index + 1).toString(), item.barcode, data)
+        val indexUnnamedBarcode =
+            resourceProvider.getIndexUnnamedBarcode(value.index + 1, item.barcode)
+        return ForcedTerminationItem(indexUnnamedBarcode, data)
     }
 
 }

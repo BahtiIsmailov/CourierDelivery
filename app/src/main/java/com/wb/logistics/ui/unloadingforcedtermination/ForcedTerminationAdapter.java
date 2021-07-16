@@ -36,7 +36,6 @@ public class ForcedTerminationAdapter extends ArrayAdapter<ForcedTerminationItem
             holder = (ViewHolder) convertView.getTag();
         }
         ForcedTerminationItem item = items.get(position);
-        holder.binding.number.setText(item.getNumber());
         holder.binding.barcode.setText(item.getBarcode());
         holder.binding.data.setText(item.getData());
         return convertView;
