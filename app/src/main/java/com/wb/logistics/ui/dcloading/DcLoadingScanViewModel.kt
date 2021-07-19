@@ -130,7 +130,7 @@ class DcLoadingScanViewModel(
                     }
             }
             is ScanBoxData.BoxHasBeenAdded -> {
-                _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
+                _beepEvent.value = DcLoadingScanBeepState.BoxAdded
                 boxStateUI.value =
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxHasBeenAdded(

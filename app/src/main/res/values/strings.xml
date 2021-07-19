@@ -85,13 +85,14 @@
     <string name="flights_routes_title_pref">Маршрут %1$s</string>
     <string name="flights_routes_empty">Маршруты не назначены</string>
 
-    <string name="flights_loader">Идет проверка наличия доставок</string>
+    <string name="flights_loader">Получаем данные по рейсу</string>
 
     <string name="dc_loading_label">Прием</string>
     <string name="dc_loading_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
-    <string name="dc_loading_scan_not_permission">Разрешение не установлено</string>
+    <string name="dc_loading_scan_not_permission">Разрешение для использования камеры не установлено</string>
     <string name="dc_loading_scan_loader">Идет загрузка данных</string>
     <string name="dc_loading_scan_not_permission_request">Запросить</string>
+    <string name="dc_loading_scan_not_permission_request_setting">В настройки</string>
     <string name="dc_loading_manual_input_button">Ручной ввод</string>
     <string name="dc_loading_complete_button">Завершить</string>
     <string name="dc_loading_current_box">Баркод коробки</string>

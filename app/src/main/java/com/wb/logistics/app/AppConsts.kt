@@ -9,4 +9,6 @@ object AppConsts {
     const val SERVICE_CODE_UNAUTHORIZED = 401
     const val SERVICE_CODE_FORBIDDEN = 403
     const val SERVICE_CODE_LOCKED = 423
+
+    const val APP_PACKAGE = "package"
 }

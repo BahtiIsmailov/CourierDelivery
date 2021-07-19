@@ -1,34 +1,35 @@
 package com.wb.logistics.ui.scanner
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.zxing.Result
 import com.wb.logistics.R
+import com.wb.logistics.app.AppConsts
 import com.wb.logistics.databinding.ScannerFragmentBinding
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.utils.LogUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler{ //, AndroidScopeComponent
+class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
-
-//    override val scope: Scope by fragmentScope()
-//
-//    private val scannerInteractor: ScannerInteractor by inject()
-
-    private val viewModel by viewModel<ScannerViewModel>() // { parametersOf(scannerInteractor) }
+    private val viewModel by viewModel<ScannerViewModel>()
 
     private var _binding: ScannerFragmentBinding? = null
     private val binding get() = _binding!!
@@ -43,44 +44,43 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler{ //, AndroidS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initPermission()
         initScanner()
         initListener()
         initObserver()
+        initPermission()
     }
 
     private fun initPermission() {
-        if (hasPermissions(Manifest.permission.CAMERA)) {
-            binding.permissionInfo.visibility = View.GONE
-            binding.requestPermission.visibility = View.GONE
-        } else {
-            binding.permissionInfo.visibility = View.VISIBLE
-            binding.requestPermission.visibility = View.VISIBLE
-            requestPermission()
-        }
-    }
-
-    private fun requestPermission() {
-        requestPermissions(
-            arrayOf(Manifest.permission.CAMERA), PERMISSIONS_REQUEST_CAMERA_NO_ACTION
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSIONS_REQUEST_CAMERA_NO_ACTION
-            && grantResults.isNotEmpty()
-            && grantResults.first() == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (hasPermission(Manifest.permission.CAMERA)) {
             binding.permissionInfo.visibility = View.GONE
             binding.requestPermission.visibility = View.GONE
             startScanner()
+        } else {
+            requestPermission.launch(Manifest.permission.CAMERA)
         }
     }
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                binding.permissionInfo.visibility = View.GONE
+                binding.requestPermission.visibility = View.GONE
+                binding.requestPermissionSetting.visibility = View.GONE
+                startScanner()
+            } else {
+                binding.permissionInfo.visibility = View.VISIBLE
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                        binding.requestPermissionSetting.visibility = View.GONE
+                        binding.requestPermission.visibility = View.VISIBLE
+                    } else {
+                        binding.requestPermissionSetting.visibility = View.VISIBLE
+                        binding.requestPermission.visibility = View.GONE
+                    }
+                }
+                stopScanner()
+            }
+        }
 
     private fun initScanner() {
         scannerView = ZXingScannerZoomView(context)
@@ -123,7 +123,24 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler{ //, AndroidS
 
     private fun initListener() {
         binding.sun.setOnClickListener { scannerView.toggleFlash() }
-        binding.requestPermission.setOnClickListener { requestPermission() }
+        binding.requestPermission.setOnClickListener {
+            requestPermission.launch(Manifest.permission.CAMERA)
+        }
+
+        binding.requestPermissionSetting.setOnClickListener {
+            LogUtils { logDebugApp("initPermission() startActivityForResult") }
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri = Uri.fromParts(AppConsts.APP_PACKAGE, requireContext().packageName, null)
+            intent.data = uri
+            startActivityForResult(intent, PERMISSION_FROM_SETTING_REQUEST_CODE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PERMISSION_FROM_SETTING_REQUEST_CODE) {
+            requestPermission.launch(Manifest.permission.CAMERA)
+        }
     }
 
     private fun vibrate() {
@@ -171,14 +188,12 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler{ //, AndroidS
         }, HOLD_SCANNER)
     }
 
-    override fun onStart() {
-        super.onStart()
-        startScanner()
-    }
-
     private fun startScanner() {
         scannerView.setResultHandler(this)
-        scannerView.startCamera()
+
+        if (hasPermission(Manifest.permission.CAMERA)) {
+            scannerView.startCamera()
+        }
 //        scannerView.setCameraCompleteListener {
 //            binding.zoom.max = scannerView.maxZoom
 //            binding.zoom.setOnSeekBarChangeListener(onSeekBarChangeListener)
@@ -202,9 +217,9 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler{ //, AndroidS
     }
 
     companion object {
-        const val PERMISSIONS_REQUEST_CAMERA_NO_ACTION = 1
         const val HOLD_SCANNER = 1000L
         const val VIBRATE_MS = 100L
+        const val PERMISSION_FROM_SETTING_REQUEST_CODE = 502
     }
 
 }

@@ -79,12 +79,12 @@ android {
             debuggable true
             signingConfig signingConfigs.debug
 
-            android.applicationVariants.all { variant ->
-                variant.outputs.all {
-                    def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
-                    outputFileName = "../../../../../apk/" + fileName
-                }
-            }
+//            android.applicationVariants.all { variant ->
+//                variant.outputs.all {
+//                    def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
+//                    outputFileName = "../../../../../apk/" + fileName
+//                }
+//            }
         }
 
     }

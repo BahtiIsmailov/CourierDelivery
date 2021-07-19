@@ -32,9 +32,9 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-    project.logger.lifecycle("remove root dir apk ${rootProject.rootDir}" + "\\apk")
-    fileTree("${rootProject.rootDir}" + "\\apk").each { File file ->
-        project.logger.lifecycle("${file.name}")
-        delete file
-    }
+//    project.logger.lifecycle("remove root dir apk ${rootProject.rootDir}" + "\\apk")
+//    fileTree("${rootProject.rootDir}" + "\\apk").each { File file ->
+//        project.logger.lifecycle("${file.name}")
+//        delete file
+//    }
 }
