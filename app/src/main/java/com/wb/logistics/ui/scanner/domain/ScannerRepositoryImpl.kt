@@ -10,6 +10,7 @@ class ScannerRepositoryImpl : ScannerRepository {
     private val scannerActionSubject = PublishSubject.create<ScannerAction>()
 
     override fun barcodeScanned(barcode: String) {
+        LogUtils { logDebugApp("SCOPE_DEBUG " + this@ScannerRepositoryImpl.toString() + " -> barcodeScanned() " + barcode) }
         actionBarcodeScannedSubject.onNext(barcode)
     }
 
@@ -17,7 +18,6 @@ class ScannerRepositoryImpl : ScannerRepository {
 
 
     override fun scannerAction(action: ScannerAction) {
-        LogUtils { logDebugApp(action.toString()) }
         scannerActionSubject.onNext(action)
     }
 

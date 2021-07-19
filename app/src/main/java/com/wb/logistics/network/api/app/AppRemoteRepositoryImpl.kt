@@ -80,7 +80,6 @@ class AppRemoteRepositoryImpl(
     ): List<FlightOfficeEntity> {
         val officesEntity = mutableListOf<FlightOfficeEntity>()
         offices?.forEach { office ->
-            LogUtils { logDebugApp(office.toString()) }
             officesEntity.add(with(office) {
                 FlightOfficeEntity(
                     id = id,
@@ -266,6 +265,7 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun boxInfo(barcode: String): Single<BoxInfoDataEntity> {
+        LogUtils { logDebugApp("SCOPE_DEBUG call boxInfo " + barcode) }
         return remote.boxInfo(apiVersion(), barcode).map { covertBoxInfoToFlight(it) }
     }
 

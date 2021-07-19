@@ -9,7 +9,6 @@ import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightserror.FlightsErrorParameters
 import com.wb.logistics.ui.flightsloader.domain.FlightDefinitionAction
 import com.wb.logistics.ui.flightsloader.domain.FlightsLoaderInteractor
-import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 
 class FlightLoaderViewModel(
@@ -57,7 +56,6 @@ class FlightLoaderViewModel(
     }
 
     private fun navigateToOnError(throwable: Throwable) {
-        LogUtils { logDebugApp(this.javaClass.name + " navigateToOnError " + throwable.toString()) }
         _countFlightsState.value = CountFlights(flightLoaderProvider.getEmptyFlight())
         _navState.value = NavigateTo(errorDirections(throwable.toString()))
     }

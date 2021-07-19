@@ -9,7 +9,6 @@ import com.wb.logistics.network.exceptions.UnauthorizedException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
-import com.wb.logistics.utils.LogUtils
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -69,7 +68,6 @@ class FlightDeliveriesViewModel(
         addSubscription(interactor.getDeliveryBoxesGroupByOffice()
             .doOnSuccess { copyScannedBoxes = it.toMutableList() }
             .flatMap { boxes ->
-                LogUtils { logDebugApp("fetchDeliveryBoxesGroupByOfficeId " + boxes) }
                 Single.zip(buildPvzItem(boxes), completeDeliveryState(boxes),
                     { build, completeDeliveryState ->
                         FlightDeliveriesUIListState.ShowFlight(build, completeDeliveryState)

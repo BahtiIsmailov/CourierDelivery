@@ -32,9 +32,16 @@ import com.wb.logistics.ui.splash.domain.AppInteractor
 import com.wb.logistics.ui.splash.domain.AppInteractorImpl
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
+import com.wb.logistics.ui.unloadingboxes.domain.UnloadingBoxesInteractor
+import com.wb.logistics.ui.unloadingboxes.domain.UnloadingBoxesInteractorImpl
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
 import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
 import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractorImpl
+import com.wb.logistics.ui.unloadinghandle.domain.UnloadingHandleInteractor
+import com.wb.logistics.ui.unloadinghandle.domain.UnloadingHandleInteractorImpl
+import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
+import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
 import org.koin.dsl.module
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
@@ -153,6 +160,32 @@ val interactorModule = module {
             screenManager)
     }
 
+    fun provideUnloadingBoxesInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appLocalRepository: AppLocalRepository,
+    ): UnloadingBoxesInteractor {
+        return UnloadingBoxesInteractorImpl(rxSchedulerFactory, appLocalRepository)
+    }
+
+    fun provideUnloadingHandleInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appLocalRepository: AppLocalRepository,
+    ): UnloadingHandleInteractor {
+        return UnloadingHandleInteractorImpl(rxSchedulerFactory, appLocalRepository)
+    }
+
+    fun provideUnloadingReturnInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        appLocalRepository: AppLocalRepository,
+        timeManager: TimeManager,
+    ): UnloadingReturnInteractor {
+        return UnloadingReturnInteractorImpl(rxSchedulerFactory,
+            appRemoteRepository,
+            appLocalRepository,
+            timeManager)
+    }
+
     fun provideUnloadingInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppRemoteRepository,
@@ -161,6 +194,7 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): UnloadingInteractor {
+        LogUtils { logDebugApp("SCOPE_DEBUG UnloadingInteractorImpl ctreate " + "scannerRepository -> " + scannerRepository.toString()) }
         return UnloadingInteractorImpl(rxSchedulerFactory,
             appRemoteRepository,
             appLocalRepository,
@@ -239,6 +273,10 @@ val interactorModule = module {
 
     // TODO: 16.07.2021 вынести в scope fragment
     single { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
+
+    single { provideUnloadingBoxesInteractor(get(), get()) }
+    single { provideUnloadingHandleInteractor(get(), get()) }
+    single { provideUnloadingReturnInteractor(get(), get(), get(), get()) }
 
     single { provideForcedTerminationInteractor(get(), get(), get(), get(), get()) }
     single { provideCongratulationInteractor(get(), get()) }

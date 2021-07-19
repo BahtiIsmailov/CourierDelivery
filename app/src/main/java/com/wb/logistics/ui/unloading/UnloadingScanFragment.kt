@@ -15,22 +15,30 @@ import com.wb.logistics.databinding.UnloadingScanFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
-import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
 import com.wb.logistics.ui.unloading.views.UnloadingAcceptedMode
 import com.wb.logistics.ui.unloading.views.UnloadingInfoMode
 import com.wb.logistics.ui.unloading.views.UnloadingReturnMode
+import com.wb.logistics.ui.unloadingboxes.UnloadingBoxesParameters
 import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationParameters
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleParameters
+import com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnParameters
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.SoftKeyboard.hideKeyBoard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class UnloadingScanFragment : Fragment() {
+class UnloadingScanFragment : Fragment() { //, AndroidScopeComponent
+
+//    override val scope: Scope by fragmentScope()
+//
+//    private val unloadingInteractor: UnloadingInteractor by inject()
 
     private val viewModel by viewModel<UnloadingScanViewModel> {
-        parametersOf(requireArguments().getParcelable<UnloadingScanParameters>(UNLOADING_SCAN_KEY))
+        parametersOf(requireArguments().getParcelable<UnloadingScanParameters>(UNLOADING_SCAN_KEY)) //, unloadingInteractor
     }
 
     private var _binding: UnloadingScanFragmentBinding? = null
@@ -196,6 +204,10 @@ class UnloadingScanFragment : Fragment() {
 
     private fun initListener() {
 
+//        binding.test.setOnClickListener {
+//            viewModel.onTestClicked()
+//        }
+
         binding.unloadingBox.setOnClickListener {
             viewModel.onUnloadingListClicked()
         }
@@ -215,8 +227,10 @@ class UnloadingScanFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        LogUtils {logDebugApp("onDestroyView " + this@UnloadingScanFragment.toString())}
         super.onDestroyView()
         _binding = null
+        //scope.close()
     }
 
     private fun beepAdded() {

@@ -7,7 +7,6 @@ import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.api.auth.entity.UserInfoEntity
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
-import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -36,7 +35,6 @@ class FlightsLoaderInteractorImpl(
                         .andThen(navigateTo())
                 }
             }
-            .doOnError { LogUtils { logDebugApp(it.toString()) } }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

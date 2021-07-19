@@ -21,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthTemporaryPasswordFragmentBinding
-import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
@@ -110,7 +109,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
         })
 
         viewModel.repeatStateUI.observe(viewLifecycleOwner, { state ->
-            LogUtils { logDebugApp(state.toString()) }
             when (state) {
                 TemporaryPasswordUIRepeatState.RepeatPassword -> {
                     binding.repeatPasswordTimer.visibility = GONE
@@ -145,7 +143,6 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
         })
 
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
-            LogUtils { logDebugApp(state.toString()) }
             when (state) {
                 TemporaryPasswordUIState.NextDisable -> {
                     binding.passwordLayout.background =

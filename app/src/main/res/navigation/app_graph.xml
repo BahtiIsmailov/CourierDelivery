@@ -231,12 +231,12 @@
 
     <fragment
         android:id="@+id/unloadingBoxesFragment"
-        android:name="com.wb.logistics.ui.unloading.UnloadingBoxesFragment"
+        android:name="com.wb.logistics.ui.unloadingboxes.UnloadingBoxesFragment"
         android:label="@string/unloading_boxes_label"
         tools:layout="@layout/unloading_boxes_fragment">
         <argument
             android:name="unloading_boxes_key"
-            app:argType="com.wb.logistics.ui.unloading.UnloadingBoxesParameters"
+            app:argType="com.wb.logistics.ui.unloadingboxes.UnloadingBoxesParameters"
             app:nullable="false" />
     </fragment>
 
@@ -253,23 +253,23 @@
 
     <fragment
         android:id="@+id/unloadingReturnBoxesFragment"
-        android:name="com.wb.logistics.ui.unloading.UnloadingReturnBoxesFragment"
+        android:name="com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnBoxesFragment"
         android:label="@string/unloading_return_boxes_label"
         tools:layout="@layout/unloading_return_boxes_fragment">
         <argument
             android:name="unloading_return_key"
-            app:argType="com.wb.logistics.ui.unloading.UnloadingReturnParameters"
+            app:argType="com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/unloadingHandleFragment"
-        android:name="com.wb.logistics.ui.unloading.UnloadingHandleFragment"
+        android:name="com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment"
         android:label="@string/unloading_handle_label"
         tools:layout="@layout/unloading_handle_fragment">
         <argument
             android:name="unloading_handle_key"
-            app:argType="com.wb.logistics.ui.unloading.UnloadingHandleParameters"
+            app:argType="com.wb.logistics.ui.unloadinghandle.UnloadingHandleParameters"
             app:nullable="false" />
     </fragment>
 

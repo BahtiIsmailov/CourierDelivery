@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.unloading
+package com.wb.logistics.ui.unloadingboxes
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.logistics.databinding.UnloadingBoxesFragmentBinding
+import com.wb.logistics.ui.unloading.UnloadingScanParameters
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf

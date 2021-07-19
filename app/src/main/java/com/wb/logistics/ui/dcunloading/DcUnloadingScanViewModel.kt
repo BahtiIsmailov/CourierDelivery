@@ -11,7 +11,6 @@ import com.wb.logistics.ui.dcunloading.domain.DcUnloadingAction
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
@@ -85,7 +84,6 @@ class DcUnloadingScanViewModel(
 
     private fun observeScanProcessComplete(): (it: DcUnloadingData) -> Unit =
         {
-            LogUtils { logDebugApp("observeScanProcessComplete " + it.toString()) }
             val accepted =
                 resourceProvider.getAccepted(it.unloadedCounter.unloadedCount,
                     it.unloadedCounter.unloadedCount + it.unloadedCounter.leftUnload)

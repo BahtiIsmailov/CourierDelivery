@@ -1,9 +1,10 @@
-package com.wb.logistics.ui.unloading
+package com.wb.logistics.ui.unloadingboxes
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
+import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
+import com.wb.logistics.ui.unloadingboxes.domain.UnloadingBoxesInteractor
 import com.wb.logistics.utils.time.TimeFormatType
 import com.wb.logistics.utils.time.TimeFormatter
 import io.reactivex.Observable
@@ -14,7 +15,7 @@ class UnloadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: UnloadingScanResourceProvider,
     private val timeFormatter: TimeFormatter,
-    interactor: UnloadingInteractor,
+    interactor: UnloadingBoxesInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxesState = MutableLiveData<UnloadingBoxesState>()

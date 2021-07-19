@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.unloading
+package com.wb.logistics.ui.unloadingreturnboxes
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,7 @@ import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.dcloading.DcLoadingResourceProvider
-import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
+import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.time.TimeFormatType
 import com.wb.logistics.utils.time.TimeFormatter
@@ -17,7 +17,7 @@ import io.reactivex.disposables.CompositeDisposable
 class UnloadingReturnBoxesViewModel(
     private val parameters: UnloadingReturnParameters,
     compositeDisposable: CompositeDisposable,
-    private val interactor: UnloadingInteractor,
+    private val interactor: UnloadingReturnInteractor,
     private val timeFormatter: TimeFormatter,
     private val resourceProvider: DcLoadingResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {

@@ -11,7 +11,6 @@ import com.wb.logistics.ui.unloading.domain.ScanProgressData
 import com.wb.logistics.ui.unloading.domain.UnloadingAction
 import com.wb.logistics.ui.unloading.domain.UnloadingData
 import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
-import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
@@ -107,7 +106,6 @@ class UnloadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(it: UnloadingData) {
-        LogUtils { logDebugApp("observeScanProcessComplete " + it) }
         val unloadingAccepted =
             resourceProvider.getAccepted(it.flightUnloadedAndUnloadCountEntity.unloadedCount,
                 it.flightUnloadedAndUnloadCountEntity.unloadCount)
@@ -196,7 +194,6 @@ class UnloadingScanViewModel(
             resourceProvider.getBoxNotInfoAddress())
 
     private fun observeScanProcessError(throwable: Throwable) {
-        LogUtils { logDebugApp("observeScanProcessError " + throwable.toString()) }
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message
@@ -209,6 +206,13 @@ class UnloadingScanViewModel(
     fun onBoxHandleInput(barcode: String) {
         interactor.barcodeManualInput(barcode.replace("-", ""))
     }
+
+//    fun onTestClicked() {
+//       addSubscription(interactor.barcodeManualInputObserve().subscribe({
+//           LogUtils { logDebugApp("SCOPE_DEBUG " + this@UnloadingScanViewModel.toString() + " -> " + it) }
+//       }, {}))
+//        interactor.barcodeManualInput("onTestClicked")
+//    }
 
     fun onUnloadingListClicked() {
         _navigationEvent.value =

@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.unloading
+package com.wb.logistics.ui.unloadingreturnboxes
 
 data class UnloadingReturnBoxesItem(
     val barcode: String,

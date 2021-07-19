@@ -17,14 +17,18 @@ import com.google.zxing.Result
 import com.wb.logistics.R
 import com.wb.logistics.databinding.ScannerFragmentBinding
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.utils.LogUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
+class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler{ //, AndroidScopeComponent
 
-    private val viewModel by viewModel<ScannerViewModel>()
+
+//    override val scope: Scope by fragmentScope()
+//
+//    private val scannerInteractor: ScannerInteractor by inject()
+
+    private val viewModel by viewModel<ScannerViewModel>() // { parametersOf(scannerInteractor) }
 
     private var _binding: ScannerFragmentBinding? = null
     private val binding get() = _binding!!
@@ -159,7 +163,6 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun scanResult(barcode: String) {
         viewModel.onBarcodeScanned(barcode)
-        LogUtils { logDebugApp("Barcode scan: $barcode") }
     }
 
     private fun holdScanner() {

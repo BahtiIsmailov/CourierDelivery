@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.unloading
+package com.wb.logistics.ui.unloadingboxes
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -17,7 +17,7 @@ class UnloadingBoxesAdapter(context: Context, private val items: MutableList<Unl
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: UnloadingBoxesAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.barcode.text = items[position].barcode
         holder.binding.time.text = items[position].time
     }

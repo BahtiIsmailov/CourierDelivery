@@ -2,7 +2,6 @@ package com.wb.logistics.network.certificate
 
 import android.content.Context
 import com.wb.logistics.R
-import com.wb.logistics.utils.LogUtils
 import java.io.IOException
 import java.io.InputStream
 import java.security.*
@@ -61,7 +60,6 @@ class CertificateStoreUnsafe(context: Context) : CertificateStoreBase(context) {
         for ((index, certificate) in getCertificates(streamCertificate).withIndex()) {
             val certificateAlias = (index).toString()
             keyStore.setCertificateEntry(certificateAlias, certificate)
-            LogUtils { logDebug(CertificateStoreUnsafe::class.java, certificateAlias) }
         }
         return keyStore
     }

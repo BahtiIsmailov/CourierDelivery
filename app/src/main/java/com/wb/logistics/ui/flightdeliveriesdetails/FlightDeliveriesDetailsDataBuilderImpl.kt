@@ -7,7 +7,6 @@ import com.wb.logistics.ui.flightdeliveriesdetails.delegates.items.FlightDeliver
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.items.FlightDeliveriesDetailsItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.items.FlightDeliveriesDetailsTitleItem
 import com.wb.logistics.ui.flightdeliveriesdetails.domain.UnloadedAndReturnBoxesGroupByOffice
-import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_DATE
 import com.wb.logistics.utils.time.TimeFormatType.ONLY_TIME
 import com.wb.logistics.utils.time.TimeFormatter
@@ -30,7 +29,6 @@ class FlightDeliveriesDetailsDataBuilderImpl(
         unloadedBoxes: List<DeliveryUnloadingErrorBoxEntity>,
         idx: Int,
     ): Int {
-        LogUtils { logDebugApp(unloadedBoxes.toString()) }
         var idx1 = idx
         items.add(FlightDeliveriesDetailsTitleItem(
             resourceProvider.getDeliveryTitle(),

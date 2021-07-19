@@ -16,9 +16,8 @@ import com.wb.logistics.ui.dcunloading.views.DcUnloadingInfoMode
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
-import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloading.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
-import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -148,7 +147,6 @@ class DcUnloadingScanFragment : Fragment() {
         }
 
         viewModel.infoState.observe(viewLifecycleOwner) { state ->
-            LogUtils { logDebugApp("viewModel.infoState " + state.toString()) }
             when (state) {
                 is DcUnloadingInfoState.Empty -> binding.info.setCodeBox(
                     DcUnloadingInfoMode.EMPTY)

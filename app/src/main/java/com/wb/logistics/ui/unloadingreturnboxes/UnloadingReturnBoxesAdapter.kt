@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.unloading
+package com.wb.logistics.ui.unloadingreturnboxes
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -24,7 +24,7 @@ class UnloadingReturnBoxesAdapter(
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: UnloadingReturnBoxesAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val (_, unnamedBarcode, data, isChecked) = items[position]
         holder.binding.box.text = unnamedBarcode
         holder.binding.data.text = data
