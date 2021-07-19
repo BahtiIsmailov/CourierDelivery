@@ -1,7 +1,6 @@
 package com.wb.logistics.ui.unloading
 
-import android.media.AudioManager
-import android.media.ToneGenerator
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
@@ -128,8 +128,8 @@ class UnloadingScanFragment : Fragment() {
 
         viewModel.soundEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UnloadingScanSoundEvent.BoxAdded -> beepAdded()
-                is UnloadingScanSoundEvent.BoxSkipAdded -> beepSkip()
+                is UnloadingScanSoundEvent.BoxAdded -> beepSuccess()
+                is UnloadingScanSoundEvent.BoxSkipAdded -> beepError()
             }
         }
 
@@ -228,14 +228,16 @@ class UnloadingScanFragment : Fragment() {
         _binding = null
     }
 
-    private fun beepAdded() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
+    private fun beepSuccess() {
+        play(R.raw.sound_scan_success)
     }
 
-    private fun beepSkip() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
+    private fun beepError() {
+        play(R.raw.sound_scan_error)
+    }
+
+    private fun play(resid: Int) {
+        MediaPlayer.create(context, resid).start()
     }
 
     companion object {

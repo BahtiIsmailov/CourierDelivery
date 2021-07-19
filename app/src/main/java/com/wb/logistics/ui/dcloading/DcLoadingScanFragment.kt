@@ -2,8 +2,7 @@ package com.wb.logistics.ui.dcloading
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.media.AudioManager
-import android.media.ToneGenerator
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.wb.logistics.R
 import com.wb.logistics.databinding.DcLoadingScanFragmentBinding
 import com.wb.logistics.ui.dcloading.DcLoadingHandleFragment.Companion.HANDLE_BARCODE_RESULT
 import com.wb.logistics.ui.dcloading.views.ReceptionAcceptedMode
@@ -69,8 +69,8 @@ class DcLoadingFragment : Fragment() {
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is DcLoadingScanBeepState.BoxAdded -> beepAdded()
-                is DcLoadingScanBeepState.BoxSkipAdded -> beepSkip()
+                is DcLoadingScanBeepState.BoxAdded -> beepSuccess()
+                is DcLoadingScanBeepState.BoxSkipAdded -> beepError()
             }
         }
 
@@ -182,14 +182,16 @@ class DcLoadingFragment : Fragment() {
         _binding = null
     }
 
-    private fun beepAdded() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
+    private fun beepSuccess() {
+        play(R.raw.sound_scan_success)
     }
 
-    private fun beepSkip() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
+    private fun beepError() {
+        play(R.raw.sound_scan_error)
+    }
+
+    private fun play(resid: Int) {
+        MediaPlayer.create(context, resid).start()
     }
 
     companion object {

@@ -72,13 +72,6 @@ class UnloadingScanViewModel(
         observeScanProgress()
     }
 
-//    fun init() {
-//        initTitleToolbar()
-//        observeBackButton()
-//        observeUnloadProcess()
-//        observeScanProgress()
-//    }
-
     private fun observeScanProgress() {
         addSubscription(interactor.scanLoaderProgress()
             .subscribe {
@@ -248,10 +241,6 @@ class UnloadingScanViewModel(
     fun onStopScanner() {
         interactor.scannerAction(ScannerAction.Stop)
     }
-
-//    fun onDestroy() {
-//        onCleared()
-//    }
 
     object HideBackButtonState
 
