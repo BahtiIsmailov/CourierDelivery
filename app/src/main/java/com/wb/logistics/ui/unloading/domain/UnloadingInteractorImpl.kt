@@ -31,6 +31,8 @@ class UnloadingInteractorImpl(
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
 
+    private val barcodeScannedSubject = PublishSubject.create<String>()
+
     private val scanLoaderProgressSubject = PublishSubject.create<ScanProgressData>()
 
     override fun barcodeManualInput(barcode: String) {
@@ -38,7 +40,7 @@ class UnloadingInteractorImpl(
     }
 
     private fun barcodeScannerInput(): Observable<Pair<String, Boolean>> {
-        return scannerRepository.observeBarcodeScanned()
+        return scannerRepository.observeBarcodeScanned(barcodeScannedSubject)
             .doOnNext { LogUtils { logDebugApp("SCOPE_DEBUG " + this@UnloadingInteractorImpl.toString() + " -> barcodeScannerInput() " + it) } }
             .map { Pair(it, false) }
     }

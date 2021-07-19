@@ -31,14 +31,10 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class UnloadingScanFragment : Fragment() { //, AndroidScopeComponent
-
-//    override val scope: Scope by fragmentScope()
-//
-//    private val unloadingInteractor: UnloadingInteractor by inject()
+class UnloadingScanFragment : Fragment() {
 
     private val viewModel by viewModel<UnloadingScanViewModel> {
-        parametersOf(requireArguments().getParcelable<UnloadingScanParameters>(UNLOADING_SCAN_KEY)) //, unloadingInteractor
+        parametersOf(requireArguments().getParcelable<UnloadingScanParameters>(UNLOADING_SCAN_KEY))
     }
 
     private var _binding: UnloadingScanFragmentBinding? = null
@@ -230,7 +226,6 @@ class UnloadingScanFragment : Fragment() { //, AndroidScopeComponent
         LogUtils {logDebugApp("onDestroyView " + this@UnloadingScanFragment.toString())}
         super.onDestroyView()
         _binding = null
-        //scope.close()
     }
 
     private fun beepAdded() {

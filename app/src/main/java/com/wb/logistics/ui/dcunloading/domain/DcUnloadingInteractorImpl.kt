@@ -28,6 +28,8 @@ class DcUnloadingInteractorImpl(
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
 
+    private val barcodeScannedSubject = PublishSubject.create<String>()
+
     private val scanLoaderProgressSubject = PublishSubject.create<ScanProgressData>()
 
     override fun barcodeManualInput(barcode: String) {
@@ -48,7 +50,7 @@ class DcUnloadingInteractorImpl(
     }
 
     private fun barcodeScannerInput(): Observable<Pair<String, Boolean>> {
-        return scannerRepository.observeBarcodeScanned().map { Pair(it, false) }
+        return scannerRepository.observeBarcodeScanned(barcodeScannedSubject).map { Pair(it, false) }
     }
 
     private fun observeUnloadingCounterBoxes(): Observable<DcUnloadingCounterEntity> {

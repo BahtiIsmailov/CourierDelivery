@@ -268,11 +268,10 @@ val interactorModule = module {
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
     single { provideFlightPickPointInteractor(get(), get(), get(), get()) }
     single { provideFlightDeliveriesInteractor(get(), get(), get(), get()) }
-    single { provideScannerInteractor(get(), get()) }
+    factory { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get()) }
 
-    // TODO: 16.07.2021 вынести в scope fragment
-    single { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
+    factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
 
     single { provideUnloadingBoxesInteractor(get(), get()) }
     single { provideUnloadingHandleInteractor(get(), get()) }
