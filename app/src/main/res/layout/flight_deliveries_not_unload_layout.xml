@@ -9,6 +9,7 @@
     android:layout_marginTop="16dp"
     android:layout_marginEnd="10dp"
     android:background="@drawable/reception_rounded_corner_info"
+    app:cardElevation="@dimen/card_view_elevation"
     android:clickable="true"
     android:focusable="true">
 

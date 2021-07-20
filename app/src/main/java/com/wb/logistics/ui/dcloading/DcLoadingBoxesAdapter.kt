@@ -25,8 +25,8 @@ class DcLoadingBoxesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (barcode, address, isChecked) = items[position]
-        holder.binding.box.text = barcode
+        val (barcode, unnamedBarcode, address, isChecked) = items[position]
+        holder.binding.box.text = unnamedBarcode
         holder.binding.address.text = address
         holder.binding.checked.isChecked = isChecked
     }

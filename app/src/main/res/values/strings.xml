@@ -29,7 +29,7 @@
     <string name="unloading_empty_title" />
 
 
-    <string name="inet_text">наличие интернета</string>
+    <string name="inet_text">Наличие интернета: </string>
     <string name="inet_ok">Есть</string>
     <string name="inet_no">Нет</string>
 

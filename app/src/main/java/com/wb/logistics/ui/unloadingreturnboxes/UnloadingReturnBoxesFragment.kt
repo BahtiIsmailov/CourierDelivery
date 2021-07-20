@@ -1,7 +1,6 @@
 package com.wb.logistics.ui.unloadingreturnboxes
 
-import android.app.Activity
-import android.content.Intent
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -9,6 +8,9 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingReturnBoxesFragmentBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
-import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -125,21 +126,28 @@ class UnloadingReturnBoxesFragment : Fragment() {
     }
 
     private fun showDialogReturnBalance() {
-        val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.unloading_return_dialog_title),
-            getString(R.string.unloading_return_dialog_description),
-            getString(R.string.unloading_return_dialog_positive_button),
-            getString(R.string.unloading_return_dialog_negative_button)
-        )
-        dialog.setTargetFragment(this, UNLOADING_RETURN_REQUEST_CODE)
-        dialog.show(parentFragmentManager, UNLOADING_RETURN_TAG)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == UNLOADING_RETURN_REQUEST_CODE) {
+        val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup = binding.loginLayout
+        val dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.custom_layout_dialog, viewGroup, false)
+        val title: TextView = dialogView.findViewById(R.id.title)
+        val message: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        val positive: Button = dialogView.findViewById(R.id.positive)
+        builder.setView(dialogView)
+        val alertDialog = builder.create()
+        title.text = getString(R.string.unloading_return_dialog_title)
+        message.text = getString(R.string.unloading_return_dialog_description)
+        negative.setOnClickListener { alertDialog.dismiss() }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = getString(R.string.unloading_return_dialog_negative_button)
+        positive.setOnClickListener {
+            alertDialog.dismiss()
             viewModel.onRemoveClick()
         }
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.accept))
+        positive.text = getString(R.string.unloading_return_dialog_positive_button)
+        alertDialog.show()
     }
 
     override fun onDestroyView() {
@@ -149,8 +157,6 @@ class UnloadingReturnBoxesFragment : Fragment() {
 
     companion object {
         const val UNLOADING_RETURN_KEY = "unloading_return_key"
-        private const val UNLOADING_RETURN_REQUEST_CODE = 100
-        private const val UNLOADING_RETURN_TAG = "UNLOADING_RETURN_TAG"
     }
 
 }

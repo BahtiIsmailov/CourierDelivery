@@ -1,11 +1,12 @@
 package com.wb.logistics.ui.flightpickpoint
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -17,11 +18,11 @@ import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightPickPointFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
-import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightpickpoint.delegates.FlightPickPointDelegate
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class FlightPickPointFragment : Fragment() {
 
@@ -120,23 +121,31 @@ class FlightPickPointFragment : Fragment() {
     }
 
     private fun showDeliveryDialog() {
-        val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.flight_deliveries_dialog_title),
-            getString(R.string.flight_deliveries_dialog_description),
-            getString(R.string.flight_deliveries_dialog_positive_button),
-            getString(R.string.flight_deliveries_dialog_negative_button),
-            ContextCompat.getColor(requireContext(), R.color.accept),
-            ContextCompat.getColor(requireContext(), R.color.primary)
-        )
-        dialog.setTargetFragment(this, GO_DELIVERY_REQUEST_CODE)
-        dialog.show(parentFragmentManager, GO_DELIVERY_TAG)
-    }
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.recyclerView
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.custom_layout_dialog, viewGroup, false)
+        val title: TextView = dialogView.findViewById(R.id.title)
+        val message: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        val positive: Button = dialogView.findViewById(R.id.positive)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == GO_DELIVERY_REQUEST_CODE) {
+        builder.setView(dialogView)
+        val alertDialog: AlertDialog = builder.create()
+        title.text = getString(R.string.flight_deliveries_dialog_title)
+        message.text = getString(R.string.flight_deliveries_dialog_description)
+        negative.setOnClickListener { alertDialog.dismiss() }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = getString(R.string.flight_deliveries_dialog_negative_button)
+        positive.setOnClickListener {
+            alertDialog.dismiss()
             viewModel.action(FlightPickPointUIAction.GoToDeliveryConfirmClick)
         }
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.accept))
+        positive.text = getString(R.string.flight_deliveries_dialog_positive_button)
+        alertDialog.show()
     }
 
     private fun updateToolbarLabel(toolbarTitle: String) {

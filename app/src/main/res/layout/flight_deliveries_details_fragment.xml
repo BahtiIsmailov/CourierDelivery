@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
-        android:background="@color/delivery_background"
+        android:background="@color/delivery_card_background"
         android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/proceed_boxes"
         app:layout_constraintEnd_toEndOf="parent"

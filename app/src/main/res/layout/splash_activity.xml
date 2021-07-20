@@ -4,7 +4,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
     <include layout="@layout/navigation_auth_host" />
@@ -23,26 +22,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:background="@color/tint" />
+
+            <LinearLayout
+                android:id="@+id/ver_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp">
+
+                <TextView
+                    android:id="@+id/version_app_text"
+                    style="@style/SMediumRegularDarkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    tools:text="версия" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:background="@color/tint" />
 
             <LinearLayout
                 android:id="@+id/logout_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
                 android:background="?android:selectableItemBackground">
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_marginStart="24dp"
                     app:srcCompat="@drawable/ic_nav_out_app" />
 
                 <TextView
                     style="@style/SMediumRegularDarkText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="16dp"
                     android:text="@string/app_nav_out_app" />
 
             </LinearLayout>

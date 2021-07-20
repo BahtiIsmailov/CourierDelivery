@@ -1,11 +1,13 @@
 package com.wb.logistics.ui.flightdeliveries
 
-import android.app.Activity
-import android.content.Intent
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +18,6 @@ import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
-import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.splash.NavToolbarListener
@@ -34,11 +35,6 @@ class FlightDeliveriesFragment : Fragment() {
     private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
-
-    companion object {
-        private const val FLIGHT_DELIVERY_REQUEST_CODE = 100
-        private const val FLIGHT_DELIVERY_TAG = "FLIGHT_DELIVERY_TAG"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -218,21 +214,31 @@ class FlightDeliveriesFragment : Fragment() {
     }
 
     private fun showDialogReturnBalance(description: String) {
-        val dialog = SimpleResultDialogFragment.newInstance(
-            getString(R.string.flight_deliveries_dialog_negative_title),
-            description,
-            getString(R.string.flight_deliveries_dialog_force_positive_button),
-            getString(R.string.flight_deliveries_dialog_force_negative_button)
-        )
-        dialog.setTargetFragment(this, FLIGHT_DELIVERY_REQUEST_CODE)
-        dialog.show(parentFragmentManager, FLIGHT_DELIVERY_TAG)
-    }
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.recyclerView
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.custom_layout_dialog, viewGroup, false)
+        val title: TextView = dialogView.findViewById(R.id.title)
+        val message: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        val positive: Button = dialogView.findViewById(R.id.positive)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == FLIGHT_DELIVERY_REQUEST_CODE) {
+        builder.setView(dialogView)
+        val alertDialog: AlertDialog = builder.create()
+        title.text = getString(R.string.flight_deliveries_dialog_negative_title)
+        message.text = description
+        negative.setOnClickListener { alertDialog.dismiss() }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = getString(R.string.flight_deliveries_dialog_force_negative_button)
+        positive.setOnClickListener {
+            alertDialog.dismiss()
             viewModel.onCompleteConfirm()
         }
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.accept))
+        positive.text = getString(R.string.flight_deliveries_dialog_force_positive_button)
+        alertDialog.show()
     }
 
 }

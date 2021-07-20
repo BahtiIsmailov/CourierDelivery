@@ -47,7 +47,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        binding.navView.clearAnimation()
         initToolbar()
         initNavController()
         initObserver()
@@ -97,18 +97,19 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         viewModel.networkState.observe(this) {
             networkIcon.visibility = if (it) GONE else VISIBLE
             val header: View = binding.navView.getHeaderView(0)
-            val status = when (it) {
-                true -> getString(R.string.inet_ok)
-                false -> getString(R.string.inet_no)
+            if (it) {
+                header.findViewById<TextView>(R.id.inet_app_status_make_text).visibility = VISIBLE
+                header.findViewById<TextView>(R.id.inet_app_status_no_text).visibility = GONE
+            } else {
+                header.findViewById<TextView>(R.id.inet_app_status_make_text).visibility = GONE
+                header.findViewById<TextView>(R.id.inet_app_status_no_text).visibility = VISIBLE
             }
-            header.findViewById<TextView>(R.id.inet_app_text).text =
-                String.format("%s: %s", getString(R.string.inet_text), status)
-
         }
 
-        viewModel.versionApp.observe(this) {
-            val header: View = binding.navView.getHeaderView(0)
-            header.findViewById<TextView>(R.id.version_app_text).text = it
+        viewModel.versionApp.observe(this)
+        {
+            //val header: View = binding.navView.getHeaderView(0)
+            //binding.navView.findViewById<TextView>(R.id.version_app_text).text = it
         }
     }
 

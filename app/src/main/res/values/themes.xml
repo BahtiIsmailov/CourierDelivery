@@ -101,6 +101,12 @@
         <item name="android:textColor">@color/base_text</item>
     </style>
 
+    <style name="MediumBaseText" parent="@android:style/Widget.TextView">
+        <item name="android:fontFamily">@font/medium</item>
+        <item name="android:textSize">@dimen/base_text</item>
+        <item name="android:textColor">@color/base_text</item>
+    </style>
+
     <style name="BaseRegularDarkText" parent="RegularBaseText">
         <item name="android:textSize">@dimen/base_text</item>
         <item name="android:textColor">@color/base_text</item>>
@@ -156,9 +162,19 @@
         <item name="android:textColor">@color/bright_text</item>
     </style>
 
+    <style name="MediumRegularSemiDarkText" parent="RegularBaseText">
+        <item name="android:textSize">@dimen/smedium_text</item>
+        <item name="android:textColor">@color/semi_dark_text</item>
+    </style>
+
     <style name="MediumRegularLightText" parent="RegularBaseText">
         <item name="android:textSize">@dimen/smedium_text</item>
         <item name="android:textColor">@color/light_text</item>
+    </style>
+
+    <style name="SMediumBrightText" parent="MediumBaseText">
+        <item name="android:textSize">@dimen/smedium_text</item>
+        <item name="android:textColor">@color/bright_text</item>
     </style>
 
     <style name="InputPhoneOutlineBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
@@ -206,6 +222,10 @@
 
     <style name="HandleInputBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">#00000000</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/reception_rounded_corner_empty</item>
     </style>
 
 </resources>

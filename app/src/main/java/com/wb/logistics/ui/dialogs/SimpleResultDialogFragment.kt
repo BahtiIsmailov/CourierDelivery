@@ -12,6 +12,7 @@ import com.wb.logistics.R
 import com.wb.logistics.app.AppExtras
 import kotlin.properties.Delegates
 
+
 class SimpleResultDialogFragment : DialogFragment() {
 
     private lateinit var title: String
@@ -35,8 +36,10 @@ class SimpleResultDialogFragment : DialogFragment() {
                 arguments.getString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, "")
             negativeButtonName =
                 arguments.getString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, "")
-            positiveButtonColor = arguments.getInt(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_COLOR, positiveTextColorButtonDefault)
-            negativeButtonColor = arguments.getInt(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_COLOR, negativeTextColorButtonDefault)
+            positiveButtonColor = arguments.getInt(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_COLOR,
+                positiveTextColorButtonDefault)
+            negativeButtonColor = arguments.getInt(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_COLOR,
+                negativeTextColorButtonDefault)
         }
     }
 
@@ -66,7 +69,7 @@ class SimpleResultDialogFragment : DialogFragment() {
         context?.let {
             (dialog as AlertDialog)
                 .getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor( positiveButtonColor)
+                .setTextColor(positiveButtonColor)
             (dialog as AlertDialog)
                 .getButton(AlertDialog.BUTTON_NEGATIVE)
                 .setTextColor(negativeButtonColor)

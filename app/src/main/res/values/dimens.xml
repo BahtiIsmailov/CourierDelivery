@@ -15,10 +15,18 @@
     <dimen name="input_corner">8dp</dimen>
     <dimen name="input_height">56dp</dimen>
 
+    <dimen name="auth_padding_left">16dp</dimen>
+    <dimen name="auth_padding_right">4dp</dimen>
+    <dimen name="auth_padding_top">16dp</dimen>
+    <dimen name="auth_padding_bottom">16dp</dimen>
+
+    <dimen name="layout_padding_horizontal_base">16dp</dimen>
+    <dimen name="layout_scanner_padding_horizontal_base">24dp</dimen>
+
     <dimen name="toolbar_height">56dp</dimen>
 
-    <dimen name="activity_horizontal_margin">32dp</dimen>
-    <dimen name="activity_vertical_margin">32dp</dimen>
+    <dimen name="activity_horizontal_margin">24dp</dimen>
+    <dimen name="activity_vertical_margin">24dp</dimen>
 
 
     <dimen name="small_text">12sp</dimen>
@@ -28,7 +36,7 @@
     <dimen name="large_text">27sp</dimen>
 
     <dimen name="card_view_elevation">2dp</dimen>
-    <dimen name="card_view_corner_radius">5dp</dimen>
+    <dimen name="card_view_corner_radius">8dp</dimen>
 
     <dimen name="button_text_size">18sp</dimen>
 
@@ -37,11 +45,14 @@
     <dimen name="floating_hint_corner_radius">5dp</dimen>
 
     <dimen name="auth_input_top_offset">96dp</dimen>
-    <dimen name="auth_input_horizontal_patent_offset">24dp</dimen>
+    <dimen name="auth_input_horizontal_patent_offset">16dp</dimen>
     <dimen name="auth_button_height">56dp</dimen>
     <dimen name="auth_button_height_large">72dp</dimen>
 
     <dimen name="reception_rounded_corner">8dp</dimen>
+    <dimen name="counter_rounded_corner">6dp</dimen>
+    <dimen name="counter_margin_vertical">4dp</dimen>
+    <dimen name="counter_margin_horizontal">10dp</dimen>
     <dimen name="reception_stroke_width">1dp</dimen>
 
     <dimen name="scanner_zoom_button">30dp</dimen>

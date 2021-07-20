@@ -5,11 +5,11 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="10dp"
+    android:layout_marginLeft="@dimen/layout_padding_horizontal_base"
     android:layout_marginTop="25dp"
-    android:layout_marginRight="10dp"
+    android:layout_marginRight="@dimen/layout_padding_horizontal_base"
     android:layout_marginBottom="25dp"
-    app:cardBackgroundColor="@color/delivery_background"
+    app:cardBackgroundColor="@color/delivery_card_background"
     app:cardCornerRadius="@dimen/card_view_corner_radius"
     app:cardElevation="@dimen/card_view_elevation"
     tools:context=".ui.flights.FlightsFragment">
@@ -17,8 +17,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingStart="@dimen/layout_padding_horizontal_base">
 
         <TextView
             android:id="@+id/flight_text"
@@ -33,7 +32,7 @@
 
         <TextView
             android:id="@+id/date_text"
-            style="@style/BaseRegularLightText"
+            style="@style/SMediumRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
@@ -54,9 +53,10 @@
 
         <TextView
             android:id="@+id/time_text"
-            style="@style/BaseRegularLightText"
+            style="@style/SMediumRegularLightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/layout_padding_horizontal_base"
             app:layout_constraintBottom_toBottomOf="@+id/date_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/date_text"
@@ -69,8 +69,9 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
+            android:letterSpacing="0.08"
             android:text="@string/flights_parking_title"
-            android:textColor="@color/delivery_parking_number"
+            android:textColor="@color/primary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/flight_text" />
 
@@ -80,8 +81,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/delivery_parking_number"
+            android:layout_marginStart="10dp"
+            android:letterSpacing="0.08"
+            android:textColor="@color/primary"
             app:layout_constraintBottom_toBottomOf="@+id/parking_title_text"
             app:layout_constraintStart_toEndOf="@+id/parking_title_text"
             app:layout_constraintTop_toTopOf="@+id/parking_title_text"
@@ -104,11 +106,13 @@
             android:id="@+id/show_route_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:background="?selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:padding="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="@dimen/layout_padding_horizontal_base"
+            android:paddingBottom="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/routes_title_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/routes_title_text"
