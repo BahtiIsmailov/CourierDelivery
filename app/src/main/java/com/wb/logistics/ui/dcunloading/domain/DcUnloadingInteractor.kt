@@ -4,6 +4,7 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -22,5 +23,7 @@ interface DcUnloadingInteractor {
     fun isBoxesUnloaded(): Single<Boolean>
 
     fun scannerAction(scannerAction: ScannerAction)
+
+    fun switchScreenToClosed(): Completable
 
 }

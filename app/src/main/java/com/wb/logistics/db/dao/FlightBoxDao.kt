@@ -10,6 +10,7 @@ import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
 import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingCounterEntity
+import com.wb.logistics.ui.splash.domain.AppDeliveryResult
 import com.wb.logistics.ui.unloadingcongratulation.domain.DeliveryResult
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -92,6 +93,9 @@ interface FlightBoxDao {
 
     @Query("SELECT (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightBoxEntity.src_office_id = dc_id AND onBoard = 0 AND status != 6) as unloadedCount, (SELECT COUNT(*) as attachedCount FROM FlightBoxEntity WHERE FlightBoxEntity.src_office_id = dc_id) as attachedCount FROM (SELECT dc_id FROM FlightEntity) as dc_id")
     fun getCongratulationDelivered(): Single<DeliveryResult>
+
+    @Query("SELECT (SELECT COUNT(*) FROM FlightBoxEntity WHERE FlightBoxEntity.src_office_id = dc_id AND onBoard = 0) as unloadedCount, (SELECT COUNT(*) as attachedCount FROM FlightBoxEntity WHERE FlightBoxEntity.src_office_id = dc_id) as attachedCount FROM (SELECT dc_id FROM FlightEntity) as dc_id")
+    fun getAppDelivered(): Flowable<AppDeliveryResult>
 
     @Query("SELECT * FROM FlightBoxEntity WHERE barcode IN (:barcodes)")
     fun loadBox(barcodes: List<String>): Single<List<FlightBoxEntity>>

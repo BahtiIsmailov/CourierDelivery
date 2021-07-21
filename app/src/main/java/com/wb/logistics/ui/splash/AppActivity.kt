@@ -8,11 +8,11 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavController.OnDestinationChangedListener
@@ -26,11 +26,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.SplashActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
+import com.wb.logistics.ui.flightsloader.FlightActionStatus
+import com.wb.logistics.utils.LogUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnUserInfo,
+class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
+    OnUserInfo,
     NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -47,7 +50,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.navView.clearAnimation()
         initToolbar()
         initNavController()
         initObserver()
@@ -96,30 +98,85 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
 
         viewModel.networkState.observe(this) {
             networkIcon.visibility = if (it) GONE else VISIBLE
-            val header: View = binding.navView.getHeaderView(0)
-            if (it) {
-                header.findViewById<TextView>(R.id.inet_app_status_make_text).visibility = VISIBLE
-                header.findViewById<TextView>(R.id.inet_app_status_no_text).visibility = GONE
-            } else {
-                header.findViewById<TextView>(R.id.inet_app_status_make_text).visibility = GONE
-                header.findViewById<TextView>(R.id.inet_app_status_no_text).visibility = VISIBLE
+            with(binding.navView) {
+                if (it) {
+                    findViewById<TextView>(R.id.inet_app_status_make_text).visibility = VISIBLE
+                    findViewById<TextView>(R.id.inet_app_status_no_text).visibility = GONE
+                } else {
+                    findViewById<TextView>(R.id.inet_app_status_make_text).visibility = GONE
+                    findViewById<TextView>(R.id.inet_app_status_no_text).visibility = VISIBLE
+                }
             }
         }
 
-        viewModel.versionApp.observe(this)
-        {
-            //val header: View = binding.navView.getHeaderView(0)
-            //binding.navView.findViewById<TextView>(R.id.version_app_text).text = it
+        viewModel.flightsActionState.observe(this) { status ->
+            LogUtils { logDebugApp(status.toString()) }
+            when (status) {
+                is FlightActionStatus.NotAssigned -> flightNotAssigned(status.delivery)
+                is FlightActionStatus.Loading -> {
+                    with(binding.navView) {
+                        findViewById<TextView>(R.id.delivery).text = status.deliveryId
+                        findViewById<TextView>(R.id.status_not_assigned).visibility = GONE
+                        findViewById<TextView>(R.id.status_in_transit).visibility = GONE
+                        findViewById<TextView>(R.id.status_loading_progress).visibility = VISIBLE
+
+                        findViewById<TextView>(R.id.info_empty).visibility = GONE
+                        findViewById<View>(R.id.accepted_layout).visibility = VISIBLE
+                        findViewById<View>(R.id.debt_layout).visibility = VISIBLE
+                    }
+                }
+                is FlightActionStatus.InTransit -> {
+                    with(binding.navView) {
+                        findViewById<TextView>(R.id.delivery).text = status.deliveryId
+                        findViewById<TextView>(R.id.status_not_assigned).visibility = GONE
+                        findViewById<TextView>(R.id.status_in_transit).visibility = VISIBLE
+                        findViewById<TextView>(R.id.status_loading_progress).visibility = GONE
+
+                        findViewById<TextView>(R.id.info_empty).visibility = GONE
+                        findViewById<View>(R.id.accepted_layout).visibility = VISIBLE
+                        findViewById<View>(R.id.debt_layout).visibility = VISIBLE
+                    }
+                }
+            }
+        }
+
+        viewModel.counterBoxesActionStatus.observe(this) { status ->
+            when (status) {
+                is CounterBoxesActionStatus.Accepted -> {
+                    with(binding.navView) {
+                        findViewById<TextView>(R.id.accepted_text).text = status.accepted
+                        findViewById<TextView>(R.id.debt_text).text = status.debt
+                        findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
+                            context, R.color.icon_success))
+                    }
+                }
+                is CounterBoxesActionStatus.AcceptedDebt -> {
+                    with(binding.navView) {
+                        findViewById<TextView>(R.id.accepted_text).text = status.accepted
+                        findViewById<TextView>(R.id.debt_text).text = status.debt
+                        findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
+                            context, R.color.icon_deny))
+                    }
+                }
+            }
+        }
+
+        viewModel.versionApp.observe(this) {
+            with(binding.navView) {
+                findViewById<TextView>(R.id.version_app_text).text = it
+            }
         }
     }
 
     private fun initListener() {
-        binding.logoutLayout.setOnClickListener {
-            viewModel.onExitClick()
-            panMode()
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            Navigation.findNavController(this, R.id.nav_auth_host_fragment)
-                .navigate(R.id.load_navigation)
+        with(binding.navView) {
+            findViewById<View>(R.id.logout_layout).setOnClickListener {
+                viewModel.onExitClick()
+                panMode()
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                Navigation.findNavController(this@AppActivity, R.id.nav_auth_host_fragment)
+                    .navigate(R.id.load_navigation)
+            }
         }
     }
 
@@ -133,25 +190,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
                 getString(R.string.nav_no_internet_dialog_button),
             ).show(supportFragmentManager, "TAG_NETWORK")
         }
-    }
-
-    override fun flightCount(count: String) {
-        setMenuCounter(getMenuIds().first(), count)
-    }
-
-    private fun getMenuIds(): List<Int> {
-        val menuItemId: MutableList<Int> = ArrayList()
-        val menu = binding.navView.menu
-        for (i in 0 until menu.size()) {
-            menuItemId.add(menu.getItem(i).itemId)
-        }
-        return menuItemId
-    }
-
-    private fun setMenuCounter(@IdRes itemId: Int, count: String) {
-        val view = binding.navView.menu.findItem(itemId).actionView
-        val counter = view.findViewById<TextView>(R.id.counter_flight_text)
-        counter.text = count
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -219,10 +257,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
             .show()
     }
 
-    override fun flightCount(name: String, company: String) {
-        val header: View = binding.navView.getHeaderView(0)
-        header.findViewById<TextView>(R.id.nav_header_name).text = name
-        header.findViewById<TextView>(R.id.nav_header_company).text = company
+    override fun flightUserInfo(name: String, company: String) {
+        with(binding.navView) {
+            findViewById<TextView>(R.id.nav_header_name).text = name
+            findViewById<TextView>(R.id.nav_header_company).text = company
+        }
     }
 
     override fun lock() {
@@ -242,6 +281,18 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsCount, OnU
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
+    override fun flightNotAssigned(delivery: String) {
+        with(binding.navView) {
+            findViewById<TextView>(R.id.delivery).text = delivery
+            findViewById<TextView>(R.id.status_not_assigned).visibility = VISIBLE
+            findViewById<TextView>(R.id.status_in_transit).visibility = GONE
+            findViewById<TextView>(R.id.status_loading_progress).visibility = GONE
+
+            findViewById<TextView>(R.id.info_empty).visibility = VISIBLE
+            findViewById<View>(R.id.accepted_layout).visibility = GONE
+            findViewById<View>(R.id.debt_layout).visibility = GONE
+        }
+    }
 }
 
 interface NavToolbarListener {
@@ -264,9 +315,9 @@ interface KeyboardListener {
 }
 
 interface OnUserInfo {
-    fun flightCount(name: String, company: String)
+    fun flightUserInfo(name: String, company: String)
 }
 
-interface OnFlightsCount {
-    fun flightCount(count: String)
+interface OnFlightsStatus {
+    fun flightNotAssigned(delivery: String)
 }

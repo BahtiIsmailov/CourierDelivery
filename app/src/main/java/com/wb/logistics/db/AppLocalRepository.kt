@@ -15,6 +15,7 @@ import com.wb.logistics.db.entity.unload.UnloadingTookAndPickupCountEntity
 import com.wb.logistics.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
 import com.wb.logistics.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingCounterEntity
+import com.wb.logistics.ui.splash.domain.AppDeliveryResult
 import com.wb.logistics.ui.unloadingcongratulation.domain.DeliveryResult
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -112,6 +113,8 @@ interface AppLocalRepository {
     fun getNotDelivered(): Single<Int>
 
     fun getCongratulationDelivered(): Single<DeliveryResult>
+
+    fun observeCountBoxes(): Flowable<AppDeliveryResult>
 
     //==============================================================================================
     //DcUnloadedBox

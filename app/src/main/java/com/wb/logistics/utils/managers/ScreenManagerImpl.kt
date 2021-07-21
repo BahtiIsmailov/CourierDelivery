@@ -12,9 +12,12 @@ import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.flightsloader.FlightLoaderFragmentDirections
 import com.wb.logistics.ui.unloading.UnloadingScanParameters
+import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.prefs.SharedWorker
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 
 class ScreenManagerImpl(
     private val worker: SharedWorker,
@@ -24,14 +27,32 @@ class ScreenManagerImpl(
     private val timeManager: TimeManager,
 ) : ScreenManager {
 
+    private val navigateSubject = PublishSubject.create<NavigateComplete>()
+
+    data class NavigateComplete(val flightId: String, val flightStatus: FlightStatus)
+
+    override fun observeUpdatedStatus(): Observable<NavigateComplete> {
+        return navigateSubject
+    }
+
     override fun navDirection(flightId: String): Single<NavDirections> {
         return appRemoteRepository.getFlightStatus(flightId)
             .doOnSuccess { worker.save(AppPreffsKeys.SCREEN_KEY, it) }
             .map {
-                navDirectionsByStatus(FlightStatus.valueOf(it.status.uppercase()),
-                    it.location.office.id)
+                LogUtils { logDebugApp("ScreenManagerImpl navDirection1") }
+                val flightStatus = FlightStatus.valueOf(it.status.uppercase())
+                val navDir = navDirectionsByStatus(flightStatus, it.location.office.id)
+                LogUtils { logDebugApp("ScreenManagerImpl navDirection2 " + flightStatus.toString()) }
+                navigateSubject.onNext(NavigateComplete(flightId, flightStatus))
+                navDir
             }
-            .onErrorReturn { navDirectionsByStatus(FlightStatus.CLOSED, 0) }
+            .onErrorReturn {
+                LogUtils { logDebugApp("Error " + it.toString()) }
+                val flightStatus = FlightStatus.CLOSED
+                val navDir = navDirectionsByStatus(flightStatus, 0)
+                navigateSubject.onNext(NavigateComplete(flightId, flightStatus))
+                navDir
+            }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -81,7 +102,10 @@ class ScreenManagerImpl(
         val convertStatus = Single.just(StatusStateEntity(flightStatus.status, StatusLocationEntity(
             StatusOfficeLocationEntity(officeId), isGetFromGPS)))
         return Completable.fromSingle(putStatus.andThen(convertStatus)
-            .doOnSuccess { worker.save(AppPreffsKeys.SCREEN_KEY, it) })
+            .doOnSuccess {
+                navigateSubject.onNext(NavigateComplete(flightId, flightStatus))
+                worker.save(AppPreffsKeys.SCREEN_KEY, it)
+            })
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

@@ -7,12 +7,14 @@ import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.db.entity.flighboxes.ScanProcessStatus
 import com.wb.logistics.network.api.app.AppRemoteRepository
+import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
+import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -24,6 +26,7 @@ class DcUnloadingInteractorImpl(
     private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
     private val timeManager: TimeManager,
+    private val screenManager: ScreenManager,
 ) : DcUnloadingInteractor {
 
     private val barcodeManualInput = PublishSubject.create<Pair<String, Boolean>>()
@@ -50,7 +53,8 @@ class DcUnloadingInteractorImpl(
     }
 
     private fun barcodeScannerInput(): Observable<Pair<String, Boolean>> {
-        return scannerRepository.observeBarcodeScanned(barcodeScannedSubject).map { Pair(it, false) }
+        return scannerRepository.observeBarcodeScanned(barcodeScannedSubject)
+            .map { Pair(it, false) }
     }
 
     private fun observeUnloadingCounterBoxes(): Observable<DcUnloadingCounterEntity> {
@@ -186,6 +190,11 @@ class DcUnloadingInteractorImpl(
 
     override fun scannerAction(scannerAction: ScannerAction) {
         scannerRepository.scannerAction(scannerAction)
+    }
+
+    override fun switchScreenToClosed(): Completable {
+        return screenManager.saveState(FlightStatus.CLOSED)
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
 }

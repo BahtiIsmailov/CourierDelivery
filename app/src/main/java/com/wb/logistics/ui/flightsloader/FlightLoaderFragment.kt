@@ -42,12 +42,13 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
     private fun initObserver() {
 
         viewModel.navHeader.observe(viewLifecycleOwner) {
-            (activity as OnUserInfo).flightCount(it.name, it.company)
+            (activity as OnUserInfo).flightUserInfo(it.name, it.company)
         }
 
         viewModel.navState.observe(viewLifecycleOwner) { findNavController().navigate(it.navDirections) }
-        viewModel.countFlightsState.observe(viewLifecycleOwner) {
-            (activity as OnFlightsCount).flightCount(it.countFlights)
+
+        viewModel.flightsActionState.observe(viewLifecycleOwner) {
+            (activity as OnFlightsStatus).flightNotAssigned(it)
         }
     }
 

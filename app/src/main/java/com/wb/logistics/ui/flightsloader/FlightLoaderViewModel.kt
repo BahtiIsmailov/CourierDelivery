@@ -25,9 +25,9 @@ class FlightLoaderViewModel(
     val navHeader: LiveData<UserInfoEntity>
         get() = _navHeader
 
-    private val _countFlightsState = SingleLiveEvent<CountFlights>()
-    val countFlightsState: LiveData<CountFlights>
-        get() = _countFlightsState
+    private val _flightsActionState = SingleLiveEvent<String>()
+    val flightsActionState: LiveData<String>
+        get() = _flightsActionState
 
     fun update() {
         toApp()
@@ -45,18 +45,17 @@ class FlightLoaderViewModel(
     private fun navigateToOnComplete(definitionAction: FlightDefinitionAction) {
         when (definitionAction) {
             FlightDefinitionAction.FlightEmpty -> {
-                _countFlightsState.value = CountFlights(flightLoaderProvider.getEmptyFlight())
+                _flightsActionState.value = "Доставка"
                 _navState.value = NavigateTo(emptyDirections())
             }
             is FlightDefinitionAction.NavigateComplete -> {
-                _countFlightsState.value = CountFlights(flightLoaderProvider.getOneFlight())
                 _navState.value = NavigateTo(definitionAction.navDirections)
             }
         }
     }
 
     private fun navigateToOnError(throwable: Throwable) {
-        _countFlightsState.value = CountFlights(flightLoaderProvider.getEmptyFlight())
+        _flightsActionState.value = "Доставка"
         _navState.value = NavigateTo(errorDirections(throwable.toString()))
     }
 
@@ -69,6 +68,5 @@ class FlightLoaderViewModel(
 
 
     data class NavigateTo(val navDirections: NavDirections)
-    data class CountFlights(val countFlights: String)
 
 }

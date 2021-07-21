@@ -11,6 +11,7 @@ import com.wb.logistics.ui.dcunloading.domain.DcUnloadingAction
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingData
 import com.wb.logistics.ui.dcunloading.domain.DcUnloadingInteractor
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
@@ -171,11 +172,20 @@ class DcUnloadingScanViewModel(
     }
 
     fun onCompleteClicked() {
-        addSubscription(interactor.isBoxesUnloaded().subscribe({
-            _navigationEvent.value =
-                if (it) DcUnloadingScanNavAction.NavigateToDcCongratulation
-                else DcUnloadingScanNavAction.NavigateToDcForcedTermination
-        }, {}))
+        _progressEvent.value = DcUnloadingScanProgress.LoaderProgress
+        addSubscription(interactor.isBoxesUnloaded()
+            .flatMap {
+                if (it) {
+                    Single.just(DcUnloadingScanNavAction.NavigateToDcForcedTermination)
+                } else {
+                    interactor.switchScreenToClosed()
+                        .andThen(Single.just(DcUnloadingScanNavAction.NavigateToDcCongratulation))
+                }
+            }.subscribe({
+                _navigationEvent.value = it
+                _progressEvent.value = DcUnloadingScanProgress.LoaderComplete
+            }, { _progressEvent.value = DcUnloadingScanProgress.LoaderComplete })
+        )
     }
 
     fun onStopScanner() {

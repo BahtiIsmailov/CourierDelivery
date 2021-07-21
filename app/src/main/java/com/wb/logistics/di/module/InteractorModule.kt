@@ -74,11 +74,13 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
         appLocalRepository: AppLocalRepository,
+        screenManager: ScreenManager,
     ): AppInteractor {
         return AppInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
-            appLocalRepository)
+            appLocalRepository,
+            screenManager)
     }
 
     fun provideFlightsLoaderInteractor(
@@ -230,12 +232,14 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         scannerRepository: ScannerRepository,
         timeManager: TimeManager,
+        screenManager: ScreenManager,
     ): DcUnloadingInteractor {
         return DcUnloadingInteractorImpl(rxSchedulerFactory,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
-            timeManager)
+            timeManager,
+            screenManager)
     }
 
     fun provideDcForcedTerminationInteractor(
@@ -262,7 +266,7 @@ val interactorModule = module {
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
@@ -279,7 +283,7 @@ val interactorModule = module {
 
     single { provideForcedTerminationInteractor(get(), get(), get(), get(), get()) }
     single { provideCongratulationInteractor(get(), get()) }
-    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get()) }
+    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideDcForcedTerminationInteractor(get(), get(), get(), get(), get()) }
     single { provideDcUnloadingCongratulationInteractor(get(), get()) }
 

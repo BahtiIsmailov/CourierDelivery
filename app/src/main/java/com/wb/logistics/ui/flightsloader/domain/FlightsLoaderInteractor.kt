@@ -5,6 +5,5 @@ import io.reactivex.Single
 
 interface FlightsLoaderInteractor {
     fun updateFlight(): Single<FlightDefinitionAction>
-    //fun navigateTo(): Single<NavDirections>
     fun sessionInfo(): Single<UserInfoEntity>
 }

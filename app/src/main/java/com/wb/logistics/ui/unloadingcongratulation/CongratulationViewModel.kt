@@ -9,7 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 class CongratulationViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: CongratulationResourceProvider,
-    private val interactor: CongratulationInteractor,
+    interactor: CongratulationInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _infoState = MutableLiveData<String>()

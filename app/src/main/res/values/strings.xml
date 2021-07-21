@@ -3,7 +3,7 @@
 
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
-    <string name="app_version">версия %s</string>
+    <string name="app_version">%s</string>
     <string name="app_duration_time_value">Выслать пароль повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
@@ -29,9 +29,28 @@
     <string name="unloading_empty_title" />
 
 
+    <string name="count_boxes">%d шт.</string>
+    <string name="delivery">Доставка №%s</string>
+
     <string name="inet_text">Наличие интернета: </string>
     <string name="inet_ok">Есть</string>
     <string name="inet_no">Нет</string>
+
+    <string name="accepted">Принял</string>
+    <string name="debt">Задолженность</string>
+
+    <string name="status_on_way">В пути</string>
+    <string name="status_not_assigned">Не назначена</string>
+    <string name="status_loading_progress">Идет погрузка</string>
+    <string name="status_delivery">Доставка</string>
+    <string name="status_not_assigned_empty">Здесь будет информация по доставке</string>
+
+    <string name="app_ver">ver. </string>
+
+
+
+
+
 
     <string name="exit_app">Выйти из приложения?</string>
     <string name="exit_app_ok">Ok</string>
