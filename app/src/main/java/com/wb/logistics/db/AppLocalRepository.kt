@@ -114,7 +114,7 @@ interface AppLocalRepository {
 
     fun getCongratulationDelivered(): Single<DeliveryResult>
 
-    fun observeCountBoxes(): Flowable<AppDeliveryResult>
+    fun observeNavDrawerCountBoxes(): Flowable<AppDeliveryResult>
 
     //==============================================================================================
     //DcUnloadedBox

@@ -144,16 +144,20 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             when (status) {
                 is CounterBoxesActionStatus.Accepted -> {
                     with(binding.navView) {
-                        findViewById<TextView>(R.id.accepted_text).text = status.accepted
-                        findViewById<TextView>(R.id.debt_text).text = status.debt
+                        findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
+                        findViewById<TextView>(R.id.return_text).text = status.returnBox
+                        findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
+                        findViewById<TextView>(R.id.debt_text).text = status.debtBox
                         findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
                             context, R.color.icon_success))
                     }
                 }
                 is CounterBoxesActionStatus.AcceptedDebt -> {
                     with(binding.navView) {
-                        findViewById<TextView>(R.id.accepted_text).text = status.accepted
-                        findViewById<TextView>(R.id.debt_text).text = status.debt
+                        findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
+                        findViewById<TextView>(R.id.return_text).text = status.returnBox
+                        findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
+                        findViewById<TextView>(R.id.debt_text).text = status.debtBox
                         findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
                             context, R.color.icon_deny))
                     }

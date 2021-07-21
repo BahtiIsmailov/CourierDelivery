@@ -27,7 +27,7 @@ class AppInteractorImpl(
     }
 
     override fun observeCountBoxes(): Observable<AppDeliveryResult> {
-        return appLocalRepository.observeCountBoxes()
+        return appLocalRepository.observeNavDrawerCountBoxes()
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
@@ -39,4 +39,9 @@ class AppInteractorImpl(
 
 }
 
-data class AppDeliveryResult(val unloadedCount: Int, val attachedCount: Int)
+data class AppDeliveryResult(
+    val acceptedCount: Int,
+    val returnCount: Int,
+    val deliveryCount: Int,
+    val debtCount: Int,
+)

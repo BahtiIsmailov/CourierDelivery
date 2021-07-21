@@ -48,7 +48,8 @@ class AppViewModel(
                 when (it.flightStatus) {
                     FlightStatus.ASSIGNED, FlightStatus.DCLOADING, FlightStatus.DCUNLOADING, FlightStatus.UNLOADING ->
                         FlightActionStatus.Loading(resourceProvider.getDeliveryId(it.flightId))
-                    FlightStatus.INTRANSIT -> FlightActionStatus.InTransit(resourceProvider.getDeliveryId(it.flightId))
+                    FlightStatus.INTRANSIT -> FlightActionStatus.InTransit(resourceProvider.getDeliveryId(
+                        it.flightId))
                     FlightStatus.CLOSED -> FlightActionStatus.NotAssigned("Доставка")
                 }
             }
@@ -66,15 +67,20 @@ class AppViewModel(
         addSubscription(interactor.observeCountBoxes()
             .map {
                 with(it) {
-                    val debt = attachedCount - unloadedCount
+                    LogUtils { logDebugApp(it.toString()) }
+                    val debt = debtCount - acceptedCount
                     if (debt == 0) {
                         CounterBoxesActionStatus.Accepted(
-                            resourceProvider.getCount(unloadedCount),
-                            resourceProvider.getCount(debt))
+                            resourceProvider.getCount(acceptedCount),
+                            resourceProvider.getCount(returnCount),
+                            resourceProvider.getCount(deliveryCount),
+                            resourceProvider.getCount(debtCount))
                     } else {
                         CounterBoxesActionStatus.AcceptedDebt(
-                            resourceProvider.getCount(unloadedCount),
-                            resourceProvider.getCount(debt))
+                            resourceProvider.getCount(acceptedCount),
+                            resourceProvider.getCount(returnCount),
+                            resourceProvider.getCount(deliveryCount),
+                            resourceProvider.getCount(debtCount))
                     }
                 }
             }

@@ -277,7 +277,7 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.getCongratulationDelivered()
     }
 
-    override fun observeCountBoxes(): Flowable<AppDeliveryResult> {
+    override fun observeNavDrawerCountBoxes(): Flowable<AppDeliveryResult> {
         return flightBoxDao.getAppDelivered()
     }
 

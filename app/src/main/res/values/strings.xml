@@ -37,6 +37,8 @@
     <string name="inet_no">Нет</string>
 
     <string name="accepted">Принял</string>
+    <string name="return_box">Возврат</string>
+    <string name="delivery_box">Доставил</string>
     <string name="debt">Задолженность</string>
 
     <string name="status_on_way">В пути</string>
@@ -46,11 +48,6 @@
     <string name="status_not_assigned_empty">Здесь будет информация по доставке</string>
 
     <string name="app_ver">ver. </string>
-
-
-
-
-
 
     <string name="exit_app">Выйти из приложения?</string>
     <string name="exit_app_ok">Ok</string>
