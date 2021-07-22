@@ -67,16 +67,14 @@ class AppViewModel(
         addSubscription(interactor.observeCountBoxes()
             .map {
                 with(it) {
-                    LogUtils { logDebugApp(it.toString()) }
-                    val debt = debtCount - acceptedCount
-                    if (debt == 0) {
-                        CounterBoxesActionStatus.Accepted(
+                    if (debtCount > 0) {
+                        CounterBoxesActionStatus.AcceptedDebt(
                             resourceProvider.getCount(acceptedCount),
                             resourceProvider.getCount(returnCount),
                             resourceProvider.getCount(deliveryCount),
                             resourceProvider.getCount(debtCount))
                     } else {
-                        CounterBoxesActionStatus.AcceptedDebt(
+                        CounterBoxesActionStatus.Accepted(
                             resourceProvider.getCount(acceptedCount),
                             resourceProvider.getCount(returnCount),
                             resourceProvider.getCount(deliveryCount),

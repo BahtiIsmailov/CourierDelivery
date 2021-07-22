@@ -121,8 +121,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<TextView>(R.id.status_loading_progress).visibility = VISIBLE
 
                         findViewById<TextView>(R.id.info_empty).visibility = GONE
-                        findViewById<View>(R.id.accepted_layout).visibility = VISIBLE
-                        findViewById<View>(R.id.debt_layout).visibility = VISIBLE
+                        findViewById<View>(R.id.layout_data).visibility = VISIBLE
                     }
                 }
                 is FlightActionStatus.InTransit -> {
@@ -133,8 +132,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<TextView>(R.id.status_loading_progress).visibility = GONE
 
                         findViewById<TextView>(R.id.info_empty).visibility = GONE
-                        findViewById<View>(R.id.accepted_layout).visibility = VISIBLE
-                        findViewById<View>(R.id.debt_layout).visibility = VISIBLE
+                        findViewById<View>(R.id.layout_data).visibility = VISIBLE
                     }
                 }
             }
@@ -147,9 +145,12 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
                         findViewById<TextView>(R.id.return_text).text = status.returnBox
                         findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
+
+                        findViewById<TextView>(R.id.debt_title).setTextColor(ContextCompat.getColor(
+                            context, R.color.light_text))
                         findViewById<TextView>(R.id.debt_text).text = status.debtBox
                         findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
-                            context, R.color.icon_success))
+                            context, R.color.dark_text))
                     }
                 }
                 is CounterBoxesActionStatus.AcceptedDebt -> {
@@ -157,6 +158,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
                         findViewById<TextView>(R.id.return_text).text = status.returnBox
                         findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
+                        findViewById<TextView>(R.id.debt_title).setTextColor(ContextCompat.getColor(
+                            context, R.color.icon_deny))
                         findViewById<TextView>(R.id.debt_text).text = status.debtBox
                         findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
                             context, R.color.icon_deny))
@@ -293,8 +296,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             findViewById<TextView>(R.id.status_loading_progress).visibility = GONE
 
             findViewById<TextView>(R.id.info_empty).visibility = VISIBLE
-            findViewById<View>(R.id.accepted_layout).visibility = GONE
-            findViewById<View>(R.id.debt_layout).visibility = GONE
+            findViewById<View>(R.id.layout_data).visibility = GONE
         }
     }
 }

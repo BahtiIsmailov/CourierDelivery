@@ -53,7 +53,7 @@
     <color name="background_view">#642CA3</color>
     <color name="background_transparently">#97276EA6</color>
 
-    <color name="tint">#BFC5D1</color>
+    <color name="tint">#F0EDF2</color>
     <color name="color_progress">#642CA3</color>
     <color name="invalid">#B00020</color>
     <color name="btn_clear_phone">#DBD7E0</color>
