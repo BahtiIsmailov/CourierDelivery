@@ -16,7 +16,7 @@
         android:paddingRight="15dp">
 
         <TextView
-            style="@style/MediumRegularDarkText"
+            style="@style/VeryLargeBlackRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -34,7 +34,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/MediumRegularDarkText"
+        style="@style/VeryLargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cause"
@@ -44,7 +44,7 @@
 
     <TextView
         android:id="@+id/boxes_count"
-        style="@style/MediumRegularLightText"
+        style="@style/LargeLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/title"

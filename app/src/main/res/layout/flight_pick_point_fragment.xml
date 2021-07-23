@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/status"
-        style="@style/BaseRegularLightText"
+        style="@style/MediumLightRegularText"
         android:layout_width="0dp"
         android:layout_height="34dp"
         android:background="@color/background_content_light"

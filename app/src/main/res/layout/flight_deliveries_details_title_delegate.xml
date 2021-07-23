@@ -15,7 +15,7 @@
 
     <TextView
         android:id="@+id/delivery_title"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -26,7 +26,7 @@
 
     <TextView
         android:id="@+id/delivery_title_count"
-        style="@style/SMediumRegularLightText"
+        style="@style/LargeLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

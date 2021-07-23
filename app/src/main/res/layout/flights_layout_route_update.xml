@@ -28,8 +28,9 @@
 
     <TextView
         android:id="@+id/empty_flight_message_text"
-        style="@style/SMediumRegularDarkText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="0dp"
+        android:lineSpacingExtra="6sp"
         android:layout_height="wrap_content"
         android:text="@string/flights_empty_flight"
         android:textColor="@color/text_info"

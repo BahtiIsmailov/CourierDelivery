@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/textView2"
-        style="@style/MediumRegularDarkText"
+        style="@style/VeryLargeBlackRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
@@ -29,7 +29,7 @@
 
     <TextView
         android:id="@+id/info"
-        style="@style/SMediumRegularLightText"
+        style="@style/LargeLightRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
@@ -61,7 +61,7 @@
 
     <TextView
         android:id="@+id/delivered"
-        style="@style/SMediumRegularLightText"
+        style="@style/LargeLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -73,7 +73,7 @@
 
     <TextView
         android:id="@+id/delivered_count"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -107,7 +107,7 @@
 
     <TextView
         android:id="@+id/returned"
-        style="@style/SMediumRegularLightText"
+        style="@style/LargeLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -119,7 +119,7 @@
 
     <TextView
         android:id="@+id/returned_count"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"

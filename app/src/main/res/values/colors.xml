@@ -70,9 +70,8 @@
 
     <color name="splash_text">#fafafa</color>
 
-    <color name="base_text">#231D2A</color>
-    <color name="dark_text">#231D2A</color>
-    <color name="semi_dark_text">#6F6779</color>
+    <color name="black_text">#231D2A</color>
+    <color name="dark_text">#6F6779</color>
     <color name="light_text">#99939F</color>
     <color name="bright_text">#ffffff</color>
 

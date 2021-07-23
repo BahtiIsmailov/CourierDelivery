@@ -24,14 +24,12 @@
 
     <TextView
         android:id="@+id/box"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/box_image"
-        android:layout_toRightOf="@+id/box_image"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
         tools:ignore="RtlSymmetry"
-        tools:text="TRBX.....6565" />
+        tools:text="ПВЗ без имени" />
 
 </RelativeLayout>

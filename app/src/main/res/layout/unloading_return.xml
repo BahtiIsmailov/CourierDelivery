@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/return_title"
-        style="@style/BaseRegularLightText"
+        style="@style/MediumLightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/count_box"
-        style="@style/BaseRegularDarkText"
+        style="@style/MediumBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/list_box"
-        style="@style/BaseRegularLightText"
+        style="@style/MediumLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"

@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/number"
-        style="@style/SmallRegularLightText"
+        style="@style/SmallLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/barcode"
@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/barcode"
-        style="@style/SMediumRegularDarkText"
+        style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/number"
@@ -32,8 +32,9 @@
 
     <TextView
         android:id="@+id/data"
-        style="@style/SmallRegularLightText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
+        android:layout_marginTop="4dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/barcode"
         android:layout_toEndOf="@+id/number"

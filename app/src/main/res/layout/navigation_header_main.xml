@@ -4,26 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/nav_header_name"
-        style="@style/MediumRegularDarkText"
+        style="@style/VeryLargeBlackRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:textStyle="bold"
         tools:text="ФИО" />
 
     <TextView
         android:id="@+id/nav_header_company"
-        style="@style/SMediumRegularLightText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         tools:text="Компания" />
 
@@ -43,7 +43,7 @@
 
         <TextView
             android:id="@+id/inet_app_text"
-            style="@style/MediumRegularLightText"
+            style="@style/MediumDarkRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -52,7 +52,7 @@
 
         <TextView
             android:id="@+id/inet_app_status_make_text"
-            style="@style/MediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inet_ok"
@@ -61,7 +61,7 @@
 
         <TextView
             android:id="@+id/inet_app_status_no_text"
-            style="@style/MediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inet_no"
@@ -77,11 +77,11 @@
 
     <TextView
         android:id="@+id/delivery"
-        style="@style/MediumRegularDarkText"
+        style="@style/VeryLargeBlackRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:text="@string/status_delivery" />
 
@@ -95,7 +95,7 @@
 
         <TextView
             android:id="@+id/status_not_assigned"
-            style="@style/MediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/navigation_status_not_assigned"
@@ -112,7 +112,7 @@
 
         <TextView
             android:id="@+id/status_in_transit"
-            style="@style/MediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/navigation_status_on_way"
@@ -129,7 +129,7 @@
 
         <TextView
             android:id="@+id/status_loading_progress"
-            style="@style/MediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/navigation_status_loading_progress"
@@ -150,11 +150,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="12dp">
 
         <TextView
             android:id="@+id/info_empty"
-            style="@style/MediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/version_layout"
@@ -172,14 +172,14 @@
 
             <TextView
                 android:id="@+id/accepted_title"
-                style="@style/MediumRegularLightText"
+                style="@style/LargeDarkRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/accepted" />
 
             <TextView
                 android:id="@+id/accepted_text"
-                style="@style/SMediumRegularDarkText"
+                style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -187,7 +187,7 @@
 
             <TextView
                 android:id="@+id/delivery_title"
-                style="@style/MediumRegularLightText"
+                style="@style/LargeDarkRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/accepted_title"
@@ -196,7 +196,7 @@
 
             <TextView
                 android:id="@+id/delivery_text"
-                style="@style/SMediumRegularDarkText"
+                style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/accepted_text"
@@ -206,7 +206,7 @@
 
             <TextView
                 android:id="@+id/return_title"
-                style="@style/MediumRegularLightText"
+                style="@style/LargeDarkRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/delivery_title"
@@ -215,7 +215,7 @@
 
             <TextView
                 android:id="@+id/return_text"
-                style="@style/SMediumRegularDarkText"
+                style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/delivery_text"
@@ -225,7 +225,7 @@
 
             <TextView
                 android:id="@+id/debt_title"
-                style="@style/MediumRegularLightText"
+                style="@style/LargeDarkRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/return_title"
@@ -234,7 +234,7 @@
 
             <TextView
                 android:id="@+id/debt_text"
-                style="@style/SMediumRegularDarkText"
+                style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/return_text"
@@ -264,8 +264,8 @@
                 android:background="?android:selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingTop="24dp"
-                android:paddingBottom="24dp">
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
 
                 <ImageView
                     android:id="@+id/update_image"
@@ -278,7 +278,7 @@
 
                 <TextView
                     android:id="@+id/update_title"
-                    style="@style/SMediumRegularDarkText"
+                    style="@style/LargeBlackRegularText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -287,7 +287,7 @@
 
                 <TextView
                     android:id="@+id/version_app_title"
-                    style="@style/MediumRegularLightText"
+                    style="@style/LargeLightRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/update_title"
@@ -298,7 +298,7 @@
 
                 <TextView
                     android:id="@+id/version_app_text"
-                    style="@style/SMediumRegularDarkText"
+                    style="@style/LargeBlackRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/update_title"
@@ -314,8 +314,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackground"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp">
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -325,7 +325,7 @@
                     app:srcCompat="@drawable/ic_exit" />
 
                 <TextView
-                    style="@style/SMediumRegularDarkText"
+                    style="@style/LargeBlackRegularText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"

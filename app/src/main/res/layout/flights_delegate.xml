@@ -21,7 +21,7 @@
 
         <TextView
             android:id="@+id/flight_text"
-            style="@style/SMediumRegularDarkText"
+            style="@style/LargeBlackRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -32,7 +32,7 @@
 
         <TextView
             android:id="@+id/date_text"
-            style="@style/SMediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
@@ -53,7 +53,7 @@
 
         <TextView
             android:id="@+id/time_text"
-            style="@style/SMediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/layout_padding_horizontal_base"
@@ -64,7 +64,7 @@
 
         <TextView
             android:id="@+id/parking_title_text"
-            style="@style/SMediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -77,7 +77,7 @@
 
         <TextView
             android:id="@+id/parking_number_text"
-            style="@style/SMediumRegularLightText"
+            style="@style/LargeLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -91,7 +91,7 @@
 
         <TextView
             android:id="@+id/routes_title_text"
-            style="@style/SMediumRegularDarkText"
+            style="@style/MediumBlackRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"

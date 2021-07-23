@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/current_box"
-        style="@style/BaseRegularLightText"
+        style="@style/MediumLightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
@@ -21,12 +21,12 @@
 
     <TextView
         android:id="@+id/barcode"
-        style="@style/BaseRegularDarkText"
+        style="@style/MediumBlackRegularText"
         android:layout_width="0dp"
-        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginBottom="4dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/guideline_center_horizontal"
         app:layout_constraintStart_toStartOf="@+id/guideline_center_vertical"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
 
     <TextView
         android:id="@+id/status"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumBlackRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -51,7 +51,7 @@
 
     <TextView
         android:id="@+id/empty_box"
-        style="@style/BaseRegularLightText"
+        style="@style/MediumLightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"

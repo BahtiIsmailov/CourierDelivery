@@ -14,20 +14,17 @@
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         app:srcCompat="@drawable/ic_route_dot"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/route_legend_description_text"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/route_legend_color_image"
-        android:layout_toRightOf="@+id/route_legend_color_image"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
         tools:ignore="RtlSymmetry"
         tools:text="Описание маршрута" />
 

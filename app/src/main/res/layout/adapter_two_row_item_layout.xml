@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        style="@style/SMediumRegularDarkText"
+        style="@style/LargeBlackRegularText"
         android:id="@+id/text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         tools:text="Имя" />
 
     <TextView
-        style="@style/SmallRegularLightText"
+        style="@style/SmallLightRegularText"
         android:id="@+id/text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

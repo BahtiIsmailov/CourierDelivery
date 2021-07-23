@@ -21,7 +21,7 @@
 
         <TextView
             android:id="@+id/address"
-            style="@style/SMediumRegularDarkText"
+            style="@style/LargeBlackRegularText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -36,7 +36,7 @@
 
         <TextView
             android:id="@+id/deliver_count"
-            style="@style/BaseRegularLightText"
+            style="@style/MediumLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -58,7 +58,7 @@
 
         <TextView
             android:id="@+id/pickup_count"
-            style="@style/BaseRegularLightText"
+            style="@style/MediumLightRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

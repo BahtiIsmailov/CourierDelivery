@@ -150,7 +150,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                             context, R.color.light_text))
                         findViewById<TextView>(R.id.debt_text).text = status.debtBox
                         findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
-                            context, R.color.dark_text))
+                            context, R.color.black_text))
                     }
                 }
                 is CounterBoxesActionStatus.AcceptedDebt -> {

@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/MediumRegularDarkText"
+            style="@style/VeryLargeBlackRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/return_danger"
@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/description"
-            style="@style/MediumRegularSemiDarkText"
+            style="@style/VeryLargeDarkRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/title"
@@ -75,7 +75,7 @@
 
     <TextView
         android:id="@+id/code"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
@@ -98,7 +98,7 @@
 
     <TextView
         android:id="@+id/address"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"

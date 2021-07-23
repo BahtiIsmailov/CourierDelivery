@@ -26,7 +26,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_number"
-            style="@style/MediumRegularDarkText"
+            style="@style/VeryLargeBlackRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/auth_padding_top"
@@ -41,12 +41,12 @@
 
     <TextView
         android:id="@+id/number_not_found"
-        style="@style/BaseRegularDarkText"
+        style="@style/MediumBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/auth_number_phone_phone_not_found"
-        android:textAppearance="@style/SmallRegularDarkText"
+        android:textAppearance="@style/SmallBlackRegularText"
         android:textColor="@color/danger"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@+id/phone_layout"

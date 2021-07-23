@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/MediumRegularDarkText"
+            style="@style/VeryLargeBlackRegularText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -54,7 +54,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/code_box"
-                style="@style/MediumRegularDarkText"
+                style="@style/VeryLargeBlackRegularText"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/input_height"
                 android:layout_marginStart="10dp"

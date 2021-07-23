@@ -96,7 +96,7 @@ public class ReceptionParkingView extends FrameLayout {
         background.setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.scanner_rounded_corner_empty));
         parkingTitleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.light_text));
         parkingNumberTextView.setText(getResources().getString(R.string.dc_loading_default_parking));
-        parkingNumberTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.base_text));
+        parkingNumberTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.black_text));
     }
 
     private void containsCompleteState() {

@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/box"
-        style="@style/SMediumRegularDarkText"
+        style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -21,12 +21,12 @@
 
     <TextView
         android:id="@+id/data"
-        style="@style/SMediumRegularLightText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/box"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="4dp"
         android:layout_toStartOf="@+id/checked"
         tools:text="23.04.2021•20:00" />
 

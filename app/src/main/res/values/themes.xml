@@ -95,91 +95,99 @@
         <item name="android:textColor">@color/tint</item>
     </style>
 
-    <style name="RegularBaseText" parent="@android:style/Widget.TextView">
+
+    <style name="RegularBaseFont" parent="@android:style/Widget.TextView">
         <item name="android:fontFamily">@font/regular</item>
-        <item name="android:textSize">@dimen/base_text</item>
-        <item name="android:textColor">@color/base_text</item>
     </style>
 
-    <style name="MediumBaseText" parent="@android:style/Widget.TextView">
+    <style name="MediumBaseFont" parent="@android:style/Widget.TextView">
         <item name="android:fontFamily">@font/medium</item>
-        <item name="android:textSize">@dimen/base_text</item>
-        <item name="android:textColor">@color/base_text</item>
     </style>
 
-    <style name="BaseRegularDarkText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/base_text</item>
-        <item name="android:textColor">@color/base_text</item>>
+
+    <style name="SmallBlackRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/small_text</item>
+        <item name="android:textColor">@color/black_text</item>>
     </style>
 
-    <style name="BaseRegularLightText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/base_text</item>
-        <item name="android:textColor">@color/light_text</item>>
-    </style>
-
-    <style name="SmallRegularDarkText" parent="RegularBaseText">
+    <style name="SmallDarkRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/dark_text</item>>
     </style>
 
-    <style name="SmallRegularLightText" parent="RegularBaseText">
+    <style name="SmallLightRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/light_text</item>>
     </style>
 
-    <style name="SmallRegularBrightText" parent="RegularBaseText">
+    <style name="SmallBrightRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/bright_text</item>
     </style>
 
-    <style name="SMediumRegularBaseText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
-        <item name="android:textColor">@color/base_text</item>
-    </style>
 
-    <style name="SMediumRegularDarkText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
-        <item name="android:textColor">@color/dark_text</item>
-    </style>
-
-    <style name="SMediumRegularLightText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
-        <item name="android:textColor">@color/light_text</item>
-    </style>
-
-    <style name="SMediumRegularBrightText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
-        <item name="android:textColor">@color/bright_text</item>
-    </style>
-
-    <style name="MediumRegularDarkText" parent="RegularBaseText">
+    <style name="MediumBlackRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/medium_text</item>
-        <item name="android:textColor">@color/dark_text</item>
+        <item name="android:textColor">@color/black_text</item>>
     </style>
 
-    <style name="MediumRegularBrightText" parent="RegularBaseText">
+    <style name="MediumDarkRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/dark_text</item>>
+    </style>
+
+    <style name="MediumLightRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/light_text</item>>
+    </style>
+
+    <style name="MediumSmallBrightRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/medium_text</item>
         <item name="android:textColor">@color/bright_text</item>
     </style>
 
-    <style name="MediumRegularSemiDarkText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
-        <item name="android:textColor">@color/semi_dark_text</item>
+
+    <style name="LargeBlackRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/black_text</item>
     </style>
 
-    <style name="MediumRegularLightText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
+    <style name="LargeDarkRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/dark_text</item>
+    </style>
+
+    <style name="LargeLightRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/light_text</item>
     </style>
 
-    <style name="SMediumBrightText" parent="MediumBaseText">
-        <item name="android:textSize">@dimen/smedium_text</item>
+    <style name="LargeBrightRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/bright_text</item>
     </style>
+
+
+    <style name="VeryLargeBlackRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/black_text</item>
+    </style>
+
+    <style name="VeryLargeDarkRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/dark_text</item>
+    </style>
+
+
+    <style name="LargeBrightMediumText" parent="MediumBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/bright_text</item>
+    </style>
+
 
     <style name="InputPhoneOutlineBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-        <item name="android:textSize">@dimen/medium_text</item>
-        <item name="android:textColor">@color/dark_text</item>
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/black_text</item>
         <item name="boxStrokeColor">@color/colorOnSecondary</item>
     </style>
 
@@ -188,9 +196,9 @@
         <item name="boxStrokeWidth">2dp</item>
     </style>
 
-    <style name="LargeRegularText" parent="RegularBaseText">
-        <item name="android:textSize">@dimen/large_text</item>
-        <item name="android:textColor">@color/dark_text</item>
+    <style name="LargeRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/black_text</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -209,7 +217,7 @@
 
     <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/light_text</item>
-        <item name="android:textColorPrimary">@color/base_text</item>
+        <item name="android:textColorPrimary">@color/black_text</item>
         <item name="android:background">@color/background_content_light</item>
     </style>
 

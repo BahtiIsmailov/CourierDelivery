@@ -39,7 +39,7 @@
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <TextView
-        style="@style/SmallRegularBrightText"
+        style="@style/SmallBrightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/layout_scanner_padding_horizontal_base"
@@ -62,7 +62,7 @@
 
     <TextView
         android:id="@+id/permission_info"
-        style="@style/SMediumRegularBrightText"
+        style="@style/LargeBrightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -116,7 +116,7 @@
 
     <TextView
         android:id="@+id/loader"
-        style="@style/SMediumRegularDarkText"
+        style="@style/MediumDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
