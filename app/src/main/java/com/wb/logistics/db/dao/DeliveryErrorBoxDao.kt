@@ -20,7 +20,7 @@ interface DeliveryErrorBoxDao {
     fun findDeliveryErrorBoxByOfficeId(currentOfficeId: Int): Single<List<DeliveryErrorBoxEntity>>
 
 
-    @Query("REPLACE INTO DeliveryErrorBoxEntity (barcode, currentOfficeId) SELECT barcode, :currentOfficeId FROM FlightBoxEntity WHERE dst_office_id = :currentOfficeId AND onBoard = 1 AND status = 3")
+    @Query("REPLACE INTO DeliveryErrorBoxEntity (barcode, currentOfficeId) SELECT barcode, :currentOfficeId AS currentOfficeId FROM FlightBoxEntity WHERE dst_office_id = :currentOfficeId AND onBoard = 1 AND status = 3")
     fun insertNotUnloadingBoToDeliveryErrorByOfficeId(currentOfficeId: Int): Completable
 
     @Query("UPDATE FlightBoxEntity SET updatedAt = :updatedAt, onBoard = :onBoard, status = :status WHERE dst_office_id = :currentOfficeId")

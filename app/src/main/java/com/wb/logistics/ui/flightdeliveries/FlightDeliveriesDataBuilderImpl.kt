@@ -31,7 +31,7 @@ class FlightDeliveriesDataBuilderImpl(
                     FlightDeliveriesNotUnloadItem(
                         address = dstFullAddress,
                         unloadedCount = resourceProvider.getNotDelivery(deliveredCount,
-                            deliveredCount + deliverCount),
+                            deliverCount + deliveredCount),
                         returnCount = returnCountText,
                         idView = index)
 
