@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import com.wb.logistics.network.api.auth.entity.UserInfoEntity
+import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightserror.FlightsErrorParameters
@@ -56,7 +58,12 @@ class FlightLoaderViewModel(
 
     private fun navigateToOnError(throwable: Throwable) {
         _flightsActionState.value = "Доставка"
-        _navState.value = NavigateTo(errorDirections(throwable.toString()))
+        val message = when (throwable) {
+            is NoInternetException -> throwable.message
+            is BadRequestException -> throwable.error.message
+            else -> throwable.message ?: "Сервис временно недоступен\nПовторите действие чуть позже"
+        }
+        _navState.value = NavigateTo(errorDirections(message))
     }
 
     private fun errorDirections(message: String) =

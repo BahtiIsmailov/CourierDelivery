@@ -10,12 +10,12 @@
 
     <!--network error-->
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
-    <string name="timeout_service_error">Ведутся работы по улучшению сервиса</string>
+    <string name="timeout_service_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
     <string name="wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
-    <string name="unknown_error">Что-то пошло не так. Повторите операцию позднее</string>
-    <string name="unknown_http_error">Неизвестная ошибка</string>
-    <string name="unknown_generic_error">Операция не выполнена. Мы знаем о проблемме и работаем над ее устранением</string>
+    <string name="unknown_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+    <string name="unknown_http_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+    <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
     <!--debug panel-->
     <string name="debug_panel_caption">App Debug Console</string>
