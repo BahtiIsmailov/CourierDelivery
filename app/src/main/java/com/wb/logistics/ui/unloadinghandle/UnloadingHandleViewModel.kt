@@ -24,6 +24,13 @@ class UnloadingHandleViewModel(
 
     init {
         addSubscription(interactor.observeAttachedBoxes(parameters.dstOfficeId)
+//            .map {
+//                val list = mutableListOf<FlightBoxEntity>()
+//                for (i in 0..20) {
+//                    list.add(it[0])
+//                }
+//                return@map list
+//            }
             .switchMap {
                 Observable.fromIterable(it.withIndex())
                     .map { box ->
@@ -32,7 +39,8 @@ class UnloadingHandleViewModel(
                                 value.barcode.take(4),
                                 value.barcode.takeLast(4))
                         }
-                    }.toList()
+                    }
+                    .toList()
                     .toObservable()
             }
             .subscribe {

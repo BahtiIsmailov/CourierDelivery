@@ -21,7 +21,7 @@ import com.wb.logistics.ui.unloading.views.UnloadingReturnMode
 import com.wb.logistics.ui.unloadingboxes.UnloadingBoxesParameters
 import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationParameters
 import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_RESULT
 import com.wb.logistics.ui.unloadinghandle.UnloadingHandleParameters
 import com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnParameters
 import com.wb.logistics.utils.LogUtils
@@ -50,10 +50,15 @@ class UnloadingScanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initListener()
         initObserver()
         initResultListener()
         initKeyboard()
+    }
+
+    private fun initView() {
+        (activity as NavToolbarListener).showToolbar()
     }
 
     private fun initKeyboard() {
@@ -62,7 +67,7 @@ class UnloadingScanFragment : Fragment() {
     }
 
     private fun initResultListener() {
-        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
+        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_RESULT) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
         }
@@ -199,10 +204,6 @@ class UnloadingScanFragment : Fragment() {
     }
 
     private fun initListener() {
-
-//        binding.test.setOnClickListener {
-//            viewModel.onTestClicked()
-//        }
 
         binding.unloadingBox.setOnClickListener {
             viewModel.onUnloadingListClicked()

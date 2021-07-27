@@ -17,7 +17,7 @@ import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_COMPLETE
+import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_RESULT
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -48,7 +48,7 @@ class DcUnloadingScanFragment : Fragment() {
     }
 
     private fun initReturnResult() {
-        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_COMPLETE) { _, bundle ->
+        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_RESULT) { _, bundle ->
             val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
             viewModel.onStartScanner()

@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.jakewharton.rxbinding3.widget.textChanges
-import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingHandleFragmentBinding
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
@@ -38,7 +37,7 @@ class UnloadingHandleFragment : Fragment() {
             return UnloadingHandleFragment()
         }
 
-        const val UNLOADING_HANDLE_BARCODE_COMPLETE = "UNLOADING_HANDLE_BARCODE_RESULT2"
+        const val UNLOADING_HANDLE_BARCODE_RESULT = "UNLOADING_HANDLE_BARCODE_RESULT"
         const val HANDLE_BARCODE_COMPLETE_KEY = "HANDLE_BARCODE_COMPLETE_KEY"
 
         const val UNLOADING_HANDLE_KEY = "unloading_handle_key"
@@ -61,7 +60,8 @@ class UnloadingHandleFragment : Fragment() {
     }
 
     private fun initView() {
-        (activity as NavToolbarListener).backButtonIcon(R.drawable.ic_close_dialog)
+        //(activity as NavToolbarListener).backButtonIcon(R.drawable.ic_close_dialog)
+        (activity as NavToolbarListener).hideToolbar()
         (activity as KeyboardListener).panMode()
     }
 
@@ -102,9 +102,12 @@ class UnloadingHandleFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.close.setOnClickListener {
+            findNavController().navigateUp()
+        }
         viewModel.action(UnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
-            setFragmentResult(UNLOADING_HANDLE_BARCODE_COMPLETE,
+            setFragmentResult(UNLOADING_HANDLE_BARCODE_RESULT,
                 bundleOf(HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
             findNavController().navigateUp()
         }

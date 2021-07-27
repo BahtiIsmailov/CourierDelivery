@@ -30,10 +30,10 @@ class DcUnloadingHandleFragment : Fragment() {
             return DcUnloadingHandleFragment()
         }
 
-        const val UNLOADING_HANDLE_BARCODE_CANCEL = "UNLOADING_HANDLE_BARCODE_RESULT1"
-        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
+//        const val UNLOADING_HANDLE_BARCODE_CANCEL = "UNLOADING_HANDLE_BARCODE_RESULT1"
+//        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
 
-        const val UNLOADING_HANDLE_BARCODE_COMPLETE = "UNLOADING_HANDLE_BARCODE_RESULT2"
+        const val UNLOADING_HANDLE_BARCODE_RESULT = "UNLOADING_HANDLE_BARCODE_RESULT2"
         const val HANDLE_BARCODE_COMPLETE_KEY = "HANDLE_BARCODE_COMPLETE_KEY"
     }
 
@@ -95,7 +95,7 @@ class DcUnloadingHandleFragment : Fragment() {
     private fun initListener() {
         viewModel.action(DcUnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
-            setFragmentResult(UNLOADING_HANDLE_BARCODE_COMPLETE,
+            setFragmentResult(UNLOADING_HANDLE_BARCODE_RESULT,
                 bundleOf(HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
             findNavController().navigateUp()
         }

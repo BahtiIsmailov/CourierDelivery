@@ -236,9 +236,9 @@
     <string name="unloading_scan_switch_dialog_message_error">Не удается завершить приемку на ПВЗ, повторите операцию</string>
     <string name="unloading_scan_dialog_positive_button_error">Ok</string>
 
-    <string name="unloading_handle_label">Ручной ввод</string>
+    <string name="unloading_handle_label" />
 
-    <string name="unloading_box_not_belong_point_toolbar_label">Не принадлежит ПВЗ</string>
+    <string name="unloading_box_not_belong_point_toolbar_label" />
     <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>
     <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ</string>
     <string name="unloading_box_not_belong_dc_return_car">верните её в машину</string>
@@ -279,7 +279,7 @@
 
     <string name="force_termination_complete_delivery">Завершить доставку</string>
 
-    <string name="congratulation_label">Завершение доставки</string>
+    <string name="congratulation_label" />
     <string name="congratulation_title">Вы завершили доставку</string>
     <string name="congratulation_info">Осталось вернуть возратные коробки\nна РЦ</string>
     <string name="congratulation_info_count">%1$d / %2$d</string>
@@ -303,7 +303,7 @@
     <string name="dc_unloading_not_belong_title">Информация по ШК не найдена</string>
     <string name="dc_unloading_not_belong_info">Данная коробка не является\nвозвратной, оставьте её на РЦ</string>
 
-    <string name="dc_unloading_handle_label">Ручной ввод</string>
+    <string name="dc_unloading_handle_label" />
 
     <string name="dc_unloading_forced_termination_label">Принудительное завершение</string>
     <string name="dc_unloading_forced_termination_details_label">Невыгруженные коробки</string>
