@@ -1,17 +1,30 @@
 package com.wb.logistics.ui.splash
 
+import android.Manifest
+import android.app.PendingIntent
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
+import android.content.pm.PackageInstaller
+import android.content.pm.PackageInstaller.SessionParams
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.UserManager
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -28,7 +41,12 @@ import com.wb.logistics.databinding.SplashActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flightsloader.FlightActionStatus
 import com.wb.logistics.utils.LogUtils
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import org.apache.commons.net.ftp.FTPClient
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.*
 import java.util.*
 
 
@@ -45,16 +63,177 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: OnDestinationChangedListener
 
+//    override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+//        if (super.onPreferenceChange(preference, newValue)) return true
+//        val value = newValue as Boolean
+//        if (preference == enableCheckbox) {
+//            if (value != adminActive) {
+//                if (value) {
+//                    // Launch the activity to have the user enable our admin.
+//                    val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+//                        putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdminSample)
+//                        putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+//                            activity.getString(R.string.add_admin_extra_app_text))
+//                    }
+//                    startActivityForResult(intent, REQUEST_CODE_ENABLE_ADMIN)
+//                    // return false - don't update checkbox until we're really active
+//                    return false
+//                } else {
+//                    dpm.removeActiveAdmin(deviceAdminSample)
+//                    enableDeviceCapabilitiesArea(false)
+//                    adminActive = false
+//                }
+//            }
+//        } else if (preference == disableCameraCheckbox) {
+//            dpm.setCameraDisabled(deviceAdminSample, value)
+//        }
+//        return true
+//    }
+
+    private lateinit var dpm: DevicePolicyManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
+
+        val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val componentName = ComponentName(this, MyDevicePolicyReceiver::class.java)
+        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Разрешения для обновления APK") //getString(R.string.admin_explanation)
+
+        startActivity(intent)
+
+
+        if (dpm.isAdminActive(componentName)) {
+            LogUtils {logDebugApp("FTP dpm.isAdminActive")}
+        }
+//        dpm.addUserRestriction(componentName, UserManager.DISALLOW_INSTALL_APPS)
+//        dpm.addUserRestriction(componentName, UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES)
+
         setContentView(binding.root)
         initToolbar()
         initNavController()
         initObserver()
         initView()
         initListener()
+    }
+
+    private fun ftp() {
+
+        try {
+
+            LogUtils { logDebugApp("ftp() run") }
+            val ftpClient = FTPClient()
+//            ftpClient.localPort
+
+            ftpClient.enterLocalPassiveMode()
+            val ftpRemoteFile = "/ftp/files/debug_0.8.62_1.apk"
+
+
+            //val downPath = getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS).absolutePath
+            val downPath = cacheDir
+            val apkLocalFile = File("$downPath/debug_0.8.62_1.apk")
+            val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(apkLocalFile))
+            LogUtils { logDebugApp("ftpClient absolute local path " + apkLocalFile.absolutePath) }
+            val success: Boolean = ftpClient.retrieveFile(ftpRemoteFile, outputStream)
+            LogUtils { logDebugApp("ftpClient.retrieveFile " + success) }
+            outputStream.close()
+
+            //apkLocalFile.setReadable(true, false)
+
+            if (success) {
+                LogUtils { logDebugApp("ftpClient promptInstall complete") }
+
+                val fileSize = (apkLocalFile.length() / 1024).toString().toInt()
+                LogUtils { logDebugApp("ftpClient download file " + apkLocalFile.toString() + " size:" + fileSize + "Kb") }
+
+//                val promptInstall = Intent(Intent.ACTION_VIEW)
+//                    .setDataAndType(Uri.fromFile(apkLocalFile), "application/vnd.android.package-archive")
+//                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                startActivity(promptInstall)
+
+
+                val pi: PackageInstaller = this.packageManager.packageInstaller
+                val sessionId = pi.createSession(SessionParams(SessionParams.MODE_FULL_INSTALL))
+                //clearMyRestrictions(this)
+                val session = pi.openSession(sessionId)
+                //addMyRestrictions(this)
+
+                val input: InputStream?
+                val output: OutputStream?
+
+                input = FileInputStream(apkLocalFile)
+                output = session.openWrite("wb_app_session", 0, apkLocalFile.length())
+                var total = 0
+                val buffer = ByteArray(65536)
+                var c: Int
+                while (input.read(buffer).also { c = it } != -1) {
+                    total += c
+                    output.write(buffer, 0, c)
+                }
+
+                LogUtils { logDebugApp("ftpClient output complete") }
+
+                session.fsync(output)
+                input.close()
+                output.close()
+
+                val intent = Intent(this, AppActivity::class.java)
+                val alarmtest = PendingIntent.getBroadcast(this,
+                    1337111117, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+                session.commit(alarmtest.intentSender)
+                session.close()
+
+                //session.commit(createIntentSender(sessionId))
+
+                //LogUtils { logDebugApp("ftpClient session.commit") }
+
+
+//                val intent = Intent(this, AlarmReceiver::class.java)
+
+
+            } else {
+                LogUtils { logDebugApp("ftpClient promptInstall file not success") }
+                ftpClient.logout()
+                ftpClient.disconnect()
+                return
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            LogUtils { logDebugApp("ftpClient.Exception " + e.toString()) }
+        }
+    }
+
+    private fun createIntentSender(sessionId: Int): IntentSender {
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            sessionId,
+            Intent("ACTION_INSTALL_COMPLETE"),
+            0)
+        return pendingIntent.intentSender
+    }
+
+
+    fun getDpm(context: Context): DevicePolicyManager {
+        return context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+    }
+
+    fun getAdmin(context: Context): ComponentName {
+        return ComponentName(context, MyDevicePolicyReceiver::class.java)
+    }
+
+
+    fun clearMyRestrictions(context: Context) {
+        //getDpm(context).clearUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_APPS)
+        //getDpm(context).clearUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES)
+    }
+
+    fun addMyRestrictions(context: Context) {
+        getDpm(context).addUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_APPS)
+        getDpm(context).addUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES)
     }
 
     private fun initToolbar() {
@@ -176,6 +355,23 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     }
 
     private fun initListener() {
+
+        binding.navView.findViewById<View>(R.id.ver_layout).setOnClickListener {
+
+
+            if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+            ) {
+                Completable.fromAction { ftp() }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+            } else {
+                requestPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+
+        }
+
         with(binding.navView) {
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()
@@ -186,6 +382,16 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             }
         }
     }
+
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+
+            } else {
+
+            }
+        }
 
     private fun initView() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -326,4 +532,14 @@ interface OnUserInfo {
 
 interface OnFlightsStatus {
     fun flightNotAssigned(delivery: String)
+}
+
+fun AppActivity.hasPermissions(vararg permissions: String): Boolean =
+    permissions.all(::hasPermission)
+
+fun AppActivity.hasPermission(permission: String): Boolean {
+    return ActivityCompat.checkSelfPermission(
+        this,
+        permission
+    ) == PackageManager.PERMISSION_GRANTED
 }
