@@ -95,8 +95,6 @@
     <string name="flights_start_adding_boxes">Начать прием коробок</string>
     <string name="flights_return_balance">Вернуть\nна баланс</string>
     <string name="flights_continue_acceptance">Продолжить\nприемку</string>
-    <string name="flights_zero">0</string>
-    <string name="flights_one">1</string>
     <string name="flights_flight_number">№ %1$d</string>
     <string name="flights_parking_number">№%1$d</string>
     <string name="flights_routes_title_pref">Маршрут %1$s</string>

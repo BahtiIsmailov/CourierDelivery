@@ -8,7 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.FlightLoaderFragmentBinding
-import com.wb.logistics.ui.splash.*
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.splash.KeyboardListener
+import com.wb.logistics.ui.splash.NavDrawerListener
+import com.wb.logistics.ui.splash.NavToolbarListener
+import com.wb.logistics.ui.splash.OnUserInfo
+import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
@@ -28,15 +33,17 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initListener()
         initView()
         initObserver()
     }
 
     private fun initView() {
-        //(activity as NavToolbarListener).hideBackButton()
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).unlock()
         (activity as KeyboardListener).adjustMode()
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.flights_label)
+        binding.toolbarLayout.back.visibility = View.INVISIBLE
         viewModel.update()
     }
 
@@ -46,11 +53,60 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
             (activity as OnUserInfo).flightUserInfo(it.name, it.company)
         }
 
-        viewModel.navState.observe(viewLifecycleOwner) { findNavController().navigate(it.navDirections) }
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
 
-        viewModel.flightsActionState.observe(viewLifecycleOwner) {
-            (activity as OnFlightsStatus).flightNotAssigned(it)
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
         }
+
+        viewModel.flightLoaderUIState.observe(viewLifecycleOwner) {
+            when(it) {
+                is FlightLoaderUIState.Error -> {
+                    binding.progress.visibility = View.INVISIBLE
+                    binding.titleProgress.visibility = View.INVISIBLE
+                    binding.emptyFlightMessage.visibility = View.INVISIBLE
+                    binding.errorMessage.visibility = View.VISIBLE
+                    binding.errorMessage.text = it.message
+                    binding.update.setState(ProgressImageButtonMode.ENABLED)
+                    binding.update.visibility = View.VISIBLE
+                }
+                is FlightLoaderUIState.InTransit -> {
+                    findNavController().navigate(it.navDirections)
+                }
+                FlightLoaderUIState.NotAssigned -> {
+                    binding.progress.visibility = View.INVISIBLE
+                    binding.titleProgress.visibility = View.INVISIBLE
+                    binding.emptyFlightMessage.visibility = View.VISIBLE
+                    binding.errorMessage.visibility = View.INVISIBLE
+                    binding.update.setState(ProgressImageButtonMode.ENABLED)
+                    binding.update.visibility = View.VISIBLE
+                }
+                FlightLoaderUIState.InitProgress -> {
+                    binding.progress.visibility = View.VISIBLE
+                    binding.titleProgress.visibility = View.VISIBLE
+                    binding.emptyFlightMessage.visibility = View.INVISIBLE
+                    binding.errorMessage.visibility = View.INVISIBLE
+                    binding.update.setState(ProgressImageButtonMode.ENABLED)
+                    binding.update.visibility = View.INVISIBLE
+                }
+                FlightLoaderUIState.Progress -> {
+                    binding.update.setState(ProgressImageButtonMode.PROGRESS)
+                }
+            }
+        }
+    }
+
+    private fun initListener() {
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
+        binding.update.setOnClickListener { viewModel.onUpdate() }
     }
 
     override fun onDestroyView() {

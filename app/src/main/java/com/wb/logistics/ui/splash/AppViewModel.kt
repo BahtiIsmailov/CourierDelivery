@@ -6,7 +6,6 @@ import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
-import com.wb.logistics.ui.flightsloader.FlightActionStatus
 import com.wb.logistics.ui.splash.domain.AppInteractor
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.DeviceManager
@@ -28,8 +27,8 @@ class AppViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _flightsActionState = SingleLiveEvent<FlightActionStatus>()
-    val flightsActionState: LiveData<FlightActionStatus>
+    private val _flightsActionState = SingleLiveEvent<AppUIState>()
+    val flightsActionState: LiveData<AppUIState>
         get() = _flightsActionState
 
     private val _counterBoxesActionStatus = MutableLiveData<CounterBoxesActionStatus>()
@@ -48,10 +47,10 @@ class AppViewModel(
             .map {
                 when (it.flightStatus) {
                     FlightStatus.ASSIGNED, FlightStatus.DCLOADING, FlightStatus.DCUNLOADING, FlightStatus.UNLOADING ->
-                        FlightActionStatus.Loading(resourceProvider.getDeliveryId(it.flightId))
-                    FlightStatus.INTRANSIT -> FlightActionStatus.InTransit(resourceProvider.getDeliveryId(
+                        AppUIState.Loading(resourceProvider.getDeliveryId(it.flightId))
+                    FlightStatus.INTRANSIT -> AppUIState.InTransit(resourceProvider.getDeliveryId(
                         it.flightId))
-                    FlightStatus.CLOSED -> FlightActionStatus.NotAssigned("Доставка")
+                    FlightStatus.CLOSED -> AppUIState.NotAssigned("Доставка")
                 }
             }
             .subscribe({

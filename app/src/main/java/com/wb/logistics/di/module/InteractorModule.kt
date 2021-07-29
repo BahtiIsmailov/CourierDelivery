@@ -102,8 +102,27 @@ val interactorModule = module {
             screenManager)
     }
 
+//    fun provideFlightsEmptyInteractor(
+//        rxSchedulerFactory: RxSchedulerFactory,
+//        networkMonitorRepository: NetworkMonitorRepository,
+//        appRemoteRepository: AppRemoteRepository,
+//        appLocalRepository: AppLocalRepository,
+//        authRemoteRepository: AuthRemoteRepository,
+//        timeManager: TimeManager,
+//        screenManager: ScreenManager,
+//    ): FlightsEmptyInteractor {
+//        return FlightsEmptyInteractorImpl(rxSchedulerFactory,
+//            networkMonitorRepository,
+//            appRemoteRepository,
+//            appLocalRepository,
+//            authRemoteRepository,
+//            timeManager,
+//            screenManager)
+//    }
+
     fun provideFlightsLoaderInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         authRemoteRepository: AuthRemoteRepository,
@@ -111,6 +130,7 @@ val interactorModule = module {
         screenManager: ScreenManager,
     ): FlightsLoaderInteractor {
         return FlightsLoaderInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             authRemoteRepository,
@@ -301,7 +321,7 @@ val interactorModule = module {
     single { provideInputPasswordInteractor(get(), get(), get()) }
     single { provideCreatePasswordInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
-    single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
     single { provideFlightPickPointInteractor(get(), get(), get(), get(), get()) }

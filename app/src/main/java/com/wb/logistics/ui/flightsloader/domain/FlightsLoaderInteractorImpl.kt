@@ -5,14 +5,18 @@ import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.api.auth.entity.UserInfoEntity
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.utils.managers.ScreenManager
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class FlightsLoaderInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
     private val authRemoteRepository: AuthRemoteRepository,
@@ -95,6 +99,11 @@ class FlightsLoaderInteractorImpl(
 
     private fun updateTime() = appRemoteRepository.time()
         .flatMapCompletable { Completable.fromAction { timeManager.saveNetworkTime(it.currentTime) } }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
 
 
 }

@@ -12,9 +12,6 @@ import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParame
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointViewModel
 import com.wb.logistics.ui.flights.FlightsViewModel
-import com.wb.logistics.ui.flightsempty.FlightsEmptyViewModel
-import com.wb.logistics.ui.flightserror.FlightsErrorParameters
-import com.wb.logistics.ui.flightserror.FlightsErrorViewModel
 import com.wb.logistics.ui.flightsloader.FlightLoaderViewModel
 import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
@@ -56,10 +53,8 @@ val viewModelModule = module {
         DcLoadingBoxNotBelongViewModel(parameters)
     }
 
-    viewModel { FlightLoaderViewModel(get(), get(), get()) }
+    viewModel { FlightLoaderViewModel(get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get()) }
-    viewModel { FlightsEmptyViewModel(get(), get(), get()) }
-    viewModel { (parameters: FlightsErrorParameters) -> FlightsErrorViewModel(parameters, get()) }
 
     viewModel { ScannerViewModel(get(), get()) }
 

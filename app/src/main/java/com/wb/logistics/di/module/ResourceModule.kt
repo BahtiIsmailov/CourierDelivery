@@ -11,7 +11,6 @@ import com.wb.logistics.ui.flightdeliveries.FlightDeliveriesResourceProvider
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
 import com.wb.logistics.ui.flightpickpoint.FlightPickPointResourceProvider
 import com.wb.logistics.ui.flights.FlightsResourceProvider
-import com.wb.logistics.ui.flightserror.FlightsErrorResourceProvider
 import com.wb.logistics.ui.flightsloader.FlightLoaderProvider
 import com.wb.logistics.ui.splash.AppResourceProvider
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
@@ -31,10 +30,6 @@ val resourceModule = module {
 
     fun provideFlightResourceProvider(application: Application): FlightsResourceProvider {
         return FlightsResourceProvider(application)
-    }
-
-    fun provideFlightEmptyResourceProvider(application: Application): FlightsErrorResourceProvider {
-        return FlightsErrorResourceProvider(application)
     }
 
     fun provideReceptionResourceProvider(application: Application): DcLoadingResourceProvider {
@@ -88,7 +83,6 @@ val resourceModule = module {
     single { provideAppResourceProvider(get()) }
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }
-    single { provideFlightEmptyResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }
     single { provideFlightPickPointResourceProvider(get()) }
     single { provideFlightDeliveriesResourceProvider(get()) }

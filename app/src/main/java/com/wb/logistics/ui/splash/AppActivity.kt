@@ -27,7 +27,6 @@ import com.wb.logistics.R
 import com.wb.logistics.databinding.SplashActivityBinding
 import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
-import com.wb.logistics.ui.flightsloader.FlightActionStatus
 import com.wb.logistics.utils.LogUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -83,11 +82,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             }
         navController.addOnDestinationChangedListener(onDestinationChangedListener)
 
-        appBarConfiguration =
-            AppBarConfiguration(setOf(R.id.flightsFragment,
-                R.id.flightsErrorFragment,
-                R.id.flightsEmptyFragment),
-                binding.drawerLayout)
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.flightsFragment), binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
@@ -115,8 +110,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         viewModel.flightsActionState.observe(this) { status ->
             LogUtils { logDebugApp(status.toString()) }
             when (status) {
-                is FlightActionStatus.NotAssigned -> flightNotAssigned(status.delivery)
-                is FlightActionStatus.Loading -> {
+                is AppUIState.NotAssigned -> flightNotAssigned(status.delivery)
+                is AppUIState.Loading -> {
                     with(binding.navView) {
                         findViewById<TextView>(R.id.delivery).text = status.deliveryId
                         findViewById<TextView>(R.id.status_not_assigned).visibility = GONE
@@ -127,7 +122,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<View>(R.id.layout_data).visibility = VISIBLE
                     }
                 }
-                is FlightActionStatus.InTransit -> {
+                is AppUIState.InTransit -> {
                     with(binding.navView) {
                         findViewById<TextView>(R.id.delivery).text = status.deliveryId
                         findViewById<TextView>(R.id.status_not_assigned).visibility = GONE
@@ -244,7 +239,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.flightsEmptyFragment, R.id.flightsErrorFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
+            R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
                 showExitDialog()
             }
             R.id.unloadingScanFragment -> {
