@@ -50,6 +50,11 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         initPermission()
     }
 
+    override fun onStart() {
+        super.onStart()
+        startScanner()
+    }
+
     private fun initPermission() {
         if (hasPermission(Manifest.permission.CAMERA)) {
             binding.permissionInfo.visibility = View.GONE

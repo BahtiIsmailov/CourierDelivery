@@ -9,10 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.FlightLoaderFragmentBinding
 import com.wb.logistics.network.monitor.NetworkState
-import com.wb.logistics.ui.splash.KeyboardListener
-import com.wb.logistics.ui.splash.NavDrawerListener
-import com.wb.logistics.ui.splash.NavToolbarListener
-import com.wb.logistics.ui.splash.OnUserInfo
+import com.wb.logistics.ui.splash.*
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -80,6 +77,9 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
                     findNavController().navigate(it.navDirections)
                 }
                 FlightLoaderUIState.NotAssigned -> {
+
+                    (activity as OnFlightsStatus).flightNotAssigned("Доставка")
+
                     binding.progress.visibility = View.INVISIBLE
                     binding.titleProgress.visibility = View.INVISIBLE
                     binding.emptyFlightMessage.visibility = View.VISIBLE
