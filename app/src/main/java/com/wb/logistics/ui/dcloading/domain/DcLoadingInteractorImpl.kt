@@ -11,6 +11,8 @@ import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.api.app.entity.warehousescan.WarehouseScanEntity
 import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
@@ -21,6 +23,7 @@ import io.reactivex.subjects.PublishSubject
 
 class DcLoadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
@@ -33,6 +36,11 @@ class DcLoadingInteractorImpl(
     private val barcodeScannedSubject = PublishSubject.create<String>()
 
     private val scanLoaderProgressSubject = PublishSubject.create<ScanProgressData>()
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
 
     override fun barcodeManualInput(barcode: String) {
         actionBarcodeScannedSubject.onNext(Pair(barcode, true))

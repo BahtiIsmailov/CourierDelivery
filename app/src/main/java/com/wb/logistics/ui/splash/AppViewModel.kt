@@ -3,6 +3,7 @@ package com.wb.logistics.ui.splash
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.api.app.FlightStatus
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightsloader.FlightActionStatus
@@ -19,8 +20,8 @@ class AppViewModel(
 
     ) : NetworkViewModel(compositeDisposable) {
 
-    private val _networkState = MutableLiveData<Boolean>()
-    val networkState: LiveData<Boolean>
+    private val _networkState = MutableLiveData<NetworkState>()
+    val networkState: LiveData<NetworkState>
         get() = _networkState
 
     private val _versionApp = MutableLiveData<String>()
@@ -90,7 +91,7 @@ class AppViewModel(
     }
 
     private fun fetchNetworkState() {
-        addSubscription(interactor.isNetworkConnected().subscribe({ _networkState.value = it }, {}))
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {}))
     }
 
     fun onExitClick() {

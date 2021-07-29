@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.databinding.DcUnloadingHandleFragmentBinding
 import com.wb.logistics.ui.splash.KeyboardListener
-import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -33,8 +32,8 @@ class DcUnloadingHandleFragment : Fragment() {
 //        const val UNLOADING_HANDLE_BARCODE_CANCEL = "UNLOADING_HANDLE_BARCODE_RESULT1"
 //        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
 
-        const val UNLOADING_HANDLE_BARCODE_RESULT = "UNLOADING_HANDLE_BARCODE_RESULT2"
-        const val HANDLE_BARCODE_COMPLETE_KEY = "HANDLE_BARCODE_COMPLETE_KEY"
+        const val DC_UNLOADING_HANDLE_BARCODE_RESULT = "DC_UNLOADING_HANDLE_BARCODE_RESULT2"
+        const val DC_UNLOADING_HANDLE_BARCODE_COMPLETE_KEY = "DC_UNLOADING_HANDLE_BARCODE_COMPLETE_KEY"
     }
 
     override fun onCreateView(
@@ -54,7 +53,7 @@ class DcUnloadingHandleFragment : Fragment() {
     }
 
     private fun initView() {
-        (activity as NavToolbarListener).backButtonIcon(com.wb.logistics.R.drawable.ic_close_dialog)
+//        (activity as NavToolbarListener).backButtonIcon(com.wb.logistics.R.drawable.ic_close_dialog)
         (activity as KeyboardListener).panMode()
     }
 
@@ -80,8 +79,10 @@ class DcUnloadingHandleFragment : Fragment() {
                 }
                 is DcUnloadingHandleUIState.BoxesComplete -> {
                     initBoxes(state.boxes)
+                    binding.listEmpty.visibility = View.GONE
                 }
                 DcUnloadingHandleUIState.BoxesEmpty -> {
+                    binding.listEmpty.visibility = View.VISIBLE
                 }
             }
         }
@@ -93,10 +94,11 @@ class DcUnloadingHandleFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.close.setOnClickListener { findNavController().navigateUp() }
         viewModel.action(DcUnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
-            setFragmentResult(UNLOADING_HANDLE_BARCODE_RESULT,
-                bundleOf(HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
+            setFragmentResult(DC_UNLOADING_HANDLE_BARCODE_RESULT,
+                bundleOf(DC_UNLOADING_HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
             findNavController().navigateUp()
         }
     }

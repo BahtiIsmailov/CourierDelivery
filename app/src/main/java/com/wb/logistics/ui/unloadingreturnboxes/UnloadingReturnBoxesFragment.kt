@@ -49,9 +49,14 @@ class UnloadingReturnBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initRecyclerView()
         initObserver()
         initListener()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.unloading_return_boxes_label)
     }
 
     private fun initRecyclerView() {
@@ -72,6 +77,7 @@ class UnloadingReturnBoxesFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.remove.setOnClickListener { showDialogReturnBalance() }
     }
 

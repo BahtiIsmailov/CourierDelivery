@@ -4,12 +4,18 @@ package com.wb.logistics.network.monitor
 import io.reactivex.subjects.BehaviorSubject
 import kotlin.properties.Delegates
 
-object NetworkState {
+open class NetworkState {
 
     var isNetworkConnected: Boolean by Delegates.observable(
         false,
-        { _, _, newValue -> connect.onNext(newValue) })
+        { _, _, newValue -> connect.onNext(if (newValue) Complete else Failed) })
 
-    var connect = BehaviorSubject.create<Boolean>()
+    object Failed : NetworkState()
+
+    object Complete : NetworkState()
+
+    companion object {
+        val connect = BehaviorSubject.create<NetworkState>()
+    }
 
 }

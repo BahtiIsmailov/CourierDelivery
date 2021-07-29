@@ -16,8 +16,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsDelegate
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesDetailsTitleDelegate
 import com.wb.logistics.ui.flightdeliveriesdetails.delegates.FlightDeliveriesErrorDelegate
-import com.wb.logistics.ui.splash.NavToolbarListener
-import com.wb.logistics.ui.unloading.UnloadingScanParameters
+import com.wb.logistics.ui.unloadingscan.UnloadingScanParameters
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -52,6 +51,9 @@ class FlightDeliveriesDetailsFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
         binding.proceedBoxes.setOnClickListener {
             viewModel.onCompleteClick()
         }
@@ -90,7 +92,7 @@ class FlightDeliveriesDetailsFragment : Fragment() {
     private fun initObserver() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            (activity as NavToolbarListener).updateTitle(it.label)
+            binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
         viewModel.itemsState.observe(viewLifecycleOwner) {

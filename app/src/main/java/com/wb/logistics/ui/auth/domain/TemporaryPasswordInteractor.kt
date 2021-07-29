@@ -2,6 +2,7 @@ package com.wb.logistics.ui.auth.domain
 
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.auth.signup.TimerState
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -15,4 +16,5 @@ interface TemporaryPasswordInteractor {
     fun passwordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean>
     fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse>
     fun checkPassword(phone: String, tmpPassword: String): Completable
+    fun observeNetworkConnected(): Observable<NetworkState>
 }

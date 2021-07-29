@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingForcedTerminationFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
@@ -35,8 +37,13 @@ class ForcedTerminationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObserver()
         initListener()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.force_termination_label)
     }
 
     private fun initTitleBoxes(title: String) {
@@ -56,6 +63,18 @@ class ForcedTerminationFragment : Fragment() {
         viewModel.navigateToMessage.observe(viewLifecycleOwner) {
             InformationDialogFragment.newInstance(it.title, it.message, it.button)
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
         }
 
         viewModel.boxesState.observe(viewLifecycleOwner) {
@@ -81,6 +100,10 @@ class ForcedTerminationFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         binding.checkedBoxNotFound.setOnCheckedChangeListener { _, isChecked ->
             binding.complete.setState(if (isChecked) ProgressImageButtonMode.ENABLED else ProgressImageButtonMode.DISABLED)
         }

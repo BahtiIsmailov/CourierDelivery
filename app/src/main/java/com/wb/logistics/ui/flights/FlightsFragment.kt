@@ -18,6 +18,7 @@ import com.wb.logistics.mvvm.model.base.BaseItem
 import com.wb.logistics.ui.dialogs.SimpleResultDialogFragment
 import com.wb.logistics.ui.flights.delegates.FlightsDelegate
 import com.wb.logistics.ui.flights.delegates.FlightsProgressDelegate
+import com.wb.logistics.ui.splash.NavToolbarListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -47,6 +48,7 @@ class FlightsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as NavToolbarListener).showToolbar()
         initRecyclerView()
         initAdapter()
         initListener()
@@ -71,7 +73,8 @@ class FlightsFragment : Fragment() {
                 FlightsUINavState.NavigateToNetworkInfoDialog -> {
                 }
                 FlightsUINavState.NavigateToReceptionBox -> findNavController().navigate(R.id.dcLoadingFragment)
-                FlightsUINavState.NavigateToReturnBalanceDialog -> { }
+                FlightsUINavState.NavigateToReturnBalanceDialog -> {
+                }
             }
         })
 

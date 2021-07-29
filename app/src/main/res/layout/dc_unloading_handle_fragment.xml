@@ -7,6 +7,40 @@
     android:background="@drawable/reception_bottom_sheet_info">
 
     <TextView
+        android:id="@+id/title"
+        style="@style/VeryLargeBlackRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/dc_loading_handle_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_close_dialog"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@color/tint"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
         android:id="@+id/title_list"
         style="@style/MediumLightRegularText"
         android:layout_width="wrap_content"
@@ -15,17 +49,16 @@
         android:layout_marginTop="16dp"
         android:text="@string/unloading_handle_title_list"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
     <TextView
         android:id="@+id/list_empty"
         style="@style/MediumLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginTop="16dp"
         android:text="@string/empty_list"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/boxes"
         app:layout_constraintStart_toStartOf="@+id/boxes"
         app:layout_constraintTop_toBottomOf="@+id/title_list" />
@@ -35,20 +68,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:divider="@null"
         android:dividerHeight="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
+        app:layout_constraintBottom_toTopOf="@+id/code_layout"
         app:layout_constraintTop_toBottomOf="@+id/title_list"
         tools:listitem="@layout/unloading_boxes_item_layout" />
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        android:background="@color/tint"
-        app:layout_constraintBottom_toTopOf="@+id/code_layout" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/code_layout"

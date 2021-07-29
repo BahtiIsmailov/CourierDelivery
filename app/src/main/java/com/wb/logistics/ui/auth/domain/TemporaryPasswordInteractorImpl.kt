@@ -3,6 +3,8 @@ package com.wb.logistics.ui.auth.domain
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.api.auth.response.RemainingAttemptsResponse
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.auth.signup.TimerOverStateImpl
 import com.wb.logistics.ui.auth.signup.TimerState
@@ -14,6 +16,7 @@ import java.util.concurrent.TimeUnit
 
 class TemporaryPasswordInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val repository: AuthRemoteRepository,
 ) : TemporaryPasswordInteractor {
     private val timerStates: BehaviorSubject<TimerState>
@@ -70,6 +73,11 @@ class TemporaryPasswordInteractorImpl(
         return observable.map { it.toString() }
             .distinctUntilChanged()
             .map { it.length >= LENGTH_SMS_CODE }
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

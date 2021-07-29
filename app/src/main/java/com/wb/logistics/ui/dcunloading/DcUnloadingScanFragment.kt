@@ -11,13 +11,14 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.DcUnloadingScanFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment.Companion.DC_UNLOADING_HANDLE_BARCODE_COMPLETE_KEY
+import com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment.Companion.DC_UNLOADING_HANDLE_BARCODE_RESULT
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingAcceptedMode
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingInfoMode
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
-import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.HANDLE_BARCODE_COMPLETE_KEY
-import com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment.Companion.UNLOADING_HANDLE_BARCODE_RESULT
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -39,17 +40,22 @@ class DcUnloadingScanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initListener()
         initObserver()
         initKeyboard()
-        viewModel.update()
-        (activity as NavToolbarListener).showToolbar()
         initReturnResult()
     }
 
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_unloading_boxes_label)
+        binding.toolbarLayout.back.visibility = View.INVISIBLE
+    }
+
     private fun initReturnResult() {
-        setFragmentResultListener(UNLOADING_HANDLE_BARCODE_RESULT) { _, bundle ->
-            val barcode = bundle.get(HANDLE_BARCODE_COMPLETE_KEY) as String
+        setFragmentResultListener(DC_UNLOADING_HANDLE_BARCODE_RESULT) { _, bundle ->
+            val barcode = bundle.get(DC_UNLOADING_HANDLE_BARCODE_COMPLETE_KEY) as String
             viewModel.onBoxHandleInput(barcode)
             viewModel.onStartScanner()
         }
@@ -67,12 +73,16 @@ class DcUnloadingScanFragment : Fragment() {
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
         }
 
-        viewModel.toolbarBackState.observe(viewLifecycleOwner) {
-            (activity as NavToolbarListener).hideBackButton()
-        }
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
 
-        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            (activity as NavToolbarListener).updateTitle(it.label)
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
         }
 
         val eventObserver = Observer<DcUnloadingScanNavAction> { state ->
@@ -194,6 +204,14 @@ class DcUnloadingScanFragment : Fragment() {
 //    }
 
     private fun initListener() {
+
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
 
         binding.unloadingBox.setOnClickListener {
             viewModel.onUnloadingListClicked()

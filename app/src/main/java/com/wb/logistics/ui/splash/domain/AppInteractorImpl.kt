@@ -3,6 +3,7 @@ package com.wb.logistics.ui.splash.domain
 import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.utils.managers.ScreenManager
 import com.wb.logistics.utils.managers.ScreenManagerImpl
@@ -16,8 +17,8 @@ class AppInteractorImpl(
     private val screenManager: ScreenManager,
 ) : AppInteractor {
 
-    override fun isNetworkConnected(): Observable<Boolean> {
-        return networkMonitorRepository.isNetworkConnected()
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

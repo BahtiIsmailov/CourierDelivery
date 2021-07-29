@@ -2,12 +2,15 @@ package com.wb.logistics.ui.auth.domain
 
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 
 class CreatePasswordInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val repository: AuthRemoteRepository
 ) : CreatePasswordInteractor {
     override fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
@@ -25,6 +28,11 @@ class CreatePasswordInteractorImpl(
         val changePassword = repository.changePasswordBySmsCode(phone, password, tmpPassword)
         val authByPassword = repository.authByPhoneOrPassword(phone, password, false)
         return changePassword.andThen(authByPassword).compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     companion object {

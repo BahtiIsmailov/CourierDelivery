@@ -6,6 +6,8 @@ import com.wb.logistics.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.Label
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightdeliveries.domain.FlightDeliveriesInteractor
@@ -20,9 +22,13 @@ class FlightDeliveriesViewModel(
     private val dataBuilder: FlightDeliveriesDataBuilder,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _stateUIToolBar = MutableLiveData<FlightDeliveriesUIToolbarState>()
-    val stateUIToolBar: LiveData<FlightDeliveriesUIToolbarState>
+    private val _stateUIToolBar = MutableLiveData<Label>()
+    val toolbarLabelState: LiveData<Label>
         get() = _stateUIToolBar
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
 
     private val _stateUINav = SingleLiveEvent<FlightDeliveriesUINavState>()
     val stateUINav: LiveData<FlightDeliveriesUINavState>
@@ -41,6 +47,11 @@ class FlightDeliveriesViewModel(
         get() = _navigateToMessageInfo
 
     init {
+        observeNetworkState()
+        updatePvzAttachedBoxes()
+    }
+
+    private fun updatePvzAttachedBoxes() {
         addSubscription(interactor.updatePvzAttachedBoxes().subscribe({}, {}))
     }
 
@@ -56,12 +67,11 @@ class FlightDeliveriesViewModel(
     }
 
     private fun fetchFlightIdComplete(title: String) {
-        _stateUIToolBar.value = FlightDeliveriesUIToolbarState.Delivery(title)
+        _stateUIToolBar.value = Label(title)
     }
 
     private fun fetchFlightIdError() {
-        _stateUIToolBar.value =
-            FlightDeliveriesUIToolbarState.Delivery(resourceProvider.getDeliveryToolbarEmpty())
+        _stateUIToolBar.value = Label(resourceProvider.getDeliveryToolbarEmpty())
     }
 
     private fun fetchDeliveryBoxesGroupByOfficeId() {
@@ -110,7 +120,7 @@ class FlightDeliveriesViewModel(
     fun onItemClicked(itemId: Int) {
         val item = copyScannedBoxes[itemId]
         _stateUINav.value = if (item.visitedAt.isEmpty()) {
-             FlightDeliveriesUINavState.NavigateToUpload(item.officeId)
+            FlightDeliveriesUINavState.NavigateToUpload(item.officeId)
         } else FlightDeliveriesUINavState.NavigateToUnloadDetails(item.officeId, item.officeName)
     }
 
@@ -160,6 +170,11 @@ class FlightDeliveriesViewModel(
             resourceProvider.getCompleteDeliveryDialogTitle(),
             message,
             resourceProvider.getCompleteDeliveryDialogButton())
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected()
+            .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

@@ -1,6 +1,7 @@
 package com.wb.logistics.ui.dcloading.domain
 
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -23,5 +24,7 @@ interface DcLoadingInteractor {
     fun switchScreen(): Completable
 
     fun scannerAction(scannerAction: ScannerAction)
+
+    fun observeNetworkConnected(): Observable<NetworkState>
 
 }

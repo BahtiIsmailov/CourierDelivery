@@ -1,24 +1,26 @@
 package com.wb.logistics.ui.auth
 
 import androidx.lifecycle.LiveData
-import com.wb.logistics.network.api.auth.AuthRemoteRepository
+import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.api.auth.response.CheckExistPhoneResponse
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.UserManager
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.NumberPhoneUIState.*
+import com.wb.logistics.ui.auth.domain.NumberPhoneInteractor
 import com.wb.logistics.utils.formatter.PhoneUtils
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
-    private val authRepository: AuthRemoteRepository,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val resourceProvider: AuthResourceProvider,
+    private val rxSchedulerFactory: RxSchedulerFactory,
+    private val interactor: NumberPhoneInteractor,
     private val userManager: UserManager,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -27,13 +29,21 @@ class NumberPhoneViewModel(
     val navigationEvent: LiveData<NumberPhoneNavAction>
         get() = _navigationEvent
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
     private val _stateUI = SingleLiveEvent<NumberPhoneUIState>()
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
 
+    init {
+        observeNetworkState()
+    }
+
     fun initFormatter() {
         addSubscription(
-            PhoneUtils.phoneFormatter(Observable.just(authRepository.userPhone()), rxSchedulerFactory)
+            PhoneUtils.phoneFormatter(Observable.just(interactor.userPhone()), rxSchedulerFactory)
                 .subscribe { number -> _stateUI.value = NumberFormatInit(number) })
     }
 
@@ -57,8 +67,7 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumber(phone: String) {
         _stateUI.value = PhoneCheck
-        val disposable = authRepository.checkExistAndSavePhone(phone.filter { it.isDigit() })
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+        val disposable = interactor.checkExistAndSavePhone(phone.filter { it.isDigit() })
             .subscribe(
                 { fetchPhoneNumberComplete(it, phone) },
                 { fetchPhoneNumberError(it) }
@@ -82,6 +91,10 @@ class NumberPhoneViewModel(
             is BadRequestException -> NumberNotFound(resourceProvider.getNumberNotFound())
             else -> Error(resourceProvider.getGenericError())
         }
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     companion object {

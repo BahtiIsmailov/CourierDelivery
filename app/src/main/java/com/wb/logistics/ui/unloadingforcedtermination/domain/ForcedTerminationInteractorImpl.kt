@@ -4,6 +4,8 @@ import com.wb.logistics.db.AppLocalRepository
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.utils.managers.ScreenManager
@@ -12,6 +14,7 @@ import io.reactivex.Observable
 
 class ForcedTerminationInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
     private val timeManager: TimeManager,
@@ -32,6 +35,11 @@ class ForcedTerminationInteractorImpl(
             .andThen(getFlightId())
             .flatMapCompletable { flightsLogs(it, date, dataLog) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     private fun insertNotUnloadingBoxToDeliveryError(currentOfficeId: Int) =

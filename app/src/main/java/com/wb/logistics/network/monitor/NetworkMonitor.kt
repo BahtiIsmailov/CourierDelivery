@@ -30,12 +30,15 @@ constructor(val application: Application) {
         application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+
+        val state = NetworkState()
+
         override fun onAvailable(network: Network) {
-            NetworkState.isNetworkConnected = true
+            state.isNetworkConnected = true
         }
 
         override fun onLost(network: Network) {
-            NetworkState.isNetworkConnected = false
+            state.isNetworkConnected = false
         }
     }
 

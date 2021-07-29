@@ -8,6 +8,13 @@
     android:background="@color/delivery_flight_background"
     tools:context=".ui.flights.FlightsFragment">
 
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <fragment
         android:id="@+id/scanner"
         class="com.wb.logistics.ui.scanner.ScannerFragment"
@@ -16,7 +23,7 @@
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         tools:layout="@layout/scanner_fragment" />
 
     <View
@@ -50,7 +57,7 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <com.wb.logistics.ui.unloading.views.UnloadingAcceptedView
+            <com.wb.logistics.ui.unloadingscan.views.UnloadingAcceptedView
                 android:id="@+id/unloading_box"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
@@ -65,7 +72,7 @@
                 app:unloading_accepted_box="0/0"
                 app:unloading_accepted_state="empty_box" />
 
-            <com.wb.logistics.ui.unloading.views.UnloadingReturnView
+            <com.wb.logistics.ui.unloadingscan.views.UnloadingReturnView
                 android:id="@+id/return_box"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
@@ -80,7 +87,7 @@
                 app:unloading_return_box="0/0"
                 app:unloading_return_state="empty_box" />
 
-            <com.wb.logistics.ui.unloading.views.UnloadingInfoView
+            <com.wb.logistics.ui.unloadingscan.views.UnloadingInfoView
                 android:id="@+id/info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

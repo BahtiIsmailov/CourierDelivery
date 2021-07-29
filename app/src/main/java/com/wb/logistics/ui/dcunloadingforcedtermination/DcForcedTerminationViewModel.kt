@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractor
@@ -27,9 +28,14 @@ class DcForcedTerminationViewModel(
     val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
         get() = _navigateToMessageInfo
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
+        observeNetworkState()
         _boxesState.value = DcForcedTerminationState.Title(resourceProvider.getLabel())
         addSubscription(interactor.observeNotDcUnloadedBoxes()
             .subscribe {
@@ -67,6 +73,11 @@ class DcForcedTerminationViewModel(
             resourceProvider.getForcedDialogTitle(),
             message,
             resourceProvider.getForcedDialogButton())
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected()
+            .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

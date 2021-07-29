@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.wb.logistics.R
 import com.wb.logistics.databinding.DcForcedTerminationFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
@@ -29,8 +31,13 @@ class DcForcedTerminationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObserver()
         initListener()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_unloading_forced_termination_label)
     }
 
     private fun initTitleBoxes(count: String) {
@@ -42,6 +49,18 @@ class DcForcedTerminationFragment : Fragment() {
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             InformationDialogFragment.newInstance(it.title, it.message, it.button)
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
         }
 
         viewModel.boxesState.observe(viewLifecycleOwner) {
@@ -69,6 +88,10 @@ class DcForcedTerminationFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         binding.icDetails.setOnClickListener { viewModel.onDetailsClick() }
 
         binding.checkedBoxNotFound.setOnCheckedChangeListener { _, isChecked ->

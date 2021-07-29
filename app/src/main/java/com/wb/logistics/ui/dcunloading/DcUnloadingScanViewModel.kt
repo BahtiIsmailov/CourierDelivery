@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcloading.domain.ScanProgressData
@@ -21,13 +22,9 @@ class DcUnloadingScanViewModel(
     private val interactor: DcUnloadingInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _toolbarBackState = MutableLiveData<BackButtonState>()
-    val toolbarBackState: LiveData<BackButtonState>
-        get() = _toolbarBackState
-
-    private val _toolbarLabelState = MutableLiveData<Label>()
-    val toolbarLabelState: LiveData<Label>
-        get() = _toolbarLabelState
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
 
     private val _messageEvent = SingleLiveEvent<DcUnloadingScanMessageEvent>()
     val toastEvent: LiveData<DcUnloadingScanMessageEvent>
@@ -61,6 +58,7 @@ class DcUnloadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
+        observeNetworkState()
         observeScanProcess()
         observeScanProgress()
     }
@@ -155,10 +153,6 @@ class DcUnloadingScanViewModel(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
-    fun update() {
-        _toolbarBackState.value = BackButtonState
-    }
-
     fun onBoxHandleInput(barcode: String) {
         interactor.barcodeManualInput(barcode.replace("-", ""))
     }
@@ -188,6 +182,10 @@ class DcUnloadingScanViewModel(
         )
     }
 
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
+    }
+
     fun onStopScanner() {
         interactor.scannerAction(ScannerAction.Stop)
     }
@@ -195,10 +193,6 @@ class DcUnloadingScanViewModel(
     fun onStartScanner() {
         interactor.scannerAction(ScannerAction.Start)
     }
-
-    object BackButtonState
-
-    data class Label(val label: String)
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 

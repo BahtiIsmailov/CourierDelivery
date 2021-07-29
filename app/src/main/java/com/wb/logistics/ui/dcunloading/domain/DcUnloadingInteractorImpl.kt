@@ -9,6 +9,8 @@ import com.wb.logistics.db.entity.flighboxes.ScanProcessStatus
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.app.FlightStatus
 import com.wb.logistics.network.exceptions.BadRequestException
+import com.wb.logistics.network.monitor.NetworkMonitorRepository
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.dcloading.domain.ScanProgressData
@@ -22,6 +24,7 @@ import io.reactivex.subjects.PublishSubject
 
 class DcUnloadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
@@ -195,6 +198,11 @@ class DcUnloadingInteractorImpl(
     override fun switchScreenToClosed(): Completable {
         return screenManager.saveState(FlightStatus.CLOSED)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
 }

@@ -6,6 +6,8 @@ import com.wb.logistics.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntit
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
 import com.wb.logistics.network.exceptions.UnauthorizedException
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.Label
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.flightpickpoint.domain.FlightPickPointInteractor
@@ -20,13 +22,17 @@ class FlightPickPointViewModel(
     private val dataBuilder: FlightPickPointDataBuilder,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _stateUIToolBar = MutableLiveData<FlightPickPointUIToolbarState>()
-    val stateUIToolBar: LiveData<FlightPickPointUIToolbarState>
-        get() = _stateUIToolBar
-
     private val _stateUINav = SingleLiveEvent<FlightPickPointUINavState>()
     val stateUINav: LiveData<FlightPickPointUINavState>
         get() = _stateUINav
+
+    private val _toolbarLabelState = MutableLiveData<Label>()
+    val toolbarLabelState: LiveData<Label>
+        get() = _toolbarLabelState
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
 
     private val _stateUI = SingleLiveEvent<FlightPickPointUIState>()
     val stateUI: LiveData<FlightPickPointUIState>
@@ -37,6 +43,12 @@ class FlightPickPointViewModel(
     val stateUIList = MutableLiveData<FlightPickPointUIListState>()
 
     private var copyScannedBoxes = mutableListOf<PickupPointBoxGroupByOfficeEntity>()
+
+    init {
+        observeNetworkState()
+        fetchFlightId()
+        fetchAttachedBoxesGroupByOfficeId()
+    }
 
     fun action(actionView: FlightPickPointUIAction) {
         when (actionView) {
@@ -70,24 +82,17 @@ class FlightPickPointViewModel(
 
     }
 
-    init {
-        fetchFlightId()
-        fetchAttachedBoxesGroupByOfficeId()
-    }
-
     private fun fetchFlightId() {
         addSubscription(interactor.flightId()
             .subscribe({ flightIdComplete(it) }) { flightIdError() })
     }
 
     private fun flightIdComplete(flightId: Int) {
-        _stateUIToolBar.value =
-            FlightPickPointUIToolbarState.Flight(resourceProvider.getFlightToolbar(flightId))
+        _toolbarLabelState.value = Label(resourceProvider.getFlightToolbar(flightId))
     }
 
     private fun flightIdError() {
-        _stateUIToolBar.value =
-            FlightPickPointUIToolbarState.Flight(resourceProvider.getFlightNotDefineToolbar())
+        _toolbarLabelState.value = Label(resourceProvider.getFlightNotDefineToolbar())
     }
 
     private fun fetchAttachedBoxesGroupByOfficeId() {
@@ -131,6 +136,10 @@ class FlightPickPointViewModel(
                 resourceProvider.getCountBox(0)
             )
         }
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
 }

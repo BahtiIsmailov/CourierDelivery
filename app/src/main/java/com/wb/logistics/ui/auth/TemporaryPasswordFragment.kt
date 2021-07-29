@@ -21,6 +21,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthTemporaryPasswordFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
@@ -58,6 +60,8 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
         binding.repeatPasswordTimer.visibility = GONE
         binding.repeatPassword.visibility = GONE
         binding.next.setState(ProgressImageButtonMode.PROGRESS)
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_temporary_toolbar_label)
+        binding.toolbarLayout.back.visibility = View.VISIBLE
     }
 
     private fun initKeyboard() {
@@ -65,6 +69,13 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         val password = binding.password
         viewModel.action(TemporaryPasswordUIAction.PasswordChanges(password.textChanges()))
         binding.repeatPassword.setOnClickListener { viewModel.onRepeatTmpPassword() }
@@ -88,6 +99,18 @@ class TemporaryPasswordFragment : Fragment(R.layout.auth_temporary_password_frag
             binding.numberPhoneTitle.setText(phoneSpannable(state), TextView.BufferType.SPANNABLE)
             binding.numberPhoneTitle.visibility = VISIBLE
         })
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
+        }
 
         viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
             when (state) {

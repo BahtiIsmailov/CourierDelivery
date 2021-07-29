@@ -7,37 +7,36 @@
     android:layout_height="match_parent"
     android:background="@color/delivery_card_background">
 
-    <LinearLayout
-        android:id="@+id/cause"
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout" />
+
+    <TextView
+        android:id="@+id/cause_title"
+        style="@style/VeryLargeBlackRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:layout_below="@+id/toolbar_layout"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/force_termination_cause" />
 
-        <TextView
-            style="@style/VeryLargeBlackRegularText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/force_termination_cause" />
-
-        <CheckBox
-            android:id="@+id/checked_box_not_found"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/transparent"
-            android:text="@string/force_termination_box_not_found" />
-
-    </LinearLayout>
+    <CheckBox
+        android:id="@+id/checked_box_not_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cause_title"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/transparent"
+        android:text="@string/force_termination_box_not_found" />
 
     <TextView
         android:id="@+id/title"
         style="@style/VeryLargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cause"
+        android:layout_below="@+id/checked_box_not_found"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:text="@string/force_termination_not_delivery" />

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthPhoneFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.splash.NavDrawerListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.LogUtils
@@ -46,8 +48,10 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
     private fun initViews() {
         binding.next.setState(ProgressImageButtonMode.DISABLED)
-        (activity as NavToolbarListener).hideBackButton()
+        (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lock()
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_number_phone_toolbar_label)
+        binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
     private fun initKeyboard() {
@@ -55,6 +59,11 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initListener() {
+
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
+
         binding.loginLayout.setOnLongClickListener {
             viewModel.action(NumberPhoneUIAction.LongTitle)
             true
@@ -98,8 +107,20 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
             }
         })
 
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
+        }
+
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
-            LogUtils{logDebugApp(state.toString())}
+            LogUtils { logDebugApp(state.toString()) }
             when (state) {
                 is NumberPhoneUIState.NumberFormatInit -> {
                     binding.phoneNumber.setText(state.number)

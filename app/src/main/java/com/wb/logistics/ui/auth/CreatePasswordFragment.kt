@@ -16,6 +16,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthCreatePasswordFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
@@ -50,6 +52,8 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
     private fun initViews() {
         binding.password.isEnabled = true
         binding.next.setState(ProgressImageButtonMode.ENABLED)
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_create_password_toolbar_label)
+        binding.toolbarLayout.back.visibility = View.VISIBLE
     }
 
     private fun initKeyboard() {
@@ -57,6 +61,13 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         val password = binding.password
         viewModel.action(CreatePasswordUIAction.PasswordChanges(password.textChanges()))
         binding.next.setOnClickListener {
@@ -76,6 +87,18 @@ class CreatePasswordFragment : Fragment(R.layout.auth_create_password_fragment) 
                     findNavController().navigate(R.id.load_navigation)
             }
         })
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
+        }
 
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {

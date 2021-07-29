@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.wb.logistics.R
 import com.wb.logistics.databinding.DcForcedTerminationDetailsFragmentBinding
 import com.wb.logistics.ui.splash.NavToolbarListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,8 +28,13 @@ class DcForcedTerminationDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObserver()
         initListener()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_unloading_forced_termination_details_label)
     }
 
     private fun initBoxes(routeItems: List<DcForcedTerminationDetailsItem>) {
@@ -57,6 +63,7 @@ class DcForcedTerminationDetailsFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.complete.setOnClickListener { viewModel.onCompleteClick() }
     }
 

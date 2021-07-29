@@ -102,9 +102,7 @@ class UnloadingHandleFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.close.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        binding.close.setOnClickListener { findNavController().navigateUp() }
         viewModel.action(UnloadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
         binding.accept.setOnClickListener {
             setFragmentResult(UNLOADING_HANDLE_BARCODE_RESULT,

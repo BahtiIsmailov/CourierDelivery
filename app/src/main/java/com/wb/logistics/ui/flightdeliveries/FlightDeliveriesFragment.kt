@@ -17,11 +17,12 @@ import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightDeliveriesFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flightdeliveries.delegates.*
 import com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
 import com.wb.logistics.ui.splash.NavToolbarListener
-import com.wb.logistics.ui.unloading.UnloadingScanParameters
+import com.wb.logistics.ui.unloadingscan.UnloadingScanParameters
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -46,6 +47,7 @@ class FlightDeliveriesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initRecyclerView()
         initAdapter()
         initListener()
@@ -53,7 +55,15 @@ class FlightDeliveriesFragment : Fragment() {
         viewModel.update()
     }
 
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
+        binding.toolbarLayout.back.visibility = View.INVISIBLE
+    }
+
     private fun initListener() {
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         binding.completeDeliveryPositive.setOnClickListener {
             viewModel.onCompleteDeliveryPositiveClick()
         }
@@ -64,12 +74,18 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun initStateObserve() {
 
-        viewModel.stateUIToolBar.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is FlightDeliveriesUIToolbarState.Flight -> updateToolbarLabel(state.label)
-                is FlightDeliveriesUIToolbarState.Delivery -> {
-                    updateToolbarDeliveryIcon()
-                    updateToolbarLabel(state.label)
+        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
                 }
             }
         }
@@ -131,16 +147,6 @@ class FlightDeliveriesFragment : Fragment() {
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
         }
 
-    }
-
-    private fun updateToolbarLabel(toolbarTitle: String) {
-        (activity as NavToolbarListener).updateTitle(toolbarTitle)
-    }
-
-    private fun updateToolbarDeliveryIcon() {
-        // TODO: 03.06.2021 реализовать ТТН
-//        (activity as NavToolbarTitleListener).backButtonIcon(R.drawable.ic_fligt_delivery_transport_doc)
-        (activity as NavToolbarListener).hideBackButton()
     }
 
     private fun updateBottom(state: FlightDeliveriesUIBottomState) {

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.db.entity.flighboxes.FlightBoxEntity
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.utils.LogUtils
@@ -15,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 class DcLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
-    private val receptionInteractor: DcLoadingInteractor,
+    private val interactor: DcLoadingInteractor,
     private val resourceProvider: DcLoadingResourceProvider,
     private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
@@ -27,6 +28,10 @@ class DcLoadingBoxesViewModel(
     private val _navigateToBack = MutableLiveData<NavigateToBack>()
     val navigateToBack: LiveData<NavigateToBack>
         get() = _navigateToBack
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
 
     private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
     val navigateToMessage: LiveData<NavigateToMessageInfo>
@@ -40,11 +45,12 @@ class DcLoadingBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<DcLoadingBoxesItem>()
 
     init {
+        observeNetworkState()
         observeScannedBoxes()
     }
 
     private fun observeScannedBoxes() {
-        addSubscription(receptionInteractor.observeScannedBoxes()
+        addSubscription(interactor.observeScannedBoxes()
             .flatMap { convertBoxes(it) }
             .doOnNext { copyConvertBoxes(it) }
             .subscribe({ changeBoxesComplete(it) },
@@ -88,7 +94,7 @@ class DcLoadingBoxesViewModel(
         _boxes.value = DcLoadingBoxesUIState.Progress
         val dcLoadingBoxes =
             copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
-        addSubscription(receptionInteractor.removeScannedBoxes(dcLoadingBoxes)
+        addSubscription(interactor.removeScannedBoxes(dcLoadingBoxes)
             .subscribe(
                 { removeScannedBoxesComplete() },
                 { removeScannedBoxesError(it) }
@@ -143,6 +149,11 @@ class DcLoadingBoxesViewModel(
             copyReceptionBoxes[index] = copyReception
         }
         _boxes.value = DcLoadingBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected()
+            .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     object NavigateToBack

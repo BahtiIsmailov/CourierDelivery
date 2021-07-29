@@ -12,8 +12,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.wb.logistics.R
 import com.wb.logistics.databinding.DcLoadingBoxesFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,7 +31,6 @@ class DcLoadingBoxesFragment : Fragment() {
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -39,15 +41,32 @@ class DcLoadingBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initRecyclerView()
         initObservable()
         initListener()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_loading_boxes_label)
     }
 
     private fun initObservable() {
         viewModel.navigateToMessage.observe(viewLifecycleOwner) {
             InformationDialogFragment.newInstance(it.title, it.message, it.button)
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
         }
 
         viewModel.boxes.observe(viewLifecycleOwner) {
@@ -95,9 +114,13 @@ class DcLoadingBoxesFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.remove.setOnClickListener {
-            viewModel.onRemoveClick()
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
         }
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
+        binding.remove.setOnClickListener { viewModel.onRemoveClick() }
     }
 
     private fun initRecyclerView() {

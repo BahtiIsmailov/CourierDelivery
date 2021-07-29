@@ -33,7 +33,8 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
     }
 
     private fun initView() {
-        (activity as NavToolbarListener).hideBackButton()
+        //(activity as NavToolbarListener).hideBackButton()
+        (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).unlock()
         (activity as KeyboardListener).adjustMode()
         viewModel.update()

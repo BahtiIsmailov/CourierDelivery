@@ -18,6 +18,7 @@ import com.wb.logistics.R
 import com.wb.logistics.adapters.DefaultAdapterDelegate
 import com.wb.logistics.databinding.FlightPickPointFragmentBinding
 import com.wb.logistics.mvvm.model.base.BaseItem
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.flightpickpoint.delegates.FlightPickPointDelegate
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
@@ -57,6 +58,12 @@ class FlightPickPointFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         binding.goToDelivery.setOnClickListener {
             viewModel.action(FlightPickPointUIAction.GoToDeliveryClick)
         }
@@ -64,11 +71,18 @@ class FlightPickPointFragment : Fragment() {
 
     private fun initStateObserve() {
 
-        viewModel.stateUIToolBar.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is FlightPickPointUIToolbarState.Flight -> updateToolbarLabel(state.label)
-                is FlightPickPointUIToolbarState.Delivery -> {
-                    updateToolbarLabel(state.label)
+        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
                 }
             }
         }
@@ -146,10 +160,6 @@ class FlightPickPointFragment : Fragment() {
         positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.accept))
         positive.text = getString(R.string.flight_deliveries_dialog_positive_button)
         alertDialog.show()
-    }
-
-    private fun updateToolbarLabel(toolbarTitle: String) {
-        (activity as NavToolbarListener).updateTitle(toolbarTitle)
     }
 
     private fun updateStatus(status: String) {

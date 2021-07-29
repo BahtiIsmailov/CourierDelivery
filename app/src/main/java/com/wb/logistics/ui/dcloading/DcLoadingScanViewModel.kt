@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
@@ -27,6 +28,10 @@ class DcLoadingScanViewModel(
     val navigationEvent: LiveData<DcLoadingScanNavAction>
         get() = _navigationEvent
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
     private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
     val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
         get() = _navigateToMessageInfo
@@ -46,6 +51,7 @@ class DcLoadingScanViewModel(
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
     init {
+        observeNetworkState()
         observeInitScanProcess()
         observeScanProcess()
         observeScanProgress()
@@ -213,6 +219,10 @@ class DcLoadingScanViewModel(
 
     fun onStartScanner() {
         interactor.scannerAction(ScannerAction.Start)
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

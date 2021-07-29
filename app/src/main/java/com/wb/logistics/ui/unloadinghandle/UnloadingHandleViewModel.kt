@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.rx.RxSchedulerFactory
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadinghandle.domain.UnloadingHandleInteractor
+import com.wb.logistics.ui.unloadingscan.UnloadingScanResourceProvider
 import com.wb.logistics.utils.formatter.BoxUtils
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

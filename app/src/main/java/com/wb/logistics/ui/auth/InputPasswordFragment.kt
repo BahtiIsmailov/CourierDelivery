@@ -12,6 +12,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.wb.logistics.R
 import com.wb.logistics.databinding.AuthInputPasswordFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.SoftKeyboard
 import com.wb.logistics.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
@@ -48,6 +50,8 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
         binding.password.isEnabled = true
         binding.remindPassword.isEnabled = true
         binding.next.setState(ProgressImageButtonMode.ENABLED)
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_number_phone_toolbar_label)
+        binding.toolbarLayout.back.visibility = View.VISIBLE
     }
 
     private fun initKeyboard() {
@@ -56,6 +60,13 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
         val password = binding.password
         viewModel.action(InputPasswordUIAction.PasswordChanges(password.textChanges()))
         binding.remindPassword.setOnClickListener {
@@ -81,6 +92,18 @@ class InputPasswordFragment : Fragment(R.layout.auth_input_password_fragment) {
                 }
             }
         })
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+                }
+
+                is NetworkState.Complete -> {
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                }
+            }
+        }
 
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {

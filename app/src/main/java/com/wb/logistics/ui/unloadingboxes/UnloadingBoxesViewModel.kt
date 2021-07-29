@@ -3,8 +3,8 @@ package com.wb.logistics.ui.unloadingboxes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.ui.NetworkViewModel
-import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadingboxes.domain.UnloadingBoxesInteractor
+import com.wb.logistics.ui.unloadingscan.UnloadingScanResourceProvider
 import com.wb.logistics.utils.time.TimeFormatType
 import com.wb.logistics.utils.time.TimeFormatter
 import io.reactivex.Observable

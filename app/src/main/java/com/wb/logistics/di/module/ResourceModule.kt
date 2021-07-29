@@ -14,9 +14,9 @@ import com.wb.logistics.ui.flights.FlightsResourceProvider
 import com.wb.logistics.ui.flightserror.FlightsErrorResourceProvider
 import com.wb.logistics.ui.flightsloader.FlightLoaderProvider
 import com.wb.logistics.ui.splash.AppResourceProvider
-import com.wb.logistics.ui.unloading.UnloadingScanResourceProvider
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationResourceProvider
 import com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
+import com.wb.logistics.ui.unloadingscan.UnloadingScanResourceProvider
 import org.koin.dsl.module
 
 val resourceModule = module {

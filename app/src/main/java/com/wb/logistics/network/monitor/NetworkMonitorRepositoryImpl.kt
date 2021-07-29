@@ -4,7 +4,7 @@ import io.reactivex.Observable
 
 class NetworkMonitorRepositoryImpl : NetworkMonitorRepository {
 
-    override fun isNetworkConnected(): Observable<Boolean> {
+    override fun networkConnected(): Observable<NetworkState> {
         return NetworkState.connect
     }
 

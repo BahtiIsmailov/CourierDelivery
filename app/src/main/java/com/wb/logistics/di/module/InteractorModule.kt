@@ -30,8 +30,6 @@ import com.wb.logistics.ui.scanner.domain.ScannerInteractorImpl
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.ui.splash.domain.AppInteractor
 import com.wb.logistics.ui.splash.domain.AppInteractorImpl
-import com.wb.logistics.ui.unloading.domain.UnloadingInteractor
-import com.wb.logistics.ui.unloading.domain.UnloadingInteractorImpl
 import com.wb.logistics.ui.unloadingboxes.domain.UnloadingBoxesInteractor
 import com.wb.logistics.ui.unloadingboxes.domain.UnloadingBoxesInteractorImpl
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
@@ -41,6 +39,8 @@ import com.wb.logistics.ui.unloadinghandle.domain.UnloadingHandleInteractor
 import com.wb.logistics.ui.unloadinghandle.domain.UnloadingHandleInteractorImpl
 import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
+import com.wb.logistics.ui.unloadingscan.domain.UnloadingInteractor
+import com.wb.logistics.ui.unloadingscan.domain.UnloadingInteractorImpl
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
 import org.koin.dsl.module
@@ -48,25 +48,44 @@ import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteract
 
 val interactorModule = module {
 
+    fun provideNumberPhoneInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        repository: AuthRemoteRepository,
+    ): NumberPhoneInteractor {
+        return NumberPhoneInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            repository)
+    }
+
     fun provideTemporaryPasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
     ): TemporaryPasswordInteractor {
-        return TemporaryPasswordInteractorImpl(rxSchedulerFactory, repository)
+        return TemporaryPasswordInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            repository)
     }
 
     fun provideInputPasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         authRepository: AuthRemoteRepository,
     ): InputPasswordInteractor {
-        return InputPasswordInteractorImpl(rxSchedulerFactory, authRepository)
+        return InputPasswordInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            authRepository)
     }
 
     fun provideCreatePasswordInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
     ): CreatePasswordInteractor {
-        return CreatePasswordInteractorImpl(rxSchedulerFactory, repository)
+        return CreatePasswordInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
+            repository)
     }
 
     fun provideNavigationInteractor(
@@ -118,11 +137,13 @@ val interactorModule = module {
 
     fun provideFlightPickPointInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightPickPointInteractor {
         return FlightPickPointInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             screenManager)
@@ -130,11 +151,13 @@ val interactorModule = module {
 
     fun provideFlightDeliveriesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightDeliveriesInteractor {
         return FlightDeliveriesInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             screenManager)
@@ -148,6 +171,7 @@ val interactorModule = module {
 
     fun provideReceptionInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         scannerRepository: ScannerRepository,
@@ -155,6 +179,7 @@ val interactorModule = module {
         screenManager: ScreenManager,
     ): DcLoadingInteractor {
         return DcLoadingInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
@@ -190,6 +215,7 @@ val interactorModule = module {
 
     fun provideUnloadingInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         scannerRepository: ScannerRepository,
@@ -198,6 +224,7 @@ val interactorModule = module {
     ): UnloadingInteractor {
         LogUtils { logDebugApp("SCOPE_DEBUG UnloadingInteractorImpl ctreate " + "scannerRepository -> " + scannerRepository.toString()) }
         return UnloadingInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
@@ -207,12 +234,14 @@ val interactorModule = module {
 
     fun provideForcedTerminationInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): ForcedTerminationInteractor {
         return ForcedTerminationInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             timeManager,
@@ -228,6 +257,7 @@ val interactorModule = module {
 
     fun provideDcUnloadingInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         scannerRepository: ScannerRepository,
@@ -235,6 +265,7 @@ val interactorModule = module {
         screenManager: ScreenManager,
     ): DcUnloadingInteractor {
         return DcUnloadingInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
@@ -244,12 +275,14 @@ val interactorModule = module {
 
     fun provideDcForcedTerminationInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): DcForcedTerminationInteractor {
         return DcForcedTerminationInteractorImpl(rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             timeManager,
@@ -263,28 +296,29 @@ val interactorModule = module {
         return DcUnloadingCongratulationInteractorImpl(rxSchedulerFactory, appLocalRepository)
     }
 
-    single { provideTemporaryPasswordInteractor(get(), get()) }
-    single { provideInputPasswordInteractor(get(), get()) }
-    single { provideCreatePasswordInteractor(get(), get()) }
+    single { provideNumberPhoneInteractor(get(), get(), get()) }
+    single { provideTemporaryPasswordInteractor(get(), get(), get()) }
+    single { provideInputPasswordInteractor(get(), get(), get()) }
+    single { provideCreatePasswordInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
-    single { provideFlightPickPointInteractor(get(), get(), get(), get()) }
-    single { provideFlightDeliveriesInteractor(get(), get(), get(), get()) }
+    single { provideFlightPickPointInteractor(get(), get(), get(), get(), get()) }
+    single { provideFlightDeliveriesInteractor(get(), get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
-    single { provideReceptionInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideReceptionInteractor(get(), get(), get(), get(), get(), get(), get()) }
 
-    factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
+    factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
 
     single { provideUnloadingBoxesInteractor(get(), get()) }
     single { provideUnloadingHandleInteractor(get(), get()) }
     single { provideUnloadingReturnInteractor(get(), get(), get(), get()) }
 
-    single { provideForcedTerminationInteractor(get(), get(), get(), get(), get()) }
+    single { provideForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideCongratulationInteractor(get(), get()) }
-    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideDcForcedTerminationInteractor(get(), get(), get(), get(), get()) }
+    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
+    single { provideDcForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideDcUnloadingCongratulationInteractor(get(), get()) }
 
 }

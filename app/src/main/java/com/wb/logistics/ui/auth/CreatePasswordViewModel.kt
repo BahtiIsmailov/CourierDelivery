@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.CreatePasswordUIAction.Auth
@@ -25,9 +26,17 @@ class CreatePasswordViewModel(
     val navigationEvent: LiveData<CreatePasswordNavAction>
         get() = _navigationEvent
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
     private val _stateUI = MutableLiveData<CreatePasswordUIState>()
     val stateUI: LiveData<CreatePasswordUIState>
         get() = _stateUI
+
+    init {
+        observeNetworkState()
+    }
 
     fun action(actionView: CreatePasswordUIAction) {
         when (actionView) {
@@ -69,6 +78,10 @@ class CreatePasswordViewModel(
             is BadRequestException -> Error(throwable.error.message)
             else -> Error(resourceProvider.getGenericError())
         }
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
 }

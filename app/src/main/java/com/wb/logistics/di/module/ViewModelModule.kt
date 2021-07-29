@@ -19,10 +19,6 @@ import com.wb.logistics.ui.flightsloader.FlightLoaderViewModel
 import com.wb.logistics.ui.scanner.ScannerViewModel
 import com.wb.logistics.ui.splash.AppViewModel
 import com.wb.logistics.ui.splash.LoaderViewModel
-import com.wb.logistics.ui.unloading.UnloadingBoxNotBelongModel
-import com.wb.logistics.ui.unloading.UnloadingBoxNotBelongParameters
-import com.wb.logistics.ui.unloading.UnloadingScanParameters
-import com.wb.logistics.ui.unloading.UnloadingScanViewModel
 import com.wb.logistics.ui.unloadingboxes.UnloadingBoxesParameters
 import com.wb.logistics.ui.unloadingboxes.UnloadingBoxesViewModel
 import com.wb.logistics.ui.unloadingcongratulation.CongratulationViewModel
@@ -32,6 +28,10 @@ import com.wb.logistics.ui.unloadinghandle.UnloadingHandleParameters
 import com.wb.logistics.ui.unloadinghandle.UnloadingHandleViewModel
 import com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnBoxesViewModel
 import com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnParameters
+import com.wb.logistics.ui.unloadingscan.UnloadingBoxNotBelongModel
+import com.wb.logistics.ui.unloadingscan.UnloadingBoxNotBelongParameters
+import com.wb.logistics.ui.unloadingscan.UnloadingScanParameters
+import com.wb.logistics.ui.unloadingscan.UnloadingScanViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -58,7 +58,7 @@ val viewModelModule = module {
 
     viewModel { FlightLoaderViewModel(get(), get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get()) }
-    viewModel { FlightsEmptyViewModel(get()) }
+    viewModel { FlightsEmptyViewModel(get(), get(), get()) }
     viewModel { (parameters: FlightsErrorParameters) -> FlightsErrorViewModel(parameters, get()) }
 
     viewModel { ScannerViewModel(get(), get()) }

@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:background="@color/background_content">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/content_top"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="16dp" />
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/content_left"
@@ -31,12 +31,13 @@
         style="@style/LargeDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:lineSpacingExtra="4sp"
         android:text="@string/flights_empty_flight"
         android:textColor="@color/text_info"
         app:layout_constraintEnd_toEndOf="@id/content_right"
         app:layout_constraintStart_toStartOf="@id/content_left"
-        app:layout_constraintTop_toTopOf="@+id/content_top" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
 
     <com.wb.logistics.views.ProgressImageButtonView
         android:id="@+id/update"

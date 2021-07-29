@@ -11,8 +11,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingBoxesFragmentBinding
-import com.wb.logistics.ui.unloading.UnloadingScanParameters
+import com.wb.logistics.ui.unloadingscan.UnloadingScanParameters
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -40,9 +41,14 @@ class UnloadingBoxesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initRecyclerView()
         initObserver()
         initListener()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_loading_label)
     }
 
     private fun initBoxes(routeItems: MutableList<UnloadingBoxesItem>) {
@@ -81,6 +87,7 @@ class UnloadingBoxesFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.complete.setOnClickListener { viewModel.onCompleteClick() }
     }
 

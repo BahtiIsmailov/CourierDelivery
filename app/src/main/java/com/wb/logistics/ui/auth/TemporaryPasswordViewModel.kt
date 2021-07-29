@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxbinding3.InitialValueObservable
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.SingleLiveEvent
 import com.wb.logistics.ui.auth.TemporaryPasswordUIAction.CheckPassword
@@ -26,6 +27,10 @@ class TemporaryPasswordViewModel(
     val stateTitleUI: LiveData<InitTitle>
         get() = _stateTitleUI
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
     private val _navigationEvent =
         SingleLiveEvent<TemporaryPasswordNavAction>()
     val navigationEvent: LiveData<TemporaryPasswordNavAction>
@@ -40,6 +45,7 @@ class TemporaryPasswordViewModel(
         get() = _stateUI
 
     init {
+        observeNetworkState()
         fetchTitle()
         fetchInitTmpPassword()
         subscribeTimer()
@@ -174,6 +180,10 @@ class TemporaryPasswordViewModel(
 
     override fun onTimeIsOverState() {
         _repeatStateUI.value = TemporaryPasswordUIRepeatState.RepeatPassword
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     companion object {

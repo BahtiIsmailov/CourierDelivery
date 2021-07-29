@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.exceptions.NoInternetException
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.NetworkViewModel
 import com.wb.logistics.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
 import io.reactivex.Observable
@@ -25,12 +26,17 @@ class ForcedTerminationViewModel(
     val navigateToBack: LiveData<ForcedTerminationNavAction>
         get() = _navigateToBack
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
     private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
     val navigateToMessage: LiveData<NavigateToMessageInfo>
         get() = _navigateToMessageInfo
 
     init {
         initTitle()
+        observeNetworkState()
         initNotUnloadedBox()
     }
 
@@ -74,6 +80,10 @@ class ForcedTerminationViewModel(
             message,
             resourceProvider.getBoxPositiveButton())
         _navigateToBack.value = ForcedTerminationNavAction.NavigateToBack
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

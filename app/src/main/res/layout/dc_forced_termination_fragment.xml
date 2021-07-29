@@ -7,11 +7,9 @@
     android:layout_height="match_parent"
     android:background="@color/delivery_card_background">
 
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="#EDEEF0"
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,7 +22,7 @@
         android:background="#EDEEF0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
 
     <ImageView
         android:id="@+id/ic_returned"
@@ -34,7 +32,7 @@
         android:src="@drawable/ic_warning_dc"
         app:layout_constraintBottom_toTopOf="@id/divider2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider1" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
 
     <ImageView
         android:id="@+id/ic_details"
@@ -48,7 +46,7 @@
         android:src="@drawable/ic_arrow_right"
         app:layout_constraintBottom_toTopOf="@id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider1" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
 
     <TextView
         android:id="@+id/title"
@@ -60,7 +58,7 @@
         android:text="@string/force_termination_not_delivery"
         app:layout_constraintBottom_toTopOf="@+id/boxes_count"
         app:layout_constraintStart_toEndOf="@+id/ic_returned"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
 
     <TextView
         android:id="@+id/boxes_count"

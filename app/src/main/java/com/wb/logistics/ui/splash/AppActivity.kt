@@ -25,6 +25,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.SplashActivityBinding
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flightsloader.FlightActionStatus
 import com.wb.logistics.utils.LogUtils
@@ -97,14 +98,16 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private fun initObserver() {
 
         viewModel.networkState.observe(this) {
-            networkIcon.visibility = if (it) GONE else VISIBLE
-            with(binding.navView) {
-                if (it) {
-                    findViewById<TextView>(R.id.inet_app_status_make_text).visibility = VISIBLE
-                    findViewById<TextView>(R.id.inet_app_status_no_text).visibility = GONE
-                } else {
+            when (it) {
+                is NetworkState.Failed -> {
+                    networkIcon.visibility = VISIBLE
                     findViewById<TextView>(R.id.inet_app_status_make_text).visibility = GONE
                     findViewById<TextView>(R.id.inet_app_status_no_text).visibility = VISIBLE
+                }
+                is NetworkState.Complete -> {
+                    networkIcon.visibility = GONE
+                    findViewById<TextView>(R.id.inet_app_status_make_text).visibility = VISIBLE
+                    findViewById<TextView>(R.id.inet_app_status_no_text).visibility = GONE
                 }
             }
         }
@@ -190,13 +193,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private fun initView() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         networkIcon = toolbar.findViewById(R.id.no_internet_image)
-        networkIcon.setOnClickListener {
-            InformationDialogFragment.newInstance(
-                getString(R.string.nav_no_internet_dialog_title),
-                getString(R.string.nav_no_internet_dialog_description),
-                getString(R.string.nav_no_internet_dialog_button),
-            ).show(supportFragmentManager, "TAG_NETWORK")
-        }
+        networkIcon.setOnClickListener { showNetworkDialog() }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -218,6 +215,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     override fun showToolbar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.visibility = VISIBLE
+    }
+
+    override fun showNetworkDialog() {
+        InformationDialogFragment.newInstance(
+            getString(R.string.nav_no_internet_dialog_title),
+            getString(R.string.nav_no_internet_dialog_description),
+            getString(R.string.nav_no_internet_dialog_button),
+        ).show(supportFragmentManager, "TAG_NETWORK")
     }
 
     override fun leftIcon(resId: Int) {
@@ -308,6 +313,7 @@ interface NavToolbarListener {
     fun updateTitle(title: String)
     fun hideToolbar()
     fun showToolbar()
+    fun showNetworkDialog()
 }
 
 interface NavDrawerListener {

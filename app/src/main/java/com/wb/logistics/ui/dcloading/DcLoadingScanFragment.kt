@@ -12,11 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.DcLoadingScanFragmentBinding
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dcloading.DcLoadingHandleFragment.Companion.HANDLE_BARCODE_RESULT
 import com.wb.logistics.ui.dcloading.views.ReceptionAcceptedMode
 import com.wb.logistics.ui.dcloading.views.ReceptionInfoMode
 import com.wb.logistics.ui.dcloading.views.ReceptionParkingMode
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
+import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,14 +40,30 @@ class DcLoadingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initListener()
         initObserver()
+    }
+
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
+        binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_loading_label)
     }
 
     private fun initObserver() {
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             InformationDialogFragment.newInstance(it.title, it.message, it.button)
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed ->
+                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
+
+                is NetworkState.Complete ->
+                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+            }
         }
 
         val navigationObserver = Observer<DcLoadingScanNavAction> { state ->
@@ -134,6 +152,15 @@ class DcLoadingFragment : Fragment() {
     }
 
     private fun initListener() {
+
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbarLayout.noInternetImage.setOnClickListener {
+            (activity as NavToolbarListener).showNetworkDialog()
+        }
+
         binding.manualInput.setOnClickListener {
             // TODO: 22.04.2021 заменить на вызовы
             viewModel.onStopScanner()

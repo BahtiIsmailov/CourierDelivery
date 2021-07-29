@@ -2,6 +2,7 @@ package com.wb.logistics.ui.dcunloading.domain
 
 import com.wb.logistics.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import com.wb.logistics.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
+import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import io.reactivex.Completable
@@ -25,5 +26,7 @@ interface DcUnloadingInteractor {
     fun scannerAction(scannerAction: ScannerAction)
 
     fun switchScreenToClosed(): Completable
+
+    fun observeNetworkConnected(): Observable<NetworkState>
 
 }

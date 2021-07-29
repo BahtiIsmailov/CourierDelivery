@@ -173,12 +173,12 @@
 
     <fragment
         android:id="@+id/unloadingScanFragment"
-        android:name="com.wb.logistics.ui.unloading.UnloadingScanFragment"
+        android:name="com.wb.logistics.ui.unloadingscan.UnloadingScanFragment"
         android:label="@string/unloading_scan_label"
         tools:layout="@layout/unloading_scan_fragment">
         <argument
             android:name="unloading_scan_key"
-            app:argType="com.wb.logistics.ui.unloading.UnloadingScanParameters"
+            app:argType="com.wb.logistics.ui.unloadingscan.UnloadingScanParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_unloadingScanFragment_to_unloadingBoxesFragment"
@@ -239,12 +239,12 @@
 
     <fragment
         android:id="@+id/unloadingNotBelongFragment"
-        android:name="com.wb.logistics.ui.unloading.UnloadingBoxNotBelongFragment"
+        android:name="com.wb.logistics.ui.unloadingscan.UnloadingBoxNotBelongFragment"
         android:label="@string/unloading_box_not_belong_point_toolbar_label"
         tools:layout="@layout/unloading_box_not_belong_fragment">
         <argument
             android:name="box_not_belong_key"
-            app:argType="com.wb.logistics.ui.unloading.UnloadingBoxNotBelongParameters"
+            app:argType="com.wb.logistics.ui.unloadingscan.UnloadingBoxNotBelongParameters"
             app:nullable="false" />
     </fragment>
 
