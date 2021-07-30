@@ -170,10 +170,10 @@ class DcUnloadingScanViewModel(
         addSubscription(interactor.isBoxesUnloaded()
             .flatMap {
                 if (it) {
-                    Single.just(DcUnloadingScanNavAction.NavigateToDcForcedTermination)
-                } else {
                     interactor.switchScreenToClosed()
                         .andThen(Single.just(DcUnloadingScanNavAction.NavigateToDcCongratulation))
+                } else {
+                    Single.just(DcUnloadingScanNavAction.NavigateToDcForcedTermination)
                 }
             }.subscribe({
                 _navigationEvent.value = it

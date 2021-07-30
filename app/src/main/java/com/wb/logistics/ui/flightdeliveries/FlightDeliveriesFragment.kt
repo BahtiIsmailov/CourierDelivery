@@ -226,7 +226,7 @@ class FlightDeliveriesFragment : Fragment() {
         val dialogView: View =
             LayoutInflater.from(requireContext())
                 .inflate(R.layout.custom_layout_dialog, viewGroup, false)
-        val title: TextView = dialogView.findViewById(R.id.title_progress)
+        val title: TextView = dialogView.findViewById(R.id.title)
         val message: TextView = dialogView.findViewById(R.id.message)
         val negative: Button = dialogView.findViewById(R.id.negative)
         val positive: Button = dialogView.findViewById(R.id.positive)
