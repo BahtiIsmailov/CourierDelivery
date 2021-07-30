@@ -60,7 +60,7 @@
             <com.wb.logistics.ui.dcloading.views.ReceptionAcceptedView
                 android:id="@+id/received"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
+                android:layout_height="0dp"
                 android:layout_marginStart="@dimen/layout_scanner_padding_horizontal_base"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="12dp"
@@ -75,7 +75,7 @@
             <com.wb.logistics.ui.dcloading.views.ReceptionParkingView
                 android:id="@+id/parking"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="@dimen/layout_scanner_padding_horizontal_base"
@@ -85,7 +85,7 @@
                 app:layout_constraintStart_toStartOf="@+id/guideline_center_info_vertical"
                 app:layout_constraintTop_toTopOf="parent"
                 app:reception_parking_number="10"
-                app:reception_parking_state="empty_box" />
+                app:reception_parking_state="contains_deny_box" />
 
             <com.wb.logistics.ui.dcloading.views.ReceptionInfoView
                 android:id="@+id/info"
