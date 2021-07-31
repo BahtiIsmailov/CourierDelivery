@@ -58,6 +58,16 @@ class UnloadingScanFragment : Fragment() {
         initKeyboard()
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.onStartScanner()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStopScanner()
+    }
+
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.unloading_boxes_label)
@@ -155,12 +165,14 @@ class UnloadingScanFragment : Fragment() {
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UnloadingScanProgress.LoaderProgress -> {
+                    viewModel.onStopScanner()
                     binding.unloadingBox.isEnabled = false
                     binding.returnBox.isEnabled = false
                     binding.manualInput.setState(ProgressImageButtonMode.DISABLED)
                     binding.complete.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is UnloadingScanProgress.LoaderComplete -> {
+                    viewModel.onStartScanner()
                     binding.unloadingBox.isEnabled = true
                     binding.returnBox.isEnabled = true
                     binding.manualInput.setState(ProgressImageButtonMode.ENABLED)

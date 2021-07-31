@@ -10,6 +10,8 @@ sealed class DcLoadingScanNavAction {
 
     object NavigateToBoxes : DcLoadingScanNavAction()
 
+    object NavigateToHandle : DcLoadingScanNavAction()
+
     object NavigateToFlightDeliveries : DcLoadingScanNavAction()
 
     object NavigateToBack : DcLoadingScanNavAction()

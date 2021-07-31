@@ -24,7 +24,10 @@ class DcLoadingHandleViewModel(
     private fun fetchBoxNumberFormat(actionView: DcLoadingHandleUIAction.BoxChanges) {
         addSubscription(
             BoxUtils.boxNumberFormatter(actionView.observable, rxSchedulerFactory)
-                .map { if (it.length > 5) DcLoadingHandleUIState.BoxFormatted(it) else DcLoadingHandleUIState.BoxAcceptDisabled(it) }
+                .map {
+                    if (it.length > 5) DcLoadingHandleUIState.BoxFormatted(it)
+                    else DcLoadingHandleUIState.BoxAcceptDisabled(it)
+                }
                 .subscribe { stateUI.value = it }
         )
     }

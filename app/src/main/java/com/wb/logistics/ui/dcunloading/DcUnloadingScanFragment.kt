@@ -47,6 +47,17 @@ class DcUnloadingScanFragment : Fragment() {
         initReturnResult()
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.onStartScanner()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStopScanner()
+    }
+
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_unloading_boxes_label)

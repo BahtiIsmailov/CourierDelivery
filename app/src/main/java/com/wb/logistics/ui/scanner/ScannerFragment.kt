@@ -22,7 +22,6 @@ import com.wb.logistics.R
 import com.wb.logistics.app.AppConsts
 import com.wb.logistics.databinding.ScannerFragmentBinding
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.utils.LogUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -50,16 +49,10 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         initPermission()
     }
 
-    override fun onStart() {
-        super.onStart()
-        startScanner()
-    }
-
     private fun initPermission() {
         if (hasPermission(Manifest.permission.CAMERA)) {
             binding.permissionInfo.visibility = View.GONE
             binding.requestPermission.visibility = View.GONE
-            startScanner()
         } else {
             requestPermission.launch(Manifest.permission.CAMERA)
         }
@@ -133,7 +126,6 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
 
         binding.requestPermissionSetting.setOnClickListener {
-            LogUtils { logDebugApp("initPermission() startActivityForResult") }
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             val uri = Uri.fromParts(AppConsts.APP_PACKAGE, requireContext().packageName, null)
             intent.data = uri
@@ -199,15 +191,6 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         if (hasPermission(Manifest.permission.CAMERA)) {
             scannerView.startCamera()
         }
-//        scannerView.setCameraCompleteListener {
-//            binding.zoom.max = scannerView.maxZoom
-//            binding.zoom.setOnSeekBarChangeListener(onSeekBarChangeListener)
-//        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        stopScanner()
     }
 
     private fun stopScanner() {

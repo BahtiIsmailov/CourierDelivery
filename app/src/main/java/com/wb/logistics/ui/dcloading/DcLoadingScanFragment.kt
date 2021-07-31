@@ -1,13 +1,12 @@
 package com.wb.logistics.ui.dcloading
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
@@ -43,6 +42,30 @@ class DcLoadingFragment : Fragment() {
         initView()
         initListener()
         initObserver()
+        initReturnResult()
+    }
+
+    private fun initReturnResult() {
+        setFragmentResultListener(HANDLE_BARCODE_RESULT) { _, bundle ->
+            isHandleActive = false
+            viewModel.onStartScanner()
+            if (bundle.containsKey(DcLoadingHandleFragment.HANDLE_BARCODE_COMPLETE_KEY)) {
+                val barcode = bundle.get(DcLoadingHandleFragment.HANDLE_BARCODE_COMPLETE_KEY) as String
+                viewModel.onBoxHandleInput(barcode)
+            }
+        }
+    }
+
+    private var isHandleActive: Boolean = false
+
+    override fun onStart() {
+        super.onStart()
+        if (!isHandleActive) viewModel.onStartScanner()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStopScanner()
     }
 
     private fun initView() {
@@ -80,6 +103,11 @@ class DcLoadingFragment : Fragment() {
                 DcLoadingScanNavAction.NavigateToFlightDeliveries -> findNavController().navigate(
                     DcLoadingFragmentDirections.actionReceptionFragmentToFlightPickPointFragment())
                 DcLoadingScanNavAction.NavigateToBack -> findNavController().popBackStack()
+                DcLoadingScanNavAction.NavigateToHandle -> {
+                    isHandleActive = true
+                    findNavController().navigate(
+                        DcLoadingFragmentDirections.actionDcLoadingFragmentToDcLoadingHandleFragment())
+                }
             }
         }
 
@@ -95,11 +123,13 @@ class DcLoadingFragment : Fragment() {
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is DcLoadingScanProgress.LoaderProgress -> {
+                    viewModel.onStopScanner()
                     binding.received.isEnabled = false
                     binding.manualInput.setState(ProgressImageButtonMode.DISABLED)
                     binding.complete.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is DcLoadingScanProgress.LoaderComplete -> {
+                    viewModel.onStartScanner()
                     binding.received.isEnabled = true
                     binding.manualInput.setState(ProgressImageButtonMode.ENABLED)
                     binding.complete.setState(ProgressImageButtonMode.ENABLED)
@@ -162,9 +192,7 @@ class DcLoadingFragment : Fragment() {
         }
 
         binding.manualInput.setOnClickListener {
-            // TODO: 22.04.2021 заменить на вызовы
-            viewModel.onStopScanner()
-            showHandleInput()
+            viewModel.onHandleClicked()
         }
 
         binding.complete.setOnClickListener {
@@ -175,33 +203,6 @@ class DcLoadingFragment : Fragment() {
             viewModel.onListClicked()
         }
 
-    }
-
-    private fun showHandleInput() {
-        val receptionHandleFragment = DcLoadingHandleFragment.newInstance()
-        receptionHandleFragment.setTargetFragment(this, REQUEST_HANDLE_CODE)
-        receptionHandleFragment.show(parentFragmentManager, REQUEST_HANDLE_TAG)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // TODO: 22.04.2021 заменить на вызовы
-        viewModel.onStartScanner()
-
-        if (resultCode == RESULT_OK)
-            resultScanner(requestCode, data)
-    }
-
-    private fun resultScanner(requestCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_HANDLE_CODE) {
-            data?.apply {
-                val barcode = data.getStringExtra(HANDLE_BARCODE_RESULT)
-                if (data.hasExtra(HANDLE_BARCODE_RESULT) && barcode != null) {
-                    viewModel.onBoxHandleInput(barcode)
-                }
-            }
-        }
     }
 
     override fun onDestroyView() {
@@ -219,11 +220,6 @@ class DcLoadingFragment : Fragment() {
 
     private fun play(resid: Int) {
         MediaPlayer.create(context, resid).start()
-    }
-
-    companion object {
-        const val REQUEST_HANDLE_CODE = 100
-        const val REQUEST_HANDLE_TAG = "request_handle_tag"
     }
 
 }

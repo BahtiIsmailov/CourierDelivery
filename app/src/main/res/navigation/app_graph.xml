@@ -98,6 +98,9 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_dcLoadingFragment_to_dcLoadingHandleFragment"
+            app:destination="@id/dcLoadingHandleFragment" />
     </fragment>
 
     <fragment
@@ -420,5 +423,11 @@
         android:name="com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsFragment"
         android:label="@string/dc_unloading_forced_termination_details_label"
         tools:layout="@layout/dc_forced_termination_details_fragment" />
+
+    <dialog
+        android:id="@+id/dcLoadingHandleFragment"
+        android:name="com.wb.logistics.ui.dcloading.DcLoadingHandleFragment"
+        android:label="DcLoadingHandleFragment"
+        tools:layout="@layout/dc_loading_handle_fragment"/>
 
 </navigation>

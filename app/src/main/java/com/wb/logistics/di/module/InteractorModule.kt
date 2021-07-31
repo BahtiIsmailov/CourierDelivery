@@ -102,24 +102,6 @@ val interactorModule = module {
             screenManager)
     }
 
-//    fun provideFlightsEmptyInteractor(
-//        rxSchedulerFactory: RxSchedulerFactory,
-//        networkMonitorRepository: NetworkMonitorRepository,
-//        appRemoteRepository: AppRemoteRepository,
-//        appLocalRepository: AppLocalRepository,
-//        authRemoteRepository: AuthRemoteRepository,
-//        timeManager: TimeManager,
-//        screenManager: ScreenManager,
-//    ): FlightsEmptyInteractor {
-//        return FlightsEmptyInteractorImpl(rxSchedulerFactory,
-//            networkMonitorRepository,
-//            appRemoteRepository,
-//            appLocalRepository,
-//            authRemoteRepository,
-//            timeManager,
-//            screenManager)
-//    }
-
     fun provideFlightsLoaderInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,

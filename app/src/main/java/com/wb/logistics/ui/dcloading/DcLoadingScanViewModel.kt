@@ -168,6 +168,12 @@ class DcLoadingScanViewModel(
         interactor.barcodeManualInput(barcode)
     }
 
+
+    fun onHandleClicked() {
+        onStopScanner()
+        _navigationEvent.value = DcLoadingScanNavAction.NavigateToHandle
+    }
+
     fun onListClicked() {
         _navigationEvent.value = DcLoadingScanNavAction.NavigateToBoxes
     }

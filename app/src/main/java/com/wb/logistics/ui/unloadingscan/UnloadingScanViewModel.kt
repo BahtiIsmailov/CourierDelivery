@@ -250,6 +250,10 @@ class UnloadingScanViewModel(
         interactor.scannerAction(ScannerAction.Stop)
     }
 
+    fun onStartScanner() {
+        interactor.scannerAction(ScannerAction.Start)
+    }
+
     private fun observeNetworkState() {
         addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }

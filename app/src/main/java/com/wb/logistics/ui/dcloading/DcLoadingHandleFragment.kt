@@ -1,14 +1,14 @@
 package com.wb.logistics.ui.dcloading
 
 import android.R
-import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -32,11 +32,8 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
         }
 
         const val HANDLE_BARCODE_RESULT = "HANDLE_INPUT_RESULT"
-    }
-
-    override fun onPause() {
-        super.onPause()
-        onResult(RESULT_CANCELED, "")
+        const val HANDLE_BARCODE_CANCEL_KEY = "HANDLE_BARCODE_CANCEL_KEY"
+        const val HANDLE_BARCODE_COMPLETE_KEY = "HANDLE_BARCODE_COMPLETE_KEY"
     }
 
     override fun onCreateView(
@@ -51,6 +48,11 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
                 BottomSheetBehavior.from(bottomSheetInternal).state =
                     BottomSheetBehavior.STATE_EXPANDED
             }
+        }
+        dialog?.setOnCancelListener {
+            setFragmentResult(HANDLE_BARCODE_RESULT,
+                bundleOf(HANDLE_BARCODE_CANCEL_KEY to binding.codeBox.text.toString()))
+            findNavController().navigateUp()
         }
         return binding.root
     }
@@ -88,13 +90,16 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
 
     private fun initListener() {
         binding.close.setOnClickListener {
-            onResult(RESULT_CANCELED, binding.codeBox.text.toString())
-            this.dismiss()
+            setFragmentResult(HANDLE_BARCODE_RESULT,
+                bundleOf(HANDLE_BARCODE_CANCEL_KEY to binding.codeBox.text.toString()))
+            findNavController().navigateUp()
         }
         viewModel.action(DcLoadingHandleUIAction.BoxChanges(binding.codeBox.textChanges()))
+
         binding.accept.setOnClickListener {
-            onResult(RESULT_OK, binding.codeBox.text.toString())
-            this.dismiss()
+            setFragmentResult(HANDLE_BARCODE_RESULT,
+                bundleOf(HANDLE_BARCODE_COMPLETE_KEY to binding.codeBox.text.toString()))
+            findNavController().navigateUp()
         }
     }
 
@@ -106,11 +111,6 @@ class DcLoadingHandleFragment : BottomSheetDialogFragment() {
                 R.color.transparent
             )
         )
-    }
-
-    private fun onResult(resultCode: Int, codeBox: String) {
-        val intent = Intent().putExtra(HANDLE_BARCODE_RESULT, codeBox)
-        targetFragment?.onActivityResult(targetRequestCode, resultCode, intent)
     }
 
     override fun onDestroyView() {
