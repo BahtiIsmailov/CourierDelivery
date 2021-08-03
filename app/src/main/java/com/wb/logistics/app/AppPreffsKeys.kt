@@ -8,6 +8,7 @@ object AppPreffsKeys {
 
     const val SCREEN_KEY = "SCREEN_KEY"
 
-    const val TIME_NETWORK_KEY = "TIME_NETWORK_KEY"
-    const val TIME_LOCAL_KEY = "TIME_LOCAL_KEY"
+    const val SERVER_DATE_TIME_KEY = "SERVER_DATE_TIME_KEY"
+    const val LOCAL_DATE_TIME_KEY = "LOCAL_DATE_TIME_KEY"
+    const val OFFSET_LOCAL_DATE_TIME_KEY = "OFFSET_LOCAL_DATE_TIME_KEY"
 }

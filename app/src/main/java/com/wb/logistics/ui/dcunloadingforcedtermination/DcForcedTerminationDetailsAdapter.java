@@ -37,7 +37,6 @@ public class DcForcedTerminationDetailsAdapter extends ArrayAdapter<ForcedTermin
             holder = (ViewHolder) convertView.getTag();
         }
         DcForcedTerminationDetailsItem item = items.get(position);
-        holder.binding.number.setText(item.getNumber());
         holder.binding.barcode.setText(item.getBarcode());
         holder.binding.data.setText(item.getData());
         return convertView;

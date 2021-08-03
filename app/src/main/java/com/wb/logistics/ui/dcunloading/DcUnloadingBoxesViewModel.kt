@@ -12,8 +12,8 @@ import io.reactivex.disposables.CompositeDisposable
 class DcUnloadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: DcUnloadingInteractor,
-    private val timeFormatter: TimeFormatter,
     private val resourceProvider: DcUnloadingScanResourceProvider,
+    private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxesState = MutableLiveData<DcUnloadingBoxesState>()

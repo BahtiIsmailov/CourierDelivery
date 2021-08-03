@@ -104,15 +104,15 @@ class TimeFormatterImpl : TimeFormatter {
         return dateTimeFormatter.print(seconds * MILLIS_IN_SECOND)
     }
 
-    override fun calendarFromStringSimple(date: String): Calendar {
+    private fun calendarFromStringSimple(date: String): Calendar {
         return getCalendarWithTimeZone(date, PATTERN_CALENDAR_FORMAT)
     }
 
-    override fun calendarWithTimezoneFromString(date: String): Calendar {
+    private fun calendarWithTimezoneFromString(date: String): Calendar {
         return getCalendarWithTimeZone(date, PATTERN_CALENDAR_FORMAT)
     }
 
-    override fun calendarWithoutTimezoneFromString(date: String): Calendar {
+    private fun calendarWithoutTimezoneFromString(date: String): Calendar {
         return getCalendarWithoutTimeZone(date, PATTERN_CALENDAR_FORMAT)
     }
 
@@ -161,6 +161,10 @@ class TimeFormatterImpl : TimeFormatter {
 
     override fun dateTimeWithoutTimezoneFromString(date: String): DateTime {
         return DateTime(calendarWithoutTimezoneFromString(date).timeInMillis)
+    }
+
+    override fun dateTimeWithoutTimezoneOffsetFromString(date: String, offset: Long): DateTime {
+        return DateTime(calendarWithoutTimezoneFromString(date).timeInMillis + offset)
     }
 
     companion object {

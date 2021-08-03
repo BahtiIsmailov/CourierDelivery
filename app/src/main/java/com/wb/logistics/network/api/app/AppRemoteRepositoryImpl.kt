@@ -36,6 +36,7 @@ import com.wb.logistics.network.api.app.remote.warehouse.*
 import com.wb.logistics.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxResponse
 import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.managers.TimeManager
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -43,6 +44,7 @@ import io.reactivex.Single
 class AppRemoteRepositoryImpl(
     private val remote: AppApi,
     private val tokenManager: TokenManager,
+    private val timeManager: TimeManager,
 ) : AppRemoteRepository {
 
     override fun flight(): Single<FlightDataEntity> {
@@ -237,7 +239,7 @@ class AppRemoteRepositoryImpl(
                     boxesEntity.add(with(box) {
                         FlightBoxEntity(
                             barcode = barcode,
-                            updatedAt = updatedAt,
+                            updatedAt = timeManager.getOffsetTimeZone(updatedAt),
                             status = status,
                             onBoard = onBoard,
                             srcOffice = FlightSrcOfficeEntity(

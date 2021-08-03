@@ -12,11 +12,11 @@ import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
-import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.dcloading.domain.ScanProgressData
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.utils.managers.ScreenManager
+import com.wb.logistics.utils.managers.TimeManager
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single

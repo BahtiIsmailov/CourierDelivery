@@ -5,7 +5,6 @@ import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.api.auth.AuthRemoteRepository
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
-import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.auth.domain.*
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractor
 import com.wb.logistics.ui.dcloading.domain.DcLoadingInteractorImpl
@@ -43,6 +42,7 @@ import com.wb.logistics.ui.unloadingscan.domain.UnloadingInteractor
 import com.wb.logistics.ui.unloadingscan.domain.UnloadingInteractorImpl
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
+import com.wb.logistics.utils.managers.TimeManager
 import org.koin.dsl.module
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
 

@@ -19,6 +19,7 @@ import com.wb.logistics.network.token.TokenManager
 import com.wb.logistics.network.token.UserManager
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.ui.scanner.domain.ScannerRepositoryImpl
+import com.wb.logistics.utils.managers.TimeManager
 import org.koin.dsl.module
 
 val deliveryRepositoryModule = module {
@@ -31,8 +32,12 @@ val deliveryRepositoryModule = module {
         return AuthRemoteRepositoryImpl(api, tokenManager, userManager)
     }
 
-    fun provideAppRemoteRepository(api: AppApi, tokenManager: TokenManager): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(api, tokenManager)
+    fun provideAppRemoteRepository(
+        api: AppApi,
+        tokenManager: TokenManager,
+        timeManager: TimeManager,
+    ): AppRemoteRepository {
+        return AppRemoteRepositoryImpl(api, tokenManager, timeManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -67,7 +72,7 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRemoteRepository(get(), get(), get()) }
-    single { provideAppRemoteRepository(get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideScannerRepository() }

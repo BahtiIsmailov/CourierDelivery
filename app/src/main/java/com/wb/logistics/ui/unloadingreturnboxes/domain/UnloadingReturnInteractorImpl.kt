@@ -8,7 +8,7 @@ import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingDstOfficeEntity
 import com.wb.logistics.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import com.wb.logistics.network.api.app.AppRemoteRepository
 import com.wb.logistics.network.rx.RxSchedulerFactory
-import com.wb.logistics.network.token.TimeManager
+import com.wb.logistics.utils.managers.TimeManager
 import io.reactivex.Completable
 import io.reactivex.Observable
 

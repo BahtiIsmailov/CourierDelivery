@@ -12,9 +12,9 @@ class DcForcedTerminationDetailsDataBuilderImpl(
 
     override fun buildDcForcedTerminationItem(value: IndexedValue<DcNotUnloadedBoxEntity>): DcForcedTerminationDetailsItem {
         val item = value.value
-        val date = item.updatedAt
+        val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
         val dcOffice = item.currentOffice
-        val srcOffice =  item.srcOffice
+        val srcOffice = item.srcOffice
         val data = if (dcOffice == srcOffice) {
             resourceProvider.getNotDelivery(
                 timeFormatter.format(date, ONLY_DATE),
@@ -26,7 +26,9 @@ class DcForcedTerminationDetailsDataBuilderImpl(
                 item.srcFullAddress)
         }
 
-        return DcForcedTerminationDetailsItem((value.index + 1).toString(), item.barcode, data)
+        return DcForcedTerminationDetailsItem(
+            resourceProvider.getUnnamedBarcodeFormat(value.index + 1, item.barcode),
+            data)
     }
 
 }

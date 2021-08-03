@@ -20,13 +20,12 @@ class FlightsDataBuilderImpl(
             val flightOffices =
                 if (offices.isEmpty()) listOf(resourceProvider.getRoutesEmpty())
                 else offices
-            val withoutTimezone =
-                timeFormatter.dateTimeWithoutTimezoneFromString(date)
+            val date = timeFormatter.dateTimeWithoutTimezoneFromString(date)
             FlightItem(
                 resourceProvider.getFlightNumber(flightId),
                 resourceProvider.getParkingNumber(gate),
-                timeFormatter.format(withoutTimezone, ONLY_DATE),
-                timeFormatter.format(withoutTimezone, ONLY_TIME),
+                timeFormatter.format(date, ONLY_DATE),
+                timeFormatter.format(date, ONLY_TIME),
                 resourceProvider.getRoutesTitle(routesTitle),
                 flightOffices
             )

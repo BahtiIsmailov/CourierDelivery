@@ -32,8 +32,7 @@ class UnloadingBoxesViewModel(
                 Observable.fromIterable(list.withIndex())
                     .map {
                         with(it) {
-                            val date =
-                                timeFormatter.dateTimeWithoutTimezoneFromString(value.updatedAt)
+                            val date = timeFormatter.dateTimeWithoutTimezoneFromString(value.updatedAt)
                             val timeFormat = resourceProvider.getBoxTimeAndTime(
                                 timeFormatter.format(date, TimeFormatType.ONLY_DATE),
                                 timeFormatter.format(date, TimeFormatType.ONLY_TIME))

@@ -11,11 +11,9 @@ interface TimeFormatter {
     fun format(date: String, @TimeFormatType formatType: String): String
     fun format(dateTime: DateTime, @TimeFormatType formatType: String): String
     fun format(seconds: Long, @TimeFormatType formatType: String): String
-    fun calendarFromStringSimple(date: String): Calendar
-    fun calendarWithTimezoneFromString(date: String): Calendar
-    fun calendarWithoutTimezoneFromString(date: String): Calendar
     fun dateFromString(date: String): Date
     fun dateTimeFromStringSimple(date: String): DateTime
     fun dateTimeWithTimezoneFromString(date: String): DateTime
     fun dateTimeWithoutTimezoneFromString(date: String): DateTime
+    fun dateTimeWithoutTimezoneOffsetFromString(date: String, offset: Long): DateTime
 }

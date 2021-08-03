@@ -14,11 +14,11 @@ import com.wb.logistics.network.exceptions.BadRequestException
 import com.wb.logistics.network.monitor.NetworkMonitorRepository
 import com.wb.logistics.network.monitor.NetworkState
 import com.wb.logistics.network.rx.RxSchedulerFactory
-import com.wb.logistics.network.token.TimeManager
 import com.wb.logistics.ui.scanner.domain.ScannerAction
 import com.wb.logistics.ui.scanner.domain.ScannerRepository
 import com.wb.logistics.utils.LogUtils
 import com.wb.logistics.utils.managers.ScreenManager
+import com.wb.logistics.utils.managers.TimeManager
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
 
@@ -50,7 +50,6 @@ class UnloadingInteractorImpl(
 
     private fun barcodeScannerInput(): Observable<Pair<String, Boolean>> {
         return scannerRepository.observeBarcodeScanned(barcodeScannedSubject)
-            .doOnNext { LogUtils { logDebugApp("SCOPE_DEBUG " + this@UnloadingInteractorImpl.toString() + " -> barcodeScannerInput() " + it) } }
             .map { Pair(it, false) }
     }
 
