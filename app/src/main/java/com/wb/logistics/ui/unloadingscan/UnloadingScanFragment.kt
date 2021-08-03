@@ -1,11 +1,15 @@
 package com.wb.logistics.ui.unloadingscan
 
+import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
@@ -13,7 +17,6 @@ import androidx.navigation.fragment.findNavController
 import com.wb.logistics.R
 import com.wb.logistics.databinding.UnloadingScanFragmentBinding
 import com.wb.logistics.network.monitor.NetworkState
-import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.ui.unloadingboxes.UnloadingBoxesParameters
@@ -60,7 +63,7 @@ class UnloadingScanFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.onStartScanner()
+        if (!isDialogActive) viewModel.onStartScanner()
     }
 
     override fun onStop() {
@@ -85,11 +88,15 @@ class UnloadingScanFragment : Fragment() {
         }
     }
 
+    private var isDialogActive: Boolean = false
+
     private fun initObserver() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+            isDialogActive = true
+//            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+//                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+            showSimpleDialog(it)
         }
 
         viewModel.toolbarBackState.observe(viewLifecycleOwner) {
@@ -227,6 +234,35 @@ class UnloadingScanFragment : Fragment() {
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
+    }
+
+    private fun showSimpleDialog(it: UnloadingScanViewModel.NavigateToMessageInfo) {
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.main
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.simple_layout_dialog, viewGroup, false)
+        val title: TextView = dialogView.findViewById(R.id.title)
+        val message: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        builder.setView(dialogView)
+
+        val alertDialog: AlertDialog = builder.create()
+
+        title.text = it.title
+        message.text = it.message
+        negative.setOnClickListener {
+            isDialogActive = false
+            alertDialog.dismiss()
+        }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = it.button
+        alertDialog.setOnDismissListener {
+            isDialogActive = false
+            viewModel.onStartScanner()
+        }
+        alertDialog.show()
     }
 
     private fun initListener() {

@@ -33,7 +33,7 @@ class ForcedTerminationResourceProvider(private val context: Context) {
         context.getString(R.string.unloading_boxes_dialog_complete_ok)
 
     fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
-        return context.getString(R.string.unnamed_barcode_format,
+        return context.getString(R.string.unnamed_barcode_format_number,
             index,
             barcode.take(4),
             barcode.takeLast(4))

@@ -30,13 +30,16 @@ class ScannerViewModel(
         if (barcode.startsWith("TRBX")) {
             if (oldBarcode == barcode) {
                 erase?.dispose()
-                erase = Observable.timer(5, TimeUnit.SECONDS).subscribe { oldBarcode = "" }
+                erase = Observable.timer(5, TimeUnit.SECONDS).subscribe { clearMemoryBarcode() }
             } else {
                 _scannerAction.value = ScannerAction.BeepScan
                 interactor.barcodeScanned(barcode)
             }
             oldBarcode = barcode
         }
+    }
+    fun clearMemoryBarcode() {
+        oldBarcode = ""
     }
 
 }

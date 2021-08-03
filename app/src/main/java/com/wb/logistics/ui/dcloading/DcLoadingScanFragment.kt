@@ -1,10 +1,14 @@
 package com.wb.logistics.ui.dcloading
 
+import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
@@ -16,7 +20,6 @@ import com.wb.logistics.ui.dcloading.DcLoadingHandleFragment.Companion.HANDLE_BA
 import com.wb.logistics.ui.dcloading.views.ReceptionAcceptedMode
 import com.wb.logistics.ui.dcloading.views.ReceptionInfoMode
 import com.wb.logistics.ui.dcloading.views.ReceptionParkingMode
-import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -47,20 +50,21 @@ class DcLoadingFragment : Fragment() {
 
     private fun initReturnResult() {
         setFragmentResultListener(HANDLE_BARCODE_RESULT) { _, bundle ->
-            isHandleActive = false
+            isDialogActive = false
             viewModel.onStartScanner()
             if (bundle.containsKey(DcLoadingHandleFragment.HANDLE_BARCODE_COMPLETE_KEY)) {
-                val barcode = bundle.get(DcLoadingHandleFragment.HANDLE_BARCODE_COMPLETE_KEY) as String
+                val barcode =
+                    bundle.get(DcLoadingHandleFragment.HANDLE_BARCODE_COMPLETE_KEY) as String
                 viewModel.onBoxHandleInput(barcode)
             }
         }
     }
 
-    private var isHandleActive: Boolean = false
+    private var isDialogActive: Boolean = false
 
     override fun onStart() {
         super.onStart()
-        if (!isHandleActive) viewModel.onStartScanner()
+        if (!isDialogActive) viewModel.onStartScanner()
     }
 
     override fun onStop() {
@@ -75,8 +79,8 @@ class DcLoadingFragment : Fragment() {
 
     private fun initObserver() {
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+            isDialogActive = true
+            showSimpleDialog(it)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -104,7 +108,7 @@ class DcLoadingFragment : Fragment() {
                     DcLoadingFragmentDirections.actionReceptionFragmentToFlightPickPointFragment())
                 DcLoadingScanNavAction.NavigateToBack -> findNavController().popBackStack()
                 DcLoadingScanNavAction.NavigateToHandle -> {
-                    isHandleActive = true
+                    isDialogActive = true
                     findNavController().navigate(
                         DcLoadingFragmentDirections.actionDcLoadingFragmentToDcLoadingHandleFragment())
                 }
@@ -179,6 +183,35 @@ class DcLoadingFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showSimpleDialog(it: DcLoadingScanViewModel.NavigateToMessageInfo) {
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.main
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.simple_layout_dialog, viewGroup, false)
+        val title: TextView = dialogView.findViewById(R.id.title)
+        val message: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        builder.setView(dialogView)
+
+        val alertDialog: AlertDialog = builder.create()
+
+        title.text = it.title
+        message.text = it.message
+        negative.setOnClickListener {
+            isDialogActive = false
+            alertDialog.dismiss()
+        }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = it.button
+        alertDialog.setOnDismissListener {
+            isDialogActive = false
+            viewModel.onStartScanner()
+        }
+        alertDialog.show()
     }
 
     private fun initListener() {

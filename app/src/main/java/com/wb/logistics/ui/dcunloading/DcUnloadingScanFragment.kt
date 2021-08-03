@@ -1,10 +1,14 @@
 package com.wb.logistics.ui.dcunloading
 
+import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
@@ -16,7 +20,6 @@ import com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment.Companion.DC_UN
 import com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment.Companion.DC_UNLOADING_HANDLE_BARCODE_RESULT
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingAcceptedMode
 import com.wb.logistics.ui.dcunloading.views.DcUnloadingInfoMode
-import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.splash.KeyboardListener
 import com.wb.logistics.ui.splash.NavToolbarListener
 import com.wb.logistics.utils.SoftKeyboard
@@ -47,10 +50,11 @@ class DcUnloadingScanFragment : Fragment() {
         initReturnResult()
     }
 
+    private var isDialogActive: Boolean = false
 
     override fun onStart() {
         super.onStart()
-        viewModel.onStartScanner()
+        if (!isDialogActive) viewModel.onStartScanner()
     }
 
     override fun onStop() {
@@ -80,8 +84,8 @@ class DcUnloadingScanFragment : Fragment() {
     private fun initObserver() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+            isDialogActive = true
+            showSimpleDialog(it)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -183,6 +187,35 @@ class DcUnloadingScanFragment : Fragment() {
                 if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED)
         }
 
+    }
+
+    private fun showSimpleDialog(it: DcUnloadingScanViewModel.NavigateToMessageInfo) {
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.main
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.simple_layout_dialog, viewGroup, false)
+        val title: TextView = dialogView.findViewById(R.id.title)
+        val message: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        builder.setView(dialogView)
+
+        val alertDialog: AlertDialog = builder.create()
+
+        title.text = it.title
+        message.text = it.message
+        negative.setOnClickListener {
+            isDialogActive = false
+            alertDialog.dismiss()
+        }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = it.button
+        alertDialog.setOnDismissListener {
+            isDialogActive = false
+            viewModel.onStartScanner()
+        }
+        alertDialog.show()
     }
 
 //    private fun showToastBoxAdded(message: String) {

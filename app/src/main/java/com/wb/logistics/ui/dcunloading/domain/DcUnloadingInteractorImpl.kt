@@ -90,8 +90,10 @@ class DcUnloadingInteractorImpl(
         barcode: String, flightBoxEntity: FlightBoxEntity, updatedAt: String,
     ): Observable<DcUnloadingAction> {
         val saveFlightBox = saveFlightBox(flightBoxEntity.copy(updatedAt = updatedAt))
+        val removeDeliveryErrorBox = removeDeliveryErrorBox(barcode)
         val boxUnloaded = Single.just(DcUnloadingAction.BoxUnloaded(barcode))
         return saveFlightBox
+            .andThen(removeDeliveryErrorBox)
             .andThen(boxUnloaded)
             .toObservable()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -99,6 +101,9 @@ class DcUnloadingInteractorImpl(
 
     private fun saveFlightBox(attachedBoxEntity: FlightBoxEntity) =
         appLocalRepository.saveFlightBox(attachedBoxEntity)
+
+    private fun removeDeliveryErrorBox(barcode: String) =
+        appLocalRepository.deleteDeliveryErrorBoxByBarcode(barcode)
 
 
     private fun observeScanProcess(): Observable<DcUnloadingAction> {

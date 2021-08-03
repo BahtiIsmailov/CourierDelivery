@@ -207,6 +207,7 @@ class UnloadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
+        onStopScanner()
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }

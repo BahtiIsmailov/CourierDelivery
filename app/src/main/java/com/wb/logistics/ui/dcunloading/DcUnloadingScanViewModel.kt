@@ -149,6 +149,7 @@ class DcUnloadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
+        interactor.scannerAction(ScannerAction.Stop)
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }

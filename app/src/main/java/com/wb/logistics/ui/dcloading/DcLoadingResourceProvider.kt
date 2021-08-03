@@ -51,7 +51,7 @@ class DcLoadingResourceProvider(private val context: Context) {
     fun getIndex(index: Int) = context.getString(R.string.dc_loading_boxes_index, index)
 
     fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
-        return context.getString(R.string.unnamed_barcode_format,
+        return context.getString(R.string.unnamed_barcode_format_number,
             index,
             barcode.take(4),
             barcode.takeLast(4))

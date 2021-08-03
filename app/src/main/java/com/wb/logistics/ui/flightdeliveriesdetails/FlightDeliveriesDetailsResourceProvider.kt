@@ -26,4 +26,10 @@ class FlightDeliveriesDetailsResourceProvider(private val context: Context) {
     fun getTriedToUnload(date: String, time: String, address: String) =
         context.getString(R.string.force_termination_not_belong_data, date, time, address)
 
+    fun getUnnamedBarcodeFormat(barcode: String): String {
+        return context.getString(R.string.unnamed_barcode_format,
+            barcode.take(4),
+            barcode.takeLast(4))
+    }
+
 }

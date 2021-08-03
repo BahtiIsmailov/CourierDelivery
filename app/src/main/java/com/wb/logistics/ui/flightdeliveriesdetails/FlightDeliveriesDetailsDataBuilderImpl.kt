@@ -19,6 +19,7 @@ class FlightDeliveriesDetailsDataBuilderImpl(
     override fun buildItem(value: UnloadedAndReturnBoxesGroupByOffice): List<BaseItem> {
         val items = mutableListOf<BaseItem>()
         var idx = 0
+
         idx = buildUnloadedItems(items, value.unloadedBoxes, idx)
         buildReturnItems(items, value.returnBoxes, idx)
         return items
@@ -43,28 +44,28 @@ class FlightDeliveriesDetailsDataBuilderImpl(
                     val item = if (errorOfficeId == null) {
                         if (onBoard) {
                             FlightDeliveriesDetailsErrorItem(
-                                barcode,
+                                resourceProvider.getUnnamedBarcodeFormat(barcode),
                                 resourceProvider.getNotFoundOnUnloading(getOnlyDate(updatedAt),
                                     getOnlyTime(updatedAt)),
                                 ++idx1)
 
                         } else {
                             FlightDeliveriesDetailsItem(
-                                barcode,
+                                resourceProvider.getUnnamedBarcodeFormat(barcode),
                                 getDeliveryDate(updatedAt),
                                 ++idx1)
                         }
                     } else {
                         if (unloadedBox.dstOfficeId == errorOfficeId) {
                             FlightDeliveriesDetailsErrorItem(
-                                barcode,
+                                resourceProvider.getUnnamedBarcodeFormat(barcode),
                                 resourceProvider.getNotFoundOnUnloading(getOnlyDate(updatedAt),
                                     getOnlyTime(updatedAt)),
                                 ++idx1)
 
                         } else {
                             FlightDeliveriesDetailsErrorItem(
-                                barcode,
+                                resourceProvider.getUnnamedBarcodeFormat(barcode),
                                 resourceProvider.getTriedToUnload(getOnlyDate(updatedAt),
                                     getOnlyTime(updatedAt),
                                     errorOfficeFullAddress ?: ""),
@@ -92,7 +93,7 @@ class FlightDeliveriesDetailsDataBuilderImpl(
         if (returnBoxes.isNotEmpty()) {
             for ((index, returnBox) in returnBoxes.withIndex()) {
                 items.add(FlightDeliveriesDetailsItem(
-                    returnBox.barcode,
+                    resourceProvider.getUnnamedBarcodeFormat(returnBox.barcode),
                     getReturnDate(returnBox.updatedAt, returnBox.srcOffice.fullAddress),
                     ++idx1))
             }

@@ -108,7 +108,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         scannerView.setFlashLoaderEnabled()
         binding.loaderProgress.visibility = View.VISIBLE
         binding.loader.visibility = View.VISIBLE
-        stopScanner()
+        stopLoaderScanner()
     }
 
     private fun loaderComplete() {
@@ -193,7 +193,12 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
+    private fun stopLoaderScanner() {
+        scannerView.stopCamera()
+    }
+
     private fun stopScanner() {
+        viewModel.clearMemoryBarcode()
         scannerView.stopCamera()
     }
 
