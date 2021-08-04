@@ -67,8 +67,14 @@ class DcUnloadingScanViewModel(
         addSubscription(interactor.scanLoaderProgress()
             .subscribe {
                 _progressEvent.value = when (it) {
-                    ScanProgressData.Complete -> DcUnloadingScanProgress.LoaderComplete
-                    ScanProgressData.Progress -> DcUnloadingScanProgress.LoaderProgress
+                    ScanProgressData.Complete -> {
+                        interactor.scannerAction(ScannerAction.LoaderComplete)
+                        DcUnloadingScanProgress.LoaderComplete
+                    }
+                    ScanProgressData.Progress -> {
+                        interactor.scannerAction(ScannerAction.LoaderProgress)
+                        DcUnloadingScanProgress.LoaderProgress
+                    }
                 }
             })
     }
@@ -184,7 +190,8 @@ class DcUnloadingScanViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
+        addSubscription(interactor.observeNetworkConnected()
+            .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     fun onStopScanner() {

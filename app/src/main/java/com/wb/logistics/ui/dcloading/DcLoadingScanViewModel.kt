@@ -88,8 +88,14 @@ class DcLoadingScanViewModel(
         addSubscription(interactor.scanLoaderProgress()
             .subscribe {
                 _progressEvent.value = when (it) {
-                    ScanProgressData.Complete -> DcLoadingScanProgress.LoaderComplete
-                    ScanProgressData.Progress -> DcLoadingScanProgress.LoaderProgress
+                    ScanProgressData.Complete -> {
+                        interactor.scannerAction(ScannerAction.LoaderComplete)
+                        DcLoadingScanProgress.LoaderComplete
+                    }
+                    ScanProgressData.Progress -> {
+                        interactor.scannerAction(ScannerAction.LoaderProgress)
+                        DcLoadingScanProgress.LoaderProgress
+                    }
                 }
             })
     }
@@ -229,7 +235,8 @@ class DcLoadingScanViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
+        addSubscription(interactor.observeNetworkConnected()
+            .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

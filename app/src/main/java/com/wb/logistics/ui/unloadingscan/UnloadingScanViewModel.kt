@@ -84,8 +84,14 @@ class UnloadingScanViewModel(
         addSubscription(interactor.scanLoaderProgress()
             .subscribe {
                 _progressEvent.value = when (it) {
-                    ScanProgressData.Complete -> UnloadingScanProgress.LoaderComplete
-                    ScanProgressData.Progress -> UnloadingScanProgress.LoaderProgress
+                    ScanProgressData.Complete -> {
+                        interactor.scannerAction(ScannerAction.LoaderComplete)
+                        UnloadingScanProgress.LoaderComplete
+                    }
+                    ScanProgressData.Progress -> {
+                        interactor.scannerAction(ScannerAction.LoaderProgress)
+                        UnloadingScanProgress.LoaderProgress
+                    }
                 }
             })
     }
@@ -256,7 +262,8 @@ class UnloadingScanViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
+        addSubscription(interactor.observeNetworkConnected()
+            .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

@@ -127,13 +127,11 @@ class DcLoadingFragment : Fragment() {
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is DcLoadingScanProgress.LoaderProgress -> {
-                    viewModel.onStopScanner()
                     binding.received.isEnabled = false
                     binding.manualInput.setState(ProgressImageButtonMode.DISABLED)
                     binding.complete.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is DcLoadingScanProgress.LoaderComplete -> {
-                    viewModel.onStartScanner()
                     binding.received.isEnabled = true
                     binding.manualInput.setState(ProgressImageButtonMode.ENABLED)
                     binding.complete.setState(ProgressImageButtonMode.ENABLED)

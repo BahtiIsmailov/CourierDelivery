@@ -22,6 +22,7 @@ import com.wb.logistics.R
 import com.wb.logistics.app.AppConsts
 import com.wb.logistics.databinding.ScannerFragmentBinding
 import com.wb.logistics.ui.scanner.domain.ScannerAction
+import com.wb.logistics.utils.LogUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -194,10 +195,12 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun stopLoaderScanner() {
+        LogUtils {logDebugApp("Scanner stopLoaderScanner()")}
         scannerView.stopCamera()
     }
 
     private fun stopScanner() {
+        LogUtils {logDebugApp("Scanner stopScanner()")}
         viewModel.clearMemoryBarcode()
         scannerView.stopCamera()
     }

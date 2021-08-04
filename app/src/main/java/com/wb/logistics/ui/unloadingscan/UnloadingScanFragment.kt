@@ -172,14 +172,14 @@ class UnloadingScanFragment : Fragment() {
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UnloadingScanProgress.LoaderProgress -> {
-                    viewModel.onStopScanner()
+                    //viewModel.onStopScanner()
                     binding.unloadingBox.isEnabled = false
                     binding.returnBox.isEnabled = false
                     binding.manualInput.setState(ProgressImageButtonMode.DISABLED)
                     binding.complete.setState(ProgressImageButtonMode.DISABLED)
                 }
                 is UnloadingScanProgress.LoaderComplete -> {
-                    viewModel.onStartScanner()
+                    //viewModel.onStartScanner()
                     binding.unloadingBox.isEnabled = true
                     binding.returnBox.isEnabled = true
                     binding.manualInput.setState(ProgressImageButtonMode.ENABLED)
