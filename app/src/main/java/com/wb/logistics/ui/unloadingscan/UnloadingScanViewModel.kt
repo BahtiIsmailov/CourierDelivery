@@ -14,6 +14,7 @@ import com.wb.logistics.ui.unloadingscan.domain.ScanProgressData
 import com.wb.logistics.ui.unloadingscan.domain.UnloadingAction
 import com.wb.logistics.ui.unloadingscan.domain.UnloadingData
 import com.wb.logistics.ui.unloadingscan.domain.UnloadingInteractor
+import com.wb.logistics.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
@@ -120,6 +121,7 @@ class UnloadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(it: UnloadingData) {
+        LogUtils { logDebugApp("observeScanProcessComplete " + it.toString()) }
         val unloadingAccepted =
             resourceProvider.getAccepted(it.flightUnloadedAndUnloadCountEntity.unloadedCount,
                 it.flightUnloadedAndUnloadCountEntity.unloadCount)
@@ -138,6 +140,9 @@ class UnloadingScanViewModel(
                 _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
                 _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
                 _infoState.value = UnloadingScanInfoState.Return(it.unloadingAction.barcode)
+            }
+            UnloadingAction.BoxReturnRemoved -> {
+                updateInit(it, unloadingAccepted, returnAccepted)
             }
             is UnloadingAction.BoxDoesNotBelongPvz -> {
                 _soundEvent.value = UnloadingScanSoundEvent.BoxSkipAdded
@@ -161,27 +166,40 @@ class UnloadingScanViewModel(
                 _infoState.value = UnloadingScanInfoState.NotInfoDeny(it.unloadingAction.barcode)
             }
             UnloadingAction.Init -> {
-                val updatedAtUnloading = it.flightUnloadedAndUnloadCountEntity.updatedAt ?: ""
-                val updatedAtTook = it.flightTookAndPickupCountEntity.updatedAt ?: ""
-                if (updatedAtUnloading.isEmpty() && updatedAtTook.isEmpty()) {
-                    _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
-                    _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
-                    _infoState.value = UnloadingScanInfoState.Empty
-                } else {
-                    if (updatedAtUnloading >= updatedAtTook) {
-                        _unloadedState.value = UnloadingScanBoxState.Active(unloadingAccepted)
-                        _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
-                        _infoState.value =
-                            UnloadingScanInfoState.Unloading(it.flightUnloadedAndUnloadCountEntity.barcode
-                                ?: "")
-                    } else {
-                        _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
-                        _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
-                        _infoState.value =
-                            UnloadingScanInfoState.Return(it.flightTookAndPickupCountEntity.barcode
-                                ?: "")
-                    }
-                }
+                updateInit(it, unloadingAccepted, returnAccepted)
+            }
+            UnloadingAction.Terminate -> {
+//                _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
+//                _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
+//                _infoState.value = UnloadingScanInfoState.Return(
+//                    it.flightTookAndPickupCountEntity.barcode ?: "")
+            }
+
+        }
+    }
+
+    private fun updateInit(
+        it: UnloadingData,
+        unloadingAccepted: String,
+        returnAccepted: String,
+    ) {
+        val updatedAtUnloading = it.flightUnloadedAndUnloadCountEntity.updatedAt ?: ""
+        val updatedAtTook = it.flightTookAndPickupCountEntity.updatedAt ?: ""
+        if (updatedAtUnloading.isEmpty() && updatedAtTook.isEmpty()) {
+            _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
+            _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+            _infoState.value = UnloadingScanInfoState.Empty
+        } else {
+            if (updatedAtUnloading >= updatedAtTook) {
+                _unloadedState.value = UnloadingScanBoxState.Active(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Complete(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.Unloading(
+                    it.flightUnloadedAndUnloadCountEntity.barcode ?: "")
+            } else {
+                _unloadedState.value = UnloadingScanBoxState.Complete(unloadingAccepted)
+                _returnState.value = UnloadingScanReturnState.Active(returnAccepted)
+                _infoState.value = UnloadingScanInfoState.Return(
+                    it.flightTookAndPickupCountEntity.barcode ?: "")
             }
         }
     }
@@ -221,13 +239,6 @@ class UnloadingScanViewModel(
     fun onBoxHandleInput(barcode: String) {
         interactor.barcodeManualInput(barcode.replace("-", ""))
     }
-
-//    fun onTestClicked() {
-//       addSubscription(interactor.barcodeManualInputObserve().subscribe({
-//           LogUtils { logDebugApp("SCOPE_DEBUG " + this@UnloadingScanViewModel.toString() + " -> " + it) }
-//       }, {}))
-//        interactor.barcodeManualInput("onTestClicked")
-//    }
 
     fun onUnloadingListClicked() {
         _navigationEvent.value =

@@ -59,7 +59,13 @@ class UnloadingInteractorImpl(
             observeUnloadedAndUnloadOnFlightBoxes(currentOfficeId),
             observeTookAndPickupBoxes(currentOfficeId),
             { scan, unloadedAndUnload, tookAndPickup ->
-                UnloadingData(scan, unloadedAndUnload, tookAndPickup)
+                if (tookAndPickup.second) {
+                    UnloadingData(UnloadingAction.BoxReturnRemoved,
+                        unloadedAndUnload,
+                        tookAndPickup.first)
+                } else {
+                    UnloadingData(scan, unloadedAndUnload, tookAndPickup.first)
+                }
             })
             .distinctUntilChanged()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -200,6 +206,10 @@ class UnloadingInteractorImpl(
             }
             .flatMap { Completable.fromAction { loaderComplete() }.andThen(Observable.just(it)) }
             .doOnError { loaderComplete() }
+            .flatMap {
+                Observable.concatArray(Observable.just(it),
+                    Observable.just(UnloadingAction.Terminate))
+            }
             .startWith(UnloadingAction.Init)
     }
 
@@ -497,9 +507,11 @@ class UnloadingInteractorImpl(
             .toObservable()
     }
 
-    private fun observeTookAndPickupBoxes(currentOfficeId: Int): Observable<UnloadingTookAndPickupCountEntity> {
+    private fun observeTookAndPickupBoxes(currentOfficeId: Int): Observable<Pair<UnloadingTookAndPickupCountEntity, Boolean>> {
         return appLocalRepository.observeTookAndPickupOnFlightBoxesByOfficeId(currentOfficeId)
             .toObservable()
+            .map { Pair(it, false) }
+            .scan { old, new -> Pair(new.first, old.first.tookCount > new.first.tookCount) }
     }
 
     override fun scannerAction(scannerAction: ScannerAction) {
