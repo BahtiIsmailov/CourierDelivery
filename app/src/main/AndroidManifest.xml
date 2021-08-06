@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wb.logistics">
+    package="ru.wb.perevozka">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
@@ -10,10 +10,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
 
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
-
     <application
-        android:name="com.wb.logistics.app.App"
+        android:name="ru.wb.perevozka.app.App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,7 +21,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.splash.AppActivity"
+            android:name="ru.wb.perevozka.ui.splash.AppActivity"
             android:screenOrientation="locked"
             android:theme="@style/Splash"
             android:windowSoftInputMode="adjustResize">
@@ -37,7 +35,7 @@
         </activity>
 
         <activity
-            android:name=".ui.config.ConfigActivity"
+            android:name="ru.wb.perevozka.ui.config.ConfigActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="locked"

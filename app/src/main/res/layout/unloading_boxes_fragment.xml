@@ -26,7 +26,7 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:listitem="@layout/unloading_boxes_item_layout" />
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"

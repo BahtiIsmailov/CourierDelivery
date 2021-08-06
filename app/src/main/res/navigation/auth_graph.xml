@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/authNumberPhoneFragment"
-        android:name="com.wb.logistics.ui.auth.NumberPhoneFragment"
+        android:name="ru.wb.perevozka.ui.auth.NumberPhoneFragment"
         tools:layout="@layout/auth_phone_fragment"
         android:label="@string/auth_number_phone_toolbar_label">
         <action
@@ -32,17 +32,17 @@
 
     <activity
         android:id="@+id/authConfigActivity"
-        android:name="com.wb.logistics.ui.config.ConfigActivity"
+        android:name="ru.wb.perevozka.ui.config.ConfigActivity"
         tools:layout="@layout/config_activity" />
 
     <fragment
         android:id="@+id/temporaryPasswordFragment"
-        android:name="com.wb.logistics.ui.auth.TemporaryPasswordFragment"
+        android:name="ru.wb.perevozka.ui.auth.TemporaryPasswordFragment"
         tools:layout="@layout/auth_temporary_password_fragment"
         android:label="@string/auth_temporary_toolbar_label">
         <argument
             android:name="phone_key"
-            app:argType="com.wb.logistics.ui.auth.TemporaryPasswordParameters"
+            app:argType="ru.wb.perevozka.ui.auth.TemporaryPasswordParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_temporaryPasswordFragment_to_createPasswordFragment"
@@ -55,12 +55,12 @@
 
     <fragment
         android:id="@+id/authInputPasswordFragment"
-        android:name="com.wb.logistics.ui.auth.InputPasswordFragment"
+        android:name="ru.wb.perevozka.ui.auth.InputPasswordFragment"
         tools:layout="@layout/auth_input_password_fragment"
         android:label="@string/auth_input_password_toolbar_label">
         <argument
             android:name="phone_key"
-            app:argType="com.wb.logistics.ui.auth.InputPasswordParameters"
+            app:argType="ru.wb.perevozka.ui.auth.InputPasswordParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_inputPasswordFragment_to_temporaryPasswordFragment"
@@ -73,12 +73,12 @@
 
     <fragment
         android:id="@+id/authCreatePasswordFragment"
-        android:name="com.wb.logistics.ui.auth.CreatePasswordFragment"
+        android:name="ru.wb.perevozka.ui.auth.CreatePasswordFragment"
         tools:layout="@layout/auth_create_password_fragment"
         android:label="@string/auth_input_password_toolbar_label">
         <argument
             android:name="phone_key"
-            app:argType="com.wb.logistics.ui.auth.CreatePasswordParameters"
+            app:argType="ru.wb.perevozka.ui.auth.CreatePasswordParameters"
             app:nullable="false" />
     </fragment>
 

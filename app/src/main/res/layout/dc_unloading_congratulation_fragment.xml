@@ -129,7 +129,7 @@
         app:layout_constraintTop_toTopOf="@+id/divider2"
         tools:text="10 / 15" />
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"

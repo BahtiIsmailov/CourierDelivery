@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/flightLoaderFragment"
-        android:name="com.wb.logistics.ui.flightsloader.FlightLoaderFragment"
+        android:name="ru.wb.perevozka.ui.flightsloader.FlightLoaderFragment"
         android:label=""
         tools:layout="@layout/flight_loader_fragment">
         <action
@@ -53,7 +53,7 @@
 
     <fragment
         android:id="@+id/flightsFragment"
-        android:name="com.wb.logistics.ui.flights.FlightsFragment"
+        android:name="ru.wb.perevozka.ui.flights.FlightsFragment"
         android:label="@string/flights_label"
         tools:layout="@layout/flights_fragment">
         <action
@@ -69,7 +69,7 @@
 
     <fragment
         android:id="@+id/dcLoadingFragment"
-        android:name="com.wb.logistics.ui.dcloading.DcLoadingFragment"
+        android:name="ru.wb.perevozka.ui.dcloading.DcLoadingFragment"
         android:label="@string/dc_loading_label"
         tools:layout="@layout/dc_loading_scan_fragment">
 
@@ -105,24 +105,24 @@
 
     <fragment
         android:id="@+id/receptionBoxNotBelongFragment"
-        android:name="com.wb.logistics.ui.dcloading.DcLoadingBoxNotBelongFragment"
+        android:name="ru.wb.perevozka.ui.dcloading.DcLoadingBoxNotBelongFragment"
         android:label="@string/dc_loading_box_not_belong_dc_toolbar_title"
         tools:layout="@layout/dc_loading_box_not_belong_fragment">
         <argument
             android:name="box_not_belong_key"
-            app:argType="com.wb.logistics.ui.dcloading.DcLoadingBoxNotBelongParameters"
+            app:argType="ru.wb.perevozka.ui.dcloading.DcLoadingBoxNotBelongParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/receptionBoxesFragment"
-        android:name="com.wb.logistics.ui.dcloading.DcLoadingBoxesFragment"
+        android:name="ru.wb.perevozka.ui.dcloading.DcLoadingBoxesFragment"
         android:label="@string/dc_loading_boxes_label"
         tools:layout="@layout/dc_loading_boxes_fragment" />
 
     <fragment
         android:id="@+id/flightPickPointFragment"
-        android:name="com.wb.logistics.ui.flightpickpoint.FlightPickPointFragment"
+        android:name="ru.wb.perevozka.ui.flightpickpoint.FlightPickPointFragment"
         android:label="@string/flight_deliveries_label"
         tools:layout="@layout/flight_pick_point_fragment">
         <action
@@ -136,7 +136,7 @@
 
     <fragment
         android:id="@+id/flightDeliveriesFragment"
-        android:name="com.wb.logistics.ui.flightdeliveries.FlightDeliveriesFragment"
+        android:name="ru.wb.perevozka.ui.flightdeliveries.FlightDeliveriesFragment"
         android:label="@string/flight_deliveries_label"
         tools:layout="@layout/flight_deliveries_fragment">
         <action
@@ -166,12 +166,12 @@
 
     <fragment
         android:id="@+id/unloadingScanFragment"
-        android:name="com.wb.logistics.ui.unloadingscan.UnloadingScanFragment"
+        android:name="ru.wb.perevozka.ui.unloadingscan.UnloadingScanFragment"
         android:label="@string/unloading_scan_label"
         tools:layout="@layout/unloading_scan_fragment">
         <argument
             android:name="unloading_scan_key"
-            app:argType="com.wb.logistics.ui.unloadingscan.UnloadingScanParameters"
+            app:argType="ru.wb.perevozka.ui.unloadingscan.UnloadingScanParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_unloadingScanFragment_to_unloadingBoxesFragment"
@@ -221,57 +221,57 @@
 
     <fragment
         android:id="@+id/unloadingBoxesFragment"
-        android:name="com.wb.logistics.ui.unloadingboxes.UnloadingBoxesFragment"
+        android:name="ru.wb.perevozka.ui.unloadingboxes.UnloadingBoxesFragment"
         android:label="@string/unloading_boxes_label"
         tools:layout="@layout/unloading_boxes_fragment">
         <argument
             android:name="unloading_boxes_key"
-            app:argType="com.wb.logistics.ui.unloadingboxes.UnloadingBoxesParameters"
+            app:argType="ru.wb.perevozka.ui.unloadingboxes.UnloadingBoxesParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/unloadingNotBelongFragment"
-        android:name="com.wb.logistics.ui.unloadingscan.UnloadingBoxNotBelongFragment"
+        android:name="ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongFragment"
         android:label="@string/unloading_box_not_belong_point_toolbar_label"
         tools:layout="@layout/unloading_box_not_belong_fragment">
         <argument
             android:name="box_not_belong_key"
-            app:argType="com.wb.logistics.ui.unloadingscan.UnloadingBoxNotBelongParameters"
+            app:argType="ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/unloadingReturnBoxesFragment"
-        android:name="com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnBoxesFragment"
+        android:name="ru.wb.perevozka.ui.unloadingreturnboxes.UnloadingReturnBoxesFragment"
         android:label="@string/unloading_return_boxes_label"
         tools:layout="@layout/unloading_return_boxes_fragment">
         <argument
             android:name="unloading_return_key"
-            app:argType="com.wb.logistics.ui.unloadingreturnboxes.UnloadingReturnParameters"
+            app:argType="ru.wb.perevozka.ui.unloadingreturnboxes.UnloadingReturnParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/unloadingHandleFragment"
-        android:name="com.wb.logistics.ui.unloadinghandle.UnloadingHandleFragment"
+        android:name="ru.wb.perevozka.ui.unloadinghandle.UnloadingHandleFragment"
         android:label="@string/unloading_handle_label"
         tools:layout="@layout/unloading_handle_fragment">
         <argument
             android:name="unloading_handle_key"
-            app:argType="com.wb.logistics.ui.unloadinghandle.UnloadingHandleParameters"
+            app:argType="ru.wb.perevozka.ui.unloadinghandle.UnloadingHandleParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/unloadingForcedTerminationFragment"
-        android:name="com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationFragment"
+        android:name="ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationFragment"
         android:label="@string/force_termination_label"
         tools:layout="@layout/unloading_forced_termination_fragment">
 
         <argument
             android:name="forced_termination_key"
-            app:argType="com.wb.logistics.ui.unloadingforcedtermination.ForcedTerminationParameters"
+            app:argType="ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_forcedTerminationFragment_to_flightDeliveriesFragment"
@@ -286,7 +286,7 @@
 
     <fragment
         android:id="@+id/congratulationFragment"
-        android:name="com.wb.logistics.ui.unloadingcongratulation.CongratulationFragment"
+        android:name="ru.wb.perevozka.ui.unloadingcongratulation.CongratulationFragment"
         android:label="@string/congratulation_label"
         tools:layout="@layout/unloading_congratulation_fragment">
         <action
@@ -301,12 +301,12 @@
 
     <fragment
         android:id="@+id/flightDeliveriesDetailsFragment"
-        android:name="com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsFragment"
+        android:name="ru.wb.perevozka.ui.flightdeliveriesdetails.FlightDeliveriesDetailsFragment"
         android:label="FlightDeliveriesDetailsFragment"
         tools:layout="@layout/flight_deliveries_details_fragment">
         <argument
             android:name="flight_deliveries_details_key"
-            app:argType="com.wb.logistics.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters"
+            app:argType="ru.wb.perevozka.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_flightDeliveriesDetailsFragment_to_unloadingScanFragment"
@@ -320,7 +320,7 @@
 
     <fragment
         android:id="@+id/dcUnloadingScanFragment"
-        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingScanFragment"
+        android:name="ru.wb.perevozka.ui.dcunloading.DcUnloadingScanFragment"
         android:label="@string/dc_unloading_boxes_label"
         tools:layout="@layout/dc_unloading_scan_fragment">
         <action
@@ -362,30 +362,30 @@
 
     <fragment
         android:id="@+id/dcUnloadingBoxesFragment"
-        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingBoxesFragment"
+        android:name="ru.wb.perevozka.ui.dcunloading.DcUnloadingBoxesFragment"
         android:label=""
         tools:layout="@layout/dc_unloading_boxes_fragment" />
 
     <fragment
         android:id="@+id/dcUnloadingBoxNotBelongFragment"
-        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingBoxNotBelongFragment"
+        android:name="ru.wb.perevozka.ui.dcunloading.DcUnloadingBoxNotBelongFragment"
         android:label=""
         tools:layout="@layout/dc_unloading_box_not_belong_fragment">
         <argument
             android:name="dc_box_not_belong_key"
-            app:argType="com.wb.logistics.ui.dcunloading.DcUnloadingBoxNotBelongParameters"
+            app:argType="ru.wb.perevozka.ui.dcunloading.DcUnloadingBoxNotBelongParameters"
             app:nullable="false" />
     </fragment>
 
     <fragment
         android:id="@+id/dcUnloadingHandleFragment"
-        android:name="com.wb.logistics.ui.dcunloading.DcUnloadingHandleFragment"
+        android:name="ru.wb.perevozka.ui.dcunloading.DcUnloadingHandleFragment"
         android:label="@string/dc_unloading_handle_label"
         tools:layout="@layout/dc_unloading_handle_fragment" />
 
     <fragment
         android:id="@+id/dcUnloadingCongratulationFragment"
-        android:name="com.wb.logistics.ui.dcunloadingcongratulation.DcUnloadingCongratulationFragment"
+        android:name="ru.wb.perevozka.ui.dcunloadingcongratulation.DcUnloadingCongratulationFragment"
         android:label=""
         tools:layout="@layout/dc_unloading_congratulation_fragment">
         <action
@@ -399,7 +399,7 @@
 
     <fragment
         android:id="@+id/dcForcedTerminationFragment"
-        android:name="com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationFragment"
+        android:name="ru.wb.perevozka.ui.dcunloadingforcedtermination.DcForcedTerminationFragment"
         android:label="@string/dc_unloading_forced_termination_label"
         tools:layout="@layout/dc_forced_termination_fragment">
         <action
@@ -420,13 +420,13 @@
 
     <fragment
         android:id="@+id/dcForcedTerminationDetailsFragment"
-        android:name="com.wb.logistics.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsFragment"
+        android:name="ru.wb.perevozka.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsFragment"
         android:label="@string/dc_unloading_forced_termination_details_label"
         tools:layout="@layout/dc_forced_termination_details_fragment" />
 
     <dialog
         android:id="@+id/dcLoadingHandleFragment"
-        android:name="com.wb.logistics.ui.dcloading.DcLoadingHandleFragment"
+        android:name="ru.wb.perevozka.ui.dcloading.DcLoadingHandleFragment"
         android:label="DcLoadingHandleFragment"
         tools:layout="@layout/dc_loading_handle_fragment"/>
 

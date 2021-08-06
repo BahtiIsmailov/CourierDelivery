@@ -100,7 +100,7 @@
 
     </LinearLayout>
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="match_parent"
         android:layout_height="72dp"

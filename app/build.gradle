@@ -50,7 +50,7 @@ android {
 
         defaultConfig {
             multiDexEnabled true
-            applicationId "com.wb.logistics"
+            applicationId "ru.wb.perevozka"
             minSdkVersion 21
             targetSdkVersion 30
             versionCode 1

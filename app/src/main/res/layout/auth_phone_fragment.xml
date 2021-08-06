@@ -59,7 +59,7 @@
         app:layout_constraintStart_toStartOf="@+id/phone_layout"
         app:layout_constraintTop_toBottomOf="@+id/phone_layout" />
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/next"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"

@@ -60,7 +60,7 @@
         app:barrierDirection="top"
         app:constraint_referenced_ids="complete_delivery_negative, complete_delivery_positive" />
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/complete_delivery_negative"
         android:layout_width="0dp"
         android:layout_height="72dp"
@@ -76,7 +76,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/complete_delivery_positive"
         android:layout_width="match_parent"
         android:layout_height="72dp"

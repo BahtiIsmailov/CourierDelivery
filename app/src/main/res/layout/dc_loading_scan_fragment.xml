@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/scanner"
-        class="com.wb.logistics.ui.scanner.ScannerFragment"
+        class="com.wb.perevozka.ui.scanner.ScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
@@ -57,7 +57,7 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <com.wb.logistics.ui.dcloading.views.ReceptionAcceptedView
+            <ru.wb.perevozka.ui.dcloading.views.ReceptionAcceptedView
                 android:id="@+id/received"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -72,7 +72,7 @@
                 app:reception_accepted_box="5"
                 app:reception_accepted_state="empty_box" />
 
-            <com.wb.logistics.ui.dcloading.views.ReceptionParkingView
+            <ru.wb.perevozka.ui.dcloading.views.ReceptionParkingView
                 android:id="@+id/parking"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
                 app:reception_parking_number="10"
                 app:reception_parking_state="empty_box" />
 
-            <com.wb.logistics.ui.dcloading.views.ReceptionInfoView
+            <ru.wb.perevozka.ui.dcloading.views.ReceptionInfoView
                 android:id="@+id/info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
 
     </FrameLayout>
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/manual_input"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -128,7 +128,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"

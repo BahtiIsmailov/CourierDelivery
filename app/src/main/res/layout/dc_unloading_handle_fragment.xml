@@ -65,7 +65,7 @@
         app:layout_constraintStart_toStartOf="@+id/boxes"
         app:layout_constraintTop_toBottomOf="@+id/title_list" />
 
-    <com.wb.logistics.views.WrapContentListView
+    <ru.wb.perevozka.views.WrapContentListView
         android:id="@+id/boxes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -106,7 +106,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.wb.logistics.views.ProgressImageButtonView
+    <ru.wb.perevozka.views.ProgressImageButtonView
         android:id="@+id/accept"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
