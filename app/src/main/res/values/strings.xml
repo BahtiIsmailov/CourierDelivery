@@ -5,7 +5,13 @@
     <string name="app_nav_out_app">Выйти из аккаунта</string>
     <string name="app_nav_update_app">Проверить обновления</string>
     <string name="app_version">%s</string>
+    <string name="app_update_version">Новая версия %s</string>
+    <string name="app_update_version_status">Обновить</string>
+    <string name="app_update_version_load_status">Загрузка…</string>
+    <string name="app_update_version_error">Обновление не установлено. Повторите операцию позднее</string>
+    <string name="app_update_version_up_to_date">Версия актуальна</string>
     <string name="app_duration_time_value">Выслать пароль повторно через %1$s:%2$s</string>
+
     <string name="app_duration_time_span">через</string>
 
     <!--network error-->

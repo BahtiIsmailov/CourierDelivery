@@ -42,6 +42,7 @@ import com.wb.logistics.ui.unloadinghandle.domain.UnloadingHandleInteractorImpl
 import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import com.wb.logistics.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
 import com.wb.logistics.utils.LogUtils
+import com.wb.logistics.utils.managers.DeviceManager
 import com.wb.logistics.utils.managers.ScreenManager
 import org.koin.dsl.module
 import com.wb.logistics.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
@@ -75,12 +76,14 @@ val interactorModule = module {
         authRemoteRepository: AuthRemoteRepository,
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
+        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
             appLocalRepository,
-            screenManager)
+            screenManager,
+            deviceManager)
     }
 
     fun provideFlightsLoaderInteractor(
@@ -266,7 +269,7 @@ val interactorModule = module {
     single { provideTemporaryPasswordInteractor(get(), get()) }
     single { provideInputPasswordInteractor(get(), get()) }
     single { provideCreatePasswordInteractor(get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }

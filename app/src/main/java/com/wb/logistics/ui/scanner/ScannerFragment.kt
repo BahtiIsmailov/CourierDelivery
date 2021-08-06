@@ -22,7 +22,6 @@ import com.wb.logistics.R
 import com.wb.logistics.app.AppConsts
 import com.wb.logistics.databinding.ScannerFragmentBinding
 import com.wb.logistics.ui.scanner.domain.ScannerAction
-import com.wb.logistics.utils.LogUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -56,7 +55,7 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
             binding.requestPermission.visibility = View.GONE
             startScanner()
         } else {
-            requestPermission.launch(Manifest.permission.CAMERA)
+            requestPermissionCamera()
         }
     }
 
@@ -124,11 +123,10 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun initListener() {
         binding.sun.setOnClickListener { scannerView.toggleFlash() }
         binding.requestPermission.setOnClickListener {
-            requestPermission.launch(Manifest.permission.CAMERA)
+            requestPermissionCamera()
         }
 
         binding.requestPermissionSetting.setOnClickListener {
-            LogUtils { logDebugApp("initPermission() startActivityForResult") }
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             val uri = Uri.fromParts(AppConsts.APP_PACKAGE, requireContext().packageName, null)
             intent.data = uri
@@ -139,8 +137,12 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PERMISSION_FROM_SETTING_REQUEST_CODE) {
-            requestPermission.launch(Manifest.permission.CAMERA)
+            requestPermissionCamera()
         }
+    }
+
+    private fun requestPermissionCamera() {
+        requestPermission.launch(Manifest.permission.CAMERA)
     }
 
     private fun vibrate() {

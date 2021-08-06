@@ -1,22 +1,18 @@
 package com.wb.logistics.ui.splash
 
-import android.app.PendingIntent
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentSender
+import android.Manifest
+import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment.DIRECTORY_DOWNLOADS
-import android.os.Environment.getExternalStoragePublicDirectory
-import android.os.UserManager
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -36,23 +32,19 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.wb.logistics.BuildConfig
 import com.wb.logistics.R
 import com.wb.logistics.databinding.SplashActivityBinding
 import com.wb.logistics.ui.dialogs.InformationDialogFragment
 import com.wb.logistics.ui.flightsloader.FlightActionStatus
 import com.wb.logistics.utils.LogUtils
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import org.apache.commons.net.ftp.FTPClient
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.*
 import java.util.*
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
-    OnUserInfo,
-    NavDrawerListener, KeyboardListener {
+    OnUserInfo, NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -63,55 +55,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: OnDestinationChangedListener
 
-//    override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-//        if (super.onPreferenceChange(preference, newValue)) return true
-//        val value = newValue as Boolean
-//        if (preference == enableCheckbox) {
-//            if (value != adminActive) {
-//                if (value) {
-//                    // Launch the activity to have the user enable our admin.
-//                    val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-//                        putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdminSample)
-//                        putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-//                            activity.getString(R.string.add_admin_extra_app_text))
-//                    }
-//                    startActivityForResult(intent, REQUEST_CODE_ENABLE_ADMIN)
-//                    // return false - don't update checkbox until we're really active
-//                    return false
-//                } else {
-//                    dpm.removeActiveAdmin(deviceAdminSample)
-//                    enableDeviceCapabilitiesArea(false)
-//                    adminActive = false
-//                }
-//            }
-//        } else if (preference == disableCameraCheckbox) {
-//            dpm.setCameraDisabled(deviceAdminSample, value)
-//        }
-//        return true
-//    }
-
-    // private lateinit var dpm: DevicePolicyManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
-
-        val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        val componentName = ComponentName(this, MyDevicePolicyReceiver::class.java)
-        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
-        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-            "Разрешения для обновления APK") //getString(R.string.admin_explanation)
-
-        startActivity(intent)
-
-
-        if (dpm.isAdminActive(componentName)) {
-            LogUtils { logDebugApp("FTP dpm.isAdminActive") }
-        }
-//        dpm.addUserRestriction(componentName, UserManager.DISALLOW_INSTALL_APPS)
-//        dpm.addUserRestriction(componentName, UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES)
 
         setContentView(binding.root)
         initToolbar()
@@ -121,141 +68,28 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         initListener()
     }
 
-    private fun ftp() {
-
-        try {
-
-            LogUtils { logDebugApp("ftp() run") }
-            val ftpClient = FTPClient()
-
-            ftpClient.connect("95.217.162.185", 21)
-            ftpClient.login("eugene", "brigada_ftp")
-
-            ftpClient.enterLocalPassiveMode()
-            val ftpRemoteFile = "/ftp/files/debug_0.8.66_1.apk"
-
-            //val downPath = getExternalFilesDir(DIRECTORY_DOWNLOADS)
-            val downPath = getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)
-//            val downPath = cacheDir// + "/apk"
-            val apkLocalFile = File("$downPath/debug_0.8.66_1.apk")
-            //val success = true
-            //apkLocalFile.mkdirs()
-
-            val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(apkLocalFile))
-            LogUtils { logDebugApp("ftpClient absolute local path " + apkLocalFile.absolutePath) }
-            val success: Boolean = ftpClient.retrieveFile(ftpRemoteFile, outputStream)
-            LogUtils { logDebugApp("ftpClient.retrieveFile " + success) }
-            outputStream.close()
-
-            //apkLocalFile.setReadable(true, false)
-
-            if (success) {
-                LogUtils { logDebugApp("ftpClient promptInstall complete") }
-
-                val fileSize = (apkLocalFile.length() / 1024).toString().toInt()
-                LogUtils { logDebugApp("ftpClient download file " + apkLocalFile.toString() + " size:" + fileSize + "Kb") }
-
-//                val promptInstall = Intent(Intent.ACTION_VIEW)
-//                    .setDataAndType(Uri.fromFile(apkLocalFile), "application/vnd.android.package-archive")
-//                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                startActivity(promptInstall)
-
-
-//                val pi: PackageInstaller = this.packageManager.packageInstaller
-//                val sessionId = pi.createSession(SessionParams(SessionParams.MODE_FULL_INSTALL))
-//                //clearMyRestrictions(this)
-//                val session = pi.openSession(sessionId)
-//                //addMyRestrictions(this)
-//
-//                val input: InputStream?
-//                val output: OutputStream?
-//
-//                input = FileInputStream(apkLocalFile)
-//                output = session.openWrite("wb_app_session", 0, apkLocalFile.length())
-//                var total = 0
-//                val buffer = ByteArray(65536)
-//                var c: Int
-//                while (input.read(buffer).also { c = it } != -1) {
-//                    total += c
-//                    output.write(buffer, 0, c)
-//                }
-//
-//                LogUtils { logDebugApp("ftpClient output complete") }
-//
-//                session.fsync(output)
-//                input.close()
-//                output.close()
-
-//                val intent = Intent(this, AppActivity::class.java)
-//                val alarmtest = PendingIntent.getBroadcast(this,
-//                    1337111117, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//                session.commit(alarmtest.intentSender)
-//                session.close()
-
-//                val packageURI: Uri = Uri.parse()
-
-
-                ///val packageURI: Uri = apkLocalFile.toUri()
-
-                //val intent = Intent(Intent.ACTION_VIEW, packageURI)
-
-                //session.commit(createIntentSender(sessionId))
-
-                //LogUtils { logDebugApp("ftpClient session.commit") }
-//                val intent = Intent(this, AlarmReceiver::class.java)
-
-                val intent = Intent(Intent.ACTION_VIEW)
-
-                val photoURI = FileProvider.getUriForFile(this,
-                    packageName.toString() + ".provider", apkLocalFile)
-                intent.setDataAndType(photoURI, "application/vnd.android.package-archive")
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(intent)
-//                finish()
-
-
-            } else {
-                LogUtils { logDebugApp("ftpClient promptInstall file not success") }
-                ftpClient.logout()
-                ftpClient.disconnect()
-                return
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            LogUtils { logDebugApp("ftpClient.Exception " + e.toString()) }
+    private fun showInstallOption(destination: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val contentUri = FileProvider.getUriForFile(
+                this,
+                BuildConfig.APPLICATION_ID + PROVIDER_PATH,
+                File(destination)
+            )
+            val install = Intent(Intent.ACTION_VIEW)
+            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            install.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            install.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+            install.data = contentUri
+            this.startActivity(install)
+            finish()
+        } else {
+            val uri = Uri.parse("$FILE_BASE_PATH$destination")
+            val install = Intent(Intent.ACTION_VIEW)
+            install.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            install.setDataAndType(uri, APP_INSTALL_PATH)
+            this.startActivity(install)
+            finish()
         }
-    }
-
-    private fun createIntentSender(sessionId: Int): IntentSender {
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            sessionId,
-            Intent("ACTION_INSTALL_COMPLETE"),
-            0)
-        return pendingIntent.intentSender
-    }
-
-
-    fun getDpm(context: Context): DevicePolicyManager {
-        return context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-    }
-
-    fun getAdmin(context: Context): ComponentName {
-        return ComponentName(context, MyDevicePolicyReceiver::class.java)
-    }
-
-
-    fun clearMyRestrictions(context: Context) {
-        //getDpm(context).clearUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_APPS)
-        //getDpm(context).clearUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES)
-    }
-
-    fun addMyRestrictions(context: Context) {
-        getDpm(context).addUserRestriction(getAdmin(context), UserManager.DISALLOW_INSTALL_APPS)
-        getDpm(context).addUserRestriction(getAdmin(context),
-            UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES)
     }
 
     private fun initToolbar() {
@@ -371,28 +205,79 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
 
         viewModel.versionApp.observe(this) {
             with(binding.navView) {
-                findViewById<TextView>(R.id.version_app_text).text = it
+                findViewById<TextView>(R.id.version_app).text = it
+            }
+        }
+
+        viewModel.appVersionState.observe(this) {
+            when (it) {
+                is AppVersionState.Update -> {
+                    findViewById<View>(R.id.check_version_layout).visibility = GONE
+                    findViewById<View>(R.id.update_version_layout).isEnabled = true
+                    findViewById<View>(R.id.update_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.update_image).visibility = VISIBLE
+                    findViewById<ProgressBar>(R.id.update_progress).visibility = INVISIBLE
+                    findViewById<TextView>(R.id.current_version_update_title).text =
+                        getString(R.string.app_update_version,
+                            it.fileName.substringBefore(".apk"))
+                    findViewById<TextView>(R.id.update_version_app).text =
+                        getString(R.string.app_update_version_status)
+
+                }
+                AppVersionState.UpdateProgress -> {
+                    findViewById<View>(R.id.check_version_layout).visibility = GONE
+                    findViewById<View>(R.id.update_version_layout).isEnabled = false
+                    findViewById<View>(R.id.update_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.update_image).visibility = INVISIBLE
+                    findViewById<ProgressBar>(R.id.update_progress).visibility = VISIBLE
+                    findViewById<TextView>(R.id.update_version_app).text =
+                        getString(R.string.app_update_version_load_status)
+                }
+                is AppVersionState.UpdateComplete -> showInstallOption(it.pathFile)
+                is AppVersionState.UpdateError -> {
+                    findViewById<View>(R.id.update_version_layout).visibility = GONE
+                    findViewById<View>(R.id.check_version_layout).isEnabled = true
+                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
+                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
+                    Toast.makeText(this,
+                        getString(R.string.app_update_version_error),
+                        Toast.LENGTH_LONG).show()
+                }
+                is AppVersionState.UpToDate -> {
+                    findViewById<View>(R.id.update_version_layout).visibility = GONE
+                    findViewById<View>(R.id.check_version_layout).isEnabled = true
+                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
+                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
+                    Toast.makeText(this,
+                        getString(R.string.app_update_version_up_to_date),
+                        Toast.LENGTH_LONG).show()
+                }
+                AppVersionState.UpToDateProgress -> {
+                    findViewById<View>(R.id.update_version_layout).visibility = GONE
+                    findViewById<View>(R.id.check_version_layout).isEnabled = false
+                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.check_version).visibility = INVISIBLE
+                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = VISIBLE
+                }
+
             }
         }
     }
 
     private fun initListener() {
 
-        binding.navView.findViewById<View>(R.id.ver_layout).setOnClickListener {
+        binding.navView.findViewById<View>(R.id.check_version_layout).setOnClickListener {
+            viewModel.checkUpdateVersionApp()
+        }
 
-            Completable.fromAction { ftp() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
-
-//            if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                    Manifest.permission.READ_EXTERNAL_STORAGE)
-//            ) {
-//
-//            } else {
-//                requestPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//            }
-
+        binding.navView.findViewById<View>(R.id.update_version_layout).setOnClickListener {
+            if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                updateVersionApp()
+            } else {
+                requestPermissionExtStorage()
+            }
         }
 
         with(binding.navView) {
@@ -404,17 +289,41 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                     .navigate(R.id.load_navigation)
             }
         }
+
     }
 
+    private fun requestPermissionExtStorage() {
+        requestPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    private fun updateVersionApp() {
+        val destination = "$cacheDir/"
+        viewModel.updateVersionApp(destination)
+    }
 
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-
+                updateVersionApp()
             } else {
-
+                // TODO: 06.08.2021 добавить разметку перехода в настройки разрешений
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+//                        val uri = Uri.fromParts(AppConsts.APP_PACKAGE, packageName, null)
+//                        intent.data = uri
+//                        startActivityForResult(intent, PERMISSION_EXT_STORAGE_REQUEST_CODE)
+//                    }
+//                }
             }
         }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PERMISSION_EXT_STORAGE_REQUEST_CODE) {
+            requestPermissionExtStorage()
+        }
+    }
 
     private fun initView() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -528,6 +437,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             findViewById<View>(R.id.layout_data).visibility = GONE
         }
     }
+
+    companion object {
+        const val PERMISSION_EXT_STORAGE_REQUEST_CODE = 500
+        private const val FILE_BASE_PATH = "file://"
+        private const val PROVIDER_PATH = ".provider"
+        private const val APP_INSTALL_PATH = "\"application/vnd.android.package-archive\""
+    }
+
 }
 
 interface NavToolbarListener {

@@ -256,9 +256,62 @@
                 android:layout_gravity="center"
                 android:background="@color/tint" />
 
+            <RelativeLayout
+                android:id="@+id/update_version_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/update_image"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/current_version_update_title"
+                    android:layout_alignBottom="@+id/update_version_app"
+                    android:layout_marginStart="24dp"
+                    app:srcCompat="@drawable/ic_app_update" />
+
+                <ProgressBar
+                    android:id="@+id/update_progress"
+                    style="?android:attr/progressBarStyleSmallTitle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/current_version_update_title"
+                    android:layout_alignBottom="@+id/update_version_app"
+                    android:layout_marginStart="24dp"
+                    android:theme="@style/AppProgressBarCircularDark"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/current_version_update_title"
+                    style="@style/LargeBlackRegularText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@+id/update_image"
+                    tools:text="Новая версия 0.1.101" />
+
+                <TextView
+                    android:id="@+id/update_version_app"
+                    style="@style/LargeBlackRegularText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_below="@+id/current_version_update_title"
+                    android:layout_marginTop="10dp"
+                    android:layout_toEndOf="@+id/update_image"
+                    android:text="@string/app_update_version_status" />
+
+            </RelativeLayout>
+
 
             <RelativeLayout
-                android:id="@+id/ver_layout"
+                android:id="@+id/check_version_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackground"
@@ -268,7 +321,7 @@
                 android:paddingBottom="16dp">
 
                 <ImageView
-                    android:id="@+id/update_image"
+                    android:id="@+id/check_version"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_alignTop="@+id/update_title"
@@ -276,13 +329,24 @@
                     android:layout_marginStart="24dp"
                     app:srcCompat="@drawable/ic_update" />
 
+                <ProgressBar
+                    android:id="@+id/progress_check_update"
+                    style="?android:attr/progressBarStyleSmallTitle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/update_title"
+                    android:layout_alignBottom="@+id/version_app_title"
+                    android:layout_marginStart="24dp"
+                    android:theme="@style/AppProgressBarCircularDark"
+                    android:visibility="gone" />
+
                 <TextView
                     android:id="@+id/update_title"
                     style="@style/LargeBlackRegularText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@+id/update_image"
+                    android:layout_toEndOf="@+id/check_version"
                     android:text="@string/app_nav_update_app" />
 
                 <TextView
@@ -293,11 +357,11 @@
                     android:layout_below="@+id/update_title"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="10dp"
-                    android:layout_toEndOf="@+id/update_image"
+                    android:layout_toEndOf="@+id/check_version"
                     android:text="@string/app_ver" />
 
                 <TextView
-                    android:id="@+id/version_app_text"
+                    android:id="@+id/version_app"
                     style="@style/LargeBlackRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

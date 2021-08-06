@@ -35,6 +35,10 @@ class AppViewModel(
     val counterBoxesActionStatus: LiveData<CounterBoxesActionStatus>
         get() = _counterBoxesActionStatus
 
+    private val _appVersionState = MutableLiveData<AppVersionState>()
+    val appVersionState: LiveData<AppVersionState>
+        get() = _appVersionState
+
     init {
         fetchNetworkState()
         updateDrawer()
@@ -59,7 +63,6 @@ class AppViewModel(
 
             }, {
                 LogUtils { logDebugApp(it.toString()) }
-
             }))
     }
 
@@ -100,5 +103,34 @@ class AppViewModel(
     private fun updateDrawer() {
         fetchVersionApp()
     }
+
+    fun checkUpdateVersionApp() {
+        _appVersionState.value = AppVersionState.UpToDateProgress
+        addSubscription(interactor.checkUpdateApp()
+            .subscribe({ checkUpdateVersionAppComplete(it) }, { checkUpdateVersionAppError() }))
+    }
+
+    private fun checkUpdateVersionAppComplete(appVersionState: AppVersionState) {
+        _appVersionState.value = appVersionState
+    }
+
+    private fun checkUpdateVersionAppError() {
+        _appVersionState.value = AppVersionState.UpdateError
+    }
+
+    fun updateVersionApp(destination: String) {
+        _appVersionState.value = AppVersionState.UpdateProgress
+        addSubscription(interactor.getUpdateApp(destination)
+            .subscribe({ getUpdateAppComplete(it) }, { getUpdateAppError() }))
+    }
+
+    private fun getUpdateAppComplete(appVersionState: AppVersionState) {
+        _appVersionState.value = appVersionState
+    }
+
+    private fun getUpdateAppError() {
+        _appVersionState.value = AppVersionState.UpdateError
+    }
+
 
 }
