@@ -11,6 +11,10 @@ object InterceptorFactory {
             .setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE)
     }
 
+    fun createMockResponseInterceptor(apiServer: String): MockResponseInterceptor {
+        return MockResponseInterceptor(apiServer)
+    }
+
     fun createRefreshTokenInterceptor(
         refreshTokenRepository: RefreshTokenRepository,
         headerManager: HeaderManager,

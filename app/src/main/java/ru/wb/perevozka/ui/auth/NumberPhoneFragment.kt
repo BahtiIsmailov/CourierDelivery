@@ -12,15 +12,17 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.widget.textChanges
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthPhoneFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
+import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.SoftKeyboard
 import ru.wb.perevozka.views.ProgressImageButtonMode
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
@@ -86,24 +88,27 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
             binding.phoneNumber.isEnabled = true
             when (state) {
-                is NumberPhoneNavAction.NavigateToInputPassword -> {
+                is NumberPhoneNavAction.NavigateToCheckPassword -> {
                     findNavController().navigate(
-                        NumberPhoneFragmentDirections.actionNumberPhoneFragmentToInputPasswordFragment(
-                            InputPasswordParameters(state.number)
-                        )
-                    )
-                    binding.next.setState(ProgressImageButtonMode.DISABLED)
-                }
-                is NumberPhoneNavAction.NavigateToTemporaryPassword -> {
-                    findNavController().navigate(
-                        NumberPhoneFragmentDirections.actionNumberPhoneFragmentToTemporaryPasswordFragment(
-                            TemporaryPasswordParameters(state.number)
+                        NumberPhoneFragmentDirections.actionAuthNumberPhoneFragmentToCheckSmsFragment(
+                            CheckSmsParameters(state.number, state.ttl)
                         )
                     )
                     binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 NumberPhoneNavAction.NavigateToConfig ->
                     findNavController().navigate(R.id.authConfigActivity)
+                is NumberPhoneNavAction.NavigateToCouriersCompleteRegistration -> findNavController().navigate(
+                    NumberPhoneFragmentDirections.actionAuthNumberPhoneFragmentToCouriersCompleteRegistrationFragment(
+                        CouriersCompleteRegistrationParameters(state.phone)
+                    )
+                )
+                is NumberPhoneNavAction.NavigateToUserForm -> findNavController().navigate(
+                    NumberPhoneFragmentDirections.actionAuthNumberPhoneFragmentToUserFormFragment(
+                        UserFormParameters(state.phone)
+                    )
+                )
+                NumberPhoneNavAction.NavigateToApp -> {}
             }
         })
 

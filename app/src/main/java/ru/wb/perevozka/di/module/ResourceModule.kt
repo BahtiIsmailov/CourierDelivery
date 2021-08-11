@@ -17,11 +17,21 @@ import ru.wb.perevozka.ui.unloadingcongratulation.CongratulationResourceProvider
 import ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanResourceProvider
 import org.koin.dsl.module
+import ru.wb.perevozka.ui.userdata.UserDataResourceProvider
+import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationResourceProvider
 
 val resourceModule = module {
 
     fun provideAppResourceProvider(application: Application): AppResourceProvider {
         return AppResourceProvider(application)
+    }
+
+    fun provideUserDataResourceProvider(application: Application): UserDataResourceProvider {
+        return UserDataResourceProvider(application)
+    }
+
+    fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CouriersCompleteRegistrationResourceProvider {
+        return CouriersCompleteRegistrationResourceProvider(application)
     }
 
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
@@ -81,6 +91,8 @@ val resourceModule = module {
     }
 
     single { provideAppResourceProvider(get()) }
+    single { provideUserDataResourceProvider(get()) }
+    single { provideCouriersCompleteRegistrationResourceProvider(get()) }
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }

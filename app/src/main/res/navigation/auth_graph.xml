@@ -8,21 +8,28 @@
     <fragment
         android:id="@+id/authNumberPhoneFragment"
         android:name="ru.wb.perevozka.ui.auth.NumberPhoneFragment"
-        tools:layout="@layout/auth_phone_fragment"
-        android:label="@string/auth_number_phone_toolbar_label">
+        android:label="@string/auth_number_phone_toolbar_label"
+        tools:layout="@layout/auth_phone_fragment">
         <action
             android:id="@+id/action_loginFragment_to_configActivity"
             app:destination="@id/authConfigActivity" />
         <action
-            android:id="@+id/action_numberPhoneFragment_to_temporaryPasswordFragment"
-            app:destination="@id/temporaryPasswordFragment"
+            android:id="@+id/action_authNumberPhoneFragment_to_checkSmsFragment"
+            app:destination="@id/checkSmsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_numberPhoneFragment_to_inputPasswordFragment"
-            app:destination="@id/authInputPasswordFragment"
+            android:id="@+id/action_authNumberPhoneFragment_to_userFormFragment"
+            app:destination="@id/userFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_authNumberPhoneFragment_to_couriersCompleteRegistrationFragment"
+            app:destination="@id/couriersCompleteRegistrationFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -36,17 +43,24 @@
         tools:layout="@layout/config_activity" />
 
     <fragment
-        android:id="@+id/temporaryPasswordFragment"
-        android:name="ru.wb.perevozka.ui.auth.TemporaryPasswordFragment"
-        tools:layout="@layout/auth_temporary_password_fragment"
-        android:label="@string/auth_temporary_toolbar_label">
+        android:id="@+id/checkSmsFragment"
+        android:name="ru.wb.perevozka.ui.auth.CheckSmsFragment"
+        android:label="CheckSmsFragment"
+        tools:layout="@layout/auth_check_sms_fragment">
         <argument
-            android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.auth.TemporaryPasswordParameters"
+            android:name="check_sms_key"
+            app:argType="ru.wb.perevozka.ui.auth.CheckSmsParameters"
             app:nullable="false" />
         <action
-            android:id="@+id/action_temporaryPasswordFragment_to_createPasswordFragment"
-            app:destination="@id/authCreatePasswordFragment"
+            android:id="@+id/action_checkSmsFragment_to_couriersCompleteRegistrationFragment"
+            app:destination="@id/couriersCompleteRegistrationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_checkSmsFragment_to_userFormFragment"
+            app:destination="@id/userFormFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -54,31 +68,32 @@
     </fragment>
 
     <fragment
-        android:id="@+id/authInputPasswordFragment"
-        android:name="ru.wb.perevozka.ui.auth.InputPasswordFragment"
-        tools:layout="@layout/auth_input_password_fragment"
-        android:label="@string/auth_input_password_toolbar_label">
+        android:id="@+id/userFormFragment"
+        android:name="ru.wb.perevozka.ui.userdata.userform.UserFormFragment"
+        android:label="UserFormFragment"
+        tools:layout="@layout/auth_user_form_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.auth.InputPasswordParameters"
+            app:argType="ru.wb.perevozka.ui.userdata.userform.UserFormParameters"
             app:nullable="false" />
         <action
-            android:id="@+id/action_inputPasswordFragment_to_temporaryPasswordFragment"
-            app:destination="@id/temporaryPasswordFragment"
+            android:id="@+id/action_userFormFragment_to_couriersCompleteRegistrationFragment"
+            app:destination="@id/couriersCompleteRegistrationFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
+
     <fragment
-        android:id="@+id/authCreatePasswordFragment"
-        android:name="ru.wb.perevozka.ui.auth.CreatePasswordFragment"
-        tools:layout="@layout/auth_create_password_fragment"
-        android:label="@string/auth_input_password_toolbar_label">
+        android:id="@+id/couriersCompleteRegistrationFragment"
+        android:name="ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationFragment"
+        android:label="CouriersCompleteRegistrationFragment"
+        tools:layout="@layout/auth_couriers_completion_registration_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.auth.CreatePasswordParameters"
+            app:argType="ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters"
             app:nullable="false" />
     </fragment>
 

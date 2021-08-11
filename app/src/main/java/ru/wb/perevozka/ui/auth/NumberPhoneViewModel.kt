@@ -2,19 +2,21 @@ package ru.wb.perevozka.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.wb.perevozka.network.api.auth.response.CheckExistPhoneResponse
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.app.NEED_APPROVE_COURIER_DOCUMENTS
+import ru.wb.perevozka.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.NumberPhoneUIState.*
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.perevozka.utils.formatter.PhoneUtils
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
@@ -22,6 +24,7 @@ class NumberPhoneViewModel(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val interactor: NumberPhoneInteractor,
     private val userManager: UserManager,
+    private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -39,7 +42,35 @@ class NumberPhoneViewModel(
 
     init {
         observeNetworkState()
+        checkUserState()
     }
+
+    private fun checkUserState() {
+        if (tokenManager.isContains()) {
+            val phone = tokenManager.userPhone()
+            when {
+                tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toUserForm(phone)
+                tokenManager.resources()
+                    .contains(NEED_APPROVE_COURIER_DOCUMENTS) -> toCouriersCompleteRegistration(
+                    phone
+                )
+                tokenManager.resources().isEmpty() -> toApp()
+            }
+        }
+    }
+
+    private fun toUserForm(phone: String) {
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToUserForm(phone)
+    }
+
+    private fun toCouriersCompleteRegistration(phone: String) {
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToCouriersCompleteRegistration(phone)
+    }
+
+    private fun toApp() {
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToApp
+    }
+
 
     fun initFormatter() {
         addSubscription(
@@ -67,10 +98,10 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumber(phone: String) {
         _stateUI.value = PhoneCheck
-        val disposable = interactor.checkExistAndSavePhone(phone.filter { it.isDigit() })
+        val disposable = interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
             .subscribe(
-                { fetchPhoneNumberComplete(it, phone) },
-                { fetchPhoneNumberError(it) }
+                { fetchPhoneNumberComplete(phone) },
+                { fetchPhoneNumberError(it, phone) }
             )
         addSubscription(disposable)
     }
@@ -79,22 +110,29 @@ class NumberPhoneViewModel(
         _navigationEvent.value = NumberPhoneNavAction.NavigateToConfig
     }
 
-    private fun fetchPhoneNumberComplete(checkPhoneRemote: CheckExistPhoneResponse, phone: String) {
-        _navigationEvent.value =
-            if (checkPhoneRemote.hasPassword) NumberPhoneNavAction.NavigateToInputPassword(phone)
-            else NumberPhoneNavAction.NavigateToTemporaryPassword(phone)
+    private fun fetchPhoneNumberComplete(phone: String) {
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, 0)
     }
 
-    private fun fetchPhoneNumberError(throwable: Throwable) {
-        _stateUI.value = when (throwable) {
-            is NoInternetException -> Error(throwable.message)
-            is BadRequestException -> NumberNotFound(resourceProvider.getNumberNotFound())
-            else -> Error(resourceProvider.getGenericError())
+    private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
+        when (throwable) {
+            is NoInternetException -> _stateUI.value = Error(throwable.message)
+            is BadRequestException -> {
+                if (throwable.error.code == "CODE_SENT") {
+                    val ttl = throwable.error.data?.ttl ?: 0
+                    _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
+                } else {
+                    _stateUI.value = NumberNotFound(throwable.error.message)
+                }
+            }
+            else -> _stateUI.value = Error(resourceProvider.getGenericError())
         }
     }
 
     private fun observeNetworkState() {
-        addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
 
     companion object {

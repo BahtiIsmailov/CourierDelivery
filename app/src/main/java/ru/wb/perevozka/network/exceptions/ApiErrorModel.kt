@@ -9,5 +9,5 @@ data class Error(
 )
 
 data class Data(
-    val resendTime: Int,
+    val ttl: Int,
 )

@@ -1,6 +1,10 @@
 package ru.wb.perevozka.di.module
 
-import ru.wb.perevozka.ui.auth.*
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+import ru.wb.perevozka.ui.auth.CheckSmsParameters
+import ru.wb.perevozka.ui.auth.CheckSmsViewModel
+import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
 import ru.wb.perevozka.ui.dcloading.*
 import ru.wb.perevozka.ui.dcunloading.*
@@ -29,8 +33,10 @@ import ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongModel
 import ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongParameters
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanParameters
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
+import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationViewModel
+import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
+import ru.wb.perevozka.ui.userdata.userform.UserFormViewModel
 
 val viewModelModule = module {
 
@@ -38,31 +44,37 @@ val viewModelModule = module {
 
     viewModel { LoaderViewModel(get(), get(), get(), get(), get()) }
 
-    viewModel { NumberPhoneViewModel(get(), get(), get(), get(), get()) }
+    viewModel { NumberPhoneViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
-    viewModel { (parameters: TemporaryPasswordParameters) ->
-        TemporaryPasswordViewModel(parameters, get(), get(), get())
+
+    viewModel { (parameters: CheckSmsParameters) ->
+        CheckSmsViewModel(parameters, get(), get(), get())
     }
-    viewModel { (parameters: InputPasswordParameters) ->
-        InputPasswordViewModel(parameters, get(), get(), get())
+
+    viewModel { (parameters: UserFormParameters) ->
+        UserFormViewModel(parameters, get(), get(), get())
     }
-    viewModel { (parameters: CreatePasswordParameters) ->
-        CreatePasswordViewModel(parameters, get(), get(), get())
+
+    viewModel { (parameters: CouriersCompleteRegistrationParameters) ->
+        CouriersCompleteRegistrationViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
     }
+
+    viewModel { ScannerViewModel(get(), get()) }
+
+    viewModel { DcLoadingScanViewModel(get(), get(), get()) }
+    viewModel { DcLoadingHandleViewModel(get(), get()) }
+    viewModel { DcLoadingBoxesViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: DcLoadingBoxNotBelongParameters) ->
         DcLoadingBoxNotBelongViewModel(parameters)
     }
 
     viewModel { FlightLoaderViewModel(get(), get()) }
     viewModel { FlightsViewModel(get(), get(), get()) }
-
-    viewModel { ScannerViewModel(get(), get()) }
-
-    viewModel { DcLoadingScanViewModel(get(), get(), get()) }
-    viewModel { DcLoadingHandleViewModel(get(), get()) }
-
-    viewModel { DcLoadingBoxesViewModel(get(), get(), get(), get()) }
-
     viewModel { FlightPickPointViewModel(get(), get(), get(), get()) }
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: FlightDeliveriesDetailsParameters) ->
@@ -72,15 +84,12 @@ val viewModelModule = module {
     viewModel { (parameters: UnloadingScanParameters) ->
         UnloadingScanViewModel(parameters, get(), get(), get())
     }
-
     viewModel { (parameters: UnloadingBoxNotBelongParameters) ->
         UnloadingBoxNotBelongModel(parameters)
     }
-
     viewModel { (parameters: UnloadingBoxesParameters) ->
         UnloadingBoxesViewModel(parameters, get(), get(), get(), get())
     }
-
     viewModel { (parameters: UnloadingReturnParameters) ->
         UnloadingReturnBoxesViewModel(parameters, get(), get(), get(), get())
     }
@@ -99,21 +108,15 @@ val viewModelModule = module {
     viewModel {
         DcUnloadingScanViewModel(get(), get(), get())
     }
-
     viewModel {
         DcUnloadingHandleViewModel(get(), get(), get(), get())
     }
-
     viewModel { (parameters: DcUnloadingBoxNotBelongParameters) ->
         DcUnloadingBoxNotBelongModel(parameters)
     }
-
     viewModel { DcUnloadingBoxesViewModel(get(), get(), get(), get()) }
-
     viewModel { DcForcedTerminationViewModel(get(), get(), get()) }
-
     viewModel { DcForcedTerminationDetailsViewModel(get(), get(), get()) }
-
     viewModel { DcUnloadingCongratulationViewModel(get(), get(), get(), get()) }
 
 }

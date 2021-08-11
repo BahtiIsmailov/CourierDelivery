@@ -1,22 +1,37 @@
 package ru.wb.perevozka.network.api.auth
 
-import ru.wb.perevozka.network.api.auth.query.AuthByPhoneOrPasswordQuery
-import ru.wb.perevozka.network.api.auth.query.ChangePasswordBySmsCodeQuery
-import ru.wb.perevozka.network.api.auth.query.PasswordCheckQuery
-import ru.wb.perevozka.network.api.auth.response.AuthResponse
-import ru.wb.perevozka.network.api.auth.response.CheckExistPhoneResponse
-import ru.wb.perevozka.network.api.auth.response.RemainingAttemptsResponse
-import ru.wb.perevozka.network.api.auth.response.StatisticsResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
+import ru.wb.perevozka.network.api.auth.query.AuthBySmsOrPasswordQuery
+import ru.wb.perevozka.network.api.auth.query.ChangePasswordBySmsCodeQuery
+import ru.wb.perevozka.network.api.auth.query.PasswordCheckQuery
+import ru.wb.perevozka.network.api.auth.query.RefreshTokenQuery
+import ru.wb.perevozka.network.api.auth.response.*
 
 interface AuthApi {
 
     @POST("{version}/auth")
-    fun authByPhoneOrPassword(
+    fun auth(
         @Path(value = "version", encoded = true) version: String,
-        @Body authByPhoneOrPasswordQuery: AuthByPhoneOrPasswordQuery,
+        @Body authByPhoneOrPasswordQuery: AuthBySmsOrPasswordQuery,
+    ): Single<AuthResponse>
+
+    @GET("{version}/couriers-auth/{phone}/password")
+    fun couriersAuth(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("phone") phone: String,
+    ): Single<CheckCouriersPhoneResponse>
+
+    @GET("{version}/couriers-auth/form")
+    fun couriersForm(
+        @Path(value = "version", encoded = true) version: String
+    ): Completable
+
+    @PUT("{version}/auth")
+    fun refreshToken(
+        @Path(value = "version", encoded = true) version: String,
+        @Body refreshTokenQuery: RefreshTokenQuery
     ): Single<AuthResponse>
 
     @GET("{version}/auth/{phone}")

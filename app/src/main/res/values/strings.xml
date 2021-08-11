@@ -5,7 +5,7 @@
     <string name="app_nav_out_app">Выйти из аккаунта</string>
     <string name="app_nav_update_app">Проверить обновления</string>
     <string name="app_version">%s</string>
-    <string name="app_duration_time_value">Выслать пароль повторно через %1$s:%2$s</string>
+    <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
     <!--network error-->
@@ -81,6 +81,15 @@
     <string name="auth_create_password_hint">Мой пароль</string>
     <string name="auth_create_password_title">Этот пароль будет использоваться при последующих авторизациях</string>
     <string name="auth_create_password_input">Сохранить и войти</string>
+
+    <string name="auth_check_sms_toolbar_label">Вход</string>
+    <string name="auth_check_sms_title">На номер %1$s выслано СМС с кодом подтверждения</string>
+    <string name="auth_check_sms_hint">Код</string>
+    <string name="auth_check_sms_incorrect">Неверный код</string>
+    <string name="auth_check_sms_repeat"><u>Выслать CMC повторно</u></string>
+
+
+    <string name="auth_user_data_label">Регистрация</string>
 
     <string name="nav_default_count">0</string>
     <string name="nav_no_internet_dialog_title">У вас отсутствует интернет!</string>

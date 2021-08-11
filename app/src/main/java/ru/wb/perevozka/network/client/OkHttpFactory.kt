@@ -1,19 +1,25 @@
 package ru.wb.perevozka.network.client
 
-import ru.wb.perevozka.BuildConfig
-import ru.wb.perevozka.network.certificate.CertificateStore
-import ru.wb.perevozka.network.headers.RefreshTokenInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import ru.wb.perevozka.BuildConfig
+import ru.wb.perevozka.network.certificate.CertificateStore
+import ru.wb.perevozka.network.headers.MockResponseInterceptor
+import ru.wb.perevozka.network.headers.RefreshTokenInterceptor
 
 object OkHttpFactory {
 
     fun createAuthOkHttpClient(
         certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
+        mockResponseInterceptor: MockResponseInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
-            OkHttpClientUnsafe.create(certificateStore, httpLoggingInterceptor)
+            OkHttpClientUnsafe.create(
+                certificateStore,
+                httpLoggingInterceptor,
+                mockResponseInterceptor
+            )
         } else {
             OkHttpClientSafe.create(certificateStore, httpLoggingInterceptor)
         }
@@ -36,7 +42,8 @@ object OkHttpFactory {
         httpLogginInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
-            OkHttpClientUnsafe.create(certificateStore,
+            OkHttpClientUnsafe.create(
+                certificateStore,
                 refreshResponseInterceptor,
                 httpLogginInterceptor,
             )

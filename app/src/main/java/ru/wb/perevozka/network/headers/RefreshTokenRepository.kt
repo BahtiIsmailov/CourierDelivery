@@ -6,6 +6,6 @@ interface RefreshTokenRepository {
 
     fun refreshAccessTokens()
 
-    fun refreshAccessTokensSync()  : Completable
+    fun refreshAccessTokensSync(): Completable
 
 }

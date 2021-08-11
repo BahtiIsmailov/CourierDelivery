@@ -2,12 +2,13 @@ package ru.wb.perevozka.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.app.DRIVER
 import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.utils.managers.ScreenManager
-import io.reactivex.disposables.CompositeDisposable
 
 class LoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -23,15 +24,23 @@ class LoaderViewModel(
 
     init {
         if (tokenManager.isContains()) {
-            addSubscription(repository.refreshAccessTokensSync()
-                .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe({
-                    toApp()
-                }, {
-                    toNumberPhone()
-                }))
+            if (tokenManager.resources().contains(DRIVER))
+                refreshTokenAndNavigateToApp(repository, rxSchedulerFactory)
+            else toNumberPhone()
         } else {
             toNumberPhone()
         }
+    }
+
+    private fun refreshTokenAndNavigateToApp(
+        repository: RefreshTokenRepository,
+        rxSchedulerFactory: RxSchedulerFactory
+    ) {
+        addSubscription(repository.refreshAccessTokensSync()
+            .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
+                { toApp() },
+                { toNumberPhone() }
+            ))
     }
 
     private fun toApp() {

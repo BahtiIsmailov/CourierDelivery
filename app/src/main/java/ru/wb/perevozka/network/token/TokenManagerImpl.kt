@@ -35,6 +35,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return tokenResource().extra.company
     }
 
+    override fun userPhone(): String {
+        return tokenResource().extra.phone
+    }
+
     private fun token(): TokenEntity =
         readTokenEntity() ?: TokenEntity("", 0, "")
 
@@ -52,6 +56,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
 
     override fun isContains(): Boolean {
         return readTokenEntity() != null
+    }
+
+    override fun resources(): List<String> {
+        return tokenResource().extra.resources ?: mutableListOf()
     }
 
 }

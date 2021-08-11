@@ -1,10 +1,13 @@
 package ru.wb.perevozka.di.module
 
+import org.koin.dsl.module
 import ru.wb.perevozka.db.AppLocalRepository
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.auth.AuthRemoteRepository
+import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.ui.auth.domain.*
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractorImpl
@@ -40,10 +43,13 @@ import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractor
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractorImpl
+import ru.wb.perevozka.ui.userdata.couriers.domain.CouriersCompleteRegistrationInteractor
+import ru.wb.perevozka.ui.userdata.couriers.domain.CouriersCompleteRegistrationInteractorImpl
+import ru.wb.perevozka.ui.userdata.userform.domain.UserFormInteractor
+import ru.wb.perevozka.ui.userdata.userform.domain.UserFormInteractorImpl
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
-import org.koin.dsl.module
 import ru.wb.perevozka.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
 
 val interactorModule = module {
@@ -53,39 +59,53 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
     ): NumberPhoneInteractor {
-        return NumberPhoneInteractorImpl(rxSchedulerFactory,
+        return NumberPhoneInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
-            repository)
+            repository
+        )
     }
 
-    fun provideTemporaryPasswordInteractor(
+    fun provideUserFormInteractorImpl(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
-    ): TemporaryPasswordInteractor {
-        return TemporaryPasswordInteractorImpl(rxSchedulerFactory,
+    ): UserFormInteractor {
+        return UserFormInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
-            repository)
+            repository
+        )
     }
 
-    fun provideInputPasswordInteractor(
+    fun provideCouriersCompleteRegistrationInteractorImpl(
         rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
+        appLocalRepository: AppLocalRepository,
         authRepository: AuthRemoteRepository,
-    ): InputPasswordInteractor {
-        return InputPasswordInteractorImpl(rxSchedulerFactory,
-            networkMonitorRepository,
-            authRepository)
+        refreshTokenRepository: RefreshTokenRepository,
+        tokenManager: TokenManager
+    ): CouriersCompleteRegistrationInteractor {
+        return CouriersCompleteRegistrationInteractorImpl(
+            rxSchedulerFactory,
+            appLocalRepository,
+            authRepository,
+            refreshTokenRepository,
+            tokenManager
+        )
     }
 
-    fun provideCreatePasswordInteractor(
+    fun provideCheckSmsInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
-    ): CreatePasswordInteractor {
-        return CreatePasswordInteractorImpl(rxSchedulerFactory,
+        tokenManager: TokenManager
+    ): CheckSmsInteractor {
+        return CheckSmsInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
-            repository)
+            repository,
+            tokenManager
+        )
     }
 
     fun provideNavigationInteractor(
@@ -95,11 +115,13 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): AppInteractor {
-        return AppInteractorImpl(rxSchedulerFactory,
+        return AppInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
             appLocalRepository,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideFlightsLoaderInteractor(
@@ -111,13 +133,15 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): FlightsLoaderInteractor {
-        return FlightsLoaderInteractorImpl(rxSchedulerFactory,
+        return FlightsLoaderInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             authRemoteRepository,
             timeManager,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideFlightsInteractor(
@@ -125,9 +149,11 @@ val interactorModule = module {
         appRemoteRepository: AppRemoteRepository,
         appLocalRepository: AppLocalRepository,
     ): FlightsInteractor {
-        return FlightsInteractorImpl(rxSchedulerFactory,
+        return FlightsInteractorImpl(
+            rxSchedulerFactory,
             appRemoteRepository,
-            appLocalRepository)
+            appLocalRepository
+        )
     }
 
     fun provideFlightDeliveriesDetailsInteractor(
@@ -144,11 +170,13 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightPickPointInteractor {
-        return FlightPickPointInteractorImpl(rxSchedulerFactory,
+        return FlightPickPointInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideFlightDeliveriesInteractor(
@@ -158,11 +186,13 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         screenManager: ScreenManager,
     ): FlightDeliveriesInteractor {
-        return FlightDeliveriesInteractorImpl(rxSchedulerFactory,
+        return FlightDeliveriesInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideScannerInteractor(
@@ -180,13 +210,15 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): DcLoadingInteractor {
-        return DcLoadingInteractorImpl(rxSchedulerFactory,
+        return DcLoadingInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
             timeManager,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideUnloadingBoxesInteractor(
@@ -209,10 +241,12 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         timeManager: TimeManager,
     ): UnloadingReturnInteractor {
-        return UnloadingReturnInteractorImpl(rxSchedulerFactory,
+        return UnloadingReturnInteractorImpl(
+            rxSchedulerFactory,
             appRemoteRepository,
             appLocalRepository,
-            timeManager)
+            timeManager
+        )
     }
 
     fun provideUnloadingInteractor(
@@ -224,14 +258,15 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): UnloadingInteractor {
-        LogUtils { logDebugApp("SCOPE_DEBUG UnloadingInteractorImpl ctreate " + "scannerRepository -> " + scannerRepository.toString()) }
-        return UnloadingInteractorImpl(rxSchedulerFactory,
+        return UnloadingInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
             timeManager,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideForcedTerminationInteractor(
@@ -242,12 +277,14 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): ForcedTerminationInteractor {
-        return ForcedTerminationInteractorImpl(rxSchedulerFactory,
+        return ForcedTerminationInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             timeManager,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideCongratulationInteractor(
@@ -266,13 +303,15 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): DcUnloadingInteractor {
-        return DcUnloadingInteractorImpl(rxSchedulerFactory,
+        return DcUnloadingInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             scannerRepository,
             timeManager,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideDcForcedTerminationInteractor(
@@ -283,12 +322,14 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
     ): DcForcedTerminationInteractor {
-        return DcForcedTerminationInteractorImpl(rxSchedulerFactory,
+        return DcForcedTerminationInteractorImpl(
+            rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             appLocalRepository,
             timeManager,
-            screenManager)
+            screenManager
+        )
     }
 
     fun provideDcUnloadingCongratulationInteractor(
@@ -299,9 +340,9 @@ val interactorModule = module {
     }
 
     single { provideNumberPhoneInteractor(get(), get(), get()) }
-    single { provideTemporaryPasswordInteractor(get(), get(), get()) }
-    single { provideInputPasswordInteractor(get(), get(), get()) }
-    single { provideCreatePasswordInteractor(get(), get(), get()) }
+    single { provideUserFormInteractorImpl(get(), get(), get()) }
+    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
+    single { provideCheckSmsInteractor(get(), get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }

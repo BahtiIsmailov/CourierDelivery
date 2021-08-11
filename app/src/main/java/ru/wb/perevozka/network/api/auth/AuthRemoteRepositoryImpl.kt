@@ -1,17 +1,18 @@
 package ru.wb.perevozka.network.api.auth
 
+import io.reactivex.Completable
+import io.reactivex.Single
 import ru.wb.perevozka.network.api.auth.entity.TokenEntity
 import ru.wb.perevozka.network.api.auth.entity.UserInfoEntity
-import ru.wb.perevozka.network.api.auth.query.AuthByPhoneOrPasswordQuery
+import ru.wb.perevozka.network.api.auth.query.AuthBySmsOrPasswordQuery
 import ru.wb.perevozka.network.api.auth.query.ChangePasswordBySmsCodeQuery
 import ru.wb.perevozka.network.api.auth.query.PasswordCheckQuery
+import ru.wb.perevozka.network.api.auth.query.RefreshTokenQuery
 import ru.wb.perevozka.network.api.auth.response.CheckExistPhoneResponse
 import ru.wb.perevozka.network.api.auth.response.RemainingAttemptsResponse
 import ru.wb.perevozka.network.api.auth.response.StatisticsResponse
 import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.network.token.UserManager
-import io.reactivex.Completable
-import io.reactivex.Single
 
 class AuthRemoteRepositoryImpl(
     private val authApi: AuthApi,
@@ -19,14 +20,34 @@ class AuthRemoteRepositoryImpl(
     private val userManager: UserManager,
 ) : AuthRemoteRepository {
 
-    override fun authByPhoneOrPassword(
+    override fun auth(
         password: String, phone: String, useSMS: Boolean,
     ): Completable {
-        val requestBody = AuthByPhoneOrPasswordQuery(phone, password, useSMS)
-        val auth = authApi.authByPhoneOrPassword(tokenManager.apiVersion(), requestBody)
+        val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
+        val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
             .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
             .doOnSuccess { saveToken(it) }
         return Completable.fromSingle(auth)
+    }
+
+    override fun couriersExistAndSavePhone(phone: String): Completable {
+        return authApi.couriersAuth(tokenManager.apiVersion(), phone)
+            .doOnSuccess { userManager.savePhone(phone) }
+            .toCompletable()
+    }
+
+    override fun couriersForm(phone: String): Completable {
+        return authApi.couriersForm(tokenManager.apiVersion())
+    }
+
+    override fun refreshToken(): Completable {
+        val refreshToken = authApi.refreshToken(
+            tokenManager.apiVersion(),
+            RefreshTokenQuery(tokenManager.refreshToken())
+        )
+            .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
+            .doOnSuccess { saveToken(it) }
+        return Completable.fromSingle(refreshToken)
     }
 
     private fun saveToken(tokenEntity: TokenEntity) {
@@ -55,9 +76,11 @@ class AuthRemoteRepositoryImpl(
         phone: String,
         tmpPassword: String,
     ): Completable {
-        return authApi.passwordCheck(tokenManager.apiVersion(),
+        return authApi.passwordCheck(
+            tokenManager.apiVersion(),
             phone,
-            PasswordCheckQuery(tmpPassword))
+            PasswordCheckQuery(tmpPassword)
+        )
     }
 
     override fun statistics(): Single<StatisticsResponse> {

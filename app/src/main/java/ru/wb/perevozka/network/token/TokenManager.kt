@@ -10,6 +10,8 @@ interface TokenManager {
     fun refreshToken(): String
     fun userName(): String
     fun userCompany(): String
+    fun userPhone() : String
     fun clear()
     fun isContains(): Boolean
+    fun resources(): List<String>
 }

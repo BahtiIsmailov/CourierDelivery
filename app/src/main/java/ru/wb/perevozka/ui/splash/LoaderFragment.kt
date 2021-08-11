@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthLoaderFragmentBinding
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoaderFragment : Fragment(R.layout.auth_loader_fragment) {
 
@@ -39,7 +39,8 @@ class LoaderFragment : Fragment(R.layout.auth_loader_fragment) {
         viewModel.navState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 LoaderUINavState.NavigateToApp -> findNavController().navigate(
-                    LoaderFragmentDirections.actionAuthLoaderFragmentToAppNavigation())
+                    LoaderFragmentDirections.actionAuthLoaderFragmentToAppNavigation()
+                )
                 LoaderUINavState.NavigateToNumberPhone -> findNavController().navigate(
                     LoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
                 )

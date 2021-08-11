@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import ru.wb.perevozka.app.AppConsts;
-import ru.wb.perevozka.utils.LogUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +23,8 @@ import kotlin.Unit;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Response;
+import ru.wb.perevozka.app.AppConsts;
+import ru.wb.perevozka.utils.LogUtils;
 
 public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 

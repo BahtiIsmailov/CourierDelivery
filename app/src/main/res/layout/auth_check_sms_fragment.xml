@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_auth_content">
+
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/number_phone_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
+        android:textAppearance="@style/LargeDarkRegularText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        tools:text="На номер +7 (916) 433-42-42 выслан временный пароль" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/sms_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+        android:layout_marginTop="@dimen/auth_input_top_offset"
+        android:background="@drawable/border_input_normal"
+        android:paddingStart="@dimen/auth_padding_left"
+        android:paddingEnd="@dimen/auth_padding_right"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="false"
+        app:hintEnabled="false"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/sms"
+            style="@style/VeryLargeBlackRegularText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/auth_check_sms_hint"
+            android:importantForAutofill="noExcludeDescendants"
+            android:inputType="numberPassword"
+            android:maxLength="4"
+            android:paddingTop="@dimen/auth_padding_top"
+            android:paddingBottom="@dimen/auth_padding_bottom"
+            tools:text="01234" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/bottom_info"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/auth_check_sms_incorrect"
+        android:textColor="@color/danger"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/sms_layout"
+        app:layout_constraintTop_toBottomOf="@+id/sms_layout" />
+
+    <TextView
+        android:id="@+id/repeat_sms_timer"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/sms_layout"
+        app:layout_constraintTop_toBottomOf="@+id/sms_layout"
+        tools:text="Выслать CMC повторно через 00:30" />
+
+    <TextView
+        android:id="@+id/repeat_sms"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/auth_check_sms_repeat"
+        android:textColor="@color/text_clickable"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/sms_layout"
+        app:layout_constraintTop_toBottomOf="@+id/sms_layout" />
+
+    <ProgressBar
+        android:id="@+id/repeat_password_progress"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/repeat_sms"
+        app:layout_constraintEnd_toStartOf="@+id/repeat_sms"
+        app:layout_constraintTop_toTopOf="@+id/repeat_sms" />
+
+    <ru.wb.perevozka.views.ProgressImageButtonView
+        android:id="@+id/next"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/auth_button_height"
+        app:app_background="@drawable/progress_image_button_default"
+        app:app_icon="@drawable/ic_arrow_right"
+        app:app_state="disabled"
+        app:app_text="Далее"
+        app:app_text_color_disable="@color/button_default_text_disable"
+        app:app_text_color_enable="@color/button_default_text_enable"
+        app:app_text_color_progress="@color/button_default_text_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

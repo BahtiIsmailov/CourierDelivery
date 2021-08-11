@@ -23,6 +23,7 @@
 
     <color name="text_clickable">#642CA3</color>
     <color name="border_normal">#642CA3</color>
+    <color name="border_lite">#DBD7E0</color>
     <color name="border_error">#B00020</color>
 
     <color name="background">#642CA3</color>

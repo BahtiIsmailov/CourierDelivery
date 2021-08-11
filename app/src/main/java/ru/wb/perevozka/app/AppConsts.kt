@@ -11,4 +11,6 @@ object AppConsts {
     const val SERVICE_CODE_LOCKED = 423
 
     const val APP_PACKAGE = "package"
+
+    const val PRIVATE_INFO_MIN_DATE_PIKER = "01/01/1930 00:00:00"
 }
