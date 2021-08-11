@@ -36,10 +36,6 @@ class AuthRemoteRepositoryImpl(
             .toCompletable()
     }
 
-    override fun couriersForm(phone: String): Completable {
-        return authApi.couriersForm(tokenManager.apiVersion())
-    }
-
     override fun refreshToken(): Completable {
         val refreshToken = authApi.refreshToken(
             tokenManager.apiVersion(),

@@ -25,6 +25,7 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppConsts
 import ru.wb.perevozka.databinding.AuthUserFormFragmentBinding
+import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.date.DatePickerDialog
 import ru.wb.perevozka.ui.dialogs.date.OnDateSelected
@@ -73,12 +74,23 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         }
         viewModel.onTextChanges(changeObservables())
         binding.passportDatePickerIcon.setOnClickListener {
-            dateSelect(it, binding.passportDate)
+            dateSelect(it, binding.passportDateOfIssue)
         }
         binding.next.setOnClickListener {
             SoftKeyboard.hideKeyBoard(requireActivity())
-            viewModel.onNextClick() }
+            viewModel.onNextClick(getUserFormData())
+        }
     }
+
+    private fun getUserFormData() = CourierDocumentsEntity(
+        surName = binding.surname.text.toString(),
+        firstName = binding.firstName.text.toString(),
+        middleName = binding.middleName.text.toString(),
+        inn = binding.inn.text.toString(),
+        passportSeries = binding.passportSeries.text.toString(),
+        passportNumber = binding.passportNumber.text.toString(),
+        passportDateOfIssue = binding.passportDateOfIssue.text.toString()
+    )
 
     private lateinit var activityCallback: OnDateSelected
 
@@ -130,13 +142,13 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         )
         changeObservables.add(
             createTextChangesObserver().initListener(
-                binding.name,
+                binding.firstName,
                 UserFormQueryType.NAME
             )
         )
         changeObservables.add(
             createTextChangesObserver().initListener(
-                binding.patronymic,
+                binding.middleName,
                 UserFormQueryType.PATRONYMIC
             )
         )
@@ -154,7 +166,7 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         )
         changeObservables.add(
             createTextChangesObserver().initListener(
-                binding.passportDate,
+                binding.passportDateOfIssue,
                 UserFormQueryType.PASSPORT_DATE
             )
         )

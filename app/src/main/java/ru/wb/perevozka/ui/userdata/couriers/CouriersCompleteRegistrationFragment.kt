@@ -19,6 +19,7 @@ import ru.wb.perevozka.databinding.AuthCouriersCompletionRegistrationFragmentBin
 import ru.wb.perevozka.ui.userdata.userform.UserFormFragment
 import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
 import ru.wb.perevozka.ui.userdata.userform.UserFormViewModel
+import ru.wb.perevozka.utils.SoftKeyboard
 import ru.wb.perevozka.views.ProgressImageButtonMode
 
 class CouriersCompleteRegistrationFragment : Fragment() {
@@ -43,6 +44,11 @@ class CouriersCompleteRegistrationFragment : Fragment() {
         initView()
         initObserver()
         initListener()
+        initKeyboard()
+    }
+
+    private fun initKeyboard() {
+        SoftKeyboard.hideKeyBoard(requireActivity())
     }
 
     private fun initView() {

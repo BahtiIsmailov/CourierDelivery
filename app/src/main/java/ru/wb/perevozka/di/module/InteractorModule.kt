@@ -69,12 +69,12 @@ val interactorModule = module {
     fun provideUserFormInteractorImpl(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
-        repository: AuthRemoteRepository,
+        appRemoteRepository: AppRemoteRepository,
     ): UserFormInteractor {
         return UserFormInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
-            repository
+            appRemoteRepository
         )
     }
 

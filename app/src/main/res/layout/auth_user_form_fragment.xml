@@ -76,7 +76,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:id="@+id/name_title"
+                    android:id="@+id/first_name_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -85,7 +85,7 @@
                     android:textAppearance="@style/MediumBlackRegularText" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/name_layout"
+                    android:id="@+id/first_name_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -97,7 +97,7 @@
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/name"
+                        android:id="@+id/first_name"
                         style="@style/VeryLargeBlackRegularText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:id="@+id/patronymic_title"
+                    android:id="@+id/middle_name_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -120,7 +120,7 @@
                     android:textAppearance="@style/MediumBlackRegularText" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/patronymic_layout"
+                    android:id="@+id/middle_name_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -133,7 +133,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/patronymic_title">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/patronymic"
+                        android:id="@+id/middle_name"
                         style="@style/VeryLargeBlackRegularText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
 
 
                     <TextView
-                        android:id="@+id/passport_date_title"
+                        android:id="@+id/passport_date_of_Issue_title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -218,7 +218,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/passport_series_layout" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/passport_date_layout"
+                        android:id="@+id/passport_date_of_Issue_layout"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -232,10 +232,10 @@
                         app:hintEnabled="false"
                         app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_center"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/passport_date_title">
+                        app:layout_constraintTop_toBottomOf="@+id/passport_date_of_Issue_title">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/passport_date"
+                            android:id="@+id/passport_date_of_Issue"
                             style="@style/VeryLargeBlackRegularText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -257,9 +257,9 @@
                         android:background="?selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
-                        app:layout_constraintBottom_toBottomOf="@+id/passport_date_layout"
-                        app:layout_constraintEnd_toEndOf="@+id/passport_date_layout"
-                        app:layout_constraintTop_toBottomOf="@+id/passport_date_title"
+                        app:layout_constraintBottom_toBottomOf="@+id/passport_date_of_Issue_layout"
+                        app:layout_constraintEnd_toEndOf="@+id/passport_date_of_Issue_layout"
+                        app:layout_constraintTop_toBottomOf="@+id/passport_date_of_Issue_title"
                         app:srcCompat="@drawable/ic_date_picker"
                         app:tint="@color/border_normal"
                         tools:ignore="ContentDescription" />

@@ -3,7 +3,8 @@ package ru.wb.perevozka.ui.splash
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.DRIVER
+import ru.wb.perevozka.app.NEED_APPROVE_COURIER_DOCUMENTS
+import ru.wb.perevozka.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
@@ -12,9 +13,9 @@ import ru.wb.perevozka.utils.managers.ScreenManager
 
 class LoaderViewModel(
     compositeDisposable: CompositeDisposable,
-    repository: RefreshTokenRepository,
-    rxSchedulerFactory: RxSchedulerFactory,
-    tokenManager: TokenManager,
+    private val repository: RefreshTokenRepository,
+    private val rxSchedulerFactory: RxSchedulerFactory,
+    private val tokenManager: TokenManager,
     private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -23,22 +24,18 @@ class LoaderViewModel(
         get() = _navState
 
     init {
-        if (tokenManager.isContains()) {
-            if (tokenManager.resources().contains(DRIVER))
-                refreshTokenAndNavigateToApp(repository, rxSchedulerFactory)
-            else toNumberPhone()
-        } else {
-            toNumberPhone()
-        }
+        refreshTokenAndNavigateToApp()
     }
 
-    private fun refreshTokenAndNavigateToApp(
-        repository: RefreshTokenRepository,
-        rxSchedulerFactory: RxSchedulerFactory
-    ) {
+    private fun refreshTokenAndNavigateToApp() {
         addSubscription(repository.refreshAccessTokensSync()
             .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
-                { toApp() },
+                {
+                    if (!tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS)
+                        && !tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS)
+                    ) toApp()
+                    else toNumberPhone()
+                },
                 { toNumberPhone() }
             ))
     }

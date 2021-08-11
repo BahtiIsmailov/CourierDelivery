@@ -191,6 +191,11 @@ class CheckSmsViewModel(
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        interactor.stopTimer()
+    }
+
     companion object {
         private const val DURATION_TIME_INIT = 180
         const val TIME_DIVIDER = 60

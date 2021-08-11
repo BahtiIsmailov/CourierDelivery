@@ -13,8 +13,6 @@ interface AuthRemoteRepository {
 
     fun couriersExistAndSavePhone(phone: String): Completable
 
-    fun couriersForm(phone: String): Completable
-
     fun refreshToken(): Completable
 
     @Deprecated("")

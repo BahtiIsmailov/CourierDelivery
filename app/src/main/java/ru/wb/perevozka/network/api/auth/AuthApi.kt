@@ -23,11 +23,6 @@ interface AuthApi {
         @Path("phone") phone: String,
     ): Single<CheckCouriersPhoneResponse>
 
-    @GET("{version}/couriers-auth/form")
-    fun couriersForm(
-        @Path(value = "version", encoded = true) version: String
-    ): Completable
-
     @PUT("{version}/auth")
     fun refreshToken(
         @Path(value = "version", encoded = true) version: String,

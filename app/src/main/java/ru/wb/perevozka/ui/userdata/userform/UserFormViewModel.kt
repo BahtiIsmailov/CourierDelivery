@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -39,7 +40,9 @@ class UserFormViewModel(
     val loaderState: LiveData<UserFormUILoaderState>
         get() = _loaderState
 
-    init { observeNetworkState() }
+    init {
+        observeNetworkState()
+    }
 
     fun onTextChanges(changeObservables: ArrayList<Observable<Pair<String, UserFormQueryType>>>) {
         addSubscription(Observable.merge(changeObservables)
@@ -86,10 +89,10 @@ class UserFormViewModel(
         )
     }
 
-    fun onNextClick() {
+    fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = UserFormUILoaderState.Progress
         addSubscription(
-            interactor.couriersForm(parameters.phone).subscribe(
+            interactor.courierDocuments(courierDocumentsEntity).subscribe(
                 { couriersFormComplete() },
                 { couriersFormError(it) })
         )
@@ -105,7 +108,7 @@ class UserFormViewModel(
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message
-            else -> "Сервис временно не доступен. Повторите операцию позднее"
+            else -> resourceProvider.getGenericError()
         }
         _loaderState.value = UserFormUILoaderState.Enable
         _navigateToMessageInfo.value = NavigateToMessageInfo("Отправка данных", message, "OK")
@@ -120,6 +123,3 @@ class UserFormViewModel(
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }
-
-
-data class InitTitle(val title: String, val phone: String)

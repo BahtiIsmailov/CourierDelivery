@@ -1,5 +1,8 @@
 package ru.wb.perevozka.network.api.app
 
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
 import ru.wb.perevozka.db.Optional
 import ru.wb.perevozka.db.entity.flighboxes.BoxStatus
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
@@ -12,10 +15,12 @@ import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
+import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.api.app.entity.boxinfo.*
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
+import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.*
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
@@ -37,9 +42,6 @@ import ru.wb.perevozka.network.api.app.remote.warehousematchingboxes.WarehouseMa
 import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.TimeManager
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
 
 class AppRemoteRepositoryImpl(
     private val remote: AppApi,
@@ -50,8 +52,10 @@ class AppRemoteRepositoryImpl(
     override fun flight(): Single<FlightDataEntity> {
         return remote.flight(apiVersion())
             .map {
-                FlightDataEntity(convertFlight(it),
-                    convertOffices(it.offices, it.id ?: 0))
+                FlightDataEntity(
+                    convertFlight(it),
+                    convertOffices(it.offices, it.id ?: 0)
+                )
             }
     }
 
@@ -99,18 +103,22 @@ class AppRemoteRepositoryImpl(
 
     private fun convertDc(dc: FlightDcResponse?): DcEntity =
         if (dc == null) {
-            DcEntity(id = 0,
+            DcEntity(
+                id = 0,
                 name = "",
                 fullAddress = "",
                 longitude = 0.0,
-                latitude = 0.0)
+                latitude = 0.0
+            )
         } else {
             with(dc) {
-                DcEntity(id = id,
+                DcEntity(
+                    id = id,
                     name = name,
                     fullAddress = fullAddress,
                     longitude = long,
-                    latitude = lat)
+                    latitude = lat
+                )
             }
         }
 
@@ -125,9 +133,11 @@ class AppRemoteRepositoryImpl(
 
     private fun convertRoute(route: FlightRouteResponse?): RouteEntity? =
         if (route == null) null else with(route) {
-            RouteEntity(id = id,
+            RouteEntity(
+                id = id,
                 changed = changed,
-                name = name)
+                name = name
+            )
         }
 
     private fun convertCar(car: FlightCarResponse?): CarEntity =
@@ -141,11 +151,15 @@ class AppRemoteRepositoryImpl(
     private fun convertLocation(location: FlightLocationResponse?): LocationEntity =
         with(location) {
             if (location == null) {
-                LocationEntity(office = OfficeLocationEntity(0),
-                    getFromGPS = false)
+                LocationEntity(
+                    office = OfficeLocationEntity(0),
+                    getFromGPS = false
+                )
             } else {
-                LocationEntity(office = convertOfficeLocation(this?.office),
-                    getFromGPS = this?.getFromGPS ?: false)
+                LocationEntity(
+                    office = convertOfficeLocation(this?.office),
+                    getFromGPS = this?.getFromGPS ?: false
+                )
             }
         }
 
@@ -156,11 +170,15 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         currentOfficeId: Int,
     ): Completable {
-        return remote.putBoxToPvzBalance(tokenManager.apiVersion(), flightId,
-            FlightBoxToBalanceRequest(barcode,
+        return remote.putBoxToPvzBalance(
+            tokenManager.apiVersion(), flightId,
+            FlightBoxToBalanceRequest(
+                barcode,
                 isManualInput,
                 updatedAt,
-                FlightBoxToBalanceCurrentOfficeRequest(currentOfficeId)))
+                FlightBoxToBalanceCurrentOfficeRequest(currentOfficeId)
+            )
+        )
     }
 
     override fun removeBoxesFromFlight(
@@ -170,13 +188,16 @@ class AppRemoteRepositoryImpl(
         currentOfficeId: Int,
         barcodes: List<String>,
     ): Completable {
-        return remote.removeBoxesFromFlight(tokenManager.apiVersion(),
+        return remote.removeBoxesFromFlight(
+            tokenManager.apiVersion(),
             flightId,
             RemoveBoxesFromFlightRequest(
                 isManualInput = isManualInput,
                 updatedAt = updatedAt,
                 currentOffice = DeleteBoxesCurrentOfficeRemote(currentOfficeId),
-                barcodes = barcodes))
+                barcodes = barcodes
+            )
+        )
     }
 
     override fun removeBoxFromWarehouseBalance(
@@ -190,7 +211,8 @@ class AppRemoteRepositoryImpl(
             barcode,
             isManualInput,
             updatedAt,
-            BoxFromWarehouseBalanceCurrentOfficeRequest(currentOfficeId))
+            BoxFromWarehouseBalanceCurrentOfficeRequest(currentOfficeId)
+        )
         return remote.removeBoxFromWarehouseBalance(apiVersion(), flightId, balanceRequest)
             .map { convertToFlightBox(it) }
     }
@@ -206,13 +228,15 @@ class AppRemoteRepositoryImpl(
                 name = srcOffice.name,
                 fullAddress = srcOffice.fullAddress,
                 longitude = srcOffice.long,
-                latitude = srcOffice.lat),
+                latitude = srcOffice.lat
+            ),
             dstOffice = FlightDstOfficeEntity(
                 id = dstOffice.id,
                 name = dstOffice.name,
                 fullAddress = dstOffice.fullAddress,
                 longitude = dstOffice.long,
-                latitude = dstOffice.lat)
+                latitude = dstOffice.lat
+            )
         )
     }
 
@@ -223,12 +247,15 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         currentOfficeId: Int,
     ): Completable {
-        val removeBoxFromPvzBalance = remote.removeBoxFromPvzBalance(apiVersion(), flightId,
+        val removeBoxFromPvzBalance = remote.removeBoxFromPvzBalance(
+            apiVersion(), flightId,
             BoxFromPvzBalanceRequest(
                 barcode,
                 isManualInput,
                 updatedAt,
-                BoxFromPvzBalanceCurrentOfficeRequest(currentOfficeId)))
+                BoxFromPvzBalanceCurrentOfficeRequest(currentOfficeId)
+            )
+        )
         return Completable.fromSingle(removeBoxFromPvzBalance)
     }
 
@@ -248,13 +275,15 @@ class AppRemoteRepositoryImpl(
                                 name = srcOffice.name ?: "",
                                 fullAddress = srcOffice.fullAddress ?: "",
                                 longitude = srcOffice.long ?: 0.0,
-                                latitude = srcOffice.lat ?: 0.0),
+                                latitude = srcOffice.lat ?: 0.0
+                            ),
                             dstOffice = FlightDstOfficeEntity(
                                 id = dstOffice.id ?: 0,
                                 name = dstOffice.name ?: "",
                                 fullAddress = dstOffice.fullAddress ?: "",
                                 longitude = dstOffice.long ?: 0.0,
-                                latitude = dstOffice.lat ?: 0.0)
+                                latitude = dstOffice.lat ?: 0.0
+                            )
                         )
                     })
                 }
@@ -273,11 +302,13 @@ class AppRemoteRepositoryImpl(
     }
 
     private fun convertBoxInfoDstOfficeEntity(dstOffice: BoxInfoDstOfficeResponse) =
-        BoxInfoDstOfficeEntity(id = dstOffice.id,
+        BoxInfoDstOfficeEntity(
+            id = dstOffice.id,
             name = dstOffice.name,
             fullAddress = dstOffice.fullAddress,
             longitude = dstOffice.long,
-            latitude = dstOffice.lat)
+            latitude = dstOffice.lat
+        )
 
     private fun convertBoxInfoSrcOfficeEntity(srcOffice: BoxInfoSrcOfficeResponse) =
         with(srcOffice) {
@@ -286,7 +317,8 @@ class AppRemoteRepositoryImpl(
                 name = name,
                 fullAddress = fullAddress,
                 longitude = long,
-                latitude = lat)
+                latitude = lat
+            )
         }
 
     override fun warehouseMatchingBoxes(flightId: String): Single<List<WarehouseMatchingBoxEntity>> {
@@ -308,13 +340,15 @@ class AppRemoteRepositoryImpl(
                     name = srcOffice.name ?: "",
                     fullAddress = srcOffice.fullAddress ?: "",
                     longitude = srcOffice.long ?: 0.0,
-                    latitude = srcOffice.lat ?: 0.0),
+                    latitude = srcOffice.lat ?: 0.0
+                ),
                 dstOffice = WarehouseMatchingDstOfficeEntity(
                     id = dstOffice.id ?: 0,
                     name = dstOffice.name ?: "",
                     fullAddress = dstOffice.fullAddress ?: "",
                     longitude = dstOffice.long ?: 0.0,
-                    latitude = dstOffice.lat ?: 0.0),
+                    latitude = dstOffice.lat ?: 0.0
+                ),
             )
         }
     }
@@ -338,13 +372,15 @@ class AppRemoteRepositoryImpl(
                     name = srcOffice.name ?: "",
                     fullAddress = srcOffice.fullAddress ?: "",
                     longitude = srcOffice.long ?: 0.0,
-                    latitude = srcOffice.lat ?: 0.0),
+                    latitude = srcOffice.lat ?: 0.0
+                ),
                 dstOffice = PvzMatchingDstOfficeEntity(
                     id = dstOffice.id,
                     name = dstOffice.name ?: "",
                     fullAddress = dstOffice.fullAddress ?: "",
                     longitude = dstOffice.long ?: 0.0,
-                    latitude = dstOffice.lat ?: 0.0),
+                    latitude = dstOffice.lat ?: 0.0
+                ),
             )
         }
     }
@@ -358,8 +394,10 @@ class AppRemoteRepositoryImpl(
         }
 
         if (flight != null && box != null)
-            return BoxInfoDataEntity(Optional.Success(convertBoxInfoEntity(box)),
-                Optional.Success(convertBoxInfoFlightEntity(flight)))
+            return BoxInfoDataEntity(
+                Optional.Success(convertBoxInfoEntity(box)),
+                Optional.Success(convertBoxInfoFlightEntity(flight))
+            )
         return BoxInfoDataEntity(Optional.Empty(), Optional.Empty())
     }
 
@@ -369,7 +407,8 @@ class AppRemoteRepositoryImpl(
                 barcode = barcode,
                 srcOffice = convertBoxInfoSrcOfficeEntity(srcOffice),
                 dstOffice = convertBoxInfoDstOfficeEntity(dstOffice),
-                smID = smID)
+                smID = smID
+            )
         }
 
     private fun convertBoxInfoFlightEntity(boxInfoFlightRemote: BoxInfoFlightResponse) =
@@ -378,7 +417,8 @@ class AppRemoteRepositoryImpl(
                 id = id,
                 gate = gate,
                 plannedDate = plannedDate,
-                isAttached = isAttached)
+                isAttached = isAttached
+            )
         }
 
     override fun flightStatuses(): Single<FlightStatusesResponse> {
@@ -392,9 +432,14 @@ class AppRemoteRepositoryImpl(
         isGetFromGPS: Boolean,
         updatedAt: String,
     ): Completable {
-        return remote.putFlightStatus(apiVersion(), flightId,
-            StatusResponse(flightStatus.status, StatusLocationResponse(
-                StatusOfficeLocationResponse(officeId), isGetFromGPS), updatedAt))
+        return remote.putFlightStatus(
+            apiVersion(), flightId,
+            StatusResponse(
+                flightStatus.status, StatusLocationResponse(
+                    StatusOfficeLocationResponse(officeId), isGetFromGPS
+                ), updatedAt
+            )
+        )
     }
 
     override fun getFlightStatus(flightId: String): Single<StatusStateEntity> {
@@ -403,7 +448,9 @@ class AppRemoteRepositoryImpl(
                 StatusStateEntity(
                     status = status,
                     location = StatusLocationEntity(
-                        StatusOfficeLocationEntity(location.office.id), location.getFromGPS))
+                        StatusOfficeLocationEntity(location.office.id), location.getFromGPS
+                    )
+                )
             }
         }
     }
@@ -415,12 +462,15 @@ class AppRemoteRepositoryImpl(
         updatedAt: String,
         currentOfficeId: Int,
     ): Single<WarehouseScanEntity> {
-        return remote.putBoxToWarehouseBalance(apiVersion(), flightId,
+        return remote.putBoxToWarehouseBalance(
+            apiVersion(), flightId,
             BoxToWarehouseBalanceRequest(
                 barcode = barcode,
                 isManualInput = isManualInput,
                 updatedAt = updatedAt,
-                BoxToWarehouseBalanceCurrentOfficeRequest(currentOfficeId)))
+                BoxToWarehouseBalanceCurrentOfficeRequest(currentOfficeId)
+            )
+        )
             .map { convertWarehouseScannedBox(it) }
     }
 
@@ -432,8 +482,10 @@ class AppRemoteRepositoryImpl(
         flightId: Int,
         event: String,
     ): Completable {
-        return remote.boxTracker(tokenManager.apiVersion(),
-            BoxTrackerRequest(barcode,
+        return remote.boxTracker(
+            tokenManager.apiVersion(),
+            BoxTrackerRequest(
+                barcode,
                 isManualInput,
                 updatedAt,
                 BoxTrackerCurrentOfficeRequest(currentOfficeId),
@@ -441,6 +493,21 @@ class AppRemoteRepositoryImpl(
                 event
             )
         )
+    }
+
+    override fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
+        val courierDocuments = with(courierDocumentsEntity) {
+            CourierDocumentsRequest(
+                firstName = firstName,
+                surName = surName,
+                middleName = middleName,
+                inn = inn,
+                passportSeries = passportSeries,
+                passportNumber = passportNumber,
+                passportDateOfIssue = passportDateOfIssue
+            )
+        }
+        return remote.courierDocuments(tokenManager.apiVersion(), courierDocuments)
     }
 
     private fun convertWarehouseScannedBox(warehouseScanRemote: BoxToWarehouseBalanceResponse): WarehouseScanEntity {
@@ -451,16 +518,19 @@ class AppRemoteRepositoryImpl(
                     name = srcOffice.name,
                     fullAddress = srcOffice.fullAddress,
                     longitude = srcOffice.long,
-                    latitude = srcOffice.lat),
+                    latitude = srcOffice.lat
+                ),
                 dstOffice = WarehouseScanDstOfficeEntity(
                     id = dstOffice.id,
                     name = dstOffice.name,
                     fullAddress = dstOffice.fullAddress,
                     longitude = dstOffice.long,
-                    latitude = dstOffice.lat),
+                    latitude = dstOffice.lat
+                ),
                 barcode = barcode,
                 updatedAt = updatedAt,
-                status = BoxStatus.values()[status])
+                status = BoxStatus.values()[status]
+            )
         }
     }
 

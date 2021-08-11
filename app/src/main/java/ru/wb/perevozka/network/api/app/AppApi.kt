@@ -23,6 +23,7 @@ import ru.wb.perevozka.network.api.app.remote.warehousematchingboxes.WarehouseMa
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
+import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 
 interface AppApi {
 
@@ -151,5 +152,11 @@ interface AppApi {
         @Body box: BoxTrackerRequest,
     ): Completable
 
+
+    @POST("{version}/me/courier-documents")
+    fun courierDocuments(
+        @Path(value = "version", encoded = true) version: String,
+        @Body courierDocuments: CourierDocumentsRequest,
+    ): Completable
 
 }

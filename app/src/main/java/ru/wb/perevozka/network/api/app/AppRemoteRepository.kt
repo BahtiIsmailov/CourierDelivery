@@ -1,15 +1,16 @@
 package ru.wb.perevozka.network.api.app
 
+import io.reactivex.Completable
+import io.reactivex.Single
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
+import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
 import ru.wb.perevozka.network.api.app.remote.flightsstatus.StatusStateEntity
 import ru.wb.perevozka.network.api.app.remote.flightstatuses.FlightStatusesResponse
 import ru.wb.perevozka.network.api.app.remote.time.TimeResponse
-import io.reactivex.Completable
-import io.reactivex.Single
 
 interface AppRemoteRepository {
 
@@ -87,5 +88,8 @@ interface AppRemoteRepository {
         flightId: Int,
         event: String,
     ): Completable
+
+
+    fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
 
 }
