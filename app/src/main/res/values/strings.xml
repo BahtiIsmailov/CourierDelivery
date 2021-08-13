@@ -17,6 +17,11 @@
     <string name="unknown_http_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
     <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
+    <!--pin-->
+    <string name="input_sms_repeat_status_timer">Повторная отправка кода %s</string>
+    <string name="input_sms_repeat_no_timer">Отправить код повторно</string>
+    <string name="keyboard_view_forgot">Забыл\nкод</string>
+
     <!--debug panel-->
     <string name="debug_panel_caption">App Debug Console</string>
     <string name="debug_auto_substitution">Auto substitution</string>
@@ -328,5 +333,16 @@
     <string name="dc_loading_scan_dialog_message_return_error">Коробка не возвращена, повторите операцию</string>
     <string name="dc_loading_scan_switch_dialog_message_return_error">Не удается завершить возврат на РЦ, повторите операцию</string>
     <string name="dc_loading_scan_dialog_positive_button_return_error">Ok</string>
+
+    <string name="keyboard_button0">0</string>
+    <string name="keyboard_button1">1</string>
+    <string name="keyboard_button2">2</string>
+    <string name="keyboard_button3">3</string>
+    <string name="keyboard_button4">4</string>
+    <string name="keyboard_button5">5</string>
+    <string name="keyboard_button6">6</string>
+    <string name="keyboard_button7">7</string>
+    <string name="keyboard_button8">8</string>
+    <string name="keyboard_button9">9</string>
 
 </resources>

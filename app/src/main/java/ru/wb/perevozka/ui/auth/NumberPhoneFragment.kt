@@ -1,17 +1,19 @@
 package ru.wb.perevozka.ui.auth
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
-import com.jakewharton.rxbinding3.widget.textChanges
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthPhoneFragmentBinding
@@ -20,9 +22,7 @@ import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
 import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
-import ru.wb.perevozka.utils.LogUtils
-import ru.wb.perevozka.utils.SoftKeyboard
-import ru.wb.perevozka.views.ProgressImageButtonMode
+import ru.wb.perevozka.views.ProgressButtonMode
 
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
@@ -42,51 +42,50 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        initKeyboard()
-        initListener()
+        initListeners()
         initStateObserve()
-        initFormatter()
+    }
+
+    private fun phoneSpannable(state: NumberPhoneUIState.PhoneSpanFormat): Spannable {
+        val phone = state.numberFormat
+        val spannable: Spannable = SpannableString(phone)
+        val first = 0
+        val last = state.count
+        val span = ForegroundColorSpan(
+            ResourcesCompat.getColor(resources, R.color.text_spannable_phone, null)
+        )
+        spannable.setSpan(span, first, last, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannable
     }
 
     private fun initViews() {
-        binding.next.setState(ProgressImageButtonMode.DISABLED)
+        binding.next.setState(ProgressButtonMode.DISABLE)
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lock()
-        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_number_phone_toolbar_label)
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
-    private fun initKeyboard() {
-        activity?.let { SoftKeyboard.showKeyboard(it, binding.phoneNumber) }
-    }
-
-    private fun initListener() {
+    private fun initListeners() {
 
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()
         }
 
         binding.loginLayout.setOnLongClickListener {
-            viewModel.action(NumberPhoneUIAction.LongTitle)
+            viewModel.onLongClick()
             true
         }
 
-        with(binding.phoneNumber) {
-            binding.next.setOnClickListener {
-                viewModel.action(NumberPhoneUIAction.CheckPhone(text.toString()))
-            }
+        with(binding.phoneNumberTitle) {
+            binding.next.setOnClickListener { viewModel.onCheckPhone(text.toString()) }
         }
 
-        binding.phoneLayout.setEndIconOnClickListener {
-            binding.phoneNumber.setText(R.string.auth_number_phone_phone_default)
-            viewModel.action(NumberPhoneUIAction.NumberClear)
-        }
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
 
     }
 
     private fun initStateObserve() {
         viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
-            binding.phoneNumber.isEnabled = true
             when (state) {
                 is NumberPhoneNavAction.NavigateToCheckPassword -> {
                     findNavController().navigate(
@@ -94,7 +93,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                             CheckSmsParameters(state.number, state.ttl)
                         )
                     )
-                    binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 NumberPhoneNavAction.NavigateToConfig ->
                     findNavController().navigate(R.id.authConfigActivity)
@@ -108,7 +106,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                         UserFormParameters(state.phone)
                     )
                 )
-                NumberPhoneNavAction.NavigateToApp -> {}
             }
         })
 
@@ -119,76 +116,57 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
 
                 is NetworkState.Complete -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+                    binding.toolbarLayout.noInternetImage.visibility = INVISIBLE
                 }
             }
         }
 
+        viewModel.stateBackspaceUI.observe(viewLifecycleOwner) {
+            when (it) {
+                NumberPhoneBackspaceUIState.Active -> binding.viewKeyboard.active()
+                NumberPhoneBackspaceUIState.Inactive -> binding.viewKeyboard.inactive()
+            }
+        }
+
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
-            LogUtils { logDebugApp(state.toString()) }
             when (state) {
-                is NumberPhoneUIState.NumberFormatInit -> {
-                    binding.phoneNumber.setText(state.number)
-                    binding.phoneNumber.setSelection(state.number.length)
-                    viewModel.action(NumberPhoneUIAction.NumberChanges(binding.phoneNumber.textChanges()))
-                }
-                NumberPhoneUIState.PhoneCheck -> {
-                    binding.phoneNumber.isEnabled = false
+                NumberPhoneUIState.NumberCheckProgress -> {
                     binding.numberNotFound.visibility = GONE
-                    binding.next.setState(ProgressImageButtonMode.PROGRESS)
-                }
-                is NumberPhoneUIState.NumberFormat -> {
-                    val phoneNumber = state.number
-                    if (phoneNumber.length == 2) {
-                        binding.phoneLayout.endIconMode = TextInputLayout.END_ICON_NONE
-                    } else {
-                        binding.phoneLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                        binding.phoneLayout.setEndIconDrawable(R.drawable.ic_clear_text)
-                        binding.phoneLayout.setEndIconOnClickListener {
-                            binding.phoneNumber.setText(R.string.auth_number_phone_phone_default)
-                        }
-                    }
-                    setNormalBorderInput()
-                    binding.phoneNumber.isEnabled = true
-                    binding.phoneNumber.setText(phoneNumber)
-                    binding.phoneNumber.setSelection(phoneNumber.length)
-                    binding.numberNotFound.visibility = GONE
-                    binding.next.setState(ProgressImageButtonMode.DISABLED)
+                    binding.viewKeyboard.lock()
+                    binding.viewKeyboard.inactive()
+                    binding.next.setState(ProgressButtonMode.PROGRESS)
                 }
                 NumberPhoneUIState.NumberFormatComplete -> {
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.viewKeyboard.unlock()
+                    binding.viewKeyboard.active()
+                }
+                NumberPhoneUIState.NumberNotFilled -> {
+                    binding.next.setState(ProgressButtonMode.DISABLE)
+                    binding.numberNotFound.visibility = INVISIBLE
                 }
                 is NumberPhoneUIState.NumberNotFound -> {
-                    setErrorBorderInput()
-                    binding.phoneNumber.isEnabled = true
-                    binding.numberNotFound.text = state.message
+                    showBarMessage(state.message)
                     binding.numberNotFound.visibility = View.VISIBLE
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.viewKeyboard.unlock()
+                    binding.viewKeyboard.active()
                 }
                 is NumberPhoneUIState.Error -> {
                     showBarMessage(state.message)
-                    setNormalBorderInput()
-                    binding.phoneNumber.isEnabled = true
-                    binding.numberNotFound.visibility = GONE
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.viewKeyboard.unlock()
+                    binding.viewKeyboard.active()
+                }
+                is NumberPhoneUIState.PhoneSpanFormat -> {
+                    binding.phoneNumberTitle.setText(
+                        phoneSpannable(state),
+                        TextView.BufferType.SPANNABLE
+                    )
                 }
             }
 
         })
-    }
-
-    private fun initFormatter() {
-        viewModel.initFormatter()
-    }
-
-    private fun setErrorBorderInput() {
-        binding.phoneLayout.background =
-            ContextCompat.getDrawable(requireContext(), R.drawable.border_input_error)
-    }
-
-    private fun setNormalBorderInput() {
-        binding.phoneLayout.background =
-            ContextCompat.getDrawable(requireContext(), R.drawable.border_input_normal)
     }
 
     override fun onDestroyView() {

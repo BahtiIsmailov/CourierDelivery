@@ -9,21 +9,19 @@ import ru.wb.perevozka.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
-import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.NumberPhoneUIState.*
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
+import ru.wb.perevozka.ui.auth.keyboard.KeyboardNumericView
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.formatter.PhoneUtils
 
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: AuthResourceProvider,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val interactor: NumberPhoneInteractor,
-    private val userManager: UserManager,
     private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -40,6 +38,10 @@ class NumberPhoneViewModel(
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
 
+    private val _stateBackspaceUI = SingleLiveEvent<NumberPhoneBackspaceUIState>()
+    val stateBackspaceUI: LiveData<NumberPhoneBackspaceUIState>
+        get() = _stateBackspaceUI
+
     init {
         observeNetworkState()
         checkUserState()
@@ -50,11 +52,8 @@ class NumberPhoneViewModel(
             val phone = tokenManager.userPhone()
             when {
                 tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toUserForm(phone)
-                tokenManager.resources()
-                    .contains(NEED_APPROVE_COURIER_DOCUMENTS) -> toCouriersCompleteRegistration(
-                    phone
-                )
-                tokenManager.resources().isEmpty() -> toApp()
+                tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
+                    toCouriersCompleteRegistration(phone)
             }
         }
     }
@@ -67,37 +66,53 @@ class NumberPhoneViewModel(
         _navigationEvent.value = NumberPhoneNavAction.NavigateToCouriersCompleteRegistration(phone)
     }
 
-    private fun toApp() {
-        _navigationEvent.value = NumberPhoneNavAction.NavigateToApp
+    fun onCheckPhone(number: String) {
+        fetchPhoneNumber(number)
     }
 
+    fun onLongClick() {
+        navigateToConfig()
+    }
 
-    fun initFormatter() {
+    fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
+        val initPhone = Observable.just(interactor.userPhone())
+        val eventKeyboard =
+            event.scan(String(), { accumulator, item -> accumulateNumber(accumulator, item) })
         addSubscription(
-            PhoneUtils.phoneFormatter(Observable.just(interactor.userPhone()), rxSchedulerFactory)
-                .subscribe { number -> _stateUI.value = NumberFormatInit(number) })
+            initPhone.concatWith(eventKeyboard)
+                .doOnNext { switchNext(it) }
+                .map { numberToPhoneSpanFormat(it) }
+                .subscribe(
+                    { _stateUI.value = it },
+                    { LogUtils { logDebugApp("onNumberObservableClicked err " + it.toString()) } })
+        )
     }
 
-    fun action(actionView: NumberPhoneUIAction) {
-        when (actionView) {
-            is NumberPhoneUIAction.NumberChanges -> fetchPhoneNumberFormat(actionView)
-            is NumberPhoneUIAction.CheckPhone -> fetchPhoneNumber(actionView.number)
-            NumberPhoneUIAction.LongTitle -> navigateToConfig()
-            NumberPhoneUIAction.NumberClear -> userManager.clear()
+    private fun numberToPhoneSpanFormat(it: String) = PhoneSpanFormat(
+        PhoneUtils.phoneFormatter(it),
+        PhoneUtils.phoneFormatterSpanLength(it)
+    )
+
+    private fun switchNext(it: String) {
+        _stateBackspaceUI.value =
+            if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active
+        _stateUI.value =
+            if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete
+    }
+
+
+    private fun accumulateNumber(accumulator: String, item: KeyboardNumericView.ButtonAction) =
+        if (item == KeyboardNumericView.ButtonAction.BUTTON_DELETE) {
+            accumulator.dropLast(NUMBER_DROP_COUNT_LAST)
+        } else if (item == KeyboardNumericView.ButtonAction.BUTTON_DELETE_LONG) {
+            accumulator.drop(accumulator.length)
+        } else {
+            if (accumulator.length > NUMBER_LENGTH_MAX - 1) accumulator.take(NUMBER_LENGTH_MAX)
+            else accumulator.plus(item.ordinal)
         }
-    }
-
-    private fun fetchPhoneNumberFormat(actionView: NumberPhoneUIAction.NumberChanges) {
-        addSubscription(
-            PhoneUtils.phoneFormatter(actionView.observable, rxSchedulerFactory)
-                .subscribe { number ->
-                    _stateUI.value = if (number.length == PHONE_MAX_LENGTH)
-                        NumberFormatComplete else NumberFormat(number)
-                })
-    }
 
     private fun fetchPhoneNumber(phone: String) {
-        _stateUI.value = PhoneCheck
+        _stateUI.value = NumberCheckProgress
         val disposable = interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
             .subscribe(
                 { fetchPhoneNumberComplete(phone) },
@@ -111,16 +126,19 @@ class NumberPhoneViewModel(
     }
 
     private fun fetchPhoneNumberComplete(phone: String) {
-        _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, 0)
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)
+        _stateUI.value = NumberFormatComplete
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
         when (throwable) {
             is NoInternetException -> _stateUI.value = Error(throwable.message)
             is BadRequestException -> {
-                if (throwable.error.code == "CODE_SENT") {
-                    val ttl = throwable.error.data?.ttl ?: 0
-                    _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
+                if (throwable.error.code == CODE_SENT) {
+                    val ttl = throwable.error.data?.ttl ?: DEFAULT_TTL
+                    _navigationEvent.value =
+                        NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
+                    _stateUI.value = NumberFormatComplete
                 } else {
                     _stateUI.value = NumberNotFound(throwable.error.message)
                 }
@@ -136,7 +154,10 @@ class NumberPhoneViewModel(
     }
 
     companion object {
-        const val PHONE_MAX_LENGTH = 18
+        const val CODE_SENT = "CODE_SENT"
+        const val NUMBER_LENGTH_MAX = 10
+        const val NUMBER_DROP_COUNT_LAST = 1
+        const val DEFAULT_TTL = 0
     }
 
 }

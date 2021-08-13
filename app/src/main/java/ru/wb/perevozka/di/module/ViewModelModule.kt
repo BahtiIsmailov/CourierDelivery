@@ -44,7 +44,7 @@ val viewModelModule = module {
 
     viewModel { LoaderViewModel(get(), get(), get(), get(), get()) }
 
-    viewModel { NumberPhoneViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
 
     viewModel { (parameters: CheckSmsParameters) ->

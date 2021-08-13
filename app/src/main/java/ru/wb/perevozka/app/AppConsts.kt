@@ -13,4 +13,7 @@ object AppConsts {
     const val APP_PACKAGE = "package"
 
     const val PRIVATE_INFO_MIN_DATE_PIKER = "01/01/1930 00:00:00"
+
+    const val REPEAT_SMS_TICK: Long = 1000
+    const val REPEAT_SMS_DURATION: Long = 120000
 }

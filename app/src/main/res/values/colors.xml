@@ -17,6 +17,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="transparent">#0000</color>
+    <color name="keyboard_dot">#642CA3</color>
+    <color name="keyboard_dot_background">#F7F2FC</color>
+    <color name="keyboard_ripple_color">#80F7F2FC</color>
+
     <color name="toolbar_text">#231D2A</color>
 
     <color name="colorTextPrimaryLight">#FFFFFF</color>
@@ -45,7 +50,6 @@
     <color name="icon_success">#2CA364</color>
     <color name="icon_warning">#FB8C00</color>
     <color name="icon_deny">#B00020</color>
-
 
     <color name="background_content_light">#FFFFFF</color>
     <color name="background_content">#E5E5E5</color>
@@ -89,7 +93,7 @@
 
     <color name="button_default_text_enable">#FFFFFF</color>
     <color name="button_default_text_progress">#FFFFFF</color>
-    <color name="button_default_text_disable">#FFFFFF</color>
+    <color name="button_default_text_disable">#B6B2BD</color>
 
     <color name="button_alert_text_enable">#DF1F00</color>
     <color name="button_alert_text_progress">#E0DDE4</color>
@@ -99,7 +103,7 @@
     <color name="button_round_default_enabled">#642CA3</color>
     <color name="button_round_default_pressed">#703AAC</color>
 
-    <color name="button_default_disabled">#E0DDE4</color>
+    <color name="button_default_disabled">#EAE8ED</color>
     <color name="button_default_enabled">#642CA3</color>
     <color name="button_default_pressed">#703AAC</color>
 
@@ -129,4 +133,7 @@
 
     <color name="reception_text_manual_input">#642CA3</color>
     <color name="mtrl_textinput_default_box_stroke_color" >#673AB7</color>
+
+    <color name="keyboard_text_color">#231D2A</color>
+
 </resources>

@@ -2,12 +2,14 @@ package ru.wb.perevozka.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -16,11 +18,17 @@ import ru.wb.perevozka.R;
 
 public class ProgressButtonView extends FrameLayout {
 
-    private final static String DEFAULT_TEXT = "";
-    private final static int DEFAULT_CURRENT_STATE = ProgressButtonMode.DISABLE;
+    private final static String DEFAULT_TEXT = "Далее";
+    private final static int DEFAULT_CURRENT_STATE = ProgressButtonMode.ENABLE;
+    private final static int DEFAULT_COLOR = Color.WHITE;
 
-    private Button progressButton;
+    private View layout;
+    private TextView textView;
     private ProgressBar progressBar;
+
+    private int enableColor;
+    private int progressColor;
+    private int disableColor;
 
     private String text = DEFAULT_TEXT;
     private int currentState = ProgressButtonMode.DISABLE;
@@ -49,7 +57,8 @@ public class ProgressButtonView extends FrameLayout {
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layoutView = inflater.inflate(R.layout.progress_button, this, false);
-        progressButton = layoutView.findViewById(R.id.update);
+        layout = layoutView.findViewById(R.id.background_layout);
+        textView = layoutView.findViewById(R.id.text);
         progressBar = layoutView.findViewById(R.id.progress_bar);
         addView(layoutView);
     }
@@ -60,6 +69,11 @@ public class ProgressButtonView extends FrameLayout {
             try {
                 text = array.getString(R.styleable.ProgressButtonView_progress_button_name);
                 currentState = array.getInteger(R.styleable.ProgressButtonView_progress_button_state, DEFAULT_CURRENT_STATE);
+                enableColor = array.getColor(R.styleable.ProgressButtonView_progress_button_text_color_enable, DEFAULT_COLOR);
+                progressColor = array.getColor(R.styleable.ProgressButtonView_progress_button_text_color_progress, DEFAULT_COLOR);
+                disableColor = array.getColor(R.styleable.ProgressButtonView_progress_button_text_color_disable, DEFAULT_COLOR);
+                Drawable background = array.getDrawable(R.styleable.ProgressButtonView_progress_button_background);
+                layout.setBackground(background);
             } catch (NullPointerException exception) {
                 initDefaultState();
             } finally {
@@ -74,7 +88,6 @@ public class ProgressButtonView extends FrameLayout {
     }
 
     private void initState() {
-        progressButton.setText(text);
         switch (currentState) {
             case ProgressButtonMode.DISABLE:
                 disableState();
@@ -89,29 +102,29 @@ public class ProgressButtonView extends FrameLayout {
     }
 
     private void disableState() {
-        progressButton.setEnabled(false);
-        progressButton.setVisibility(VISIBLE);
-        progressButton.setText(text);
+        layout.setEnabled(false);
+        textView.setText(text);
+        textView.setTextColor(disableColor);
         progressBar.setVisibility(GONE);
     }
 
     private void enableState() {
-        progressButton.setEnabled(true);
-        progressButton.setVisibility(VISIBLE);
-        progressButton.setText(text);
+        layout.setEnabled(true);
+        textView.setText(text);
+        textView.setTextColor(enableColor);
         progressBar.setVisibility(GONE);
     }
 
     private void progressState() {
-        progressButton.setEnabled(false);
-        progressButton.setVisibility(VISIBLE);
-        progressButton.setText(DEFAULT_TEXT);
+        layout.setEnabled(false);
+        textView.setText(text);
+        textView.setTextColor(progressColor);
         progressBar.setVisibility(VISIBLE);
     }
 
     public void setText(String text) {
         this.text = text;
-        progressButton.setText(text);
+        textView.setText(text);
     }
 
     public void setState(int currentState) {
@@ -121,7 +134,7 @@ public class ProgressButtonView extends FrameLayout {
 
     @Override
     public void setOnClickListener(@Nullable OnClickListener onClickListener) {
-        progressButton.setOnClickListener(onClickListener);
+        layout.setOnClickListener(onClickListener);
     }
 
 }
