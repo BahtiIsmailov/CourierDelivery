@@ -23,12 +23,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.SplashActivityBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
 import ru.wb.perevozka.utils.LogUtils
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
@@ -144,11 +144,17 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<TextView>(R.id.return_text).text = status.returnBox
                         findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
 
-                        findViewById<TextView>(R.id.debt_title).setTextColor(ContextCompat.getColor(
-                            context, R.color.light_text))
+                        findViewById<TextView>(R.id.debt_title).setTextColor(
+                            ContextCompat.getColor(
+                                context, R.color.light_text
+                            )
+                        )
                         findViewById<TextView>(R.id.debt_text).text = status.debtBox
-                        findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
-                            context, R.color.black_text))
+                        findViewById<TextView>(R.id.debt_text).setTextColor(
+                            ContextCompat.getColor(
+                                context, R.color.black_text
+                            )
+                        )
                     }
                 }
                 is CounterBoxesActionStatus.AcceptedDebt -> {
@@ -156,11 +162,17 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                         findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
                         findViewById<TextView>(R.id.return_text).text = status.returnBox
                         findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
-                        findViewById<TextView>(R.id.debt_title).setTextColor(ContextCompat.getColor(
-                            context, R.color.icon_deny))
+                        findViewById<TextView>(R.id.debt_title).setTextColor(
+                            ContextCompat.getColor(
+                                context, R.color.icon_deny
+                            )
+                        )
                         findViewById<TextView>(R.id.debt_text).text = status.debtBox
-                        findViewById<TextView>(R.id.debt_text).setTextColor(ContextCompat.getColor(
-                            context, R.color.icon_deny))
+                        findViewById<TextView>(R.id.debt_text).setTextColor(
+                            ContextCompat.getColor(
+                                context, R.color.icon_deny
+                            )
+                        )
                     }
                 }
             }
@@ -238,7 +250,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
 
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
-            R.id.authNumberPhoneFragment -> finish()
+            R.id.authNumberPhoneFragment, R.id.checkSmsFragment -> finish()
             R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
                 showExitDialog()
             }

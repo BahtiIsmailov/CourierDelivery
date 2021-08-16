@@ -15,18 +15,16 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.jakewharton.rxbinding3.widget.textChanges
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthCheckSmsFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
 import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
-import ru.wb.perevozka.utils.SoftKeyboard
-import ru.wb.perevozka.views.ProgressImageButtonMode
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -48,20 +46,14 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        initKeyboard()
         initListener()
-        initStateObserve()
+        initObserve()
     }
 
     private fun initViews() {
-        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_check_sms_toolbar_label)
-        binding.toolbarLayout.back.visibility = View.VISIBLE
-        binding.sms.isEnabled = true
-        binding.next.setState(ProgressImageButtonMode.ENABLED)
-    }
-
-    private fun initKeyboard() {
-        activity?.let { SoftKeyboard.showKeyboard(it, binding.sms) }
+        binding.toolbarLayout.back.visibility = VISIBLE
+        (activity as NavDrawerListener).lock()
+        binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
     private fun initListener() {
@@ -72,15 +64,11 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()
         }
-        val sms = binding.sms
-        viewModel.passwordChanges(sms.textChanges())
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
         binding.repeatSms.setOnClickListener { viewModel.onRepeatPassword() }
-        binding.next.setOnClickListener {
-            viewModel.authClick(sms.text.toString())
-        }
     }
 
-    private fun initStateObserve() {
+    private fun initObserve() {
 
         viewModel.stateTitleUI.observe(viewLifecycleOwner, { state ->
             binding.numberPhoneTitle.setText(phoneSpannable(state), TextView.BufferType.SPANNABLE)
@@ -104,6 +92,13 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             }
         })
 
+        viewModel.stateBackspaceUI.observe(viewLifecycleOwner) {
+            when (it) {
+                CheckSmsBackspaceUIState.Active -> binding.viewKeyboard.active()
+                CheckSmsBackspaceUIState.Inactive -> binding.viewKeyboard.inactive()
+            }
+        }
+
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
             when (it) {
                 is NetworkState.Failed ->
@@ -115,35 +110,41 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
         viewModel.stateUI.observe(viewLifecycleOwner, { state ->
             when (state) {
-                CheckSmsUIState.SaveAndNextDisable -> {
-                    binding.next.setState(ProgressImageButtonMode.DISABLED)
-                    binding.bottomInfo.visibility = INVISIBLE
-                }
-                CheckSmsUIState.SaveAndNextEnable ->
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
                 CheckSmsUIState.Progress -> {
-                    binding.sms.isEnabled = false
+                    binding.smsCodeProgress.visibility = VISIBLE
+                    binding.viewKeyboard.lock()
+                    binding.viewKeyboard.inactive()
+                    binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = false
-                    binding.next.setState(ProgressImageButtonMode.PROGRESS)
                 }
                 CheckSmsUIState.Complete -> {
-                    binding.sms.isEnabled = false
+                    binding.smsCodeProgress.visibility = INVISIBLE
+                    binding.viewKeyboard.unlock()
+                    binding.viewKeyboard.active()
                     binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = false
-                    binding.next.setState(ProgressImageButtonMode.DISABLED)
                 }
                 CheckSmsUIState.Error -> {
-                    binding.sms.isEnabled = true
+                    binding.viewPinCode.text?.clear()
+                    binding.smsCodeProgress.visibility = INVISIBLE
+                    binding.viewKeyboard.unlock()
+                    binding.viewKeyboard.active()
+                    binding.viewKeyboard.clear()
                     binding.bottomInfo.visibility = VISIBLE
                     binding.repeatSms.isEnabled = true
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
                 }
                 is CheckSmsUIState.MessageError -> {
+                    binding.viewPinCode.text?.clear()
                     showBarMessage(state.message)
-                    binding.sms.isEnabled = true
+                    binding.smsCodeProgress.visibility = INVISIBLE
+                    binding.viewKeyboard.unlock()
+                    binding.viewKeyboard.active()
+                    binding.viewKeyboard.clear()
                     binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = true
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
+                }
+                is CheckSmsUIState.CodeFormat -> {
+                    binding.viewPinCode.setText(state.code)
                 }
             }
         })
@@ -229,7 +230,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
     }
 
     private fun showBarMessage(state: String) {
-        Snackbar.make(binding.next, state, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding.bottomInfo, state, Snackbar.LENGTH_LONG).show()
     }
 
     companion object {

@@ -38,9 +38,9 @@ class NumberPhoneViewModel(
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI
 
-    private val _stateBackspaceUI = SingleLiveEvent<NumberPhoneBackspaceUIState>()
+    private val _stateKeyboardBackspaceUI = SingleLiveEvent<NumberPhoneBackspaceUIState>()
     val stateBackspaceUI: LiveData<NumberPhoneBackspaceUIState>
-        get() = _stateBackspaceUI
+        get() = _stateKeyboardBackspaceUI
 
     init {
         observeNetworkState()
@@ -94,7 +94,7 @@ class NumberPhoneViewModel(
     )
 
     private fun switchNext(it: String) {
-        _stateBackspaceUI.value =
+        _stateKeyboardBackspaceUI.value =
             if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active
         _stateUI.value =
             if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete

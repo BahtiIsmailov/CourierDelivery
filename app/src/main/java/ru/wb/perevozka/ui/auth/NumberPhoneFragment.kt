@@ -147,7 +147,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
                 is NumberPhoneUIState.NumberNotFound -> {
                     showBarMessage(state.message)
-                    binding.numberNotFound.visibility = View.VISIBLE
                     binding.next.setState(ProgressButtonMode.ENABLE)
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()

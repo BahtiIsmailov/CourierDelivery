@@ -16,10 +16,8 @@ class PasswordDotsView : AppCompatEditText {
     private var strokeWidth = 0f
     private var dotSize = 0f
 
-    constructor(context: Context?) : super(context!!) {}
-    constructor(context: Context?, attrs: AttributeSet?) : super(
-        context!!, attrs
-    ) {
+    constructor(context: Context) : super(context) {}
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(attrs)
     }
 
@@ -71,7 +69,8 @@ class PasswordDotsView : AppCompatEditText {
     }
 
     private fun drawDots(canvas: Canvas) {
-        val radius = (dotSize / if (count == text!!.length) 1.5f else 2.0f).toInt()
+        val radius =
+            (dotSize / 2).toInt()
         for (i in 0 until count) {
             drawBackgroundCircle(canvas, i, radius)
             drawCircle(canvas, i, radius)

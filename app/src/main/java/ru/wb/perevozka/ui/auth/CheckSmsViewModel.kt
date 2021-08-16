@@ -2,7 +2,7 @@ package ru.wb.perevozka.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.jakewharton.rxbinding3.InitialValueObservable
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -11,6 +11,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.domain.CheckSmsData
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
+import ru.wb.perevozka.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 
@@ -42,6 +43,10 @@ class CheckSmsViewModel(
     val repeatStateUI: LiveData<CheckSmsUIRepeatState>
         get() = _repeatStateUI
 
+    private val _stateKeyboardBackspaceUI = SingleLiveEvent<CheckSmsBackspaceUIState>()
+    val stateBackspaceUI: LiveData<CheckSmsBackspaceUIState>
+        get() = _stateKeyboardBackspaceUI
+
     init {
         observeNetworkState()
         fetchTitle()
@@ -55,12 +60,42 @@ class CheckSmsViewModel(
         )
     }
 
-    fun passwordChanges(observable: InitialValueObservable<CharSequence>) {
-        fetchPasswordChanges(observable)
+    fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
+        addSubscription(
+            event.scan(String(), { accumulator, item -> accumulateCode(accumulator, item) })
+                .doOnNext { switchNext(it) }
+                .subscribe(
+                    { formatSmsComplete(it) },
+                    {  })
+        )
     }
 
-    fun authClick(password: String) {
-        fetchAuth(password)
+    private fun formatSmsComplete(code: String) {
+        _stateUI.value = CheckSmsUIState.CodeFormat(code)
+        if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
+    }
+
+    private fun checkSmsError(throwable: Throwable) {
+        _stateUI.value = when (throwable) {
+            is NoInternetException -> CheckSmsUIState.MessageError(throwable.message)
+            is BadRequestException -> CheckSmsUIState.Error
+            else -> CheckSmsUIState.MessageError(resourceProvider.getGenericError())
+        }
+    }
+
+    private fun accumulateCode(accumulator: String, item: KeyboardNumericView.ButtonAction) =
+        if (item == KeyboardNumericView.ButtonAction.BUTTON_DELETE) {
+            accumulator.dropLast(NumberPhoneViewModel.NUMBER_DROP_COUNT_LAST)
+        } else if (item == KeyboardNumericView.ButtonAction.BUTTON_DELETE_LONG) {
+            accumulator.drop(accumulator.length)
+        } else {
+            if (accumulator.length > NUMBER_LENGTH_MAX - 1) accumulator.take(NUMBER_LENGTH_MAX)
+            else accumulator.plus(item.ordinal)
+        }
+
+    private fun switchNext(code: String) {
+        _stateKeyboardBackspaceUI.value =
+            if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active
     }
 
     private fun subscribeTimer() {
@@ -113,19 +148,6 @@ class CheckSmsViewModel(
         interactor.startTimer(durationTime)
     }
 
-    private fun fetchPasswordChanges(observable: InitialValueObservable<CharSequence>) {
-        addSubscription(
-            interactor.remindPasswordChanges(observable)
-                .subscribe(
-                    {
-                        _stateUI.value =
-                            if (it) CheckSmsUIState.SaveAndNextEnable else CheckSmsUIState.SaveAndNextDisable
-                    },
-                    { _stateUI.value = CheckSmsUIState.SaveAndNextDisable }
-                )
-        )
-    }
-
     private fun fetchAuth(password: String) {
         _stateUI.value = CheckSmsUIState.Progress
         val phone = formatPhone()
@@ -133,7 +155,7 @@ class CheckSmsViewModel(
             .map { checkSmsData(it, phone) }
             .subscribe(
                 { authComplete(it) },
-                { authError(it) }
+                { checkSmsError(it) }
             )
         )
     }
@@ -154,21 +176,11 @@ class CheckSmsViewModel(
         _navigationEvent.value = createPasswordNavAction
     }
 
-    private fun authError(throwable: Throwable) {
-        _stateUI.value = when (throwable) {
-            is NoInternetException -> CheckSmsUIState.MessageError(throwable.message)
-            is BadRequestException -> CheckSmsUIState.Error //throwable.error.message
-            else -> CheckSmsUIState.MessageError(resourceProvider.getGenericError())
-        }
-    }
-
     private fun observeNetworkState() {
         addSubscription(
             interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
         )
     }
-
-    data class InitTitle(val title: String, val phone: String)
 
     override fun onTimerState(duration: Int) {
         val time: String =
@@ -199,6 +211,9 @@ class CheckSmsViewModel(
     companion object {
         private const val DURATION_TIME_INIT = 180
         const val TIME_DIVIDER = 60
+        const val NUMBER_LENGTH_MAX = 4
     }
+
+    data class InitTitle(val title: String, val phone: String)
 
 }

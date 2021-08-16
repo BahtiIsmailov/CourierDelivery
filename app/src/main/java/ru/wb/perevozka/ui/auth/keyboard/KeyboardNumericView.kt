@@ -6,8 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
+import io.reactivex.subjects.PublishSubject
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.KeyboardNumericLayoutBinding
 import java.util.*
@@ -42,30 +41,35 @@ class KeyboardNumericView : RelativeLayout {
         initAttributes(attrs)
         initDefault()
         initListeners()
+
     }
 
-    lateinit var observableListener: Observable<ButtonAction>
-        private set
+//    lateinit var observableListener: Observable<ButtonAction>
+//        private set
+
+    var observableListener = PublishSubject.create<ButtonAction>()
+//        private set
 
     private fun initListeners() {
-        observableListener = Observable.create { emitter: ObservableEmitter<ButtonAction> ->
-            for (button in numberButtons!!) {
-                button.setOnClickListener { v: View ->
-                    val keyboardButtonView = v as KeyboardButtonView
-                    val action = ButtonAction.values()[keyboardButtonView.customValue]
-                    emitter.onNext(action)
-                    keyboardButtonView.startAnimation()
-                }
-            }
-            binding.buttonBottomRight.setOnLongClickListener { v: View ->
-                emitter.onNext(ButtonAction.BUTTON_DELETE_LONG)
-                true
-            }
-            binding.buttonBottomRight.setOnClickListener { v: View -> emitter.onNext(ButtonAction.BUTTON_DELETE) }
-        }
+
         for (button in numberButtons!!) {
-            button.setOnClickListener { view: View -> onNumberClicked(view) }
+            button.setOnClickListener { v: View ->
+                val keyboardButtonView = v as KeyboardButtonView
+                val action = ButtonAction.values()[keyboardButtonView.customValue]
+                observableListener.onNext(action)
+                keyboardButtonView.startAnimation()
+            }
         }
+        binding.buttonBottomRight.setOnLongClickListener {
+            observableListener.onNext(ButtonAction.BUTTON_DELETE_LONG)
+            true
+        }
+        binding.buttonBottomRight.setOnClickListener {
+            observableListener.onNext(
+                ButtonAction.BUTTON_DELETE
+            )
+        }
+
     }
 
     private fun initUI() {
@@ -164,6 +168,10 @@ class KeyboardNumericView : RelativeLayout {
 
     fun unlock() {
         binding.overlayKeyboard.visibility = GONE
+    }
+
+    fun clear() {
+        observableListener.onNext(ButtonAction.BUTTON_DELETE_LONG)
     }
 
     fun inactive() {
