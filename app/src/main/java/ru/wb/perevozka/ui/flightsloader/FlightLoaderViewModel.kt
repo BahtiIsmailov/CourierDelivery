@@ -2,6 +2,7 @@ package ru.wb.perevozka.ui.flightsloader
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.api.auth.entity.UserInfoEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -10,7 +11,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.flightsloader.domain.FlightDefinitionAction
 import ru.wb.perevozka.ui.flightsloader.domain.FlightsLoaderInteractor
-import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.utils.LogUtils
 
 class FlightLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -39,11 +40,23 @@ class FlightLoaderViewModel(
     }
 
     private fun toApp() {
-        addSubscription(interactor.sessionInfo().subscribe({ _navHeader.value = it }, {}))
+        initSessionInfo()
+        // TODO: 19.08.2021 выключено до реализации функционала по принятию документов курьера
+//        addSubscription(
+//            interactor.updateFlight().subscribe(
+//                { navigateToOnComplete(it) },
+//                { navigateToOnError(it) })
+//        )
+ //
+    }
+
+    private fun initSessionInfo() {
         addSubscription(
-            interactor.updateFlight().subscribe(
-                { navigateToOnComplete(it) },
-                { navigateToOnError(it) })
+            interactor.sessionInfo().subscribe(
+                { _navHeader.value = it },
+                {
+                    LogUtils { logDebugApp("initSessionInfoError " + it) }
+                    _navHeader.value = UserInfoEntity("Ошибка", "Error") })
         )
     }
 
@@ -52,7 +65,7 @@ class FlightLoaderViewModel(
             FlightDefinitionAction.FlightEmpty -> {
                 FlightLoaderUIState.NotAssigned
             }
-            is FlightDefinitionAction.NavigateComplete -> {
+            is FlightDefinitionAction.NavigateToDirections -> {
                 FlightLoaderUIState.InTransit(definitionAction.navDirections)
             }
         }
@@ -74,7 +87,8 @@ class FlightLoaderViewModel(
 
     private fun observeNetworkState() {
         addSubscription(interactor.observeNetworkConnected()
-            .subscribe({ _toolbarNetworkState.value = it }, {}))
+            .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
 
 }

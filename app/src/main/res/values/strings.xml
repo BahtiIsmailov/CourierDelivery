@@ -181,6 +181,19 @@
 
     <string name="confirm_info_dialog_button">Понятно</string>
 
+    <string name="courier_warehouse_title">Склады</string>
+    <string name="courier_warehouse_empty_list">Ничего не найдено</string>
+    <string name="courier_warehouse_dialog_title_error">Склады</string>
+    <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
+    <string name="courier_warehouse_dialog_positive_button_error">Ok</string>
+
+    <string name="courier_orders_update">Обновить</string>
+    <string name="courier_orders_count">от %1$d шт. / %2$s</string>
+    <string name="courier_orders_empty_list">Заказы не найдены</string>
+    <string name="courier_order_dialog_title_error">Заказы</string>
+    <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+    <string name="courier_order_dialog_positive_button_error">Ok</string>
+
     <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>
     <string name="flight_deliveries_dialog_title">Начать доставку?</string>
     <string name="flight_deliveries_dialog_description">После перехода к доставке, вы больше не сможете погрузить коробки в машину</string>

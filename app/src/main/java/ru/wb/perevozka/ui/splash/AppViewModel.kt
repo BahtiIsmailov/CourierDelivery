@@ -2,6 +2,8 @@ package ru.wb.perevozka.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.api.app.FlightStatus
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
@@ -9,7 +11,6 @@ import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.splash.domain.AppInteractor
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.DeviceManager
-import io.reactivex.disposables.CompositeDisposable
 
 class AppViewModel(
     compositeDisposable: CompositeDisposable,
@@ -42,14 +43,21 @@ class AppViewModel(
         observeCountBoxes()
     }
 
+    fun onSearchChange(query: String) {
+        interactor.onSearchChange(query)
+    }
+
     private fun observeUpdatedStatus() {
         addSubscription(interactor.observeUpdatedStatus()
             .map {
                 when (it.flightStatus) {
                     FlightStatus.ASSIGNED, FlightStatus.DCLOADING, FlightStatus.DCUNLOADING, FlightStatus.UNLOADING ->
                         AppUIState.Loading(resourceProvider.getDeliveryId(it.flightId))
-                    FlightStatus.INTRANSIT -> AppUIState.InTransit(resourceProvider.getDeliveryId(
-                        it.flightId))
+                    FlightStatus.INTRANSIT -> AppUIState.InTransit(
+                        resourceProvider.getDeliveryId(
+                            it.flightId
+                        )
+                    )
                     FlightStatus.CLOSED -> AppUIState.NotAssigned("Доставка")
                 }
             }
@@ -59,8 +67,8 @@ class AppViewModel(
 
             }, {
                 LogUtils { logDebugApp(it.toString()) }
-
-            }))
+            })
+        )
     }
 
     private fun observeCountBoxes() {
@@ -72,13 +80,15 @@ class AppViewModel(
                             resourceProvider.getCount(acceptedCount),
                             resourceProvider.getCount(returnCount),
                             resourceProvider.getCount(deliveryCount),
-                            resourceProvider.getCount(debtCount))
+                            resourceProvider.getCount(debtCount)
+                        )
                     } else {
                         CounterBoxesActionStatus.Accepted(
                             resourceProvider.getCount(acceptedCount),
                             resourceProvider.getCount(returnCount),
                             resourceProvider.getCount(deliveryCount),
-                            resourceProvider.getCount(debtCount))
+                            resourceProvider.getCount(debtCount)
+                        )
                     }
                 }
             }
@@ -90,7 +100,9 @@ class AppViewModel(
     }
 
     private fun fetchNetworkState() {
-        addSubscription(interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {}))
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {})
+        )
     }
 
     fun onExitClick() {

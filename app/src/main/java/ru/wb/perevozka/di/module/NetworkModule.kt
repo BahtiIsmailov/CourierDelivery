@@ -26,6 +26,8 @@ import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.network.token.TokenManagerImpl
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.network.token.UserManagerImpl
+import ru.wb.perevozka.reader.MockResponse
+import ru.wb.perevozka.reader.MockResponseImpl
 import ru.wb.perevozka.utils.managers.ConfigManager
 import ru.wb.perevozka.utils.prefs.SharedWorker
 import java.net.URI
@@ -79,6 +81,10 @@ val networkModule = module {
         return CertificateStoreFactory.createCertificateStore(context)
     }
 
+    fun provideMockResponse(context: Context): MockResponse {
+        return MockResponseImpl(context)
+    }
+
     //==============================================================================================
     //token manager
     //==============================================================================================
@@ -122,8 +128,15 @@ val networkModule = module {
         return InterceptorFactory.createHttpLoggingInterceptor()
     }
 
-    fun provideMockResponseInterceptor(): MockResponseInterceptor {
-        return InterceptorFactory.createMockResponseInterceptor("https://wbtrans-auth.wildberries.ru/api/v1")
+    fun provideAuthMockResponseInterceptor(): AuthMockResponseInterceptor {
+        return InterceptorFactory.createAuthMockResponseInterceptor("https://wbtrans-auth.wildberries.ru/api/v1")
+    }
+
+    fun provideAppMockResponseInterceptor(mockResponse: MockResponse): AppMockResponseInterceptor {
+        return InterceptorFactory.createAppMockResponseInterceptor(
+            "https://wbtrans-mobile-api.wildberries.ru/api/v1",
+            mockResponse
+        )
     }
 
     fun provideRefreshTokenInterceptor(
@@ -144,12 +157,12 @@ val networkModule = module {
     fun provideAuthOkHttpClient(
         certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        mockResponseInterceptor: MockResponseInterceptor
+        authMockResponseInterceptor: AuthMockResponseInterceptor
     ): OkHttpClient {
         return OkHttpFactory.createAuthOkHttpClient(
             certificateStore,
             httpLoggingInterceptor,
-            mockResponseInterceptor
+            authMockResponseInterceptor
         )
     }
 
@@ -161,11 +174,13 @@ val networkModule = module {
         certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor,
+        appMockResponseInterceptor: AppMockResponseInterceptor
     ): OkHttpClient {
         return OkHttpFactory.createAppOkHttpClient(
             certificateStore,
             refreshResponseInterceptor,
             httpLoggingInterceptor,
+            appMockResponseInterceptor
         )
     }
 
@@ -236,6 +251,8 @@ val networkModule = module {
 
     single { provideCertificateStore(get()) }
 
+    single { provideMockResponse(get()) }
+
     single { provideTokenManager(get()) }
     single { provideUserManager(get()) }
 
@@ -249,7 +266,8 @@ val networkModule = module {
 
     single { provideLoggingInterceptor() }
 
-    single { provideMockResponseInterceptor() }
+    single { provideAuthMockResponseInterceptor() }
+    single { provideAppMockResponseInterceptor(get()) }
 
     single { provideRefreshTokenInterceptor(get(), get(named(APP_NAMED_HEADER_MANAGER)), get()) }
 
@@ -259,7 +277,7 @@ val networkModule = module {
         createTokenRefreshOkHttpClient()
     }
 
-    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get()) }
+    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get(), get()) }
 
     single { provideGsonConverterFactory() }
     single { provideGson() }

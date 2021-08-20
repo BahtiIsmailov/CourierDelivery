@@ -8,7 +8,14 @@ import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
-import ru.wb.perevozka.ui.auth.domain.*
+import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
+import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
+import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
+import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractorImpl
+import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
+import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractorImpl
+import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
+import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractorImpl
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingInteractor
@@ -32,6 +39,7 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.splash.domain.AppInteractor
 import ru.wb.perevozka.ui.splash.domain.AppInteractorImpl
+import ru.wb.perevozka.ui.splash.domain.AppSharedRepository
 import ru.wb.perevozka.ui.unloadingboxes.domain.UnloadingBoxesInteractor
 import ru.wb.perevozka.ui.unloadingboxes.domain.UnloadingBoxesInteractorImpl
 import ru.wb.perevozka.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
@@ -47,7 +55,6 @@ import ru.wb.perevozka.ui.userdata.couriers.domain.CouriersCompleteRegistrationI
 import ru.wb.perevozka.ui.userdata.couriers.domain.CouriersCompleteRegistrationInteractorImpl
 import ru.wb.perevozka.ui.userdata.userform.domain.UserFormInteractor
 import ru.wb.perevozka.ui.userdata.userform.domain.UserFormInteractorImpl
-import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
 import ru.wb.perevozka.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
@@ -113,6 +120,7 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
         appLocalRepository: AppLocalRepository,
+        appSharedRepository: AppSharedRepository,
         screenManager: ScreenManager,
     ): AppInteractor {
         return AppInteractorImpl(
@@ -120,6 +128,7 @@ val interactorModule = module {
             networkMonitorRepository,
             authRemoteRepository,
             appLocalRepository,
+            appSharedRepository,
             screenManager
         )
     }
@@ -218,6 +227,30 @@ val interactorModule = module {
             scannerRepository,
             timeManager,
             screenManager
+        )
+    }
+
+    fun provideCourierWarehouseInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        appSharedRepository: AppSharedRepository,
+    ): CourierWarehouseInteractor {
+        return CourierWarehouseInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            appSharedRepository
+        )
+    }
+
+    fun provideCourierOrderInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+    ): CourierOrderInteractor {
+        return CourierOrderInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
         )
     }
 
@@ -343,7 +376,7 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
@@ -351,6 +384,9 @@ val interactorModule = module {
     single { provideFlightDeliveriesInteractor(get(), get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get(), get()) }
+
+    single { provideCourierWarehouseInteractor(get(), get(), get()) }
+    single { provideCourierOrderInteractor(get(), get(), get()) }
 
     factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
 

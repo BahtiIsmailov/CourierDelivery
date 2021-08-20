@@ -29,6 +29,7 @@
     <dimen name="activity_vertical_margin">24dp</dimen>
 
     <dimen name="progress_bar_button">20dp</dimen>
+    <dimen name="progress_bar_dialog">36dp</dimen>
 
     <dimen name="small_text">12sp</dimen>
     <dimen name="medium_text">14sp</dimen>

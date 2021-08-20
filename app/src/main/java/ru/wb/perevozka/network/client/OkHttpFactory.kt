@@ -4,7 +4,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.network.certificate.CertificateStore
-import ru.wb.perevozka.network.headers.MockResponseInterceptor
+import ru.wb.perevozka.network.headers.AppMockResponseInterceptor
+import ru.wb.perevozka.network.headers.AuthMockResponseInterceptor
 import ru.wb.perevozka.network.headers.RefreshTokenInterceptor
 
 object OkHttpFactory {
@@ -12,13 +13,13 @@ object OkHttpFactory {
     fun createAuthOkHttpClient(
         certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        mockResponseInterceptor: MockResponseInterceptor
+        authMockResponseInterceptor: AuthMockResponseInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
             OkHttpClientUnsafe.create(
                 certificateStore,
                 httpLoggingInterceptor,
-                mockResponseInterceptor
+                authMockResponseInterceptor
             )
         } else {
             OkHttpClientSafe.create(certificateStore, httpLoggingInterceptor)
@@ -40,12 +41,14 @@ object OkHttpFactory {
         certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLogginInterceptor: HttpLoggingInterceptor,
+        appMockResponseInterceptor: AppMockResponseInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
             OkHttpClientUnsafe.create(
                 certificateStore,
                 refreshResponseInterceptor,
                 httpLogginInterceptor,
+                appMockResponseInterceptor
             )
         } else {
             OkHttpClientSafe.create(

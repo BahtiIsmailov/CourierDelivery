@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingStart="@dimen/layout_padding_horizontal_base">
+
+    <TextView
+        android:id="@+id/order"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Заказ № 3245934" />
+
+    <TextView
+        android:id="@+id/volume"
+        style="@style/MediumDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="26dp"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        app:layout_constraintTop_toBottomOf="@+id/order"
+        app:layout_constraintVertical_bias="0"
+        tools:text="от 200 шт. / 86 кубов" />
+
+    <ImageView
+        android:id="@+id/show_route_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/volume"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/volume"
+        app:srcCompat="@drawable/ic_box_and_volume"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/pvz"
+        style="@style/MediumDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        app:layout_constraintTop_toBottomOf="@+id/volume"
+        app:layout_constraintVertical_bias="0"
+        tools:text="9 ПВЗ" />
+
+    <ImageView
+        android:id="@+id/pvz_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/pvz"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pvz"
+        app:srcCompat="@drawable/ic_pvz_count"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/coast"
+        style="@style/VeryLargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="3200 \u20BD" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

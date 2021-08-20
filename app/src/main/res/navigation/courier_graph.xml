@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/courier_navigation"
+    app:startDestination="@id/courierWarehouseFragment">
+
+    <fragment
+        android:id="@+id/courierWarehouseFragment"
+        android:name="ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesFragment"
+        android:label="@string/courier_warehouse_title"
+        tools:layout="@layout/courier_warehouse_fragment">
+        <action
+            android:id="@+id/action_courierWarehouseFragment_to_courierOrderFragment"
+            app:destination="@id/courierOrderFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierOrderFragment"
+        android:name="ru.wb.perevozka.ui.courierorders.CourierOrderFragment"
+        android:label=""
+        tools:layout="@layout/courier_order_fragment">
+
+        <argument
+        android:name="courier_order_id_key"
+        app:argType="ru.wb.perevozka.ui.courierorders.CourierOrderParameters"
+        app:nullable="false" />
+
+    </fragment>
+
+</navigation>

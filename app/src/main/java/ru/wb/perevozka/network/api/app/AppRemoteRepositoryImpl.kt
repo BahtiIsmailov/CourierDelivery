@@ -4,6 +4,10 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.perevozka.db.Optional
+import ru.wb.perevozka.db.entity.courier.CourierOrderDstOfficeEntity
+import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+import ru.wb.perevozka.db.entity.courier.CourierOrderSrcOfficeEntity
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
 import ru.wb.perevozka.db.entity.flighboxes.BoxStatus
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightDstOfficeEntity
@@ -22,6 +26,8 @@ import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.*
+import ru.wb.perevozka.network.api.app.remote.courier.CourierOrderResponse
+import ru.wb.perevozka.network.api.app.remote.courier.CourierWarehouseResponse
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
 import ru.wb.perevozka.network.api.app.remote.flight.*
@@ -508,6 +514,69 @@ class AppRemoteRepositoryImpl(
             )
         }
         return remote.courierDocuments(tokenManager.apiVersion(), courierDocuments)
+    }
+
+    override fun courierWarehouses(): Single<List<CourierWarehouseEntity>> {
+        return remote.freeTasksOffices(apiVersion())
+            .map { it.data }
+            .flatMap {
+                Observable.fromIterable(it)
+                    .map { office -> convertCourierWarehouseEntity(office) }
+                    .toList()
+            }
+    }
+
+    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseEntity {
+        return with(courierOfficeResponse) {
+            CourierWarehouseEntity(
+                id = id,
+                name = name,
+                fullAddress = fullAddress,
+                long = long,
+                lat = lat
+            )
+        }
+    }
+
+    override fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
+        return remote.freeTasks(apiVersion(), srcOfficeID)
+            .map { it.data }
+            .flatMap {
+                Observable.fromIterable(it)
+                    .map { order -> convertCourierOrderEntity(order) }
+                    .toList()
+            }
+    }
+
+    private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
+        val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
+        courierOrderResponse.dstOffices.forEach { dstOffice ->
+            dstOffices.add(CourierOrderDstOfficeEntity(
+                id = dstOffice.id,
+                name= dstOffice.name,
+                fullAddress= dstOffice.fullAddress,
+                long= dstOffice.long,
+                lat= dstOffice.lat,
+            ))
+        }
+        return with(courierOrderResponse) {
+            CourierOrderEntity(
+                id = id,
+                routeID = routeID,
+                gate = gate,
+                srcOffice = CourierOrderSrcOfficeEntity(
+                    id = srcOffice.id,
+                    name= srcOffice.name,
+                    fullAddress= srcOffice.fullAddress,
+                    long= srcOffice.long,
+                    lat= srcOffice.lat,
+                ),
+                minPrice = minPrice,
+                minVolume = minVolume,
+                minBoxesCount = minBoxesCount,
+                dstOffices = dstOffices
+            )
+        }
     }
 
     private fun convertWarehouseScannedBox(warehouseScanRemote: BoxToWarehouseBalanceResponse): WarehouseScanEntity {

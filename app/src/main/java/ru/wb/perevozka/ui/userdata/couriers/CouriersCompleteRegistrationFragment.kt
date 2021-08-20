@@ -10,22 +10,24 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
-import ru.wb.perevozka.ui.splash.NavToolbarListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthCouriersCompletionRegistrationFragmentBinding
-import ru.wb.perevozka.ui.userdata.userform.UserFormFragment
-import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
-import ru.wb.perevozka.ui.userdata.userform.UserFormViewModel
+import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.utils.SoftKeyboard
 import ru.wb.perevozka.views.ProgressImageButtonMode
 
 class CouriersCompleteRegistrationFragment : Fragment() {
 
     private val viewModel by viewModel<CouriersCompleteRegistrationViewModel> {
-        parametersOf(requireArguments().getParcelable<CouriersCompleteRegistrationParameters>(PHONE_KEY))
+        parametersOf(
+            requireArguments().getParcelable<CouriersCompleteRegistrationParameters>(
+                PHONE_KEY
+            )
+        )
     }
 
     private var _binding: AuthCouriersCompletionRegistrationFragmentBinding? = null
@@ -35,7 +37,8 @@ class CouriersCompleteRegistrationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = AuthCouriersCompletionRegistrationFragmentBinding.inflate(inflater, container, false)
+        _binding =
+            AuthCouriersCompletionRegistrationFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -56,15 +59,25 @@ class CouriersCompleteRegistrationFragment : Fragment() {
     }
 
     private fun initObserver() {
-        viewModel.navigateToUpdateDialogInfo.observe(viewLifecycleOwner) {
-            showSimpleDialog()
-            binding.updateStatus.setState(ProgressImageButtonMode.ENABLED)
+        viewModel.navAction.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CouriersCompleteRegistrationNavAction.NavigateToApplication ->
+                    findNavController().navigate(R.id.load_navigation)
+                CouriersCompleteRegistrationNavAction.NavigateToCouriersDialog -> {
+                    showSimpleDialog()
+                    binding.updateStatus.setState(ProgressImageButtonMode.ENABLED)
+                }
+            }
         }
 
         viewModel.progressState.observe(viewLifecycleOwner) {
-            when(it){
-                CouriersCompleteRegistrationProgressState.Complete -> binding.updateStatus.setState(ProgressImageButtonMode.PROGRESS)
-                CouriersCompleteRegistrationProgressState.Progress -> binding.updateStatus.setState(ProgressImageButtonMode.ENABLED)
+            when (it) {
+                CouriersCompleteRegistrationProgressState.Complete -> binding.updateStatus.setState(
+                    ProgressImageButtonMode.ENABLED
+                )
+                CouriersCompleteRegistrationProgressState.Progress -> binding.updateStatus.setState(
+                    ProgressImageButtonMode.PROGRESS
+                )
             }
         }
     }

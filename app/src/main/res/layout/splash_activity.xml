@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <include layout="@layout/navigation_auth_host" />
+    <include
+        android:id="@+id/layout_host"
+        layout="@layout/navigation_auth_host" />
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

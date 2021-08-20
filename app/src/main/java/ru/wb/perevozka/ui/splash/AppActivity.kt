@@ -1,11 +1,11 @@
 package ru.wb.perevozka.ui.splash
 
 import android.os.Bundle
-import android.view.View
+import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -14,6 +14,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.navigation.NavController
 import androidx.navigation.NavController.OnDestinationChangedListener
 import androidx.navigation.NavDestination
@@ -29,6 +30,7 @@ import ru.wb.perevozka.databinding.SplashActivityBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
 import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.utils.SoftKeyboard
 import java.util.*
 
 
@@ -82,7 +84,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             }
         navController.addOnDestinationChangedListener(onDestinationChangedListener)
 
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.flightsFragment), binding.drawerLayout)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.flightsFragment, R.id.courierWarehouseFragment),
+            binding.drawerLayout
+        )
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
@@ -195,6 +200,36 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                     .navigate(R.id.load_navigation)
             }
         }
+
+//        binding.layoutHost.toolbarLayout.search.setOnQueryTextListener(object :
+//            SearchView.OnQueryTextListener {
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                viewModel.onSearchChange(newText)
+//                return false
+//            }
+//
+//            override fun onQueryTextSubmit(query: String): Boolean {
+//                viewModel.onSearchChange(query)
+//                return false
+//            }
+//        })
+//        binding.layoutHost.toolbarLayout.search.setBackgroundResource(R.drawable.rounded_search_layout)
+
+        binding.drawerLayout.addDrawerListener(object : DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+                SoftKeyboard.hideKeyBoard(this@AppActivity)
+            }
+        })
+
     }
 
     private fun initView() {
@@ -215,14 +250,19 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     }
 
     override fun hideToolbar() {
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        toolbar.visibility = GONE
+        val toolbarLayout = findViewById<RelativeLayout>(R.id.toolbar_layout)
+        toolbarLayout.visibility = GONE
     }
 
     override fun showToolbar() {
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        toolbar.visibility = VISIBLE
+        val toolbarLayout = findViewById<RelativeLayout>(R.id.toolbar_layout)
+        toolbarLayout.visibility = VISIBLE
     }
+
+//    override fun showToolbarSearch() {
+//        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        toolbar.visibility = VISIBLE
+//    }
 
     override fun showNetworkDialog() {
         InformationDialogFragment.newInstance(
@@ -251,9 +291,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment, R.id.checkSmsFragment -> finish()
-            R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.flightDeliveriesFragment, R.id.congratulationFragment -> {
-                showExitDialog()
-            }
+            R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.courierWarehouseFragment,
+            R.id.flightDeliveriesFragment, R.id.congratulationFragment -> showExitDialog()
             R.id.unloadingScanFragment -> {
                 val toolbar = findViewById<Toolbar>(R.id.toolbar)
                 if (toolbar.navigationIcon == null) {

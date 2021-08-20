@@ -28,11 +28,11 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     override fun userName(): String {
-        return tokenResource().sub
+        return tokenResource().sub ?: ""
     }
 
     override fun userCompany(): String {
-        return tokenResource().extra.company
+        return tokenResource().extra.company ?: ""
     }
 
     override fun userPhone(): String {

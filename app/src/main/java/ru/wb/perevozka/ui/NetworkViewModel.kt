@@ -1,9 +1,9 @@
 package ru.wb.perevozka.ui
 
 import androidx.lifecycle.ViewModel
-import ru.wb.perevozka.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import ru.wb.perevozka.utils.LogUtils
 
 abstract class NetworkViewModel(private val compositeDisposable: CompositeDisposable) :
     ViewModel() {
@@ -14,12 +14,11 @@ abstract class NetworkViewModel(private val compositeDisposable: CompositeDispos
 
     override fun onCleared() {
         LogUtils { logDebugApp("SCOPE_DEBUG " + this@NetworkViewModel + " onCleared() NetworkViewModel") }
-        compositeDisposable.apply {
-            if (!isDisposed) {
-                clear()
-                dispose()
-            }
-        }
+        compositeDisposable.apply { if (!isDisposed) dispose() }
+    }
+
+    fun clearSubscription() {
+        compositeDisposable.apply { if (!isDisposed) clear() }
     }
 
 }

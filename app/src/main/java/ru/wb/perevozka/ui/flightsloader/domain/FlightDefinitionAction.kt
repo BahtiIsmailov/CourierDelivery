@@ -6,6 +6,6 @@ sealed class FlightDefinitionAction {
 
     object FlightEmpty : FlightDefinitionAction()
 
-    data class NavigateComplete(val navDirections: NavDirections) : FlightDefinitionAction()
+    data class NavigateToDirections(val navDirections: NavDirections) : FlightDefinitionAction()
 
 }

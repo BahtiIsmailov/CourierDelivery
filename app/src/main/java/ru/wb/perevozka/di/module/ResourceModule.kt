@@ -1,7 +1,10 @@
 package ru.wb.perevozka.di.module
 
 import android.app.Application
+import org.koin.dsl.module
 import ru.wb.perevozka.ui.auth.AuthResourceProvider
+import ru.wb.perevozka.ui.courierorders.CourierOrderResourceProvider
+import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesResourceProvider
 import ru.wb.perevozka.ui.dcloading.DcLoadingResourceProvider
 import ru.wb.perevozka.ui.dcunloading.DcUnloadingScanResourceProvider
 import ru.wb.perevozka.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
@@ -16,7 +19,6 @@ import ru.wb.perevozka.ui.splash.AppResourceProvider
 import ru.wb.perevozka.ui.unloadingcongratulation.CongratulationResourceProvider
 import ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanResourceProvider
-import org.koin.dsl.module
 import ru.wb.perevozka.ui.userdata.UserDataResourceProvider
 import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationResourceProvider
 
@@ -32,6 +34,14 @@ val resourceModule = module {
 
     fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CouriersCompleteRegistrationResourceProvider {
         return CouriersCompleteRegistrationResourceProvider(application)
+    }
+
+    fun provideCourierWarehouseResourceProvider(application: Application): CourierWarehousesResourceProvider {
+        return CourierWarehousesResourceProvider(application)
+    }
+
+    fun provideCourierOrderResourceProvider(application: Application): CourierOrderResourceProvider {
+        return CourierOrderResourceProvider(application)
     }
 
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
@@ -93,6 +103,8 @@ val resourceModule = module {
     single { provideAppResourceProvider(get()) }
     single { provideUserDataResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
+    single { provideCourierWarehouseResourceProvider(get()) }
+    single { provideCourierOrderResourceProvider(get()) }
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }
     single { provideReceptionResourceProvider(get()) }

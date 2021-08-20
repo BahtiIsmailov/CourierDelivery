@@ -1,6 +1,12 @@
 package ru.wb.perevozka.network.api.app
 
+import io.reactivex.Completable
+import io.reactivex.Single
+import retrofit2.http.*
+import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.BoxInfoResponse
+import ru.wb.perevozka.network.api.app.remote.courier.CourierOrdersResponse
+import ru.wb.perevozka.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
 import ru.wb.perevozka.network.api.app.remote.flight.FlightResponse
 import ru.wb.perevozka.network.api.app.remote.flightboxes.FlightBoxesResponse
@@ -20,10 +26,6 @@ import ru.wb.perevozka.network.api.app.remote.warehouse.BoxFromWarehouseBalanceR
 import ru.wb.perevozka.network.api.app.remote.warehouse.BoxToWarehouseBalanceRequest
 import ru.wb.perevozka.network.api.app.remote.warehouse.BoxToWarehouseBalanceResponse
 import ru.wb.perevozka.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxesResponse
-import io.reactivex.Completable
-import io.reactivex.Single
-import retrofit2.http.*
-import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 
 interface AppApi {
 
@@ -158,5 +160,19 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Body courierDocuments: CourierDocumentsRequest,
     ): Completable
+
+    //==============================================================================================
+    //tasks
+    //==============================================================================================
+    @GET("{version}/free-tasks/offices")
+    fun freeTasksOffices(
+        @Path(value = "version", encoded = true) version: String
+    ): Single<CourierWarehousesResponse>
+
+    @GET("{version}/free-tasks")
+    fun freeTasks(
+        @Path(value = "version", encoded = true) version: String,
+        @Query("srcOfficeID") srcOfficeID: Int
+    ): Single<CourierOrdersResponse>
 
 }

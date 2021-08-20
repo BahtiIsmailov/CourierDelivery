@@ -74,6 +74,11 @@ class FlightDeliveriesFragment : Fragment() {
 
     private fun initStateObserve() {
 
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            InformationDialogFragment.newInstance(it.title, it.message, it.button)
+                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        }
+
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
@@ -140,11 +145,6 @@ class FlightDeliveriesFragment : Fragment() {
                     binding.completeDeliveryPositive.setState(ProgressImageButtonMode.PROGRESS)
                 }
             }
-        }
-
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
         }
 
     }

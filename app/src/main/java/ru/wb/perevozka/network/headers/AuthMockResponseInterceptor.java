@@ -12,7 +12,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class MockResponseInterceptor implements Interceptor {
+public class AuthMockResponseInterceptor implements Interceptor {
 
     private static final String GET_APP_USER_FORM_URL = "http://ip-api.com/json/208.80.152.200";
     private static final String GET_APP_USER_FORM_API = "couriers-auth/form";
@@ -23,7 +23,7 @@ public class MockResponseInterceptor implements Interceptor {
     @NonNull
     private final String apiServer;
 
-    public MockResponseInterceptor(@NonNull String apiServer) {
+    public AuthMockResponseInterceptor(@NonNull String apiServer) {
         this.apiServer = apiServer;
     }
 

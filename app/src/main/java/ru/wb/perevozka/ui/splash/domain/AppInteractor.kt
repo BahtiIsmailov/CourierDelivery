@@ -10,5 +10,6 @@ interface AppInteractor {
     fun exitAuth()
     fun observeUpdatedStatus() : Observable<ScreenManagerImpl.NavigateComplete>
     fun observeCountBoxes() : Observable<AppDeliveryResult>
+    fun onSearchChange(query: String)
 
 }

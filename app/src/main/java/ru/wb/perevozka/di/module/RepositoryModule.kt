@@ -21,6 +21,8 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.perevozka.utils.managers.TimeManager
 import org.koin.dsl.module
+import ru.wb.perevozka.ui.splash.domain.AppSharedRepository
+import ru.wb.perevozka.ui.splash.domain.AppSharedRepositoryImpl
 
 val deliveryRepositoryModule = module {
 
@@ -71,11 +73,16 @@ val deliveryRepositoryModule = module {
         return NetworkMonitorRepositoryImpl()
     }
 
+    fun provideAppSharedRepository(): AppSharedRepository {
+        return AppSharedRepositoryImpl()
+    }
+
     single { provideAuthRemoteRepository(get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
+    single { provideAppSharedRepository() }
 
 }

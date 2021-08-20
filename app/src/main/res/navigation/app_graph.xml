@@ -428,6 +428,6 @@
         android:id="@+id/dcLoadingHandleFragment"
         android:name="ru.wb.perevozka.ui.dcloading.DcLoadingHandleFragment"
         android:label="DcLoadingHandleFragment"
-        tools:layout="@layout/dc_loading_handle_fragment"/>
+        tools:layout="@layout/dc_loading_handle_fragment" />
 
 </navigation>

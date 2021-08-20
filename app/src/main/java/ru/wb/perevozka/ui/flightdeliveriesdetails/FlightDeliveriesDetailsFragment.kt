@@ -20,6 +20,7 @@ import ru.wb.perevozka.ui.unloadingscan.UnloadingScanParameters
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 class FlightDeliveriesDetailsFragment : Fragment() {
 

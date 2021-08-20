@@ -44,8 +44,10 @@ class LoaderFragment : Fragment(R.layout.auth_loader_fragment) {
                 LoaderUINavState.NavigateToNumberPhone -> findNavController().navigate(
                     LoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
                 )
+                LoaderUINavState.NavigateToCourier -> findNavController().navigate(
+                    LoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()
+                )
             }
-
         }
     }
 

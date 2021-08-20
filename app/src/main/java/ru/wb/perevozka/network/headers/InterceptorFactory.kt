@@ -3,6 +3,7 @@ package ru.wb.perevozka.network.headers
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.network.token.TokenManager
 import okhttp3.logging.HttpLoggingInterceptor
+import ru.wb.perevozka.reader.MockResponse
 
 object InterceptorFactory {
 
@@ -11,8 +12,12 @@ object InterceptorFactory {
             .setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE)
     }
 
-    fun createMockResponseInterceptor(apiServer: String): MockResponseInterceptor {
-        return MockResponseInterceptor(apiServer)
+    fun createAuthMockResponseInterceptor(apiServer: String): AuthMockResponseInterceptor {
+        return AuthMockResponseInterceptor(apiServer)
+    }
+
+    fun createAppMockResponseInterceptor(apiServer: String, mockResponse : MockResponse): AppMockResponseInterceptor {
+        return AppMockResponseInterceptor(apiServer, mockResponse)
     }
 
     fun createRefreshTokenInterceptor(

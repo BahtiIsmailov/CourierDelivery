@@ -1,0 +1,1 @@
+package ru.wb.perevozka.reader;import androidx.annotation.NonNull;public interface MockResponse {    byte[] read(@NonNull PathReader pathReader);}

@@ -63,7 +63,7 @@ class FlightsLoaderInteractorImpl(
                     .toSingle { flightId }
             }
             .flatMap { navDirection(it) }
-            .map { FlightDefinitionAction.NavigateComplete(it) }
+            .map { FlightDefinitionAction.NavigateToDirections(it) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

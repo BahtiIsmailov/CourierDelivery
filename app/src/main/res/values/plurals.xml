@@ -28,4 +28,13 @@
         <item quantity="other">Необходимо выгрузить %d коробок</item>
     </plurals>
 
+    <plurals name="volume">
+        <item quantity="zero">%d кубов</item>
+        <item quantity="one">%d куб</item>
+        <item quantity="two">%d куба</item>
+        <item quantity="few">%d кубов</item>
+        <item quantity="many">%d кубов</item>
+        <item quantity="other">%d кубов</item>
+    </plurals>
+
 </resources>

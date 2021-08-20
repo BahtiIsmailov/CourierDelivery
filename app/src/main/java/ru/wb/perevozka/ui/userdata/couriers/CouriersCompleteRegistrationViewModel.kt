@@ -18,9 +18,9 @@ class CouriersCompleteRegistrationViewModel(
     val infoState: LiveData<String>
         get() = _infoState
 
-    private val _navigateToDialog = MutableLiveData<CouriersCompleteRegistrationNavAction>()
-    val navigateToUpdateDialogInfo: LiveData<CouriersCompleteRegistrationNavAction>
-        get() = _navigateToDialog
+    private val _navAction = MutableLiveData<CouriersCompleteRegistrationNavAction>()
+    val navAction: LiveData<CouriersCompleteRegistrationNavAction>
+        get() = _navAction
 
     private val _progressState = SingleLiveEvent<CouriersCompleteRegistrationProgressState>()
     val progressState: LiveData<CouriersCompleteRegistrationProgressState>
@@ -38,11 +38,11 @@ class CouriersCompleteRegistrationViewModel(
                 }.subscribe(
                     {
                         _progressState.value = CouriersCompleteRegistrationProgressState.Complete
-                        _navigateToDialog.value = it
+                        _navAction.value = it
                     },
                     {
                         _progressState.value = CouriersCompleteRegistrationProgressState.Complete
-                        _navigateToDialog.value =
+                        _navAction.value =
                             CouriersCompleteRegistrationNavAction.NavigateToCouriersDialog
                     })
         )

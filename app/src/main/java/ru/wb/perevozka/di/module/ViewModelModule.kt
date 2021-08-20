@@ -6,6 +6,9 @@ import ru.wb.perevozka.ui.auth.CheckSmsParameters
 import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
+import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
+import ru.wb.perevozka.ui.courierorders.CourierOrderViewModel
+import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.perevozka.ui.dcloading.*
 import ru.wb.perevozka.ui.dcunloading.*
 import ru.wb.perevozka.ui.dcunloadingcongratulation.DcUnloadingCongratulationViewModel
@@ -69,6 +72,9 @@ val viewModelModule = module {
     viewModel { DcLoadingScanViewModel(get(), get(), get()) }
     viewModel { DcLoadingHandleViewModel(get(), get()) }
     viewModel { DcLoadingBoxesViewModel(get(), get(), get(), get()) }
+
+    viewModel { CourierWarehousesViewModel(get(), get(), get()) }
+
     viewModel { (parameters: DcLoadingBoxNotBelongParameters) ->
         DcLoadingBoxNotBelongViewModel(parameters)
     }
@@ -79,6 +85,10 @@ val viewModelModule = module {
     viewModel { FlightDeliveriesViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: FlightDeliveriesDetailsParameters) ->
         FlightDeliveriesDetailsViewModel(parameters, get(), get(), get())
+    }
+
+    viewModel { (parameters: CourierOrderParameters) ->
+        CourierOrderViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { (parameters: UnloadingScanParameters) ->

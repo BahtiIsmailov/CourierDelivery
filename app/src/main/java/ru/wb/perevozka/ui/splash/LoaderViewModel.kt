@@ -34,7 +34,7 @@ class LoaderViewModel(
                     if (!tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS)
                         && !tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS)
                     ) toApp()
-                    else toNumberPhone()
+                    else toCourier() //toNumberPhone()
                 },
                 { toNumberPhone() }
             ))
@@ -42,6 +42,10 @@ class LoaderViewModel(
 
     private fun toApp() {
         _navState.value = LoaderUINavState.NavigateToApp
+    }
+
+    private fun toCourier() {
+        _navState.value = LoaderUINavState.NavigateToCourier
     }
 
     private fun toNumberPhone() {

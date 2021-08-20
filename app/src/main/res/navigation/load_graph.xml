@@ -12,36 +12,33 @@
         tools:layout="@layout/auth_loader_fragment">
 
         <action
-            android:id="@+id/action_authLoaderFragment_to_app_navigation"
-            app:destination="@id/app_load_navigation" />
-        <action
             android:id="@+id/action_authLoaderFragment_to_auth_navigation"
             app:destination="@id/auth_navigation"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
-        <!--        <action-->
-<!--            android:id="@+id/action_authNumberPhoneFragment_to_userFormFragment"-->
-<!--            app:destination="@id/userFormFragment"-->
-<!--            app:enterAnim="@anim/slide_in_right"-->
-<!--            app:exitAnim="@anim/slide_out_left"-->
-<!--            app:popEnterAnim="@anim/slide_in_left"-->
-<!--            app:popExitAnim="@anim/slide_out_right"/>-->
-<!--        <action-->
-<!--            android:id="@+id/action_authNumberPhoneFragment_to_couriersCompleteRegistrationFragment"-->
-<!--            app:destination="@id/couriersCompleteRegistrationFragment"-->
-<!--            app:enterAnim="@anim/slide_in_right"-->
-<!--            app:exitAnim="@anim/slide_out_left"-->
-<!--            app:popEnterAnim="@anim/slide_in_left"-->
-<!--            app:popExitAnim="@anim/slide_out_right"/>-->
+
+        <action
+            android:id="@+id/action_authLoaderFragment_to_app_navigation"
+            app:destination="@id/app_load_navigation"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+
+        <action
+            android:id="@+id/action_authLoaderFragment_to_courier_navigation"
+            app:destination="@id/courier_navigation"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
-
-
     <include app:graph="@navigation/auth_graph" />
-
     <include app:graph="@navigation/app_graph" />
+    <include app:graph="@navigation/courier_graph" />
 
 </navigation>
