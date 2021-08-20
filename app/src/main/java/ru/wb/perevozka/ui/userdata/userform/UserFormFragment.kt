@@ -4,17 +4,20 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputLayout
+import com.jakewharton.rxbinding3.view.clicks
+import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
@@ -31,11 +34,13 @@ import ru.wb.perevozka.ui.dialogs.date.DatePickerDialog
 import ru.wb.perevozka.ui.dialogs.date.OnDateSelected
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
+import ru.wb.perevozka.ui.userdata.userform.UserFormFragment.ClickEventInterface
 import ru.wb.perevozka.ui.userdata.userform.UserFormFragment.TextChangesInterface
-import ru.wb.perevozka.utils.SoftKeyboard
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
-import ru.wb.perevozka.views.ProgressImageButtonMode
+import ru.wb.perevozka.views.ProgressButtonMode
 import java.util.*
+
 
 class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
 
@@ -57,14 +62,9 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
         initListener()
         initInputMethod()
-        initStateObserver()
-    }
-
-    private fun initViews() {
-        binding.toolbarLayout.toolbarTitle.text = getText(R.string.auth_user_data_label)
+        initObservers()
     }
 
     private fun initListener() {
@@ -72,17 +72,100 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()
         }
-        viewModel.onTextChanges(changeObservables())
-        binding.passportDatePickerIcon.setOnClickListener {
+
+        binding.overlayDate.setOnClickListener {
             dateSelect(it, binding.passportDateOfIssue)
         }
-        binding.next.setOnClickListener {
-            SoftKeyboard.hideKeyBoard(requireActivity())
-            viewModel.onNextClick(getUserFormData())
+
+        viewModel.onFormChanges(changeFieldObservables())
+
+        binding.checkedComplete.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onCheckedClick(isChecked, binding.checkedPersonal.isChecked)
         }
+        binding.checkedPersonal.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onCheckedClick(isChecked, binding.checkedComplete.isChecked)
+        }
+
     }
 
-    private fun getUserFormData() = CourierDocumentsEntity(
+    private val changeText = ArrayList<ViewChanges>()
+
+    data class ViewChanges(
+        val textLayout: TextInputLayout,
+        val text: EditText,
+        val type: UserFormQueryType
+    )
+
+    private fun changeFieldObservables(): ArrayList<Observable<UserFormUIAction>> {
+        val changeTextObservables = ArrayList<Observable<UserFormUIAction>>()
+
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.surnameLayout,
+                binding.surname,
+                UserFormQueryType.SURNAME
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.firstNameLayout,
+                binding.firstName,
+                UserFormQueryType.NAME
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.innLayout,
+                binding.inn,
+                UserFormQueryType.INN
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.passportSeriesLayout,
+                binding.passportSeries,
+                UserFormQueryType.PASSPORT_SERIES
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.passportNumberLayout,
+                binding.passportNumber,
+                UserFormQueryType.PASSPORT_NUMBER
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.passportDateOfIssueLayout,
+                binding.passportDateOfIssue,
+                UserFormQueryType.PASSPORT_DATE
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
+                binding.passportCodeLayout,
+                binding.passportCode,
+                UserFormQueryType.PASSPORT_CODE
+            )
+        )
+
+        LogUtils { logDebugApp(changeTextObservables.toString()) }
+
+        changeTextObservables.add(createClickObserver().initListener(binding.next))
+
+        return changeTextObservables
+    }
+
+    private fun getFormUserData() = mutableListOf(
+        UserData(binding.surname.text.toString(), UserFormQueryType.SURNAME),
+        UserData(binding.firstName.text.toString(), UserFormQueryType.NAME),
+        UserData(binding.inn.text.toString(), UserFormQueryType.INN),
+        UserData(binding.passportSeries.text.toString(), UserFormQueryType.PASSPORT_SERIES),
+        UserData(binding.passportNumber.text.toString(), UserFormQueryType.PASSPORT_NUMBER),
+        UserData(binding.passportDateOfIssue.text.toString(), UserFormQueryType.PASSPORT_DATE)
+    )
+
+    private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
         surName = binding.surname.text.toString(),
         firstName = binding.firstName.text.toString(),
         middleName = binding.middleName.text.toString(),
@@ -92,19 +175,17 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         passportDateOfIssue = binding.passportDateOfIssue.text.toString()
     )
 
-    private lateinit var activityCallback: OnDateSelected
-
-    private fun dateSelect(it: View, dateText: EditText) {
-        it.isEnabled = false
+    private fun dateSelect(view: View, dateText: EditText) {
+        view.isEnabled = false
         initDatePiker(object : OnDateSelected {
 
             override fun onDateSelected(date: DateTime) {
                 dateText.setText(formatDatePicker(date))
-                it.isEnabled = true
+                view.isEnabled = true
             }
 
             override fun onCanceled() {
-                it.isEnabled = true
+                view.isEnabled = true
             }
 
         })
@@ -113,89 +194,53 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
     private fun formatDatePicker(date: DateTime) =
         DateTimeFormat.forPattern(DATE_PICKER_PATTERN).print(date)
 
-    private fun initDatePiker(activityCallback: OnDateSelected) {
-        this.activityCallback = activityCallback
+    private fun initDatePiker(dateSelectedCallback: OnDateSelected) {
         val dateMin: DateTime = DateTimeFormatter.parseDate(AppConsts.PRIVATE_INFO_MIN_DATE_PIKER)
         val dateMax: DateTime
         var date: DateTime
         dateMax = DateTimeFormatter.currentDateTime().also { date = it }
-        showDatePiker(dateMin, dateMax, date)
+        showDatePiker(dateMin, dateMax, date, dateSelectedCallback)
     }
 
-    private fun showDatePiker(minDate: DateTime, maxDate: DateTime, date: DateTime) {
+    private fun showDatePiker(
+        minDate: DateTime,
+        maxDate: DateTime,
+        date: DateTime,
+        dateSelectedCallback: OnDateSelected
+    ) {
         val dateTimePickerDialog = DatePickerDialog.newInstance(minDate, maxDate, date)
-        dateTimePickerDialog.setListener(activityCallback)
-        activity?.supportFragmentManager?.let {
-            dateTimePickerDialog.show(it, DATE_TIME_PICKER_FRAGMENT)
-        }
+        dateTimePickerDialog.setListener(dateSelectedCallback)
+        dateTimePickerDialog.show(
+            requireActivity().supportFragmentManager,
+            DATE_TIME_PICKER_FRAGMENT
+        )
     }
 
-    private fun changeObservables(): ArrayList<Observable<Pair<String, UserFormQueryType>>> {
-        val changeObservables: ArrayList<Observable<Pair<String, UserFormQueryType>>> =
-            ArrayList<Observable<Pair<String, UserFormQueryType>>>()
+    fun interface ClickEventInterface {
+        fun initListener(view: View): Observable<UserFormUIAction>
+    }
 
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.surname,
-                UserFormQueryType.SURNAME
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.firstName,
-                UserFormQueryType.NAME
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.middleName,
-                UserFormQueryType.PATRONYMIC
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.passportSeries,
-                UserFormQueryType.PASSPORT_SERIES
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.passportNumber,
-                UserFormQueryType.PASSPORT_NUMBER
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.passportDateOfIssue,
-                UserFormQueryType.PASSPORT_DATE
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.passportCode,
-                UserFormQueryType.PASSPORT_CODE
-            )
-        )
-        changeObservables.add(
-            createTextChangesObserver().initListener(
-                binding.inn,
-                UserFormQueryType.INN
-            )
-        )
-        return changeObservables
+    private fun createClickObserver(): ClickEventInterface {
+        return ClickEventInterface { view ->
+            view.clicks().map { UserFormUIAction.CompleteClick(getFormUserData()) }
+        }
     }
 
     fun interface TextChangesInterface {
         fun initListener(
-            textView: TextView, queryType: UserFormQueryType
-        ): Observable<Pair<String, UserFormQueryType>>
+            textInputLayout: TextInputLayout, editText: EditText, queryType: UserFormQueryType
+        ): Observable<UserFormUIAction>
     }
 
-    private fun createTextChangesObserver(): TextChangesInterface {
-        return TextChangesInterface { textView, queryType ->
-            textView.textChanges()
+    private fun createFieldChangesObserver(): TextChangesInterface {
+        return TextChangesInterface { textInputLayout, editText, queryType ->
+            changeText.add(ViewChanges(textInputLayout, editText, queryType))
+            val textChanges = editText.textChanges()
                 .map { it.toString() }
-                .map { Pair(it, queryType) }
+                .map { UserFormUIAction.TextChange(it, queryType) }
+            val focusChanges = editText.focusChanges()
+                .map { UserFormUIAction.FocusChange(editText.text.toString(), queryType, it) }
+            Observable.merge(textChanges, focusChanges).skip(2)
         }
     }
 
@@ -229,7 +274,7 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         alertDialog.show()
     }
 
-    private fun initStateObserver() {
+    private fun initObservers() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             showSimpleDialog(it)
@@ -247,32 +292,61 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
             }
         }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
+        viewModel.formUIState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UserFormNavAction.NavigateToCouriersCompleteRegistration -> {
+                is UserFormUIState.Complete -> {
+                    val textLayout = changeText.find { it.type == state.type }?.textLayout
+                    textLayout?.error = getText(R.string.error_empty)
+                }
+                is UserFormUIState.Error -> {
+                    val textLayout = changeText.find { it.type == state.type }?.textLayout
+                    textLayout?.error = getText(R.string.error)
+                }
+                is UserFormUIState.ErrorFocus -> {
+                    changeText.find { it.type == state.type }?.text?.let {
+                        it.setSelection(it.length())
+                        it.requestFocus()
+                        scrollToViewTop(binding.scrollView, it)
+                    }
+                }
+                UserFormUIState.Next -> {
+                    viewModel.onNextClick(getCourierDocumentsEntity())
+                }
+            }
+        }
 
-                    findNavController().navigate(
-                        UserFormFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
-                            CouriersCompleteRegistrationParameters(state.phone)
+        viewModel.navigationEvent.observe(viewLifecycleOwner,
+            { state ->
+                when (state) {
+                    is UserFormNavAction.NavigateToCouriersCompleteRegistration -> {
+                        findNavController().navigate(
+                            UserFormFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
+                                CouriersCompleteRegistrationParameters(state.phone)
+                            )
                         )
-                    )
+                    }
                 }
-            }
-        })
+            })
 
-        viewModel.loaderState.observe(viewLifecycleOwner, { state ->
-            when (state) {
-                UserFormUILoaderState.Disable -> binding.next.setState(ProgressImageButtonMode.DISABLED)
-                UserFormUILoaderState.Enable -> {
-                    binding.next.setState(ProgressImageButtonMode.ENABLED)
-                    binding.overlayBoxes.visibility = View.GONE
+        viewModel.loaderState.observe(viewLifecycleOwner,
+            { state ->
+                when (state) {
+                    UserFormUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
+                    UserFormUILoaderState.Enable -> {
+                        binding.next.setState(ProgressButtonMode.ENABLE)
+                        binding.overlayBoxes.visibility = View.GONE
+                    }
+                    UserFormUILoaderState.Progress -> {
+                        binding.next.setState(ProgressButtonMode.PROGRESS)
+                        binding.overlayBoxes.visibility = View.VISIBLE
+                    }
                 }
-                UserFormUILoaderState.Progress -> {
-                    binding.next.setState(ProgressImageButtonMode.PROGRESS)
-                    binding.overlayBoxes.visibility = View.VISIBLE
-                }
-            }
-        })
+            })
+    }
+
+    private fun scrollToViewTop(scrollView: ScrollView, childView: View) {
+        val delay: Long = 100
+        scrollView.postDelayed({ scrollView.smoothScrollTo(0, childView.top) }, delay)
     }
 
     override fun onDestroyView() {
@@ -290,5 +364,7 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
 
 @Parcelize
 data class UserFormParameters(val phone: String) : Parcelable
+
+data class UserData(val text: String, val type: UserFormQueryType)
 
 
