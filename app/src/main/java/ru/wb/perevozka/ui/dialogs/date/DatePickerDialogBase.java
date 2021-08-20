@@ -13,6 +13,8 @@ import androidx.fragment.app.DialogFragment;
 
 import org.joda.time.DateTime;
 
+import ru.wb.perevozka.R;
+
 public abstract class DatePickerDialogBase extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     private OnDateSelected activityCallback;
@@ -40,10 +42,12 @@ public abstract class DatePickerDialogBase extends DialogFragment implements Dat
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         readArguments(getArguments());
         DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
-                AlertDialog.THEME_HOLO_LIGHT, this, date.getYear(),
+                AlertDialog.THEME_HOLO_LIGHT,this, date.getYear(),
                 date.getMonthOfYear(), date.getDayOfMonth());
         datePickerDialog.getDatePicker().setMinDate(minDate.getMillis());
         datePickerDialog.getDatePicker().setMaxDate(maxDate.getMillis());
+        datePickerDialog.getDatePicker().setSpinnersShown(true);
+        datePickerDialog.getDatePicker().setCalendarViewShown(false);
         return datePickerDialog;
     }
 

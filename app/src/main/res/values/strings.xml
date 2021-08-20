@@ -46,6 +46,8 @@
     <string name="return_box">Возврат</string>
     <string name="delivery_box">Доставил</string>
     <string name="debt">Задолженность</string>
+    <string name="error">Заполните поле</string>
+    <string name="error_empty" />
 
     <string name="status_on_way">В ПУТИ</string>
     <string name="status_not_assigned">НЕ НАЗНАЧЕН</string>
@@ -345,5 +347,8 @@
     <string name="keyboard_button7">7</string>
     <string name="keyboard_button8">8</string>
     <string name="keyboard_button9">9</string>
+
+    <string name="user_form_complete">Я подтверждаю правильность и полноту предоставленных мною данных</string>
+    <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
 
 </resources>
