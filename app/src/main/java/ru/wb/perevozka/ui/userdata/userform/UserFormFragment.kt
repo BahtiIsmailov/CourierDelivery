@@ -62,9 +62,14 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initListener()
         initInputMethod()
         initObservers()
+    }
+
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
     }
 
     private fun initListener() {

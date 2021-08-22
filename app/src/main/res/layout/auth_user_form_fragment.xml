@@ -47,7 +47,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
                     android:layout_marginTop="32dp"
-                    android:text="Личные данные" />
+                    android:text="Личные данные"
+                    android:textStyle="normal" />
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -149,6 +150,7 @@
 
                 <TextView
                     android:id="@+id/passport_title"
+                    style="@style/LargeBlackRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"

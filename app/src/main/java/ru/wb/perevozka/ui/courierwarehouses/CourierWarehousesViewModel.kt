@@ -7,7 +7,6 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
-import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
@@ -43,7 +42,6 @@ class CourierWarehousesViewModel(
 
 
     private fun getWarehouse() {
-        showProgress()
         addSubscription(
             interactor.warehouses()
                 .flatMap { convertWarehouses(it) }
@@ -55,20 +53,15 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete(items: MutableList<CourierWarehousesItem>) {
-        _warehouse.value = if (items.isEmpty()) CourierWarehousesUIState.Empty("Извините, все заказы в работе")
-        else CourierWarehousesUIState.ReceptionBoxesItem(items)
+        _warehouse.value =
+            if (items.isEmpty()) CourierWarehousesUIState.Empty("Извините, все заказы в работе")
+            else CourierWarehousesUIState.InitItems(items)
         hideProgress()
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
-        val message = getErrorMessage(throwable)
-        showMessageError(message)
+        showMessageError(getErrorMessage(throwable))
         progressComplete()
-        warehouseErrorMessage(message)
-    }
-
-    private fun warehouseErrorMessage(message: String) {
-        _warehouse.value = CourierWarehousesUIState.Empty(message)
     }
 
     private fun getErrorMessage(throwable: Throwable): String {
@@ -119,6 +112,7 @@ class CourierWarehousesViewModel(
     }
 
     fun onUpdateClick() {
+        showProgress()
         getWarehouse()
     }
 

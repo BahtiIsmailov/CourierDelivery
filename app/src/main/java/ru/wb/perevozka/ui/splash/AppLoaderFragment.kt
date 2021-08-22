@@ -10,12 +10,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthLoaderFragmentBinding
 
-class LoaderFragment : Fragment(R.layout.auth_loader_fragment) {
+class AppLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
 
     private var _binding: AuthLoaderFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by viewModel<LoaderViewModel>()
+    private val viewModel by viewModel<AppLoaderViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,14 +38,14 @@ class LoaderFragment : Fragment(R.layout.auth_loader_fragment) {
     private fun initObserver() {
         viewModel.navState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                LoaderUINavState.NavigateToApp -> findNavController().navigate(
-                    LoaderFragmentDirections.actionAuthLoaderFragmentToAppNavigation()
+                AppLoaderUINavState.NavigateToApp -> findNavController().navigate(
+                    AppLoaderFragmentDirections.actionAuthLoaderFragmentToAppNavigation()
                 )
-                LoaderUINavState.NavigateToNumberPhone -> findNavController().navigate(
-                    LoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
+                AppLoaderUINavState.NavigateToAuth -> findNavController().navigate(
+                    AppLoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
                 )
-                LoaderUINavState.NavigateToCourier -> findNavController().navigate(
-                    LoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()
+                AppLoaderUINavState.NavigateToCourier -> findNavController().navigate(
+                    AppLoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()
                 )
             }
         }

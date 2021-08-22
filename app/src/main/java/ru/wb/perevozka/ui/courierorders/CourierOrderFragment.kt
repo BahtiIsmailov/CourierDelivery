@@ -25,6 +25,7 @@ import ru.wb.perevozka.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
 import ru.wb.perevozka.ui.flights.delegates.FlightsProgressDelegate
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.views.ProgressButtonMode
 
 
 class CourierOrderFragment : Fragment() {
@@ -116,7 +117,9 @@ class CourierOrderFragment : Fragment() {
             when (state) {
                 is CourierOrderUIListState.ShowOrders -> {
                     binding.emptyList.visibility = GONE
+                    binding.progress.visibility = GONE
                     binding.recyclerView.visibility = VISIBLE
+                    binding.update.setState(ProgressButtonMode.ENABLE)
                     displayItems(state.items)
                 }
                 is CourierOrderUIListState.Empty -> {

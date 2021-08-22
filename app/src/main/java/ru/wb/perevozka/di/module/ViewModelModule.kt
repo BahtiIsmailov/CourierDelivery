@@ -2,6 +2,7 @@ package ru.wb.perevozka.di.module
 
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import ru.wb.perevozka.ui.auth.AuthLoaderViewModel
 import ru.wb.perevozka.ui.auth.CheckSmsParameters
 import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
@@ -21,8 +22,8 @@ import ru.wb.perevozka.ui.flightpickpoint.FlightPickPointViewModel
 import ru.wb.perevozka.ui.flights.FlightsViewModel
 import ru.wb.perevozka.ui.flightsloader.FlightLoaderViewModel
 import ru.wb.perevozka.ui.scanner.ScannerViewModel
+import ru.wb.perevozka.ui.splash.AppLoaderViewModel
 import ru.wb.perevozka.ui.splash.AppViewModel
-import ru.wb.perevozka.ui.splash.LoaderViewModel
 import ru.wb.perevozka.ui.unloadingboxes.UnloadingBoxesParameters
 import ru.wb.perevozka.ui.unloadingboxes.UnloadingBoxesViewModel
 import ru.wb.perevozka.ui.unloadingcongratulation.CongratulationViewModel
@@ -43,11 +44,11 @@ import ru.wb.perevozka.ui.userdata.userform.UserFormViewModel
 
 val viewModelModule = module {
 
+    viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
+    viewModel { AuthLoaderViewModel(get(), get()) }
     viewModel { AppViewModel(get(), get(), get(), get()) }
 
-    viewModel { LoaderViewModel(get(), get(), get(), get(), get()) }
-
-    viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
+    viewModel { NumberPhoneViewModel(get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
 
     viewModel { (parameters: CheckSmsParameters) ->

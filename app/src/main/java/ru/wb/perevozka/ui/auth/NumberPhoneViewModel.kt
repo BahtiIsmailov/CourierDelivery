@@ -4,12 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.NEED_APPROVE_COURIER_DOCUMENTS
-import ru.wb.perevozka.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.NumberPhoneUIState.*
@@ -22,7 +19,6 @@ class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: AuthResourceProvider,
     private val interactor: NumberPhoneInteractor,
-    private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigationEvent =
@@ -44,26 +40,6 @@ class NumberPhoneViewModel(
 
     init {
         observeNetworkState()
-        checkUserState()
-    }
-
-    private fun checkUserState() {
-        if (tokenManager.isContains()) {
-            val phone = tokenManager.userPhone()
-            when {
-                tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toUserForm(phone)
-                tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
-                    toCouriersCompleteRegistration(phone)
-            }
-        }
-    }
-
-    private fun toUserForm(phone: String) {
-        _navigationEvent.value = NumberPhoneNavAction.NavigateToUserForm(phone)
-    }
-
-    private fun toCouriersCompleteRegistration(phone: String) {
-        _navigationEvent.value = NumberPhoneNavAction.NavigateToCouriersCompleteRegistration(phone)
     }
 
     fun onCheckPhone(number: String) {

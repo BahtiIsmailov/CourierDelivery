@@ -8,7 +8,6 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
-import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
 import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesViewModel
 
@@ -53,7 +52,6 @@ class CourierOrderViewModel(
     }
 
     private fun initOrders() {
-        progressState.value = CourierOrderProgressState.Progress
         addSubscription(interactor.orders(parameters.currentWarehouseId)
             .flatMap { orders ->
                 Observable.fromIterable(orders)
@@ -68,6 +66,10 @@ class CourierOrderViewModel(
         )
     }
 
+    private fun showProgress() {
+        progressState.value = CourierOrderProgressState.Progress
+    }
+
     private fun ordersComplete(courierOrderUIListState: CourierOrderUIListState) {
         progressState.value = CourierOrderProgressState.Complete
         stateUIList.value = courierOrderUIListState
@@ -76,7 +78,6 @@ class CourierOrderViewModel(
     private fun ordersError(throwable: Throwable) {
         val message = getErrorMessage(throwable)
         showMessageError(message)
-        observeSearchError(message)
         progressComplete()
     }
 
@@ -101,55 +102,13 @@ class CourierOrderViewModel(
     }
 
     fun onUpdateClick() {
+        showProgress()
         initOrders()
     }
 
     fun onCancelLoadClick() {
         clearSubscription()
     }
-
-    private fun observeSearchError(message: String) {
-        stateUIList.value = CourierOrderUIListState.Empty(message)
-    }
-
-//    private fun fetchFlights() {
-//        stateUIList.value = CourierOrderUIListState.ProgressFlight(
-//            listOf(dataBuilder.buildProgressItem())
-//        )
-//    }
-
-//    private fun observeFlightBoxesScanned() {
-//        addSubscription(
-//            interactor.observeFlightBoxScanned()
-//                .subscribe({ observeFlightBoxesComplete(it) },
-//                    { observeFlightBoxesError(it) })
-//        )
-//    }
-
-//    private fun observeFlightBoxesComplete(boxes: Int) {
-//        stateUIBottom.value =
-//            if (boxes == 0) CourierOrderUIBottomState.ScanBox
-//            else CourierOrderUIBottomState.ReturnBox
-//    }
-
-//    private fun observeFlight() {
-//        addSubscription(interactor.observeFlightData()
-//            .map {
-//                when (it) {
-//                    is Optional.Empty -> CourierOrderUIListState.UpdateFlight(
-//                        listOf(dataBuilder.buildEmptyItem())
-//                    )
-//                    is Optional.Success -> CourierOrderUIListState.ShowFlight(
-//                        listOf(dataBuilder.buildSuccessItem(it))
-//                    )
-//                }
-//            }
-//            .subscribe({ flightsComplete(it) }, { flightsError(it) })
-//        )
-//    }
-
-//    private fun observeFlightBoxesError(error: Throwable) {
-//    }
 
     data class Label(val label: String)
 

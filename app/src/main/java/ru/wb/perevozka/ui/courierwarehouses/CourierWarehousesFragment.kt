@@ -25,6 +25,7 @@ import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
 import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
 import ru.wb.perevozka.ui.splash.KeyboardListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.views.ProgressButtonMode
 
 
 class CourierWarehousesFragment : Fragment() {
@@ -71,9 +72,11 @@ class CourierWarehousesFragment : Fragment() {
 
         viewModel.warehouse.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierWarehousesUIState.ReceptionBoxesItem -> {
+                is CourierWarehousesUIState.InitItems -> {
                     binding.emptyList.visibility = GONE
+                    binding.progress.visibility = GONE
                     binding.boxes.visibility = VISIBLE
+                    binding.update.setState(ProgressButtonMode.ENABLE)
                     val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int, isChecked: Boolean) {
                             viewModel.onItemClick(index, isChecked)
@@ -82,7 +85,7 @@ class CourierWarehousesFragment : Fragment() {
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     binding.boxes.adapter = adapter
                 }
-                is CourierWarehousesUIState.ReceptionBoxItem -> {
+                is CourierWarehousesUIState.UpdateItems -> {
                     adapter.setItem(it.index, it.item)
                     adapter.notifyItemChanged(it.index, it.item)
                 }
@@ -106,8 +109,10 @@ class CourierWarehousesFragment : Fragment() {
                 CourierWarehousesUINavState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesUINavState.NavigateToCourierOrder ->
                     findNavController().navigate(
-                    CourierWarehousesFragmentDirections.actionCourierWarehouseFragmentToCourierOrderFragment(CourierOrderParameters(it.officeId, it.address))
-                )
+                        CourierWarehousesFragmentDirections.actionCourierWarehouseFragmentToCourierOrderFragment(
+                            CourierOrderParameters(it.officeId, it.address)
+                        )
+                    )
                 is CourierWarehousesUINavState.NavigateToMessageInfo -> showSimpleDialog(it)
             }
 

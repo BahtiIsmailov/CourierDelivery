@@ -3,7 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/auth_navigation"
-    app:startDestination="@id/authNumberPhoneFragment">
+    app:startDestination="@id/authLoaderFragment">
+
+    <fragment
+        android:id="@+id/authLoaderFragment"
+        android:name="ru.wb.perevozka.ui.auth.AuthLoaderFragment"
+        android:label=""
+        tools:layout="@layout/auth_loader_fragment">
+        <action
+            android:id="@+id/action_authLoaderFragment_to_authNumberPhoneFragment"
+            app:destination="@id/authNumberPhoneFragment" />
+        <action
+            android:id="@+id/action_authLoaderFragment_to_userFormFragment"
+            app:destination="@id/userFormFragment" />
+        <action
+            android:id="@+id/action_authLoaderFragment_to_couriersCompleteRegistrationFragment"
+            app:destination="@id/couriersCompleteRegistrationFragment" />
+    </fragment>
+
+
 
     <fragment
         android:id="@+id/authNumberPhoneFragment"
@@ -21,21 +39,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/checkSmsFragment"
-            app:popUpToInclusive="true"/>
-        <action
-            android:id="@+id/action_authNumberPhoneFragment_to_userFormFragment"
-            app:destination="@id/userFormFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_authNumberPhoneFragment_to_couriersCompleteRegistrationFragment"
-            app:destination="@id/couriersCompleteRegistrationFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -59,14 +63,18 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/authNumberPhoneFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_checkSmsFragment_to_userFormFragment"
             app:destination="@id/userFormFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/authNumberPhoneFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

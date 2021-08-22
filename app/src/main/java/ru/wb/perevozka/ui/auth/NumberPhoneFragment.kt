@@ -96,16 +96,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
                 NumberPhoneNavAction.NavigateToConfig ->
                     findNavController().navigate(R.id.authConfigActivity)
-                is NumberPhoneNavAction.NavigateToCouriersCompleteRegistration -> findNavController().navigate(
-                    NumberPhoneFragmentDirections.actionAuthNumberPhoneFragmentToCouriersCompleteRegistrationFragment(
-                        CouriersCompleteRegistrationParameters(state.phone)
-                    )
-                )
-                is NumberPhoneNavAction.NavigateToUserForm -> findNavController().navigate(
-                    NumberPhoneFragmentDirections.actionAuthNumberPhoneFragmentToUserFormFragment(
-                        UserFormParameters(state.phone)
-                    )
-                )
             }
         })
 

@@ -11,7 +11,7 @@ import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.utils.managers.ScreenManager
 
-class LoaderViewModel(
+class AppLoaderViewModel(
     compositeDisposable: CompositeDisposable,
     private val repository: RefreshTokenRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -19,8 +19,8 @@ class LoaderViewModel(
     private val screenManager: ScreenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _navState = MutableLiveData<LoaderUINavState>()
-    val navState: LiveData<LoaderUINavState>
+    private val _navState = MutableLiveData<AppLoaderUINavState>()
+    val navState: LiveData<AppLoaderUINavState>
         get() = _navState
 
     init {
@@ -34,22 +34,22 @@ class LoaderViewModel(
                     if (!tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS)
                         && !tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS)
                     ) toApp()
-                    else toCourier() //toNumberPhone()
+                    else toAuth() //toCourier()
                 },
-                { toNumberPhone() }
+                { toAuth() }
             ))
     }
 
     private fun toApp() {
-        _navState.value = LoaderUINavState.NavigateToApp
+        _navState.value = AppLoaderUINavState.NavigateToApp
     }
 
     private fun toCourier() {
-        _navState.value = LoaderUINavState.NavigateToCourier
+        _navState.value = AppLoaderUINavState.NavigateToCourier
     }
 
-    private fun toNumberPhone() {
-        _navState.value = LoaderUINavState.NavigateToNumberPhone
+    private fun toAuth() {
+        _navState.value = AppLoaderUINavState.NavigateToAuth
     }
 
 }
