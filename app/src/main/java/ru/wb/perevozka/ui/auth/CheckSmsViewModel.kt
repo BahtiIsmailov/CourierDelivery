@@ -66,7 +66,7 @@ class CheckSmsViewModel(
                 .doOnNext { switchNext(it) }
                 .subscribe(
                     { formatSmsComplete(it) },
-                    {  })
+                    { })
         )
     }
 
@@ -77,9 +77,17 @@ class CheckSmsViewModel(
 
     private fun checkSmsError(throwable: Throwable) {
         _stateUI.value = when (throwable) {
-            is NoInternetException -> CheckSmsUIState.MessageError(throwable.message)
+            is NoInternetException -> CheckSmsUIState.MessageError(
+                throwable.message,
+                resourceProvider.getGenericInternetMessageError(),
+                resourceProvider.getGenericInternetButtonError()
+            )
             is BadRequestException -> CheckSmsUIState.Error
-            else -> CheckSmsUIState.MessageError(resourceProvider.getGenericError())
+            else -> CheckSmsUIState.MessageError(
+                resourceProvider.getGenericServiceTitleError(),
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
+            )
         }
     }
 
@@ -127,7 +135,11 @@ class CheckSmsViewModel(
     private fun fetchingPasswordError(throwable: Throwable) {
         when (throwable) {
             is NoInternetException -> _repeatStateUI.value =
-                CheckSmsUIRepeatState.ErrorPassword(throwable.message)
+                CheckSmsUIRepeatState.ErrorPassword(
+                    throwable.message,
+                    resourceProvider.getGenericInternetMessageError(),
+                    resourceProvider.getGenericInternetButtonError()
+                )
             is BadRequestException -> {
                 with(throwable.error) {
                     restartTimer(
@@ -140,7 +152,11 @@ class CheckSmsViewModel(
                 }
             }
             else -> _repeatStateUI.value =
-                CheckSmsUIRepeatState.ErrorPassword(resourceProvider.getGenericError())
+                CheckSmsUIRepeatState.ErrorPassword(
+                    resourceProvider.getGenericServiceTitleError(),
+                    resourceProvider.getGenericServiceMessageError(),
+                    resourceProvider.getGenericServiceButtonError()
+                )
         }
     }
 

@@ -34,7 +34,7 @@ class AppLoaderViewModel(
                     if (!tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS)
                         && !tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS)
                     ) toApp()
-                    else toAuth() //toCourier()
+                    else toCourier()
                 },
                 { toAuth() }
             ))

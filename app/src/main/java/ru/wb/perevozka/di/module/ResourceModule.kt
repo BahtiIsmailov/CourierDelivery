@@ -19,8 +19,8 @@ import ru.wb.perevozka.ui.splash.AppResourceProvider
 import ru.wb.perevozka.ui.unloadingcongratulation.CongratulationResourceProvider
 import ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanResourceProvider
-import ru.wb.perevozka.ui.userdata.UserDataResourceProvider
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationResourceProvider
+import ru.wb.perevozka.ui.auth.courierdata.CourierDataResourceProvider
+import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsResourceProvider
 
 val resourceModule = module {
 
@@ -28,12 +28,12 @@ val resourceModule = module {
         return AppResourceProvider(application)
     }
 
-    fun provideUserDataResourceProvider(application: Application): UserDataResourceProvider {
-        return UserDataResourceProvider(application)
+    fun provideUserDataResourceProvider(application: Application): CourierDataResourceProvider {
+        return CourierDataResourceProvider(application)
     }
 
-    fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CouriersCompleteRegistrationResourceProvider {
-        return CouriersCompleteRegistrationResourceProvider(application)
+    fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CourierExpectsResourceProvider {
+        return CourierExpectsResourceProvider(application)
     }
 
     fun provideCourierWarehouseResourceProvider(application: Application): CourierWarehousesResourceProvider {

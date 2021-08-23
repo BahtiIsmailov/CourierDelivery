@@ -28,6 +28,10 @@
 
     <color name="background">#642CA3</color>
 
+    <color name="dialog_info">#642CA3</color>
+    <color name="dialog_warning">#FB8C00</color>
+    <color name="dialog_alarm">#B00020</color>
+
     <color name="danger">#B00020</color>
     <color name="info">#DBD7E0</color>
     <color name="complete">#2CA364</color>

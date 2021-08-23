@@ -6,5 +6,5 @@ sealed class CheckSmsUIRepeatState {
         CheckSmsUIRepeatState()
 
     object RepeatPasswordComplete : CheckSmsUIRepeatState()
-    data class ErrorPassword(val message: String) : CheckSmsUIRepeatState()
+    data class ErrorPassword(val title: String, val message: String, val button: String) : CheckSmsUIRepeatState()
 }

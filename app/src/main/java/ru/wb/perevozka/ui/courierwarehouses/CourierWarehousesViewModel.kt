@@ -40,7 +40,6 @@ class CourierWarehousesViewModel(
         observeSearch()
     }
 
-
     private fun getWarehouse() {
         addSubscription(
             interactor.warehouses()

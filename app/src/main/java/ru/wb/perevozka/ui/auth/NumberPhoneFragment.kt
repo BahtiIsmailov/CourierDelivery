@@ -13,15 +13,15 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
+import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.AuthPhoneFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
-import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
 import ru.wb.perevozka.views.ProgressButtonMode
 
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
@@ -136,13 +136,22 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                     binding.numberNotFound.visibility = INVISIBLE
                 }
                 is NumberPhoneUIState.NumberNotFound -> {
-                    showBarMessage(state.message)
+                    showDialog(
+                        DialogStyle.WARNING.ordinal,
+                        state.title,
+                        state.message,
+                        state.button
+                    )
                     binding.next.setState(ProgressButtonMode.ENABLE)
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                 }
                 is NumberPhoneUIState.Error -> {
-                    showBarMessage(state.message)
+                    showDialog(
+                        DialogStyle.WARNING.ordinal, state.title,
+                        state.message,
+                        state.button
+                    )
                     binding.next.setState(ProgressButtonMode.ENABLE)
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
@@ -163,8 +172,9 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         _binding = null
     }
 
-    private fun showBarMessage(state: String) {
-        Snackbar.make(binding.next, state, Snackbar.LENGTH_LONG).show()
+    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
     }
 
 }

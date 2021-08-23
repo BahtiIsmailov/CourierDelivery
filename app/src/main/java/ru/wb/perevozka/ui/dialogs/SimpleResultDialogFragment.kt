@@ -31,7 +31,7 @@ class SimpleResultDialogFragment : DialogFragment() {
     private fun readArguments(arguments: Bundle?) {
         if (arguments != null) {
             title = arguments.getString(AppExtras.EXTRA_DIALOG_TITLE, "")
-            description = arguments.getString(AppExtras.EXTRA_DIALOG_DESCRIPTION, "")
+            description = arguments.getString(AppExtras.EXTRA_DIALOG_MESSAGE, "")
             positiveButtonName =
                 arguments.getString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, "")
             negativeButtonName =
@@ -90,7 +90,7 @@ class SimpleResultDialogFragment : DialogFragment() {
         ): SimpleResultDialogFragment {
             val args = Bundle()
             args.putString(AppExtras.EXTRA_DIALOG_TITLE, title)
-            args.putString(AppExtras.EXTRA_DIALOG_DESCRIPTION, description)
+            args.putString(AppExtras.EXTRA_DIALOG_MESSAGE, description)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
             args.putString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, negativeButtonName)
             val fragment = SimpleResultDialogFragment()
@@ -108,7 +108,7 @@ class SimpleResultDialogFragment : DialogFragment() {
         ): SimpleResultDialogFragment {
             val args = Bundle()
             args.putString(AppExtras.EXTRA_DIALOG_TITLE, title)
-            args.putString(AppExtras.EXTRA_DIALOG_DESCRIPTION, description)
+            args.putString(AppExtras.EXTRA_DIALOG_MESSAGE, description)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
             args.putString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, negativeButtonName)
             args.putInt(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_COLOR, positiveTextColorButton)

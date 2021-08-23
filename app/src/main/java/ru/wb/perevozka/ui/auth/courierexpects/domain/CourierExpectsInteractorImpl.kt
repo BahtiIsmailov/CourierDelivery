@@ -1,4 +1,4 @@
-package ru.wb.perevozka.ui.userdata.couriers.domain
+package ru.wb.perevozka.ui.auth.courierexpects.domain
 
 import io.reactivex.Single
 import ru.wb.perevozka.db.AppLocalRepository
@@ -8,13 +8,11 @@ import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
 import java.util.concurrent.TimeUnit
 
-class CouriersCompleteRegistrationInteractorImpl(
+class CourierExpectsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val appLocalRepository: AppLocalRepository,
-    private val authRepository: AuthRemoteRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val tokenManager: TokenManager
-) : CouriersCompleteRegistrationInteractor {
+) : CourierExpectsInteractor {
 
     override fun isRegisteredStatus(): Single<Boolean> {
         val refreshToken = refreshTokenRepository.refreshAccessTokensSync()

@@ -37,10 +37,10 @@ import ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongModel
 import ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongParameters
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanParameters
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanViewModel
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationViewModel
-import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
-import ru.wb.perevozka.ui.userdata.userform.UserFormViewModel
+import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
+import ru.wb.perevozka.ui.auth.courierexpects.CouriersCompleteRegistrationViewModel
+import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
+import ru.wb.perevozka.ui.auth.courierdata.UserFormViewModel
 
 val viewModelModule = module {
 
@@ -55,11 +55,11 @@ val viewModelModule = module {
         CheckSmsViewModel(parameters, get(), get(), get())
     }
 
-    viewModel { (parameters: UserFormParameters) ->
+    viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get())
     }
 
-    viewModel { (parameters: CouriersCompleteRegistrationParameters) ->
+    viewModel { (parameters: CourierExpectsParameters) ->
         CouriersCompleteRegistrationViewModel(
             parameters,
             get(),

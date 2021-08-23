@@ -8,6 +8,10 @@ import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
+import ru.wb.perevozka.ui.auth.courierdata.domain.CourierDataInteractor
+import ru.wb.perevozka.ui.auth.courierdata.domain.CourierDataInteractorImpl
+import ru.wb.perevozka.ui.auth.courierexpects.domain.CourierExpectsInteractor
+import ru.wb.perevozka.ui.auth.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
@@ -51,10 +55,6 @@ import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractor
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractorImpl
-import ru.wb.perevozka.ui.userdata.couriers.domain.CouriersCompleteRegistrationInteractor
-import ru.wb.perevozka.ui.userdata.couriers.domain.CouriersCompleteRegistrationInteractorImpl
-import ru.wb.perevozka.ui.userdata.userform.domain.UserFormInteractor
-import ru.wb.perevozka.ui.userdata.userform.domain.UserFormInteractorImpl
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
 import ru.wb.perevozka.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
@@ -77,8 +77,8 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
-    ): UserFormInteractor {
-        return UserFormInteractorImpl(
+    ): CourierDataInteractor {
+        return CourierDataInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository
@@ -87,15 +87,11 @@ val interactorModule = module {
 
     fun provideCouriersCompleteRegistrationInteractorImpl(
         rxSchedulerFactory: RxSchedulerFactory,
-        appLocalRepository: AppLocalRepository,
-        authRepository: AuthRemoteRepository,
         refreshTokenRepository: RefreshTokenRepository,
         tokenManager: TokenManager
-    ): CouriersCompleteRegistrationInteractor {
-        return CouriersCompleteRegistrationInteractorImpl(
+    ): CourierExpectsInteractor {
+        return CourierExpectsInteractorImpl(
             rxSchedulerFactory,
-            appLocalRepository,
-            authRepository,
             refreshTokenRepository,
             tokenManager
         )
@@ -374,7 +370,7 @@ val interactorModule = module {
 
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get()) }
-    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
+    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }

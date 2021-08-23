@@ -1,18 +1,14 @@
-package ru.wb.perevozka.ui.userdata.userform
+package ru.wb.perevozka.ui.auth.courierdata
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
@@ -27,36 +23,38 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppConsts
-import ru.wb.perevozka.databinding.AuthUserFormFragmentBinding
+import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
+import ru.wb.perevozka.databinding.AuthCourierDataFragmentBinding
 import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.auth.courierdata.CourierDataFragment.ClickEventInterface
+import ru.wb.perevozka.ui.auth.courierdata.CourierDataFragment.TextChangesInterface
+import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.date.DatePickerDialog
 import ru.wb.perevozka.ui.dialogs.date.OnDateSelected
 import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
-import ru.wb.perevozka.ui.userdata.userform.UserFormFragment.ClickEventInterface
-import ru.wb.perevozka.ui.userdata.userform.UserFormFragment.TextChangesInterface
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
 import ru.wb.perevozka.views.ProgressButtonMode
 import java.util.*
 
 
-class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
+class CourierDataFragment : Fragment(R.layout.auth_courier_data_fragment) {
 
-    private var _binding: AuthUserFormFragmentBinding? = null
+    private var _binding: AuthCourierDataFragmentBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var inputMethod: InputMethodManager
     private val viewModel by viewModel<UserFormViewModel> {
-        parametersOf(requireArguments().getParcelable<UserFormParameters>(PHONE_KEY))
+        parametersOf(requireArguments().getParcelable<CourierDataParameters>(PHONE_KEY))
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = AuthUserFormFragmentBinding.inflate(inflater, container, false)
+        _binding = AuthCourierDataFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -98,59 +96,59 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
     data class ViewChanges(
         val textLayout: TextInputLayout,
         val text: EditText,
-        val type: UserFormQueryType
+        val type: CourierDataQueryType
     )
 
-    private fun changeFieldObservables(): ArrayList<Observable<UserFormUIAction>> {
-        val changeTextObservables = ArrayList<Observable<UserFormUIAction>>()
+    private fun changeFieldObservables(): ArrayList<Observable<CourierDataUIAction>> {
+        val changeTextObservables = ArrayList<Observable<CourierDataUIAction>>()
 
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.surnameLayout,
                 binding.surname,
-                UserFormQueryType.SURNAME
+                CourierDataQueryType.SURNAME
             )
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.firstNameLayout,
                 binding.firstName,
-                UserFormQueryType.NAME
+                CourierDataQueryType.NAME
             )
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.innLayout,
                 binding.inn,
-                UserFormQueryType.INN
+                CourierDataQueryType.INN
             )
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.passportSeriesLayout,
                 binding.passportSeries,
-                UserFormQueryType.PASSPORT_SERIES
+                CourierDataQueryType.PASSPORT_SERIES
             )
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.passportNumberLayout,
                 binding.passportNumber,
-                UserFormQueryType.PASSPORT_NUMBER
+                CourierDataQueryType.PASSPORT_NUMBER
             )
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.passportDateOfIssueLayout,
                 binding.passportDateOfIssue,
-                UserFormQueryType.PASSPORT_DATE
+                CourierDataQueryType.PASSPORT_DATE
             )
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.passportCodeLayout,
                 binding.passportCode,
-                UserFormQueryType.PASSPORT_CODE
+                CourierDataQueryType.PASSPORT_CODE
             )
         )
 
@@ -162,12 +160,12 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
     }
 
     private fun getFormUserData() = mutableListOf(
-        UserData(binding.surname.text.toString(), UserFormQueryType.SURNAME),
-        UserData(binding.firstName.text.toString(), UserFormQueryType.NAME),
-        UserData(binding.inn.text.toString(), UserFormQueryType.INN),
-        UserData(binding.passportSeries.text.toString(), UserFormQueryType.PASSPORT_SERIES),
-        UserData(binding.passportNumber.text.toString(), UserFormQueryType.PASSPORT_NUMBER),
-        UserData(binding.passportDateOfIssue.text.toString(), UserFormQueryType.PASSPORT_DATE)
+        CourierData(binding.surname.text.toString(), CourierDataQueryType.SURNAME),
+        CourierData(binding.firstName.text.toString(), CourierDataQueryType.NAME),
+        CourierData(binding.inn.text.toString(), CourierDataQueryType.INN),
+        CourierData(binding.passportSeries.text.toString(), CourierDataQueryType.PASSPORT_SERIES),
+        CourierData(binding.passportNumber.text.toString(), CourierDataQueryType.PASSPORT_NUMBER),
+        CourierData(binding.passportDateOfIssue.text.toString(), CourierDataQueryType.PASSPORT_DATE)
     )
 
     private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
@@ -222,19 +220,19 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
     }
 
     fun interface ClickEventInterface {
-        fun initListener(view: View): Observable<UserFormUIAction>
+        fun initListener(view: View): Observable<CourierDataUIAction>
     }
 
     private fun createClickObserver(): ClickEventInterface {
         return ClickEventInterface { view ->
-            view.clicks().map { UserFormUIAction.CompleteClick(getFormUserData()) }
+            view.clicks().map { CourierDataUIAction.CompleteClick(getFormUserData()) }
         }
     }
 
     fun interface TextChangesInterface {
         fun initListener(
-            textInputLayout: TextInputLayout, editText: EditText, queryType: UserFormQueryType
-        ): Observable<UserFormUIAction>
+            textInputLayout: TextInputLayout, editText: EditText, queryType: CourierDataQueryType
+        ): Observable<CourierDataUIAction>
     }
 
     private fun createFieldChangesObserver(): TextChangesInterface {
@@ -242,9 +240,9 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
                 .map { it.toString() }
-                .map { UserFormUIAction.TextChange(it, queryType) }
+                .map { CourierDataUIAction.TextChange(it, queryType) }
             val focusChanges = editText.focusChanges()
-                .map { UserFormUIAction.FocusChange(editText.text.toString(), queryType, it) }
+                .map { CourierDataUIAction.FocusChange(editText.text.toString(), queryType, it) }
             Observable.merge(textChanges, focusChanges).skip(2)
         }
     }
@@ -254,35 +252,10 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
-    private fun showSimpleDialog(it: UserFormViewModel.NavigateToMessageInfo) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.loginLayout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.simple_layout_dialog, viewGroup, false)
-        val title: TextView = dialogView.findViewById(R.id.title)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        builder.setView(dialogView)
-
-        val alertDialog: AlertDialog = builder.create()
-
-        title.text = it.title
-        message.text = it.message
-        negative.setOnClickListener {
-            alertDialog.dismiss()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = it.button
-        alertDialog.setOnDismissListener {}
-        alertDialog.show()
-    }
-
     private fun initObservers() {
 
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            showSimpleDialog(it)
+        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
+            showDialog(it.style, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -299,22 +272,22 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
 
         viewModel.formUIState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is UserFormUIState.Complete -> {
+                is CourierDataUIState.Complete -> {
                     val textLayout = changeText.find { it.type == state.type }?.textLayout
                     textLayout?.error = getText(R.string.error_empty)
                 }
-                is UserFormUIState.Error -> {
+                is CourierDataUIState.Error -> {
                     val textLayout = changeText.find { it.type == state.type }?.textLayout
                     textLayout?.error = getText(R.string.error)
                 }
-                is UserFormUIState.ErrorFocus -> {
+                is CourierDataUIState.ErrorFocus -> {
                     changeText.find { it.type == state.type }?.text?.let {
                         it.setSelection(it.length())
                         it.requestFocus()
                         scrollToViewTop(binding.scrollView, it)
                     }
                 }
-                UserFormUIState.Next -> {
+                CourierDataUIState.Next -> {
                     viewModel.onNextClick(getCourierDocumentsEntity())
                 }
             }
@@ -323,10 +296,10 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         viewModel.navigationEvent.observe(viewLifecycleOwner,
             { state ->
                 when (state) {
-                    is UserFormNavAction.NavigateToCouriersCompleteRegistration -> {
+                    is CourierDataNavAction.NavigateToCouriersCompleteRegistration -> {
                         findNavController().navigate(
-                            UserFormFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
-                                CouriersCompleteRegistrationParameters(state.phone)
+                            CourierDataFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
+                                CourierExpectsParameters(state.phone)
                             )
                         )
                     }
@@ -336,12 +309,12 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         viewModel.loaderState.observe(viewLifecycleOwner,
             { state ->
                 when (state) {
-                    UserFormUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
-                    UserFormUILoaderState.Enable -> {
+                    CourierDataUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
+                    CourierDataUILoaderState.Enable -> {
                         binding.next.setState(ProgressButtonMode.ENABLE)
                         binding.overlayBoxes.visibility = View.GONE
                     }
-                    UserFormUILoaderState.Progress -> {
+                    CourierDataUILoaderState.Progress -> {
                         binding.next.setState(ProgressButtonMode.PROGRESS)
                         binding.overlayBoxes.visibility = View.VISIBLE
                     }
@@ -359,6 +332,11 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
         _binding = null
     }
 
+    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+    }
+
     companion object {
         const val PHONE_KEY = "phone_key"
         const val DATE_TIME_PICKER_FRAGMENT = "date_time_picker_fragment"
@@ -368,8 +346,8 @@ class UserFormFragment : Fragment(R.layout.auth_user_form_fragment) {
 }
 
 @Parcelize
-data class UserFormParameters(val phone: String) : Parcelable
+data class CourierDataParameters(val phone: String) : Parcelable
 
-data class UserData(val text: String, val type: UserFormQueryType)
+data class CourierData(val text: String, val type: CourierDataQueryType)
 
 

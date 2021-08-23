@@ -24,7 +24,7 @@ class InformationDialogFragment : DialogFragment() {
     private fun readArguments(arguments: Bundle?) {
         if (arguments != null) {
             title = arguments.getString(AppExtras.EXTRA_DIALOG_TITLE, "")
-            description = arguments.getString(AppExtras.EXTRA_DIALOG_DESCRIPTION, "")
+            description = arguments.getString(AppExtras.EXTRA_DIALOG_MESSAGE, "")
             positiveButtonName =
                 arguments.getString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, "")
         }
@@ -57,7 +57,7 @@ class InformationDialogFragment : DialogFragment() {
         ): InformationDialogFragment {
             val args = Bundle()
             args.putString(AppExtras.EXTRA_DIALOG_TITLE, title)
-            args.putString(AppExtras.EXTRA_DIALOG_DESCRIPTION, description)
+            args.putString(AppExtras.EXTRA_DIALOG_MESSAGE, description)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
             val fragment = InformationDialogFragment()
             fragment.arguments = args

@@ -17,6 +17,18 @@
     <string name="unknown_http_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
     <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
+    <string name="unknown_internet_title_error">Сервер не отвечает</string>
+    <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>
+    <string name="unknown_internet_button_error">Понятно</string>
+
+    <string name="unknown_service_title_error">Сервер не отвечает</string>
+    <string name="unknown_service_message_error">Повторите попытку позже</string>
+    <string name="unknown_service_button_error">Понятно</string>
+
+    <string name="courier_expects_title">Ваши данные еще не подтверждены</string>
+    <string name="courier_expects_message">Обратитесь к сотруднику на ПВЗ</string>
+    <string name="courier_expects_positive">Понятно</string>
+
     <!--pin-->
     <string name="input_sms_repeat_status_timer">Повторная отправка кода %s</string>
     <string name="input_sms_repeat_no_timer">Отправить код повторно</string>

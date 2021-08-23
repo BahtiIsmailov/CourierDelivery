@@ -7,6 +7,8 @@ sealed class NumberPhoneUIState {
 
     data class PhoneSpanFormat(val numberFormat: String, val count: Int) : NumberPhoneUIState()
 
-    data class NumberNotFound(val message: String) : NumberPhoneUIState()
-    data class Error(val message: String) : NumberPhoneUIState()
+    data class NumberNotFound(val title: String, val message: String, val button: String) :
+        NumberPhoneUIState()
+
+    data class Error(val title: String, val message: String, val button: String) : NumberPhoneUIState()
 }

@@ -10,8 +10,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthLoaderFragmentBinding
 import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
-import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
+import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
+import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
 
 class AuthLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
 
@@ -46,12 +46,12 @@ class AuthLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
                 )
                 is AuthLoaderUINavState.NavigateToCouriersCompleteRegistration -> findNavController().navigate(
                     AuthLoaderFragmentDirections.actionAuthLoaderFragmentToCouriersCompleteRegistrationFragment(
-                        CouriersCompleteRegistrationParameters(state.phone)
+                        CourierExpectsParameters(state.phone)
                     )
                 )
                 is AuthLoaderUINavState.NavigateToUserForm -> findNavController().navigate(
                     AuthLoaderFragmentDirections.actionAuthLoaderFragmentToUserFormFragment(
-                        UserFormParameters(state.phone)
+                        CourierDataParameters(state.phone)
                     )
                 )
             }

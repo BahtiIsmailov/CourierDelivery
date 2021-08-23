@@ -21,8 +21,6 @@
             app:destination="@id/couriersCompleteRegistrationFragment" />
     </fragment>
 
-
-
     <fragment
         android:id="@+id/authNumberPhoneFragment"
         android:name="ru.wb.perevozka.ui.auth.NumberPhoneFragment"
@@ -79,12 +77,12 @@
 
     <fragment
         android:id="@+id/userFormFragment"
-        android:name="ru.wb.perevozka.ui.userdata.userform.UserFormFragment"
+        android:name="ru.wb.perevozka.ui.auth.courierdata.CourierDataFragment"
         android:label="UserFormFragment"
-        tools:layout="@layout/auth_user_form_fragment">
+        tools:layout="@layout/auth_courier_data_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.userdata.userform.UserFormParameters"
+            app:argType="ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_userFormFragment_to_couriersCompleteRegistrationFragment"
@@ -95,15 +93,14 @@
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
-
     <fragment
         android:id="@+id/couriersCompleteRegistrationFragment"
-        android:name="ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationFragment"
+        android:name="ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsFragment"
         android:label="CouriersCompleteRegistrationFragment"
-        tools:layout="@layout/auth_couriers_completion_registration_fragment">
+        tools:layout="@layout/auth_courier_expects_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters"
+            app:argType="ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters"
             app:nullable="false" />
     </fragment>
 

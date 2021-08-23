@@ -52,6 +52,7 @@
     <dimen name="auth_button_height_large">72dp</dimen>
 
     <dimen name="reception_rounded_corner">8dp</dimen>
+    <dimen name="dialog_rounded_corner">12dp</dimen>
     <dimen name="counter_rounded_corner">6dp</dimen>
     <dimen name="counter_margin_vertical">4dp</dimen>
     <dimen name="counter_margin_horizontal">10dp</dimen>

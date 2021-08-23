@@ -108,7 +108,11 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
         when (throwable) {
-            is NoInternetException -> _stateUI.value = Error(throwable.message)
+            is NoInternetException -> _stateUI.value = Error(
+                throwable.message,
+                resourceProvider.getGenericInternetMessageError(),
+                resourceProvider.getGenericInternetButtonError()
+            )
             is BadRequestException -> {
                 if (throwable.error.code == CODE_SENT) {
                     val ttl = throwable.error.data?.ttl ?: DEFAULT_TTL
@@ -116,10 +120,18 @@ class NumberPhoneViewModel(
                         NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
                     _stateUI.value = NumberFormatComplete
                 } else {
-                    _stateUI.value = NumberNotFound(throwable.error.message)
+                    _stateUI.value = NumberNotFound(
+                        throwable.error.message,
+                        resourceProvider.getGenericServiceMessageError(),
+                        resourceProvider.getGenericServiceButtonError()
+                    )
                 }
             }
-            else -> _stateUI.value = Error(resourceProvider.getGenericError())
+            else -> _stateUI.value = Error(
+                resourceProvider.getGenericServiceTitleError(),
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
+            )
         }
     }
 

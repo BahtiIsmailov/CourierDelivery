@@ -14,17 +14,19 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
+import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.AuthCheckSmsFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.ui.userdata.couriers.CouriersCompleteRegistrationParameters
-import ru.wb.perevozka.ui.userdata.userform.UserFormParameters
+import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
+import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -81,12 +83,12 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     findNavController().navigate(R.id.load_navigation)
                 is CheckSmsNavAction.NavigateToCompletionRegistration -> findNavController().navigate(
                     CheckSmsFragmentDirections.actionCheckSmsFragmentToCouriersCompleteRegistrationFragment(
-                        CouriersCompleteRegistrationParameters(state.phone)
+                        CourierExpectsParameters(state.phone)
                     )
                 )
                 is CheckSmsNavAction.NavigateToUserForm -> findNavController().navigate(
                     CheckSmsFragmentDirections.actionCheckSmsFragmentToUserFormFragment(
-                        UserFormParameters(state.phone)
+                        CourierDataParameters(state.phone)
                     )
                 )
             }
@@ -135,7 +137,11 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                 }
                 is CheckSmsUIState.MessageError -> {
                     binding.viewPinCode.text?.clear()
-                    showBarMessage(state.message)
+                    showDialog(
+                        DialogStyle.WARNING.ordinal, state.title,
+                        state.message,
+                        state.button
+                    )
                     binding.smsCodeProgress.visibility = INVISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
@@ -178,7 +184,12 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     binding.repeatSms.isEnabled = true
                     binding.repeatSms.visibility = VISIBLE
                     binding.repeatPasswordProgress.visibility = View.GONE
-                    showBarMessage(state.message)
+                    showDialog(
+                        DialogStyle.WARNING.ordinal,
+                        state.title,
+                        state.message,
+                        state.button
+                    )
                 }
             }
         })
@@ -229,8 +240,9 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         _binding = null
     }
 
-    private fun showBarMessage(state: String) {
-        Snackbar.make(binding.bottomInfo, state, Snackbar.LENGTH_LONG).show()
+    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
     }
 
     companion object {
