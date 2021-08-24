@@ -1,6 +1,10 @@
 package ru.wb.perevozka.db.entity.courier
 
-data class CourierOrderEntity(
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class CourierOrderEntity (
     val id: Int,
     val routeID: Int,
     val gate: String,
@@ -9,4 +13,4 @@ data class CourierOrderEntity(
     val minVolume: Int,
     val minBoxesCount: Int,
     val dstOffices: List<CourierOrderDstOfficeEntity>,
-)
+) : Parcelable

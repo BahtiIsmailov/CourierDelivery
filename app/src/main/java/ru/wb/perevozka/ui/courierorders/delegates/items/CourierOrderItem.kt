@@ -7,14 +7,5 @@ data class CourierOrderItem(
     val volume: String,
     val pvzCount: String,
     val coast: String,
-) : BaseItem {
-
-    private var _idView: Int = 0
-
-    override var idView: Int
-        get() = _idView
-        set(value) {
-            _idView = value
-        }
-
-}
+    override var idView: Int,
+) : BaseItem

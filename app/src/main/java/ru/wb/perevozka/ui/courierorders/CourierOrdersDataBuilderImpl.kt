@@ -5,11 +5,11 @@ import ru.wb.perevozka.mvvm.model.base.BaseItem
 import ru.wb.perevozka.ui.courierorders.delegates.items.CourierOrderItem
 import java.text.DecimalFormat
 
-class CourierOrderDataBuilderImpl(
-    private val resourceProvider: CourierOrderResourceProvider,
-) : CourierOrderDataBuilder {
+class CourierOrdersDataBuilderImpl(
+    private val resourceProvider: CourierOrdersResourceProvider,
+) : CourierOrdersDataBuilder {
 
-    override fun buildOrderItem(courierOrderEntity: CourierOrderEntity): BaseItem {
+    override fun buildOrderItem(index: Int, courierOrderEntity: CourierOrderEntity): BaseItem {
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
@@ -19,7 +19,8 @@ class CourierOrderDataBuilderImpl(
                 courierOrderEntity.minVolume
             ),
             pvzCount = "" + courierOrderEntity.dstOffices.size + " ПВЗ",
-            coast = "" + coast + " ₽"
+            coast = "" + coast + " ₽",
+            idView = index
         )
     }
 

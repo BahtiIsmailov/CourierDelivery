@@ -5,6 +5,7 @@ import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.BoxInfoResponse
+import ru.wb.perevozka.network.api.app.remote.courier.CourierAnchorResponse
 import ru.wb.perevozka.network.api.app.remote.courier.CourierOrdersResponse
 import ru.wb.perevozka.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
@@ -174,5 +175,11 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Query("srcOfficeID") srcOfficeID: Int
     ): Single<CourierOrdersResponse>
+
+    @POST("{version}tasks/{taskID}/courier")
+    fun anchorTask(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+    ): Single<CourierAnchorResponse>
 
 }

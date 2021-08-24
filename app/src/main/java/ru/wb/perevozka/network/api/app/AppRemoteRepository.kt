@@ -7,6 +7,7 @@ import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
+import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
@@ -97,5 +98,7 @@ interface AppRemoteRepository {
     fun courierWarehouses(): Single<List<CourierWarehouseEntity>>
 
     fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+
+    fun anchorTask(taskID: String): Single<CourierAnchorEntity>
 
 }

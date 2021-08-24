@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_content_light">
+
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/order"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        tools:text="Заказ № 3245934" />
+
+    <TextView
+        android:id="@+id/volume"
+        style="@style/MediumDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="26dp"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        app:layout_constraintTop_toBottomOf="@+id/order"
+        app:layout_constraintVertical_bias="0"
+        tools:text="от 200 шт. / 86 кубов" />
+
+    <ImageView
+        android:id="@+id/show_route_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/volume"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/volume"
+        app:srcCompat="@drawable/ic_box_and_volume"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/pvz"
+        style="@style/MediumDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        app:layout_constraintTop_toBottomOf="@+id/volume"
+        app:layout_constraintVertical_bias="0"
+        tools:text="9 ПВЗ" />
+
+    <ImageView
+        android:id="@+id/pvz_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/pvz"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pvz"
+        app:srcCompat="@drawable/ic_pvz_count"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/coast"
+        style="@style/VeryLargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        tools:text="3200 \u20BD" />
+
+    <TextView
+        android:id="@+id/routes_title"
+        style="@style/MediumBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="26dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pvz"
+        tools:text="МАРШРУТ № 4 «ПОДОЛЬСК СЕВЕР»" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/routes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/back_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/routes_title"
+        tools:listitem="@layout/courier_order_details_layout" />
+
+    <TextView
+        android:id="@+id/empty_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Список пуст"
+        app:layout_constraintBottom_toTopOf="@+id/back_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/routes_title" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/gradient_top_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/routes_title" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/gradient_bottom_list"
+        app:layout_constraintBottom_toTopOf="@+id/back_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ru.wb.perevozka.views.ProgressButtonView
+        android:id="@+id/back_order"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progress_button_background="@drawable/progress_image_button_round_default1"
+        app:progress_button_name="Назад"
+        app:progress_button_state="enable"
+        app:progress_button_text_color_disable="@color/button_default_text_disable"
+        app:progress_button_text_color_enable="@color/button_default_text_enable1"
+        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+    <ru.wb.perevozka.views.ProgressButtonView
+        android:id="@+id/take_order"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/center_vertical"
+        app:progress_button_background="@drawable/progress_image_button_round_default"
+        app:progress_button_name="Взять заказ"
+        app:progress_button_state="enable"
+        app:progress_button_text_color_disable="@color/button_default_text_disable"
+        app:progress_button_text_color_enable="@color/button_default_text_enable"
+        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

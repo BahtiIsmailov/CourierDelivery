@@ -3,7 +3,7 @@ package ru.wb.perevozka.di.module
 import android.app.Application
 import org.koin.dsl.module
 import ru.wb.perevozka.ui.auth.AuthResourceProvider
-import ru.wb.perevozka.ui.courierorders.CourierOrderResourceProvider
+import ru.wb.perevozka.ui.courierorders.CourierOrdersResourceProvider
 import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesResourceProvider
 import ru.wb.perevozka.ui.dcloading.DcLoadingResourceProvider
 import ru.wb.perevozka.ui.dcunloading.DcUnloadingScanResourceProvider
@@ -21,6 +21,7 @@ import ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationResourcePr
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanResourceProvider
 import ru.wb.perevozka.ui.auth.courierdata.CourierDataResourceProvider
 import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsResourceProvider
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 
 val resourceModule = module {
 
@@ -36,12 +37,16 @@ val resourceModule = module {
         return CourierExpectsResourceProvider(application)
     }
 
+    fun provideCourierOrderDetailsResourceProvider(application: Application): CourierOrderDetailsResourceProvider {
+        return CourierOrderDetailsResourceProvider(application)
+    }
+
     fun provideCourierWarehouseResourceProvider(application: Application): CourierWarehousesResourceProvider {
         return CourierWarehousesResourceProvider(application)
     }
 
-    fun provideCourierOrderResourceProvider(application: Application): CourierOrderResourceProvider {
-        return CourierOrderResourceProvider(application)
+    fun provideCourierOrderResourceProvider(application: Application): CourierOrdersResourceProvider {
+        return CourierOrdersResourceProvider(application)
     }
 
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
@@ -103,6 +108,7 @@ val resourceModule = module {
     single { provideAppResourceProvider(get()) }
     single { provideUserDataResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
+    single { provideCourierOrderDetailsResourceProvider(get()) }
     single { provideCourierWarehouseResourceProvider(get()) }
     single { provideCourierOrderResourceProvider(get()) }
     single { provideFlightLoaderProvider(get()) }

@@ -70,6 +70,7 @@ class DialogInfoFragment : DialogFragment() {
             fragment.arguments = args
             return fragment
         }
+        const val DIALOG_INFO_TAG = "DIALOG_INFO_TAG"
 
     }
 

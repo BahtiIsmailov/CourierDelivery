@@ -1,28 +1,27 @@
 package ru.wb.perevozka.ui.courierwarehouses
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.KeyEvent.ACTION_UP
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierWarehouseFragmentBinding
 import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
-import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
+import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIALOG_BACK_KEY
+import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIALOG_RESULT
+import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIALOG_TAG
 import ru.wb.perevozka.ui.splash.KeyboardListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
@@ -38,7 +37,6 @@ class CourierWarehousesFragment : Fragment() {
     private lateinit var adapter: CourierWarehousesAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
-    private lateinit var progressDialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,8 +52,27 @@ class CourierWarehousesFragment : Fragment() {
         initRecyclerView()
         initObservable()
         initListener()
-        initProgressDialog()
+        initReturnResult()
         viewModel.update()
+    }
+
+    private fun initReturnResult() {
+        setFragmentResultListener(PROGRESS_DIALOG_RESULT) { _, bundle ->
+            if (bundle.containsKey(PROGRESS_DIALOG_BACK_KEY)) {
+                viewModel.onCancelLoadClick()
+            }
+        }
+    }
+
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, PROGRESS_DIALOG_TAG)
+    }
+
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
     }
 
     private fun initView() {
@@ -65,25 +82,20 @@ class CourierWarehousesFragment : Fragment() {
 
     private fun initObservable() {
 
-        viewModel.navigateToMessage.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
-        }
-
-        viewModel.warehouse.observe(viewLifecycleOwner) {
+        viewModel.warehouses.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehousesUIState.InitItems -> {
                     binding.emptyList.visibility = GONE
                     binding.progress.visibility = GONE
-                    binding.boxes.visibility = VISIBLE
+                    binding.items.visibility = VISIBLE
                     binding.update.setState(ProgressButtonMode.ENABLE)
                     val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
-                        override fun onItemClick(index: Int, isChecked: Boolean) {
-                            viewModel.onItemClick(index, isChecked)
+                        override fun onItemClick(index: Int) {
+                            viewModel.onItemClick(index)
                         }
                     }
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
-                    binding.boxes.adapter = adapter
+                    binding.items.adapter = adapter
                 }
                 is CourierWarehousesUIState.UpdateItems -> {
                     adapter.setItem(it.index, it.item)
@@ -91,8 +103,10 @@ class CourierWarehousesFragment : Fragment() {
                 }
                 is CourierWarehousesUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
-                    binding.boxes.visibility = GONE
+                    binding.progress.visibility = GONE
+                    binding.items.visibility = GONE
                     binding.emptyTitle.text = it.info
+                    binding.update.setState(ProgressButtonMode.ENABLE)
                 }
             }
         }
@@ -104,18 +118,18 @@ class CourierWarehousesFragment : Fragment() {
             }
         }
 
-        viewModel.navigateUIState.observe(viewLifecycleOwner) {
+        viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesUINavState.NavigateToBack -> findNavController().popBackStack()
-                is CourierWarehousesUINavState.NavigateToCourierOrder ->
+                CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
+                is CourierWarehousesNavigationState.NavigateToCourierOrder ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehouseFragmentToCourierOrderFragment(
                             CourierOrderParameters(it.officeId, it.address)
                         )
                     )
-                is CourierWarehousesUINavState.NavigateToMessageInfo -> showSimpleDialog(it)
+                is CourierWarehousesNavigationState.NavigateToDialogInfo ->
+                    with(it) { showDialogInfo(type, title, message, button) }
             }
-
         }
 
     }
@@ -124,64 +138,16 @@ class CourierWarehousesFragment : Fragment() {
         binding.update.setOnClickListener { viewModel.onUpdateClick() }
     }
 
-    private fun showSimpleDialog(it: CourierWarehousesUINavState.NavigateToMessageInfo) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.boxes
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.simple_layout_dialog, viewGroup, false)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        builder.setView(dialogView)
-
-        val alertDialog: AlertDialog = builder.create()
-
-        message.text = it.message
-        negative.setOnClickListener {
-            alertDialog.dismiss()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = it.button
-        alertDialog.show()
-    }
-
-    // TODO: 20.08.2021 переработать
-    private fun initProgressDialog() {
-        val builder = AlertDialog.Builder(requireContext(), R.style.CustomProgressAlertDialog)
-        val viewGroup: ViewGroup = binding.boxes
-        val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.custom_progress_layout_dialog, viewGroup, false)
-        builder.setView(dialogView)
-        progressDialog = builder.create()
-        progressDialog.setCanceledOnTouchOutside(false)
-        progressDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == ACTION_UP) {
-                progressDialog.dismiss()
-                viewModel.onCancelLoadClick()
-            }
-            true
-        }
-    }
-
-    private fun closeProgressDialog() {
-        if (progressDialog.isShowing) progressDialog.dismiss()
-    }
-
-    private fun showProgressDialog() {
-        progressDialog.show()
-    }
-
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.boxes.layoutManager = layoutManager
-        binding.boxes.addItemDecoration(
+        binding.items.layoutManager = layoutManager
+        binding.items.addItemDecoration(
             DividerItemDecoration(
                 activity,
                 DividerItemDecoration.VERTICAL
             )
         )
-        binding.boxes.setHasFixedSize(true)
+        binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
 
@@ -196,6 +162,16 @@ class CourierWarehousesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showDialogInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

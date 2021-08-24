@@ -17,7 +17,7 @@ class CourierWarehouseInteractorImpl(
 
 
     override fun warehouses(): Single<List<CourierWarehouseEntity>> {
-        return appRemoteRepository.courierWarehouses().delay(400, TimeUnit.MILLISECONDS)
+        return appRemoteRepository.courierWarehouses().delay(4000, TimeUnit.MILLISECONDS)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -28,7 +28,7 @@ class CourierWarehouseInteractorImpl(
     }
 
     override fun loadProgress(): Completable {
-        return Completable.timer(3, TimeUnit.SECONDS)
+        return Completable.timer(4000, TimeUnit.MILLISECONDS)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

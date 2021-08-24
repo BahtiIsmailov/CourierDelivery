@@ -242,7 +242,7 @@ class UnloadingScanFragment : Fragment() {
         val viewGroup: ViewGroup = binding.main
         val dialogView: View =
             LayoutInflater.from(requireContext())
-                .inflate(R.layout.simple_layout_dialog, viewGroup, false)
+                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
         val title: TextView = dialogView.findViewById(R.id.title)
         val message: TextView = dialogView.findViewById(R.id.message)
         val negative: Button = dialogView.findViewById(R.id.negative)

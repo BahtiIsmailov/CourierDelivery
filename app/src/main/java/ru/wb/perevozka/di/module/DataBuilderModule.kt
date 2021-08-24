@@ -1,9 +1,9 @@
 package ru.wb.perevozka.di.module
 
 import org.koin.dsl.module
-import ru.wb.perevozka.ui.courierorders.CourierOrderDataBuilder
-import ru.wb.perevozka.ui.courierorders.CourierOrderDataBuilderImpl
-import ru.wb.perevozka.ui.courierorders.CourierOrderResourceProvider
+import ru.wb.perevozka.ui.courierorders.CourierOrdersDataBuilder
+import ru.wb.perevozka.ui.courierorders.CourierOrdersDataBuilderImpl
+import ru.wb.perevozka.ui.courierorders.CourierOrdersResourceProvider
 import ru.wb.perevozka.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsDataBuilder
 import ru.wb.perevozka.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsDataBuilderImpl
 import ru.wb.perevozka.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsResourceProvider
@@ -68,9 +68,9 @@ val dataBuilderModule = module {
 
 
     fun provideCourierOrderDataBuilder(
-        resourceProvider: CourierOrderResourceProvider,
-    ): CourierOrderDataBuilder {
-        return CourierOrderDataBuilderImpl(resourceProvider)
+        resourceProvider: CourierOrdersResourceProvider,
+    ): CourierOrdersDataBuilder {
+        return CourierOrdersDataBuilderImpl(resourceProvider)
     }
 
     single { provideFlightsDataBuilder(get(), get()) }

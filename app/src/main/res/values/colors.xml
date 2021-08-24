@@ -95,6 +95,7 @@
     <color name="button_default_text_enable">#FFFFFF</color>
     <color name="button_default_text_progress">#FFFFFF</color>
     <color name="button_default_text_disable">#B6B2BD</color>
+    <color name="button_default_text_enable1">#642CA3</color>
 
     <color name="button_alert_text_enable">#DF1F00</color>
     <color name="button_alert_text_progress">#E0DDE4</color>
@@ -107,6 +108,10 @@
     <color name="button_default_disabled">#EAE8ED</color>
     <color name="button_default_enabled">#642CA3</color>
     <color name="button_default_pressed">#703AAC</color>
+
+    <color name="button_default_enabled1">#EFE8F7</color>
+    <color name="button_default_pressed1">#E6D1FF</color>
+
 
     <color name="button_light_disabled">#E0DDE4</color>
     <color name="button_light_enabled">#FFFFFF</color>

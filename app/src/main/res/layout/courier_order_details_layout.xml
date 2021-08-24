@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/box_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="20dp">
+
+    <ImageView
+        android:id="@+id/route_legend_color_image"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_order_route_dot"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/fullAddressWarehouse"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/route_legend_color_image"
+        tools:text="г. Подольск, ул. Троицкая, 20" />
+
+</RelativeLayout>

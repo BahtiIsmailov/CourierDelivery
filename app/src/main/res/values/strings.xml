@@ -200,6 +200,12 @@
     <string name="courier_warehouse_dialog_title_error">Склады</string>
     <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
     <string name="courier_warehouse_dialog_positive_button_error">Ok</string>
+    <string name="courier_warehouse_dialog_empty_list">Извините, все заказы в работе</string>
+    <string name="courier_warehouse_search_empty">Ничего не найдено</string>
+
+    <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>
+    <string name="courier_warehouse_dialog_empty_message">Все заказы взяты в работу</string>
+    <string name="courier_warehouse_dialog_empty_button">Понятно</string>
 
     <string name="courier_orders_update">Обновить</string>
     <string name="courier_orders_count">от %1$d шт. / %2$s</string>
@@ -207,6 +213,15 @@
     <string name="courier_order_dialog_title_error">Заказы</string>
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
     <string name="courier_order_dialog_positive_button_error">Ok</string>
+
+    <string name="courier_orders_details_order">Заказ № %1$d</string>
+    <string name="courier_orders_details_coast">%1$s ₽</string>
+    <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
+
+    <string name="courier_orders_details_dialog_title">Подтвердить взятие заказа?</string>
+    <string name="courier_orders_details_dialog_message">Прибыть • за %1$d мин\nТранспорт • от %2$d кубов</string>
+    <string name="courier_orders_details_dialog_negative_button">Отмена</string>
+    <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
 
     <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>
     <string name="flight_deliveries_dialog_title">Начать доставку?</string>

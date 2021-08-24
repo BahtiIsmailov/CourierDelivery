@@ -10,6 +10,7 @@ import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
+import ru.wb.perevozka.ui.dialogs.DialogStyle
 import java.util.*
 
 class CourierWarehousesViewModel(
@@ -18,17 +19,13 @@ class CourierWarehousesViewModel(
     private val resourceProvider: CourierWarehousesResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _warehouse = MutableLiveData<CourierWarehousesUIState>()
-    val warehouse: LiveData<CourierWarehousesUIState>
-        get() = _warehouse
+    private val _warehouses = MutableLiveData<CourierWarehousesUIState>()
+    val warehouses: LiveData<CourierWarehousesUIState>
+        get() = _warehouses
 
-    private val _navigateUIState = SingleLiveEvent<CourierWarehousesUINavState>()
-    val navigateUIState: LiveData<CourierWarehousesUINavState>
-        get() = _navigateUIState
-
-    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessage: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _navigationState = SingleLiveEvent<CourierWarehousesNavigationState>()
+    val navigationState: LiveData<CourierWarehousesNavigationState>
+        get() = _navigationState
 
     private val _progressState = MutableLiveData<CourierWarehousesProgressState>()
     val progressState: LiveData<CourierWarehousesProgressState>
@@ -52,35 +49,42 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete(items: MutableList<CourierWarehousesItem>) {
-        _warehouse.value =
-            if (items.isEmpty()) CourierWarehousesUIState.Empty("Извините, все заказы в работе")
+        _warehouses.value =
+            if (items.isEmpty()) CourierWarehousesUIState.Empty(resourceProvider.getEmptyList())
             else CourierWarehousesUIState.InitItems(items)
         hideProgress()
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
-        showMessageError(getErrorMessage(throwable))
-        progressComplete()
-    }
-
-    private fun getErrorMessage(throwable: Throwable): String {
-        return when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getErrorWarehouseDialogMessage()
+        val message = when (throwable) {
+            is NoInternetException -> CourierWarehousesNavigationState.NavigateToDialogInfo(
+                DialogStyle.WARNING.ordinal,
+                throwable.message,
+                resourceProvider.getGenericInternetMessageError(),
+                resourceProvider.getGenericInternetButtonError()
+            )
+            is BadRequestException -> CourierWarehousesNavigationState.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                throwable.error.message,
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
+            )
+            else -> CourierWarehousesNavigationState.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
+            )
         }
+        _navigationState.value = message
+        if (copyReceptionWarehouses.isEmpty()) {
+            _warehouses.value = CourierWarehousesUIState.Empty(message.title)
+        }
+        progressComplete()
     }
 
     private fun progressComplete() {
         _progressState.value = CourierWarehousesProgressState.ProgressComplete
-    }
-
-    private fun showMessageError(message: String) {
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getWarehouseDialogTitle(),
-            message,
-            resourceProvider.getBoxPositiveButton()
-        )
     }
 
     private fun observeSearch() {
@@ -98,7 +102,7 @@ class CourierWarehousesViewModel(
     else copyReceptionWarehouses.filter { it.name.lowercase(Locale.getDefault()).contains(text) }
 
     private fun observeSearchError() {
-        _warehouse.value = CourierWarehousesUIState.Empty("Ничего не найдено")
+        _warehouses.value = CourierWarehousesUIState.Empty(resourceProvider.getSearchEmpty())
     }
 
     private fun convertWarehouses(warehouses: List<CourierWarehouseEntity>) =
@@ -119,7 +123,7 @@ class CourierWarehousesViewModel(
         getWarehouse()
     }
 
-    fun onItemClick(index: Int, checked: Boolean) {
+    fun onItemClick(index: Int) {
         showProgress()
         val oldItem = copyReceptionWarehouses[index].copy()
         addSubscription(
@@ -130,14 +134,16 @@ class CourierWarehousesViewModel(
                     { warehouseItems ->
                         if (warehouseItems.find { it.id == oldItem.id } == null) {
                             courierWarehouseComplete(warehouseItems)
-                            _navigateUIState.value =
-                                CourierWarehousesUINavState.NavigateToMessageInfo(
-                                    "Извините, на складе " + oldItem.name + " все заказы в работе",
-                                    "Ok"
+                            _navigationState.value =
+                                CourierWarehousesNavigationState.NavigateToDialogInfo(
+                                    DialogStyle.WARNING.ordinal,
+                                    resourceProvider.getDialogEmptyTitle(),
+                                    resourceProvider.getDialogEmptyMessage(),
+                                    resourceProvider.getDialogEmptyButton(),
                                 )
                         } else {
-                            _navigateUIState.value =
-                                CourierWarehousesUINavState.NavigateToCourierOrder(
+                            _navigationState.value =
+                                CourierWarehousesNavigationState.NavigateToCourierOrder(
                                     oldItem.id,
                                     oldItem.name
                                 )
@@ -159,7 +165,5 @@ class CourierWarehousesViewModel(
     fun onCancelLoadClick() {
         clearSubscription()
     }
-
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

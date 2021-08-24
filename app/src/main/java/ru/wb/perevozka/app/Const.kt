@@ -11,8 +11,12 @@ const val EXPORT_SCHEMA_DATABASE = false
 
 const val DRIVER = "DRIVER"
 const val NEED_SEND_COURIER_DOCUMENTS = "NEED_SEND_COURIER_DOCUMENTS" //не заполнил данные
-const val NEED_APPROVE_COURIER_DOCUMENTS = "NEED_APPROVE_COURIER_DOCUMENTS" //не прошел валидацию на ПВЗ
+const val NEED_APPROVE_COURIER_DOCUMENTS =
+    "NEED_APPROVE_COURIER_DOCUMENTS" //не прошел валидацию на ПВЗ
 
 const val DIALOG_INFO_MESSAGE_TAG = "DIALOG_INFO_MESSAGE_TAG"
+
+const val ARRIVE_FOR = 20
+
 
 

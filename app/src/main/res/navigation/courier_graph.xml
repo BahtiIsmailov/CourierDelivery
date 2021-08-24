@@ -26,9 +26,29 @@
         tools:layout="@layout/courier_order_fragment">
 
         <argument
-        android:name="courier_order_id_key"
-        app:argType="ru.wb.perevozka.ui.courierorders.CourierOrderParameters"
-        app:nullable="false" />
+            android:name="courier_order_id_key"
+            app:argType="ru.wb.perevozka.ui.courierorders.CourierOrderParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_courierOrderFragment_to_courierOrderDetailsFragment"
+            app:destination="@id/courierOrderDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierOrderDetailsFragment"
+        android:name="ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsFragment"
+        android:label="CourierOrderDetailsFragment"
+        tools:layout="@layout/courier_order_details_fragment">
+
+        <argument
+            android:name="courier_order_details_id_key"
+            app:argType="ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters"
+            app:nullable="false" />
 
     </fragment>
 

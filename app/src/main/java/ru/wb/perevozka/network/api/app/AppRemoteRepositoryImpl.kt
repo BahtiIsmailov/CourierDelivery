@@ -19,6 +19,7 @@ import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
+import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.api.app.entity.boxinfo.*
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
@@ -548,16 +549,22 @@ class AppRemoteRepositoryImpl(
             }
     }
 
+    override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
+        return remote.anchorTask(apiVersion(), taskID).map { CourierAnchorEntity(it.carNumber) }
+    }
+
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
         val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
         courierOrderResponse.dstOffices.forEach { dstOffice ->
-            dstOffices.add(CourierOrderDstOfficeEntity(
-                id = dstOffice.id,
-                name= dstOffice.name,
-                fullAddress= dstOffice.fullAddress,
-                long= dstOffice.long,
-                lat= dstOffice.lat,
-            ))
+            dstOffices.add(
+                CourierOrderDstOfficeEntity(
+                    id = dstOffice.id,
+                    name = dstOffice.name,
+                    fullAddress = dstOffice.fullAddress,
+                    long = dstOffice.long,
+                    lat = dstOffice.lat,
+                )
+            )
         }
         return with(courierOrderResponse) {
             CourierOrderEntity(
@@ -566,10 +573,10 @@ class AppRemoteRepositoryImpl(
                 gate = gate,
                 srcOffice = CourierOrderSrcOfficeEntity(
                     id = srcOffice.id,
-                    name= srcOffice.name,
-                    fullAddress= srcOffice.fullAddress,
-                    long= srcOffice.long,
-                    lat= srcOffice.lat,
+                    name = srcOffice.name,
+                    fullAddress = srcOffice.fullAddress,
+                    long = srcOffice.long,
+                    lat = srcOffice.lat,
                 ),
                 minPrice = minPrice,
                 minVolume = minVolume,

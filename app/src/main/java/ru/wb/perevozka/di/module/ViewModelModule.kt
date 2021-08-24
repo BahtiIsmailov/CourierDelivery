@@ -8,7 +8,7 @@ import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
 import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
-import ru.wb.perevozka.ui.courierorders.CourierOrderViewModel
+import ru.wb.perevozka.ui.courierorders.CourierOrdersViewModel
 import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.perevozka.ui.dcloading.*
 import ru.wb.perevozka.ui.dcunloading.*
@@ -41,6 +41,8 @@ import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.auth.courierexpects.CouriersCompleteRegistrationViewModel
 import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.auth.courierdata.UserFormViewModel
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
 
 val viewModelModule = module {
 
@@ -61,6 +63,15 @@ val viewModelModule = module {
 
     viewModel { (parameters: CourierExpectsParameters) ->
         CouriersCompleteRegistrationViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
+
+    viewModel { (parameters: CourierOrderDetailsParameters) ->
+        CourierOrderDetailsViewModel(
             parameters,
             get(),
             get(),
@@ -89,7 +100,7 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrderViewModel(parameters, get(), get(), get(), get())
+        CourierOrdersViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { (parameters: UnloadingScanParameters) ->

@@ -8,10 +8,10 @@ import ru.wb.perevozka.adapters.BaseAdapterDelegate
 import ru.wb.perevozka.databinding.CourierOrderDelegateBinding
 import ru.wb.perevozka.mvvm.model.base.BaseItem
 import ru.wb.perevozka.ui.courierorders.delegates.items.CourierOrderItem
-import ru.wb.perevozka.ui.flights.delegates.items.FlightItem
 
-class CourierOrderDelegate(context: Context) :
+class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCourierOrderCallback) :
     BaseAdapterDelegate<CourierOrderItem, CourierOrderDelegate.RouterViewHolder>(context) {
+
 
     override fun isForViewType(item: BaseItem): Boolean {
         return item is CourierOrderItem
@@ -34,12 +34,18 @@ class CourierOrderDelegate(context: Context) :
         binding.coast.text = item.coast
     }
 
-    companion object {
-        const val DURATION = 500L
-    }
-
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var binding = CourierOrderDelegateBinding.bind(itemView)
+
+        init {
+            binding.background.setOnClickListener {
+                onCourierOrderCallback.onOrderClick(getTag(itemView).idView)
+            }
+        }
+
+        private fun getTag(itemView: View): CourierOrderItem {
+            return itemView.tag as CourierOrderItem
+        }
     }
 
 }

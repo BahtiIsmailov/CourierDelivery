@@ -2,9 +2,11 @@ package ru.wb.perevozka.ui.courierorders
 
 import android.content.Context
 import ru.wb.perevozka.R
+import ru.wb.perevozka.mvvm.BaseMessageResourceProvider
 import kotlin.math.abs
 
-class CourierOrderResourceProvider(private val context: Context) {
+class CourierOrdersResourceProvider(private val context: Context) :
+    BaseMessageResourceProvider(context) {
 
     fun getErrorOrderDialogTitle() = context.getString(R.string.courier_order_dialog_title_error)
 
