@@ -20,6 +20,8 @@ class KeyboardNumericView : RelativeLayout {
     private var leftButtonMode = LeftButtonMode.NONE
     private var rightButtonMode = RightButtonMode.DELETE
 
+    var observableListener = PublishSubject.create<ButtonAction>()
+
     constructor(context: Context?) : super(context) {
         init(null)
     }
@@ -44,18 +46,13 @@ class KeyboardNumericView : RelativeLayout {
 
     }
 
-//    lateinit var observableListener: Observable<ButtonAction>
-//        private set
-
-    var observableListener = PublishSubject.create<ButtonAction>()
-//        private set
-
     private fun initListeners() {
 
         for (button in numberButtons!!) {
             button.setOnClickListener { v: View ->
                 val keyboardButtonView = v as KeyboardButtonView
-                val action = ButtonAction.values()[keyboardButtonView.customValue]
+                val action =
+                    ButtonAction.valueOf(keyboardButtonView.customValue)
                 observableListener.onNext(action)
                 keyboardButtonView.startAnimation()
             }
@@ -76,7 +73,7 @@ class KeyboardNumericView : RelativeLayout {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         _binding = KeyboardNumericLayoutBinding.inflate(inflater, this, false)
         ArrayList(
-            Arrays.asList(
+            listOf(
                 binding.button0, binding.button1, binding.button2,
                 binding.button3, binding.button4, binding.button5,
                 binding.button6, binding.button7, binding.button8,
@@ -104,13 +101,13 @@ class KeyboardNumericView : RelativeLayout {
         setRightButtonMode(rightButtonMode)
     }
 
-    private fun onNumberClicked(view: View) {
-        val keyboardButtonView = view as KeyboardButtonView
-        if (callbackListener != null) {
-            callbackListener!!.onNumberClicked(keyboardButtonView.customValue)
-            keyboardButtonView.startAnimation()
-        }
-    }
+//    private fun onNumberClicked(view: View) {
+//        val keyboardButtonView = view as KeyboardButtonView
+//        if (callbackListener != null) {
+//            callbackListener!!.onNumberClicked(keyboardButtonView.customValue)
+//            keyboardButtonView.startAnimation()
+//        }
+//    }
 
     private fun setColor(color: Int) {
         for (button in numberButtons!!) {

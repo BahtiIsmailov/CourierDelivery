@@ -1,16 +1,18 @@
 package ru.wb.perevozka.ui.courierorderdetails
 
-sealed class CourierOrderDetailsNavigatioState {
+sealed class CourierOrderDetailsNavigationState {
 
     data class NavigateToDialogInfo(
         val type: Int,
         val title: String,
         val message: String,
         val button: String
-    ) : CourierOrderDetailsNavigatioState()
+    ) : CourierOrderDetailsNavigationState()
 
     data class NavigateToDialogConfirm(
         val title: String, val message: String
-    ) : CourierOrderDetailsNavigatioState()
+    ) : CourierOrderDetailsNavigationState()
+
+    object NavigateToCarNumber: CourierOrderDetailsNavigationState()
 
 }

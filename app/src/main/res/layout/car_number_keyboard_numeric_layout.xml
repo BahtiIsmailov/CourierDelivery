@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/numeric"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -18,7 +18,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
         app:layout_constraintTop_toTopOf="parent"
         app:value="BUTTON_1"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="1" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_2"
@@ -31,7 +32,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="parent"
         app:value="BUTTON_2"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="2" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_3"
@@ -44,7 +46,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline6"
         app:layout_constraintTop_toTopOf="parent"
         app:value="BUTTON_3"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="3" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_4"
@@ -57,7 +60,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
         app:layout_constraintTop_toTopOf="@+id/guideline8"
         app:value="BUTTON_4"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="4" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_5"
@@ -70,7 +74,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline7"
         app:layout_constraintTop_toBottomOf="@+id/button_3"
         app:value="BUTTON_5"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="5" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_6"
@@ -83,7 +88,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline6"
         app:layout_constraintTop_toTopOf="@+id/guideline8"
         app:value="BUTTON_6"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="6" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_7"
@@ -96,7 +102,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
         app:layout_constraintTop_toTopOf="@+id/guideline9"
         app:value="BUTTON_7"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="7" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_8"
@@ -109,20 +116,8 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline9"
         app:value="BUTTON_8"
-        custom:strokeWidth="@dimen/dp_0d2" />
-
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
-        android:id="@+id/button_0"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="@string/keyboard_button0"
-        android:textSize="@dimen/pin_button_text_size"
-        app:layout_constraintBottom_toTopOf="@+id/guideline11"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline4"
-        app:layout_constraintRight_toLeftOf="@+id/guideline7"
-        app:layout_constraintTop_toBottomOf="@+id/guideline10"
-        app:value="BUTTON_0"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="8" />
 
     <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_9"
@@ -135,34 +130,22 @@
         app:layout_constraintRight_toLeftOf="@+id/guideline6"
         app:layout_constraintTop_toTopOf="@+id/guideline9"
         app:value="BUTTON_9"
-        custom:strokeWidth="@dimen/dp_0d2" />
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="9" />
 
-    <Button
-        android:id="@+id/button_bottom_left"
+    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_0"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/transparent"
-        android:textColor="@color/reception_text_manual_input"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline11"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline12"
-        app:layout_constraintRight_toLeftOf="@+id/guideline13"
+        android:text="@string/keyboard_button0"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline4"
+        app:layout_constraintRight_toLeftOf="@+id/guideline7"
         app:layout_constraintTop_toBottomOf="@+id/guideline10"
-        app:tint="@color/reception_text_manual_input"
-        tools:text="Left" />
-
-    <ImageButton
-        android:id="@+id/button_bottom_right"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/transparent"
-        android:drawablePadding="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline11"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline5"
-        app:layout_constraintRight_toLeftOf="@+id/guideline6"
-        app:layout_constraintTop_toTopOf="@+id/guideline10"
-        app:srcCompat="@drawable/ic_keyboard_backspace_active"
-        tools:ignore="ContentDescription" />
+        app:value="BUTTON_0"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="0" />
 
     <View
         android:id="@+id/overlay_keyboard"
@@ -171,11 +154,6 @@
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
@@ -225,13 +203,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.75" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="1.0" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline12"

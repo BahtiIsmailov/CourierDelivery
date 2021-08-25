@@ -2,6 +2,7 @@ package ru.wb.perevozka.ui.courierorderdetails.domain
 
 import io.reactivex.Completable
 import io.reactivex.Single
+import ru.wb.perevozka.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
@@ -13,7 +14,7 @@ class CourierOrderDetailsInteractorImpl(
 ) : CourierOrderDetailsInteractor {
 
     override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
-        return Completable.timer(1000, TimeUnit.MILLISECONDS)
+        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
             .andThen(appRemoteRepository.anchorTask(taskID))
             .compose(rxSchedulerFactory.applySingleSchedulers())
         // TODO: 24.08.2021 выключено для тестирования

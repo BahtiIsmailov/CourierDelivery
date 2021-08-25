@@ -113,7 +113,7 @@
     <declare-styleable name="KeyboardButtonView">
         <attr name="id" format="integer" />
         <attr name="isBackgroundCircle" format="boolean" />
-        <attr name="value" format="integer" />
+        <attr name="value" format="string" />
         <attr name="strokeWidth" format="dimension" />
     </declare-styleable>
 
@@ -136,6 +136,14 @@
 
     <declare-styleable name="KeyboardNumericView">
         <attr name="keyboardColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CarNumberKeyboardView">
+        <attr name="carNumberKeyboardColor" format="color" />
+        <attr name="carNumberType" format="enum">
+            <enum name="numeric" value="0" />
+            <enum name="symbol" value="1" />
+        </attr>
     </declare-styleable>
 
 </resources>

@@ -11,7 +11,7 @@ import ru.wb.perevozka.R
 
 class KeyboardButtonView : AppCompatTextView {
 
-    var customValue = 0
+    var customValue = "0"
     private var animationRadius = 0
     private var color = 0
     private var strokeWidth = 0f
@@ -75,7 +75,7 @@ class KeyboardButtonView : AppCompatTextView {
                     false
                 )
             )
-            customValue = attributes.getInt(R.styleable.KeyboardButtonView_value, 0)
+            customValue = attributes.getString(R.styleable.KeyboardButtonView_value) ?: ""
             setStrokeWidth(
                 attributes.getDimension(
                     R.styleable.KeyboardButtonView_strokeWidth,

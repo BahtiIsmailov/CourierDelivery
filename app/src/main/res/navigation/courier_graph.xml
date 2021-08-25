@@ -49,7 +49,20 @@
             android:name="courier_order_details_id_key"
             app:argType="ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_courierOrderDetailsFragment_to_courierCarNumberFragment"
+            app:destination="@id/courierCarNumberFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/courierCarNumberFragment"
+        android:name="ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberFragment"
+        android:label="CourierCarNumberFragment"
+        tools:layout="@layout/courier_car_number_fragment" />
 
 </navigation>

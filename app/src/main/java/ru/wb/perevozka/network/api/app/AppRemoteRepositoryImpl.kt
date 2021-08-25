@@ -19,12 +19,14 @@ import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
+import ru.wb.perevozka.network.api.app.entity.CarNumberEntity
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.api.app.entity.boxinfo.*
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
+import ru.wb.perevozka.network.api.app.remote.CarNumberRequest
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.*
 import ru.wb.perevozka.network.api.app.remote.courier.CourierOrderResponse
@@ -551,6 +553,12 @@ class AppRemoteRepositoryImpl(
 
     override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
         return remote.anchorTask(apiVersion(), taskID).map { CourierAnchorEntity(it.carNumber) }
+    }
+
+    override fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable {
+        val carNumberRequest = mutableListOf<CarNumberRequest>()
+        carNumbersEntity.forEach { carNumberRequest.add(CarNumberRequest(it.number, it.isDefault)) }
+        return remote.putCarNumbers(apiVersion(), carNumberRequest)
     }
 
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {

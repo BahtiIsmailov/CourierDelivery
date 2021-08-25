@@ -41,6 +41,7 @@ import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.auth.courierexpects.CouriersCompleteRegistrationViewModel
 import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.auth.courierdata.UserFormViewModel
+import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
 
@@ -78,6 +79,8 @@ val viewModelModule = module {
             get()
         )
     }
+
+    viewModel { CourierCarNumberViewModel(get(), get(), get()) }
 
     viewModel { ScannerViewModel(get(), get()) }
 

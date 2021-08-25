@@ -16,6 +16,8 @@ import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractorImpl
+import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractor
+import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
@@ -259,6 +261,16 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierCarNumberInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository
+    ): CourierCarNumberInteractor {
+        return CourierCarNumberInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+        )
+    }
+
     fun provideUnloadingBoxesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appLocalRepository: AppLocalRepository,
@@ -393,6 +405,7 @@ val interactorModule = module {
     single { provideCourierWarehouseInteractor(get(), get(), get()) }
     single { provideCourierOrderInteractor(get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get()) }
+    single { provideCourierCarNumberInteractor(get(), get()) }
 
     factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
 

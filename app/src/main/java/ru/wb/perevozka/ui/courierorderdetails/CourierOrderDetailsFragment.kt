@@ -115,10 +115,12 @@ class CourierOrderDetailsFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderDetailsNavigatioState.NavigateToDialogConfirm ->
+                is CourierOrderDetailsNavigationState.NavigateToDialogConfirm ->
                     showConfirmDialog(it.title, it.message)
-                is CourierOrderDetailsNavigatioState.NavigateToDialogInfo ->
+                is CourierOrderDetailsNavigationState.NavigateToDialogInfo ->
                     showEmptyOrderDialog(it.title, it.message, it.button)
+                CourierOrderDetailsNavigationState.NavigateToCarNumber ->
+                    findNavController().navigate(CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment())
             }
         }
 

@@ -388,6 +388,20 @@
     <string name="keyboard_button8">8</string>
     <string name="keyboard_button9">9</string>
 
+    <string name="keyboard_symbolA">A</string>
+    <string name="keyboard_symbolB">B</string>
+    <string name="keyboard_symbolE">E</string>
+    <string name="keyboard_symbolK">K</string>
+    <string name="keyboard_symbolM">M</string>
+    <string name="keyboard_symbolH">H</string>
+    <string name="keyboard_symbolO">O</string>
+    <string name="keyboard_symbolP">P</string>
+    <string name="keyboard_symbolC">C</string>
+    <string name="keyboard_symbolT">T</string>
+    <string name="keyboard_symbolY">Y</string>
+    <string name="keyboard_symbolX">X</string>
+
+
     <string name="user_form_complete">Я подтверждаю правильность и полноту предоставленных мною данных</string>
     <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
 

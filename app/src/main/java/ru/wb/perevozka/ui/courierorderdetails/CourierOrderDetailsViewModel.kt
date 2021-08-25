@@ -31,8 +31,8 @@ class CourierOrderDetailsViewModel(
     val orderDetails: LiveData<CourierOrderDetailsUIState>
         get() = _orderDetails
 
-    private val _navigationState = SingleLiveEvent<CourierOrderDetailsNavigatioState>()
-    val navigationState: LiveData<CourierOrderDetailsNavigatioState>
+    private val _navigationState = SingleLiveEvent<CourierOrderDetailsNavigationState>()
+    val navigationState: LiveData<CourierOrderDetailsNavigationState>
         get() = _navigationState
 
     private val _progressState = MutableLiveData<CourierOrderDetailsProgressState>()
@@ -77,7 +77,7 @@ class CourierOrderDetailsViewModel(
     }
 
     fun takeOrderClick() {
-        _navigationState.value = CourierOrderDetailsNavigatioState.NavigateToDialogConfirm(
+        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogConfirm(
             resourceProvider.getConfirmDialogTitle(),
             resourceProvider.getConfirmDialogMessage(ARRIVE_FOR, parameters.order.minVolume)
         )
@@ -91,12 +91,15 @@ class CourierOrderDetailsViewModel(
                     _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
                 }, {
                     _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-                    _navigationState.value = CourierOrderDetailsNavigatioState.NavigateToDialogInfo(
-                        DialogStyle.WARNING.ordinal,
-                        "Заказ забрали",
-                        "Этот заказ уже взят в работу",
-                        "Вернуться к списку заказов"
-                    )
+
+                    // TODO: 25.08.2021 выключено до полной реализации экранов номера автомобиля
+//                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogInfo(
+//                        DialogStyle.WARNING.ordinal,
+//                        "Заказ забрали",
+//                        "Этот заказ уже взят в работу",
+//                        "Вернуться к списку заказов"
+//                    )
+                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber
                 })
         )
     }
