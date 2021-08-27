@@ -35,6 +35,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return tokenResource().extra.company ?: ""
     }
 
+    override fun userCompanyId(): String {
+        return tokenResource().extra.companyID.toString() ?: ""
+    }
+
     override fun userPhone(): String {
         return tokenResource().extra.phone
     }

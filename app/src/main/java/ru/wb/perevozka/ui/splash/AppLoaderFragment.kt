@@ -38,13 +38,13 @@ class AppLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
     private fun initObserver() {
         viewModel.navState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                AppLoaderUINavState.NavigateToApp -> findNavController().navigate(
+                AppLoaderNavigatioState.NavigateToDelivery -> findNavController().navigate(
                     AppLoaderFragmentDirections.actionAuthLoaderFragmentToAppNavigation()
                 )
-                AppLoaderUINavState.NavigateToAuth -> findNavController().navigate(
+                AppLoaderNavigatioState.NavigateToAuth -> findNavController().navigate(
                     AppLoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
                 )
-                AppLoaderUINavState.NavigateToCourier -> findNavController().navigate(
+                AppLoaderNavigatioState.NavigateToCourier -> findNavController().navigate(
                     AppLoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()
                 )
             }

@@ -3,7 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/courier_navigation"
-    app:startDestination="@id/courierWarehouseFragment">
+    app:startDestination="@id/courierLoaderFragment">
+
+    <fragment
+        android:id="@+id/courierLoaderFragment"
+        android:name="ru.wb.perevozka.ui.courierloader.CourierLoaderFragment"
+        android:label="CourierLoaderFragment"
+        tools:layout="@layout/courier_loader_fragment">
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierWarehouseFragment"
+            app:destination="@id/courierWarehouseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_userFormFragment"
+            app:destination="@id/userFormFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_couriersCompleteRegistrationFragment"
+            app:destination="@id/couriersCompleteRegistrationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/courierWarehouseFragment"
@@ -17,6 +45,38 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userFormFragment"
+        android:name="ru.wb.perevozka.ui.courierdata.CourierDataFragment"
+        android:label="UserFormFragment"
+        tools:layout="@layout/courier_data_fragment">
+        <argument
+            android:name="phone_key"
+            app:argType="ru.wb.perevozka.ui.courierdata.CourierDataParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_userFormFragment_to_couriersCompleteRegistrationFragment"
+            app:destination="@id/couriersCompleteRegistrationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/couriersCompleteRegistrationFragment"
+        android:name="ru.wb.perevozka.ui.courierexpects.CourierExpectsFragment"
+        android:label="CouriersCompleteRegistrationFragment"
+        tools:layout="@layout/auth_courier_expects_fragment">
+        <argument
+            android:name="phone_key"
+            app:argType="ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierWarehouseFragment"
+            app:destination="@id/courierWarehouseFragment" />
     </fragment>
 
     <fragment
@@ -63,6 +123,33 @@
         android:id="@+id/courierCarNumberFragment"
         android:name="ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberFragment"
         android:label="CourierCarNumberFragment"
-        tools:layout="@layout/courier_car_number_fragment" />
+        tools:layout="@layout/courier_car_number_fragment">
+
+        <argument
+            android:name="courier_car_number_id_key"
+            app:argType="ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters"
+            app:nullable="false" />
+
+        <action
+            android:id="@+id/action_courierCarNumberFragment_to_courierOrderTimerFragment"
+            app:destination="@id/courierOrderTimerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierOrderTimerFragment"
+        android:name="ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerFragment"
+        android:label="CourierOrderTimerFragment"
+        tools:layout="@layout/courier_order_timer_fragment">
+
+        <argument
+            android:name="courier_order_timer_id_key"
+            app:argType="ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters"
+            app:nullable="false" />
+
+    </fragment>
 
 </navigation>

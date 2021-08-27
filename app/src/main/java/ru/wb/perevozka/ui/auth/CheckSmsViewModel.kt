@@ -9,7 +9,6 @@ import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.auth.domain.CheckSmsData
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.perevozka.ui.auth.signup.TimerState
@@ -27,8 +26,8 @@ class CheckSmsViewModel(
         get() = _stateTitleUI
 
     private val _navigationEvent =
-        SingleLiveEvent<CheckSmsNavAction>()
-    val navigationEvent: LiveData<CheckSmsNavAction>
+        SingleLiveEvent<CheckSmsNavigationState>()
+    val navigationEvent: LiveData<CheckSmsNavigationState>
         get() = _navigationEvent
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
@@ -168,28 +167,18 @@ class CheckSmsViewModel(
         _stateUI.value = CheckSmsUIState.Progress
         val phone = formatPhone()
         addSubscription(interactor.auth(phone, password)
-            .map { checkSmsData(it, phone) }
             .subscribe(
-                { authComplete(it) },
+                { authComplete() },
                 { checkSmsError(it) }
             )
         )
     }
 
-    private fun checkSmsData(it: CheckSmsData, phone: String) = when (it) {
-        CheckSmsData.NeedApproveCourierDocuments ->
-            CheckSmsNavAction.NavigateToCompletionRegistration(phone)
-        CheckSmsData.NeedSendCourierDocument ->
-            CheckSmsNavAction.NavigateToUserForm(phone)
-        CheckSmsData.UserRegistered ->
-            CheckSmsNavAction.NavigateToApplication
-    }
-
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
-    private fun authComplete(createPasswordNavAction: CheckSmsNavAction) {
+    private fun authComplete() {
         _stateUI.value = CheckSmsUIState.Complete
-        _navigationEvent.value = createPasswordNavAction
+        _navigationEvent.value = CheckSmsNavigationState.NavigateToAppLoader
     }
 
     private fun observeNetworkState() {

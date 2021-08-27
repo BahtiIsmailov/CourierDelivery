@@ -8,10 +8,10 @@ import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
-import ru.wb.perevozka.ui.auth.courierdata.domain.CourierDataInteractor
-import ru.wb.perevozka.ui.auth.courierdata.domain.CourierDataInteractorImpl
-import ru.wb.perevozka.ui.auth.courierexpects.domain.CourierExpectsInteractor
-import ru.wb.perevozka.ui.auth.courierexpects.domain.CourierExpectsInteractorImpl
+import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractor
+import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractorImpl
+import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
+import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
@@ -105,13 +105,11 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
-        tokenManager: TokenManager
     ): CheckSmsInteractor {
         return CheckSmsInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             repository,
-            tokenManager
         )
     }
 
@@ -392,7 +390,7 @@ val interactorModule = module {
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
-    single { provideCheckSmsInteractor(get(), get(), get(), get()) }
+    single { provideCheckSmsInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }

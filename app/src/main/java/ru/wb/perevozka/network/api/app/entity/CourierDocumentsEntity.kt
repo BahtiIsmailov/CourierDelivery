@@ -8,4 +8,6 @@ data class CourierDocumentsEntity(
     val passportSeries: String,
     val passportNumber: String,
     val passportDateOfIssue: String,
+    val passportIssuedBy: String,
+    val passportDepartmentCode: String,
 )

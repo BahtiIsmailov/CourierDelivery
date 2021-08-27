@@ -1,0 +1,25 @@
+package ru.wb.perevozka.ui.courierordertimer.domain
+
+import io.reactivex.Completable
+import io.reactivex.Single
+import ru.wb.perevozka.app.DELAY_NETWORK_REQUEST_MS
+import ru.wb.perevozka.network.api.app.AppRemoteRepository
+import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
+import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import java.util.concurrent.TimeUnit
+
+class CourierOrderTimerInteractorImpl(
+    private val rxSchedulerFactory: RxSchedulerFactory,
+    private val appRemoteRepository: AppRemoteRepository,
+) : CourierOrderTimerInteractor {
+
+    override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
+        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
+            .andThen(appRemoteRepository.anchorTask(taskID))
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+        // TODO: 24.08.2021 выключено для тестирования
+//        return appRemoteRepository.anchorTask(taskID)
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+}

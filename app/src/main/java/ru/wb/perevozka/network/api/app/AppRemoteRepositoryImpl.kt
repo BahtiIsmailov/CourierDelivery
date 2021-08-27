@@ -49,7 +49,6 @@ import ru.wb.perevozka.network.api.app.remote.tracker.BoxTrackerRequest
 import ru.wb.perevozka.network.api.app.remote.warehouse.*
 import ru.wb.perevozka.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxResponse
 import ru.wb.perevozka.network.token.TokenManager
-import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.TimeManager
 
 class AppRemoteRepositoryImpl(
@@ -306,7 +305,6 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun boxInfo(barcode: String): Single<BoxInfoDataEntity> {
-        LogUtils { logDebugApp("SCOPE_DEBUG call boxInfo " + barcode) }
         return remote.boxInfo(apiVersion(), barcode).map { covertBoxInfoToFlight(it) }
     }
 
@@ -513,7 +511,9 @@ class AppRemoteRepositoryImpl(
                 inn = inn,
                 passportSeries = passportSeries,
                 passportNumber = passportNumber,
-                passportDateOfIssue = passportDateOfIssue
+                passportDateOfIssue = passportDateOfIssue,
+                passportIssuedBy = passportIssuedBy,
+                passportDepartmentCode = passportDepartmentCode
             )
         }
         return remote.courierDocuments(tokenManager.apiVersion(), courierDocuments)
@@ -577,14 +577,14 @@ class AppRemoteRepositoryImpl(
         return with(courierOrderResponse) {
             CourierOrderEntity(
                 id = id,
-                routeID = routeID,
-                gate = gate,
+                routeID = routeID ?: 0,
+                gate = gate ?: "",
                 srcOffice = CourierOrderSrcOfficeEntity(
-                    id = srcOffice.id,
-                    name = srcOffice.name,
-                    fullAddress = srcOffice.fullAddress,
-                    long = srcOffice.long,
-                    lat = srcOffice.lat,
+                    id = srcOffice?.id ?: 0,
+                    name = srcOffice?.name ?: "",
+                    fullAddress = srcOffice?.fullAddress ?: "",
+                    long = srcOffice?.long ?: 0.0,
+                    lat = srcOffice?.lat ?: 0.0,
                 ),
                 minPrice = minPrice,
                 minVolume = minVolume,

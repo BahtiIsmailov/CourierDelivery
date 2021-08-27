@@ -7,8 +7,19 @@ import ru.wb.perevozka.ui.auth.CheckSmsParameters
 import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
+import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters
+import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
+import ru.wb.perevozka.ui.courierdata.CourierDataParameters
+import ru.wb.perevozka.ui.courierdata.UserFormViewModel
+import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
+import ru.wb.perevozka.ui.courierexpects.CouriersCompleteRegistrationViewModel
+import ru.wb.perevozka.ui.courierloader.CourierLoaderViewModel
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
 import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
 import ru.wb.perevozka.ui.courierorders.CourierOrdersViewModel
+import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters
+import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerViewModel
 import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.perevozka.ui.dcloading.*
 import ru.wb.perevozka.ui.dcunloading.*
@@ -37,31 +48,24 @@ import ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongModel
 import ru.wb.perevozka.ui.unloadingscan.UnloadingBoxNotBelongParameters
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanParameters
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanViewModel
-import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
-import ru.wb.perevozka.ui.auth.courierexpects.CouriersCompleteRegistrationViewModel
-import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
-import ru.wb.perevozka.ui.auth.courierdata.UserFormViewModel
-import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
 
 val viewModelModule = module {
 
-    viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
-    viewModel { AuthLoaderViewModel(get(), get()) }
+    viewModel { AppLoaderViewModel(get(), get(), get(), get()) }
+    viewModel { AuthLoaderViewModel(get()) }
     viewModel { AppViewModel(get(), get(), get(), get()) }
 
     viewModel { NumberPhoneViewModel(get(), get(), get()) }
-    viewModel { ConfigViewModel(get(), get()) }
-
     viewModel { (parameters: CheckSmsParameters) ->
         CheckSmsViewModel(parameters, get(), get(), get())
     }
 
+    viewModel { CourierLoaderViewModel(get(), get()) }
+    viewModel { ConfigViewModel(get(), get()) }
+
     viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get())
     }
-
     viewModel { (parameters: CourierExpectsParameters) ->
         CouriersCompleteRegistrationViewModel(
             parameters,
@@ -80,7 +84,23 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { CourierCarNumberViewModel(get(), get(), get()) }
+    viewModel { (parameters: CourierCarNumberParameters) ->
+        CourierCarNumberViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
+
+    viewModel { (parameters: CourierOrderTimerParameters) ->
+        CourierOrderTimerViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
 
     viewModel { ScannerViewModel(get(), get()) }
 

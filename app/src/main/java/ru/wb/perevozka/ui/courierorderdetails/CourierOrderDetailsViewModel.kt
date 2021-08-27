@@ -99,7 +99,10 @@ class CourierOrderDetailsViewModel(
 //                        "Этот заказ уже взят в работу",
 //                        "Вернуться к списку заказов"
 //                    )
-                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber
+                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber(
+                        parameters.title,
+                        parameters.order
+                    )
                 })
         )
     }

@@ -1,5 +1,7 @@
 package ru.wb.perevozka.ui.courierorderdetails
 
+import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+
 sealed class CourierOrderDetailsNavigationState {
 
     data class NavigateToDialogInfo(
@@ -13,6 +15,6 @@ sealed class CourierOrderDetailsNavigationState {
         val title: String, val message: String
     ) : CourierOrderDetailsNavigationState()
 
-    object NavigateToCarNumber: CourierOrderDetailsNavigationState()
+    data class  NavigateToCarNumber(val title: String, val order: CourierOrderEntity): CourierOrderDetailsNavigationState()
 
 }

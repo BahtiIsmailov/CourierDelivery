@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Perevozka</string>
+    <string name="app_name">WB Go</string>
 
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>

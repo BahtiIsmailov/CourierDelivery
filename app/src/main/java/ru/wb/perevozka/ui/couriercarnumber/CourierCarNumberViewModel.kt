@@ -14,6 +14,7 @@ import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
+    private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: CourierCarNumberResourceProvider,
     private val interactor: CourierCarNumberInteractor,
@@ -43,7 +44,10 @@ class CourierCarNumberViewModel(
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
             event.scan(String(), { accumulator, item -> accumulateNumber(accumulator, item) })
-                .doOnNext { switchComplete(it) }
+                .doOnNext {
+                    switchBackspace(it)
+                    switchComplete(it)
+                }
                 .map { keyToNumberSpanFormat(it) }
                 .subscribe(
                     { _stateUI.value = it },
@@ -58,11 +62,16 @@ class CourierCarNumberViewModel(
             CarNumberUtils.numberKeyboardMode(it)
         )
 
-    private fun switchComplete(it: String) {
+    private fun switchBackspace(it: String) {
         _stateKeyboardBackspaceUI.value =
-            if (it.isEmpty()) CourierCarNumberBackspaceUIState.Inactive else CourierCarNumberBackspaceUIState.Active
+            if (it.isEmpty()) CourierCarNumberBackspaceUIState.Inactive
+            else CourierCarNumberBackspaceUIState.Active
+    }
+
+    private fun switchComplete(it: String) {
         _stateUI.value =
-            if (it.length < NUMBER_LENGTH_MAX) CourierCarNumberUIState.NumberNotFilled else CourierCarNumberUIState.NumberFormatComplete
+            if (it.length < NUMBER_LENGTH_MAX - 1) CourierCarNumberUIState.NumberNotFilled
+            else CourierCarNumberUIState.NumberFormatComplete
     }
 
     private fun accumulateNumber(
@@ -89,33 +98,37 @@ class CourierCarNumberViewModel(
     }
 
     private fun fetchCarNumberComplete() {
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer
+        _navigationState.value =
+            CourierCarNumberNavigationState.NavigateToTimer(parameters.title, parameters.order)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> CourierCarNumberNavigationState.NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> CourierCarNumberNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> CourierCarNumberNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigationState.value = message
+        // TODO: 26.08.2021 Выключено до полной реализации
+//        val message = when (throwable) {
+//            is NoInternetException -> CourierCarNumberNavigationState.NavigateToDialogInfo(
+//                DialogStyle.WARNING.ordinal,
+//                throwable.message,
+//                resourceProvider.getGenericInternetMessageError(),
+//                resourceProvider.getGenericInternetButtonError()
+//            )
+//            is BadRequestException -> CourierCarNumberNavigationState.NavigateToDialogInfo(
+//                DialogStyle.ERROR.ordinal,
+//                throwable.error.message,
+//                resourceProvider.getGenericServiceMessageError(),
+//                resourceProvider.getGenericServiceButtonError()
+//            )
+//            else -> CourierCarNumberNavigationState.NavigateToDialogInfo(
+//                DialogStyle.ERROR.ordinal,
+//                resourceProvider.getGenericServiceTitleError(),
+//                resourceProvider.getGenericServiceMessageError(),
+//                resourceProvider.getGenericServiceButtonError()
+//            )
+//        }
+//        _navigationState.value = message
+
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer(parameters.title, parameters.order)
     }
 
     fun onCancelLoadClick() {

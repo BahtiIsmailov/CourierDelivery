@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="CircleProgressView">
-        <attr name="ap_progress" format="integer" />
+    <declare-styleable name="TimerProgressView">
+        <attr name="ap_progress" format="float" />
         <attr name="ap_progress_scale_current_color" format="color" />
         <attr name="ap_progress_scale_wait_color" format="color" />
         <attr name="ap_progress_background_color" format="color" />

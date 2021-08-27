@@ -10,40 +10,22 @@ import ru.wb.perevozka.ui.NetworkViewModel
 
 class AuthLoaderViewModel(
     compositeDisposable: CompositeDisposable,
-    private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _navState = MutableLiveData<AuthLoaderUINavState>()
-    val navState: LiveData<AuthLoaderUINavState>
-        get() = _navState
+    private val _navigationState = MutableLiveData<AuthLoaderNavigationState>()
+    val navigationState: LiveData<AuthLoaderNavigationState>
+        get() = _navigationState
 
     init {
         checkUserState()
     }
 
     private fun checkUserState() {
-        if (tokenManager.isContains()) {
-            val phone = tokenManager.userPhone()
-            when {
-                tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toUserForm(phone)
-                tokenManager.resources()
-                    .contains(NEED_APPROVE_COURIER_DOCUMENTS) -> toCouriersCompleteRegistration(
-                    phone
-                )
-            }
-        } else toNumberPhone()
+        toNumberPhone()
     }
 
     private fun toNumberPhone() {
-        _navState.value = AuthLoaderUINavState.NavigateToNumberPhone
-    }
-
-    private fun toUserForm(phone: String) {
-        _navState.value = AuthLoaderUINavState.NavigateToUserForm(phone)
-    }
-
-    private fun toCouriersCompleteRegistration(phone: String) {
-        _navState.value = AuthLoaderUINavState.NavigateToCouriersCompleteRegistration(phone)
+        _navigationState.value = AuthLoaderNavigationState.NavigateToNumberPhone
     }
 
 }

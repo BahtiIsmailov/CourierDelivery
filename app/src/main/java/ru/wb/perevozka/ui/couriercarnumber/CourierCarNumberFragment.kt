@@ -1,6 +1,7 @@
 package ru.wb.perevozka.ui.couriercarnumber
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -13,10 +14,14 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierCarNumberFragmentBinding
+import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
@@ -29,7 +34,17 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     private lateinit var _binding: CourierCarNumberFragmentBinding
     private val binding get() = _binding
 
-    private val viewModel by viewModel<CourierCarNumberViewModel>()
+    companion object {
+        const val COURIER_CAR_NUMBER_ID_KEY = "courier_car_number_id_key"
+    }
+
+    private val viewModel by viewModel<CourierCarNumberViewModel> {
+        parametersOf(
+            requireArguments().getParcelable<CourierCarNumberParameters>(
+                COURIER_CAR_NUMBER_ID_KEY
+            )
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,6 +98,11 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         viewModel.navigationState.observe(viewLifecycleOwner, { state ->
             when (state) {
                 is CourierCarNumberNavigationState.NavigateToTimer -> {
+                    findNavController().navigate(
+                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderTimerFragment(
+                            CourierOrderTimerParameters(state.title, state.order)
+                        )
+                    )
                 }
                 is CourierCarNumberNavigationState.NavigateToDialogInfo -> {
                     with(state) { showDialogInfo(type, title, message, button) }
@@ -174,3 +194,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
 }
+
+@Parcelize
+data class CourierCarNumberParameters(val title: String, val order: CourierOrderEntity) :
+    Parcelable

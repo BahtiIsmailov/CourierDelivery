@@ -20,7 +20,6 @@ class CheckSmsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val authRepository: AuthRemoteRepository,
-    private val tokenManager: TokenManager
 ) : CheckSmsInteractor {
 
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
@@ -76,18 +75,9 @@ class CheckSmsInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun auth(phone: String, password: String): Single<CheckSmsData> {
+    override fun auth(phone: String, password: String): Completable {
         val auth = authRepository.auth(phone, password, true)
-        val tokenResources = Single.fromCallable { tokenManager.resources() }
-        return auth.andThen(tokenResources)
-            .map {
-                when {
-                    it.contains(NEED_SEND_COURIER_DOCUMENTS) -> CheckSmsData.NeedSendCourierDocument
-                    it.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> CheckSmsData.NeedApproveCourierDocuments
-                    else -> CheckSmsData.UserRegistered
-                }
-            }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+        return auth.compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     override fun couriersExistAndSavePhone(phone: String): Completable {

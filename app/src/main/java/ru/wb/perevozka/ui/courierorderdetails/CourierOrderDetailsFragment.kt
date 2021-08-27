@@ -26,6 +26,7 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.views.ProgressButtonMode
 
@@ -119,8 +120,12 @@ class CourierOrderDetailsFragment : Fragment() {
                     showConfirmDialog(it.title, it.message)
                 is CourierOrderDetailsNavigationState.NavigateToDialogInfo ->
                     showEmptyOrderDialog(it.title, it.message, it.button)
-                CourierOrderDetailsNavigationState.NavigateToCarNumber ->
-                    findNavController().navigate(CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment())
+                is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
+                    findNavController().navigate(
+                        CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment(
+                            CourierCarNumberParameters(it.title, it.order)
+                        )
+                    )
             }
         }
 

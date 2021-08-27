@@ -97,7 +97,7 @@
     <color name="button_default_text_disable">#B6B2BD</color>
     <color name="button_default_text_enable1">#642CA3</color>
 
-    <color name="button_alert_text_enable">#DF1F00</color>
+    <color name="button_alert_text_enable">#B00020</color>
     <color name="button_alert_text_progress">#E0DDE4</color>
     <color name="button_alert_text_disable">#E0DDE4</color>
 
@@ -138,8 +138,13 @@
     <color name="button_warning_pressed">#FA900A</color>
 
     <color name="reception_text_manual_input">#642CA3</color>
-    <color name="mtrl_textinput_default_box_stroke_color" >#673AB7</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#673AB7</color>
 
     <color name="keyboard_text_color">#231D2A</color>
+
+    <color name="color_arc_foreground">#FFFFFF</color>
+    <color name="color_arc_backgroundColor">#FFFFFF</color>
+    <color name="color_arc_scale_current">#673AB7</color>
+    <color name="color_arc_scale_wait">#E6E3EB</color>
 
 </resources>

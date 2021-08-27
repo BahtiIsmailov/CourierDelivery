@@ -25,8 +25,6 @@ import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.ui.auth.courierexpects.CourierExpectsParameters
-import ru.wb.perevozka.ui.auth.courierdata.CourierDataParameters
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -79,18 +77,8 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
         viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
-                CheckSmsNavAction.NavigateToApplication ->
+                CheckSmsNavigationState.NavigateToAppLoader ->
                     findNavController().navigate(R.id.load_navigation)
-                is CheckSmsNavAction.NavigateToCompletionRegistration -> findNavController().navigate(
-                    CheckSmsFragmentDirections.actionCheckSmsFragmentToCouriersCompleteRegistrationFragment(
-                        CourierExpectsParameters(state.phone)
-                    )
-                )
-                is CheckSmsNavAction.NavigateToUserForm -> findNavController().navigate(
-                    CheckSmsFragmentDirections.actionCheckSmsFragmentToUserFormFragment(
-                        CourierDataParameters(state.phone)
-                    )
-                )
             }
         })
 
