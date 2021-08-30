@@ -179,6 +179,11 @@
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
+    <style name="VeryLargeLightRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/light_text</item>
+    </style>
+
 
     <style name="LargeBrightMediumText" parent="MediumBaseFont">
         <item name="android:textSize">@dimen/large_text</item>

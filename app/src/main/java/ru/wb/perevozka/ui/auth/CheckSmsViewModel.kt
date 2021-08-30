@@ -214,7 +214,7 @@ class CheckSmsViewModel(
     }
 
     companion object {
-        private const val DURATION_TIME_INIT = 180
+        private const val DURATION_TIME_INIT = 60
         const val TIME_DIVIDER = 60
         const val NUMBER_LENGTH_MAX = 4
     }

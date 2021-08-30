@@ -9,9 +9,9 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierLoaderFragmentBinding
-import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.courierdata.CourierDataParameters
+import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
+import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 

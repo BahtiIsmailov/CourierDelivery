@@ -2,26 +2,31 @@ package ru.wb.perevozka.di.module
 
 import org.koin.dsl.module
 import ru.wb.perevozka.db.AppLocalRepository
+import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.auth.AuthRemoteRepository
 import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
-import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractor
-import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractorImpl
-import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
-import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractorImpl
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
+import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractor
+import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractorImpl
+import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
+import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractorImpl
+import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
+import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractorImpl
+import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
+import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractorImpl
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
@@ -228,6 +233,28 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierScannerLoadingInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        appLocalRepository: AppLocalRepository,
+        scannerRepository: ScannerRepository,
+        timeManager: TimeManager,
+        screenManager: ScreenManager,
+        courierLocalRepository: CourierLocalRepository
+    ): CourierLoadingInteractor {
+        return CourierLoadingInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            appLocalRepository,
+            scannerRepository,
+            timeManager,
+            screenManager,
+            courierLocalRepository
+        )
+    }
+
     fun provideCourierWarehouseInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppRemoteRepository,
@@ -247,15 +274,24 @@ val interactorModule = module {
         return CourierOrderDetailsInteractorImpl(rxSchedulerFactory, appRemoteRepository)
     }
 
+    fun provideCourierOrderTimerInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+    ): CourierOrderTimerInteractor {
+        return CourierOrderTimerInteractorImpl(rxSchedulerFactory, appRemoteRepository)
+    }
+
     fun provideCourierOrderInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository
     ): CourierOrderInteractor {
         return CourierOrderInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
+            courierLocalRepository
         )
     }
 
@@ -401,9 +437,22 @@ val interactorModule = module {
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get(), get()) }
 
     single { provideCourierWarehouseInteractor(get(), get(), get()) }
-    single { provideCourierOrderInteractor(get(), get(), get()) }
+    single { provideCourierOrderInteractor(get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get()) }
+    single { provideCourierOrderTimerInteractor(get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get()) }
+    single {
+        provideCourierScannerLoadingInteractor(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
 

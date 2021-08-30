@@ -38,6 +38,7 @@
 
     <declare-styleable name="ReceptionInfoView">
         <attr name="reception_info_box" format="string" />
+        <attr name="reception_address_box" format="string" />
         <attr name="reception_info_state" format="enum">
             <enum name="empty_box" value="0" />
             <enum name="submerge_box" value="1" />

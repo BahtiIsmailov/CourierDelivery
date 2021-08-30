@@ -1,8 +1,7 @@
 package ru.wb.perevozka.di.module
 
-import ru.wb.perevozka.db.AppDatabase
-import ru.wb.perevozka.db.AppLocalRepository
-import ru.wb.perevozka.db.AppLocalRepositoryImpl
+import org.koin.dsl.module
+import ru.wb.perevozka.db.*
 import ru.wb.perevozka.db.dao.*
 import ru.wb.perevozka.network.api.app.AppApi
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
@@ -19,10 +18,9 @@ import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepositoryImpl
-import ru.wb.perevozka.utils.managers.TimeManager
-import org.koin.dsl.module
 import ru.wb.perevozka.ui.splash.domain.AppSharedRepository
 import ru.wb.perevozka.ui.splash.domain.AppSharedRepositoryImpl
+import ru.wb.perevozka.utils.managers.TimeManager
 
 val deliveryRepositoryModule = module {
 
@@ -57,13 +55,23 @@ val deliveryRepositoryModule = module {
         pvzMatchingBoxDao: PvzMatchingBoxDao,
         deliveryErrorBoxDao: DeliveryErrorBoxDao,
     ): AppLocalRepository {
-        return AppLocalRepositoryImpl(appDatabase,
+        return AppLocalRepositoryImpl(
+            appDatabase,
             flightDao,
             flightMatchingDao,
             warehouseMatchingBoxDao,
             pvzMatchingBoxDao,
-            deliveryErrorBoxDao)
+            deliveryErrorBoxDao
+        )
     }
+
+    fun provideCourierLocalRepository(
+        courierOrderDao: CourierOrderDao,
+        courierBoxDao: CourierBoxDao
+    ): CourierLocalRepository {
+        return CourierLocalRepositoryImpl(courierOrderDao, courierBoxDao)
+    }
+
 
     fun provideScannerRepository(): ScannerRepository {
         return ScannerRepositoryImpl()
@@ -81,6 +89,7 @@ val deliveryRepositoryModule = module {
     single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
+    single { provideCourierLocalRepository(get(), get()) }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
     single { provideAppSharedRepository() }

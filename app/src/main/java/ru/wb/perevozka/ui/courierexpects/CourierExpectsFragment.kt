@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.AuthCourierExpectsFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment

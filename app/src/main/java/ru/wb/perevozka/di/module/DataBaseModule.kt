@@ -17,6 +17,14 @@ val databaseModule = module {
             .build()
     }
 
+    fun provideCourierOrderDao(database: AppDatabase): CourierOrderDao {
+        return database.courierOrderDao
+    }
+
+    fun provideCourierBoxDao(database: AppDatabase): CourierBoxDao {
+        return database.courierBoxDao
+    }
+
     fun provideFlightDao(database: AppDatabase): FlightDao {
         return database.flightDao
     }
@@ -39,6 +47,8 @@ val databaseModule = module {
 
     single { provideDatabase(androidApplication()) }
     single { provideFlightDao(get()) }
+    single { provideCourierOrderDao(get()) }
+    single { provideCourierBoxDao(get()) }
     single { provideFlightMatchingDao(get()) }
     single { provideWarehouseMatchingBoxDao(get()) }
     single { providePvzMatchingBoxDao(get()) }

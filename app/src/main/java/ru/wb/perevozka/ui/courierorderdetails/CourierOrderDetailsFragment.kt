@@ -187,6 +187,7 @@ class CourierOrderDetailsFragment : Fragment() {
         alertDialog.show()
     }
 
+    // TODO: 27.08.2021 переработать
     private fun showConfirmDialog(title: String, message: String) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)

@@ -223,6 +223,12 @@
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
 
+    <string name="courier_orders_timer_dialog_negative_button">Отмена</string>
+    <string name="courier_orders_timer_dialog_positive_button">Отказаться</string>
+
+    <string name="courier_order_scanner_label">Прием коробок</string>
+    <string name="courier_order_scanner_complete">Завершить приёмку</string>
+
     <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>
     <string name="flight_deliveries_dialog_title">Начать доставку?</string>
     <string name="flight_deliveries_dialog_description">После перехода к доставке, вы больше не сможете погрузить коробки в машину</string>

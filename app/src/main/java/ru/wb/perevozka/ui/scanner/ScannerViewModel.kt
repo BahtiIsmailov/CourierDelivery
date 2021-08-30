@@ -8,6 +8,7 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerInteractor
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import ru.wb.perevozka.app.PREFIX_QR_CODE
 import java.util.concurrent.TimeUnit
 
 class ScannerViewModel(
@@ -27,7 +28,7 @@ class ScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
-        if (barcode.startsWith("TRBX")) {
+        if (barcode.startsWith(PREFIX_QR_CODE)) {
             if (oldBarcode == barcode) {
                 erase?.dispose()
                 erase = Observable.timer(5, TimeUnit.SECONDS).subscribe { clearMemoryBarcode() }

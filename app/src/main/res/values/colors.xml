@@ -109,6 +109,10 @@
     <color name="button_default_enabled">#642CA3</color>
     <color name="button_default_pressed">#703AAC</color>
 
+    <color name="button_refused_disabled">#EAE8ED</color>
+    <color name="button_refused_enabled">#FDF4F2</color>
+    <color name="button_refused_pressed">#CDFDF4F2</color>
+
     <color name="button_default_enabled1">#EFE8F7</color>
     <color name="button_default_pressed1">#E6D1FF</color>
 
@@ -146,5 +150,11 @@
     <color name="color_arc_backgroundColor">#FFFFFF</color>
     <color name="color_arc_scale_current">#673AB7</color>
     <color name="color_arc_scale_wait">#E6E3EB</color>
+
+    <color name="disable_icon">#D1CED5</color>
+
+    <color name="disable_scan_status">#99939F</color>
+    <color name="complete_scan_status">#2CA364</color>
+    <color name="unknown_scan_status">#B00020</color>
 
 </resources>

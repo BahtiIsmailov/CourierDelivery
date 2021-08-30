@@ -11,7 +11,6 @@ import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
-import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesUIState
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 
 class CourierOrdersViewModel(
@@ -51,11 +50,17 @@ class CourierOrdersViewModel(
     }
 
     fun onItemClick(idView: Int) {
-        _navigationState.value =
-            CourierOrdersNavigationState.NavigateToOrderDetails(
-                parameters.address,
-                copyCourierOrdersEntity[idView]
-            )
+        val courierOrderEntity = copyCourierOrdersEntity[idView]
+        addSubscription(
+            interactor.clearAndSaveOrder(courierOrderEntity)
+                .subscribe({
+                    _navigationState.value =
+                        CourierOrdersNavigationState.NavigateToOrderDetails(
+                            parameters.address,
+                            copyCourierOrdersEntity[idView]
+                        )
+                }, {})
+        )
     }
 
     private fun observeNetworkState() {

@@ -9,6 +9,8 @@ interface ScannerRepository {
 
     fun observeBarcodeScanned(barcodeSubject: PublishSubject<String>): Observable<String>
 
+    fun observeBarcodeScanned(): Observable<String>
+
     fun scannerAction(action: ScannerAction)
 
     fun observeScannerAction(): Observable<ScannerAction>

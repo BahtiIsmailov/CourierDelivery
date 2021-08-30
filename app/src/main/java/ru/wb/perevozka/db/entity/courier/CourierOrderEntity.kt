@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class CourierOrderEntity (
+data class CourierOrderEntity(
     val id: Int,
     val routeID: Int,
     val gate: String,

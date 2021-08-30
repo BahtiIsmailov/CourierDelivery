@@ -20,6 +20,7 @@ import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
 import ru.wb.perevozka.ui.courierorders.CourierOrdersViewModel
 import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters
 import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerViewModel
+import ru.wb.perevozka.ui.courierloading.CourierLoadingScanViewModel
 import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.perevozka.ui.dcloading.*
 import ru.wb.perevozka.ui.dcunloading.*
@@ -32,6 +33,7 @@ import ru.wb.perevozka.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewMod
 import ru.wb.perevozka.ui.flightpickpoint.FlightPickPointViewModel
 import ru.wb.perevozka.ui.flights.FlightsViewModel
 import ru.wb.perevozka.ui.flightsloader.FlightLoaderViewModel
+import ru.wb.perevozka.ui.scanner.CourierScannerViewModel
 import ru.wb.perevozka.ui.scanner.ScannerViewModel
 import ru.wb.perevozka.ui.splash.AppLoaderViewModel
 import ru.wb.perevozka.ui.splash.AppViewModel
@@ -102,7 +104,18 @@ val viewModelModule = module {
         )
     }
 
+    viewModel {
+        CourierLoadingScanViewModel(
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+
+
     viewModel { ScannerViewModel(get(), get()) }
+    viewModel { CourierScannerViewModel(get(), get()) }
 
     viewModel { DcLoadingScanViewModel(get(), get(), get()) }
     viewModel { DcLoadingHandleViewModel(get(), get()) }

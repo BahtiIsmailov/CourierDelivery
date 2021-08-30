@@ -9,10 +9,13 @@ sealed class CourierOrderTimerNavigationState {
         val button: String
     ) : CourierOrderTimerNavigationState()
 
-    data class NavigateToDialogConfirm(
+    data class NavigateToRefuseOrderDialog(
         val title: String, val message: String
     ) : CourierOrderTimerNavigationState()
 
-    object NavigateToCarNumber: CourierOrderTimerNavigationState()
+    object NavigateToWarehouse: CourierOrderTimerNavigationState()
+
+    object NavigateToScanner: CourierOrderTimerNavigationState()
+
 
 }

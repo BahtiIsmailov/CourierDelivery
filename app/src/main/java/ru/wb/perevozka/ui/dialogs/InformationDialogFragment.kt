@@ -10,6 +10,7 @@ import androidx.fragment.app.setFragmentResult
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppExtras
 
+// TODO: 27.08.2021 объединить с DialogInfoFragment
 class InformationDialogFragment : DialogFragment() {
 
     private lateinit var title: String

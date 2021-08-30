@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/scanner"
-        class="com.wb.perevozka.ui.scanner.ScannerFragment"
+        class="ru.wb.perevozka.ui.scanner.ScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/divider2"

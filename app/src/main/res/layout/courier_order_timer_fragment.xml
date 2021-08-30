@@ -172,8 +172,19 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.055" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ImageButton
         android:id="@+id/refuse_order"
+        android:layout_width="64dp"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/progress_image_button_round_refuse"
+        android:src="@drawable/ic_stop_timer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ru.wb.perevozka.views.ProgressButtonView
+        android:id="@+id/i_arrived"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
@@ -181,9 +192,9 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_danger"
-        app:progress_button_name="Отказаться от заказа"
+        app:layout_constraintStart_toEndOf="@+id/refuse_order"
+        app:progress_button_background="@drawable/progress_image_button_round_default"
+        app:progress_button_name="Я прибыл"
         app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/button_default_text_disable"
         app:progress_button_text_color_enable="@color/button_default_text_enable"

@@ -5,7 +5,7 @@ import io.reactivex.subjects.PublishSubject
 
 class ScannerRepositoryImpl : ScannerRepository {
 
-    private lateinit var actionBarcodeScannedSubject: PublishSubject<String>
+    private var actionBarcodeScannedSubject = PublishSubject.create<String>()
 
     private val scannerActionSubject = PublishSubject.create<ScannerAction>()
 
@@ -14,8 +14,12 @@ class ScannerRepositoryImpl : ScannerRepository {
     }
 
     override fun observeBarcodeScanned(barcodeSubject: PublishSubject<String>): Observable<String> {
-        actionBarcodeScannedSubject= barcodeSubject
+        actionBarcodeScannedSubject = barcodeSubject
         return barcodeSubject
+    }
+
+    override fun observeBarcodeScanned(): Observable<String> {
+        return actionBarcodeScannedSubject
     }
 
     override fun scannerAction(action: ScannerAction) {

@@ -2,27 +2,26 @@ package ru.wb.perevozka.ui.courierordertimer
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.app.ARRIVAL_TIME_COURIER_SEC
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.CheckSmsViewModel
-import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
+import ru.wb.perevozka.ui.auth.signup.TimerState
+import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
+import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
-import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 class CourierOrderTimerViewModel(
     private val parameters: CourierOrderTimerParameters,
     compositeDisposable: CompositeDisposable,
-    private val interactor: CourierOrderDetailsInteractor,
+    private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
+) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
     val orderTimer: LiveData<CourierOrderTimerState>
@@ -40,9 +39,6 @@ class CourierOrderTimerViewModel(
     val progressState: LiveData<CourierOrderTimerProgressState>
         get() = _progressState
 
-    companion object {
-        const val DELAY_TIMER_SEC = 20L * 60
-    }
 
     init {
         initOrderInfo()
@@ -50,23 +46,28 @@ class CourierOrderTimerViewModel(
     }
 
     private fun initTimer() {
-        addSubscription(
-            Observable.interval(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-                .take(DELAY_TIMER_SEC)
-                .scan(0, { accumulator, item -> accumulator + 1 })
-                .subscribe({
-                    val invertTime = (DELAY_TIMER_SEC - it).toInt()
-                    val min = String.format(Locale.getDefault(), "%02d", getMin(invertTime))
-                    val sec = String.format(Locale.getDefault(), "%02d", getSec(invertTime))
-                    val timeAnalog = (100.0F / DELAY_TIMER_SEC) * invertTime
-                    val timeDigit = "$min:$sec"
-                    _orderTimer.value = CourierOrderTimerState.Timer(timeAnalog, timeDigit)
-                },
-                    {
-                        LogUtils { logDebugApp("initTimer err " + it.toString()) }
-                    })
+        updateTimer(ARRIVAL_TIME_COURIER_SEC.toInt())
+        interactor.startTimer(ARRIVAL_TIME_COURIER_SEC.toInt())
+        addSubscription(interactor.timer
+            .subscribe({ onHandleSignUpState(it) })
+            { onHandleSignUpError() })
+    }
+
+    private fun onHandleSignUpState(timerState: TimerState) {
+        timerState.handle(this)
+    }
+
+    private fun onHandleSignUpError() {}
+
+    private fun timeIsOut() {
+        _navigationState.value = CourierOrderTimerNavigationState.NavigateToDialogInfo(
+            DialogStyle.WARNING.ordinal,
+            "Время вышло",
+            "К сожалению, вы не успели приехать вовремя. Заказ был отменён",
+            "Вернуться к списку заказов"
         )
     }
+
 
     private fun getMin(duration: Int): Int {
         return duration / CheckSmsViewModel.TIME_DIVIDER
@@ -95,28 +96,22 @@ class CourierOrderTimerViewModel(
     }
 
     fun refuseOrderClick() {
-
+        _navigationState.value = CourierOrderTimerNavigationState.NavigateToRefuseOrderDialog(
+            "Отказаться от заказа",
+            "Вы уверены, что хотите отказаться от заказа?"
+        )
     }
 
-    fun confirmTakeOrderClick() {
-        _progressState.value = CourierOrderTimerProgressState.Progress
-        addSubscription(
-            interactor.anchorTask(parameters.order.id.toString())
-                .subscribe({
-                    _progressState.value = CourierOrderTimerProgressState.ProgressComplete
-                }, {
-                    _progressState.value = CourierOrderTimerProgressState.ProgressComplete
+    fun iArrivedClick() {
+        _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
+    }
 
-                    // TODO: 25.08.2021 выключено до полной реализации экранов номера автомобиля
-//                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogInfo(
-//                        DialogStyle.WARNING.ordinal,
-//                        "Заказ забрали",
-//                        "Этот заказ уже взят в работу",
-//                        "Вернуться к списку заказов"
-//                    )
-                    _navigationState.value = CourierOrderTimerNavigationState.NavigateToCarNumber
-                })
-        )
+    fun returnToListOrderClick() {
+        _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
+    }
+
+    fun refuseOrderConfirmClick() {
+        _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
@@ -155,5 +150,20 @@ class CourierOrderTimerViewModel(
     )
 
     data class Label(val label: String)
+
+    override fun onTimerState(duration: Int) {
+        updateTimer(duration)
+    }
+
+    private fun updateTimer(duration: Int) {
+        _orderTimer.value = CourierOrderTimerState.Timer(
+            DateTimeFormatter.getAnalogTime(duration),
+            DateTimeFormatter.getDigitTime(duration)
+        )
+    }
+
+    override fun onTimeIsOverState() {
+        timeIsOut()
+    }
 
 }

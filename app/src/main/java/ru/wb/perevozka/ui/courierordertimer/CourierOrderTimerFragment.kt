@@ -3,6 +3,7 @@ package ru.wb.perevozka.ui.courierordertimer
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,10 +86,16 @@ class CourierOrderTimerFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderTimerNavigationState.NavigateToDialogConfirm ->
-                    showConfirmDialog(it.title, it.message)
+                is CourierOrderTimerNavigationState.NavigateToRefuseOrderDialog ->
+                    showRefuseOrderDialog(it.title, it.message)
                 is CourierOrderTimerNavigationState.NavigateToDialogInfo ->
-                    showEmptyOrderDialog(it.title, it.message, it.button)
+                    showTimeIsOutDialog(it.title, it.message, it.button)
+                CourierOrderTimerNavigationState.NavigateToWarehouse -> {
+                    findNavController().navigate(CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierWarehouseFragment())
+                }
+                CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
+                    CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierScannerLoadingScanFragment()
+                )
             }
         }
 
@@ -96,6 +103,7 @@ class CourierOrderTimerFragment : Fragment() {
 
     private fun initListeners() {
         binding.refuseOrder.setOnClickListener { viewModel.refuseOrderClick() }
+        binding.iArrived.setOnClickListener { viewModel.iArrivedClick() }
     }
 
     private fun closeProgressDialog() {
@@ -106,7 +114,7 @@ class CourierOrderTimerFragment : Fragment() {
         progressDialog.show()
     }
 
-    private fun showEmptyOrderDialog(title: String, message: String, button: String) {
+    private fun showTimeIsOutDialog(title: String, message: String, button: String) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.layout
@@ -123,38 +131,53 @@ class CourierOrderTimerFragment : Fragment() {
         messageText.text = message
         positive.setOnClickListener {
             alertDialog.dismiss()
-            findNavController().popBackStack()
+            viewModel.returnToListOrderClick()
         }
+
+        alertDialog.setCanceledOnTouchOutside(false)
+        alertDialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                alertDialog.dismiss()
+                viewModel.returnToListOrderClick()
+            }
+            true
+        }
+
         positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         positive.text = button
         alertDialog.show()
     }
 
-    private fun showConfirmDialog(title: String, message: String) {
+    private fun showRefuseOrderDialog(title: String, message: String) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.layout
         val dialogView: View =
             LayoutInflater.from(requireContext())
                 .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
+
+        val titleLayout: View = dialogView.findViewById(R.id.title_layout)
         val titleText: TextView = dialogView.findViewById(R.id.title)
         val messageText: TextView = dialogView.findViewById(R.id.message)
         val negative: Button = dialogView.findViewById(R.id.negative)
         val positive: Button = dialogView.findViewById(R.id.positive)
-
         builder.setView(dialogView)
         val alertDialog: AlertDialog = builder.create()
+
+        titleLayout.setBackgroundColor(
+            ContextCompat.getColor(requireActivity(), R.color.dialog_alarm)
+        )
         titleText.text = title
         messageText.text = message
         negative.setOnClickListener { alertDialog.dismiss() }
         negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_orders_details_dialog_negative_button)
+        negative.text = getString(R.string.courier_orders_timer_dialog_negative_button)
         positive.setOnClickListener {
             alertDialog.dismiss()
-            viewModel.confirmTakeOrderClick()
+            viewModel.refuseOrderConfirmClick()
         }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = getString(R.string.courier_orders_details_dialog_positive_button)
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.deny))
+        positive.text = getString(R.string.courier_orders_timer_dialog_positive_button)
         alertDialog.show()
     }
 

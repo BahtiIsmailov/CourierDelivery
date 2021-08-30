@@ -96,6 +96,9 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierOrderFragment_to_courierScannerLoadingScanFragment"
+            app:destination="@id/courierScannerLoadingScanFragment" />
 
     </fragment>
 
@@ -116,6 +119,9 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierOrderDetailsFragment_to_courierOrderTimerFragment"
+            app:destination="@id/courierOrderTimerFragment" />
 
     </fragment>
 
@@ -149,7 +155,19 @@
             android:name="courier_order_timer_id_key"
             app:argType="ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_courierOrderTimerFragment_to_courierScannerLoadingScanFragment"
+            app:destination="@id/courierScannerLoadingScanFragment" />
+        <action
+            android:id="@+id/action_courierOrderTimerFragment_to_courierWarehouseFragment"
+            app:destination="@id/courierWarehouseFragment" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/courierScannerLoadingScanFragment"
+        android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingScanFragment"
+        android:label="CourierScannerLoadingScanFragment"
+        tools:layout="@layout/courier_order_scanner_faragment"/>
 
 </navigation>
