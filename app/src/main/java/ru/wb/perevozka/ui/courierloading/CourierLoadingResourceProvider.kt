@@ -3,7 +3,7 @@ package ru.wb.perevozka.ui.courierloading
 import android.content.Context
 import ru.wb.perevozka.R
 
-class CourierScannerLoadingResourceProvider(private val context: Context) {
+class CourierLoadingResourceProvider(private val context: Context) {
 
     fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
     fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
@@ -20,8 +20,7 @@ class CourierScannerLoadingResourceProvider(private val context: Context) {
     fun getBoxTimeAndAddress(time: String, address: String): String =
         context.getString(R.string.dc_loading_boxes_time, time, address)
 
-    fun getBoxDateAndTime(date: String, time: String): String =
-        context.getString(R.string.date_and_time_format, date, time)
+
 
     fun getIndexAndBarcode(index: Int, barcode: String): String =
         context.getString(R.string.dc_loading_boxes_index_barcode, index, barcode)
@@ -48,7 +47,10 @@ class CourierScannerLoadingResourceProvider(private val context: Context) {
 
     fun getEmptyGate(): String = context.getString(R.string.dc_loading_box_not_belong_empty_gate)
 
-    fun getIndex(index: Int) = context.getString(R.string.dc_loading_boxes_index, index)
+    fun getBoxDateAndTimeAndAddress(date: String, time: String, address: String): String =
+        context.getString(R.string.courier_loading_boxes_date_and_time_and_address, date, time, address)
+
+    fun getIndexWithQr(index: Int, qrcode : String) = context.getString(R.string.courier_loading_boxes_index, index, qrcode)
 
     fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
         return context.getString(R.string.unnamed_barcode_format_number,

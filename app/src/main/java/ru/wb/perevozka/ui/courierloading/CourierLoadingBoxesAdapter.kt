@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.perevozka.R
-import ru.wb.perevozka.databinding.DcLoadingBoxesItemLayoutBinding
+import ru.wb.perevozka.databinding.CourierLoadingBoxesItemLayoutBinding
 
-class CourierScannerLoadingBoxesAdapter(
+class CourierLoadingBoxesAdapter(
     context: Context,
-    private val items: MutableList<CourierScannerLoadingBoxesItem>,
+    private val items: MutableList<CourierLoadingBoxesItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
-) : RecyclerView.Adapter<CourierScannerLoadingBoxesAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<CourierLoadingBoxesAdapter.ViewHolder>() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     interface OnItemClickCallBack {
@@ -20,14 +20,14 @@ class CourierScannerLoadingBoxesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.dc_loading_boxes_item_layout, parent, false)
+        val view = inflater.inflate(R.layout.courier_loading_boxes_item_layout, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (barcode, unnamedBarcode, address, isChecked) = items[position]
-        holder.binding.box.text = unnamedBarcode
-        holder.binding.address.text = address
+        val (qrCode, info, isChecked) = items[position]
+        holder.binding.qrCode.text = qrCode
+        holder.binding.info.text = info
         holder.binding.checked.isChecked = isChecked
     }
 
@@ -35,14 +35,14 @@ class CourierScannerLoadingBoxesAdapter(
         return items.size
     }
 
-    fun setItem(index: Int, item: CourierScannerLoadingBoxesItem) {
+    fun setItem(index: Int, item: CourierLoadingBoxesItem) {
         if (items.size > index) items[index] = item
     }
 
     inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
         View.OnClickListener {
-        var binding: DcLoadingBoxesItemLayoutBinding =
-            DcLoadingBoxesItemLayoutBinding.bind(rootView)
+        var binding: CourierLoadingBoxesItemLayoutBinding =
+            CourierLoadingBoxesItemLayoutBinding.bind(rootView)
 
         override fun onClick(v: View) {
             binding.checked.isChecked = !binding.checked.isChecked

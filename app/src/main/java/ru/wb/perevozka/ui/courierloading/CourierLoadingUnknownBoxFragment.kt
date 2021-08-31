@@ -7,21 +7,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.wb.perevozka.databinding.CourierScannerUnknownBoxFragmentBinding
+import ru.wb.perevozka.databinding.CourierLoadingUnknownBoxFragmentBinding
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 class CourierLoadingUnknownBoxFragment : Fragment() {
 
     private val viewModel by viewModel<CourierLoadingUnknownBoxViewModel>()
 
-    private var _binding: CourierScannerUnknownBoxFragmentBinding? = null
+    private var _binding: CourierLoadingUnknownBoxFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = CourierScannerUnknownBoxFragmentBinding.inflate(inflater, container, false)
+        _binding = CourierLoadingUnknownBoxFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 

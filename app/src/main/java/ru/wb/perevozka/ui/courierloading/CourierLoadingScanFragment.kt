@@ -15,7 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
-import ru.wb.perevozka.databinding.CourierOrderScannerFragmentBinding
+import ru.wb.perevozka.databinding.CourierLoadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
@@ -26,14 +26,14 @@ class CourierLoadingScanFragment : Fragment() {
 
     private val viewModel by viewModel<CourierLoadingScanViewModel>()
 
-    private var _binding: CourierOrderScannerFragmentBinding? = null
+    private var _binding: CourierLoadingFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = CourierOrderScannerFragmentBinding.inflate(inflater, container, false)
+        _binding = CourierLoadingFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -96,6 +96,7 @@ class CourierLoadingScanFragment : Fragment() {
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierScannerLoadingBoxNotBelongFragment())
                 }
                 CourierLoadingScanNavAction.NavigateToBoxes -> {
+                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierLoadingBoxesFragment())
                 }
                 CourierLoadingScanNavAction.NavigateToFlightDeliveries -> {
                 }

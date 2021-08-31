@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 
 class CourierLoadingScanViewModel(
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: CourierScannerLoadingResourceProvider,
+    private val resourceProvider: CourierLoadingResourceProvider,
     private val interactor: CourierLoadingInteractor,
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {

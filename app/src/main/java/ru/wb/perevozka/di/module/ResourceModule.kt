@@ -24,7 +24,7 @@ import ru.wb.perevozka.ui.courierexpects.CourierExpectsResourceProvider
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerResourceProvider
-import ru.wb.perevozka.ui.courierloading.CourierScannerLoadingResourceProvider
+import ru.wb.perevozka.ui.courierloading.CourierLoadingResourceProvider
 
 val resourceModule = module {
 
@@ -60,8 +60,8 @@ val resourceModule = module {
         return CourierOrderTimerResourceProvider(application)
     }
 
-    fun provideCourierScannerLoadingResourceProvider(application: Application): CourierScannerLoadingResourceProvider {
-        return CourierScannerLoadingResourceProvider(application)
+    fun provideCourierScannerLoadingResourceProvider(application: Application): CourierLoadingResourceProvider {
+        return CourierLoadingResourceProvider(application)
     }
 
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {

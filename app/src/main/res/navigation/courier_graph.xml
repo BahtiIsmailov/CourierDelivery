@@ -169,10 +169,17 @@
         android:id="@+id/courierScannerLoadingScanFragment"
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingScanFragment"
         android:label="CourierScannerLoadingScanFragment"
-        tools:layout="@layout/courier_order_scanner_fragment" >
+        tools:layout="@layout/courier_loading_fragment" >
         <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierScannerLoadingBoxNotBelongFragment"
             app:destination="@id/courierScannerLoadingBoxNotBelongFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierLoadingBoxesFragment"
+            app:destination="@id/courierLoadingBoxesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -183,6 +190,12 @@
         android:id="@+id/courierScannerLoadingBoxNotBelongFragment"
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingUnknownBoxFragment"
         android:label="CourierScannerLoadingBoxNotBelongFragment"
-        tools:layout="@layout/courier_scanner_unknown_box_fragment" />
+        tools:layout="@layout/courier_loading_unknown_box_fragment" />
+
+    <fragment
+        android:id="@+id/courierLoadingBoxesFragment"
+        android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingBoxesFragment"
+        tools:layout="@layout/courier_loading_boxes_fragment"
+        android:label="" />
 
 </navigation>

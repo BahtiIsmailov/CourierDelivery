@@ -2,27 +2,27 @@ package ru.wb.perevozka.ui.courierloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
-import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
+import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 
-class CourierScannerLoadingBoxesViewModel(
+class CourierLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
-    private val interactor: DcLoadingInteractor,
-    private val resourceProvider: CourierScannerLoadingResourceProvider,
+    private val interactor: CourierLoadingInteractor,
+    private val resourceProvider: CourierLoadingResourceProvider,
     private val timeFormatter: TimeFormatter,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _boxes = MutableLiveData<CourierScannerLoadingBoxesUIState>()
-    val boxes: LiveData<CourierScannerLoadingBoxesUIState>
+    private val _boxes = MutableLiveData<CourierLoadingBoxesUIState>()
+    val boxes: LiveData<CourierLoadingBoxesUIState>
         get() = _boxes
 
     private val _navigateToBack = MutableLiveData<NavigateToBack>()
@@ -38,11 +38,10 @@ class CourierScannerLoadingBoxesViewModel(
         get() = _navigateToMessageInfo
 
     private val _enableRemove = MutableLiveData<Boolean>()
-
     val enableRemove: LiveData<Boolean>
         get() = _enableRemove
 
-    private var copyReceptionBoxes = mutableListOf<CourierScannerLoadingBoxesItem>()
+    private var copyReceptionBoxes = mutableListOf<CourierLoadingBoxesItem>()
 
     init {
         observeNetworkState()
@@ -50,40 +49,39 @@ class CourierScannerLoadingBoxesViewModel(
     }
 
     private fun observeScannedBoxes() {
-        addSubscription(interactor.observeScannedBoxes()
+        addSubscription(interactor.scannedBoxes()
             .flatMap { convertBoxes(it) }
-            .doOnNext { copyConvertBoxes(it) }
+            .doOnSuccess { copyConvertBoxes(it) }
             .subscribe({ changeBoxesComplete(it) },
-                { changeBoxesError(it) }))
+                { changeBoxesError(it) })
+        )
     }
 
-    private fun convertBoxes(boxes: List<FlightBoxEntity>) =
+    private fun convertBoxes(boxes: List<CourierBoxEntity>) =
         Observable.fromIterable(boxes.withIndex())
             .map(receptionBoxItem)
             .toList()
-            .toObservable()
 
-    private val receptionBoxItem = { (index, item): IndexedValue<FlightBoxEntity> ->
-        val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
-        val dateFormat = resourceProvider.getBoxDateAndTime(
-            timeFormatter.format(date, TimeFormatType.ONLY_DATE),
-            timeFormatter.format(date, TimeFormatType.ONLY_TIME))
-        CourierScannerLoadingBoxesItem(
-            item.barcode,
-            resourceProvider.getIndexUnnamedBarcode(singleIncrement(index), item.barcode),
-            resourceProvider.getBoxTimeAndAddress(dateFormat, item.dstOffice.fullAddress),
-            false)
+    private val receptionBoxItem = { (index, item): IndexedValue<CourierBoxEntity> ->
+        val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.whenLoaded)
+        val dateFormat = timeFormatter.format(date, TimeFormatType.ONLY_DATE)
+        val timeFormat = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
+        CourierLoadingBoxesItem(
+            resourceProvider.getIndexWithQr(singleIncrement(index), item.qrcode),
+            resourceProvider.getBoxDateAndTimeAndAddress(dateFormat, timeFormat, item.address),
+            false
+        )
     }
 
     private val singleIncrement = { index: Int -> index + 1 }
 
-    private fun copyConvertBoxes(boxes: List<CourierScannerLoadingBoxesItem>) {
+    private fun copyConvertBoxes(boxes: List<CourierLoadingBoxesItem>) {
         copyReceptionBoxes = boxes.toMutableList()
     }
 
-    private fun changeBoxesComplete(boxes: MutableList<CourierScannerLoadingBoxesItem>) {
-        _boxes.value = if (boxes.isEmpty()) CourierScannerLoadingBoxesUIState.Empty
-        else CourierScannerLoadingBoxesUIState.ReceptionBoxesItem(boxes)
+    private fun changeBoxesComplete(boxes: MutableList<CourierLoadingBoxesItem>) {
+        _boxes.value = if (boxes.isEmpty()) CourierLoadingBoxesUIState.Empty
+        else CourierLoadingBoxesUIState.ReceptionBoxesItem(boxes)
     }
 
     private fun changeBoxesError(error: Throwable) {
@@ -91,10 +89,10 @@ class CourierScannerLoadingBoxesViewModel(
     }
 
     fun onRemoveClick() {
-        _boxes.value = CourierScannerLoadingBoxesUIState.Progress
-        val dcLoadingBoxes =
-            copyReceptionBoxes.filter { it.isChecked }.map { it.barcode }.toMutableList()
-        addSubscription(interactor.removeScannedBoxes(dcLoadingBoxes)
+        _boxes.value = CourierLoadingBoxesUIState.Progress
+        val loadingBoxes =
+            copyReceptionBoxes.filter { it.isChecked }.map { it.qrCode }.toMutableList()
+        addSubscription(interactor.removeScannedBoxes(loadingBoxes)
             .subscribe(
                 { removeScannedBoxesComplete() },
                 { removeScannedBoxesError(it) }
@@ -103,7 +101,7 @@ class CourierScannerLoadingBoxesViewModel(
     }
 
     private fun removeScannedBoxesComplete() {
-        _boxes.value = CourierScannerLoadingBoxesUIState.ProgressComplete
+        _boxes.value = CourierLoadingBoxesUIState.ProgressComplete
         _navigateToBack.value = NavigateToBack
     }
 
@@ -116,8 +114,9 @@ class CourierScannerLoadingBoxesViewModel(
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getBoxDialogTitle(),
             message,
-            resourceProvider.getBoxPositiveButton())
-        _boxes.value = CourierScannerLoadingBoxesUIState.ProgressComplete
+            resourceProvider.getBoxPositiveButton()
+        )
+        _boxes.value = CourierLoadingBoxesUIState.ProgressComplete
         changeDisableAllCheckedBox()
     }
 
@@ -129,7 +128,7 @@ class CourierScannerLoadingBoxesViewModel(
     private fun changeCheckedBox(index: Int, checked: Boolean) {
         val copyReception = copyReceptionBoxes[index].copy(isChecked = checked)
         copyReceptionBoxes[index] = copyReception
-        _boxes.value = CourierScannerLoadingBoxesUIState.ReceptionBoxItem(index, copyReception)
+        _boxes.value = CourierLoadingBoxesUIState.ReceptionBoxItem(index, copyReception)
     }
 
     private fun changeEnableRemove() {
@@ -148,12 +147,13 @@ class CourierScannerLoadingBoxesViewModel(
             val copyReception = copyReceptionBoxes[index].copy(isChecked = false)
             copyReceptionBoxes[index] = copyReception
         }
-        _boxes.value = CourierScannerLoadingBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
+        _boxes.value = CourierLoadingBoxesUIState.ReceptionBoxesItem(copyReceptionBoxes)
     }
 
     private fun observeNetworkState() {
         addSubscription(interactor.observeNetworkConnected()
-            .subscribe({ _toolbarNetworkState.value = it }, {}))
+            .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
 
     object NavigateToBack
