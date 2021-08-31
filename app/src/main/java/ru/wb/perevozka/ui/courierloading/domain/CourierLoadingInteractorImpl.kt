@@ -57,7 +57,7 @@ class CourierLoadingInteractorImpl(
             observeCourierScan(),
             observeCourierBoxesCount(),
             { scan, unloadedAndUnload -> CourierLoadingProcessData(scan, unloadedAndUnload) })
-            .distinctUntilChanged()
+//            .distinctUntilChanged()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

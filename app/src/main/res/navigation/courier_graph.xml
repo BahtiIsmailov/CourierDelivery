@@ -31,6 +31,13 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierScannerLoadingScanFragment"
+            app:destination="@id/courierScannerLoadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -96,9 +103,6 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierOrderFragment_to_courierScannerLoadingScanFragment"
-            app:destination="@id/courierScannerLoadingScanFragment" />
 
     </fragment>
 
@@ -119,9 +123,6 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierOrderDetailsFragment_to_courierOrderTimerFragment"
-            app:destination="@id/courierOrderTimerFragment" />
 
     </fragment>
 
@@ -168,6 +169,20 @@
         android:id="@+id/courierScannerLoadingScanFragment"
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingScanFragment"
         android:label="CourierScannerLoadingScanFragment"
-        tools:layout="@layout/courier_order_scanner_faragment"/>
+        tools:layout="@layout/courier_order_scanner_fragment" >
+        <action
+            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierScannerLoadingBoxNotBelongFragment"
+            app:destination="@id/courierScannerLoadingBoxNotBelongFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierScannerLoadingBoxNotBelongFragment"
+        android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingUnknownBoxFragment"
+        android:label="CourierScannerLoadingBoxNotBelongFragment"
+        tools:layout="@layout/courier_scanner_unknown_box_fragment" />
 
 </navigation>

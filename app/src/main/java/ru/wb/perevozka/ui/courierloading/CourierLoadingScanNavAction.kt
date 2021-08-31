@@ -1,7 +1,7 @@
 package ru.wb.perevozka.ui.courierloading
 
 sealed class CourierLoadingScanNavAction {
-    data class NavigateToUnknownBox(val title: String) : CourierLoadingScanNavAction()
+    object NavigateToUnknownBox : CourierLoadingScanNavAction()
 
     object NavigateToBoxes : CourierLoadingScanNavAction()
 

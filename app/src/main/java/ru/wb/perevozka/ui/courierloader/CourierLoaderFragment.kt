@@ -54,6 +54,11 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                         CourierDataParameters(state.phone)
                     )
                 )
+                CourierLoaderNavigationState.NavigateToCourierScanner -> {
+                    findNavController().navigate(
+                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierScannerLoadingScanFragment()
+                    )
+                }
             }
         }
     }

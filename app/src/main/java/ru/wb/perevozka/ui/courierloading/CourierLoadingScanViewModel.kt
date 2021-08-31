@@ -56,7 +56,7 @@ class CourierLoadingScanViewModel(
         get() = _progressEvent
 
     private val _boxStateUI =
-        SingleLiveEvent<CourierLoadingScanBoxState>()
+        MutableLiveData<CourierLoadingScanBoxState>()
     val boxStateUI: LiveData<CourierLoadingScanBoxState>
         get() = _boxStateUI
 
@@ -145,10 +145,7 @@ class CourierLoadingScanViewModel(
             }
 
             is CourierLoadingScanBoxData.UnknownBox -> {
-                _navigationEvent.value =
-                    CourierLoadingScanNavAction.NavigateToUnknownBox(
-                        "Коробка с другого маршрута"
-                    )
+                _navigationEvent.value = CourierLoadingScanNavAction.NavigateToUnknownBox
                 _boxStateUI.value =
                     with(scanBoxData) {
                         CourierLoadingScanBoxState.UnknownBox(

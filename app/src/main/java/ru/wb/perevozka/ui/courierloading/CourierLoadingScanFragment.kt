@@ -11,13 +11,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
-import ru.wb.perevozka.databinding.CourierOrderScannerFaragmentBinding
+import ru.wb.perevozka.databinding.CourierOrderScannerFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.ui.dcloading.DcLoadingHandleFragment.Companion.HANDLE_BARCODE_RESULT
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 import ru.wb.perevozka.views.ProgressImageButtonMode
@@ -27,14 +26,14 @@ class CourierLoadingScanFragment : Fragment() {
 
     private val viewModel by viewModel<CourierLoadingScanViewModel>()
 
-    private var _binding: CourierOrderScannerFaragmentBinding? = null
+    private var _binding: CourierOrderScannerFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = CourierOrderScannerFaragmentBinding.inflate(inflater, container, false)
+        _binding = CourierOrderScannerFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -93,11 +92,17 @@ class CourierLoadingScanFragment : Fragment() {
 
         val navigationObserver = Observer<CourierLoadingScanNavAction> { state ->
             when (state) {
-                is CourierLoadingScanNavAction.NavigateToUnknownBox -> { }
-                CourierLoadingScanNavAction.NavigateToBoxes -> { }
-                CourierLoadingScanNavAction.NavigateToFlightDeliveries -> { }
-                CourierLoadingScanNavAction.NavigateToBack -> { }
-                CourierLoadingScanNavAction.NavigateToHandle -> { }
+                is CourierLoadingScanNavAction.NavigateToUnknownBox -> {
+                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierScannerLoadingBoxNotBelongFragment())
+                }
+                CourierLoadingScanNavAction.NavigateToBoxes -> {
+                }
+                CourierLoadingScanNavAction.NavigateToFlightDeliveries -> {
+                }
+                CourierLoadingScanNavAction.NavigateToBack -> {
+                }
+                CourierLoadingScanNavAction.NavigateToHandle -> {
+                }
             }
         }
 
@@ -183,11 +188,7 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.black_text
                         )
                     )
-                    binding.listImageView.setColorFilter(
-                        ContextCompat.getColor(requireContext(), R.color.disable_icon),
-                        PorterDuff.Mode.SRC_ATOP
-                    )
-                    binding.receive.text = state.accepted
+                    initAccepted(state.accepted)
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
                     binding.complete.setState(ProgressButtonMode.ENABLE)
 
@@ -215,11 +216,7 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.black_text
                         )
                     )
-                    binding.listImageView.setColorFilter(
-                        ContextCompat.getColor(requireContext(), R.color.disable_icon),
-                        PorterDuff.Mode.SRC_ATOP
-                    )
-                    binding.receive.text = state.accepted
+                    initAccepted(state.accepted)
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
                     binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
@@ -246,11 +243,7 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.black_text
                         )
                     )
-                    binding.listImageView.setColorFilter(
-                        ContextCompat.getColor(requireContext(), R.color.disable_icon),
-                        PorterDuff.Mode.SRC_ATOP
-                    )
-                    binding.receive.text = state.accepted
+                    initAccepted(state.accepted)
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
                     binding.complete.setState(ProgressButtonMode.ENABLE)
 
@@ -258,6 +251,15 @@ class CourierLoadingScanFragment : Fragment() {
 
             }
         }
+    }
+
+    private fun initAccepted(accepted: String) {
+        val colorIconList = ContextCompat.getColor(
+            requireContext(),
+            if (accepted == "0") R.color.disable_icon else R.color.enable_icon
+        )
+        binding.listImageView.setColorFilter(colorIconList, PorterDuff.Mode.SRC_ATOP)
+        binding.receive.text = accepted
     }
 
     private fun showSimpleDialog(it: CourierLoadingScanViewModel.NavigateToMessageInfo) {
