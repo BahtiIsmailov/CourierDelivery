@@ -3,7 +3,7 @@ package ru.wb.perevozka.ui.courierorderdetails
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.ARRIVE_FOR
+import ru.wb.perevozka.app.ARRIVE_FOR_COURIER_MIN
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
@@ -79,7 +79,7 @@ class CourierOrderDetailsViewModel(
     fun takeOrderClick() {
         _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogConfirm(
             resourceProvider.getConfirmDialogTitle(),
-            resourceProvider.getConfirmDialogMessage(ARRIVE_FOR, parameters.order.minVolume)
+            resourceProvider.getConfirmDialogMessage(ARRIVE_FOR_COURIER_MIN, parameters.order.minVolume)
         )
     }
 

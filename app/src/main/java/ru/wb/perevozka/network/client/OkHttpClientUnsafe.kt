@@ -45,7 +45,7 @@ object OkHttpClientUnsafe {
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(refreshResponseInterceptor)
             .addInterceptor(httpLoggerInterceptor)
-            .addInterceptor(appMockResponseInterceptor)
+            //.addInterceptor(appMockResponseInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
         return okHttpBuilder.build()
