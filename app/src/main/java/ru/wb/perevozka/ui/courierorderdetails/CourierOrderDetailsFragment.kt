@@ -82,7 +82,6 @@ class CourierOrderDetailsFragment : Fragment() {
                     binding.volume.text = it.countBoxAndVolume
                     binding.pvz.text = it.countPvz
                     binding.coast.text = it.coast
-                    binding.routesTitle.text = it.routesTitle
                 }
             }
         }
@@ -123,7 +122,7 @@ class CourierOrderDetailsFragment : Fragment() {
                 is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.title, it.order)
+                            CourierCarNumberParameters(it.title)
                         )
                     )
             }

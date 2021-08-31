@@ -113,7 +113,6 @@ class TimerProgressView : View {
     override fun onDraw(canvas: Canvas) {
         initParam(canvas)
         drawRim()
-        drawScale(currentAngle.toFloat())
         drawArc(currentAngle)
     }
 
@@ -173,37 +172,6 @@ class TimerProgressView : View {
             false,
             foregroundPaint
         )
-    }
-
-    private fun drawScale(currentAngle: Float) {
-        val pRadiusBox = radiusBox * RADIUS_BOX
-        val pRadiusScale = radiusBox * RADIUS_SCALE
-        val pWidthScale = pRadiusBox - pRadiusScale
-        val pWidthLongArrow = pWidthScale * SIZE_LONG_ARROW
-        val resolutionScaleMax = MAX_ANGLE_SCALE / DIV_SCALE_MAX
-        var color: Int
-        val strokeWidth = pWidthScale * SCALE_WIDTH_ACTIVE
-        val scalePaint = Paint()
-        scalePaint.style = Paint.Style.STROKE
-        scalePaint.color = Color.WHITE
-        scalePaint.isAntiAlias = true
-        scalePaint.strokeWidth = strokeWidth
-        canvas!!.save()
-        canvas!!.rotate((-1 * MAX_ANGLE_SCALE).toFloat(), pCenter.x.toFloat(), pCenter.y.toFloat())
-        canvas!!.translate(pCenter.x.toFloat(), pCenter.y - pRadiusScale)
-        for (angle in 0 until MAX_ANGLE_SCALE) {
-            if (angle % resolutionScaleMax == 0) {
-                color = when {
-                    currentAngle == MIN_ANGLE_SCALE -> scaleWaitColor
-                    angle <= currentAngle -> scaleCurrentColor
-                    else -> scaleWaitColor
-                }
-                scalePaint.color = color
-                canvas!!.drawLine(0f, -30f, 0f, -pWidthLongArrow, scalePaint)
-            }
-            canvas!!.rotate(1f, 0f, pRadiusScale)
-        }
-        canvas!!.restore()
     }
 
     private val radiusBox: Float
@@ -283,15 +251,11 @@ class TimerProgressView : View {
         private const val DEFAULT_PROGRESS_FOREGROUND_COLOR = -0x9bd35d
         private const val FRAMES_PER_SECOND = 20
         private const val FRAME_FACTOR = 0.20f
-        private const val MIN_ANGLE_SCALE = 0f
         private const val MAX_ANGLE_SCALE = 360
         private const val MIN_PROGRESS_SCALE = 0f
         private const val MAX_PROGRESS_SCALE = 100f
         private const val DEFAULT_PROGRESS_VALUE = 0f
         private const val START_ARC_ANGLE = -90
-        private const val DIV_SCALE_MAX = 12
-        private const val SIZE_LONG_ARROW = 0.4f
-        private const val SCALE_WIDTH_ACTIVE = 0.06f
         private const val FOREGROUND_STROKE_WIDTH = 6
         private const val RADIUS_BOX = 0.9f
         private const val RADIUS_SCALE = 0.6f

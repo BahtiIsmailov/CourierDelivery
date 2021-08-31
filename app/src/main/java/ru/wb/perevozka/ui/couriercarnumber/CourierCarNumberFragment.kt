@@ -20,8 +20,6 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierCarNumberFragmentBinding
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
@@ -88,7 +86,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 
     private fun initListeners() {
         with(binding.carNumber) {
-            binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick(text.toString()) }
+            binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick() }
         }
         binding.cancel.setOnClickListener { findNavController().popBackStack() }
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
@@ -99,9 +97,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
             when (state) {
                 is CourierCarNumberNavigationState.NavigateToTimer -> {
                     findNavController().navigate(
-                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderTimerFragment(
-                            CourierOrderTimerParameters(state.title, state.order)
-                        )
+                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderConfirmFragment()
                     )
                 }
                 is CourierCarNumberNavigationState.NavigateToDialogInfo -> {
@@ -196,5 +192,4 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 }
 
 @Parcelize
-data class CourierCarNumberParameters(val title: String, val order: CourierOrderEntity) :
-    Parcelable
+data class CourierCarNumberParameters(val title: String) : Parcelable

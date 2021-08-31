@@ -17,6 +17,14 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
         return worker.load(AppPreffsKeys.PHONE_KEY, "")
     }
 
+    override fun saveCarNumber(number: String) {
+        worker.save(AppPreffsKeys.CAR_NUMBER_KEY, number)
+    }
+
+    override fun carNumber(): String {
+        return worker.load(AppPreffsKeys.CAR_NUMBER_KEY, "")
+    }
+
     override fun clear() {
         worker.delete(AppPreffsKeys.PHONE_KEY)
     }

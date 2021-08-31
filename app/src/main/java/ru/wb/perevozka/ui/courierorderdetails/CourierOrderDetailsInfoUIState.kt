@@ -7,7 +7,6 @@ sealed class CourierOrderDetailsInfoUIState {
         val coast: String,
         val countBoxAndVolume: String,
         val countPvz: String,
-        val routesTitle: String
     ) : CourierOrderDetailsInfoUIState()
 
 }

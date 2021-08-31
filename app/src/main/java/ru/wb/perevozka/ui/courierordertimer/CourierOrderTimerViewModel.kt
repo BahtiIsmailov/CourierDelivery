@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.app.ARRIVAL_TIME_COURIER_SEC
+import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
@@ -17,7 +17,6 @@ import ru.wb.perevozka.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
-    private val parameters: CourierOrderTimerParameters,
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
@@ -41,8 +40,15 @@ class CourierOrderTimerViewModel(
 
 
     init {
-        initOrderInfo()
+        initOrder()
         initTimer()
+    }
+
+    private fun initOrder() {
+        addSubscription(
+            interactor.observeOrderData()
+                .subscribe({ initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size) }, {})
+        )
     }
 
     private fun initTimer() {
@@ -68,17 +74,8 @@ class CourierOrderTimerViewModel(
         )
     }
 
-
-    private fun getMin(duration: Int): Int {
-        return duration / CheckSmsViewModel.TIME_DIVIDER
-    }
-
-    private fun getSec(duration: Int): Int {
-        return duration % CheckSmsViewModel.TIME_DIVIDER
-    }
-
-    private fun initOrderInfo() {
-        with(parameters.order) {
+    private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity, pvz: Int) {
+        with(courierOrderLocalEntity) {
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderTimerInfoUIState.InitOrderInfo(
@@ -86,7 +83,7 @@ class CourierOrderTimerViewModel(
                 srcOffice.name,
                 resourceProvider.getCoast(coast),
                 resourceProvider.getBoxCountAndVolume(minBoxesCount, minVolume),
-                resourceProvider.getPvz(dstOffices.size)
+                resourceProvider.getPvz(pvz)
             )
         }
     }

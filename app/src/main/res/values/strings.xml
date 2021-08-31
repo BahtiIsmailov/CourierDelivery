@@ -218,6 +218,12 @@
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
 
+    <string name="courier_orders_confirm_order">Заказ № %1$d</string>
+    <string name="courier_orders_confirm_coast">• %1$s ₽</string>
+    <string name="courier_orders_confirm_car_number">• %1$s</string>
+    <string name="courier_orders_confirm_arrive">• за %1$d мин</string>
+    <string name="courier_orders_confirm_volume">• от %1$d кубов</string>
+
     <string name="courier_orders_details_dialog_title">Подтвердить взятие заказа?</string>
     <string name="courier_orders_details_dialog_message">Прибыть • за %1$d мин\nТранспорт • от %2$d кубов</string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>

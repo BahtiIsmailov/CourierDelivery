@@ -92,17 +92,6 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:text="3200 \u20BD" />
 
-    <TextView
-        android:id="@+id/routes_title"
-        style="@style/MediumBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="26dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvz"
-        tools:text="МАРШРУТ № 4 «ПОДОЛЬСК СЕВЕР»" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/routes"
         android:layout_width="match_parent"
@@ -115,7 +104,7 @@
         app:layout_constraintBottom_toTopOf="@+id/back_order"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/routes_title"
+        app:layout_constraintTop_toBottomOf="@+id/pvz"
         tools:listitem="@layout/courier_order_details_layout" />
 
     <TextView
@@ -126,7 +115,7 @@
         app:layout_constraintBottom_toTopOf="@+id/back_order"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/routes_title" />
+        app:layout_constraintTop_toBottomOf="@+id/pvz" />
 
     <ImageView
         android:layout_width="0dp"
@@ -135,7 +124,7 @@
         android:src="@drawable/gradient_top_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/routes_title" />
+        app:layout_constraintTop_toBottomOf="@+id/pvz" />
 
     <ImageView
         android:layout_width="0dp"

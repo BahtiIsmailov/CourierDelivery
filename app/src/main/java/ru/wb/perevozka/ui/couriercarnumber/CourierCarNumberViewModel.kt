@@ -4,13 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.network.exceptions.BadRequestException
-import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.perevozka.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
-import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
@@ -37,9 +34,11 @@ class CourierCarNumberViewModel(
     val progressState: LiveData<CourierCarNumberProgressState>
         get() = _progressState
 
-    fun onCheckCarNumberClick(carNumber: String) {
+    fun onCheckCarNumberClick() {
         putCarNumber(carNumber)
     }
+
+    private var carNumber = ""
 
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
@@ -48,6 +47,7 @@ class CourierCarNumberViewModel(
                     switchBackspace(it)
                     switchComplete(it)
                 }
+                .doOnNext { carNumber = it }
                 .map { keyToNumberSpanFormat(it) }
                 .subscribe(
                     { _stateUI.value = it },
@@ -89,7 +89,7 @@ class CourierCarNumberViewModel(
 
     private fun putCarNumber(carNumber: String) {
         _progressState.value = CourierCarNumberProgressState.Progress
-        val disposable = interactor.putCarNumbers(carNumber.replace("\\s".toRegex(), ""))
+        val disposable = interactor.putCarNumber(carNumber.replace("\\s".toRegex(), ""))
             .subscribe(
                 { fetchCarNumberComplete() },
                 { fetchCarNumberError(it) }
@@ -99,7 +99,7 @@ class CourierCarNumberViewModel(
 
     private fun fetchCarNumberComplete() {
         _navigationState.value =
-            CourierCarNumberNavigationState.NavigateToTimer(parameters.title, parameters.order)
+            CourierCarNumberNavigationState.NavigateToTimer(parameters.title)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
@@ -128,7 +128,7 @@ class CourierCarNumberViewModel(
 //        _navigationState.value = message
 
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer(parameters.title, parameters.order)
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer(parameters.title)
     }
 
     fun onCancelLoadClick() {

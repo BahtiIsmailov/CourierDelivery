@@ -1,25 +1,28 @@
-package ru.wb.perevozka.ui.courierordertimer.domain
+package ru.wb.perevozka.ui.courierorderconferm.domain
 
-import io.reactivex.*
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
-import ru.wb.perevozka.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
+import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.auth.signup.TimerOverStateImpl
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateImpl
 import java.util.concurrent.TimeUnit
 
-class CourierOrderTimerInteractorImpl(
+class CourierOrderConfirmInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository
-) : CourierOrderTimerInteractor {
+    private val courierLocalRepository: CourierLocalRepository,
+    private val userManager: UserManager
+) : CourierOrderConfirmInteractor {
 
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
     private var timerDisposable: Disposable? = null
@@ -45,6 +48,10 @@ class CourierOrderTimerInteractorImpl(
 
     override fun stopTimer() {
         timeConfirmCodeDisposable()
+    }
+
+    override fun carNumber(): String {
+        return userManager.carNumber()
     }
 
     private fun onTimeConfirmCode(tick: Long) {

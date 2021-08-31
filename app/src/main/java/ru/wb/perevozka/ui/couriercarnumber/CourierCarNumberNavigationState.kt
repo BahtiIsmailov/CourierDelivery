@@ -1,10 +1,8 @@
 package ru.wb.perevozka.ui.couriercarnumber
 
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-
 sealed class CourierCarNumberNavigationState {
 
-    data class NavigateToTimer(val title: String, val order: CourierOrderEntity) :
+    data class NavigateToTimer(val title: String) :
         CourierCarNumberNavigationState()
 
     data class NavigateToDialogInfo(

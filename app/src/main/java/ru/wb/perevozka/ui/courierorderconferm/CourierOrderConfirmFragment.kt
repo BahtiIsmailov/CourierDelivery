@@ -1,8 +1,7 @@
-package ru.wb.perevozka.ui.courierordertimer
+package ru.wb.perevozka.ui.courierorderconferm
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -12,21 +11,18 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
-import ru.wb.perevozka.databinding.CourierOrderTimerFragmentBinding
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+import ru.wb.perevozka.databinding.CourierOrderConfirmFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 
 
-class CourierOrderTimerFragment : Fragment() {
+class CourierOrderConfirmFragment : Fragment() {
 
-    private val viewModel by viewModel<CourierOrderTimerViewModel>()
+    private val viewModel by viewModel<CourierOrderConfirmViewModel>()
 
-    private lateinit var _binding: CourierOrderTimerFragmentBinding
+    private lateinit var _binding: CourierOrderConfirmFragmentBinding
     private val binding get() = _binding
     private lateinit var progressDialog: AlertDialog
 
@@ -34,7 +30,7 @@ class CourierOrderTimerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = CourierOrderTimerFragmentBinding.inflate(inflater, container, false)
+        _binding = CourierOrderConfirmFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,44 +44,35 @@ class CourierOrderTimerFragment : Fragment() {
 
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderTimerInfoUIState.InitOrderInfo -> {
+                is CourierOrderConfirmInfoUIState.InitOrderInfo -> {
                     binding.order.text = it.order
-                    binding.name.text = it.name
                     binding.coast.text = it.coast
-                    binding.volume.text = it.countBoxAndVolume
-                    binding.pvz.text = it.countPvz
-                }
-            }
-        }
-
-        viewModel.orderTimer.observe(viewLifecycleOwner) {
-            when (it) {
-                is CourierOrderTimerState.Timer -> {
-                    binding.timer.setProgress(it.timeAnalog)
-                    binding.timeDigit.text = it.timeDigit
+                    binding.carNumber.text = it.carNumber
+                    binding.arrive.text = it.arrive
+                    binding.volume.text = it.volume
                 }
             }
         }
 
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierOrderTimerProgressState.Progress -> showProgressDialog()
-                CourierOrderTimerProgressState.ProgressComplete -> closeProgressDialog()
+                CourierOrderConfirmProgressState.Progress -> showProgressDialog()
+                CourierOrderConfirmProgressState.ProgressComplete -> closeProgressDialog()
             }
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderTimerNavigationState.NavigateToRefuseOrderDialog ->
+                is CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog ->
                     showRefuseOrderDialog(it.title, it.message)
-                is CourierOrderTimerNavigationState.NavigateToDialogInfo ->
+                is CourierOrderConfirmNavigationState.NavigateToDialogInfo ->
                     showTimeIsOutDialog(it.title, it.message, it.button)
-                CourierOrderTimerNavigationState.NavigateToWarehouse -> {
-                    findNavController().navigate(CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierWarehouseFragment())
+                CourierOrderConfirmNavigationState.NavigateToWarehouse -> {
+                    findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierWarehouseFragment())
                 }
-                CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
-                    CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierScannerLoadingScanFragment()
-                )
+                CourierOrderConfirmNavigationState.NavigateToTimer -> {
+                    findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierOrderTimerFragment())
+                }
             }
         }
 
@@ -93,7 +80,7 @@ class CourierOrderTimerFragment : Fragment() {
 
     private fun initListeners() {
         binding.refuseOrder.setOnClickListener { viewModel.refuseOrderClick() }
-        binding.iArrived.setOnClickListener { viewModel.iArrivedClick() }
+        binding.confirmOrder.setOnClickListener { viewModel.confirmOrderClick() }
     }
 
     private fun closeProgressDialog() {

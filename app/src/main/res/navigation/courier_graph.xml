@@ -136,14 +136,10 @@
             android:name="courier_car_number_id_key"
             app:argType="ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters"
             app:nullable="false" />
-
         <action
-            android:id="@+id/action_courierCarNumberFragment_to_courierOrderTimerFragment"
-            app:destination="@id/courierOrderTimerFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
+            android:id="@+id/action_courierCarNumberFragment_to_courierOrderConfirmFragment"
+            app:destination="@id/courierOrderConfirmFragment" />
+
     </fragment>
 
     <fragment
@@ -152,10 +148,6 @@
         android:label="CourierOrderTimerFragment"
         tools:layout="@layout/courier_order_timer_fragment">
 
-        <argument
-            android:name="courier_order_timer_id_key"
-            app:argType="ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerParameters"
-            app:nullable="false" />
         <action
             android:id="@+id/action_courierOrderTimerFragment_to_courierScannerLoadingScanFragment"
             app:destination="@id/courierScannerLoadingScanFragment" />
@@ -197,5 +189,21 @@
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingBoxesFragment"
         tools:layout="@layout/courier_loading_boxes_fragment"
         android:label="" />
+    <fragment
+        android:id="@+id/courierOrderConfirmFragment"
+        android:name="ru.wb.perevozka.ui.courierorderconferm.CourierOrderConfirmFragment"
+        android:label=""
+        tools:layout="@layout/courier_order_confirm_fragment">
+        <action
+            android:id="@+id/action_courierOrderConfirmFragment_to_courierOrderTimerFragment"
+            app:destination="@id/courierOrderTimerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_courierOrderConfirmFragment_to_courierWarehouseFragment"
+            app:destination="@id/courierWarehouseFragment" />
+    </fragment>
 
 </navigation>

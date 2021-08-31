@@ -9,6 +9,7 @@ import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
+import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
@@ -21,6 +22,8 @@ import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractorImpl
+import ru.wb.perevozka.ui.courierorderconferm.domain.CourierOrderConfirmInteractor
+import ru.wb.perevozka.ui.courierorderconferm.domain.CourierOrderConfirmInteractorImpl
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
@@ -270,15 +273,25 @@ val interactorModule = module {
     fun provideCourierOrderDetailsInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository
     ): CourierOrderDetailsInteractor {
-        return CourierOrderDetailsInteractorImpl(rxSchedulerFactory, appRemoteRepository)
+        return CourierOrderDetailsInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            courierLocalRepository
+        )
     }
 
     fun provideCourierOrderTimerInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository
     ): CourierOrderTimerInteractor {
-        return CourierOrderTimerInteractorImpl(rxSchedulerFactory, appRemoteRepository)
+        return CourierOrderTimerInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            courierLocalRepository
+        )
     }
 
     fun provideCourierOrderInteractor(
@@ -297,13 +310,30 @@ val interactorModule = module {
 
     fun provideCourierCarNumberInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository
+        appRemoteRepository: AppRemoteRepository,
+        userManager: UserManager
     ): CourierCarNumberInteractor {
         return CourierCarNumberInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
+            userManager
         )
     }
+
+    fun provideCourierOrderConfirmInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        userManager: UserManager
+    ): CourierOrderConfirmInteractor {
+        return CourierOrderConfirmInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            courierLocalRepository,
+            userManager
+        )
+    }
+
 
     fun provideUnloadingBoxesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
@@ -438,9 +468,11 @@ val interactorModule = module {
 
     single { provideCourierWarehouseInteractor(get(), get(), get()) }
     single { provideCourierOrderInteractor(get(), get(), get(), get()) }
-    single { provideCourierOrderDetailsInteractor(get(), get()) }
-    single { provideCourierOrderTimerInteractor(get(), get()) }
-    single { provideCourierCarNumberInteractor(get(), get()) }
+    single { provideCourierOrderDetailsInteractor(get(), get(), get()) }
+    single { provideCourierOrderTimerInteractor(get(), get(), get()) }
+    single { provideCourierCarNumberInteractor(get(), get(), get()) }
+    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get()) }
+
     single {
         provideCourierScannerLoadingInteractor(
             get(),
