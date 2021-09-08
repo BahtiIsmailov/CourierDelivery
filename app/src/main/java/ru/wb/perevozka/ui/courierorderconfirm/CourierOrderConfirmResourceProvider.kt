@@ -1,9 +1,8 @@
-package ru.wb.perevozka.ui.courierorderconferm
+package ru.wb.perevozka.ui.courierorderconfirm
 
 import android.content.Context
 import ru.wb.perevozka.R
 import ru.wb.perevozka.mvvm.BaseMessageResourceProvider
-import kotlin.math.abs
 
 class CourierOrderConfirmResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {

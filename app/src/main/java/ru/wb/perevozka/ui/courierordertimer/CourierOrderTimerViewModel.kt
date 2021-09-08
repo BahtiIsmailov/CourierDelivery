@@ -104,10 +104,19 @@ class CourierOrderTimerViewModel(
     }
 
     fun returnToListOrderClick() {
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
+        toWarehouse()
     }
 
     fun refuseOrderConfirmClick() {
+        addSubscription(interactor.deleteTask().subscribe(
+            { toWarehouse() }
+
+            , {} ))
+
+
+    }
+
+    private fun toWarehouse() {
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }
 

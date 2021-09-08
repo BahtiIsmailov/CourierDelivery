@@ -191,7 +191,7 @@
         android:label="" />
     <fragment
         android:id="@+id/courierOrderConfirmFragment"
-        android:name="ru.wb.perevozka.ui.courierorderconferm.CourierOrderConfirmFragment"
+        android:name="ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmFragment"
         android:label=""
         tools:layout="@layout/courier_order_confirm_fragment">
         <action

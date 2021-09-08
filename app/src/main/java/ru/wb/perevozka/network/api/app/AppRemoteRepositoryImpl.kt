@@ -19,9 +19,7 @@ import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingSrcOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
-import ru.wb.perevozka.network.api.app.entity.CarNumberEntity
-import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
-import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
+import ru.wb.perevozka.network.api.app.entity.*
 import ru.wb.perevozka.network.api.app.entity.boxinfo.*
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
@@ -30,6 +28,8 @@ import ru.wb.perevozka.network.api.app.remote.CarNumberRequest
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.*
 import ru.wb.perevozka.network.api.app.remote.courier.CourierOrderResponse
+import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStartRequest
+import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStatusesIntransitRequest
 import ru.wb.perevozka.network.api.app.remote.courier.CourierWarehouseResponse
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
@@ -553,6 +553,55 @@ class AppRemoteRepositoryImpl(
 
     override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
         return remote.anchorTask(apiVersion(), taskID).map { CourierAnchorEntity(it.carNumber) }
+    }
+
+    override fun deleteTask(taskID: String): Completable {
+        return remote.deleteTask(apiVersion(), taskID)
+    }
+
+    override fun taskStatuses(taskID: String): Single<CourierTaskStatusesEntity> {
+        return remote.taskStatuses(apiVersion())
+            .map { it.data }
+            .map { courierTaskStatusesResponse ->
+                val courierTaskStatusesEntity = mutableListOf<CourierTaskStatusEntity>()
+                courierTaskStatusesResponse.forEach {
+                    val courierTaskStatusEntity = CourierTaskStatusEntity(
+                        status = it.status,
+                        description = it.description
+                    )
+                    courierTaskStatusesEntity.add(courierTaskStatusEntity)
+                }
+                CourierTaskStatusesEntity(courierTaskStatusesEntity)
+            }
+    }
+
+    override fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable {
+        val courierTaskStartRequest =
+            CourierTaskStartRequest(
+                id = courierTaskStartEntity.id,
+                dstOfficeID = courierTaskStartEntity.dstOfficeID,
+                loadingAt = courierTaskStartEntity.loadingAt,
+                deliveredAt = courierTaskStartEntity.deliveredAt
+            )
+        return remote.taskStart(apiVersion(), taskID, courierTaskStartRequest)
+    }
+
+    override fun taskStatusesIntransit(
+        taskID: String,
+        courierTaskStatusesIntransitEntity: CourierTaskStatusesIntransitEntity
+    ): Completable {
+        val courierTaskStatusesIntransitRequest =
+            CourierTaskStatusesIntransitRequest(
+                id = courierTaskStatusesIntransitEntity.id,
+                dstOfficeID = courierTaskStatusesIntransitEntity.dstOfficeID,
+                loadingAt = courierTaskStatusesIntransitEntity.loadingAt,
+                deliveredAt = courierTaskStatusesIntransitEntity.deliveredAt
+            )
+        return remote.taskStatusesIntransit(apiVersion(), taskID, courierTaskStatusesIntransitRequest)
+    }
+
+    override fun taskStatusesEnd(taskID: String): Completable {
+        return remote.taskStatusesEnd(apiVersion(), taskID)
     }
 
     override fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable {

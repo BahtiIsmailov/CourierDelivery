@@ -1,4 +1,4 @@
-package ru.wb.perevozka.ui.courierorderconferm
+package ru.wb.perevozka.ui.courierorderconfirm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +9,7 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.courierorderconferm.domain.CourierOrderConfirmInteractor
+import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import java.text.DecimalFormat
 
@@ -69,7 +69,21 @@ class CourierOrderConfirmViewModel(
     }
 
     fun confirmOrderClick() {
+        val taskId = interactor.observeOrderData().map { it.courierOrderLocalEntity.id }
+            .map { it.toString() }
+        addSubscription(taskId.flatMapSingle { interactor.anchorTask(it) }
+            .subscribe(
+                { carNumberIsConfirm() },
+                { carNumberNotConfirmed() })
+        )
+    }
+
+    private fun carNumberIsConfirm() {
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToTimer
+    }
+
+    private fun carNumberNotConfirmed() {
+
     }
 
     fun returnToListOrderClick() {

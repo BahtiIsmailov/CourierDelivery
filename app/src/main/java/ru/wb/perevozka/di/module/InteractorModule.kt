@@ -22,8 +22,8 @@ import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractorImpl
-import ru.wb.perevozka.ui.courierorderconferm.domain.CourierOrderConfirmInteractor
-import ru.wb.perevozka.ui.courierorderconferm.domain.CourierOrderConfirmInteractorImpl
+import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
+import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractorImpl
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor

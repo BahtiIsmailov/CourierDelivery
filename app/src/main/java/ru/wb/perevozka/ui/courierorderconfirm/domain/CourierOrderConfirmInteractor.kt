@@ -1,5 +1,6 @@
-package ru.wb.perevozka.ui.courierorderconferm.domain
+package ru.wb.perevozka.ui.courierorderconfirm.domain
 
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity

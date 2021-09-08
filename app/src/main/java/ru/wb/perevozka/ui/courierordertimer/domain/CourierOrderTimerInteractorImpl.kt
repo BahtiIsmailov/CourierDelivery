@@ -3,13 +3,11 @@ package ru.wb.perevozka.ui.courierordertimer.domain
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
-import ru.wb.perevozka.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.signup.TimerOverStateImpl
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateImpl
@@ -24,11 +22,19 @@ class CourierOrderTimerInteractorImpl(
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
     private var timerDisposable: Disposable? = null
 
-
-    override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
-        return appRemoteRepository.anchorTask(taskID)
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+    override fun anchorTask(): Single<CourierAnchorEntity> {
+        return taskId().flatMap { appRemoteRepository.anchorTask(it) }
     }
+
+    override fun deleteTask(): Completable {
+        return taskId().flatMapCompletable { appRemoteRepository.deleteTask(it) }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun taskId() =
+        courierLocalRepository.observeOrderData()
+            .map { it.courierOrderLocalEntity.id.toString() }
+            .first("")
 
     private var durationTime = 0
     override fun startTimer(durationTime: Int) {

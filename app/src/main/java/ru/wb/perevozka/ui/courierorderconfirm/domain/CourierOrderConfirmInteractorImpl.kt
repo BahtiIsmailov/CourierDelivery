@@ -1,9 +1,6 @@
-package ru.wb.perevozka.ui.courierorderconferm.domain
+package ru.wb.perevozka.ui.courierorderconfirm.domain
 
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import ru.wb.perevozka.db.CourierLocalRepository

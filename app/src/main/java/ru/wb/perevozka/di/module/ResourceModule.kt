@@ -25,7 +25,7 @@ import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerResourceProvider
 import ru.wb.perevozka.ui.courierloading.CourierLoadingResourceProvider
-import ru.wb.perevozka.ui.courierorderconferm.CourierOrderConfirmResourceProvider
+import ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmResourceProvider
 
 val resourceModule = module {
 

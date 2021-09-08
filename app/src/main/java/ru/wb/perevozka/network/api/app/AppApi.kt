@@ -6,9 +6,7 @@ import retrofit2.http.*
 import ru.wb.perevozka.network.api.app.remote.CarNumberRequest
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.BoxInfoResponse
-import ru.wb.perevozka.network.api.app.remote.courier.CourierAnchorResponse
-import ru.wb.perevozka.network.api.app.remote.courier.CourierOrdersResponse
-import ru.wb.perevozka.network.api.app.remote.courier.CourierWarehousesResponse
+import ru.wb.perevozka.network.api.app.remote.courier.*
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
 import ru.wb.perevozka.network.api.app.remote.flight.FlightResponse
 import ru.wb.perevozka.network.api.app.remote.flightboxes.FlightBoxesResponse
@@ -177,12 +175,47 @@ interface AppApi {
         @Query("srcOfficeID") srcOfficeID: Int
     ): Single<CourierOrdersResponse>
 
+    @GET("{version}/tasks/my")
+    fun tasksMy(
+        @Path(value = "version", encoded = true) version: String,
+    ): Single<CourierTasksMy>
+
     @POST("{version}tasks/{taskID}/courier")
     fun anchorTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") flightID: String,
     ): Single<CourierAnchorResponse>
 
+    @HTTP(method = "DELETE", path = "{version}tasks/{taskID}/courier", hasBody = true)
+    fun deleteTask(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+    ): Completable
+
+    @GET("{version}/task-statuses")
+    fun taskStatuses(
+        @Path(value = "version", encoded = true) version: String,
+    ): Single<CourierTaskStatusesResponse>
+
+    @POST("{version}/tasks/{taskID}/statuses/start")
+    fun taskStart(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+        @Body courierTaskStartRequest: CourierTaskStartRequest
+    ): Completable
+
+    @POST("{version}/tasks/{taskID}/statuses/intransit")
+    fun taskStatusesIntransit(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+        @Body courierTaskStatusesIntransitRequest: CourierTaskStatusesIntransitRequest
+    ): Completable
+
+    @POST("{version}/tasks/{taskID}/statuses/end")
+    fun taskStatusesEnd(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+    ): Completable
 
     @PUT("{version}/couriers/me/cars")
     fun putCarNumbers(

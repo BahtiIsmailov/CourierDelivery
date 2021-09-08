@@ -1,4 +1,4 @@
-package ru.wb.perevozka.ui.courierorderconferm
+package ru.wb.perevozka.ui.courierorderconfirm
 
 import android.app.AlertDialog
 import android.os.Bundle

@@ -1,4 +1,4 @@
-package ru.wb.perevozka.ui.courierorderconferm
+package ru.wb.perevozka.ui.courierorderconfirm
 
 sealed class CourierOrderConfirmInfoUIState {
 
