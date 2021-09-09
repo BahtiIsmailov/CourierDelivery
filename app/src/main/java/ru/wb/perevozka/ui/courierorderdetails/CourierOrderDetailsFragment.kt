@@ -1,5 +1,6 @@
 package ru.wb.perevozka.ui.courierorderdetails
 
+import android.Manifest
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
@@ -12,22 +13,29 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.osmdroid.api.IMapController
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
+import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.scanner.hasPermissions
 import ru.wb.perevozka.views.ProgressButtonMode
 
 
@@ -61,12 +69,58 @@ class CourierOrderDetailsFragment : Fragment() {
         return binding.root
     }
 
+    private lateinit var mapController: IMapController
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initObservable()
         initListeners()
         initProgressDialog()
+        initPermission()
+    }
+
+    private fun initPermission() {
+        if (hasPermissions(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        ) {
+            org.osmdroid.config.Configuration.getInstance().load(
+                requireActivity(),
+                PreferenceManager.getDefaultSharedPreferences(requireContext())
+            )
+            org.osmdroid.config.Configuration.getInstance().userAgentValue =
+                BuildConfig.APPLICATION_ID
+            binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+            binding.map.setMultiTouchControls(true)
+            mapController = binding.map.controller
+            mapController.setZoom(12.0)
+            binding.map.setBuiltInZoomControls(true)
+            binding.map.setMultiTouchControls(true)
+        } else {
+            //requestPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+    }
+
+    private fun setMarker(lat: Double, long: Double) {
+        val marker = Marker(binding.map)
+        marker.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz)
+        val point = GeoPoint(lat, long)
+        marker.position = point
+        binding.map.overlays.add(marker)
+    }
+
+    private fun setSelectedMarker(lat: Double, long: Double) {
+        val marker = Marker(binding.map)
+        marker.icon =
+            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz_selected)
+        val point = GeoPoint(lat, long)
+        marker.position = point
+        binding.map.overlays.add(marker)
+        mapController.animateTo(point)
+        binding.map.invalidate()
     }
 
     private fun initObservable() {
@@ -93,15 +147,29 @@ class CourierOrderDetailsFragment : Fragment() {
                     binding.routes.visibility = VISIBLE
                     binding.takeOrder.setState(ProgressButtonMode.ENABLE)
                     val callback = object : CourierOrderDetailsAdapter.OnItemClickCallBack {
-                        override fun onItemClick(index: Int) {}
+                        override fun onItemClick(index: Int) {
+                            viewModel.onItemClick(index)
+                        }
                     }
                     adapter = CourierOrderDetailsAdapter(requireContext(), it.items, callback)
                     binding.routes.adapter = adapter
+
+                    it.items.forEach { items -> setMarker(items.lat, items.long) }
+                    binding.map.invalidate()
+
                 }
                 is CourierOrderDetailsUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
                     binding.takeOrder.setState(ProgressButtonMode.DISABLE)
+                }
+            }
+        }
+
+        viewModel.mapPoint.observe(viewLifecycleOwner) {
+            when (it) {
+                is CourierOrderDetailsMapPoint.NavigateToPoint -> {
+                    setSelectedMarker(it.lat, it.long)
                 }
             }
         }
@@ -218,12 +286,6 @@ class CourierOrderDetailsFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.routes.layoutManager = layoutManager
-        binding.routes.addItemDecoration(
-            DividerItemDecoration(
-                activity,
-                DividerItemDecoration.VERTICAL
-            )
-        )
         binding.routes.setHasFixedSize(true)
         initSmoothScroller()
     }
@@ -244,6 +306,17 @@ class CourierOrderDetailsFragment : Fragment() {
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
             .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.map.onResume()
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.map.onPause()
     }
 
 }

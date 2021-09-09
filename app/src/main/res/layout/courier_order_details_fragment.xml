@@ -14,6 +14,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+
     <TextView
         android:id="@+id/order"
         style="@style/LargeBlackRegularText"
@@ -21,9 +31,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="26dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/volume"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:text="Заказ № 3245934" />
 
     <TextView
@@ -32,9 +43,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/pvz"
         app:layout_constraintStart_toEndOf="@+id/show_route_image"
-        app:layout_constraintTop_toBottomOf="@+id/order"
         app:layout_constraintVertical_bias="0"
         tools:text="от 200 шт. / 86 кубов" />
 
@@ -60,9 +71,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/back_order"
         app:layout_constraintStart_toEndOf="@+id/show_route_image"
-        app:layout_constraintTop_toBottomOf="@+id/volume"
         app:layout_constraintVertical_bias="0"
         tools:text="9 ПВЗ" />
 
@@ -88,8 +98,8 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/pvz"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:text="3200 \u20BD" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -97,43 +107,41 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         android:divider="@null"
         android:dividerHeight="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/back_order"
+        app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvz"
+        app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
         tools:listitem="@layout/courier_order_details_layout" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:src="@drawable/gradient_top_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/center_horizontal" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/gradient_bottom_list"
+        app:layout_constraintBottom_toTopOf="@+id/order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/empty_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Список пуст"
-        app:layout_constraintBottom_toTopOf="@+id/back_order"
+        app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvz" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/gradient_top_list"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvz" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/gradient_bottom_list"
-        app:layout_constraintBottom_toTopOf="@+id/back_order"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/center_horizontal" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -141,6 +149,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
     <ru.wb.perevozka.views.ProgressButtonView

@@ -1,36 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/box_layout"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:orientation="horizontal"
-    android:paddingStart="16dp"
-    android:paddingTop="20dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="20dp">
+    android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/route_legend_color_image"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_order_route_dot"
+        android:id="@+id/selected_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/courier_background_select_pvz"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/fullAddressWarehouse"
         style="@style/LargeBlackRegularText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/route_legend_color_image"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintEnd_toEndOf="@+id/selected_background"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/selected_background"
+        app:layout_constraintTop_toTopOf="@+id/selected_background"
         tools:text="г. Подольск, ул. Троицкая, 20" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

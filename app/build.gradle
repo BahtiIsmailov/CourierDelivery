@@ -171,4 +171,7 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'com.orhanobut:hawk:2.0.1'
 
+    //open street map
+    implementation 'org.osmdroid:osmdroid-android:6.1.11'
+
 }

@@ -25,8 +25,9 @@ class CourierOrderDetailsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (id, fullAddress) = items[position]
+        val (id, fullAddress, _, _, isSelected) = items[position]
         holder.binding.fullAddressWarehouse.text = fullAddress
+        holder.binding.selectedBackground.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
     }
 
     override fun getItemCount(): Int {

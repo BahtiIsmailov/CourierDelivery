@@ -32,6 +32,10 @@ class CourierOrderDetailsViewModel(
     val orderDetails: LiveData<CourierOrderDetailsUIState>
         get() = _orderDetails
 
+    private val _mapPoint = MutableLiveData<CourierOrderDetailsMapPoint>()
+    val mapPoint: LiveData<CourierOrderDetailsMapPoint>
+        get() = _mapPoint
+
     private val _navigationState = SingleLiveEvent<CourierOrderDetailsNavigationState>()
     val navigationState: LiveData<CourierOrderDetailsNavigationState>
         get() = _navigationState
@@ -39,6 +43,12 @@ class CourierOrderDetailsViewModel(
     private val _progressState = MutableLiveData<CourierOrderDetailsProgressState>()
     val progressState: LiveData<CourierOrderDetailsProgressState>
         get() = _progressState
+
+    private var copyCourierOrderDetailsItems = mutableListOf<CourierOrderDetailsItem>()
+
+    private fun copyCourierOrderDetailsItems(items: List<CourierOrderDetailsItem>) {
+        copyCourierOrderDetailsItems = items.toMutableList()
+    }
 
     init {
         initToolbar()
@@ -75,8 +85,17 @@ class CourierOrderDetailsViewModel(
     private fun initOrderItems(dstOffices: List<CourierOrderDstOfficeLocalEntity>) {
         val items = mutableListOf<CourierOrderDetailsItem>()
         dstOffices.forEachIndexed { index, item ->
-            items.add(CourierOrderDetailsItem(index, item.fullAddress))
+            items.add(
+                CourierOrderDetailsItem(
+                    index,
+                    item.fullAddress,
+                    item.longitude,
+                    item.latitude,
+                    false
+                )
+            )
         }
+        copyCourierOrderDetailsItems(items)
         _orderDetails.value = if (items.isEmpty()) CourierOrderDetailsUIState.Empty
         else CourierOrderDetailsUIState.InitItems(items)
     }
@@ -152,6 +171,31 @@ class CourierOrderDetailsViewModel(
 
     fun onCancelLoadClick() {
         clearSubscription()
+    }
+
+    fun onItemClick(index: Int) {
+        changeItemSelected(index)
+        navigateToPoint(index)
+    }
+
+    private fun changeItemSelected(selectIndex: Int) {
+        copyCourierOrderDetailsItems.forEachIndexed { index, item ->
+            val copyReception = if (selectIndex == index) {
+                copyCourierOrderDetailsItems[index].copy(isSelected = !item.isSelected)
+            } else {
+                copyCourierOrderDetailsItems[index].copy(isSelected = false)
+            }
+            copyCourierOrderDetailsItems[index] = copyReception
+        }
+        _orderDetails.value =
+            if (copyCourierOrderDetailsItems.isEmpty()) CourierOrderDetailsUIState.Empty
+            else CourierOrderDetailsUIState.InitItems(copyCourierOrderDetailsItems)
+    }
+
+    private fun navigateToPoint(index: Int) {
+        val itemSelected = copyCourierOrderDetailsItems[index]
+        _mapPoint.value =
+            CourierOrderDetailsMapPoint.NavigateToPoint(itemSelected.lat, itemSelected.long)
     }
 
     data class NavigateToMessageInfo(
