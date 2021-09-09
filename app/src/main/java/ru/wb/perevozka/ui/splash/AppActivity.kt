@@ -292,7 +292,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment, R.id.checkSmsFragment -> finish()
             R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.courierWarehouseFragment,
-            R.id.flightDeliveriesFragment, R.id.congratulationFragment -> showExitDialog()
+            R.id.flightDeliveriesFragment, R.id.congratulationFragment, R.id.courierOrderConfirmFragment -> showExitDialog()
             R.id.unloadingScanFragment -> {
                 val toolbar = findViewById<Toolbar>(R.id.toolbar)
                 if (toolbar.navigationIcon == null) {

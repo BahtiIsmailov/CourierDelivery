@@ -11,7 +11,6 @@ import ru.wb.perevozka.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
 import ru.wb.perevozka.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
-    private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: CourierCarNumberResourceProvider,
     private val interactor: CourierCarNumberInteractor,
@@ -99,7 +98,7 @@ class CourierCarNumberViewModel(
 
     private fun fetchCarNumberComplete() {
         _navigationState.value =
-            CourierCarNumberNavigationState.NavigateToTimer(parameters.title)
+            CourierCarNumberNavigationState.NavigateToTimer
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
@@ -128,7 +127,7 @@ class CourierCarNumberViewModel(
 //        _navigationState.value = message
 
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer(parameters.title)
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer
     }
 
     fun onCancelLoadClick() {

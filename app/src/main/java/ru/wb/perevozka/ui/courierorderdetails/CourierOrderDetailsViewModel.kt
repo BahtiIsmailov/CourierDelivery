@@ -105,10 +105,14 @@ class CourierOrderDetailsViewModel(
     }
 
     fun takeOrderClick() {
-        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber(
-            parameters.title,
-            parameters.order
-        )
+        _navigationState.value = if (interactor.carNumberIsConfirm()) {
+            CourierOrderDetailsNavigationState.NavigateToOrderConfirm
+        } else {
+            CourierOrderDetailsNavigationState.NavigateToCarNumber(
+                parameters.title,
+                parameters.order
+            )
+        }
 //        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogConfirm(
 //            resourceProvider.getConfirmDialogTitle(),
 //            resourceProvider.getConfirmDialogMessage(ARRIVE_FOR_COURIER_MIN, parameters.order.minVolume)

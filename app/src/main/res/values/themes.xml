@@ -238,6 +238,16 @@
         <item name="colorAccent">@color/light_text</item>
         <item name="android:textColorPrimary">@color/black_text</item>
         <item name="android:background">@color/background_content_light</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/dialog_alarm</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/dialog_info</item>
     </style>
 
     <style name="HandleInputBottomSheetDialog" parent="Theme.Design.BottomSheetDialog">

@@ -1,7 +1,6 @@
 package ru.wb.perevozka.ui.couriercarnumber
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -14,9 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
-import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierCarNumberFragmentBinding
@@ -32,17 +29,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     private lateinit var _binding: CourierCarNumberFragmentBinding
     private val binding get() = _binding
 
-    companion object {
-        const val COURIER_CAR_NUMBER_ID_KEY = "courier_car_number_id_key"
-    }
-
-    private val viewModel by viewModel<CourierCarNumberViewModel> {
-        parametersOf(
-            requireArguments().getParcelable<CourierCarNumberParameters>(
-                COURIER_CAR_NUMBER_ID_KEY
-            )
-        )
-    }
+    private val viewModel by viewModel<CourierCarNumberViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -190,6 +177,3 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
 }
-
-@Parcelize
-data class CourierCarNumberParameters(val title: String) : Parcelable

@@ -23,14 +23,17 @@ class CourierOrderConfirmInteractorImpl(
 
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
     private var timerDisposable: Disposable? = null
+    private var durationTime = 0
 
-
-    override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
-        return appRemoteRepository.anchorTask(taskID)
+    override fun anchorTask(): Single<CourierAnchorEntity> {
+        return  courierLocalRepository.observeOrderData()
+            .map { it.courierOrderLocalEntity.id }
+            .map { it.toString() }
+            .firstOrError()
+            .flatMap{ appRemoteRepository.anchorTask(it) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private var durationTime = 0
     override fun startTimer(durationTime: Int) {
         this.durationTime = durationTime
         if (timerDisposable == null) {

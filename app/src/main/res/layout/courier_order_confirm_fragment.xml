@@ -40,88 +40,72 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/order" />
 
-    <ImageView
-        android:id="@+id/coast_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/coast"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
-        app:layout_constraintTop_toTopOf="@+id/coast"
-        app:srcCompat="@drawable/ic_coast"
-        tools:ignore="ContentDescription" />
-
     <View
         android:id="@+id/divider2"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:background="#EDEEF0"
-        app:layout_constraintBottom_toTopOf="@+id/coast"
+        app:layout_constraintBottom_toTopOf="@+id/arrive_prefix"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/coast_prefix"
-        style="@style/MediumDarkRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Оплата "
-        app:layout_constraintBottom_toTopOf="@+id/car_number"
-        app:layout_constraintStart_toEndOf="@+id/show_route_image" />
-
-    <TextView
         android:id="@+id/coast"
-        style="@style/MediumBlackRegularText"
+        style="@style/VeryLargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/car_number"
-        app:layout_constraintStart_toEndOf="@+id/coast_prefix"
-        tools:text="• 3 200 ₽" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="3 200 ₽" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginBottom="24dp"
+        android:background="#EDEEF0"
+        app:layout_constraintBottom_toTopOf="@+id/car_number_prefix"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/car_number_prefix"
         style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/arrive"
-        app:layout_constraintStart_toEndOf="@+id/show_route_image"
-        android:text="Номер машины " />
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/divider2"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Машина " />
 
     <TextView
         android:id="@+id/car_number"
         style="@style/MediumBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/arrive"
+        app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
         app:layout_constraintStart_toEndOf="@+id/car_number_prefix"
+        app:layout_constraintTop_toTopOf="@+id/car_number_prefix"
         tools:text="• А111АА197" />
 
     <ImageView
-        android:id="@+id/home_image"
+        android:id="@+id/car_change_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
+        android:layout_marginStart="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/car_number"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toEndOf="@+id/car_number"
         app:layout_constraintTop_toTopOf="@+id/car_number"
-        app:srcCompat="@drawable/ic_truck"
+        app:srcCompat="@drawable/ic_change_car"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -131,8 +115,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Прибыть на РЦ "
-        app:layout_constraintBottom_toTopOf="@+id/volume"
+        android:text="Прибыть "
+        app:layout_constraintBottom_toTopOf="@+id/pvz"
         app:layout_constraintStart_toEndOf="@+id/show_route_image" />
 
     <TextView
@@ -140,11 +124,36 @@
         style="@style/MediumBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/volume"
+        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
         app:layout_constraintStart_toEndOf="@+id/arrive_prefix"
+        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
         tools:text="• за 20 мин" />
+
+    <ImageView
+        android:id="@+id/volume_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
+        app:srcCompat="@drawable/ic_clock"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/pvz"
+        style="@style/MediumDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/volume"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        tools:text="9 ПВЗ" />
 
     <ImageView
         android:id="@+id/pvz_image"
@@ -153,34 +162,23 @@
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/arrive"
+        app:layout_constraintBottom_toBottomOf="@+id/pvz"
         app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
         app:layout_constraintStart_toStartOf="@+id/icon_vertical"
-        app:layout_constraintTop_toTopOf="@+id/arrive"
-        app:srcCompat="@drawable/ic_clock"
+        app:layout_constraintTop_toTopOf="@+id/pvz"
+        app:srcCompat="@drawable/ic_pvz_count"
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/volume_prefix"
+        android:id="@+id/volume"
         style="@style/MediumDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="44dp"
-        android:text="Транспорт "
+        android:layout_marginBottom="20dp"
+        android:text="от 200 шт. / 86 кубов"
         app:layout_constraintBottom_toTopOf="@+id/refuse_order"
         app:layout_constraintStart_toEndOf="@+id/show_route_image" />
-
-    <TextView
-        android:id="@+id/volume"
-        style="@style/MediumBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="44dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/refuse_order"
-        app:layout_constraintStart_toEndOf="@+id/volume_prefix"
-        tools:text="• от 86 кубов" />
 
     <ImageView
         android:id="@+id/show_route_image"

@@ -2,8 +2,7 @@ package ru.wb.perevozka.ui.couriercarnumber
 
 sealed class CourierCarNumberNavigationState {
 
-    data class NavigateToTimer(val title: String) :
-        CourierCarNumberNavigationState()
+    object NavigateToTimer : CourierCarNumberNavigationState()
 
     data class NavigateToDialogInfo(
         val type: Int,

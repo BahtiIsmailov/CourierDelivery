@@ -2,6 +2,8 @@ package ru.wb.perevozka.ui.courierorderdetails
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.KeyEvent
@@ -13,6 +15,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -25,6 +28,7 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import org.osmdroid.api.IMapController
+import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
@@ -33,7 +37,6 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.scanner.hasPermissions
 import ru.wb.perevozka.views.ProgressButtonMode
@@ -86,22 +89,52 @@ class CourierOrderDetailsFragment : Fragment() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         ) {
-            org.osmdroid.config.Configuration.getInstance().load(
-                requireActivity(),
-                PreferenceManager.getDefaultSharedPreferences(requireContext())
-            )
-            org.osmdroid.config.Configuration.getInstance().userAgentValue =
-                BuildConfig.APPLICATION_ID
-            binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
-            binding.map.setMultiTouchControls(true)
-            mapController = binding.map.controller
-            mapController.setZoom(12.0)
-            binding.map.setBuiltInZoomControls(true)
-            binding.map.setMultiTouchControls(true)
+            initMapView()
         } else {
-            //requestPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
+                1000
+            )
         }
+    }
+
+    private fun initMapView() {
+        Configuration.getInstance().load(
+            requireActivity(),
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+        )
+        Configuration.getInstance().userAgentValue =
+            BuildConfig.APPLICATION_ID
+        binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        binding.map.setMultiTouchControls(true)
+        mapController = binding.map.controller
+        mapController.setZoom(12.0)
+        binding.map.setBuiltInZoomControls(true)
+        binding.map.setMultiTouchControls(true)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            1000 -> {
+                if ((grantResults.isNotEmpty() &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    initMapView()
+                } else { }
+                return
+            }
+            else -> { }
+        }
+
     }
 
     private fun setMarker(lat: Double, long: Double) {
@@ -189,10 +222,10 @@ class CourierOrderDetailsFragment : Fragment() {
                     showEmptyOrderDialog(it.title, it.message, it.button)
                 is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
-                        CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.title)
-                        )
+                        CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment()
                     )
+                CourierOrderDetailsNavigationState.NavigateToOrderConfirm ->
+                    findNavController().navigate(CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierOrderConfirmFragment())
             }
         }
 

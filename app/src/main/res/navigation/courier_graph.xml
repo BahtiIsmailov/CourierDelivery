@@ -123,6 +123,15 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierOrderDetailsFragment_to_courierOrderConfirmFragment"
+            app:destination="@id/courierOrderConfirmFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/courierOrderDetailsFragment"
+            />
 
     </fragment>
 
@@ -132,13 +141,13 @@
         android:label="CourierCarNumberFragment"
         tools:layout="@layout/courier_car_number_fragment">
 
-        <argument
-            android:name="courier_car_number_id_key"
-            app:argType="ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters"
-            app:nullable="false" />
         <action
             android:id="@+id/action_courierCarNumberFragment_to_courierOrderConfirmFragment"
-            app:destination="@id/courierOrderConfirmFragment" />
+            app:destination="@id/courierOrderConfirmFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
 
@@ -161,21 +170,21 @@
         android:id="@+id/courierScannerLoadingScanFragment"
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingScanFragment"
         android:label="CourierScannerLoadingScanFragment"
-        tools:layout="@layout/courier_loading_fragment" >
+        tools:layout="@layout/courier_loading_fragment">
         <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierScannerLoadingBoxNotBelongFragment"
             app:destination="@id/courierScannerLoadingBoxNotBelongFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierLoadingBoxesFragment"
             app:destination="@id/courierLoadingBoxesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -187,8 +196,9 @@
     <fragment
         android:id="@+id/courierLoadingBoxesFragment"
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingBoxesFragment"
-        tools:layout="@layout/courier_loading_boxes_fragment"
-        android:label="" />
+        android:label=""
+        tools:layout="@layout/courier_loading_boxes_fragment" />
+
     <fragment
         android:id="@+id/courierOrderConfirmFragment"
         android:name="ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmFragment"
@@ -200,10 +210,21 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_courierOrderConfirmFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment" />
+            app:destination="@id/courierWarehouseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_courierOrderConfirmFragment_to_courierCarNumberFragment"
+            app:destination="@id/courierCarNumberFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
 </navigation>

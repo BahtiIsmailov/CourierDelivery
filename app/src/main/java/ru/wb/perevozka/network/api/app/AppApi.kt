@@ -180,7 +180,7 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
     ): Single<CourierTasksMy>
 
-    @POST("{version}tasks/{taskID}/courier")
+    @POST("{version}/tasks/{taskID}/courier")
     fun anchorTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") flightID: String,

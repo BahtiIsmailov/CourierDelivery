@@ -11,4 +11,6 @@ interface CourierOrderDetailsInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
+    fun carNumberIsConfirm(): Boolean
+
 }

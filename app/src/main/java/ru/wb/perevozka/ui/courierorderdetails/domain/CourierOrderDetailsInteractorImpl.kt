@@ -9,13 +9,16 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.network.token.UserManager
 import java.util.concurrent.TimeUnit
 
 class CourierOrderDetailsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository
+    private val courierLocalRepository: CourierLocalRepository,
+    private val userManager: UserManager
 ) : CourierOrderDetailsInteractor {
+
 
     @Deprecated("Перенести далее по flow")
     override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
@@ -30,6 +33,10 @@ class CourierOrderDetailsInteractorImpl(
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
         return courierLocalRepository.observeOrderData()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
+    }
+
+    override fun carNumberIsConfirm(): Boolean {
+        return userManager.carNumber().isNotEmpty()
     }
 
 }

@@ -7,7 +7,6 @@ import ru.wb.perevozka.ui.auth.CheckSmsParameters
 import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
-import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.perevozka.ui.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.courierdata.UserFormViewModel
@@ -88,14 +87,7 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { (parameters: CourierCarNumberParameters) ->
-        CourierCarNumberViewModel(
-            parameters,
-            get(),
-            get(),
-            get()
-        )
-    }
+    viewModel { CourierCarNumberViewModel(get(), get(), get()) }
 
     viewModel { CourierOrderConfirmViewModel(get(), get(), get()) }
 

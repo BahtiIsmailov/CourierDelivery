@@ -17,5 +17,7 @@ sealed class CourierOrderConfirmNavigationState {
 
     object NavigateToTimer: CourierOrderConfirmNavigationState()
 
+    object NavigateToChangeCar: CourierOrderConfirmNavigationState()
+
 
 }

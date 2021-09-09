@@ -10,12 +10,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderConfirmFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 
 
 class CourierOrderConfirmFragment : Fragment() {
@@ -24,7 +26,7 @@ class CourierOrderConfirmFragment : Fragment() {
 
     private lateinit var _binding: CourierOrderConfirmFragmentBinding
     private val binding get() = _binding
-    private lateinit var progressDialog: AlertDialog
+    //private lateinit var progressDialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +40,15 @@ class CourierOrderConfirmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initObservable()
         initListeners()
+        initReturnResult()
+    }
+
+    private fun initReturnResult() {
+        setFragmentResultListener(ProgressDialogFragment.PROGRESS_DIALOG_RESULT) { _, bundle ->
+            if (bundle.containsKey(ProgressDialogFragment.PROGRESS_DIALOG_BACK_KEY)) {
+                viewModel.onCancelLoadClick()
+            }
+        }
     }
 
     private fun initObservable() {
@@ -46,10 +57,11 @@ class CourierOrderConfirmFragment : Fragment() {
             when (it) {
                 is CourierOrderConfirmInfoUIState.InitOrderInfo -> {
                     binding.order.text = it.order
-                    binding.coast.text = it.coast
                     binding.carNumber.text = it.carNumber
                     binding.arrive.text = it.arrive
+                    binding.pvz.text = it.pvz
                     binding.volume.text = it.volume
+                    binding.coast.text = it.coast
                 }
             }
         }
@@ -73,6 +85,8 @@ class CourierOrderConfirmFragment : Fragment() {
                 CourierOrderConfirmNavigationState.NavigateToTimer -> {
                     findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierOrderTimerFragment())
                 }
+                CourierOrderConfirmNavigationState.NavigateToChangeCar ->
+                    findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierCarNumberFragment())
             }
         }
 
@@ -81,14 +95,26 @@ class CourierOrderConfirmFragment : Fragment() {
     private fun initListeners() {
         binding.refuseOrder.setOnClickListener { viewModel.refuseOrderClick() }
         binding.confirmOrder.setOnClickListener { viewModel.confirmOrderClick() }
+        binding.carChangeImage.setOnClickListener { viewModel.onChangeCarClick() }
+    }
+
+//    private fun closeProgressDialog() {
+//        if (progressDialog.isShowing) progressDialog.dismiss()
+//    }
+//
+//    private fun showProgressDialog() {
+//        progressDialog.show()
+//    }
+
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
     }
 
     private fun closeProgressDialog() {
-        if (progressDialog.isShowing) progressDialog.dismiss()
-    }
-
-    private fun showProgressDialog() {
-        progressDialog.show()
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
     }
 
     private fun showTimeIsOutDialog(title: String, message: String, button: String) {

@@ -39,20 +39,21 @@ class CourierOrderConfirmViewModel(
     private fun initOrder() {
         addSubscription(
             interactor.observeOrderData()
-                .subscribe({ initOrderInfo(it.courierOrderLocalEntity) }, {})
+                .subscribe({ initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size) }, {})
         )
     }
 
-    private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity) {
+    private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity, pvzCount: Int) {
         with(courierOrderLocalEntity) {
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderConfirmInfoUIState.InitOrderInfo(
                 order = resourceProvider.getOrder(id),
-                coast = resourceProvider.getCoast(coast),
                 carNumber = resourceProvider.getCarNumber(interactor.carNumber()),
                 arrive = resourceProvider.getArrive(ARRIVE_FOR_COURIER_MIN),
-                volume = resourceProvider.getVolume(minVolume)
+                pvz = resourceProvider.getPvz(pvzCount),
+                volume = resourceProvider.getVolume(minBoxesCount, minVolume),
+                coast = resourceProvider.getCoast(coast)
             )
         }
     }
@@ -69,21 +70,26 @@ class CourierOrderConfirmViewModel(
     }
 
     fun confirmOrderClick() {
-        val taskId = interactor.observeOrderData().map { it.courierOrderLocalEntity.id }
-            .map { it.toString() }
-        addSubscription(taskId.flatMapSingle { interactor.anchorTask(it) }
-            .subscribe(
-                { carNumberIsConfirm() },
-                { carNumberNotConfirmed() })
+        _progressState.value = CourierOrderConfirmProgressState.Progress
+        addSubscription(
+            interactor.anchorTask()
+                .subscribe(
+                    { anchorTaskComplete() },
+                    { anchorTaskError(it) })
         )
     }
 
-    private fun carNumberIsConfirm() {
+    fun onChangeCarClick() {
+        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToChangeCar
+    }
+
+    private fun anchorTaskComplete() {
+        _progressState.value = CourierOrderConfirmProgressState.ProgressComplete
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToTimer
     }
 
-    private fun carNumberNotConfirmed() {
-
+    private fun anchorTaskError(throwable: Throwable) {
+        courierWarehouseError(throwable)
     }
 
     fun returnToListOrderClick() {
