@@ -17,4 +17,6 @@ data class CourierOrderLocalEntity(
     val minPrice: Int,
     val minVolume: Int,
     val minBoxesCount: Int,
+    val reservedDuration: String,
+    val reservedAt: String,
 )

@@ -20,6 +20,7 @@ import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderTimerFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 
 class CourierOrderTimerFragment : Fragment() {
@@ -40,8 +41,13 @@ class CourierOrderTimerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObservable()
         initListeners()
+    }
+
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
     }
 
     private fun initObservable() {

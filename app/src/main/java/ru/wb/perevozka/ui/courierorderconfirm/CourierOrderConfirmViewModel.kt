@@ -3,7 +3,6 @@ package ru.wb.perevozka.ui.courierorderconfirm
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.ARRIVE_FOR_COURIER_MIN
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -50,7 +49,7 @@ class CourierOrderConfirmViewModel(
             _orderInfo.value = CourierOrderConfirmInfoUIState.InitOrderInfo(
                 order = resourceProvider.getOrder(id),
                 carNumber = resourceProvider.getCarNumber(interactor.carNumber()),
-                arrive = resourceProvider.getArrive(ARRIVE_FOR_COURIER_MIN),
+                arrive = resourceProvider.getArrive(reservedDuration),
                 pvz = resourceProvider.getPvz(pvzCount),
                 volume = resourceProvider.getVolume(minBoxesCount, minVolume),
                 coast = resourceProvider.getCoast(coast)
@@ -102,19 +101,19 @@ class CourierOrderConfirmViewModel(
 
     private fun courierWarehouseError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> NavigateToMessageInfo(
+            is NoInternetException -> CourierOrderConfirmNavigationState.NavigateToDialogInfo(
                 DialogStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> NavigateToMessageInfo(
+            is BadRequestException -> CourierOrderConfirmNavigationState.NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> NavigateToMessageInfo(
+            else -> CourierOrderConfirmNavigationState.NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
@@ -122,18 +121,13 @@ class CourierOrderConfirmViewModel(
             )
         }
         progressComplete()
+        _navigationState.value = message
+
     }
 
     fun onCancelLoadClick() {
         clearSubscription()
     }
-
-    data class NavigateToMessageInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
 
     data class Label(val label: String)
 

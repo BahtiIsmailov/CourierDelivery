@@ -9,4 +9,5 @@ data class CourierOrderResponse(
     val minVolume: Int,
     val minBoxesCount: Int,
     val dstOffices: List<CourierOrderDstOfficeResponse>,
+    val reservedDuration: String
 )

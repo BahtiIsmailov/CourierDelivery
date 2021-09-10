@@ -52,7 +52,7 @@ class CourierOrdersViewModel(
     fun onItemClick(idView: Int) {
         val courierOrderEntity = copyCourierOrdersEntity[idView]
         addSubscription(
-            interactor.clearAndSaveOrder(courierOrderEntity)
+            interactor.clearAndSaveSelectedOrder(courierOrderEntity)
                 .subscribe({
                     _navigationState.value =
                         CourierOrdersNavigationState.NavigateToOrderDetails(

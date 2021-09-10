@@ -19,7 +19,7 @@ class CourierOrderConfirmResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_confirm_car_number, carNumber)
     }
 
-    fun getArrive(arrive: Int): String {
+    fun getArrive(arrive: String): String {
         return context.getString(R.string.courier_orders_confirm_arrive, arrive)
     }
 

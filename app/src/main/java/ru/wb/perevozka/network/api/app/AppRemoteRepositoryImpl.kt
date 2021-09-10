@@ -27,10 +27,7 @@ import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanSrcOffi
 import ru.wb.perevozka.network.api.app.remote.CarNumberRequest
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.perevozka.network.api.app.remote.boxinfo.*
-import ru.wb.perevozka.network.api.app.remote.courier.CourierOrderResponse
-import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStartRequest
-import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStatusesIntransitRequest
-import ru.wb.perevozka.network.api.app.remote.courier.CourierWarehouseResponse
+import ru.wb.perevozka.network.api.app.remote.courier.*
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
 import ru.wb.perevozka.network.api.app.remote.flight.*
@@ -49,6 +46,7 @@ import ru.wb.perevozka.network.api.app.remote.tracker.BoxTrackerRequest
 import ru.wb.perevozka.network.api.app.remote.warehouse.*
 import ru.wb.perevozka.network.api.app.remote.warehousematchingboxes.WarehouseMatchingBoxResponse
 import ru.wb.perevozka.network.token.TokenManager
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.TimeManager
 
 class AppRemoteRepositoryImpl(
@@ -551,8 +549,60 @@ class AppRemoteRepositoryImpl(
             }
     }
 
-    override fun anchorTask(taskID: String): Single<CourierAnchorEntity> {
-        return remote.anchorTask(apiVersion(), taskID).map { CourierAnchorEntity(it.carNumber) }
+    override fun tasksMy(): Single<CourierTasksMyEntity> {
+        return remote.tasksMy(apiVersion()).map { task ->
+
+            LogUtils { logDebugApp(task.toString()) }
+            val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
+            task.dstOffices.forEach {
+                val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
+                    id = it.id,
+                    name = it.name,
+                    fullAddress = it.fullAddress,
+                    long = it.long,
+                    lat = it.lat
+                )
+                courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+            }
+
+            val srcOffice = with(task.srcOffice) {
+                CourierTasksMySrcOfficeEntity(
+                    id = id,
+                    name = name,
+                    fullAddress = fullAddress,
+                    long = long,
+                    lat = lat
+                )
+            }
+
+            CourierTasksMyEntity(
+                id = task.id,
+                routeID = task.routeID ?: 0,
+                gate = task.gate ?: "",
+                srcOffice = srcOffice,
+                minPrice = task.minPrice,
+                minVolume = task.minVolume,
+                minBoxesCount = task.minBoxesCount,
+                dstOffices = courierTaskMyDstOfficesEntity,
+                wbUserID = task.wbUserID,
+                carNumber = task.carNumber,
+                reservedAt = task.reservedAt,
+                startedAt = task.startedAt ?: "",
+                reservedDuration = task.reservedDuration,
+                status = task.status ?: ""
+            )
+        }
+    }
+
+    override fun anchorTask(
+        taskID: String,
+        carNumber: String
+    ): Completable {
+        return remote.anchorTask(
+            apiVersion(),
+            taskID,
+            CourierAnchorResponse(carNumber)
+        )
     }
 
     override fun deleteTask(taskID: String): Completable {
@@ -575,7 +625,10 @@ class AppRemoteRepositoryImpl(
             }
     }
 
-    override fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable {
+    override fun taskStart(
+        taskID: String,
+        courierTaskStartEntity: CourierTaskStartEntity
+    ): Completable {
         val courierTaskStartRequest =
             CourierTaskStartRequest(
                 id = courierTaskStartEntity.id,
@@ -597,7 +650,11 @@ class AppRemoteRepositoryImpl(
                 loadingAt = courierTaskStatusesIntransitEntity.loadingAt,
                 deliveredAt = courierTaskStatusesIntransitEntity.deliveredAt
             )
-        return remote.taskStatusesIntransit(apiVersion(), taskID, courierTaskStatusesIntransitRequest)
+        return remote.taskStatusesIntransit(
+            apiVersion(),
+            taskID,
+            courierTaskStatusesIntransitRequest
+        )
     }
 
     override fun taskStatusesEnd(taskID: String): Completable {
@@ -638,7 +695,9 @@ class AppRemoteRepositoryImpl(
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,
-                dstOffices = dstOffices
+                dstOffices = dstOffices,
+                reservedAt = "",
+                reservedDuration = reservedDuration
             )
         }
     }

@@ -47,7 +47,7 @@ class CheckSmsInteractorImpl(
             publishCallState(TimerOverStateImpl())
         } else {
             val counterTick = durationTime - tick.toInt()
-            publishCallState(TimerStateImpl(counterTick))
+            publishCallState(TimerStateImpl(durationTime, counterTick))
         }
     }
 

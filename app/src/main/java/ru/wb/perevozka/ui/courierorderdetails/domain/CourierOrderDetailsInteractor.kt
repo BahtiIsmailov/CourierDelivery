@@ -7,8 +7,6 @@ import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 
 interface CourierOrderDetailsInteractor {
 
-    fun anchorTask(taskID: String): Single<CourierAnchorEntity>
-
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
     fun carNumberIsConfirm(): Boolean

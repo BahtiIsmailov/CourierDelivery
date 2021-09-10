@@ -187,9 +187,9 @@ class CheckSmsViewModel(
         )
     }
 
-    override fun onTimerState(duration: Int) {
+    override fun onTimerState(duration: Int, downTickSec: Int) {
         val time: String =
-            resourceProvider.getSignUpTimeConfirmCode(getMin(duration), getSec(duration))
+            resourceProvider.getSignUpTimeConfirmCode(getMin(downTickSec), getSec(downTickSec))
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordTimer(
             time,
             resourceProvider.getTitleInputTimerSpan()

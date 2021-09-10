@@ -178,15 +178,16 @@ interface AppApi {
     @GET("{version}/tasks/my")
     fun tasksMy(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<CourierTasksMy>
+    ): Single<CourierTasksMyResponse>
 
     @POST("{version}/tasks/{taskID}/courier")
     fun anchorTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") flightID: String,
-    ): Single<CourierAnchorResponse>
+        @Body courierAnchorResponse: CourierAnchorResponse
+    ): Completable
 
-    @HTTP(method = "DELETE", path = "{version}tasks/{taskID}/courier", hasBody = true)
+    @HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
     fun deleteTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") flightID: String,

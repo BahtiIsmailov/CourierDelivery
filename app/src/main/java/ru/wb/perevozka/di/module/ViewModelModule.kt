@@ -63,7 +63,7 @@ val viewModelModule = module {
         CheckSmsViewModel(parameters, get(), get(), get())
     }
 
-    viewModel { CourierLoaderViewModel(get(), get(), get(), get()) }
+    viewModel { CourierLoaderViewModel(get(), get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
 
     viewModel { (parameters: CourierDataParameters) ->
@@ -91,7 +91,7 @@ val viewModelModule = module {
 
     viewModel { CourierOrderConfirmViewModel(get(), get(), get()) }
 
-    viewModel { CourierOrderTimerViewModel(get(), get(), get()) }
+    viewModel { CourierOrderTimerViewModel(get(), get(), get(), get()) }
 
     viewModel { CourierLoadingUnknownBoxViewModel() }
 

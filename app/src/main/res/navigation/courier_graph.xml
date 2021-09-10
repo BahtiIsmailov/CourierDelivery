@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/courierLoaderFragment"
         android:name="ru.wb.perevozka.ui.courierloader.CourierLoaderFragment"
-        android:label="CourierLoaderFragment"
+        android:label=""
         tools:layout="@layout/courier_loader_fragment">
         <action
             android:id="@+id/action_courierLoaderFragment_to_courierWarehouseFragment"
@@ -34,6 +34,13 @@
         <action
             android:id="@+id/action_courierLoaderFragment_to_courierScannerLoadingScanFragment"
             app:destination="@id/courierScannerLoadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierOrderTimerFragment"
+            app:destination="@id/courierOrderTimerFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -130,8 +137,7 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/courierOrderDetailsFragment"
-            />
+            app:popUpTo="@+id/courierOrderDetailsFragment" />
 
     </fragment>
 
@@ -154,7 +160,7 @@
     <fragment
         android:id="@+id/courierOrderTimerFragment"
         android:name="ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerFragment"
-        android:label="CourierOrderTimerFragment"
+        android:label=""
         tools:layout="@layout/courier_order_timer_fragment">
 
         <action
@@ -217,14 +223,14 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_courierOrderConfirmFragment_to_courierCarNumberFragment"
             app:destination="@id/courierCarNumberFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
 </navigation>

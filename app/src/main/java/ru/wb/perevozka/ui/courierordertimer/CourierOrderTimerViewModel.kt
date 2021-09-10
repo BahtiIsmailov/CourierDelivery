@@ -3,7 +3,7 @@ package ru.wb.perevozka.ui.courierordertimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.ARRIVAL_TIME_COURIER_SEC
+import ru.wb.perevozka.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -14,12 +14,14 @@ import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.utils.time.DateTimeFormatter
+import ru.wb.perevozka.utils.time.TimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
+    private val timeFormatter: TimeFormatter
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
@@ -41,22 +43,42 @@ class CourierOrderTimerViewModel(
 
     init {
         initOrder()
-        initTimer()
     }
 
     private fun initOrder() {
         addSubscription(
             interactor.observeOrderData()
-                .subscribe({ initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size) }, {})
+                .subscribe(
+                    {
+                        initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size)
+                        initTimer(
+                            it.courierOrderLocalEntity.reservedDuration,
+                            it.courierOrderLocalEntity.reservedAt
+                        )
+                    }, {}
+                )
         )
     }
 
-    private fun initTimer() {
-        updateTimer(ARRIVAL_TIME_COURIER_SEC.toInt())
-        interactor.startTimer(ARRIVAL_TIME_COURIER_SEC.toInt())
-        addSubscription(interactor.timer
-            .subscribe({ onHandleSignUpState(it) })
-            { onHandleSignUpError() })
+    private fun initTimer(reservedDuration: String, reservedAt: String) {
+        var arrivalSec: Long
+        val durationSec = (reservedDuration.toIntOrNull() ?: DEFAULT_ARRIVAL_TIME_COURIER_MIN) * 60L
+        arrivalSec = if (reservedAt.isEmpty()) {
+            durationSec
+        } else {
+            val reservedAtDataTime =
+                timeFormatter.dateTimeWithoutTimezoneFromString(reservedAt).millis
+            val currentDateTime = timeFormatter.currentDateTime().millis
+            val offsetSec = (currentDateTime - reservedAtDataTime) / 1000
+            durationSec - offsetSec
+        }
+        if (arrivalSec < 0) arrivalSec = 0L
+        updateTimer(durationSec.toInt(), arrivalSec.toInt())
+        interactor.startTimer(durationSec.toInt(), arrivalSec.toInt())
+        addSubscription(
+            interactor.timer
+                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError() })
+        )
     }
 
     private fun onHandleSignUpState(timerState: TimerState) {
@@ -104,16 +126,17 @@ class CourierOrderTimerViewModel(
     }
 
     fun returnToListOrderClick() {
-        toWarehouse()
+        deleteTask()
     }
 
     fun refuseOrderConfirmClick() {
+        deleteTask()
+    }
+
+    private fun deleteTask() {
         addSubscription(interactor.deleteTask().subscribe(
-            { toWarehouse() }
-
-            , {} ))
-
-
+            { toWarehouse() }, {})
+        )
     }
 
     private fun toWarehouse() {
@@ -157,14 +180,14 @@ class CourierOrderTimerViewModel(
 
     data class Label(val label: String)
 
-    override fun onTimerState(duration: Int) {
-        updateTimer(duration)
+    override fun onTimerState(duration: Int, downTickSec: Int) {
+        updateTimer(duration, downTickSec)
     }
 
-    private fun updateTimer(duration: Int) {
+    private fun updateTimer(duration: Int, downTickSec: Int) {
         _orderTimer.value = CourierOrderTimerState.Timer(
-            DateTimeFormatter.getAnalogTime(duration),
-            DateTimeFormatter.getDigitTime(duration)
+            DateTimeFormatter.getAnalogTime(duration, downTickSec),
+            DateTimeFormatter.getDigitTime(downTickSec)
         )
     }
 

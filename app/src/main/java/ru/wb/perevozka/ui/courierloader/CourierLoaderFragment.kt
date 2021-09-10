@@ -41,9 +41,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
     private fun initObserver() {
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierLoaderNavigationState.NavigateToCourierWarehouse -> findNavController().navigate(
-                    CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierWarehouseFragment()
-                )
+
                 is CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration -> findNavController().navigate(
                     CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCouriersCompleteRegistrationFragment(
                         CourierExpectsParameters(state.phone)
@@ -54,7 +52,15 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                         CourierDataParameters(state.phone)
                     )
                 )
-                CourierLoaderNavigationState.NavigateToCourierScanner -> {
+                CourierLoaderNavigationState.NavigateToCourierWarehouse -> findNavController().navigate(
+                    CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierWarehouseFragment()
+                )
+                CourierLoaderNavigationState.NavigateToTimer -> {
+                    findNavController().navigate(
+                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierOrderTimerFragment()
+                    )
+                }
+                CourierLoaderNavigationState.NavigateToScanner -> {
                     findNavController().navigate(
                         CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierScannerLoadingScanFragment()
                     )

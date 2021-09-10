@@ -221,7 +221,7 @@
     <string name="courier_orders_confirm_order">Заказ № %1$d</string>
     <string name="courier_orders_confirm_coast">%1$s ₽</string>
     <string name="courier_orders_confirm_car_number">• %1$s</string>
-    <string name="courier_orders_confirm_arrive">• за %1$d мин</string>
+    <string name="courier_orders_confirm_arrive">• за %1$s мин</string>
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
 

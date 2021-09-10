@@ -25,13 +25,13 @@ class CourierOrderConfirmInteractorImpl(
     private var timerDisposable: Disposable? = null
     private var durationTime = 0
 
-    override fun anchorTask(): Single<CourierAnchorEntity> {
+    override fun anchorTask(): Completable {
         return  courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id }
             .map { it.toString() }
             .firstOrError()
-            .flatMap{ appRemoteRepository.anchorTask(it) }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+            .flatMapCompletable{ appRemoteRepository.anchorTask(it, userManager.carNumber()) }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     override fun startTimer(durationTime: Int) {
@@ -60,7 +60,7 @@ class CourierOrderConfirmInteractorImpl(
             publishCallState(TimerOverStateImpl())
         } else {
             val counterTick = durationTime - tick.toInt()
-            publishCallState(TimerStateImpl(counterTick))
+            publishCallState(TimerStateImpl(durationTime, counterTick))
         }
     }
 

@@ -2,9 +2,6 @@ package ru.wb.perevozka.network.api.app
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.Path
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
@@ -13,9 +10,6 @@ import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnti
 import ru.wb.perevozka.network.api.app.entity.*
 import ru.wb.perevozka.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
-import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStartRequest
-import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStatusesIntransitRequest
-import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskStatusesResponse
 import ru.wb.perevozka.network.api.app.remote.flightsstatus.StatusStateEntity
 import ru.wb.perevozka.network.api.app.remote.flightstatuses.FlightStatusesResponse
 import ru.wb.perevozka.network.api.app.remote.time.TimeResponse
@@ -104,7 +98,9 @@ interface AppRemoteRepository {
 
     fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
-    fun anchorTask(taskID: String): Single<CourierAnchorEntity>
+    fun tasksMy(): Single<CourierTasksMyEntity>
+
+    fun anchorTask(taskID: String, carNumber: String): Completable
 
     fun deleteTask(taskID: String): Completable
 
@@ -112,7 +108,10 @@ interface AppRemoteRepository {
 
     fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable
 
-    fun taskStatusesIntransit(taskID: String, courierTaskStatusesIntransitEntity: CourierTaskStatusesIntransitEntity): Completable
+    fun taskStatusesIntransit(
+        taskID: String,
+        courierTaskStatusesIntransitEntity: CourierTaskStatusesIntransitEntity
+    ): Completable
 
     fun taskStatusesEnd(taskID: String): Completable
 

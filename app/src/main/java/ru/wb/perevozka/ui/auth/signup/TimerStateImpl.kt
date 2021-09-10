@@ -1,7 +1,7 @@
 package ru.wb.perevozka.ui.auth.signup
 
-class TimerStateImpl(private val duration: Int) : TimerState {
+class TimerStateImpl(private val duration: Int, private val downTickSec: Int) : TimerState {
     override fun handle(stateHandler: TimerStateHandler) {
-        stateHandler.onTimerState(duration)
+        stateHandler.onTimerState(duration, downTickSec)
     }
 }

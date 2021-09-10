@@ -220,15 +220,15 @@ class CourierLoadingScanViewModel(
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
-    override fun onTimerState(duration: Int) {
-        updateTimer(duration)
+    override fun onTimerState(duration: Int, downTickSec: Int) {
+        updateTimer(duration, downTickSec)
     }
 
-    private fun updateTimer(duration: Int) {
+    private fun updateTimer(duration: Int, downTickSec: Int) {
         _orderTimer.value =
             CourierLoadingScanTimerState.Timer(
-                DateTimeFormatter.getAnalogTime(duration),
-                DateTimeFormatter.getDigitTime(duration)
+                DateTimeFormatter.getAnalogTime(duration, downTickSec),
+                DateTimeFormatter.getDigitTime(downTickSec)
             )
     }
 

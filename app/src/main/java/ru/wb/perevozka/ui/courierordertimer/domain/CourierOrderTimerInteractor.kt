@@ -9,11 +9,9 @@ import ru.wb.perevozka.ui.auth.signup.TimerState
 
 interface CourierOrderTimerInteractor {
 
-    fun anchorTask(): Single<CourierAnchorEntity>
-
     fun deleteTask(): Completable
 
-    fun startTimer(durationTime: Int)
+    fun startTimer(durationTime: Int, arrivalSec : Int)
     val timer: Flowable<TimerState>
     fun stopTimer()
 

@@ -10,7 +10,7 @@ interface CourierOrderInteractor {
 
     fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
-    fun clearAndSaveOrder(courierOrderEntity: CourierOrderEntity): Completable
+    fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
 
     fun observeNetworkConnected(): Observable<NetworkState>
 

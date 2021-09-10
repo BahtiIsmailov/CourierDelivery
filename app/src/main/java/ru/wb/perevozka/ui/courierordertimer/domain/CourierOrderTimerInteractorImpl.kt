@@ -6,7 +6,6 @@ import io.reactivex.subjects.BehaviorSubject
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
-import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.ui.auth.signup.TimerOverStateImpl
 import ru.wb.perevozka.ui.auth.signup.TimerState
@@ -22,10 +21,6 @@ class CourierOrderTimerInteractorImpl(
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
     private var timerDisposable: Disposable? = null
 
-    override fun anchorTask(): Single<CourierAnchorEntity> {
-        return taskId().flatMap { appRemoteRepository.anchorTask(it) }
-    }
-
     override fun deleteTask(): Completable {
         return taskId().flatMapCompletable { appRemoteRepository.deleteTask(it) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
@@ -37,8 +32,10 @@ class CourierOrderTimerInteractorImpl(
             .first("")
 
     private var durationTime = 0
-    override fun startTimer(durationTime: Int) {
+    private var arrivalTime = 0
+    override fun startTimer(durationTime: Int, arrivalTime : Int) {
         this.durationTime = durationTime
+        this.arrivalTime = arrivalTime
         if (timerDisposable == null) {
             timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
                 .subscribe({ onTimeConfirmCode(it) }) { }
@@ -54,12 +51,12 @@ class CourierOrderTimerInteractorImpl(
     }
 
     private fun onTimeConfirmCode(tick: Long) {
-        if (tick > durationTime) {
+        if (tick > arrivalTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
         } else {
-            val counterTick = durationTime - tick.toInt()
-            publishCallState(TimerStateImpl(counterTick))
+            val downTickSec = arrivalTime - tick.toInt()
+            publishCallState(TimerStateImpl(durationTime, downTickSec))
         }
     }
 

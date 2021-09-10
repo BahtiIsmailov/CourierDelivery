@@ -25,7 +25,7 @@ class CourierOrderInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun clearAndSaveOrder(courierOrderEntity: CourierOrderEntity): Completable {
+    override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
         val courierOrderSrcOfficesLocalEntity = with(courierOrderEntity.srcOffice) {
@@ -46,6 +46,8 @@ class CourierOrderInteractorImpl(
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,
+                reservedDuration = reservedDuration,
+                reservedAt = reservedAt,
             )
         }
         val courierOrderDstOfficesLocalEntity = mutableListOf<CourierOrderDstOfficeLocalEntity>()
