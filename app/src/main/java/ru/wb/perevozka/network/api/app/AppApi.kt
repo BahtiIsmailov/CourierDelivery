@@ -202,14 +202,14 @@ interface AppApi {
     fun taskStart(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") flightID: String,
-        @Body courierTaskStartRequest: CourierTaskStartRequest
+        @Body courierTaskStartRequest: List<CourierTaskStartRequest>
     ): Completable
 
     @POST("{version}/tasks/{taskID}/statuses/intransit")
     fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") flightID: String,
-        @Body courierTaskStatusesIntransitRequest: CourierTaskStatusesIntransitRequest
+        @Body courierTaskStatusesIntransitRequest: List<CourierTaskStatusesIntransitRequest>
     ): Completable
 
     @POST("{version}/tasks/{taskID}/statuses/end")

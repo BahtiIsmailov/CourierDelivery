@@ -25,7 +25,8 @@ class CourierLoadingBoxesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (qrCode, info, isChecked) = items[position]
+        val (index, qrCode, info, isChecked) = items[position]
+        holder.binding.index.text = index
         holder.binding.qrCode.text = qrCode
         holder.binding.info.text = info
         holder.binding.checked.isChecked = isChecked

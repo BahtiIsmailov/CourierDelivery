@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="130dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -33,7 +33,20 @@
             android:layout_marginRight="24dp"
             android:gravity="center"
             android:textStyle="bold"
-            android:text="Коробка с другого маршрута" />
+            android:text="Коробка из другого заказа" />
+
+        <TextView
+            android:id="@+id/detail"
+            style="@style/LargeDarkRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="24dp"
+            android:gravity="center"
+            android:text="Оставте её на складе" />
 
     </RelativeLayout>
 
@@ -41,8 +54,8 @@
         android:id="@+id/understand"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

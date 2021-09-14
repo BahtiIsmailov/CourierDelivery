@@ -2,14 +2,12 @@ package ru.wb.perevozka.ui.courierloader
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.perevozka.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderSrcOfficeLocalEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierTasksMyEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
@@ -57,30 +55,30 @@ class CourierLoaderViewModel(
     }
 
     private fun switchNavigationState(courierTasksMyEntity: CourierTasksMyEntity) {
-        if (courierTasksMyEntity.reservedAt.isNotEmpty()) {
+        if (courierTasksMyEntity.status.isEmpty()) {
             toTimer()
-        } else {
+        } else if (courierTasksMyEntity.status == "started") {
             toScanner()
         }
     }
 
     private fun saveCurrentOrderAndOffices(courierTasksMyEntity: CourierTasksMyEntity) {
-        val courierOrderSrcOfficesLocalEntity = with(courierTasksMyEntity.srcOffice) {
-            CourierOrderSrcOfficeLocalEntity(
-                id = id,
-                name = name,
-                fullAddress = fullAddress,
-                longitude = long,
-                latitude = lat
-            )
-        }
+//        val courierOrderSrcOfficesLocalEntity = with(courierTasksMyEntity.srcOffice) {
+//            CourierOrderSrcOfficeLocalEntity(
+//                id = id,
+//                name = name,
+//                fullAddress = fullAddress,
+//                longitude = long,
+//                latitude = lat
+//            )
+//        }
 
         val courierOrderLocalEntity = with(courierTasksMyEntity) {
             CourierOrderLocalEntity(
                 id = id,
                 routeID = routeID,
                 gate = gate,
-                srcOffice = courierOrderSrcOfficesLocalEntity,
+//                srcOffice = courierOrderSrcOfficesLocalEntity,
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,

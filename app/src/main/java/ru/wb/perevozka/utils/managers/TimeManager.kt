@@ -5,4 +5,5 @@ interface TimeManager {
     fun getOffsetLocalTime(): String
     fun getOffsetTimeZone(dateTime: String): String
     fun clear()
+    fun getLocalTime(): String
 }

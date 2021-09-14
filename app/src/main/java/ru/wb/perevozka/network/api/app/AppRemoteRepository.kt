@@ -3,7 +3,7 @@ package ru.wb.perevozka.network.api.app
 import io.reactivex.Completable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
@@ -94,7 +94,7 @@ interface AppRemoteRepository {
 
     fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
 
-    fun courierWarehouses(): Single<List<CourierWarehouseEntity>>
+    fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 
     fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
@@ -110,7 +110,7 @@ interface AppRemoteRepository {
 
     fun taskStatusesIntransit(
         taskID: String,
-        courierTaskStatusesIntransitEntity: CourierTaskStatusesIntransitEntity
+        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
     ): Completable
 
     fun taskStatusesEnd(taskID: String): Completable

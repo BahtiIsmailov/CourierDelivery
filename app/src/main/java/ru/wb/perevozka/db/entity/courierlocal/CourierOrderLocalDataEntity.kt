@@ -10,6 +10,7 @@ import ru.wb.perevozka.db.entity.flight.FlightEntity
 data class CourierOrderLocalDataEntity(
     @Embedded
     val courierOrderLocalEntity: CourierOrderLocalEntity,
+
     @Relation(
         parentColumn = "order_id",
         entityColumn = "dst_office_order_id"

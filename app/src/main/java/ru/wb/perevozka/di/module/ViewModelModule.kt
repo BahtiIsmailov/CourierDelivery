@@ -91,7 +91,7 @@ val viewModelModule = module {
 
     viewModel { CourierOrderConfirmViewModel(get(), get(), get()) }
 
-    viewModel { CourierOrderTimerViewModel(get(), get(), get(), get()) }
+    viewModel { CourierOrderTimerViewModel(get(), get(), get()) }
 
     viewModel { CourierLoadingUnknownBoxViewModel() }
 

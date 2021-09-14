@@ -11,13 +11,22 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/qr_code"
+        android:id="@+id/index"
         style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        tools:text="1." />
+
+    <TextView
+        android:id="@+id/qr_code"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_toStartOf="@+id/checked"
-        tools:text="1. QR 994827463" />
+        android:layout_toEndOf="@+id/index"
+        tools:text="QR 994827463" />
 
     <TextView
         android:id="@+id/info"

@@ -16,6 +16,7 @@ import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingProcessData
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingProgressData
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingScanBoxData
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
+import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerAction
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
@@ -60,25 +61,32 @@ class CourierLoadingScanViewModel(
     val boxStateUI: LiveData<CourierLoadingScanBoxState>
         get() = _boxStateUI
 
-    val bottomProgressEvent = MutableLiveData<Boolean>()
+    private val _bottomEvent =
+        MutableLiveData<CourierLoadingScanBottomState>()
+    val bottomProgressEvent: LiveData<CourierLoadingScanBottomState>
+        get() = _bottomEvent
+
+    //val  = MutableLiveData<Boolean>()
 
     init {
         observeNetworkState()
         observeInitScanProcess()
         observeScanProcess()
-        observeTimer()
+        observeScanProgress()
     }
 
     private fun observeTimer() {
-        addSubscription(courierOrderTimerInteractor.timer
-            .subscribe({ onHandleSignUpState(it) }) { onHandleSignUpError() })
+        addSubscription(
+            courierOrderTimerInteractor.timer
+                .subscribe({ observeTimerComplete(it) }, { observeTimerError() })
+        )
     }
 
-    private fun onHandleSignUpState(timerState: TimerState) {
+    private fun observeTimerComplete(timerState: TimerState) {
         timerState.handle(this)
     }
 
-    private fun onHandleSignUpError() {}
+    private fun observeTimerError() {}
 
     private fun observeNetworkState() {
         addSubscription(
@@ -87,16 +95,22 @@ class CourierLoadingScanViewModel(
         )
     }
 
+    fun confirmLoadingClick() {
+        addSubscription(interactor.confirmLoading().subscribe({}, {}))
+    }
+
     private fun observeInitScanProcess() {
         addSubscription(interactor.scannedBoxes()
             .map { list ->
-                if (list.isEmpty()) CourierLoadingScanBoxState.Empty
-                else {
+                if (list.isEmpty()) {
+                    observeTimer()
+                    CourierLoadingScanBoxState.Empty
+                } else {
                     val lastBox = list.last()
                     CourierLoadingScanBoxState.BoxInit(
                         lastBox.qrcode,
                         lastBox.address,
-                        list.size.toString(),
+                        resourceProvider.getAccepted(list.size),
                     )
                 }
             }.subscribe(
@@ -119,42 +133,42 @@ class CourierLoadingScanViewModel(
 
     private fun observeScanProgress() {
         addSubscription(interactor.scanLoaderProgress()
-            .subscribe {
+            .subscribe({
                 _progressEvent.value = when (it) {
                     CourierLoadingProgressData.Complete -> {
-                        interactor.scannerAction(ScannerAction.LoaderComplete)
                         CourierLoadingScanProgress.LoaderComplete
                     }
                     CourierLoadingProgressData.Progress -> {
-                        interactor.scannerAction(ScannerAction.LoaderProgress)
                         CourierLoadingScanProgress.LoaderProgress
                     }
                 }
-            })
+            }, {})
+        )
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierLoadingProcessData) {
+        LogUtils{logDebugApp("observeScanProcessComplete " + scanProcess)}
         val scanBoxData = scanProcess.scanBoxData
-        val accepted = scanProcess.count.toString()
+        val accepted = resourceProvider.getAccepted(scanProcess.count)
         when (scanBoxData) {
             is CourierLoadingScanBoxData.BoxAdded -> {
                 _boxStateUI.value = with(scanBoxData) {
                     CourierLoadingScanBoxState.BoxAdded(qrCode, address, accepted)
                 }
                 _beepEvent.value = CourierLoadingScanBeepState.BoxAdded
+                _orderTimer.value = CourierLoadingScanTimerState.Stopped
+                _bottomEvent.value = CourierLoadingScanBottomState.Enable
             }
-
             is CourierLoadingScanBoxData.UnknownBox -> {
                 _navigationEvent.value = CourierLoadingScanNavAction.NavigateToUnknownBox
-                _boxStateUI.value =
-                    with(scanBoxData) {
-                        CourierLoadingScanBoxState.UnknownBox(
-                            "?",
-                            "Коробка с другого маршрута",
-                            accepted
-                        )
-                    }
+                _boxStateUI.value = CourierLoadingScanBoxState.UnknownBox(
+                    resourceProvider.getEmptyQr(),
+                    resourceProvider.getEmptyAddress(),
+                    accepted
+                )
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
+                _bottomEvent.value =
+                    if (scanProcess.count > 0) CourierLoadingScanBottomState.Enable else CourierLoadingScanBottomState.Disable
             }
             CourierLoadingScanBoxData.Empty -> _boxStateUI.value = CourierLoadingScanBoxState.Empty
         }
@@ -165,19 +179,7 @@ class CourierLoadingScanViewModel(
     }
 
     fun onCompleteClicked() {
-        bottomProgressEvent.value = true
-        addSubscription(
-            interactor.switchScreen().subscribe(
-                {
-                    _navigationEvent.value =
-                        CourierLoadingScanNavAction.NavigateToFlightDeliveries
-                    bottomProgressEvent.value = false
-                },
-                {
-                    bottomProgressEvent.value = false
-                    switchScreenError(it)
-                })
-        )
+        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }
 
     private fun switchScreenError(throwable: Throwable) {
@@ -233,7 +235,27 @@ class CourierLoadingScanViewModel(
     }
 
     override fun onTimeIsOverState() {
-        _orderTimer.value = CourierLoadingScanTimerState.TimeIsOut
+        _orderTimer.value = CourierLoadingScanTimerState.TimeIsOut(
+            DialogStyle.WARNING.ordinal,
+            "Время вышло",
+            "К сожалению, вы не успели приехать вовремя. Заказ был отменён",
+            "Вернуться к списку заказов"
+        )
+    }
+
+
+    fun returnToListOrderClick() {
+        deleteTask()
+    }
+
+    private fun deleteTask() {
+        addSubscription(interactor.deleteTask().subscribe(
+            { toWarehouse() }, {})
+        )
+    }
+
+    private fun toWarehouse() {
+        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToWarehouse
     }
 
 }

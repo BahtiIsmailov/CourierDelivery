@@ -5,8 +5,7 @@ import androidx.room.RoomDatabase
 import ru.wb.perevozka.app.EXPORT_SCHEMA_DATABASE
 import ru.wb.perevozka.app.VERSION_DATABASE
 import ru.wb.perevozka.db.dao.*
-import ru.wb.perevozka.db.entity.courier.CourierOrderDstOfficeEntity
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
@@ -19,6 +18,7 @@ import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnti
 
 @Database(
     entities = [
+        CourierWarehouseLocalEntity::class,
         CourierOrderLocalEntity::class,
         CourierOrderDstOfficeLocalEntity::class,
         CourierBoxEntity::class,
@@ -33,6 +33,7 @@ import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnti
 )
 
 abstract class AppDatabase : RoomDatabase() {
+    abstract val courierWarehouseDao: CourierWarehouseDao
     abstract val courierOrderDao: CourierOrderDao
     abstract val courierBoxDao: CourierBoxDao
     abstract val flightDao: FlightDao

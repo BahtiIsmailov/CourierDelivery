@@ -5,15 +5,35 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.perevozka.db.dao.CourierBoxDao
 import ru.wb.perevozka.db.dao.CourierOrderDao
+import ru.wb.perevozka.db.dao.CourierWarehouseDao
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 
 class CourierLocalRepositoryImpl(
+    private val courierWarehouseDao: CourierWarehouseDao,
     private val courierOrderDao: CourierOrderDao,
     private val courierBoxDao: CourierBoxDao
 ) : CourierLocalRepository {
+
+    override fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
+        return courierWarehouseDao.insert(courierWarehouseEntity)
+    }
+
+    override fun readCurrentWarehouse(): Single<CourierWarehouseLocalEntity> {
+        return courierWarehouseDao.read()
+    }
+
+    override fun courierTimerEntity(): Single<CourierTimerEntity> {
+        return courierWarehouseDao.courierTimerEntity()
+    }
+
+    override fun deleteAllCurrentWarehouse() {
+        courierWarehouseDao.deleteAll()
+    }
 
     override fun saveCurrentOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,

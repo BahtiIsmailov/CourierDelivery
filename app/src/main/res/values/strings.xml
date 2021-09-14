@@ -233,10 +233,15 @@
     <string name="courier_orders_timer_dialog_negative_button">Отмена</string>
     <string name="courier_orders_timer_dialog_positive_button">Отказаться</string>
 
-    <string name="courier_order_scanner_label">Прием коробок</string>
-    <string name="courier_order_scanner_complete">Завершить приёмку</string>
+    <string name="courier_order_scanner_label">Погрузка</string>
+    <string name="courier_order_scanner_complete">Завершить погрузку</string>
+    <string name="courier_order_scanner_empty_address">-</string>
+    <string name="courier_order_scanner_empty_qr">000000000</string>
+    <string name="courier_order_scanner_accepted">%1$d шт.</string>
+    <string name="courier_order_scanner_dialog_negative_button">Отмена</string>
+    <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
 
-    <string name="courier_loading_boxes_index">%1$d. %2$s</string>
+    <string name="courier_loading_boxes_index">%1$d.</string>
     <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
 
     <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>

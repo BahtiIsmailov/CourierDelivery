@@ -2,10 +2,9 @@ package ru.wb.perevozka.ui.courierorderdetails
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_UP
 import android.view.LayoutInflater
@@ -83,21 +82,34 @@ class CourierOrderDetailsFragment : Fragment() {
         initPermission()
     }
 
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            var grang = true
+            permissions.entries.forEach {
+                if (!it.value) {
+                    grang = false
+                }
+            }
+            if (grang) {
+                initMapView()
+            }
+        }
+
     private fun initPermission() {
         if (hasPermissions(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         ) {
             initMapView()
         } else {
-            requestPermissions(
+            requestMultiplePermissions.launch(
                 arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
-                1000
+                )
             )
+
         }
     }
 
@@ -115,26 +127,6 @@ class CourierOrderDetailsFragment : Fragment() {
         mapController.setZoom(12.0)
         binding.map.setBuiltInZoomControls(true)
         binding.map.setMultiTouchControls(true)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when (requestCode) {
-            1000 -> {
-                if ((grantResults.isNotEmpty() &&
-                            grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    initMapView()
-                } else { }
-                return
-            }
-            else -> { }
-        }
-
     }
 
     private fun setMarker(lat: Double, long: Double) {

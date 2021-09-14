@@ -21,6 +21,7 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.perevozka.ui.splash.domain.AppSharedRepository
 import ru.wb.perevozka.ui.splash.domain.AppSharedRepositoryImpl
 import ru.wb.perevozka.utils.managers.TimeManager
+import ru.wb.perevozka.utils.time.TimeFormatter
 
 val deliveryRepositoryModule = module {
 
@@ -66,12 +67,16 @@ val deliveryRepositoryModule = module {
     }
 
     fun provideCourierLocalRepository(
+        courierWarehouseDao: CourierWarehouseDao,
         courierOrderDao: CourierOrderDao,
         courierBoxDao: CourierBoxDao
     ): CourierLocalRepository {
-        return CourierLocalRepositoryImpl(courierOrderDao, courierBoxDao)
+        return CourierLocalRepositoryImpl(courierWarehouseDao, courierOrderDao, courierBoxDao)
     }
 
+    fun provideTaskTimerRepository(): TaskTimerRepository {
+        return TaskTimerRepositoryImpl()
+    }
 
     fun provideScannerRepository(): ScannerRepository {
         return ScannerRepositoryImpl()
@@ -89,7 +94,8 @@ val deliveryRepositoryModule = module {
     single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierLocalRepository(get(), get()) }
+    single { provideCourierLocalRepository(get(), get(), get()) }
+    single { provideTaskTimerRepository() }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
     single { provideAppSharedRepository() }

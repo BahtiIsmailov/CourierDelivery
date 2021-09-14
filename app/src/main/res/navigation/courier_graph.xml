@@ -165,17 +165,27 @@
 
         <action
             android:id="@+id/action_courierOrderTimerFragment_to_courierScannerLoadingScanFragment"
-            app:destination="@id/courierScannerLoadingScanFragment" />
+            app:destination="@id/courierScannerLoadingScanFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_courierOrderTimerFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment" />
+            app:destination="@id/courierWarehouseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/courierOrderTimerFragment"
+            app:popUpToInclusive="true"/>
 
     </fragment>
 
     <fragment
         android:id="@+id/courierScannerLoadingScanFragment"
         android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingScanFragment"
-        android:label="CourierScannerLoadingScanFragment"
+        android:label=""
         tools:layout="@layout/courier_loading_fragment">
         <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierScannerLoadingBoxNotBelongFragment"
@@ -187,6 +197,13 @@
         <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierLoadingBoxesFragment"
             app:destination="@id/courierLoadingBoxesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierWarehouseFragment"
+            app:destination="@id/courierWarehouseFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"

@@ -21,7 +21,6 @@ class CourierLoadingResourceProvider(private val context: Context) {
         context.getString(R.string.dc_loading_boxes_time, time, address)
 
 
-
     fun getIndexAndBarcode(index: Int, barcode: String): String =
         context.getString(R.string.dc_loading_boxes_index_barcode, index, barcode)
 
@@ -45,12 +44,12 @@ class CourierLoadingResourceProvider(private val context: Context) {
     fun getBoxPositiveButton() =
         context.getString(R.string.dc_loading_boxes_remove_dialog_positive_button_error)
 
-    fun getEmptyGate(): String = context.getString(R.string.dc_loading_box_not_belong_empty_gate)
+
 
     fun getBoxDateAndTimeAndAddress(date: String, time: String, address: String): String =
         context.getString(R.string.courier_loading_boxes_date_and_time_and_address, date, time, address)
 
-    fun getIndexWithQr(index: Int, qrcode : String) = context.getString(R.string.courier_loading_boxes_index, index, qrcode)
+    fun getIndex(index: Int) = context.getString(R.string.courier_loading_boxes_index, index)
 
     fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
         return context.getString(R.string.unnamed_barcode_format_number,
@@ -58,6 +57,12 @@ class CourierLoadingResourceProvider(private val context: Context) {
             barcode.take(4),
             barcode.takeLast(4))
     }
+
+    fun getEmptyQr(): String = context.getString(R.string.courier_order_scanner_empty_qr)
+
+    fun getEmptyAddress(): String = context.getString(R.string.courier_order_scanner_empty_address)
+
+    fun getAccepted(count: Int): String = context.getString(R.string.courier_order_scanner_accepted, count)
 
 
 }

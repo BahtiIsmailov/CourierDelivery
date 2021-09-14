@@ -28,21 +28,21 @@ class CourierOrderInteractorImpl(
     override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
-        val courierOrderSrcOfficesLocalEntity = with(courierOrderEntity.srcOffice) {
-            CourierOrderSrcOfficeLocalEntity(
-                id = id,
-                name = name,
-                fullAddress = fullAddress,
-                longitude = long,
-                latitude = lat
-            )
-        }
+//        val courierOrderSrcOfficesLocalEntity = with(courierOrderEntity.srcOffice) {
+//            CourierOrderSrcOfficeLocalEntity(
+//                id = id,
+//                name = name,
+//                fullAddress = fullAddress,
+//                longitude = long,
+//                latitude = lat
+//            )
+//        }
         val courierOrderLocalEntity = with(courierOrderEntity) {
             CourierOrderLocalEntity(
                 id = id,
                 routeID = routeID,
                 gate = gate,
-                srcOffice = courierOrderSrcOfficesLocalEntity,
+//                srcOffice = courierOrderSrcOfficesLocalEntity,
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,

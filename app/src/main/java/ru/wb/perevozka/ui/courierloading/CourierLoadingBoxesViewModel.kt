@@ -63,11 +63,12 @@ class CourierLoadingBoxesViewModel(
             .toList()
 
     private val receptionBoxItem = { (index, item): IndexedValue<CourierBoxEntity> ->
-        val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.whenLoaded)
+        val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.loadingAt)
         val dateFormat = timeFormatter.format(date, TimeFormatType.ONLY_DATE)
         val timeFormat = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
         CourierLoadingBoxesItem(
-            resourceProvider.getIndexWithQr(singleIncrement(index), item.qrcode),
+            resourceProvider.getIndex(singleIncrement(index)),
+            item.qrcode,
             resourceProvider.getBoxDateAndTimeAndAddress(dateFormat, timeFormat, item.address),
             false
         )
@@ -151,8 +152,9 @@ class CourierLoadingBoxesViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(interactor.observeNetworkConnected()
-            .subscribe({ _toolbarNetworkState.value = it }, {})
+        addSubscription(
+            interactor.observeNetworkConnected()
+                .subscribe({ _toolbarNetworkState.value = it }, {})
         )
     }
 

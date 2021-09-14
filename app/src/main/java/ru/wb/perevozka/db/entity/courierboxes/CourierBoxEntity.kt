@@ -9,8 +9,8 @@ data class CourierBoxEntity(
     @PrimaryKey
     val qrcode: String,
     val address: String,
-    val dstOffice: String,
-    val whenLoaded: String,
-    val whenUnloaded: String,
+    val dstOfficeId: Int,
+    val loadingAt: String,
+    val deliveredAt: String,
 
     )

@@ -12,8 +12,8 @@ data class CourierOrderLocalEntity(
     val id: Int,
     val routeID: Int,
     val gate: String,
-    @Embedded
-    val srcOffice: CourierOrderSrcOfficeLocalEntity,
+//    @Embedded
+//    val srcOffice: CourierOrderSrcOfficeLocalEntity,
     val minPrice: Int,
     val minVolume: Int,
     val minBoxesCount: Int,

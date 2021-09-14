@@ -3,12 +3,25 @@ package ru.wb.perevozka.db
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 
 interface CourierLocalRepository {
+
+    //==============================================================================================
+    //warehouse
+    //==============================================================================================
+    fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
+
+    fun readCurrentWarehouse(): Single<CourierWarehouseLocalEntity>
+
+    fun courierTimerEntity(): Single<CourierTimerEntity>
+
+    fun deleteAllCurrentWarehouse()
 
     //==============================================================================================
     //order

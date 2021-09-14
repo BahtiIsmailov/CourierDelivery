@@ -1,3 +1,5 @@
 package ru.wb.perevozka.ui.courierloading.domain
 
-data class CourierLoadingProcessData(val scanBoxData: CourierLoadingScanBoxData, val count: Int)
+import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
+
+data class CourierLoadingProcessData(val scanBoxData: CourierLoadingScanBoxData, val boxes : List<CourierBoxEntity>, val count: Int)

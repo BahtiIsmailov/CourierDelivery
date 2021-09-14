@@ -27,4 +27,8 @@ interface CourierLoadingInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
+    fun deleteTask(): Completable
+
+    fun confirmLoading(): Completable
+
 }

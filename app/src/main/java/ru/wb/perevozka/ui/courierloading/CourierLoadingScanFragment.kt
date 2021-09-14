@@ -1,9 +1,9 @@
 package ru.wb.perevozka.ui.courierloading
 
 import android.app.AlertDialog
-import android.graphics.PorterDuff
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +19,6 @@ import ru.wb.perevozka.databinding.CourierLoadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
-import ru.wb.perevozka.views.ProgressImageButtonMode
-
 
 class CourierLoadingScanFragment : Fragment() {
 
@@ -79,13 +77,17 @@ class CourierLoadingScanFragment : Fragment() {
         viewModel.orderTimer.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierLoadingScanTimerState.Timer -> {
-                    binding.timeIcon.visibility = View.VISIBLE
                     binding.timeDigit.visibility = View.VISIBLE
+                    binding.timer.visibility = View.VISIBLE
                     binding.timeDigit.text = it.timeDigit
+                    binding.timer.setProgress(it.timeAnalog)
                 }
-                CourierLoadingScanTimerState.TimeIsOut -> {
-                    binding.timeIcon.visibility = View.GONE
+                is CourierLoadingScanTimerState.TimeIsOut -> {
+                    showTimeIsOutDialog(it.title, it.message, it.button)
+                }
+                CourierLoadingScanTimerState.Stopped -> {
                     binding.timeDigit.visibility = View.GONE
+                    binding.timer.visibility = View.GONE
                 }
             }
         }
@@ -98,12 +100,13 @@ class CourierLoadingScanFragment : Fragment() {
                 CourierLoadingScanNavAction.NavigateToBoxes -> {
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierLoadingBoxesFragment())
                 }
-                CourierLoadingScanNavAction.NavigateToFlightDeliveries -> {
+                CourierLoadingScanNavAction.NavigateToConfirmDialog -> {
+                    showConfirmDialog("Завершить погрузку?", "Вы уверены, что хотите начать развозить коробки")
                 }
                 CourierLoadingScanNavAction.NavigateToBack -> {
                 }
-                CourierLoadingScanNavAction.NavigateToHandle -> {
-                }
+                CourierLoadingScanNavAction.NavigateToWarehouse ->
+                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
             }
         }
 
@@ -119,18 +122,28 @@ class CourierLoadingScanFragment : Fragment() {
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierLoadingScanProgress.LoaderProgress -> {
-                    binding.complete.setState(ProgressImageButtonMode.DISABLED)
+                    binding.listLayout.isEnabled = false
+                    binding.complete.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierLoadingScanProgress.LoaderComplete -> {
-                    binding.complete.setState(ProgressImageButtonMode.ENABLED)
+                    binding.listLayout.isEnabled = true
+                    binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
             }
         }
 
         viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
-            binding.complete.setState(
-                if (progress) ProgressImageButtonMode.PROGRESS else ProgressImageButtonMode.ENABLED
-            )
+            when (progress) {
+                CourierLoadingScanBottomState.Disable -> binding.complete.setState(
+                    ProgressButtonMode.DISABLE
+                )
+                CourierLoadingScanBottomState.Enable -> binding.complete.setState(
+                    ProgressButtonMode.ENABLE
+                )
+                CourierLoadingScanBottomState.Progress -> binding.complete.setState(
+                    ProgressButtonMode.PROGRESS
+                )
+            }
         }
 
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
@@ -151,18 +164,8 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.light_text
                         )
                     )
-                    binding.address.text = "Адрес доставки"
-                    binding.address.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.light_text
-                        )
-                    )
-                    binding.listImageView.setColorFilter(
-                        ContextCompat.getColor(requireContext(), R.color.disable_icon),
-                        PorterDuff.Mode.SRC_ATOP
-                    )
-                    binding.receive.text = "0"
+                    binding.address.text = "-"
+                    binding.receive.text = "0 шт."
                     binding.listLayout.setOnClickListener { null }
                     binding.complete.setState(ProgressButtonMode.DISABLE)
                 }
@@ -183,14 +186,11 @@ class CourierLoadingScanFragment : Fragment() {
                         )
                     )
                     binding.address.text = state.address
-                    binding.address.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black_text
-                        )
-                    )
-                    initAccepted(state.accepted)
+                    binding.receive.text = state.accepted
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
+
+                    binding.timeDigit.visibility = View.GONE
+                    binding.timer.visibility = View.GONE
                     binding.complete.setState(ProgressButtonMode.ENABLE)
 
                 }
@@ -217,13 +217,12 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.black_text
                         )
                     )
-                    initAccepted(state.accepted)
+                    binding.receive.text = state.accepted
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
                 is CourierLoadingScanBoxState.UnknownBox -> {
                     binding.toolbarLayout.back.visibility = View.INVISIBLE
-                    binding.status.text = "НЕИЗВЕСТНАЯ КОРОБКА"
+                    binding.status.text = "КОРОБКУ БРАТЬ ЗАПРЕЩЕНО"
                     binding.status.setBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
@@ -244,23 +243,12 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.black_text
                         )
                     )
-                    initAccepted(state.accepted)
+                    binding.receive.text = state.accepted
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-
                 }
 
             }
         }
-    }
-
-    private fun initAccepted(accepted: String) {
-        val colorIconList = ContextCompat.getColor(
-            requireContext(),
-            if (accepted == "0") R.color.disable_icon else R.color.enable_icon
-        )
-        binding.listImageView.setColorFilter(colorIconList, PorterDuff.Mode.SRC_ATOP)
-        binding.receive.text = accepted
     }
 
     private fun showSimpleDialog(it: CourierLoadingScanViewModel.NavigateToMessageInfo) {
@@ -289,6 +277,69 @@ class CourierLoadingScanFragment : Fragment() {
             isDialogActive = false
             viewModel.onStartScanner()
         }
+        alertDialog.show()
+    }
+
+    private fun showTimeIsOutDialog(title: String, message: String, button: String) {
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.main
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
+        val titleText: TextView = dialogView.findViewById(R.id.title)
+        val messageText: TextView = dialogView.findViewById(R.id.message)
+        val positive: Button = dialogView.findViewById(R.id.positive)
+
+        builder.setView(dialogView)
+        val alertDialog: AlertDialog = builder.create()
+        titleText.text = title
+        messageText.text = message
+        positive.setOnClickListener {
+            alertDialog.dismiss()
+            viewModel.returnToListOrderClick()
+        }
+
+        alertDialog.setCanceledOnTouchOutside(false)
+        alertDialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                alertDialog.dismiss()
+                viewModel.returnToListOrderClick()
+            }
+            true
+        }
+
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        positive.text = button
+        alertDialog.show()
+    }
+
+    // TODO: 27.08.2021 переработать
+    private fun showConfirmDialog(title: String, message: String) {
+        val builder: AlertDialog.Builder =
+            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        val viewGroup: ViewGroup = binding.main
+        val dialogView: View =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
+        val titleText: TextView = dialogView.findViewById(R.id.title)
+        val messageText: TextView = dialogView.findViewById(R.id.message)
+        val negative: Button = dialogView.findViewById(R.id.negative)
+        val positive: Button = dialogView.findViewById(R.id.positive)
+
+        builder.setView(dialogView)
+        val alertDialog: AlertDialog = builder.create()
+        titleText.text = title
+        messageText.text = message
+        negative.setOnClickListener { alertDialog.dismiss() }
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.text = getString(R.string.courier_order_scanner_dialog_negative_button)
+        positive.setOnClickListener {
+            alertDialog.dismiss()
+            viewModel.confirmLoadingClick()
+        }
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        positive.text = getString(R.string.courier_order_scanner_dialog_positive_button)
         alertDialog.show()
     }
 

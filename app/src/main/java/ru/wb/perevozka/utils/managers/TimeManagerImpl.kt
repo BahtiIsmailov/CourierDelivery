@@ -37,4 +37,8 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
         worker.delete(AppPreffsKeys.LOCAL_DATE_TIME_KEY)
     }
 
+    override fun getLocalTime(): String {
+        return timeFormatter.currentDateTime().toString()
+    }
+
 }

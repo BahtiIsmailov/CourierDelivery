@@ -1,7 +1,10 @@
 package ru.wb.perevozka.ui.courierordertimer.view
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Point
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.View
@@ -21,6 +24,7 @@ class TimerProgressView : View {
 
     @FloatRange(from = MIN_PROGRESS_SCALE.toDouble(), to = MAX_PROGRESS_SCALE.toDouble())
     private var progress = DEFAULT_PROGRESS_VALUE
+    private var progressWidth = DEFAULT_STROKE_WIDTH_SCALE
 
     private var scaleCurrentColor = DEFAULT_SCALE_CURRENT_COLOR
     private var scaleWaitColor = DEFAULT_SCALE_WAIT_COLOR
@@ -60,6 +64,10 @@ class TimerProgressView : View {
                     DEFAULT_PROGRESS_VALUE
                 )
                 progress = Math.min(styleProgress, MAX_ANGLE_SCALE.toFloat())
+                progressWidth = array.getInteger(
+                    R.styleable.TimerProgressView_ap_progress_width,
+                    DEFAULT_STROKE_WIDTH_SCALE
+                )
                 scaleCurrentColor = array.getColor(
                     R.styleable.TimerProgressView_ap_progress_scale_current_color,
                     DEFAULT_SCALE_CURRENT_COLOR
@@ -112,7 +120,6 @@ class TimerProgressView : View {
 
     override fun onDraw(canvas: Canvas) {
         initParam(canvas)
-        drawRim()
         drawArc(currentAngle)
     }
 
@@ -124,26 +131,9 @@ class TimerProgressView : View {
         pCenter[width / 2] = height / 2
     }
 
-    private fun drawRim() {
-        val pRadiusBox = radiusBox * RADIUS_BOX
-        val paint = Paint()
-        paint.isAntiAlias = true
-        paint.style = Paint.Style.FILL_AND_STROKE
-        val gradient: Shader =
-            RadialGradient(
-                0.0F, 0.0F,
-                pRadiusBox / 2, backgroundColor1, foregroundColor, Shader.TileMode.MIRROR
-            )
-        paint.shader = gradient
-        canvas!!.save()
-        canvas!!.translate(pCenter.x.toFloat(), pCenter.y.toFloat())
-        canvas!!.drawCircle(0f, 0f, pRadiusBox, paint)
-        canvas!!.restore()
-    }
-
     private fun drawArc(currentAngle: Int) {
         val pRadiusScale = radiusBox * RADIUS_SCALE
-        val scaleWidth = dpToPx(FOREGROUND_STROKE_WIDTH).toFloat()
+        val scaleWidth = dpToPx(progressWidth).toFloat()
         val backgroundPaint = Paint()
         backgroundPaint.style = Paint.Style.STROKE
         backgroundPaint.isAntiAlias = true
@@ -256,8 +246,8 @@ class TimerProgressView : View {
         private const val MAX_PROGRESS_SCALE = 100f
         private const val DEFAULT_PROGRESS_VALUE = 0f
         private const val START_ARC_ANGLE = -90
-        private const val FOREGROUND_STROKE_WIDTH = 6
-        private const val RADIUS_BOX = 0.9f
-        private const val RADIUS_SCALE = 0.6f
+
+        private const val DEFAULT_STROKE_WIDTH_SCALE = 5
+        private const val RADIUS_SCALE = 0.95f
     }
 }

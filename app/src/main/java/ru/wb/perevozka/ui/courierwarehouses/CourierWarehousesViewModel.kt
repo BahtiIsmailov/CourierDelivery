@@ -4,14 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
-import java.util.*
 
 class CourierWarehousesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -31,24 +30,24 @@ class CourierWarehousesViewModel(
     val progressState: LiveData<CourierWarehousesProgressState>
         get() = _progressState
 
-    private var copyReceptionWarehouses = mutableListOf<CourierWarehousesItem>()
+    private var copyWarehousesEntity = mutableListOf<CourierWarehouseLocalEntity>()
 
     init {
-        observeSearch()
+        //observeSearch()
     }
 
     private fun getWarehouse() {
         addSubscription(
             interactor.warehouses()
+                .doOnSuccess { saveWarehousesEntity(it) }
                 .flatMap { convertWarehouses(it) }
-                .doOnSuccess { saveConvertWarehouses(it) }
                 .subscribe(
-                    { courierWarehouseComplete(it) },
+                    { courierWarehousesComplete(it) },
                     { courierWarehouseError(it) })
         )
     }
 
-    private fun courierWarehouseComplete(items: MutableList<CourierWarehousesItem>) {
+    private fun courierWarehousesComplete(items: MutableList<CourierWarehousesItem>) {
         _warehouses.value =
             if (items.isEmpty()) CourierWarehousesUIState.Empty(resourceProvider.getEmptyList())
             else CourierWarehousesUIState.InitItems(items)
@@ -77,7 +76,7 @@ class CourierWarehousesViewModel(
             )
         }
         _navigationState.value = message
-        if (copyReceptionWarehouses.isEmpty()) {
+        if (copyWarehousesEntity.isEmpty()) {
             _warehouses.value = CourierWarehousesUIState.Empty(message.title)
         }
         progressComplete()
@@ -87,31 +86,31 @@ class CourierWarehousesViewModel(
         _progressState.value = CourierWarehousesProgressState.ProgressComplete
     }
 
-    private fun observeSearch() {
-        addSubscription(interactor.observeSearch()
-            .map { text -> text.lowercase(Locale.getDefault()).trim() }
-            .map { filterWarehouses(it) }
-            .map { it.toMutableList() }
-            .subscribe(
-                { courierWarehouseComplete(it) },
-                { observeSearchError() })
-        )
-    }
+//    private fun observeSearch() {
+//        addSubscription(interactor.observeSearch()
+//            .map { text -> text.lowercase(Locale.getDefault()).trim() }
+//            .map { filterWarehouses(it) }
+//            .map { it.toMutableList() }
+//            .subscribe(
+//                { courierWarehouseComplete(it) },
+//                { observeSearchError() })
+//        )
+//    }
 
-    private fun filterWarehouses(text: String) = if (text.isEmpty()) copyReceptionWarehouses
-    else copyReceptionWarehouses.filter { it.name.lowercase(Locale.getDefault()).contains(text) }
+//    private fun filterWarehouses(text: String) = if (text.isEmpty()) copyReceptionWarehouses
+//    else copyReceptionWarehouses.filter { it.name.lowercase(Locale.getDefault()).contains(text) }
+//
+//    private fun observeSearchError() {
+//        _warehouses.value = CourierWarehousesUIState.Empty(resourceProvider.getSearchEmpty())
+//    }
 
-    private fun observeSearchError() {
-        _warehouses.value = CourierWarehousesUIState.Empty(resourceProvider.getSearchEmpty())
-    }
-
-    private fun convertWarehouses(warehouses: List<CourierWarehouseEntity>) =
+    private fun convertWarehouses(warehouses: List<CourierWarehouseLocalEntity>) =
         Observable.fromIterable(warehouses)
             .map { CourierWarehousesItem(it.id, it.name, it.fullAddress) }
             .toList()
 
-    private fun saveConvertWarehouses(warehouses: List<CourierWarehousesItem>) {
-        copyReceptionWarehouses = warehouses.toMutableList()
+    private fun saveWarehousesEntity(warehouses: List<CourierWarehouseLocalEntity>) {
+        copyWarehousesEntity = warehouses.toMutableList()
     }
 
     fun onUpdateClick() {
@@ -125,15 +124,15 @@ class CourierWarehousesViewModel(
 
     fun onItemClick(index: Int) {
         showProgress()
-        val oldItem = copyReceptionWarehouses[index].copy()
+        val oldEntity = copyWarehousesEntity[index].copy()
         addSubscription(
             interactor.warehouses()
+                .doOnSuccess { saveWarehousesEntity(it) }
                 .flatMap { convertWarehouses(it) }
-                .doOnSuccess { saveConvertWarehouses(it) }
                 .subscribe(
                     { warehouseItems ->
-                        if (warehouseItems.find { it.id == oldItem.id } == null) {
-                            courierWarehouseComplete(warehouseItems)
+                        if (warehouseItems.find { it.id == oldEntity.id } == null) {
+                            courierWarehousesComplete(warehouseItems)
                             _navigationState.value =
                                 CourierWarehousesNavigationState.NavigateToDialogInfo(
                                     DialogStyle.WARNING.ordinal,
@@ -142,10 +141,11 @@ class CourierWarehousesViewModel(
                                     resourceProvider.getDialogEmptyButton(),
                                 )
                         } else {
+                            interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
                             _navigationState.value =
                                 CourierWarehousesNavigationState.NavigateToCourierOrder(
-                                    oldItem.id,
-                                    oldItem.name
+                                    oldEntity.id,
+                                    oldEntity.name
                                 )
                         }
                         hideProgress()

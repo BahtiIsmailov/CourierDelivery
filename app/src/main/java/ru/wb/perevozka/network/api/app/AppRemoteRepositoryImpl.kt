@@ -6,8 +6,7 @@ import io.reactivex.Single
 import ru.wb.perevozka.db.Optional
 import ru.wb.perevozka.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.db.entity.courier.CourierOrderSrcOfficeEntity
-import ru.wb.perevozka.db.entity.courier.CourierWarehouseEntity
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.flighboxes.BoxStatus
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightDstOfficeEntity
@@ -517,7 +516,7 @@ class AppRemoteRepositoryImpl(
         return remote.courierDocuments(tokenManager.apiVersion(), courierDocuments)
     }
 
-    override fun courierWarehouses(): Single<List<CourierWarehouseEntity>> {
+    override fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
         return remote.freeTasksOffices(apiVersion())
             .map { it.data }
             .flatMap {
@@ -527,14 +526,14 @@ class AppRemoteRepositoryImpl(
             }
     }
 
-    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseEntity {
+    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
         return with(courierOfficeResponse) {
-            CourierWarehouseEntity(
+            CourierWarehouseLocalEntity(
                 id = id,
                 name = name,
                 fullAddress = fullAddress,
-                long = long,
-                lat = lat
+                longitude = long,
+                latitude = lat
             )
         }
     }
@@ -565,21 +564,21 @@ class AppRemoteRepositoryImpl(
                 courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
             }
 
-            val srcOffice = with(task.srcOffice) {
-                CourierTasksMySrcOfficeEntity(
-                    id = id,
-                    name = name,
-                    fullAddress = fullAddress,
-                    long = long,
-                    lat = lat
-                )
-            }
+//            val srcOffice = with(task.srcOffice) {
+//                CourierTasksMySrcOfficeEntity(
+//                    id = id,
+//                    name = name,
+//                    fullAddress = fullAddress,
+//                    long = long,
+//                    lat = lat
+//                )
+//            }
 
             CourierTasksMyEntity(
                 id = task.id,
                 routeID = task.routeID ?: 0,
                 gate = task.gate ?: "",
-                srcOffice = srcOffice,
+//                srcOffice = srcOffice,
                 minPrice = task.minPrice,
                 minVolume = task.minVolume,
                 minBoxesCount = task.minBoxesCount,
@@ -634,22 +633,26 @@ class AppRemoteRepositoryImpl(
                 id = courierTaskStartEntity.id,
                 dstOfficeID = courierTaskStartEntity.dstOfficeID,
                 loadingAt = courierTaskStartEntity.loadingAt,
-                deliveredAt = courierTaskStartEntity.deliveredAt
+                deliveredAt = null
             )
-        return remote.taskStart(apiVersion(), taskID, courierTaskStartRequest)
+        return remote.taskStart(apiVersion(), taskID, listOf(courierTaskStartRequest))
     }
 
     override fun taskStatusesIntransit(
         taskID: String,
-        courierTaskStatusesIntransitEntity: CourierTaskStatusesIntransitEntity
+        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
     ): Completable {
-        val courierTaskStatusesIntransitRequest =
-            CourierTaskStatusesIntransitRequest(
-                id = courierTaskStatusesIntransitEntity.id,
-                dstOfficeID = courierTaskStatusesIntransitEntity.dstOfficeID,
-                loadingAt = courierTaskStatusesIntransitEntity.loadingAt,
-                deliveredAt = courierTaskStatusesIntransitEntity.deliveredAt
-            )
+        val courierTaskStatusesIntransitRequest = mutableListOf<CourierTaskStatusesIntransitRequest>()
+        courierTaskStatusesIntransitEntity.forEach {
+            val courierTaskStatusIntransitRequest =
+                CourierTaskStatusesIntransitRequest(
+                    id = it.id,
+                    dstOfficeID = it.dstOfficeID,
+                    loadingAt = it.loadingAt,
+                    deliveredAt = null
+                )
+            courierTaskStatusesIntransitRequest.add(courierTaskStatusIntransitRequest)
+        }
         return remote.taskStatusesIntransit(
             apiVersion(),
             taskID,
@@ -685,13 +688,13 @@ class AppRemoteRepositoryImpl(
                 id = id,
                 routeID = routeID ?: 0,
                 gate = gate ?: "",
-                srcOffice = CourierOrderSrcOfficeEntity(
-                    id = srcOffice?.id ?: 0,
-                    name = srcOffice?.name ?: "",
-                    fullAddress = srcOffice?.fullAddress ?: "",
-                    long = srcOffice?.long ?: 0.0,
-                    lat = srcOffice?.lat ?: 0.0,
-                ),
+//                srcOffice = CourierOrderSrcOfficeEntity(
+//                    id = srcOffice?.id ?: 0,
+//                    name = srcOffice?.name ?: "",
+//                    fullAddress = srcOffice?.fullAddress ?: "",
+//                    long = srcOffice?.long ?: 0.0,
+//                    lat = srcOffice?.lat ?: 0.0,
+//                ),
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,

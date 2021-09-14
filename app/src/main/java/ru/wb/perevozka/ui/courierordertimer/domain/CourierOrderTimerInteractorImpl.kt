@@ -1,29 +1,54 @@
 package ru.wb.perevozka.ui.courierordertimer.domain
 
-import io.reactivex.*
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Single
+import ru.wb.perevozka.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.perevozka.db.CourierLocalRepository
+import ru.wb.perevozka.db.TaskTimerRepository
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.auth.signup.TimerOverStateImpl
 import ru.wb.perevozka.ui.auth.signup.TimerState
-import ru.wb.perevozka.ui.auth.signup.TimerStateImpl
-import java.util.concurrent.TimeUnit
+import ru.wb.perevozka.utils.time.TimeFormatter
 
 class CourierOrderTimerInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository
+    private val courierLocalRepository: CourierLocalRepository,
+    private val taskTimerRepository: TaskTimerRepository,
+    private val timeFormatter: TimeFormatter
 ) : CourierOrderTimerInteractor {
-
-    private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
-    private var timerDisposable: Disposable? = null
 
     override fun deleteTask(): Completable {
         return taskId().flatMapCompletable { appRemoteRepository.deleteTask(it) }
+            .doOnComplete { taskTimerRepository.stopTimer() }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun startTimer(reservedDuration: String, reservedAt: String) {
+        var arrivalSec: Long
+        val durationSec = (reservedDuration.toIntOrNull() ?: DEFAULT_ARRIVAL_TIME_COURIER_MIN) * 60L
+        arrivalSec = if (reservedAt.isEmpty()) {
+            durationSec
+        } else {
+            val reservedAtDataTime =
+                timeFormatter.dateTimeWithoutTimezoneFromString(reservedAt).millis
+            val currentDateTime = timeFormatter.currentDateTime().millis
+            val offsetSec = (currentDateTime - reservedAtDataTime) / 1000
+            durationSec - offsetSec
+        }
+        if (arrivalSec < 0) arrivalSec = 0L
+
+        return taskTimerRepository.startTimer(durationSec.toInt(), arrivalSec.toInt())
+    }
+
+    override val timer: Flowable<TimerState>
+        get() = taskTimerRepository.timer.compose(rxSchedulerFactory.applyFlowableSchedulers())
+
+    override fun stopTimer() {
+        taskTimerRepository.stopTimer()
     }
 
     private fun taskId() =
@@ -31,49 +56,15 @@ class CourierOrderTimerInteractorImpl(
             .map { it.courierOrderLocalEntity.id.toString() }
             .first("")
 
-    private var durationTime = 0
-    private var arrivalTime = 0
-    override fun startTimer(durationTime: Int, arrivalTime : Int) {
-        this.durationTime = durationTime
-        this.arrivalTime = arrivalTime
-        if (timerDisposable == null) {
-            timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                .subscribe({ onTimeConfirmCode(it) }) { }
-        }
-    }
-
-    override val timer: Flowable<TimerState>
-        get() = timerStates.compose(rxSchedulerFactory.applyObservableSchedulers())
-            .toFlowable(BackpressureStrategy.BUFFER)
-
-    override fun stopTimer() {
-        timeConfirmCodeDisposable()
-    }
-
-    private fun onTimeConfirmCode(tick: Long) {
-        if (tick > arrivalTime) {
-            timeConfirmCodeDisposable()
-            publishCallState(TimerOverStateImpl())
-        } else {
-            val downTickSec = arrivalTime - tick.toInt()
-            publishCallState(TimerStateImpl(durationTime, downTickSec))
-        }
-    }
-
-    private fun publishCallState(timerState: TimerState) {
-        timerStates.onNext(timerState)
-    }
-
-    private fun timeConfirmCodeDisposable() {
-        if (timerDisposable != null) {
-            timerDisposable!!.dispose()
-            timerDisposable = null
-        }
-    }
 
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
         return courierLocalRepository.observeOrderData()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
+    }
+
+    override fun timerEntity(): Single<CourierTimerEntity> {
+        return courierLocalRepository.courierTimerEntity()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
 }

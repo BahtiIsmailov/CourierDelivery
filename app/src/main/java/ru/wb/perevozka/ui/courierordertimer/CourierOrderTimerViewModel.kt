@@ -3,8 +3,8 @@ package ru.wb.perevozka.ui.courierordertimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
@@ -14,14 +14,12 @@ import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.utils.time.DateTimeFormatter
-import ru.wb.perevozka.utils.time.TimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
-    private val timeFormatter: TimeFormatter
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
@@ -47,34 +45,19 @@ class CourierOrderTimerViewModel(
 
     private fun initOrder() {
         addSubscription(
-            interactor.observeOrderData()
+            interactor.timerEntity()
                 .subscribe(
                     {
-                        initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size)
-                        initTimer(
-                            it.courierOrderLocalEntity.reservedDuration,
-                            it.courierOrderLocalEntity.reservedAt
-                        )
+                        initOrderInfo(it)
+                        initTimer(it.reservedDuration, it.reservedAt)
                     }, {}
                 )
         )
     }
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
-        var arrivalSec: Long
-        val durationSec = (reservedDuration.toIntOrNull() ?: DEFAULT_ARRIVAL_TIME_COURIER_MIN) * 60L
-        arrivalSec = if (reservedAt.isEmpty()) {
-            durationSec
-        } else {
-            val reservedAtDataTime =
-                timeFormatter.dateTimeWithoutTimezoneFromString(reservedAt).millis
-            val currentDateTime = timeFormatter.currentDateTime().millis
-            val offsetSec = (currentDateTime - reservedAtDataTime) / 1000
-            durationSec - offsetSec
-        }
-        if (arrivalSec < 0) arrivalSec = 0L
-        updateTimer(durationSec.toInt(), arrivalSec.toInt())
-        interactor.startTimer(durationSec.toInt(), arrivalSec.toInt())
+        updateTimer(0, 0)
+        interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer
                 .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError() })
@@ -96,16 +79,16 @@ class CourierOrderTimerViewModel(
         )
     }
 
-    private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity, pvz: Int) {
-        with(courierOrderLocalEntity) {
+    private fun initOrderInfo(courierTimerEntity: CourierTimerEntity) {
+        with(courierTimerEntity) {
             val decimalFormat = DecimalFormat("#,###.##")
-            val coast = decimalFormat.format(minPrice)
+            val coast = decimalFormat.format(price)
             _orderInfo.value = CourierOrderTimerInfoUIState.InitOrderInfo(
-                resourceProvider.getOrder(id),
-                srcOffice.name,
+                resourceProvider.getOrder(orderId),
+                name,
                 resourceProvider.getCoast(coast),
-                resourceProvider.getBoxCountAndVolume(minBoxesCount, minVolume),
-                resourceProvider.getPvz(pvz)
+                resourceProvider.getBoxCountAndVolume(boxesCount, volume),
+                resourceProvider.getPvz(countPvz)
             )
         }
     }
