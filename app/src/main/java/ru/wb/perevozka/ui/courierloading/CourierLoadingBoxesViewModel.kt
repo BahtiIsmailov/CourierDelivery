@@ -68,7 +68,7 @@ class CourierLoadingBoxesViewModel(
         val timeFormat = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
         CourierLoadingBoxesItem(
             resourceProvider.getIndex(singleIncrement(index)),
-            item.qrcode,
+            item.id,
             resourceProvider.getBoxDateAndTimeAndAddress(dateFormat, timeFormat, item.address),
             false
         )

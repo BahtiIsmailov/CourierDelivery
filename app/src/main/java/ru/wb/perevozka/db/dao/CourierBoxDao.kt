@@ -1,21 +1,11 @@
 package ru.wb.perevozka.db.dao
 
 import androidx.room.*
-import ru.wb.perevozka.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
-import ru.wb.perevozka.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
-import ru.wb.perevozka.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
-import ru.wb.perevozka.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
-import ru.wb.perevozka.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
-import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
-import ru.wb.perevozka.db.entity.unload.UnloadingTookAndPickupCountEntity
-import ru.wb.perevozka.db.entity.unload.UnloadingUnloadedAndUnloadCountEntity
-import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingCounterEntity
-import ru.wb.perevozka.ui.splash.domain.AppDeliveryResult
-import ru.wb.perevozka.ui.unloadingcongratulation.domain.DeliveryResult
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
+import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 
 @Dao
 interface CourierBoxDao {
@@ -38,10 +28,13 @@ interface CourierBoxDao {
     @Delete
     fun deleteBoxes(courierBoxEntity: List<CourierBoxEntity>): Completable
 
-    @Query("DELETE FROM CourierBoxEntity WHERE qrcode IN (:qrCodes)")
+    @Query("DELETE FROM CourierBoxEntity WHERE id IN (:qrCodes)")
     fun deleteBoxesByQrCode(qrCodes: List<String>): Completable
 
     @Query("DELETE FROM CourierBoxEntity")
     fun deleteAllBoxes()
+
+    @Query("SELECT Office.address AS address, Office.longitude AS longitude, Office.latitude AS latitude, BoxCounter.deliveredCount AS deliveredCount, BoxCounter.fromCount AS fromCount FROM (SELECT dst_office_full_address AS address, dst_office_longitude AS longitude, dst_office_latitude AS latitude, dst_office_id AS officeId FROM CourierOrderDstOfficeLocalEntity) AS Office LEFT JOIN (SELECT COUNT(CASE WHEN deliveredAt != '' THEN 1 END) AS deliveredCount, COUNT(*) AS fromCount, dstOfficeId FROM CourierBoxEntity GROUP BY dstOfficeId) AS BoxCounter ON Office.officeId = BoxCounter.dstOfficeId")
+    fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
 
 }

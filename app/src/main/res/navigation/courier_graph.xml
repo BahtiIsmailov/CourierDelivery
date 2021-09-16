@@ -45,6 +45,13 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierIntransitFragment"
+            app:destination="@id/courierIntransitFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -178,7 +185,7 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/courierOrderTimerFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -204,6 +211,13 @@
         <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierWarehouseFragment"
             app:destination="@id/courierWarehouseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierIntransitFragment"
+            app:destination="@id/courierIntransitFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -249,5 +263,11 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
+    <fragment
+        android:id="@+id/courierIntransitFragment"
+        android:name="ru.wb.perevozka.ui.courierintransit.CourierIntransitFragment"
+        android:label=""
+        tools:layout="@layout/courier_intransit_fragment" />
 
 </navigation>

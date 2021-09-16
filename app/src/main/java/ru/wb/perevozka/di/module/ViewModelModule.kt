@@ -12,6 +12,7 @@ import ru.wb.perevozka.ui.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.courierdata.UserFormViewModel
 import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.courierexpects.CouriersCompleteRegistrationViewModel
+import ru.wb.perevozka.ui.courierintransit.CourierIntransitViewModel
 import ru.wb.perevozka.ui.courierloader.CourierLoaderViewModel
 import ru.wb.perevozka.ui.courierloading.CourierLoadingBoxesViewModel
 import ru.wb.perevozka.ui.courierloading.CourierLoadingScanViewModel
@@ -113,9 +114,10 @@ val viewModelModule = module {
         )
     }
 
+    viewModel { CourierScannerViewModel(get(), get()) }
+    viewModel { CourierIntransitViewModel(get(), get(), get()) }
 
     viewModel { ScannerViewModel(get(), get()) }
-    viewModel { CourierScannerViewModel(get(), get()) }
 
     viewModel { DcLoadingScanViewModel(get(), get(), get()) }
     viewModel { DcLoadingHandleViewModel(get(), get()) }

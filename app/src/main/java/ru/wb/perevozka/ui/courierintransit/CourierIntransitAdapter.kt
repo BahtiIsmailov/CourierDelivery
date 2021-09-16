@@ -1,4 +1,4 @@
-package ru.wb.perevozka.ui.courierdelivery
+package ru.wb.perevozka.ui.courierintransit
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.perevozka.R
-import ru.wb.perevozka.databinding.CourierOrderDetailsLayoutBinding
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsItem
+import ru.wb.perevozka.databinding.CourierIntransitDetailsLayoutBinding
 
-class CourierDeliveryAdapter(
+class CourierIntransitAdapter(
     context: Context,
-    private val items: MutableList<CourierOrderDetailsItem>,
+    private var items: MutableList<CourierIntransitItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
-) : RecyclerView.Adapter<CourierDeliveryAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<CourierIntransitAdapter.ViewHolder>() {
+
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     interface OnItemClickCallBack {
@@ -21,28 +21,34 @@ class CourierDeliveryAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.courier_order_details_layout, parent, false)
+        val view = inflater.inflate(R.layout.courier_intransit_details_layout, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (id, fullAddress, _, _, isSelected) = items[position]
-        holder.binding.fullAddressWarehouse.text = fullAddress
-        holder.binding.selectedBackground.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
+        val (id, fullAddress, deliveryCount, isSelected) = items[position]
+        holder.binding.address.text = fullAddress
+        holder.binding.deliveryCount.text = deliveryCount
+        holder.binding.selectedBackground.visibility =
+            if (isSelected) View.VISIBLE else View.INVISIBLE
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    fun setItem(index: Int, item: CourierOrderDetailsItem) {
+    fun setItem(index: Int, item: CourierIntransitItem) {
         if (items.size > index) items[index] = item
+    }
+
+    fun setData(newItems: List<CourierIntransitItem>) {
+        items = newItems as MutableList<CourierIntransitItem>
     }
 
     inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
 
         View.OnClickListener {
-        var binding = CourierOrderDetailsLayoutBinding.bind(rootView)
+        var binding = CourierIntransitDetailsLayoutBinding.bind(rootView)
 
         override fun onClick(v: View) {
             onItemClickCallBack.onItemClick(adapterPosition)

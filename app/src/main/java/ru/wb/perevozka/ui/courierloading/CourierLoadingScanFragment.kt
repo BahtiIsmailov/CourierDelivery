@@ -101,12 +101,17 @@ class CourierLoadingScanFragment : Fragment() {
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierLoadingBoxesFragment())
                 }
                 CourierLoadingScanNavAction.NavigateToConfirmDialog -> {
-                    showConfirmDialog("Завершить погрузку?", "Вы уверены, что хотите начать развозить коробки")
+                    showConfirmDialog(
+                        "Завершить погрузку?",
+                        "Вы уверены, что хотите начать развозить коробки"
+                    )
                 }
                 CourierLoadingScanNavAction.NavigateToBack -> {
                 }
                 CourierLoadingScanNavAction.NavigateToWarehouse ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
+                CourierLoadingScanNavAction.NavigateToIntransit ->
+                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierIntransitFragment())
             }
         }
 

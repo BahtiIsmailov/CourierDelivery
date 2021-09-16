@@ -2,11 +2,11 @@ package ru.wb.perevozka.di.module
 
 import android.app.Application
 import androidx.room.Room
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 import ru.wb.perevozka.app.DATABASE_NAME
 import ru.wb.perevozka.db.AppDatabase
 import ru.wb.perevozka.db.dao.*
-import org.koin.android.ext.koin.androidApplication
-import org.koin.dsl.module
 
 val databaseModule = module {
 

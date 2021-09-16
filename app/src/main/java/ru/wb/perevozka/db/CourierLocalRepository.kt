@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
+import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
@@ -44,20 +45,23 @@ interface CourierLocalRepository {
     //boxes
     //==============================================================================================
 
-    fun saveBox(courierBoxEntity: CourierBoxEntity): Completable
+    fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable
 
-    fun saveBoxes(courierBoxesEntity: List<CourierBoxEntity>): Completable
+    fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
 
-    fun readAllBoxes(): Single<List<CourierBoxEntity>>
+    fun readAllLoadingBoxes(): Single<List<CourierBoxEntity>>
 
-    fun observeBoxes(): Flowable<List<CourierBoxEntity>>
+    fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>>
 
-    fun deleteBox(courierBoxEntity: CourierBoxEntity): Completable
+    fun deleteLoadingBox(boxEntity: CourierBoxEntity): Completable
 
-    fun deleteBoxes(courierBoxEntity: List<CourierBoxEntity>): Completable
+    fun deleteLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
 
-    fun deleteBoxesByQrCode(qrCodes: List<String>): Completable
+    fun deleteLoadingBoxesByQrCode(qrCodes: List<String>): Completable
 
-    fun deleteAllFlightBoxes()
+    fun deleteAllLoadingBoxes()
+
+    fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
+
 
 }

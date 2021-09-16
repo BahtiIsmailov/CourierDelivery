@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class CourierBoxEntity(
 
     @PrimaryKey
-    val qrcode: String,
+    val id: String,
     val address: String,
     val dstOfficeId: Int,
     val loadingAt: String,

@@ -21,6 +21,8 @@ import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractorImpl
 import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractorImpl
+import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
+import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractorImpl
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
@@ -238,113 +240,6 @@ val interactorModule = module {
         )
     }
 
-    fun provideCourierScannerLoadingInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        scannerRepository: ScannerRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-        courierLocalRepository: CourierLocalRepository,
-        taskTimerRepository: TaskTimerRepository
-    ): CourierLoadingInteractor {
-        return CourierLoadingInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            scannerRepository,
-            timeManager,
-            screenManager,
-            courierLocalRepository,
-            taskTimerRepository
-        )
-    }
-
-    fun provideCourierWarehouseInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        appSharedRepository: AppSharedRepository,
-        courierLocalRepository: CourierLocalRepository
-    ): CourierWarehouseInteractor {
-        return CourierWarehouseInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            appSharedRepository,
-            courierLocalRepository
-        )
-    }
-
-    fun provideCourierOrderDetailsInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager
-    ): CourierOrderDetailsInteractor {
-        return CourierOrderDetailsInteractorImpl(
-            rxSchedulerFactory,
-            courierLocalRepository,
-            userManager
-        )
-    }
-
-    fun provideCourierOrderTimerInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository,
-        taskTimerRepository: TaskTimerRepository,
-        timeFormatter: TimeFormatter
-    ): CourierOrderTimerInteractor {
-        return CourierOrderTimerInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            courierLocalRepository,
-            taskTimerRepository,
-            timeFormatter
-        )
-    }
-
-    fun provideCourierOrderInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository
-    ): CourierOrderInteractor {
-        return CourierOrderInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            courierLocalRepository
-        )
-    }
-
-    fun provideCourierCarNumberInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        userManager: UserManager
-    ): CourierCarNumberInteractor {
-        return CourierCarNumberInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            userManager
-        )
-    }
-
-    fun provideCourierOrderConfirmInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager
-    ): CourierOrderConfirmInteractor {
-        return CourierOrderConfirmInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            courierLocalRepository,
-            userManager
-        )
-    }
-
-
     fun provideUnloadingBoxesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appLocalRepository: AppLocalRepository,
@@ -463,6 +358,119 @@ val interactorModule = module {
         return DcUnloadingCongratulationInteractorImpl(rxSchedulerFactory, appLocalRepository)
     }
 
+    fun provideCourierWarehouseInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        appSharedRepository: AppSharedRepository,
+        courierLocalRepository: CourierLocalRepository
+    ): CourierWarehouseInteractor {
+        return CourierWarehouseInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            appSharedRepository,
+            courierLocalRepository
+        )
+    }
+
+    fun provideCourierOrderInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository
+    ): CourierOrderInteractor {
+        return CourierOrderInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            courierLocalRepository
+        )
+    }
+
+    fun provideCourierOrderDetailsInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository,
+        userManager: UserManager
+    ): CourierOrderDetailsInteractor {
+        return CourierOrderDetailsInteractorImpl(
+            rxSchedulerFactory,
+            courierLocalRepository,
+            userManager
+        )
+    }
+
+    fun provideCourierCarNumberInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        userManager: UserManager
+    ): CourierCarNumberInteractor {
+        return CourierCarNumberInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            userManager
+        )
+    }
+
+    fun provideCourierOrderTimerInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        taskTimerRepository: TaskTimerRepository,
+        timeFormatter: TimeFormatter
+    ): CourierOrderTimerInteractor {
+        return CourierOrderTimerInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            courierLocalRepository,
+            taskTimerRepository,
+            timeFormatter
+        )
+    }
+
+    fun provideCourierOrderConfirmInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        userManager: UserManager
+    ): CourierOrderConfirmInteractor {
+        return CourierOrderConfirmInteractorImpl(
+            rxSchedulerFactory,
+            appRemoteRepository,
+            courierLocalRepository,
+            userManager
+        )
+    }
+
+    fun provideCourierScannerLoadingInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        appLocalRepository: AppLocalRepository,
+        scannerRepository: ScannerRepository,
+        timeManager: TimeManager,
+        screenManager: ScreenManager,
+        courierLocalRepository: CourierLocalRepository,
+        taskTimerRepository: TaskTimerRepository
+    ): CourierLoadingInteractor {
+        return CourierLoadingInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            appLocalRepository,
+            scannerRepository,
+            timeManager,
+            screenManager,
+            courierLocalRepository,
+            taskTimerRepository
+        )
+    }
+
+    fun provideCourierIntransitInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository,
+    ): CourierIntransitInteractor {
+        return CourierIntransitInteractorImpl(rxSchedulerFactory, courierLocalRepository)
+    }
+
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
@@ -476,13 +484,25 @@ val interactorModule = module {
     factory { provideScannerInteractor(get(), get()) }
     single { provideReceptionInteractor(get(), get(), get(), get(), get(), get(), get()) }
 
+    factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
+
+    single { provideUnloadingBoxesInteractor(get(), get()) }
+    single { provideUnloadingHandleInteractor(get(), get()) }
+    single { provideUnloadingReturnInteractor(get(), get(), get(), get()) }
+
+    single { provideForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideCongratulationInteractor(get(), get()) }
+    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
+    single { provideDcForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideDcUnloadingCongratulationInteractor(get(), get()) }
+
+    // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get()) }
     single { provideCourierOrderInteractor(get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get()) }
-    single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
+    single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierOrderConfirmInteractor(get(), get(), get(), get()) }
-
     single {
         provideCourierScannerLoadingInteractor(
             get(),
@@ -496,17 +516,6 @@ val interactorModule = module {
             get()
         )
     }
-
-    factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
-
-    single { provideUnloadingBoxesInteractor(get(), get()) }
-    single { provideUnloadingHandleInteractor(get(), get()) }
-    single { provideUnloadingReturnInteractor(get(), get(), get(), get()) }
-
-    single { provideForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCongratulationInteractor(get(), get()) }
-    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
-    single { provideDcForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideDcUnloadingCongratulationInteractor(get(), get()) }
+    single { provideCourierIntransitInteractor(get(), get()) }
 
 }

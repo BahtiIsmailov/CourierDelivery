@@ -96,7 +96,17 @@ class CourierLoadingScanViewModel(
     }
 
     fun confirmLoadingClick() {
-        addSubscription(interactor.confirmLoading().subscribe({}, {}))
+        onStopScanner()
+        // TODO: 14.09.2021 progress state
+        addSubscription(
+            interactor.confirmLoading()
+                .subscribe(
+                    {
+                        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit
+                    },
+                    { onStartScanner() }
+                )
+        )
     }
 
     private fun observeInitScanProcess() {
@@ -108,7 +118,7 @@ class CourierLoadingScanViewModel(
                 } else {
                     val lastBox = list.last()
                     CourierLoadingScanBoxState.BoxInit(
-                        lastBox.qrcode,
+                        lastBox.id,
                         lastBox.address,
                         resourceProvider.getAccepted(list.size),
                     )
@@ -132,22 +142,23 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProgress() {
-        addSubscription(interactor.scanLoaderProgress()
-            .subscribe({
-                _progressEvent.value = when (it) {
-                    CourierLoadingProgressData.Complete -> {
-                        CourierLoadingScanProgress.LoaderComplete
+        addSubscription(
+            interactor.scanLoaderProgress()
+                .subscribe({
+                    _progressEvent.value = when (it) {
+                        CourierLoadingProgressData.Complete -> {
+                            CourierLoadingScanProgress.LoaderComplete
+                        }
+                        CourierLoadingProgressData.Progress -> {
+                            CourierLoadingScanProgress.LoaderProgress
+                        }
                     }
-                    CourierLoadingProgressData.Progress -> {
-                        CourierLoadingScanProgress.LoaderProgress
-                    }
-                }
-            }, {})
+                }, {})
         )
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierLoadingProcessData) {
-        LogUtils{logDebugApp("observeScanProcessComplete " + scanProcess)}
+        LogUtils { logDebugApp("observeScanProcessComplete " + scanProcess) }
         val scanBoxData = scanProcess.scanBoxData
         val accepted = resourceProvider.getAccepted(scanProcess.count)
         when (scanBoxData) {

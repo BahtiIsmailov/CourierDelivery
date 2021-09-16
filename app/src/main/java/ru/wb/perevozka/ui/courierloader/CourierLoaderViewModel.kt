@@ -59,6 +59,8 @@ class CourierLoaderViewModel(
             toTimer()
         } else if (courierTasksMyEntity.status == "started") {
             toScanner()
+        } else if (courierTasksMyEntity.status ==  "intransit") {
+            toIntransit()
         }
     }
 
@@ -143,6 +145,10 @@ class CourierLoaderViewModel(
 
     private fun toScanner() {
         _navigationState.value = CourierLoaderNavigationState.NavigateToScanner
+    }
+
+    private fun toIntransit() {
+        _navigationState.value = CourierLoaderNavigationState.NavigateToIntransit
     }
 
 }

@@ -12,4 +12,6 @@ sealed class CourierLoadingScanNavAction {
 
     object NavigateToWarehouse : CourierLoadingScanNavAction()
 
+    object NavigateToIntransit : CourierLoadingScanNavAction()
+
 }

@@ -8,6 +8,7 @@ import ru.wb.perevozka.db.dao.CourierOrderDao
 import ru.wb.perevozka.db.dao.CourierWarehouseDao
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
+import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
@@ -16,7 +17,7 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
     private val courierOrderDao: CourierOrderDao,
-    private val courierBoxDao: CourierBoxDao
+    private val courierLoadingBoxDao: CourierBoxDao,
 ) : CourierLocalRepository {
 
     override fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
@@ -59,36 +60,40 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.deleteAllOffices()
     }
 
-    override fun saveBox(courierBoxEntity: CourierBoxEntity): Completable {
-        return courierBoxDao.insertBox(courierBoxEntity)
+    override fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable {
+        return courierLoadingBoxDao.insertBox(boxEntity)
     }
 
-    override fun saveBoxes(courierBoxesEntity: List<CourierBoxEntity>): Completable {
-        return courierBoxDao.insertBoxes(courierBoxesEntity)
+    override fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable {
+        return courierLoadingBoxDao.insertBoxes(boxEntity)
     }
 
-    override fun readAllBoxes(): Single<List<CourierBoxEntity>> {
-        return courierBoxDao.readAllBoxes()
+    override fun readAllLoadingBoxes(): Single<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.readAllBoxes()
     }
 
-    override fun observeBoxes(): Flowable<List<CourierBoxEntity>> {
-        return courierBoxDao.observeBoxes()
+    override fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.observeBoxes()
     }
 
-    override fun deleteBox(courierBoxEntity: CourierBoxEntity): Completable {
-        return courierBoxDao.deleteBox(courierBoxEntity)
+    override fun deleteLoadingBox(boxEntity: CourierBoxEntity): Completable {
+        return courierLoadingBoxDao.deleteBox(boxEntity)
     }
 
-    override fun deleteBoxes(courierBoxEntity: List<CourierBoxEntity>): Completable {
-        return courierBoxDao.deleteBoxes(courierBoxEntity)
+    override fun deleteLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable {
+        return courierLoadingBoxDao.deleteBoxes(boxEntity)
     }
 
-    override fun deleteBoxesByQrCode(qrCodes: List<String>): Completable {
-        return courierBoxDao.deleteBoxesByQrCode(qrCodes)
+    override fun deleteLoadingBoxesByQrCode(qrCodes: List<String>): Completable {
+        return courierLoadingBoxDao.deleteBoxesByQrCode(qrCodes)
     }
 
-    override fun deleteAllFlightBoxes() {
-        return courierBoxDao.deleteAllBoxes()
+    override fun deleteAllLoadingBoxes() {
+        return courierLoadingBoxDao.deleteAllBoxes()
+    }
+
+    override fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>> {
+        return courierLoadingBoxDao.observeBoxesGroupByOffice()
     }
 
 }

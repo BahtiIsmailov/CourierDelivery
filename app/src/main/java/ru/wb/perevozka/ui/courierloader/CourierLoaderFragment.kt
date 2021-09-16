@@ -65,6 +65,11 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                         CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierScannerLoadingScanFragment()
                     )
                 }
+                CourierLoaderNavigationState.NavigateToIntransit -> {
+                    findNavController().navigate(
+                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierIntransitFragment()
+                    )
+                }
             }
         }
     }

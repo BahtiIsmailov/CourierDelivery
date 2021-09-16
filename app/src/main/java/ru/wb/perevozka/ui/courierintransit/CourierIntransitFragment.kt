@@ -1,10 +1,9 @@
-package ru.wb.perevozka.ui.courierdelivery
+package ru.wb.perevozka.ui.courierintransit
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_UP
 import android.view.LayoutInflater
@@ -23,9 +22,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -33,32 +30,18 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
-import ru.wb.perevozka.databinding.CourierOrderDetailsFragmentBinding
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.databinding.CourierIntransitFragmentBinding
 import ru.wb.perevozka.ui.scanner.hasPermissions
-import ru.wb.perevozka.views.ProgressButtonMode
 
 
-class CourierOrderDetailsFragment : Fragment() {
+class CourierIntransitFragment : Fragment() {
 
-    companion object {
-        const val COURIER_ORDER_DETAILS_ID_KEY = "courier_order_details_id_key"
-    }
+    private val viewModel by viewModel<CourierIntransitViewModel>()
 
-    private val viewModel by viewModel<CourierDeliveryViewModel> {
-        parametersOf(
-            requireArguments().getParcelable<CourierOrderDetailsParameters>(
-                COURIER_ORDER_DETAILS_ID_KEY
-            )
-        )
-    }
-
-    private var _binding: CourierOrderDetailsFragmentBinding? = null
+    private var _binding: CourierIntransitFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: CourierDeliveryAdapter
+    private lateinit var adapter: CourierIntransitAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
     private lateinit var progressDialog: AlertDialog
@@ -67,7 +50,7 @@ class CourierOrderDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = CourierOrderDetailsFragmentBinding.inflate(inflater, container, false)
+        _binding = CourierIntransitFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -75,11 +58,16 @@ class CourierOrderDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initRecyclerView()
         initObservable()
         initListeners()
         initProgressDialog()
         initPermission()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.back.visibility = VISIBLE
     }
 
     private val requestMultiplePermissions =
@@ -89,7 +77,6 @@ class CourierOrderDetailsFragment : Fragment() {
                 if (!it.value) {
                     grang = false
                 }
-                Log.e("DEBUG", "${it.key} = ${it.value}")
             }
             if (grang) {
                 initMapView()
@@ -104,13 +91,6 @@ class CourierOrderDetailsFragment : Fragment() {
         ) {
             initMapView()
         } else {
-//            requestPermissions(
-//                arrayOf(
-//                    Manifest.permission.ACCESS_COARSE_LOCATION,
-//                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-//                ),
-//                1000
-//            )
             requestMultiplePermissions.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -137,120 +117,102 @@ class CourierOrderDetailsFragment : Fragment() {
         binding.map.setMultiTouchControls(true)
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//
-//        when (requestCode) {
-//            1000 -> {
-//                if ((grantResults.isNotEmpty()) //&& grantResults[0] == PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    initPermission()
-//                } else {
-//                }
-//                return
-//            }
-//            else -> {
-//
-//            }
-//        }
-//
-//    }
-
-    private fun setMarker(lat: Double, long: Double) {
+    private fun initMapMarker(id: String, lat: Double, long: Double) {
         val marker = Marker(binding.map)
-        marker.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz)
+        marker.id = id
+        marker.icon = normalMarkerIcon()
         val point = GeoPoint(lat, long)
         marker.position = point
         binding.map.overlays.add(marker)
     }
 
-    private fun setSelectedMarker(lat: Double, long: Double) {
-        val marker = Marker(binding.map)
-        marker.icon =
-            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz_selected)
-        val point = GeoPoint(lat, long)
-        marker.position = point
-        binding.map.overlays.add(marker)
-        mapController.animateTo(point)
+    private fun normalMarkerIcon() =
+        AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz)
+
+
+    private fun setSelectedMarker(id: String, isSelected: Boolean) {
+        binding.map.overlays.forEach {
+            val marker = it as Marker
+            marker.icon = if (marker.id == id && isSelected) selectedMarkerIcon()
+            else normalMarkerIcon()
+        }
+        binding.map.overlays.find { (it as Marker).id == id }?.apply {
+            binding.map.overlays.remove(this)
+            binding.map.overlays.add(this)
+            mapController.animateTo((this as Marker).position)
+        }
         binding.map.invalidate()
     }
 
+    private fun selectedMarkerIcon() =
+        AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz_selected)
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
-        viewModel.orderInfo.observe(viewLifecycleOwner) {
-            when (it) {
-                is CourierDeliveryInfoUIState.InitOrderInfo -> {
-                    binding.order.text = it.order
-                    binding.volume.text = it.countBoxAndVolume
-                    binding.pvz.text = it.countPvz
-                    binding.coast.text = it.coast
-                }
-            }
-        }
-
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierDeliveryUIState.InitItems -> {
+                is CourierIntransitUIState.InitItems -> {
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
-                    binding.takeOrder.setState(ProgressButtonMode.ENABLE)
-                    val callback = object : CourierDeliveryAdapter.OnItemClickCallBack {
+                    val callback = object : CourierIntransitAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
                             viewModel.onItemClick(index)
                         }
                     }
-                    adapter = CourierDeliveryAdapter(requireContext(), it.items, callback)
+                    adapter = CourierIntransitAdapter(requireContext(), it.items, callback)
                     binding.routes.adapter = adapter
-
-                    it.items.forEach { items -> setMarker(items.lat, items.long) }
-                    binding.map.invalidate()
-
                 }
-                is CourierDeliveryUIState.Empty -> {
+                is CourierIntransitUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
-                    binding.takeOrder.setState(ProgressButtonMode.DISABLE)
+                }
+                is CourierIntransitUIState.UpdateItems -> {
+                    adapter.setData(it.items)
+                    adapter.notifyDataSetChanged()
                 }
             }
         }
 
         viewModel.mapPoint.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierDeliveryMapPoint.NavigateToPoint -> {
-                    setSelectedMarker(it.lat, it.long)
+                is CourierIntransitMapPoint.InitMapPoint -> {
+                    it.points.forEach { item ->
+                        initMapMarker(
+                            item.id,
+                            item.lat,
+                            item.long
+                        )
+                    }
+                    val point =
+                        GeoPoint(it.startNavigation.point.x, it.startNavigation.point.y)
+                    mapController.setZoom(it.startNavigation.radius * 6)
+                    mapController.animateTo(point)
+                    binding.map.invalidate()
+                }
+                is CourierIntransitMapPoint.NavigateToPoint -> {
+                    setSelectedMarker(it.id, it.isSelected)
                 }
             }
         }
 
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierDeliveryProgressState.Progress -> showProgressDialog()
-                CourierDeliveryProgressState.ProgressComplete -> closeProgressDialog()
+                CourierIntransitProgressState.Progress -> showProgressDialog()
+                CourierIntransitProgressState.ProgressComplete -> closeProgressDialog()
             }
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierDeliveryNavigationState.NavigateToDialogConfirm ->
+                is CourierIntransitNavigationState.NavigateToDialogConfirm ->
                     showConfirmDialog(it.title, it.message)
-                is CourierDeliveryNavigationState.NavigateToDialogInfo ->
+                is CourierIntransitNavigationState.NavigateToDialogInfo ->
                     showEmptyOrderDialog(it.title, it.message, it.button)
-                is CourierDeliveryNavigationState.NavigateToCarNumber -> {
-                }
-//                    findNavController().navigate(
-//                        CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment()
-//                    )
-                CourierDeliveryNavigationState.NavigateToOrderConfirm -> {
-                }
-                //findNavController().navigate(CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierOrderConfirmFragment())
             }
         }
 
@@ -258,8 +220,7 @@ class CourierOrderDetailsFragment : Fragment() {
 
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.backOrder.setOnClickListener { findNavController().popBackStack() }
-        binding.takeOrder.setOnClickListener { viewModel.takeOrderClick() }
+        binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
     }
 
     // TODO: 20.08.2021 переработать
@@ -288,6 +249,7 @@ class CourierOrderDetailsFragment : Fragment() {
         progressDialog.show()
     }
 
+    // TODO: 27.08.2021 переработать
     private fun showEmptyOrderDialog(title: String, message: String, button: String) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
@@ -361,11 +323,6 @@ class CourierOrderDetailsFragment : Fragment() {
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
-    }
-
     override fun onResume() {
         super.onResume()
         binding.map.onResume()
@@ -378,7 +335,3 @@ class CourierOrderDetailsFragment : Fragment() {
     }
 
 }
-
-@Parcelize
-data class CourierOrderDetailsParameters(val title: String, val order: CourierOrderEntity) :
-    Parcelable
