@@ -6,6 +6,6 @@ interface ScannerInteractor {
 
     fun barcodeScanned(barcode: String)
 
-    fun observeScannerAction(): Observable<ScannerAction>
+    fun observeScannerState(): Observable<ScannerState>
 
 }

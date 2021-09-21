@@ -10,6 +10,8 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
+import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
 interface CourierLocalRepository {
 
@@ -25,7 +27,7 @@ interface CourierLocalRepository {
     fun deleteAllCurrentWarehouse()
 
     //==============================================================================================
-    //order
+    //order and offices
     //==============================================================================================
 
     fun saveCurrentOrderAndOffices(
@@ -41,6 +43,8 @@ interface CourierLocalRepository {
 
     fun deleteAllOrderOffices()
 
+    fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity>
+
     //==============================================================================================
     //boxes
     //==============================================================================================
@@ -50,6 +54,16 @@ interface CourierLocalRepository {
     fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
 
     fun readAllLoadingBoxes(): Single<List<CourierBoxEntity>>
+
+    fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+
+    fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+
+    fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult>
+
+    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult>
+
+    fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxCounterResult>
 
     fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>>
 
@@ -62,6 +76,5 @@ interface CourierLocalRepository {
     fun deleteAllLoadingBoxes()
 
     fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
-
 
 }

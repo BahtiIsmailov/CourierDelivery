@@ -19,11 +19,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppConsts
 import ru.wb.perevozka.databinding.CourierScannerFragmentBinding
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 
 
-class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
+open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
+
+    var holdScanner = HOLD_SCANNER
 
     private val viewModel by viewModel<CourierScannerViewModel>()
 
@@ -91,11 +93,11 @@ class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun initObserver() {
         viewModel.scannerAction.observe(viewLifecycleOwner) {
             when (it) {
-                ScannerAction.Start -> startScanner()
-                ScannerAction.Stop -> stopScanner()
-                ScannerAction.LoaderProgress -> loader()
-                ScannerAction.LoaderComplete -> loaderComplete()
-                ScannerAction.BeepScan -> beepScan()
+                ScannerState.Start -> startScanner()
+                ScannerState.Stop -> stopScanner()
+                ScannerState.LoaderProgress -> loader()
+                ScannerState.LoaderComplete -> loaderComplete()
+                ScannerState.BeepScan -> beepScan()
             }
         }
     }
@@ -165,10 +167,12 @@ class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         viewModel.onBarcodeScanned(barcode)
     }
 
+    // TODO: 20.09.2021 передать управаление в интерактор менеджера
     private fun holdScanner() {
         Handler(Looper.getMainLooper()).postDelayed({
             scannerView.resumeCameraPreview(this)
-        }, HOLD_SCANNER)
+//            viewModel.onScannerReady()
+        }, holdScanner)
     }
 
     private fun startScanner() {

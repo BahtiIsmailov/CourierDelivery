@@ -7,10 +7,12 @@ import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntit
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapEnclosingCircle
 import ru.wb.perevozka.utils.map.MapPoint
+import ru.wb.perevozka.utils.time.DateTimeFormatter
 
 class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
@@ -22,8 +24,8 @@ class CourierIntransitViewModel(
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
 
-    private val _orderDetails = MutableLiveData<CourierIntransitUIState>()
-    val orderDetails: LiveData<CourierIntransitUIState>
+    private val _orderDetails = MutableLiveData<CourierIntransitItemState>()
+    val orderDetails: LiveData<CourierIntransitItemState>
         get() = _orderDetails
 
     private val _mapPoint = MutableLiveData<CourierIntransitMapPoint>()
@@ -38,6 +40,10 @@ class CourierIntransitViewModel(
     val progressState: LiveData<CourierIntransitProgressState>
         get() = _progressState
 
+    private val _intransitTime = MutableLiveData<CourierIntransitTimeState>()
+    val intransitTime: LiveData<CourierIntransitTimeState>
+        get() = _intransitTime
+
     private var copyCourierIntransitItems = mutableListOf<CourierIntransitItem>()
 
     private fun copyCourierOrderDetailsItems(items: List<CourierIntransitItem>) {
@@ -46,31 +52,52 @@ class CourierIntransitViewModel(
 
     init {
         initToolbar()
-        initOrder()
+        initOffices()
+        initTime()
+        initScanner()
+    }
+
+    private fun initScanner() {
+        addSubscription(interactor.observeOfficeIdScanProcess().subscribe({
+            _navigationState.value = CourierIntransitNavigationState.NavigateToUnloadingScanner(it)
+        }, {}))
+    }
+
+    private fun initTime() {
+        addSubscription(interactor.startTime().subscribe({
+            _intransitTime.value = CourierIntransitTimeState.Time(
+                DateTimeFormatter.getDigitFullTime(it.toInt())
+            )
+        }, {}))
     }
 
     private fun initToolbar() {
         _toolbarLabelState.value = Label(resourceProvider.getLabel())
     }
 
-    private fun initOrder() {
+    private fun initOffices() {
         addSubscription(
-            interactor.observeBoxesGroupByOrder()
-                .subscribe({ initOrderItemsComplete(it) }, { initOrderItemsError(it) })
+            interactor.observeBoxesGroupByOffice()
+                .subscribe({ initOfficesComplete(it) }, { initOfficesError(it) })
         )
     }
 
-    private fun initOrderItemsError(it: Throwable) {
+    private fun initOfficesError(it: Throwable) {
         LogUtils { logDebugApp("initOrderItemsError " + it) }
     }
 
-    private fun initOrderItemsComplete(dstOffices: List<CourierIntransitGroupByOfficeEntity>) {
+    private fun initOfficesComplete(dstOffices: List<CourierIntransitGroupByOfficeEntity>) {
         val items = mutableListOf<CourierIntransitItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
         val mapPoints = mutableListOf<MapPoint>()
+        var deliveredCountTotal = 0
+        var fromCountTotal = 0
         dstOffices.forEachIndexed { index, item ->
             with(item) {
-                val countBox = resourceProvider.getBoxCountAndTotal(deliveredCount, fromCount)
+                deliveredCountTotal += deliveredCount
+                fromCountTotal += fromCount
+                val countBox =
+                    resourceProvider.getBoxCountAndTotal(deliveredCount, fromCount)
                 val intransitItem = CourierIntransitItem(
                     index,
                     address,
@@ -83,7 +110,7 @@ class CourierIntransitViewModel(
             }
         }
         copyCourierOrderDetailsItems(items)
-        initItems(items)
+        initItems(items, resourceProvider.getBoxCountAndTotal(deliveredCountTotal, fromCountTotal))
         initMap(coordinatePoints, mapPoints)
     }
 
@@ -95,9 +122,9 @@ class CourierIntransitViewModel(
         _mapPoint.value = CourierIntransitMapPoint.InitMapPoint(mapPoints, startNavigation)
     }
 
-    private fun initItems(items: MutableList<CourierIntransitItem>) {
-        _orderDetails.value = if (items.isEmpty()) CourierIntransitUIState.Empty
-        else CourierIntransitUIState.InitItems(items)
+    private fun initItems(items: MutableList<CourierIntransitItem>, boxTotal: String) {
+        _orderDetails.value = if (items.isEmpty()) CourierIntransitItemState.Empty
+        else CourierIntransitItemState.InitItems(items, boxTotal)
     }
 
     private fun progressComplete() {
@@ -105,7 +132,11 @@ class CourierIntransitViewModel(
     }
 
     fun scanQrPvzClick() {
+        _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
+    }
 
+    fun closeScannerClick() {
+        _navigationState.value = CourierIntransitNavigationState.NavigateToMap
     }
 
     fun confirmTakeOrderClick() {
@@ -118,7 +149,6 @@ class CourierIntransitViewModel(
 
     fun onItemClick(index: Int) {
         changeItemSelected(index)
-
     }
 
     private fun changeItemSelected(selectIndex: Int) {
@@ -130,7 +160,9 @@ class CourierIntransitViewModel(
             }
             copyCourierIntransitItems[index] = copySelectedItem
         }
-        initItems(copyCourierIntransitItems)
+        _orderDetails.value =
+            if (copyCourierIntransitItems.isEmpty()) CourierIntransitItemState.Empty
+            else CourierIntransitItemState.UpdateItems(copyCourierIntransitItems, selectIndex)
         navigateToPoint(selectIndex, copyCourierIntransitItems[selectIndex].isSelected)
     }
 
@@ -138,6 +170,14 @@ class CourierIntransitViewModel(
         val itemSelected = copyCourierIntransitItems[index]
         _mapPoint.value =
             CourierIntransitMapPoint.NavigateToPoint(itemSelected.id.toString(), isSelected)
+    }
+
+    fun onStopScanner() {
+        interactor.scannerAction(ScannerState.Stop)
+    }
+
+    fun onStartScanner() {
+        interactor.scannerAction(ScannerState.Start)
     }
 
     data class NavigateToMessageInfo(

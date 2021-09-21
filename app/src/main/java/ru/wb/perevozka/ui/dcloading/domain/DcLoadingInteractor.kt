@@ -2,7 +2,7 @@ package ru.wb.perevozka.ui.dcloading.domain
 
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -23,7 +23,7 @@ interface DcLoadingInteractor {
 
     fun switchScreen(): Completable
 
-    fun scannerAction(scannerAction: ScannerAction)
+    fun scannerAction(scannerAction: ScannerState)
 
     fun observeNetworkConnected(): Observable<NetworkState>
 

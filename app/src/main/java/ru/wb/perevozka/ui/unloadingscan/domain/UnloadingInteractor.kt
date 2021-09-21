@@ -1,7 +1,7 @@
 package ru.wb.perevozka.ui.unloadingscan.domain
 
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -15,7 +15,7 @@ interface UnloadingInteractor {
 
     fun observeCountUnloadReturnedBoxAndSwitchScreen(currentOfficeId: Int): Observable<Int>
 
-    fun scannerAction(scannerAction: ScannerAction)
+    fun scannerAction(scannerAction: ScannerState)
 
     fun isUnloadingComplete(currentOfficeId: Int): Single<Boolean>
 

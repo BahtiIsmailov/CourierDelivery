@@ -6,7 +6,7 @@ const val APP_JSON = "application/json"
 
 const val VERSION_API = "/api/v1"
 
-const val VERSION_DATABASE = 21
+const val VERSION_DATABASE = 22
 const val EXPORT_SCHEMA_DATABASE = false
 
 const val DRIVER = "DRIVER"

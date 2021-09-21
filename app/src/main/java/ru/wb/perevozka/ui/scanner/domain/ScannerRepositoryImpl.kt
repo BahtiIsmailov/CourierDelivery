@@ -5,29 +5,29 @@ import io.reactivex.subjects.PublishSubject
 
 class ScannerRepositoryImpl : ScannerRepository {
 
-    private var actionBarcodeScannedSubject = PublishSubject.create<String>()
+    private var scannerActionSubject = PublishSubject.create<String>()
 
-    private val scannerActionSubject = PublishSubject.create<ScannerAction>()
+    private val scannerStateSubject = PublishSubject.create<ScannerState>()
 
-    override fun barcodeScanned(barcode: String) {
-        actionBarcodeScannedSubject.onNext(barcode)
+    override fun scannerAction(barcode: String) {
+        scannerActionSubject.onNext(barcode)
     }
 
     override fun observeBarcodeScanned(barcodeSubject: PublishSubject<String>): Observable<String> {
-        actionBarcodeScannedSubject = barcodeSubject
+        scannerActionSubject = barcodeSubject
         return barcodeSubject
     }
 
     override fun observeBarcodeScanned(): Observable<String> {
-        return actionBarcodeScannedSubject
-    }
-
-    override fun scannerAction(action: ScannerAction) {
-        scannerActionSubject.onNext(action)
-    }
-
-    override fun observeScannerAction(): Observable<ScannerAction> {
         return scannerActionSubject
+    }
+
+    override fun scannerState(state: ScannerState) {
+        scannerStateSubject.onNext(state)
+    }
+
+    override fun observeScannerState(): Observable<ScannerState> {
+        return scannerStateSubject
     }
 
 }

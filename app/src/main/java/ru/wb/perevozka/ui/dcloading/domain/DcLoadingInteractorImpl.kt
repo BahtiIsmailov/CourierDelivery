@@ -14,7 +14,7 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
@@ -56,7 +56,7 @@ class DcLoadingInteractorImpl(
             .flatMapSingle {
                 Completable.fromAction {
                     scanLoaderProgressSubject.onNext(ScanProgressData.Progress)
-                    scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+                    scannerRepository.scannerState(ScannerState.LoaderProgress)
                 }.andThen(Single.just(it))
             }
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
@@ -109,7 +109,7 @@ class DcLoadingInteractorImpl(
 
     private fun loaderComplete() {
         scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
-        scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+        scannerRepository.scannerState(ScannerState.LoaderComplete)
     }
 
     override fun scanLoaderProgress(): Observable<ScanProgressData> {
@@ -256,8 +256,8 @@ class DcLoadingInteractorImpl(
         return screenManager.saveState(FlightStatus.DCLOADING)
     }
 
-    override fun scannerAction(scannerAction: ScannerAction) {
-        scannerRepository.scannerAction(scannerAction)
+    override fun scannerAction(scannerAction: ScannerState) {
+        scannerRepository.scannerState(scannerAction)
     }
 
 }

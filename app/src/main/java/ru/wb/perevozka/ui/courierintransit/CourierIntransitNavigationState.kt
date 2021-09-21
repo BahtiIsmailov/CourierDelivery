@@ -13,4 +13,10 @@ sealed class CourierIntransitNavigationState {
         val title: String, val message: String
     ) : CourierIntransitNavigationState()
 
+    object NavigateToScanner : CourierIntransitNavigationState()
+
+    object NavigateToMap : CourierIntransitNavigationState()
+
+    data class NavigateToUnloadingScanner(val officeId: Int) : CourierIntransitNavigationState()
+
 }

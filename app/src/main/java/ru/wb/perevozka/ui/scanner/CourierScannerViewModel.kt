@@ -7,8 +7,8 @@ import io.reactivex.disposables.Disposable
 import ru.wb.perevozka.app.PREFIX_QR_CODE
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
 import ru.wb.perevozka.ui.scanner.domain.ScannerInteractor
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import java.util.concurrent.TimeUnit
 
 class CourierScannerViewModel(
@@ -16,15 +16,15 @@ class CourierScannerViewModel(
     private val interactor: ScannerInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _scannerAction = SingleLiveEvent<ScannerAction>()
-    val scannerAction: LiveData<ScannerAction>
+    private val _scannerAction = SingleLiveEvent<ScannerState>()
+    val scannerAction: LiveData<ScannerState>
         get() = _scannerAction
 
     private var oldBarcode: String = ""
     private var erase: Disposable? = null
 
     init {
-        addSubscription(interactor.observeScannerAction().subscribe { _scannerAction.value = it })
+        addSubscription(interactor.observeScannerState().subscribe { _scannerAction.value = it })
     }
 
     fun onBarcodeScanned(barcode: String) {
@@ -33,7 +33,7 @@ class CourierScannerViewModel(
                 erase?.dispose()
                 erase = Observable.timer(5, TimeUnit.SECONDS).subscribe { clearMemoryBarcode() }
             } else {
-                _scannerAction.value = ScannerAction.BeepScan
+                _scannerAction.value = ScannerState.BeepScan
                 interactor.barcodeScanned(barcode)
             }
             oldBarcode = barcode

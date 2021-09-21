@@ -17,7 +17,7 @@ import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingProgressData
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingScanBoxData
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -98,15 +98,46 @@ class CourierLoadingScanViewModel(
     fun confirmLoadingClick() {
         onStopScanner()
         // TODO: 14.09.2021 progress state
+        _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
         addSubscription(
             interactor.confirmLoading()
                 .subscribe(
                     {
+                        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
                         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit
                     },
-                    { onStartScanner() }
+                    {
+                        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
+                        onStartScanner()
+                        confirmLoadingError(it)
+                    }
                 )
         )
+    }
+
+    private fun confirmLoadingError(throwable: Throwable) {
+        // TODO: 17.09.2021 реализовать
+        val message = when (throwable) {
+            is NoInternetException -> CourierLoadingScanNavAction.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                "Интернет-соединение отсутствует",
+                throwable.message,
+                "Понятно"
+            )
+            is BadRequestException -> CourierLoadingScanNavAction.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                throwable.error.message,
+                "Ок",
+                "Ок"
+            )
+            else -> CourierLoadingScanNavAction.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                "Ок",
+                "Ок",
+                "Ок"
+            )
+        }
+        _navigationEvent.value = message
     }
 
     private fun observeInitScanProcess() {
@@ -217,18 +248,18 @@ class CourierLoadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }
 
     fun onStopScanner() {
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
     }
 
     fun onStartScanner() {
-        interactor.scannerAction(ScannerAction.Start)
+        interactor.scannerAction(ScannerState.Start)
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

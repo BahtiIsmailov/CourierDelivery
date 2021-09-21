@@ -56,7 +56,7 @@
     <ImageView
         android:layout_width="0dp"
         android:layout_height="30dp"
-        android:src="@drawable/gradient_top_list"
+        android:src="@drawable/gradient_dark_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
@@ -64,7 +64,7 @@
     <ImageView
         android:layout_width="0dp"
         android:layout_height="30dp"
-        android:src="@drawable/gradient_bottom_list"
+        android:src="@drawable/gradient_light_bottom"
         app:layout_constraintBottom_toTopOf="@+id/remove"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

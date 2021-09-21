@@ -1,6 +1,8 @@
 package ru.wb.perevozka.ui.courierintransit
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
@@ -8,8 +10,7 @@ import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_UP
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -31,7 +32,10 @@ import org.osmdroid.views.overlay.Marker
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierIntransitFragmentBinding
+import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.perevozka.ui.scanner.hasPermissions
+import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.views.ProgressButtonMode
 
 
 class CourierIntransitFragment : Fragment() {
@@ -45,6 +49,7 @@ class CourierIntransitFragment : Fragment() {
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
     private lateinit var progressDialog: AlertDialog
+    private var shortAnimationDuration: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,10 +69,11 @@ class CourierIntransitFragment : Fragment() {
         initListeners()
         initProgressDialog()
         initPermission()
+        shortAnimationDuration = resources.getInteger(android.R.integer.config_longAnimTime)
     }
 
     private fun initView() {
-        binding.toolbarLayout.back.visibility = VISIBLE
+        binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
     private val requestMultiplePermissions =
@@ -115,10 +121,15 @@ class CourierIntransitFragment : Fragment() {
         mapController.setZoom(12.0)
         binding.map.setBuiltInZoomControls(true)
         binding.map.setMultiTouchControls(true)
+        //binding.map.setBuiltInZoomControls(zoomControl, OverlayLayoutParams.RIGHT | OverlayLayoutParams.BOTTOM)
     }
 
     private fun initMapMarker(id: String, lat: Double, long: Double) {
         val marker = Marker(binding.map)
+        marker.setOnMarkerClickListener { marker, _ ->
+            viewModel.onItemClick(marker.id.toInt())
+            true
+        }
         marker.id = id
         marker.icon = normalMarkerIcon()
         val point = GeoPoint(lat, long)
@@ -141,6 +152,7 @@ class CourierIntransitFragment : Fragment() {
             binding.map.overlays.add(this)
             mapController.animateTo((this as Marker).position)
         }
+        mapController.setZoom(16.0)
         binding.map.invalidate()
     }
 
@@ -154,9 +166,18 @@ class CourierIntransitFragment : Fragment() {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
+        viewModel.intransitTime.observe(viewLifecycleOwner) {
+            when (it) {
+                is CourierIntransitTimeState.Time -> {
+                    binding.time.text = it.time
+                }
+            }
+        }
+
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierIntransitUIState.InitItems -> {
+                is CourierIntransitItemState.InitItems -> {
+                    binding.deliveryTotalCount.text = it.boxTotal
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
                     val callback = object : CourierIntransitAdapter.OnItemClickCallBack {
@@ -167,13 +188,14 @@ class CourierIntransitFragment : Fragment() {
                     adapter = CourierIntransitAdapter(requireContext(), it.items, callback)
                     binding.routes.adapter = adapter
                 }
-                is CourierIntransitUIState.Empty -> {
+                is CourierIntransitItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
                 }
-                is CourierIntransitUIState.UpdateItems -> {
+                is CourierIntransitItemState.UpdateItems -> {
                     adapter.setData(it.items)
                     adapter.notifyDataSetChanged()
+                    binding.routes.scrollToPosition(it.position)
                 }
             }
         }
@@ -213,14 +235,47 @@ class CourierIntransitFragment : Fragment() {
                     showConfirmDialog(it.title, it.message)
                 is CourierIntransitNavigationState.NavigateToDialogInfo ->
                     showEmptyOrderDialog(it.title, it.message, it.button)
+                CourierIntransitNavigationState.NavigateToMap -> {
+                    crossFade(binding.mapLayout, binding.scannerLayout)
+                    binding.scanQrPvz.setState(ProgressButtonMode.ENABLE)
+                }
+                CourierIntransitNavigationState.NavigateToScanner -> {
+                    crossFade(binding.scannerLayout, binding.mapLayout)
+                    binding.scanQrPvz.setState(ProgressButtonMode.DISABLE)
+                }
+                is CourierIntransitNavigationState.NavigateToUnloadingScanner -> {
+                    findNavController().navigate(CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierUnloadingScanFragment(
+                        CourierUnloadingScanParameters(it.officeId)
+                    ))
+                }
             }
         }
 
     }
 
+    private fun crossFade(showView: View, hideView: View) {
+        showView.apply {
+            alpha = 0f
+            visibility = VISIBLE
+            animate()
+                .alpha(1f)
+                .setDuration(shortAnimationDuration.toLong())
+                .setListener(null)
+        }
+        hideView.animate()
+            .alpha(0f)
+            .setDuration(shortAnimationDuration.toLong())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    hideView.visibility = GONE
+                }
+            })
+    }
+
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
+        binding.closeScannerLayout.setOnClickListener { viewModel.closeScannerClick() }
     }
 
     // TODO: 20.08.2021 переработать
@@ -332,6 +387,17 @@ class CourierIntransitFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         binding.map.onPause()
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.onStartScanner()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStopScanner()
     }
 
 }

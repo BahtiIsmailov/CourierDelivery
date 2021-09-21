@@ -15,8 +15,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
+import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierLoadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
@@ -74,6 +77,13 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
+        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CourierLoadingScanProgress.LoaderProgress -> showProgressDialog()
+                CourierLoadingScanProgress.LoaderComplete -> closeProgressDialog()
+            }
+        }
+
         viewModel.orderTimer.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierLoadingScanTimerState.Timer -> {
@@ -112,6 +122,9 @@ class CourierLoadingScanFragment : Fragment() {
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
                 CourierLoadingScanNavAction.NavigateToIntransit ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierIntransitFragment())
+                is CourierLoadingScanNavAction.NavigateToDialogInfo -> {
+                    showDialog(state.type, state.title, state.message, state.button)
+                }
             }
         }
 
@@ -253,6 +266,22 @@ class CourierLoadingScanFragment : Fragment() {
                 }
 
             }
+        }
+    }
+
+    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+    }
+
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
+    }
+
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
         }
     }
 

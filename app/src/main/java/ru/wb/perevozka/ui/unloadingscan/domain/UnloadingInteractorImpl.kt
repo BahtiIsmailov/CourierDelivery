@@ -14,7 +14,7 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
@@ -80,7 +80,7 @@ class UnloadingInteractorImpl(
             .flatMapSingle {
                 Completable.fromAction {
                     scanLoaderProgressSubject.onNext(ScanProgressData.Progress)
-                    scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+                    scannerRepository.scannerState(ScannerState.LoaderProgress)
                 }.andThen(Single.just(it))
             }
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
@@ -215,7 +215,7 @@ class UnloadingInteractorImpl(
 
     private fun loaderComplete() {
         scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
-        scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+        scannerRepository.scannerState(ScannerState.LoaderComplete)
     }
 
     private fun boxWasUnloadedAnotherPvzScan(
@@ -514,8 +514,8 @@ class UnloadingInteractorImpl(
             .scan { old, new -> Pair(new.first, old.first.tookCount > new.first.tookCount) }
     }
 
-    override fun scannerAction(scannerAction: ScannerAction) {
-        scannerRepository.scannerAction(scannerAction)
+    override fun scannerAction(scannerAction: ScannerState) {
+        scannerRepository.scannerState(scannerAction)
     }
 
     override fun isUnloadingComplete(currentOfficeId: Int): Single<Boolean> {

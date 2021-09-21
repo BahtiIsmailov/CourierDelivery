@@ -4,7 +4,7 @@ import ru.wb.perevozka.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import ru.wb.perevozka.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dcloading.domain.ScanProgressData
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -23,7 +23,7 @@ interface DcUnloadingInteractor {
 
     fun isBoxesUnloaded(): Single<Boolean>
 
-    fun scannerAction(scannerAction: ScannerAction)
+    fun scannerAction(scannerAction: ScannerState)
 
     fun switchScreenToClosed(): Completable
 

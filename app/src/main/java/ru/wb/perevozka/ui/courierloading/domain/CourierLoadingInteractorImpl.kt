@@ -19,7 +19,7 @@ import ru.wb.perevozka.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
@@ -51,11 +51,7 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun observeCourierBoxesCount(): Observable<List<CourierBoxEntity>> {
-        return courierLocalRepository.observeLoadingBoxes()
-            .toObservable()
-            .doOnNext { LogUtils { logDebugApp("observeCourierBoxesCount " + it.size) } }
-//            .map { it.size }
-        //           .compose(rxSchedulerFactory.applyObservableSchedulers())
+        return courierLocalRepository.observeLoadingBoxes().toObservable()
     }
 
     override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
@@ -77,7 +73,6 @@ class CourierLoadingInteractorImpl(
                         .flatMap { taskId ->
                             loaderProgress()
 //                            Completable.timer(3, TimeUnit.SECONDS)
-
                             appRemoteRepository.taskStart(taskId, courierTaskStartEntity)
                                 .doOnComplete { loaderComplete() }
                                 .andThen(Observable.just(processData))
@@ -95,7 +90,7 @@ class CourierLoadingInteractorImpl(
 
     private fun loaderProgress() {
         scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Progress)
-        scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+        scannerRepository.scannerState(ScannerState.LoaderProgress)
     }
 
     private fun observeCourierScan(): Observable<CourierLoadingScanBoxData> {
@@ -156,17 +151,17 @@ class CourierLoadingInteractorImpl(
         return ParseQrCode(parseParams[0], parseParams[1])
     }
 
-    private fun getInfo(input: String): String {
-        return input.takeLast(input.length - PREFIX_QR_CODE.length)
-    }
-
     private fun getSplitInfo(input: String): List<String> {
         return input.split(":")
     }
 
+    private fun getInfo(input: String): String {
+        return input.takeLast(input.length - PREFIX_QR_CODE.length)
+    }
+
     private fun loaderComplete() {
         scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Complete)
-        scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+        scannerRepository.scannerState(ScannerState.LoaderComplete)
     }
 
     override fun scanLoaderProgress(): Observable<CourierLoadingProgressData> {
@@ -186,8 +181,8 @@ class CourierLoadingInteractorImpl(
         return screenManager.saveState(FlightStatus.DCLOADING)
     }
 
-    override fun scannerAction(scannerAction: ScannerAction) {
-        scannerRepository.scannerAction(scannerAction)
+    override fun scannerAction(scannerAction: ScannerState) {
+        scannerRepository.scannerState(scannerAction)
     }
 
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
@@ -207,9 +202,11 @@ class CourierLoadingInteractorImpl(
             .flatMapCompletable { statusesIntransit ->
                 taskId().flatMapCompletable { taskId ->
 //                        loaderProgress()
+
                     Completable.timer(3, TimeUnit.SECONDS)
+
                         // TODO: 16.09.2021 включить после отладки сканера
-                        //appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
+//                    appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
 //                            .doOnComplete { loaderComplete() }
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }

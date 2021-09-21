@@ -9,7 +9,7 @@ import ru.wb.perevozka.ui.HideBackButtonState
 import ru.wb.perevozka.ui.Label
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.unloadingscan.domain.ScanProgressData
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingAction
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingData
@@ -86,11 +86,11 @@ class UnloadingScanViewModel(
             .subscribe {
                 _progressEvent.value = when (it) {
                     ScanProgressData.Complete -> {
-                        interactor.scannerAction(ScannerAction.LoaderComplete)
+                        interactor.scannerAction(ScannerState.LoaderComplete)
                         UnloadingScanProgress.LoaderComplete
                     }
                     ScanProgressData.Progress -> {
-                        interactor.scannerAction(ScannerAction.LoaderProgress)
+                        interactor.scannerAction(ScannerState.LoaderProgress)
                         UnloadingScanProgress.LoaderProgress
                     }
                 }
@@ -265,11 +265,11 @@ class UnloadingScanViewModel(
     }
 
     fun onStopScanner() {
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
     }
 
     fun onStartScanner() {
-        interactor.scannerAction(ScannerAction.Start)
+        interactor.scannerAction(ScannerState.Start)
     }
 
     private fun observeNetworkState() {

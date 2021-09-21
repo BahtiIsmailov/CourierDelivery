@@ -11,7 +11,7 @@ import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
 import ru.wb.perevozka.ui.dcloading.domain.ScanBoxData
 import ru.wb.perevozka.ui.dcloading.domain.ScanProcessData
 import ru.wb.perevozka.ui.dcloading.domain.ScanProgressData
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
@@ -89,11 +89,11 @@ class DcLoadingScanViewModel(
             .subscribe {
                 _progressEvent.value = when (it) {
                     ScanProgressData.Complete -> {
-                        interactor.scannerAction(ScannerAction.LoaderComplete)
+                        interactor.scannerAction(ScannerState.LoaderComplete)
                         DcLoadingScanProgress.LoaderComplete
                     }
                     ScanProgressData.Progress -> {
-                        interactor.scannerAction(ScannerAction.LoaderProgress)
+                        interactor.scannerAction(ScannerState.LoaderProgress)
                         DcLoadingScanProgress.LoaderProgress
                     }
                 }
@@ -221,17 +221,17 @@ class DcLoadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
     fun onStopScanner() {
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
     }
 
     fun onStartScanner() {
-        interactor.scannerAction(ScannerAction.Start)
+        interactor.scannerAction(ScannerState.Start)
     }
 
     private fun observeNetworkState() {

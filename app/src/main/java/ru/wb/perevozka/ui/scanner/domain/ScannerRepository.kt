@@ -5,14 +5,14 @@ import io.reactivex.subjects.PublishSubject
 
 interface ScannerRepository {
 
-    fun barcodeScanned(barcode: String)
+    fun scannerAction(barcode: String)
 
     fun observeBarcodeScanned(barcodeSubject: PublishSubject<String>): Observable<String>
 
     fun observeBarcodeScanned(): Observable<String>
 
-    fun scannerAction(action: ScannerAction)
+    fun scannerState(state: ScannerState)
 
-    fun observeScannerAction(): Observable<ScannerAction>
+    fun observeScannerState(): Observable<ScannerState>
 
 }

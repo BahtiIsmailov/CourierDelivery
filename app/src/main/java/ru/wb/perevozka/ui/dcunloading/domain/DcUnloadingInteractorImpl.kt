@@ -13,7 +13,7 @@ import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.ui.dcloading.domain.ScanProgressData
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
@@ -111,7 +111,7 @@ class DcUnloadingInteractorImpl(
             .flatMapSingle {
                 Completable.fromAction {
                     scanLoaderProgressSubject.onNext(ScanProgressData.Progress)
-                    scannerRepository.scannerAction(ScannerAction.LoaderProgress)
+                    scannerRepository.scannerState(ScannerState.LoaderProgress)
                 }.andThen(Single.just(it))
             }
             .flatMapSingle { boxDefinitionResult(it.first, it.second) }
@@ -148,7 +148,7 @@ class DcUnloadingInteractorImpl(
 
     private fun loaderComplete() {
         scanLoaderProgressSubject.onNext(ScanProgressData.Complete)
-        scannerRepository.scannerAction(ScannerAction.LoaderComplete)
+        scannerRepository.scannerState(ScannerState.LoaderComplete)
     }
 
     override fun findDcUnloadedHandleBoxes(): Single<List<DcReturnHandleBarcodeEntity>> {
@@ -196,8 +196,8 @@ class DcUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun scannerAction(scannerAction: ScannerAction) {
-        scannerRepository.scannerAction(scannerAction)
+    override fun scannerAction(scannerAction: ScannerState) {
+        scannerRepository.scannerState(scannerAction)
     }
 
     override fun switchScreenToClosed(): Completable {

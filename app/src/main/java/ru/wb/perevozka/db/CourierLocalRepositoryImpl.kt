@@ -13,6 +13,8 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
+import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 
 class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
@@ -60,6 +62,10 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.deleteAllOffices()
     }
 
+    override fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity> {
+        return courierOrderDao.findOfficeById(officeId)
+    }
+
     override fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable {
         return courierLoadingBoxDao.insertBox(boxEntity)
     }
@@ -70,6 +76,27 @@ class CourierLocalRepositoryImpl(
 
     override fun readAllLoadingBoxes(): Single<List<CourierBoxEntity>> {
         return courierLoadingBoxDao.readAllBoxes()
+    }
+
+    override fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.readAllLoadingBoxesByOfficeId(officeId)
+    }
+
+    override fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.readAllUnloadingBoxesByOfficeId(officeId)
+    }
+
+    override fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult> {
+        return courierLoadingBoxDao.readInitLastUnloadingBox(officeId)
+            .onErrorReturn { CourierUnloadingInitLastBoxResult("", "") }
+    }
+
+    override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult> {
+        return courierLoadingBoxDao.readUnloadingBoxCounter(officeId)
+    }
+
+    override fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxCounterResult> {
+        return courierLoadingBoxDao.observeCounterBox(officeId)
     }
 
     override fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>> {

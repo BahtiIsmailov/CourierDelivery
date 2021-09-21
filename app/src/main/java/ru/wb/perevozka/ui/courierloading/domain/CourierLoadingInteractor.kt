@@ -7,7 +7,7 @@ import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 
 interface CourierLoadingInteractor {
 
@@ -23,7 +23,7 @@ interface CourierLoadingInteractor {
 
     fun switchScreen(): Completable
 
-    fun scannerAction(scannerAction: ScannerAction)
+    fun scannerAction(scannerAction: ScannerState)
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 

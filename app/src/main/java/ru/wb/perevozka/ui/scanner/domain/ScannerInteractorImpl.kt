@@ -9,11 +9,11 @@ class ScannerInteractorImpl(
 ) : ScannerInteractor {
 
     override fun barcodeScanned(barcode: String) {
-        scannerRepository.barcodeScanned(barcode)
+        scannerRepository.scannerAction(barcode)
     }
 
-    override fun observeScannerAction(): Observable<ScannerAction> {
-        return scannerRepository.observeScannerAction()
+    override fun observeScannerState(): Observable<ScannerState> {
+        return scannerRepository.observeScannerState()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

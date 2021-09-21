@@ -81,6 +81,10 @@ val deliveryRepositoryModule = module {
         return TaskTimerRepositoryImpl()
     }
 
+    fun provideIntransitTimeRepository(): IntransitTimeRepository {
+        return IntransitTimeRepositoryImpl()
+    }
+
     fun provideScannerRepository(): ScannerRepository {
         return ScannerRepositoryImpl()
     }
@@ -99,6 +103,7 @@ val deliveryRepositoryModule = module {
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideTaskTimerRepository() }
+    single { provideIntransitTimeRepository() }
     single { provideScannerRepository() }
     single { provideNetworkMonitorRepository() }
     single { provideAppSharedRepository() }

@@ -21,7 +21,7 @@ import com.google.zxing.Result
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppConsts
 import ru.wb.perevozka.databinding.ScannerFragmentBinding
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -95,11 +95,11 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun initObserver() {
         viewModel.scannerAction.observe(viewLifecycleOwner) {
             when (it) {
-                ScannerAction.Start -> startScanner()
-                ScannerAction.Stop -> stopScanner()
-                ScannerAction.LoaderProgress -> loader()
-                ScannerAction.LoaderComplete -> loaderComplete()
-                ScannerAction.BeepScan -> beepScan()
+                ScannerState.Start -> startScanner()
+                ScannerState.Stop -> stopScanner()
+                ScannerState.LoaderProgress -> loader()
+                ScannerState.LoaderComplete -> loaderComplete()
+                ScannerState.BeepScan -> beepScan()
             }
         }
     }

@@ -11,7 +11,7 @@ import ru.wb.perevozka.ui.dcloading.domain.ScanProgressData
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingAction
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingData
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingInteractor
-import ru.wb.perevozka.ui.scanner.domain.ScannerAction
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
@@ -68,11 +68,11 @@ class DcUnloadingScanViewModel(
             .subscribe {
                 _progressEvent.value = when (it) {
                     ScanProgressData.Complete -> {
-                        interactor.scannerAction(ScannerAction.LoaderComplete)
+                        interactor.scannerAction(ScannerState.LoaderComplete)
                         DcUnloadingScanProgress.LoaderComplete
                     }
                     ScanProgressData.Progress -> {
-                        interactor.scannerAction(ScannerAction.LoaderProgress)
+                        interactor.scannerAction(ScannerState.LoaderProgress)
                         DcUnloadingScanProgress.LoaderProgress
                     }
                 }
@@ -155,7 +155,7 @@ class DcUnloadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
         _navigateToMessageInfo.value = NavigateToMessageInfo(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
@@ -195,11 +195,11 @@ class DcUnloadingScanViewModel(
     }
 
     fun onStopScanner() {
-        interactor.scannerAction(ScannerAction.Stop)
+        interactor.scannerAction(ScannerState.Stop)
     }
 
     fun onStartScanner() {
-        interactor.scannerAction(ScannerAction.Start)
+        interactor.scannerAction(ScannerState.Start)
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

@@ -3,6 +3,7 @@ package ru.wb.perevozka.di.module
 import org.koin.dsl.module
 import ru.wb.perevozka.db.AppLocalRepository
 import ru.wb.perevozka.db.CourierLocalRepository
+import ru.wb.perevozka.db.IntransitTimeRepository
 import ru.wb.perevozka.db.TaskTimerRepository
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.auth.AuthRemoteRepository
@@ -33,6 +34,8 @@ import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractorImpl
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractorImpl
+import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractor
+import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractorImpl
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
@@ -464,11 +467,42 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierUnloadingInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        appLocalRepository: AppLocalRepository,
+        scannerRepository: ScannerRepository,
+        timeManager: TimeManager,
+        screenManager: ScreenManager,
+        courierLocalRepository: CourierLocalRepository,
+        taskTimerRepository: TaskTimerRepository
+    ): CourierUnloadingInteractor {
+        return CourierUnloadingInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            appLocalRepository,
+            scannerRepository,
+            timeManager,
+            screenManager,
+            courierLocalRepository,
+            taskTimerRepository
+        )
+    }
+
     fun provideCourierIntransitInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         courierLocalRepository: CourierLocalRepository,
+        scannerRepository: ScannerRepository,
+        intransitTimeRepository: IntransitTimeRepository,
     ): CourierIntransitInteractor {
-        return CourierIntransitInteractorImpl(rxSchedulerFactory, courierLocalRepository)
+        return CourierIntransitInteractorImpl(
+            rxSchedulerFactory,
+            courierLocalRepository,
+            scannerRepository,
+            intransitTimeRepository
+        )
     }
 
     single { provideNumberPhoneInteractor(get(), get(), get()) }
@@ -503,7 +537,7 @@ val interactorModule = module {
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierOrderConfirmInteractor(get(), get(), get(), get()) }
-    single {
+    factory {
         provideCourierScannerLoadingInteractor(
             get(),
             get(),
@@ -516,6 +550,19 @@ val interactorModule = module {
             get()
         )
     }
-    single { provideCourierIntransitInteractor(get(), get()) }
+    factory {
+        provideCourierUnloadingInteractor(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+    factory { provideCourierIntransitInteractor(get(), get(), get(), get()) }
 
 }
