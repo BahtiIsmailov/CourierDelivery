@@ -18,6 +18,8 @@ import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractorImpl
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
+import ru.wb.perevozka.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
+import ru.wb.perevozka.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractorImpl
 import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractorImpl
 import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
@@ -505,6 +507,16 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierCompleteDeliveryInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
+    ): CourierCompleteDeliveryInteractor {
+        return CourierCompleteDeliveryInteractorImpl(
+            rxSchedulerFactory,
+            courierLocalRepository,
+        )
+    }
+
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
@@ -564,5 +576,6 @@ val interactorModule = module {
         )
     }
     factory { provideCourierIntransitInteractor(get(), get(), get(), get()) }
+    factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
 
 }

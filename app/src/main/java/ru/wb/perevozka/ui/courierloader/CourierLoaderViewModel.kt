@@ -59,7 +59,7 @@ class CourierLoaderViewModel(
             toTimer()
         } else if (courierTasksMyEntity.status == "started") {
             toScanner()
-        } else if (courierTasksMyEntity.status ==  "intransit") {
+        } else if (courierTasksMyEntity.status == "intransit") {
             toIntransit()
         }
     }
@@ -99,7 +99,8 @@ class CourierLoaderViewModel(
                         name = name,
                         fullAddress = fullAddress,
                         longitude = long,
-                        latitude = lat
+                        latitude = lat,
+                        visitedAt = ""
                     )
                 )
             }

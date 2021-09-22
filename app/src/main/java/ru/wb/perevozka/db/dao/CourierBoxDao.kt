@@ -6,6 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
+import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
@@ -36,7 +37,7 @@ interface CourierBoxDao {
     @Query("DELETE FROM CourierBoxEntity")
     fun deleteAllBoxes()
 
-    @Query("SELECT Office.address AS address, Office.longitude AS longitude, Office.latitude AS latitude, BoxCounter.deliveredCount AS deliveredCount, BoxCounter.fromCount AS fromCount FROM (SELECT dst_office_full_address AS address, dst_office_longitude AS longitude, dst_office_latitude AS latitude, dst_office_id AS officeId FROM CourierOrderDstOfficeLocalEntity) AS Office LEFT JOIN (SELECT COUNT(CASE WHEN deliveredAt != '' THEN 1 END) AS deliveredCount, COUNT(*) AS fromCount, dstOfficeId FROM CourierBoxEntity GROUP BY dstOfficeId) AS BoxCounter ON Office.officeId = BoxCounter.dstOfficeId")
+    @Query("SELECT Office.address AS address, Office.longitude AS longitude, Office.latitude AS latitude, Office.visitedAt AS visitedAt, BoxCounter.deliveredCount AS deliveredCount, BoxCounter.fromCount AS fromCount FROM (SELECT dst_office_full_address AS address, dst_office_longitude AS longitude, dst_office_latitude AS latitude, dst_office_id AS officeId, dst_office_visited_at AS visitedAt FROM CourierOrderDstOfficeLocalEntity) AS Office LEFT JOIN (SELECT COUNT(CASE WHEN deliveredAt != '' THEN 1 END) AS deliveredCount, COUNT(*) AS fromCount, dstOfficeId FROM CourierBoxEntity GROUP BY dstOfficeId) AS BoxCounter ON Office.officeId = BoxCounter.dstOfficeId")
     fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
 
     @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
@@ -53,5 +54,8 @@ interface CourierBoxDao {
 
     @Query("SELECT deliveredCount AS deliveredCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
     fun observeCounterBox(officeId: Int): Flowable<CourierUnloadingBoxCounterResult>
+
+    @Query("SELECT CourierOrder.minPrice AS amount, Counter.deliveredCount AS unloadedCount, Counter.fromCount AS fromCount FROM (SELECT minPrice FROM CourierOrderLocalEntity) AS CourierOrder, (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity) AS Counter")
+    fun completeDeliveryResult(): Single<CompleteDeliveryResult>
 
 }

@@ -4,8 +4,6 @@ import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import ru.wb.perevozka.db.entity.courier.CourierOrderDstOfficeEntity
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
@@ -45,5 +43,8 @@ interface CourierOrderDao {
 
     @Query("DELETE FROM CourierOrderDstOfficeLocalEntity")
     fun deleteAllOffices()
+
+    @Query("UPDATE CourierOrderDstOfficeLocalEntity SET dst_office_visited_at = :visitedAt WHERE dst_office_id = :officeId")
+    fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable
 
 }

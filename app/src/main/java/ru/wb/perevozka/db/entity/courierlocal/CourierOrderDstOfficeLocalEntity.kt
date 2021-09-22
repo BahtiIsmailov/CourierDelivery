@@ -19,4 +19,6 @@ data class CourierOrderDstOfficeLocalEntity(
     val longitude: Double,
     @ColumnInfo(name = "dst_office_latitude")
     val latitude: Double,
+    @ColumnInfo(name = "dst_office_visited_at")
+    val visitedAt: String,
 )

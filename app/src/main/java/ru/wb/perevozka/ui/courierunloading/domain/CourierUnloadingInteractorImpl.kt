@@ -211,11 +211,16 @@ class CourierUnloadingInteractorImpl(
             .flatMapCompletable { statusesIntransit ->
                 taskId().flatMapCompletable { taskId ->
 //                        loaderProgress()
-                    Completable.timer(3, TimeUnit.SECONDS)
-                        // TODO: 16.09.2021 включить после отладки сканера
-                        // TODO: 21.09.2021 добавить дату посещения ПВЗ
-//                    appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
-//                            .doOnComplete { loaderComplete() }
+                    val timer = Completable.timer(3, TimeUnit.SECONDS)
+                    val updateVisitedAtOffice =
+                        courierLocalRepository.updateVisitedAtOffice(
+                            officeId, timeManager.getLocalTime()
+                        )
+                    // TODO: 16.09.2021 включить после отладки сканера
+                    val saveRemote =
+                        appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
+                    // TODO: 21.09.2021 добавить дату посещения ПВЗ
+                    timer.doOnComplete { loaderComplete() }.andThen(updateVisitedAtOffice)
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }
             }

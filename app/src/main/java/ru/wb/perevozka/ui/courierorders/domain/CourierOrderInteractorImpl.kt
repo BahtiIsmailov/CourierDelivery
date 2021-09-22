@@ -60,7 +60,9 @@ class CourierOrderInteractorImpl(
                         name = name,
                         fullAddress = fullAddress,
                         longitude = long,
-                        latitude = lat
+                        latitude = lat,
+                        // TODO: 22.09.2021 вынести в отдельную таблицу
+                        visitedAt = ""
                     )
                 )
             }

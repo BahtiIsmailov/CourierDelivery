@@ -6,4 +6,5 @@ data class CourierIntransitGroupByOfficeEntity(
     val fromCount: Int,
     val longitude: Double,
     val latitude: Double,
+    val visitedAt: String,
 )

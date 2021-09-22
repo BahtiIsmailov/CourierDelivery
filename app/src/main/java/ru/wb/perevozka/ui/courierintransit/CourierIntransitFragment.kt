@@ -31,10 +31,15 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
+import ru.wb.perevozka.adapters.DefaultAdapterDelegate
 import ru.wb.perevozka.databinding.CourierIntransitFragmentBinding
+import ru.wb.perevozka.mvvm.model.base.BaseItem
+import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitCompleteDelegate
+import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitEmptyDelegate
+import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitFaildDelegate
+import ru.wb.perevozka.ui.courierintransit.delegates.OnCourierIntransitCallback
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.perevozka.ui.scanner.hasPermissions
-import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.views.ProgressButtonMode
 
 
@@ -45,9 +50,15 @@ class CourierIntransitFragment : Fragment() {
     private var _binding: CourierIntransitFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: CourierIntransitAdapter
+    private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
+    private val itemCallback = object : OnCourierIntransitCallback {
+        override fun onPickToPointClick(idItem: Int) {
+            viewModel.onItemClick(idItem)
+        }
+    }
+
     private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
 
@@ -65,6 +76,7 @@ class CourierIntransitFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initRecyclerView()
+        initAdapter()
         initObservable()
         initListeners()
         initProgressDialog()
@@ -124,40 +136,34 @@ class CourierIntransitFragment : Fragment() {
         //binding.map.setBuiltInZoomControls(zoomControl, OverlayLayoutParams.RIGHT | OverlayLayoutParams.BOTTOM)
     }
 
-    private fun initMapMarker(id: String, lat: Double, long: Double) {
+    private fun initMapMarker(id: String, lat: Double, long: Double, icon: Int) {
         val marker = Marker(binding.map)
         marker.setOnMarkerClickListener { marker, _ ->
             viewModel.onItemClick(marker.id.toInt())
             true
         }
         marker.id = id
-        marker.icon = normalMarkerIcon()
+        marker.icon = getIcon(icon)
         val point = GeoPoint(lat, long)
         marker.position = point
         binding.map.overlays.add(marker)
     }
 
-    private fun normalMarkerIcon() =
-        AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz)
+    private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
 
+    private fun updateMarkers(pointsState: List<CourierIntransitMapPointItem>) {
+        binding.map.overlays.clear()
+        initMapMarkers(pointsState)
+        binding.map.invalidate()
+    }
 
-    private fun setSelectedMarker(id: String, isSelected: Boolean) {
-        binding.map.overlays.forEach {
-            val marker = it as Marker
-            marker.icon = if (marker.id == id && isSelected) selectedMarkerIcon()
-            else normalMarkerIcon()
-        }
+    private fun navigateToMarker(id: String) {
         binding.map.overlays.find { (it as Marker).id == id }?.apply {
-            binding.map.overlays.remove(this)
-            binding.map.overlays.add(this)
             mapController.animateTo((this as Marker).position)
         }
         mapController.setZoom(16.0)
         binding.map.invalidate()
     }
-
-    private fun selectedMarkerIcon() =
-        AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz_selected)
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
@@ -180,22 +186,19 @@ class CourierIntransitFragment : Fragment() {
                     binding.deliveryTotalCount.text = it.boxTotal
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
-                    val callback = object : CourierIntransitAdapter.OnItemClickCallBack {
-                        override fun onItemClick(index: Int) {
-                            viewModel.onItemClick(index)
-                        }
-                    }
-                    adapter = CourierIntransitAdapter(requireContext(), it.items, callback)
-                    binding.routes.adapter = adapter
+                    displayItems(it.items)
                 }
                 is CourierIntransitItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
                 }
                 is CourierIntransitItemState.UpdateItems -> {
-                    adapter.setData(it.items)
-                    adapter.notifyDataSetChanged()
+                    displayItems(it.items)
                     binding.routes.scrollToPosition(it.position)
+                }
+                CourierIntransitItemState.CompleteDelivery -> {
+                    binding.scanQrPvz.visibility = INVISIBLE
+                    binding.completeDelivery.visibility = VISIBLE
                 }
             }
         }
@@ -203,13 +206,7 @@ class CourierIntransitFragment : Fragment() {
         viewModel.mapPoint.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierIntransitMapPoint.InitMapPoint -> {
-                    it.points.forEach { item ->
-                        initMapMarker(
-                            item.id,
-                            item.lat,
-                            item.long
-                        )
-                    }
+                    initMapMarkers(it.pointsState)
                     val point =
                         GeoPoint(it.startNavigation.point.x, it.startNavigation.point.y)
                     mapController.setZoom(it.startNavigation.radius * 6)
@@ -217,7 +214,10 @@ class CourierIntransitFragment : Fragment() {
                     binding.map.invalidate()
                 }
                 is CourierIntransitMapPoint.NavigateToPoint -> {
-                    setSelectedMarker(it.id, it.isSelected)
+                    navigateToMarker(it.id)
+                }
+                is CourierIntransitMapPoint.UpdateMapPoints -> {
+                    updateMarkers(it.pointsState)
                 }
             }
         }
@@ -244,13 +244,37 @@ class CourierIntransitFragment : Fragment() {
                     binding.scanQrPvz.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierIntransitNavigationState.NavigateToUnloadingScanner -> {
-                    findNavController().navigate(CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierUnloadingScanFragment(
-                        CourierUnloadingScanParameters(it.officeId)
-                    ))
+                    findNavController().navigate(
+                        CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierUnloadingScanFragment(
+                            CourierUnloadingScanParameters(it.officeId)
+                        )
+                    )
+                }
+                CourierIntransitNavigationState.NavigateToCompleteDelivery -> {
+                    findNavController().navigate(
+                        CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierCompleteDeliveryFragment()
+                    )
                 }
             }
         }
 
+    }
+
+    private fun initMapMarkers(it: List<CourierIntransitMapPointItem>) {
+        it.forEach { item ->
+            initMapMarker(
+                item.point.id,
+                item.point.lat,
+                item.point.long,
+                item.icon
+            )
+        }
+    }
+
+    private fun displayItems(items: List<BaseItem>) {
+        adapter.clear()
+        adapter.addItems(items)
+        adapter.notifyDataSetChanged()
     }
 
     private fun crossFade(showView: View, hideView: View) {
@@ -276,6 +300,7 @@ class CourierIntransitFragment : Fragment() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
         binding.closeScannerLayout.setOnClickListener { viewModel.closeScannerClick() }
+        binding.completeDelivery.setOnClickListener { viewModel.completeDeliveryClick() }
     }
 
     // TODO: 20.08.2021 переработать
@@ -371,6 +396,15 @@ class CourierIntransitFragment : Fragment() {
                 return SNAP_TO_START
             }
         }
+    }
+
+    private fun initAdapter() {
+        adapter = with(DefaultAdapterDelegate()) {
+            addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
+            addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
+            addDelegate(CourierIntransitFaildDelegate(requireContext(), itemCallback))
+        }
+        binding.routes.adapter = adapter
     }
 
     override fun onDestroyView() {

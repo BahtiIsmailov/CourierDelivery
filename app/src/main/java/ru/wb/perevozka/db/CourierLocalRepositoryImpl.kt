@@ -13,6 +13,7 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 
@@ -60,6 +61,10 @@ class CourierLocalRepositoryImpl(
 
     override fun deleteAllOrderOffices() {
         courierOrderDao.deleteAllOffices()
+    }
+
+    override fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable {
+        return courierOrderDao.updateVisitedAtOffice(officeId, visitedAt)
     }
 
     override fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity> {
@@ -121,6 +126,10 @@ class CourierLocalRepositoryImpl(
 
     override fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>> {
         return courierLoadingBoxDao.observeBoxesGroupByOffice()
+    }
+
+    override fun completeDeliveryResult(): Single<CompleteDeliveryResult> {
+        return courierLoadingBoxDao.completeDeliveryResult()
     }
 
 }

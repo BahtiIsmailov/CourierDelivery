@@ -19,4 +19,6 @@ sealed class CourierIntransitNavigationState {
 
     data class NavigateToUnloadingScanner(val officeId: Int) : CourierIntransitNavigationState()
 
+    object NavigateToCompleteDelivery : CourierIntransitNavigationState()
+
 }

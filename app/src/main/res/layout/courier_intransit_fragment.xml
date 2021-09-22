@@ -217,7 +217,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
-        tools:listitem="@layout/courier_intransit_details_layout" />
+        tools:listitem="@layout/courier_intransit_empty_layout" />
 
     <ImageView
         android:layout_width="0dp"
@@ -266,6 +266,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Сканировать QR ПВЗ"
+        app:progress_button_state="enable"
+        app:progress_button_text_color_disable="@color/button_default_text_disable"
+        app:progress_button_text_color_enable="@color/button_default_text_enable"
+        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+    <ru.wb.perevozka.views.ProgressButtonView
+        android:id="@+id/complete_delivery"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progress_button_background="@drawable/progress_image_button_round_default"
+        app:progress_button_name="Завершить доставку"
         app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/button_default_text_disable"
         app:progress_button_text_color_enable="@color/button_default_text_enable"

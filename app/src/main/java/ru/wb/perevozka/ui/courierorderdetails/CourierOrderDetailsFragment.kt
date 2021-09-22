@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_UP
 import android.view.LayoutInflater
@@ -131,7 +130,7 @@ class CourierOrderDetailsFragment : Fragment() {
 
     private fun setMarker(lat: Double, long: Double) {
         val marker = Marker(binding.map)
-        marker.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz)
+        marker.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_unload_office_map_empty)
         val point = GeoPoint(lat, long)
         marker.position = point
         binding.map.overlays.add(marker)
@@ -140,7 +139,7 @@ class CourierOrderDetailsFragment : Fragment() {
     private fun setSelectedMarker(lat: Double, long: Double) {
         val marker = Marker(binding.map)
         marker.icon =
-            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_point_pvz_selected)
+            AppCompatResources.getDrawable(requireContext(), R.drawable.ic_unload_office_map_empty_select)
         val point = GeoPoint(lat, long)
         marker.position = point
         binding.map.overlays.add(marker)

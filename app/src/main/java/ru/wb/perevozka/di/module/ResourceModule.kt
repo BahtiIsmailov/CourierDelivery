@@ -3,7 +3,17 @@ package ru.wb.perevozka.di.module
 import android.app.Application
 import org.koin.dsl.module
 import ru.wb.perevozka.ui.auth.AuthResourceProvider
+import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberResourceProvider
+import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
+import ru.wb.perevozka.ui.courierdata.CourierDataResourceProvider
+import ru.wb.perevozka.ui.courierexpects.CourierExpectsResourceProvider
+import ru.wb.perevozka.ui.courierintransit.CourierIntransitResourceProvider
+import ru.wb.perevozka.ui.courierloading.CourierLoadingResourceProvider
+import ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmResourceProvider
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 import ru.wb.perevozka.ui.courierorders.CourierOrdersResourceProvider
+import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerResourceProvider
+import ru.wb.perevozka.ui.courierunloading.CourierUnloadingResourceProvider
 import ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesResourceProvider
 import ru.wb.perevozka.ui.dcloading.DcLoadingResourceProvider
 import ru.wb.perevozka.ui.dcunloading.DcUnloadingScanResourceProvider
@@ -19,15 +29,6 @@ import ru.wb.perevozka.ui.splash.AppResourceProvider
 import ru.wb.perevozka.ui.unloadingcongratulation.CongratulationResourceProvider
 import ru.wb.perevozka.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
 import ru.wb.perevozka.ui.unloadingscan.UnloadingScanResourceProvider
-import ru.wb.perevozka.ui.courierdata.CourierDataResourceProvider
-import ru.wb.perevozka.ui.courierexpects.CourierExpectsResourceProvider
-import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberResourceProvider
-import ru.wb.perevozka.ui.courierintransit.CourierIntransitResourceProvider
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsResourceProvider
-import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerResourceProvider
-import ru.wb.perevozka.ui.courierloading.CourierLoadingResourceProvider
-import ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmResourceProvider
-import ru.wb.perevozka.ui.courierunloading.CourierUnloadingResourceProvider
 
 val resourceModule = module {
 
@@ -78,6 +79,11 @@ val resourceModule = module {
     fun provideCourierUnloadingResourceProvider(application: Application): CourierUnloadingResourceProvider {
         return CourierUnloadingResourceProvider(application)
     }
+
+    fun provideCourierCompleteDeliveryResourceProvider(application: Application): CourierCompleteDeliveryResourceProvider {
+        return CourierCompleteDeliveryResourceProvider(application)
+    }
+
 
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
         return FlightLoaderProvider(application)
@@ -147,6 +153,7 @@ val resourceModule = module {
     single { provideCourierScannerLoadingResourceProvider(get()) }
     single { provideCourierIntransitResourceProvider(get()) }
     single { provideCourierUnloadingResourceProvider(get()) }
+    single { provideCourierCompleteDeliveryResourceProvider(get()) }
 
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }

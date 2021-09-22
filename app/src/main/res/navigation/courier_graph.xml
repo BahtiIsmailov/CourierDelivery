@@ -280,6 +280,13 @@
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/courierLoaderFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_courierIntransitFragment_to_courierCompleteDeliveryFragment"
+            app:destination="@id/courierCompleteDeliveryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/courierUnloadingScanFragment"
@@ -308,10 +315,23 @@
             app:popUpTo="@id/courierLoaderFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/courierUnloadingUnknownBoxFragment"
         android:name="ru.wb.perevozka.ui.courierunloading.CourierUnloadingUnknownBoxFragment"
         android:label=""
         tools:layout="@layout/courier_unloading_unknown_box_fragment" />
+
+    <fragment
+        android:id="@+id/courierCompleteDeliveryFragment"
+        android:name="ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryFragment"
+        android:label=""
+        tools:layout="@layout/courier_complete_delivery_fragment">
+        <action
+            android:id="@+id/action_courierCompleteDeliveryFragment_to_courierLoaderFragment"
+            app:destination="@id/courierLoaderFragment"
+            app:popUpTo="@id/courierLoaderFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

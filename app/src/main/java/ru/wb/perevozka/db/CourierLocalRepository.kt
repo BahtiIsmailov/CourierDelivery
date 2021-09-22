@@ -10,6 +10,7 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
@@ -42,6 +43,8 @@ interface CourierLocalRepository {
     fun deleteAllOrder()
 
     fun deleteAllOrderOffices()
+
+    fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable
 
     fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity>
 
@@ -76,5 +79,8 @@ interface CourierLocalRepository {
     fun deleteAllLoadingBoxes()
 
     fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
+
+    fun completeDeliveryResult(): Single<CompleteDeliveryResult>
+
 
 }
