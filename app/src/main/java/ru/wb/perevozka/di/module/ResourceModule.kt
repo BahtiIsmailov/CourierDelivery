@@ -9,6 +9,7 @@ import ru.wb.perevozka.ui.courierdata.CourierDataResourceProvider
 import ru.wb.perevozka.ui.courierexpects.CourierExpectsResourceProvider
 import ru.wb.perevozka.ui.courierintransit.CourierIntransitResourceProvider
 import ru.wb.perevozka.ui.courierloading.CourierLoadingResourceProvider
+import ru.wb.perevozka.ui.couriermap.CourierMapResourceProvider
 import ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmResourceProvider
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 import ru.wb.perevozka.ui.courierorders.CourierOrdersResourceProvider
@@ -84,6 +85,9 @@ val resourceModule = module {
         return CourierCompleteDeliveryResourceProvider(application)
     }
 
+    fun provideCourierMapResourceProvider(application: Application): CourierMapResourceProvider {
+        return CourierMapResourceProvider(application)
+    }
 
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
         return FlightLoaderProvider(application)
@@ -154,6 +158,7 @@ val resourceModule = module {
     single { provideCourierIntransitResourceProvider(get()) }
     single { provideCourierUnloadingResourceProvider(get()) }
     single { provideCourierCompleteDeliveryResourceProvider(get()) }
+    single { provideCourierMapResourceProvider(get()) }
 
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }

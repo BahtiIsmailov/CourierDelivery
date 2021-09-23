@@ -2,15 +2,20 @@ package ru.wb.perevozka.ui.courierwarehouses
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
+import ru.wb.perevozka.ui.couriermap.CourierMapMarker
+import ru.wb.perevozka.ui.couriermap.CourierMapState
+import ru.wb.perevozka.ui.couriermap.Empty
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.utils.map.CoordinatePoint
+import ru.wb.perevozka.utils.map.MapEnclosingCircle
+import ru.wb.perevozka.utils.map.MapPoint
 
 class CourierWarehousesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -18,8 +23,8 @@ class CourierWarehousesViewModel(
     private val resourceProvider: CourierWarehousesResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _warehouses = MutableLiveData<CourierWarehousesUIState>()
-    val warehouses: LiveData<CourierWarehousesUIState>
+    private val _warehouses = MutableLiveData<CourierWarehouseItemState>()
+    val warehouses: LiveData<CourierWarehouseItemState>
         get() = _warehouses
 
     private val _navigationState = SingleLiveEvent<CourierWarehousesNavigationState>()
@@ -30,27 +35,48 @@ class CourierWarehousesViewModel(
     val progressState: LiveData<CourierWarehousesProgressState>
         get() = _progressState
 
-    private var copyWarehousesEntity = mutableListOf<CourierWarehouseLocalEntity>()
+    private var warehouseEntities = mutableListOf<CourierWarehouseLocalEntity>()
 
-    init {
-        //observeSearch()
+    private var warehouseItems = mutableListOf<CourierWarehouseItem>()
+
+    private var mapMarkers = mutableListOf<CourierMapMarker>()
+
+    private fun saveWarehouseEntities(warehouseEntities: List<CourierWarehouseLocalEntity>) {
+        this.warehouseEntities = warehouseEntities.toMutableList()
+    }
+
+    private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
+        this.mapMarkers = mapMarkers.toMutableList()
     }
 
     private fun getWarehouse() {
         addSubscription(
             interactor.warehouses()
-                .doOnSuccess { saveWarehousesEntity(it) }
-                .flatMap { convertWarehouses(it) }
+                .doOnSuccess { saveWarehouseEntities(it) }
                 .subscribe(
-                    { courierWarehousesComplete(it) },
+                    { courierWarehouseComplete(it) },
                     { courierWarehouseError(it) })
         )
     }
 
-    private fun courierWarehousesComplete(items: MutableList<CourierWarehousesItem>) {
-        _warehouses.value =
-            if (items.isEmpty()) CourierWarehousesUIState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehousesUIState.InitItems(items)
+    private fun courierWarehouseComplete(warehouses: List<CourierWarehouseLocalEntity>) {
+        val warehouseItems = mutableListOf<CourierWarehouseItem>()
+        val coordinatePoints = mutableListOf<CoordinatePoint>()
+        val mapMarkers = mutableListOf<CourierMapMarker>()
+        warehouses.forEachIndexed { index, item ->
+            val warehouseItem = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
+            warehouseItems.add(warehouseItem)
+            coordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
+            val mapPoint = MapPoint(index.toString(), item.latitude, item.longitude)
+            val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
+            mapMarkers.add(mapMarker)
+        }
+        saveWarehouseItems(warehouseItems)
+        initItems(warehouseItems)
+        saveMapMarkers(mapMarkers)
+        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
+        interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
         hideProgress()
     }
 
@@ -76,8 +102,8 @@ class CourierWarehousesViewModel(
             )
         }
         _navigationState.value = message
-        if (copyWarehousesEntity.isEmpty()) {
-            _warehouses.value = CourierWarehousesUIState.Empty(message.title)
+        if (warehouseItems.isEmpty()) {
+            _warehouses.value = CourierWarehouseItemState.Empty(message.title)
         }
         progressComplete()
     }
@@ -86,31 +112,14 @@ class CourierWarehousesViewModel(
         _progressState.value = CourierWarehousesProgressState.ProgressComplete
     }
 
-//    private fun observeSearch() {
-//        addSubscription(interactor.observeSearch()
-//            .map { text -> text.lowercase(Locale.getDefault()).trim() }
-//            .map { filterWarehouses(it) }
-//            .map { it.toMutableList() }
-//            .subscribe(
-//                { courierWarehouseComplete(it) },
-//                { observeSearchError() })
-//        )
-//    }
+    private fun initItems(warehouseItems: MutableList<CourierWarehouseItem>) {
+        _warehouses.value =
+            if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
+            else CourierWarehouseItemState.InitItems(warehouseItems)
+    }
 
-//    private fun filterWarehouses(text: String) = if (text.isEmpty()) copyReceptionWarehouses
-//    else copyReceptionWarehouses.filter { it.name.lowercase(Locale.getDefault()).contains(text) }
-//
-//    private fun observeSearchError() {
-//        _warehouses.value = CourierWarehousesUIState.Empty(resourceProvider.getSearchEmpty())
-//    }
-
-    private fun convertWarehouses(warehouses: List<CourierWarehouseLocalEntity>) =
-        Observable.fromIterable(warehouses)
-            .map { CourierWarehousesItem(it.id, it.name, it.fullAddress) }
-            .toList()
-
-    private fun saveWarehousesEntity(warehouses: List<CourierWarehouseLocalEntity>) {
-        copyWarehousesEntity = warehouses.toMutableList()
+    private fun saveWarehouseItems(warehouses: List<CourierWarehouseItem>) {
+        warehouseItems = warehouses.toMutableList()
     }
 
     fun onUpdateClick() {
@@ -123,33 +132,70 @@ class CourierWarehousesViewModel(
     }
 
     fun onItemClick(index: Int) {
+        changeItemSelected(index)
+    }
+
+    private fun changeItemSelected(selectIndex: Int) {
+        warehouseItems.forEachIndexed { index, item ->
+            warehouseItems[index].isSelected =
+                if (selectIndex == index) !item.isSelected
+                else false
+        }
+        _warehouses.value =
+            if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
+            else CourierWarehouseItemState.UpdateItems(selectIndex, warehouseItems)
+
+        navigateToPoint(selectIndex, warehouseItems[selectIndex].isSelected)
+    }
+
+    private fun navigateToPoint(selectIndex: Int, isSelected: Boolean) {
+        mapMarkers.forEach { item ->
+            item.icon = if (item.point.id == selectIndex.toString()) {
+                if (isSelected) resourceProvider.getWarehouseMapSelectedIcon() else resourceProvider.getWarehouseMapIcon()
+            } else {
+                resourceProvider.getWarehouseMapIcon()
+            }
+        }
+        mapMarkers.find { it.point.id == selectIndex.toString() }?.apply {
+            mapMarkers.remove(this)
+            mapMarkers.add(this)
+        }
+        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
+    }
+
+    private fun checkAndNavigate(
+        warehouseEntities: List<CourierWarehouseLocalEntity>,
+        oldEntity: CourierWarehouseLocalEntity
+    ) {
+        if (warehouseEntities.find { it.id == oldEntity.id } == null) {
+            courierWarehouseComplete(warehouseEntities)
+            _navigationState.value =
+                CourierWarehousesNavigationState.NavigateToDialogInfo(
+                    DialogStyle.WARNING.ordinal,
+                    resourceProvider.getDialogEmptyTitle(),
+                    resourceProvider.getDialogEmptyMessage(),
+                    resourceProvider.getDialogEmptyButton(),
+                )
+        } else {
+            interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
+            _navigationState.value =
+                CourierWarehousesNavigationState.NavigateToCourierOrder(
+                    oldEntity.id,
+                    oldEntity.name
+                )
+        }
+        hideProgress()
+    }
+
+    fun onDetailClick(index: Int) {
         showProgress()
-        val oldEntity = copyWarehousesEntity[index].copy()
+        val oldEntity = warehouseEntities[index].copy()
         addSubscription(
             interactor.warehouses()
-                .doOnSuccess { saveWarehousesEntity(it) }
-                .flatMap { convertWarehouses(it) }
+                .doOnSuccess { saveWarehouseEntities(it) }
                 .subscribe(
-                    { warehouseItems ->
-                        if (warehouseItems.find { it.id == oldEntity.id } == null) {
-                            courierWarehousesComplete(warehouseItems)
-                            _navigationState.value =
-                                CourierWarehousesNavigationState.NavigateToDialogInfo(
-                                    DialogStyle.WARNING.ordinal,
-                                    resourceProvider.getDialogEmptyTitle(),
-                                    resourceProvider.getDialogEmptyMessage(),
-                                    resourceProvider.getDialogEmptyButton(),
-                                )
-                        } else {
-                            interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
-                            _navigationState.value =
-                                CourierWarehousesNavigationState.NavigateToCourierOrder(
-                                    oldEntity.id,
-                                    oldEntity.name
-                                )
-                        }
-                        hideProgress()
-                    },
+                    { checkAndNavigate(it, oldEntity) },
                     { courierWarehouseError(it) })
         )
     }

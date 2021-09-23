@@ -51,14 +51,14 @@ class CourierIntransitViewModel(
 
     private var copyIntransitItems = mutableListOf<BaseIntransitItem>()
 
-    private var copyMapPointItems = mutableListOf<CourierIntransitMapPointItem>()
+    private var mapPointItems = mutableListOf<CourierIntransitMapPointItem>()
 
     private fun copyItems(items: List<BaseIntransitItem>) {
         copyIntransitItems = items.toMutableList()
     }
 
-    private fun copyMapPointItems(items: List<CourierIntransitMapPointItem>) {
-        copyMapPointItems = items.toMutableList()
+    private fun copyMapPoints(items: List<CourierIntransitMapPointItem>) {
+        mapPointItems = items.toMutableList()
     }
 
     init {
@@ -108,7 +108,7 @@ class CourierIntransitViewModel(
                 deliveredCountTotal += deliveredCount
                 fromCountTotal += fromCount
                 val intransitItem: BaseIntransitItem
-                val mapState: CourierIntransitMapPointItem
+                val mapPointItem: CourierIntransitMapPointItem
                 if (deliveredCount == 0) {
                     intransitItem = CourierIntransitEmptyItem(
                         id = index,
@@ -118,7 +118,7 @@ class CourierIntransitViewModel(
                         isSelected = DEFAULT_SELECT_ITEM,
                         idView = index
                     )
-                    mapState = Empty(
+                    mapPointItem = Empty(
                         MapPoint(index.toString(), latitude, longitude),
                         resourceProvider.getEmptyMapIcon()
                     )
@@ -132,7 +132,7 @@ class CourierIntransitViewModel(
                             isSelected = DEFAULT_SELECT_ITEM,
                             idView = index
                         )
-                        mapState = Complete(
+                        mapPointItem = Complete(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getCompleteMapIcon()
                         )
@@ -145,7 +145,7 @@ class CourierIntransitViewModel(
                             isSelected = DEFAULT_SELECT_ITEM,
                             idView = index
                         )
-                        mapState = Failed(
+                        mapPointItem = Failed(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getFailedMapIcon()
                         )
@@ -153,7 +153,7 @@ class CourierIntransitViewModel(
                 }
                 items.add(intransitItem)
                 coordinatePoints.add(CoordinatePoint(latitude, longitude))
-                mapPointItems.add(mapState)
+                mapPointItems.add(mapPointItem)
             }
         }
         copyItems(items)
@@ -162,7 +162,7 @@ class CourierIntransitViewModel(
         initItems(items, boxTotalCount)
 
         val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
-        copyMapPointItems(mapPointItems)
+        copyMapPoints(mapPointItems)
         initMap(mapPointItems, startNavigation)
 
         if (deliveredCountTotal == fromCountTotal)
@@ -223,7 +223,7 @@ class CourierIntransitViewModel(
     }
 
     private fun navigateToPoint(selectIndex: Int, isSelected: Boolean) {
-        copyMapPointItems.forEach { item ->
+        mapPointItems.forEach { item ->
             val icon = if (item.point.id == selectIndex.toString()) {
                 if (isSelected) getSelectedIcon(item) else getNormalIcon(item)
             } else {
@@ -231,12 +231,12 @@ class CourierIntransitViewModel(
             }
             item.icon = icon
         }
-        copyMapPointItems.find { it.point.id == selectIndex.toString() }?.apply {
-            copyMapPointItems.remove(this)
-            copyMapPointItems.add(this)
+        mapPointItems.find { it.point.id == selectIndex.toString() }?.apply {
+            mapPointItems.remove(this)
+            mapPointItems.add(this)
         }
 
-        _mapPoint.value = CourierIntransitMapPoint.UpdateMapPoints(copyMapPointItems)
+        _mapPoint.value = CourierIntransitMapPoint.UpdateMapPoints(mapPointItems)
         _mapPoint.value = CourierIntransitMapPoint.NavigateToPoint(selectIndex.toString())
     }
 

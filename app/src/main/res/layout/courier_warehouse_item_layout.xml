@@ -1,36 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/box_layout"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     android:orientation="horizontal"
-    android:paddingStart="16dp"
+    android:paddingLeft="20dp"
     android:paddingTop="20dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="20dp">
+    android:paddingRight="20dp">
 
-    <TextView
-        android:id="@+id/name_warehouse"
-        style="@style/LargeBlackRegularText"
+    <LinearLayout
+        android:id="@+id/item_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="?android:attr/actionBarItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/image_details"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/selected_background"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/name_warehouse"
+                app:layout_constraintEnd_toEndOf="@+id/name_warehouse"
+                app:layout_constraintStart_toStartOf="@+id/name_warehouse"
+                app:layout_constraintTop_toTopOf="@+id/name_warehouse"
+                app:srcCompat="@drawable/courier_background_select_warehouse"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/name_warehouse"
+                style="@style/LargeBlackRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="г. Подольск, ул. Троицкая, 20" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/full_address_warehouse"
+            style="@style/MediumDarkRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            tools:text="Респ. Карелия, г. Петрозаводск, ш. Шуйское 12Г" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/image_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        tools:text="г. Подольск, ул. Троицкая, 20" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_navigate_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/full_address_warehouse"
-        style="@style/MediumDarkRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name_warehouse"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="6dp"
-        tools:text="Респ. Карелия, г. Петрозаводск, ш. Шуйское 12Г" />
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

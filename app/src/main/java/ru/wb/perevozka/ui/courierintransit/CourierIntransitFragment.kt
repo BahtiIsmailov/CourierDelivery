@@ -40,6 +40,7 @@ import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitFaildDelega
 import ru.wb.perevozka.ui.courierintransit.delegates.OnCourierIntransitCallback
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.perevozka.ui.scanner.hasPermissions
+import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
 
@@ -85,6 +86,7 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 

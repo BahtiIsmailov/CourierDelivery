@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -84,7 +83,7 @@ class CourierWarehousesFragment : Fragment() {
 
         viewModel.warehouses.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierWarehousesUIState.InitItems -> {
+                is CourierWarehouseItemState.InitItems -> {
                     binding.emptyList.visibility = GONE
                     binding.progress.visibility = GONE
                     binding.items.visibility = VISIBLE
@@ -93,15 +92,20 @@ class CourierWarehousesFragment : Fragment() {
                         override fun onItemClick(index: Int) {
                             viewModel.onItemClick(index)
                         }
+
+                        override fun onDetailClick(index: Int) {
+                            viewModel.onDetailClick(index)
+                        }
                     }
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     binding.items.adapter = adapter
                 }
-                is CourierWarehousesUIState.UpdateItems -> {
-                    adapter.setItem(it.index, it.item)
-                    adapter.notifyItemChanged(it.index, it.item)
+                is CourierWarehouseItemState.UpdateItems -> {
+                    adapter.clear()
+                    adapter.addItems(it.items)
+                    adapter.notifyDataSetChanged()
                 }
-                is CourierWarehousesUIState.Empty -> {
+                is CourierWarehouseItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.progress.visibility = GONE
                     binding.items.visibility = GONE
@@ -141,12 +145,6 @@ class CourierWarehousesFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.layoutManager = layoutManager
-        binding.items.addItemDecoration(
-            DividerItemDecoration(
-                activity,
-                DividerItemDecoration.VERTICAL
-            )
-        )
         binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }

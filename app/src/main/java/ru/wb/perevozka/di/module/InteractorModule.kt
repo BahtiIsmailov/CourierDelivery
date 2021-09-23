@@ -28,6 +28,9 @@ import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractorImpl
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractorImpl
+import ru.wb.perevozka.ui.couriermap.domain.CourierMapInteractor
+import ru.wb.perevozka.ui.couriermap.domain.CourierMapInteractorImpl
+import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepository
 import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
 import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractorImpl
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
@@ -367,13 +370,15 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppRemoteRepository,
         appSharedRepository: AppSharedRepository,
-        courierLocalRepository: CourierLocalRepository
+        courierLocalRepository: CourierLocalRepository,
+        courierMapRepository: CourierMapRepository
     ): CourierWarehouseInteractor {
         return CourierWarehouseInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
             appSharedRepository,
-            courierLocalRepository
+            courierLocalRepository,
+            courierMapRepository
         )
     }
 
@@ -507,6 +512,13 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierMapInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierMapRepository: CourierMapRepository,
+    ): CourierMapInteractor {
+        return CourierMapInteractorImpl(rxSchedulerFactory, courierMapRepository)
+    }
+
     fun provideCourierCompleteDeliveryInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         courierLocalRepository: CourierLocalRepository
@@ -543,7 +555,7 @@ val interactorModule = module {
     single { provideDcUnloadingCongratulationInteractor(get(), get()) }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
-    single { provideCourierWarehouseInteractor(get(), get(), get(), get()) }
+    single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierOrderInteractor(get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
@@ -577,5 +589,6 @@ val interactorModule = module {
     }
     factory { provideCourierIntransitInteractor(get(), get(), get(), get()) }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
+    factory { provideCourierMapInteractor(get(), get()) }
 
 }

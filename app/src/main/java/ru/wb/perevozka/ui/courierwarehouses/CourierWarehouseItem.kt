@@ -1,7 +1,8 @@
 package ru.wb.perevozka.ui.courierwarehouses
 
-data class CourierWarehousesItem(
+data class CourierWarehouseItem(
     val id: Int,
     val name: String,
     val fullAddress: String,
+    var isSelected: Boolean
 )

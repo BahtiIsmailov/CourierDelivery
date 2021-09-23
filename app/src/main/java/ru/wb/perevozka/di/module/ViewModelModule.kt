@@ -18,6 +18,7 @@ import ru.wb.perevozka.ui.courierloader.CourierLoaderViewModel
 import ru.wb.perevozka.ui.courierloading.CourierLoadingBoxesViewModel
 import ru.wb.perevozka.ui.courierloading.CourierLoadingScanViewModel
 import ru.wb.perevozka.ui.courierloading.CourierLoadingUnknownBoxViewModel
+import ru.wb.perevozka.ui.couriermap.CourierMapViewModel
 import ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmViewModel
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
@@ -130,6 +131,8 @@ val viewModelModule = module {
     }
     viewModel { CourierUnloadingUnknownBoxViewModel() }
     viewModel { CourierCompleteDeliveryViewModel(get(), get(), get()) }
+    viewModel { CourierMapViewModel(get(), get(), get()) }
+
 
     viewModel { ScannerViewModel(get(), get()) }
 

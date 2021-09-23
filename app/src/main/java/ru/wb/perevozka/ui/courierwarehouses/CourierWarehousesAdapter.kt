@@ -7,16 +7,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierWarehouseItemLayoutBinding
+import ru.wb.perevozka.mvvm.model.base.BaseItem
 
 class CourierWarehousesAdapter(
     context: Context,
-    private val items: MutableList<CourierWarehousesItem>,
+    private val items: MutableList<CourierWarehouseItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
 ) : RecyclerView.Adapter<CourierWarehousesAdapter.ViewHolder>() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     interface OnItemClickCallBack {
         fun onItemClick(index: Int)
+        fun onDetailClick(index: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,31 +27,42 @@ class CourierWarehousesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (id, name, fullAddress) = items[position]
+        val (id, name, address, isSelected) = items[position]
         holder.binding.nameWarehouse.text = name
-        holder.binding.fullAddressWarehouse.text = fullAddress
+        holder.binding.fullAddressWarehouse.text = address
+        holder.binding.selectedBackground.visibility =
+            if (isSelected) View.VISIBLE else View.INVISIBLE
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    fun setItem(index: Int, item: CourierWarehousesItem) {
+    fun setItem(index: Int, item: CourierWarehouseItem) {
         if (items.size > index) items[index] = item
     }
 
-    inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
+    inner class ViewHolder(rootView: View) :
+        RecyclerView.ViewHolder(rootView) {
 
-        View.OnClickListener {
         var binding = CourierWarehouseItemLayoutBinding.bind(rootView)
 
-        override fun onClick(v: View) {
-            onItemClickCallBack.onItemClick(adapterPosition)
-        }
-
         init {
-            itemView.setOnClickListener(this)
+            binding.itemLayout.setOnClickListener {
+                onItemClickCallBack.onItemClick(adapterPosition)
+            }
+            binding.imageDetails.setOnClickListener {
+                onItemClickCallBack.onDetailClick(adapterPosition)
+            }
         }
+    }
+
+    fun clear() {
+        items.clear()
+    }
+
+    fun addItems(items: List<CourierWarehouseItem>) {
+        this.items.addAll(items)
     }
 
 }

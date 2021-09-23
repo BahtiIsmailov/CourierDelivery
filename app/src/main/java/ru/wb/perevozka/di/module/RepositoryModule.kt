@@ -16,6 +16,8 @@ import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepositoryImpl
 import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.network.token.UserManager
+import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepository
+import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepositoryImpl
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.perevozka.ui.splash.domain.AppSharedRepository
@@ -89,6 +91,10 @@ val deliveryRepositoryModule = module {
         return ScannerRepositoryImpl()
     }
 
+    fun provideCourierMapRepository(): CourierMapRepository {
+        return CourierMapRepositoryImpl()
+    }
+
     fun provideNetworkMonitorRepository(): NetworkMonitorRepository {
         return NetworkMonitorRepositoryImpl()
     }
@@ -102,6 +108,7 @@ val deliveryRepositoryModule = module {
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
+    single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }
     single { provideIntransitTimeRepository() }
     single { provideScannerRepository() }

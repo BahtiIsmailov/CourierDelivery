@@ -2,15 +2,13 @@ package ru.wb.perevozka.ui.courierintransit.domain
 
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import ru.wb.perevozka.app.PREFIX_QR_CODE
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.IntransitTimeRepository
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
-import ru.wb.perevozka.utils.managers.TimeManager
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 
 class CourierIntransitInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
