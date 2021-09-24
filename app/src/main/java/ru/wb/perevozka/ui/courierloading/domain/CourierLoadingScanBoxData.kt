@@ -4,7 +4,7 @@ sealed class CourierLoadingScanBoxData {
 
     data class BoxAdded(val qrCode: String, val address: String) : CourierLoadingScanBoxData()
 
-    object UnknownBox : CourierLoadingScanBoxData()
+    data class UnknownBox(val qrCode: String) : CourierLoadingScanBoxData()
 
     object Empty : CourierLoadingScanBoxData()
 

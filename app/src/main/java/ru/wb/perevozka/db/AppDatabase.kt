@@ -9,6 +9,7 @@ import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
 import ru.wb.perevozka.db.entity.deliveryerrorbox.DeliveryErrorBoxEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.db.entity.flight.FlightEntity
@@ -21,6 +22,7 @@ import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnti
         CourierWarehouseLocalEntity::class,
         CourierOrderLocalEntity::class,
         CourierOrderDstOfficeLocalEntity::class,
+        CourierOrderVisitedOfficeLocalEntity::class,
         CourierBoxEntity::class,
         FlightEntity::class,
         FlightOfficeEntity::class,

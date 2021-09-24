@@ -10,9 +10,9 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.AuthCourierExpectsFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.utils.SoftKeyboard
 import ru.wb.perevozka.views.ProgressButtonMode
@@ -83,7 +83,7 @@ class CourierExpectsFragment : Fragment() {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun initListener() {

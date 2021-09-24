@@ -29,6 +29,6 @@ interface CourierLoadingInteractor {
 
     fun deleteTask(): Completable
 
-    fun confirmLoading(): Completable
+    fun confirmLoadingBoxes(): Completable
 
 }

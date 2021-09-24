@@ -9,10 +9,7 @@ import ru.wb.perevozka.db.dao.CourierWarehouseDao
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.perevozka.db.entity.courierlocal.*
 import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
@@ -67,6 +64,10 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.updateVisitedAtOffice(officeId, visitedAt)
     }
 
+    override fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable {
+        return courierOrderDao.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
+    }
+
     override fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity> {
         return courierOrderDao.findOfficeById(officeId)
     }
@@ -94,6 +95,14 @@ class CourierLocalRepositoryImpl(
     override fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult> {
         return courierLoadingBoxDao.readInitLastUnloadingBox(officeId)
             .onErrorReturn { CourierUnloadingInitLastBoxResult("", "") }
+    }
+
+    override fun readNotUnloadingBoxes(): Single<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.readNotUnloadingBoxes()
+    }
+
+    override fun deleteAllVisitedOffices() {
+        courierLoadingBoxDao.deleteAllVisitedOffices()
     }
 
     override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult> {

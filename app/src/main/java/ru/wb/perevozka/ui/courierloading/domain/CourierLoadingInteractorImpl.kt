@@ -19,8 +19,8 @@ import ru.wb.perevozka.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
-import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
@@ -52,40 +52,95 @@ class CourierLoadingInteractorImpl(
 
     private fun observeCourierBoxesCount(): Observable<List<CourierBoxEntity>> {
         return courierLocalRepository.observeLoadingBoxes().toObservable()
+            .doOnNext { LogUtils { logDebugApp("observeCourierBoxesCount " + it.size) } }
     }
 
     override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
-        return Observable.combineLatest(observeCourierScan(), observeCourierBoxesCount(),
-            { scan, boxes -> CourierLoadingProcessData(scan, boxes, boxes.size) })
+        return Observable.combineLatest(observeBoxDefinitionResult(),
+            observeCourierBoxesCount().distinct(),
+            { boxDefinitionResult, boxes ->
+                LogUtils { logDebugApp("boxDefinitionResult, boxes " + boxDefinitionResult.toString() + " " + boxes) }
+                Pair(boxDefinitionResult, boxes)
+            })
             .flatMap { processData ->
                 LogUtils { logDebugApp("flatMap processData " + processData) }
-                if (processData.scanBoxData is CourierLoadingScanBoxData.BoxAdded && processData.count == 1) {
-                    taskTimerRepository.stopTimer()
-                    val courierTaskStartEntity = with(processData.boxes.last()) {
-                        CourierTaskStartEntity(
-                            id,
-                            dstOfficeId,
-                            loadingAt
+
+                val orderDstOffice = processData.first.orderDstOffice
+                val count = processData.second.size
+                val qrcode = processData.first.parseQrCode.code
+
+                if (orderDstOffice == null) {
+                    LogUtils { logDebugApp("orderDstOffice == null") }
+                    justProcessData(CourierLoadingScanBoxData.UnknownBox(qrcode), count)
+                } else {
+
+                    val address = orderDstOffice.fullAddress
+                    val dstOfficeId = orderDstOffice.id
+                    val loadingAt = processData.first.loadingAt
+
+                    val courierBoxEntity = CourierBoxEntity(
+                        id = qrcode,
+                        address = address,
+                        dstOfficeId = dstOfficeId,
+                        loadingAt = loadingAt,
+                        deliveredAt = ""
+                    )
+
+                    if (processData.second.isEmpty()) {
+                        LogUtils { logDebugApp("processData.second isEmpty() " + processData.second) }
+                        loaderProgress()
+                        val courierTaskStartEntity =
+                            CourierTaskStartEntity(
+                                id = qrcode,
+                                dstOfficeID = dstOfficeId,
+                                loadingAt = loadingAt
+                            )
+
+                        taskStart(processData.first.taskId, courierTaskStartEntity)
+                            .andThen(saveBoxLocal(courierBoxEntity))
+                            .andThen(
+                                justProcessData(
+                                    CourierLoadingScanBoxData.BoxAdded(
+                                        qrcode,
+                                        address
+                                    ), count
+                                )
+                            )
+                            .doOnComplete {
+                                taskTimerRepository.stopTimer()
+                                loaderComplete()
+                            }
+                            .compose(rxSchedulerFactory.applyObservableSchedulers())
+                    } else {
+                        LogUtils { logDebugApp("processData.second " + processData.second) }
+                        saveBoxLocal(courierBoxEntity).andThen(
+                            justProcessData(
+                                CourierLoadingScanBoxData.BoxAdded(qrcode, address),
+                                count
+                            )
                         )
                     }
-                    observeOrderData().toObservable()
-                        .map { courierOrderLocalEntity -> courierOrderLocalEntity.courierOrderLocalEntity.id.toString() }
-                        .flatMap { taskId ->
-                            loaderProgress()
-//                            Completable.timer(3, TimeUnit.SECONDS)
-                            appRemoteRepository.taskStart(taskId, courierTaskStartEntity)
-                                .doOnComplete { loaderComplete() }
-                                .andThen(Observable.just(processData))
-                                .compose(rxSchedulerFactory.applyObservableSchedulers())
-                        }
 
-
-                } else {
-                    Observable.just(processData)
                 }
             }
             .doOnError { loaderComplete() }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    private fun justProcessData(
+        scanBoxData: CourierLoadingScanBoxData,
+        count: Int
+    ): Observable<CourierLoadingProcessData> {
+        return Observable.just(CourierLoadingProcessData(scanBoxData, count))
+    }
+
+    private fun taskStart(
+        taskId: String,
+        courierTaskStartEntity: CourierTaskStartEntity
+    ): Completable {
+        // TODO: 24.09.2021 выключить для тестирования
+        //return Completable.timer(3, TimeUnit.SECONDS)
+        return appRemoteRepository.taskStart(taskId, courierTaskStartEntity)
     }
 
     private fun loaderProgress() {
@@ -93,57 +148,39 @@ class CourierLoadingInteractorImpl(
         scannerRepository.scannerState(ScannerState.LoaderProgress)
     }
 
-    private fun observeCourierScan(): Observable<CourierLoadingScanBoxData> {
+    private fun observeBoxDefinitionResult(): Observable<CourierBoxDefinitionResult> {
         return scannerRepository.observeBarcodeScanned()
             .map { parseQrCode(it) }
             .flatMapSingle { boxDefinitionResult(it) }
-            .flatMap { observableStatus(it) }
-//            .filter{result -> result.courierOrderLocalDataEntity.dstOffices.find { it.id.toString() == result.parseQrCode.dstOfficeId } == null}
-//            .flatMap { Observable.just(CourierLoadingScanBoxData.UnknownBox) }
-//            .switchIfEmpty { boxAdded(result, dstOffice) }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun boxDefinitionResult(parseQrCode: ParseQrCode): Single<CourierLoadingDefinitionResult> {
-        return Single.zip(
-            courierLoadingScanBoxData(),
-            updatedAt(),
-            { courierOrderLocalDataEntity, updatedAt ->
-                CourierLoadingDefinitionResult(
-                    courierOrderLocalDataEntity,
+    private fun boxDefinitionResult(parseQrCode: ParseQrCode): Single<CourierBoxDefinitionResult> {
+        return Single.zip(orderDstOffices(), updatedAt(), taskId(),
+            { orderDstOffices, updatedAt, taskId ->
+                CourierBoxDefinitionResult(
+                    findOfficeById(orderDstOffices, parseQrCode.dstOfficeId),
                     parseQrCode,
-                    updatedAt
+                    updatedAt,
+                    taskId
                 )
             }
-        ).doOnError { LogUtils { logDebugApp(it.toString()) } }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-
-    private fun observableStatus(result: CourierLoadingDefinitionResult): Observable<out CourierLoadingScanBoxData> {
-        val dstOffice = result.courierOrderLocalDataEntity.dstOffices
-            .find { it.id.toString() == result.parseQrCode.dstOfficeId }
-        return if (dstOffice == null) {
-            Observable.just(CourierLoadingScanBoxData.UnknownBox)
-        } else {
-            boxAdded(result, dstOffice)
-        }
-    }
-
-    private fun boxAdded(
-        result: CourierLoadingDefinitionResult,
-        dstOffice: CourierOrderDstOfficeLocalEntity
-    ): Observable<CourierLoadingScanBoxData> {
-        val qrcode = result.parseQrCode.code
-        val fullAddress = dstOffice.fullAddress
-        val courierBoxEntity = CourierBoxEntity(
-            id = qrcode,
-            address = fullAddress,
-            dstOfficeId = dstOffice.id,
-            loadingAt = result.timeScan,
-            deliveredAt = ""
         )
+            .doOnError { LogUtils { logDebugApp(it.toString()) } }
+    }
+
+    private fun orderDstOffices(): Single<List<CourierOrderDstOfficeLocalEntity>> {
+        return courierLocalRepository.orderData().map { it.dstOffices }
+    }
+
+    private fun findOfficeById(
+        orderDstOffices: List<CourierOrderDstOfficeLocalEntity>,
+        dstOfficeId: String
+    ): CourierOrderDstOfficeLocalEntity? {
+        return orderDstOffices.find { it.id.toString() == dstOfficeId }
+    }
+
+    private fun saveBoxLocal(courierBoxEntity: CourierBoxEntity): Completable {
         return courierLocalRepository.saveLoadingBox(courierBoxEntity)
-            .andThen(Observable.just(CourierLoadingScanBoxData.BoxAdded(qrcode, fullAddress)))
     }
 
     private fun parseQrCode(qrCode: String): ParseQrCode {
@@ -173,8 +210,6 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun courierLoadingScanBoxData() = courierLocalRepository.orderData()
-
     private fun updatedAt() = Single.just(timeManager.getLocalTime())
 
     override fun switchScreen(): Completable {
@@ -195,19 +230,14 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun confirmLoading(): Completable {
-
+    override fun confirmLoadingBoxes(): Completable {
         return courierLocalRepository.readAllLoadingBoxes()
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
             .flatMapCompletable { statusesIntransit ->
                 taskId().flatMapCompletable { taskId ->
-//                        loaderProgress()
-
-                    Completable.timer(3, TimeUnit.SECONDS)
-
-                        // TODO: 16.09.2021 включить после отладки сканера
-//                    appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
-//                            .doOnComplete { loaderComplete() }
+                    // TODO: 24.09.2021 выключить для тестирования
+                    //Completable.timer(3, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
+                    appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }
             }

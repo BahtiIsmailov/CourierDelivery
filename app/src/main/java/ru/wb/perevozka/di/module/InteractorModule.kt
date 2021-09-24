@@ -478,37 +478,39 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
         scannerRepository: ScannerRepository,
         timeManager: TimeManager,
         screenManager: ScreenManager,
         courierLocalRepository: CourierLocalRepository,
-        taskTimerRepository: TaskTimerRepository
     ): CourierUnloadingInteractor {
         return CourierUnloadingInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
-            appLocalRepository,
             scannerRepository,
             timeManager,
             screenManager,
-            courierLocalRepository,
-            taskTimerRepository
+            courierLocalRepository
         )
     }
 
     fun provideCourierIntransitInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         scannerRepository: ScannerRepository,
         intransitTimeRepository: IntransitTimeRepository,
+        timeManager: TimeManager,
+        timeFormatter: TimeFormatter
     ): CourierIntransitInteractor {
         return CourierIntransitInteractorImpl(
             rxSchedulerFactory,
+            appRemoteRepository,
             courierLocalRepository,
             scannerRepository,
-            intransitTimeRepository
+            intransitTimeRepository,
+            timeManager,
+            timeFormatter
         )
     }
 
@@ -582,12 +584,10 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-            get(),
-            get(),
             get()
         )
     }
-    factory { provideCourierIntransitInteractor(get(), get(), get(), get()) }
+    factory { provideCourierIntransitInteractor(get(), get(), get(), get(), get(), get(), get()) }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
 

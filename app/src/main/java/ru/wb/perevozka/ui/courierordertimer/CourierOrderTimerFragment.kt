@@ -16,10 +16,10 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderTimerFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 
@@ -179,7 +179,7 @@ class CourierOrderTimerFragment : Fragment() {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.AuthPhoneFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
@@ -174,7 +173,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

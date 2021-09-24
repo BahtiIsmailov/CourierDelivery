@@ -64,5 +64,9 @@ class CourierLoadingResourceProvider(private val context: Context) {
 
     fun getAccepted(count: Int): String = context.getString(R.string.courier_order_scanner_accepted, count)
 
+    fun getGenericServiceTitleError() = context.getString(R.string.unknown_service_title_error)
+    fun getGenericServiceMessageError() = context.getString(R.string.unknown_service_message_error)
+    fun getGenericServiceButtonError() = context.getString(R.string.unknown_service_button_error)
+
 
 }

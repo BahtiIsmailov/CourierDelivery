@@ -35,7 +35,7 @@ import java.util.*
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
-    OnUserInfo,
+    OnUserInfo, OnCourierScanner,
     NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -288,12 +288,17 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         toolbar.navigationIcon = null
     }
 
+    private var isLoadingCourierBox = false
+
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment, R.id.checkSmsFragment -> finish()
             R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.courierWarehouseFragment,
             R.id.flightDeliveriesFragment, R.id.congratulationFragment, R.id.courierOrderConfirmFragment,
-            R.id.courierUnloadingScanFragment -> showExitDialog()
+            R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment -> showExitDialog()
+            R.id.courierScannerLoadingScanFragment -> {
+                if (isLoadingCourierBox) showExitDialog() else super.onBackPressed()
+            }
             R.id.unloadingScanFragment -> {
                 val toolbar = findViewById<Toolbar>(R.id.toolbar)
                 if (toolbar.navigationIcon == null) {
@@ -351,6 +356,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             findViewById<View>(R.id.layout_data).visibility = GONE
         }
     }
+
+    override fun holdBackButtonOnScanBox() {
+        isLoadingCourierBox = true
+    }
+
 }
 
 interface NavToolbarListener {
@@ -379,4 +389,8 @@ interface OnUserInfo {
 
 interface OnFlightsStatus {
     fun flightNotAssigned(delivery: String)
+}
+
+interface OnCourierScanner {
+    fun holdBackButtonOnScanBox()
 }

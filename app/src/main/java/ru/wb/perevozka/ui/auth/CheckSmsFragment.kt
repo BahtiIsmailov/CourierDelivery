@@ -18,7 +18,6 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.AuthCheckSmsFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
@@ -230,7 +229,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
     companion object {

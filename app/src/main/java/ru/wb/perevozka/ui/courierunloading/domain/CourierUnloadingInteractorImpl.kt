@@ -11,6 +11,7 @@ import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.TaskTimerRepository
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.FlightStatus
 import ru.wb.perevozka.network.api.app.entity.CourierTaskStatusesIntransitEntity
@@ -28,12 +29,10 @@ class CourierUnloadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
-    private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
     private val timeManager: TimeManager,
     private val screenManager: ScreenManager,
     private val courierLocalRepository: CourierLocalRepository,
-    private val taskTimerRepository: TaskTimerRepository
 ) : CourierUnloadingInteractor {
 
     companion object {
@@ -210,22 +209,37 @@ class CourierUnloadingInteractorImpl(
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
             .flatMapCompletable { statusesIntransit ->
                 taskId().flatMapCompletable { taskId ->
-//                        loaderProgress()
-                    val timer = Completable.timer(3, TimeUnit.SECONDS)
-                    val updateVisitedAtOffice =
-                        courierLocalRepository.updateVisitedAtOffice(
-                            officeId, timeManager.getLocalTime()
-                        )
+                    val debugTimer = Completable.timer(3, TimeUnit.SECONDS)
                     // TODO: 16.09.2021 включить после отладки сканера
                     val saveRemote =
                         appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
-                    // TODO: 21.09.2021 добавить дату посещения ПВЗ
-                    timer.doOnComplete { loaderComplete() }.andThen(updateVisitedAtOffice)
+                    saveRemote.doOnComplete { loaderComplete() }
+                        .onErrorResumeNext {
+                            insertVisitedAtOffice(
+                                CourierOrderVisitedOfficeLocalEntity(
+                                    dstOfficeId = officeId,
+                                    visitedAt = timeManager.getLocalTime(),
+                                    isUnload = false
+                                )
+                            )
+                        }.andThen(
+                            insertVisitedAtOffice(
+                                CourierOrderVisitedOfficeLocalEntity(
+                                    dstOfficeId = officeId,
+                                    visitedAt = timeManager.getLocalTime(),
+                                    isUnload = true
+                                )
+                            )
+                        )
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }
             }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
+
+    private fun insertVisitedAtOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity) =
+        courierLocalRepository.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
+
 
     private fun convertToCourierTaskStatusesIntransitEntity(item: List<CourierBoxEntity>) =
         Observable.fromIterable(item).map {

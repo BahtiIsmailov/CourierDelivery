@@ -97,26 +97,25 @@ class CourierLoadingScanViewModel(
 
     fun confirmLoadingClick() {
         onStopScanner()
-        // TODO: 14.09.2021 progress state
         _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
         addSubscription(
-            interactor.confirmLoading()
-                .subscribe(
-                    {
-                        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
-                        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit
-                    },
-                    {
-                        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
-                        onStartScanner()
-                        confirmLoadingError(it)
-                    }
-                )
+            interactor.confirmLoadingBoxes()
+                .subscribe({ confirmLoadingBoxesComplete() }, { confirmLoadingBoxesError(it) })
         )
     }
 
+    private fun confirmLoadingBoxesComplete() {
+        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
+        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit
+    }
+
+    private fun confirmLoadingBoxesError(it: Throwable) {
+        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
+//        onStartScanner()
+        confirmLoadingError(it)
+    }
+
     private fun confirmLoadingError(throwable: Throwable) {
-        // TODO: 17.09.2021 реализовать
         val message = when (throwable) {
             is NoInternetException -> CourierLoadingScanNavAction.NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
@@ -127,14 +126,14 @@ class CourierLoadingScanViewModel(
             is BadRequestException -> CourierLoadingScanNavAction.NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
                 throwable.error.message,
-                "Ок",
-                "Ок"
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
             )
             else -> CourierLoadingScanNavAction.NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
-                "Ок",
-                "Ок",
-                "Ок"
+                resourceProvider.getGenericServiceTitleError(),
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
             )
         }
         _navigationEvent.value = message
@@ -204,7 +203,7 @@ class CourierLoadingScanViewModel(
             is CourierLoadingScanBoxData.UnknownBox -> {
                 _navigationEvent.value = CourierLoadingScanNavAction.NavigateToUnknownBox
                 _boxStateUI.value = CourierLoadingScanBoxState.UnknownBox(
-                    resourceProvider.getEmptyQr(),
+                    scanBoxData.qrCode,
                     resourceProvider.getEmptyAddress(),
                     accepted
                 )
@@ -220,7 +219,12 @@ class CourierLoadingScanViewModel(
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToBoxes
     }
 
-    fun onCompleteClicked() {
+    fun onCancelLoadingClick() {
+        onStartScanner()
+    }
+
+    fun onCompleteLoaderClicked() {
+        onStopScanner()
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }
 
@@ -260,6 +264,10 @@ class CourierLoadingScanViewModel(
 
     fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
+    }
+
+    fun onDialogInfoConfirmClick() {
+        onStartScanner()
     }
 
     data class NavigateToMessageInfo(val title: String, val message: String, val button: String)

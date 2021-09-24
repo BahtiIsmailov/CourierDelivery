@@ -29,6 +29,7 @@ class CourierLoaderViewModel(
         get() = _navigationState
 
     init {
+        // TODO: 24.09.2021 выключить для тестирования
         //toCourierWarehouse()
         //toIntransit()
         checkUserState()

@@ -215,11 +215,17 @@ class CourierIntransitFragment : Fragment() {
                     mapController.animateTo(point)
                     binding.map.invalidate()
                 }
-                is CourierIntransitMapPoint.NavigateToPoint -> {
+                is CourierIntransitMapPoint.NavigateToPointById -> {
                     navigateToMarker(it.id)
                 }
                 is CourierIntransitMapPoint.UpdateMapPoints -> {
                     updateMarkers(it.pointsState)
+                }
+                is CourierIntransitMapPoint.NavigateToPoint -> {
+                    val point =
+                        GeoPoint(it.mapPoint.lat, it.mapPoint.long)
+                    mapController.setZoom(12)
+                    mapController.animateTo(point)
                 }
             }
         }

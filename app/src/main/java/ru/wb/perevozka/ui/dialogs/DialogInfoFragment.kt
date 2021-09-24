@@ -2,12 +2,15 @@ package ru.wb.perevozka.ui.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppExtras
 
@@ -50,8 +53,28 @@ class DialogInfoFragment : DialogFragment() {
         title.text = this.title
         message.text = this.message
         positive.text = this.positive
-        positive.setOnClickListener { dismiss() }
-        return builder.create()
+        positive.setOnClickListener {
+            dismiss()
+            sendResult()
+        }
+
+        val progressDialog = builder.create()
+        progressDialog.setCanceledOnTouchOutside(false)
+        progressDialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                progressDialog.dismiss()
+                sendResult()
+            }
+            true
+        }
+        return progressDialog
+    }
+
+    private fun sendResult() {
+        setFragmentResult(
+            DIALOG_INFO_RESULT,
+            bundleOf(DIALOG_INFO_BACK_KEY to DIALOG_INFO_BACK_VALUE)
+        )
     }
 
     companion object {
@@ -70,6 +93,10 @@ class DialogInfoFragment : DialogFragment() {
             fragment.arguments = args
             return fragment
         }
+
+        const val DIALOG_INFO_RESULT = "DIALOG_INFO_RESULT"
+        const val DIALOG_INFO_BACK_KEY = "DIALOG_INFO_BACK_KEY"
+        const val DIALOG_INFO_BACK_VALUE = 1000
         const val DIALOG_INFO_TAG = "DIALOG_INFO_TAG"
 
     }

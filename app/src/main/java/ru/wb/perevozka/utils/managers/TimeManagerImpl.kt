@@ -1,9 +1,9 @@
 package ru.wb.perevozka.utils.managers
 
+import org.joda.time.DateTime
 import ru.wb.perevozka.app.AppPreffsKeys
 import ru.wb.perevozka.utils.prefs.SharedWorker
 import ru.wb.perevozka.utils.time.TimeFormatter
-import org.joda.time.DateTime
 
 
 class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatter: TimeFormatter) :
@@ -28,17 +28,28 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
     }
 
     override fun getOffsetTimeZone(dateTime: String): String {
-        return timeFormatter.dateTimeWithoutTimezoneOffsetFromString(dateTime,
-            worker.load(AppPreffsKeys.OFFSET_LOCAL_DATE_TIME_KEY, 0L)).toString()
+        return timeFormatter.dateTimeWithoutTimezoneOffsetFromString(
+            dateTime,
+            worker.load(AppPreffsKeys.OFFSET_LOCAL_DATE_TIME_KEY, 0L)
+        ).toString()
     }
 
     override fun clear() {
         worker.delete(AppPreffsKeys.SERVER_DATE_TIME_KEY)
         worker.delete(AppPreffsKeys.LOCAL_DATE_TIME_KEY)
+        worker.delete(AppPreffsKeys.STARTED_TASK_TIME_KEY)
     }
 
     override fun getLocalTime(): String {
         return timeFormatter.currentDateTime().toString()
+    }
+
+    override fun saveStartedTaskTime(dateTime: String) {
+        worker.save(AppPreffsKeys.STARTED_TASK_TIME_KEY, dateTime)
+    }
+
+    override fun getStartedTaskTime(): String {
+        return worker.load(AppPreffsKeys.STARTED_TASK_TIME_KEY, "")
     }
 
 }

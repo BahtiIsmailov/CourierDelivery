@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
+import ru.wb.perevozka.network.exceptions.BadRequestException
+import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierintransit.delegates.items.BaseIntransitItem
@@ -11,6 +13,7 @@ import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitCompl
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitEmptyItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitFailedItem
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
+import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
@@ -178,20 +181,55 @@ class CourierIntransitViewModel(
         mapPoints: MutableList<CourierIntransitMapPointItem>,
         coordinatePoints: MapCircle
     ) {
-        _mapPoint.value = CourierIntransitMapPoint.InitMapPoint(mapPoints, coordinatePoints)
+        if (mapPoints.isEmpty()) {
+            _mapPoint.value = CourierIntransitMapPoint.NavigateToPoint(moscowMapPoint())
+        } else {
+            _mapPoint.value = CourierIntransitMapPoint.InitMapPoint(mapPoints, coordinatePoints)
+        }
     }
 
-    private fun progressComplete() {
-        _progressState.value = CourierIntransitProgressState.ProgressComplete
-    }
+    private fun moscowMapPoint() = MapPoint("0", 55.751244, 37.618423)
 
     fun scanQrPvzClick() {
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
     }
 
     fun completeDeliveryClick() {
-        // TODO: 22.09.2021 отправляем данные на сервер если не все отправлено, завершаем рейс, переходим на экран доставка завершена
+        _progressState.value = CourierIntransitProgressState.Progress
+        addSubscription(interactor.completeDelivery()
+            .subscribe({ completeDeliveryComplete() }, { completeDeliveryError(it) })
+        )
+    }
+
+    private fun completeDeliveryComplete() {
+        _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery
+    }
+
+    private fun completeDeliveryError(throwable: Throwable) {
+        LogUtils { logDebugApp(throwable.toString()) }
+        _progressState.value = CourierIntransitProgressState.ProgressComplete
+        val message = when (throwable) {
+            is NoInternetException -> CourierIntransitNavigationState.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                "Интернет-соединение отсутствует",
+                throwable.message,
+                "Понятно"
+            )
+            is BadRequestException -> CourierIntransitNavigationState.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                throwable.error.message,
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
+            )
+            else -> CourierIntransitNavigationState.NavigateToDialogInfo(
+                DialogStyle.ERROR.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
+                resourceProvider.getGenericServiceMessageError(),
+                resourceProvider.getGenericServiceButtonError()
+            )
+        }
+        _navigationState.value = message
     }
 
     fun closeScannerClick() {
@@ -237,7 +275,7 @@ class CourierIntransitViewModel(
         }
 
         _mapPoint.value = CourierIntransitMapPoint.UpdateMapPoints(mapPointItems)
-        _mapPoint.value = CourierIntransitMapPoint.NavigateToPoint(selectIndex.toString())
+        _mapPoint.value = CourierIntransitMapPoint.NavigateToPointById(selectIndex.toString())
     }
 
     private fun getNormalIcon(item: CourierIntransitMapPointItem) =

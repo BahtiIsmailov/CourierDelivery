@@ -2,7 +2,6 @@ package ru.wb.perevozka.utils.time
 
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -40,7 +39,7 @@ object DateTimeFormatter {
     }
 
     fun getDigitFullTime(duration: Int): String {
-        val hour = formatLeadingZero(getHour(duration))
+        val hour = getHour(duration)
         val min = formatLeadingZero(getMin(duration))
         val sec = formatLeadingZero(getSec(duration))
         return "$hour:$min:$sec"
@@ -51,12 +50,14 @@ object DateTimeFormatter {
 
     fun getAnalogTime(arrival: Int, duration: Int) = (100.0F / arrival) * duration
 
-    private fun getHour(duration: Int): Int {
-        return duration / HOUR_DIVIDER
+    private fun getHour(duration: Int): String {
+        val hourDivider = duration / HOUR_DIVIDER
+        return if (hourDivider >= 24) "" + hourDivider / 24 + " д. " + formatLeadingZero(hourDivider % 24) else formatLeadingZero(hourDivider)
     }
 
     private fun getMin(duration: Int): Int {
-        return duration / TIME_DIVIDER
+        val minDivider = duration / TIME_DIVIDER
+        return if (minDivider > TIME_DIVIDER) minDivider % TIME_DIVIDER else duration / TIME_DIVIDER
     }
 
     private fun getSec(duration: Int): Int {

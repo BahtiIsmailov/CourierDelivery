@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +18,10 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierUnloadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
@@ -229,7 +230,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun showProgressDialog() {
@@ -287,14 +288,27 @@ class CourierUnloadingScanFragment : Fragment() {
 
         builder.setView(dialogView)
         val alertDialog: AlertDialog = builder.create()
+
+        alertDialog.setCanceledOnTouchOutside(false)
+        alertDialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                alertDialog.dismiss()
+                viewModel.cancelUnloadingClick()
+            }
+            true
+        }
+
         titleText.text = title
         messageText.text = message
-        negative.setOnClickListener { alertDialog.dismiss() }
+        negative.setOnClickListener {
+            alertDialog.dismiss()
+            viewModel.cancelUnloadingClick()
+        }
         negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         negative.text = getString(R.string.courier_order_scanner_dialog_negative_button)
         positive.setOnClickListener {
             alertDialog.dismiss()
-            viewModel.confirmLoadingClick()
+            viewModel.confirmUnloadingClick()
         }
         positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         positive.text = getString(R.string.courier_order_scanner_dialog_positive_button)
@@ -302,7 +316,7 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener { viewModel.onCompleteClicked() }
+        binding.complete.setOnClickListener { viewModel.onCompleteUnloadClicked() }
         binding.receiveLayout.setOnClickListener { viewModel.onListClicked() }
     }
 

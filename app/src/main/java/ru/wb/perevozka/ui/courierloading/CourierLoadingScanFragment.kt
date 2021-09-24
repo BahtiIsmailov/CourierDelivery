@@ -11,16 +11,20 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierLoadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.ui.splash.OnCourierScanner
 import ru.wb.perevozka.views.ProgressButtonMode
 
 class CourierLoadingScanFragment : Fragment() {
@@ -43,6 +47,15 @@ class CourierLoadingScanFragment : Fragment() {
         initView()
         initListener()
         initObserver()
+        initReturnResult()
+    }
+
+    private fun initReturnResult() {
+        setFragmentResultListener(DIALOG_INFO_RESULT) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                viewModel.onDialogInfoConfirmClick()
+            }
+        }
     }
 
     private fun initView() {
@@ -123,7 +136,7 @@ class CourierLoadingScanFragment : Fragment() {
                 CourierLoadingScanNavAction.NavigateToIntransit ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierIntransitFragment())
                 is CourierLoadingScanNavAction.NavigateToDialogInfo -> {
-                    showDialog(state.type, state.title, state.message, state.button)
+                    showDialogInfo(state.type, state.title, state.message, state.button)
                 }
             }
         }
@@ -188,7 +201,7 @@ class CourierLoadingScanFragment : Fragment() {
                     binding.complete.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierLoadingScanBoxState.BoxInit -> {
-                    binding.toolbarLayout.back.visibility = View.INVISIBLE
+                    holdBackButtonOnScanBox()
                     binding.status.text = "ПОГРУЗИТЕ В МАШИНУ"
                     binding.status.setBackgroundColor(
                         ContextCompat.getColor(
@@ -213,7 +226,7 @@ class CourierLoadingScanFragment : Fragment() {
 
                 }
                 is CourierLoadingScanBoxState.BoxAdded -> {
-                    binding.toolbarLayout.back.visibility = View.INVISIBLE
+                    holdBackButtonOnScanBox()
                     binding.status.text = "ПОГРУЗИТЕ В МАШИНУ"
                     binding.status.setBackgroundColor(
                         ContextCompat.getColor(
@@ -239,7 +252,7 @@ class CourierLoadingScanFragment : Fragment() {
                     binding.listLayout.setOnClickListener { viewModel.onListClicked() }
                 }
                 is CourierLoadingScanBoxState.UnknownBox -> {
-                    binding.toolbarLayout.back.visibility = View.INVISIBLE
+                    holdBackButtonOnScanBox()
                     binding.status.text = "КОРОБКУ БРАТЬ ЗАПРЕЩЕНО"
                     binding.status.setBackgroundColor(
                         ContextCompat.getColor(
@@ -269,9 +282,19 @@ class CourierLoadingScanFragment : Fragment() {
         }
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
+    private fun holdBackButtonOnScanBox() {
+        binding.toolbarLayout.back.visibility = View.INVISIBLE
+        (activity as OnCourierScanner).holdBackButtonOnScanBox()
+    }
+
+    private fun showDialogInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun showProgressDialog() {
@@ -365,7 +388,10 @@ class CourierLoadingScanFragment : Fragment() {
         val alertDialog: AlertDialog = builder.create()
         titleText.text = title
         messageText.text = message
-        negative.setOnClickListener { alertDialog.dismiss() }
+        negative.setOnClickListener {
+            alertDialog.dismiss()
+            viewModel.onCancelLoadingClick()
+        }
         negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         negative.text = getString(R.string.courier_order_scanner_dialog_negative_button)
         positive.setOnClickListener {
@@ -378,7 +404,7 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener { viewModel.onCompleteClicked() }
+        binding.complete.setOnClickListener { viewModel.onCompleteLoaderClicked() }
         binding.listLayout.setOnClickListener { viewModel.onListClicked() }
     }
 

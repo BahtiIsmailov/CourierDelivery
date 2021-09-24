@@ -23,7 +23,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppConsts
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierDataFragmentBinding
 import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -31,6 +30,7 @@ import ru.wb.perevozka.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.perevozka.ui.courierdata.CourierDataFragment.TextChangesInterface
 import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.date.DatePickerDialog
 import ru.wb.perevozka.ui.dialogs.date.OnDateSelected
 import ru.wb.perevozka.ui.splash.NavToolbarListener
@@ -360,7 +360,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     companion object {

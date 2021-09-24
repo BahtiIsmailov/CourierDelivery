@@ -13,7 +13,6 @@ import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProcessData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProgressData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingScanBoxData
-import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import java.util.concurrent.TimeUnit
@@ -114,48 +113,26 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    fun confirmLoadingClick() {
-        onStopScanner()
+    fun cancelUnloadingClick() {
+        onStartScanner()
+    }
+
+    fun confirmUnloadingClick() {
         _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
             interactor.confirmUnloading(parameters.officeId)
-                .subscribe(
-                    {
-                        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
-                        _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
-                    },
-                    {
-                        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
-                        onStartScanner()
-                        confirmLoadingError(it)
-                    }
-                )
+                .subscribe({ confirmUnloadingComplete() }, { confirmUnloadingError() })
         )
     }
 
-    private fun confirmLoadingError(throwable: Throwable) {
-        // TODO: 17.09.2021 не используется
-        val message = when (throwable) {
-            is NoInternetException -> CourierUnloadingScanNavAction.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                "Интернет-соединение отсутствует",
-                throwable.message,
-                "Понятно"
-            )
-            is BadRequestException -> CourierUnloadingScanNavAction.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                throwable.error.message,
-                "Ок",
-                "Ок"
-            )
-            else -> CourierUnloadingScanNavAction.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                "Ок",
-                "Ок",
-                "Ок"
-            )
-        }
-        _navigationEvent.value = message
+    private fun confirmUnloadingComplete() {
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+        _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
+    }
+
+    private fun confirmUnloadingError() {
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+        _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
     }
 
     private fun observeScanProcess() {
@@ -235,7 +212,7 @@ class CourierUnloadingScanViewModel(
             }
         }
         if (scanProcess.unloadingCounter == scanProcess.fromCounter) {
-            confirmLoadingClick()
+            confirmUnloadingClick()
         }
     }
 
@@ -243,7 +220,7 @@ class CourierUnloadingScanViewModel(
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToBoxes
     }
 
-    fun onCompleteClicked() {
+    fun onCompleteUnloadClicked() {
         onStopScanner()
         addSubscription(
             interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
@@ -251,7 +228,6 @@ class CourierUnloadingScanViewModel(
                     resourceProvider.getUnloadingDialogTitle(),
                     resourceProvider.getUnloadingDialogMessage(it.deliveredCount, it.fromCount)
                 )
-                onStartScanner()
             },
                 { onStartScanner() })
         )

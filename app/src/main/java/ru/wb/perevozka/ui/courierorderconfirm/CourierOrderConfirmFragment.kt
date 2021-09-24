@@ -14,9 +14,9 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
-import ru.wb.perevozka.app.DIALOG_INFO_MESSAGE_TAG
 import ru.wb.perevozka.databinding.CourierOrderConfirmFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 
 
@@ -26,7 +26,6 @@ class CourierOrderConfirmFragment : Fragment() {
 
     private lateinit var _binding: CourierOrderConfirmFragmentBinding
     private val binding get() = _binding
-    //private lateinit var progressDialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,14 +96,6 @@ class CourierOrderConfirmFragment : Fragment() {
         binding.confirmOrder.setOnClickListener { viewModel.confirmOrderClick() }
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarClick() }
     }
-
-//    private fun closeProgressDialog() {
-//        if (progressDialog.isShowing) progressDialog.dismiss()
-//    }
-//
-//    private fun showProgressDialog() {
-//        progressDialog.show()
-//    }
 
     private fun showProgressDialog() {
         val progressDialog = ProgressDialogFragment.newInstance()
@@ -186,7 +177,7 @@ class CourierOrderConfirmFragment : Fragment() {
 
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_MESSAGE_TAG)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

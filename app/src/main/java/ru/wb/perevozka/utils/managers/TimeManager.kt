@@ -6,4 +6,6 @@ interface TimeManager {
     fun getOffsetTimeZone(dateTime: String): String
     fun clear()
     fun getLocalTime(): String
+    fun saveStartedTaskTime(dateTime: String)
+    fun getStartedTaskTime(): String
 }

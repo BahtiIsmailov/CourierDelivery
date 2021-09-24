@@ -550,8 +550,8 @@ class AppRemoteRepositoryImpl(
 
     override fun tasksMy(): Single<CourierTasksMyEntity> {
         return remote.tasksMy(apiVersion()).map { task ->
-
             LogUtils { logDebugApp(task.toString()) }
+            timeManager.saveStartedTaskTime(task.startedAt ?: "") //"2021-09-21T17:00:01.992+03:00"
             val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
             task.dstOffices.forEach {
                 val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
@@ -642,7 +642,8 @@ class AppRemoteRepositoryImpl(
         taskID: String,
         courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
     ): Completable {
-        val courierTaskStatusesIntransitRequest = mutableListOf<CourierTaskStatusesIntransitRequest>()
+        val courierTaskStatusesIntransitRequest =
+            mutableListOf<CourierTaskStatusesIntransitRequest>()
         courierTaskStatusesIntransitEntity.forEach {
             val courierTaskStatusIntransitRequest =
                 CourierTaskStatusesIntransitRequest(

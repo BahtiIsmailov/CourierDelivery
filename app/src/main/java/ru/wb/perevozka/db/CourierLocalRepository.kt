@@ -6,10 +6,7 @@ import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.perevozka.db.entity.courierlocal.*
 import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
@@ -46,6 +43,8 @@ interface CourierLocalRepository {
 
     fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable
 
+    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
+
     fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity>
 
     //==============================================================================================
@@ -63,6 +62,10 @@ interface CourierLocalRepository {
     fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
 
     fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult>
+
+    fun readNotUnloadingBoxes(): Single<List<CourierBoxEntity>>
+
+    fun deleteAllVisitedOffices()
 
     fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult>
 

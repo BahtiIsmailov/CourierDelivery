@@ -1,5 +1,6 @@
 package ru.wb.perevozka.ui.courierintransit.domain
 
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
@@ -14,5 +15,7 @@ interface CourierIntransitInteractor {
     fun scannerAction(scannerAction: ScannerState)
 
     fun startTime(): Observable<Long>
+
+    fun completeDelivery(): Completable
 
 }

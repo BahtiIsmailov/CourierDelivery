@@ -1,6 +1,7 @@
 package ru.wb.perevozka.ui.courierintransit
 
 import ru.wb.perevozka.utils.map.MapCircle
+import ru.wb.perevozka.utils.map.MapPoint
 
 sealed class CourierIntransitMapPoint {
 
@@ -14,6 +15,8 @@ sealed class CourierIntransitMapPoint {
         val pointsState: List<CourierIntransitMapPointItem>
     ) : CourierIntransitMapPoint()
 
-    data class NavigateToPoint(val id: String) : CourierIntransitMapPoint()
+    data class NavigateToPointById(val id: String) : CourierIntransitMapPoint()
+
+    data class NavigateToPoint(val mapPoint: MapPoint) : CourierIntransitMapPoint()
 
 }
