@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import ru.wb.perevozka.app.PREFIX_QR_CODE
+import ru.wb.perevozka.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.scanner.domain.ScannerInteractor
@@ -28,7 +29,9 @@ class CourierScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
-        if (barcode.startsWith(PREFIX_QR_CODE)) {
+        if (barcode.startsWith(PREFIX_QR_CODE)
+            || barcode.uppercase().startsWith(PREFIX_QR_OFFICE_CODE)
+        ) {
             if (oldBarcode == barcode) {
                 erase?.dispose()
                 erase = Observable.timer(5, TimeUnit.SECONDS).subscribe { clearMemoryBarcode() }

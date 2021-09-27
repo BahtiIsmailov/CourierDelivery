@@ -246,7 +246,7 @@ class CourierLoadingInteractorImpl(
                     id = id,
                     dstOfficeID = dstOfficeId,
                     loadingAt = loadingAt,
-                    deliveredAt = deliveredAt
+                    deliveredAt = null
                 )
             }
         }.toList()

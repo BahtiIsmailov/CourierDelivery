@@ -50,9 +50,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
     }
 
     private fun initViews() {
-        binding.toolbarLayout.back.visibility = VISIBLE
         (activity as NavDrawerListener).lock()
-        binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
     private fun initListener() {

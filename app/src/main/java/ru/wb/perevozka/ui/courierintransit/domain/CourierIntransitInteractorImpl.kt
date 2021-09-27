@@ -3,7 +3,6 @@ package ru.wb.perevozka.ui.courierintransit.domain
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import ru.wb.perevozka.app.PREFIX_QR_CODE
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.IntransitTimeRepository
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
@@ -15,7 +14,6 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.managers.TimeManager
 import ru.wb.perevozka.utils.time.TimeFormatter
-import java.util.concurrent.TimeUnit
 
 class CourierIntransitInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -128,15 +126,11 @@ class CourierIntransitInteractorImpl(
     }
 
     private fun parseQrCode(qrCode: String): String {
-        return getSplitInfo(getInfo(qrCode))[0]
+        return getSplitInfo(qrCode)[1]
     }
 
     private fun getSplitInfo(input: String): List<String> {
-        return input.split(":")
-    }
-
-    private fun getInfo(input: String): String {
-        return input.takeLast(input.length - PREFIX_QR_CODE.length)
+        return input.split(".")
     }
 
     private fun courierLoadingScanBoxData() = courierLocalRepository.orderData()

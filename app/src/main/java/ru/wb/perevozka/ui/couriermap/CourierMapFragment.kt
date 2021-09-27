@@ -67,6 +67,7 @@ class CourierMapFragment : Fragment() {
             )
         ) {
             initMapView()
+            viewModel.onInitPermission()
         } else {
             requestMultiplePermissions.launch(
                 arrayOf(

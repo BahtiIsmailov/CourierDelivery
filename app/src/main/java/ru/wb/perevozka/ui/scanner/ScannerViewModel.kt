@@ -5,10 +5,11 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import ru.wb.perevozka.app.PREFIX_QR_CODE
+import ru.wb.perevozka.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.ui.scanner.domain.ScannerInteractor
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import java.util.concurrent.TimeUnit
 
 class ScannerViewModel(

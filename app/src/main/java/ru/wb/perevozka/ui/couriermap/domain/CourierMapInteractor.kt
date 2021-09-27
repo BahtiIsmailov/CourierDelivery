@@ -9,4 +9,6 @@ interface CourierMapInteractor {
 
     fun onItemClick(index: String)
 
+    fun onInitPermission()
+
 }

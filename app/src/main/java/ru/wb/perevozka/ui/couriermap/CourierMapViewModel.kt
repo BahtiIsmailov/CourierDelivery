@@ -26,6 +26,10 @@ class CourierMapViewModel(
         )
     }
 
+    fun onInitPermission() {
+        interactor.onInitPermission()
+    }
+
     fun onItemClick(index: String) {
         interactor.onItemClick(index)
     }

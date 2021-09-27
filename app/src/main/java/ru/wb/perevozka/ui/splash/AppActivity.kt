@@ -292,7 +292,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
 
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
-            R.id.authNumberPhoneFragment, R.id.checkSmsFragment -> finish()
+            R.id.authNumberPhoneFragment -> finish()
             R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.courierWarehouseFragment,
             R.id.flightDeliveriesFragment, R.id.congratulationFragment, R.id.courierOrderConfirmFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment -> showExitDialog()

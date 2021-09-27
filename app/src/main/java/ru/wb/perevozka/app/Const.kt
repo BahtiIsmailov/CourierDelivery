@@ -22,6 +22,8 @@ const val COURIER_NAME = "COURIER"
 
 const val PREFIX_QR_CODE = "\$1:1:"
 
+const val PREFIX_QR_OFFICE_CODE = "PHX"
+
 const val DEFAULT_ARRIVAL_TIME_COURIER_MIN = 20
 
 
