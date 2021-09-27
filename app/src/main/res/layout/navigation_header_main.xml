@@ -83,7 +83,8 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
-        android:text="@string/status_delivery" />
+        android:text="@string/status_delivery"
+        android:visibility="invisible" />
 
     <FrameLayout
         android:id="@+id/status_layout"
@@ -91,7 +92,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="24dp">
+        android:layout_marginEnd="24dp"
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/status_not_assigned"
@@ -146,7 +148,6 @@
 
     </FrameLayout>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -161,14 +162,15 @@
             android:layout_alignParentTop="true"
             android:gravity="center"
             android:text="@string/status_not_assigned_empty"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <RelativeLayout
             android:id="@+id/layout_data"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp">
+            android:layout_marginEnd="24dp"
+            android:visibility="invisible">
 
             <TextView
                 android:id="@+id/accepted_title"

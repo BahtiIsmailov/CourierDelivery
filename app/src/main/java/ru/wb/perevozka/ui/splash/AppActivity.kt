@@ -321,7 +321,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             .show()
     }
 
-    override fun flightUserInfo(name: String, company: String) {
+    override fun userInfo(name: String, company: String) {
+        LogUtils { logDebugApp("authRemoteRepository.userInfo() " + name) }
         with(binding.navView) {
             findViewById<TextView>(R.id.nav_header_name).text = name
             findViewById<TextView>(R.id.nav_header_company).text = company
@@ -384,7 +385,7 @@ interface KeyboardListener {
 }
 
 interface OnUserInfo {
-    fun flightUserInfo(name: String, company: String)
+    fun userInfo(name: String, company: String)
 }
 
 interface OnFlightsStatus {

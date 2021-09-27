@@ -10,11 +10,14 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierTasksMyEntity
+import ru.wb.perevozka.network.api.auth.AuthRemoteRepository
+import ru.wb.perevozka.network.api.auth.entity.UserInfoEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.ui.NetworkViewModel
+import ru.wb.perevozka.utils.LogUtils
 
 class CourierLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -22,18 +25,28 @@ class CourierLoaderViewModel(
     private val tokenManager: TokenManager,
     private val courierLocalRepository: CourierLocalRepository,
     private val appRemoteRepository: AppRemoteRepository,
+    private val authRemoteRepository: AuthRemoteRepository,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _navigationState = MutableLiveData<CourierLoaderNavigationState>()
-    val navigationState: LiveData<CourierLoaderNavigationState>
-        get() = _navigationState
+    private val _drawerHeader = MutableLiveData<UserInfoEntity>()
+    val drawerHeader: LiveData<UserInfoEntity>
+        get() = _drawerHeader
+
+    private val _navigationDrawerState = MutableLiveData<CourierLoaderNavigationState>()
+    val navigationDrawerState: LiveData<CourierLoaderNavigationState>
+        get() = _navigationDrawerState
 
     init {
+        initDrawer()
         // TODO: 24.09.2021 выключить для тестирования
         //toCourierWarehouse()
-        toLoadingScanner()
+        //toLoadingScanner()
         //toIntransit()
-        //checkUserState()
+        checkUserState()
+    }
+
+    private fun initDrawer() {
+        _drawerHeader.value =  UserInfoEntity(tokenManager.userName(), "")
     }
 
     private fun checkUserState() {
@@ -132,28 +145,28 @@ class CourierLoaderViewModel(
     }
 
     private fun toUserForm(phone: String) {
-        _navigationState.value = CourierLoaderNavigationState.NavigateToCourierUserForm(phone)
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToCourierUserForm(phone)
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
-        _navigationState.value =
+        _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }
 
     private fun toCourierWarehouse() {
-        _navigationState.value = CourierLoaderNavigationState.NavigateToCourierWarehouse
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToCourierWarehouse
     }
 
     private fun toTimer() {
-        _navigationState.value = CourierLoaderNavigationState.NavigateToTimer
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToTimer
     }
 
     private fun toLoadingScanner() {
-        _navigationState.value = CourierLoaderNavigationState.NavigateToScanner
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToScanner
     }
 
     private fun toIntransit() {
-        _navigationState.value = CourierLoaderNavigationState.NavigateToIntransit
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToIntransit
     }
 
 }

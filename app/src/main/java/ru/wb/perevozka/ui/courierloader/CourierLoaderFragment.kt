@@ -12,6 +12,8 @@ import ru.wb.perevozka.databinding.CourierLoaderFragmentBinding
 import ru.wb.perevozka.ui.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.ui.splash.OnUserInfo
+import ru.wb.perevozka.utils.LogUtils
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
@@ -39,7 +41,12 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
     }
 
     private fun initObserver() {
-        viewModel.navigationState.observe(viewLifecycleOwner) { state ->
+
+        viewModel.drawerHeader.observe(viewLifecycleOwner) {
+            (activity as OnUserInfo).userInfo(it.name, it.company)
+        }
+
+        viewModel.navigationDrawerState.observe(viewLifecycleOwner) { state ->
             when (state) {
 
                 is CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration -> findNavController().navigate(

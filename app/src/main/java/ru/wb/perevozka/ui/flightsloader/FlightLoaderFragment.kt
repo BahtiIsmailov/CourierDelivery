@@ -12,7 +12,6 @@ import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.splash.*
 import ru.wb.perevozka.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.wb.perevozka.utils.LogUtils
 
 class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
 
@@ -48,7 +47,7 @@ class FlightLoaderFragment : Fragment(R.layout.flight_loader_fragment) {
     private fun initObserver() {
 
         viewModel.navHeader.observe(viewLifecycleOwner) {
-            (activity as OnUserInfo).flightUserInfo(it.name, it.company)
+            (activity as OnUserInfo).userInfo(it.name, it.company)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
