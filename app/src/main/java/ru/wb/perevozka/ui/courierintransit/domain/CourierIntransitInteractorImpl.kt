@@ -15,6 +15,7 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.managers.TimeManager
 import ru.wb.perevozka.utils.time.TimeFormatter
+import java.util.concurrent.TimeUnit
 
 class CourierIntransitInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -64,8 +65,7 @@ class CourierIntransitInteractorImpl(
                 } else {
                     taskId().flatMapCompletable { taskId ->
                         // TODO: 24.09.2021 выключить для тестирования
-//                        Completable.timer(2, TimeUnit.SECONDS)
-//                            .andThen(Completable.error(Throwable()))
+//                        Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
                         taskStatusesIntransit(
                             taskId,
                             intransitBoxes

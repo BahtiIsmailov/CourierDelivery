@@ -72,7 +72,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeInitScanProcess() {
-        addSubscription(interactor.readInitLastUnloadingBox(parameters.officeId)
+        addSubscription(interactor.readUnloadingLastBox(parameters.officeId)
             .map { initResult ->
                 val readyStatus = resourceProvider.getReadyStatus()
                 val accepted = resourceProvider.getAccepted(
@@ -126,11 +126,13 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun confirmUnloadingComplete() {
+        LogUtils { logDebugApp("confirmUnloadingComplete") }
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
     }
 
     private fun confirmUnloadingError() {
+        LogUtils { logDebugApp("confirmUnloadingError") }
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
     }
@@ -210,9 +212,21 @@ class CourierUnloadingScanViewModel(
                 }
 
             }
-        }
-        if (scanProcess.unloadingCounter == scanProcess.fromCounter) {
-            confirmUnloadingClick()
+            is CourierUnloadingScanBoxData.UnloadingCompleted -> {
+                _boxStateUI.value = with(scanBoxData) {
+                    CourierUnloadingScanBoxState.BoxAdded(
+                        resourceProvider.getReadyAddedBox(),
+                        qrCode,
+                        address,
+                        accepted
+                    )
+                }
+                _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
+                _bottomEvent.value = CourierUnloadingScanBottomState.Enable
+                LogUtils { logDebugApp("scanProcess.unloadingCounter " + scanProcess.unloadingCounter) }
+                confirmUnloadingClick()
+
+            }
         }
     }
 
@@ -226,7 +240,7 @@ class CourierUnloadingScanViewModel(
             interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToConfirmDialog(
                     resourceProvider.getUnloadingDialogTitle(),
-                    resourceProvider.getUnloadingDialogMessage(it.deliveredCount, it.fromCount)
+                    resourceProvider.getUnloadingDialogMessage(it.unloadedCount, it.fromCount)
                 )
             },
                 { onStartScanner() })
@@ -245,6 +259,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
+        LogUtils { logDebugApp("observeScanProcessError " + throwable) }
         val error = if (throwable is CompositeException) {
             throwable.exceptions[0]
         } else throwable

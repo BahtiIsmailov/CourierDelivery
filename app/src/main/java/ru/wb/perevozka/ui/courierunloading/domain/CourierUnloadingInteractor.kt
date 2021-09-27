@@ -15,7 +15,7 @@ interface CourierUnloadingInteractor {
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
-    fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitResult>
+    fun readUnloadingLastBox(officeId: Int): Single<CourierUnloadingLastBoxResult>
 
     fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult>
 

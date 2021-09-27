@@ -6,9 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import ru.wb.perevozka.app.PREFIX_QR_CODE
-import ru.wb.perevozka.db.AppLocalRepository
 import ru.wb.perevozka.db.CourierLocalRepository
-import ru.wb.perevozka.db.TaskTimerRepository
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
@@ -54,15 +52,15 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitResult> {
+    override fun readUnloadingLastBox(officeId: Int): Single<CourierUnloadingLastBoxResult> {
         return Single.zip(
             courierLocalRepository.readInitLastUnloadingBox(officeId),
             courierLocalRepository.readUnloadingBoxCounter(officeId),
             { unloadingBox, unloadingCounter ->
-                CourierUnloadingInitResult(
+                CourierUnloadingLastBoxResult(
                     unloadingBox.id,
                     unloadingBox.address,
-                    unloadingCounter.deliveredCount,
+                    unloadingCounter.unloadedCount,
                     unloadingCounter.fromCount
                 )
             })
@@ -79,21 +77,25 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun observeUnloadingCounterBox(officeId: Int): Observable<CourierUnloadingBoxCounterResult> {
-        return courierLocalRepository.observeUnloadingBoxCounter(officeId).toObservable()
+    private fun getUnloadingCounterBox(officeId: Int): Single<CourierUnloadingBoxCounterResult> {
+        return courierLocalRepository.observeUnloadingBoxCounter(officeId).firstOrError()
     }
 
     override fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData> {
-        return Observable.combineLatest(
-            observeUnloadingScan(officeId),
-            observeUnloadingCounterBox(officeId),
-            { scan, boxCounter ->
+        return observeUnloadingScan(officeId).flatMapSingle { scan ->
+            getUnloadingCounterBox(officeId).map { boxCounter ->
+                var tmpScan = scan
+                if (boxCounter.unloadedCount == boxCounter.fromCount && scan is CourierUnloadingScanBoxData.ScannerReady) {
+                    tmpScan =
+                        CourierUnloadingScanBoxData.UnloadingCompleted(scan.qrCode, scan.address)
+                }
                 CourierUnloadingProcessData(
-                    scan,
-                    boxCounter.deliveredCount,
+                    tmpScan,
+                    boxCounter.unloadedCount,
                     boxCounter.fromCount
                 )
-            })
+            }
+        }
             .doOnError { loaderComplete() }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
@@ -105,6 +107,7 @@ class CourierUnloadingInteractorImpl(
 
     private fun observeUnloadingScan(officeId: Int): Observable<CourierUnloadingScanBoxData> {
         return scannerRepository.observeBarcodeScanned()
+            .doOnNext { LogUtils { logDebugApp("scannerRepository.observeBarcodeScanned() " + it) } }
             .map { parseQrCode(it) }
             .flatMapSingle { boxDefinitionResult(officeId, it) }
             .flatMap { observableStatus(it) }
@@ -209,7 +212,7 @@ class CourierUnloadingInteractorImpl(
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
             .flatMapCompletable { statusesIntransit ->
                 taskId().flatMapCompletable { taskId ->
-                    val debugTimer = Completable.timer(3, TimeUnit.SECONDS)
+                    //val debugTimer = Completable.timer(3, TimeUnit.SECONDS)
                     // TODO: 16.09.2021 включить после отладки сканера
                     val saveRemote =
                         appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
@@ -264,9 +267,9 @@ data class ParseQrCode(val code: String, val dstOfficeId: Int)
 
 data class CourierUnloadingInitLastBoxResult(val id: String, val address: String)
 
-data class CourierUnloadingBoxCounterResult(val deliveredCount: Int, val fromCount: Int)
+data class CourierUnloadingBoxCounterResult(val unloadedCount: Int, val fromCount: Int)
 
-data class CourierUnloadingInitResult(
+data class CourierUnloadingLastBoxResult(
     val id: String,
     val address: String,
     val deliveredCount: Int,

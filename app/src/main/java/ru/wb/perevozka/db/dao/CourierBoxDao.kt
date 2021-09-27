@@ -49,10 +49,10 @@ interface CourierBoxDao {
     @Query("SELECT COALESCE(id, '') AS id, COALESCE(address, '') AS address FROM CourierBoxEntity WHERE dstOfficeId = :officeId AND deliveredAt != '' ORDER BY deliveredAt DESC LIMIT 1")
     fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult>
 
-    @Query("SELECT deliveredCount AS deliveredCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
+    @Query("SELECT deliveredCount AS unloadedCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
     fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult>
 
-    @Query("SELECT deliveredCount AS deliveredCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
+    @Query("SELECT deliveredCount AS unloadedCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
     fun observeCounterBox(officeId: Int): Flowable<CourierUnloadingBoxCounterResult>
 
     @Query("SELECT CourierOrder.minPrice AS amount, Counter.deliveredCount AS unloadedCount, Counter.fromCount AS fromCount FROM (SELECT minPrice FROM CourierOrderLocalEntity) AS CourierOrder, (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity) AS Counter")

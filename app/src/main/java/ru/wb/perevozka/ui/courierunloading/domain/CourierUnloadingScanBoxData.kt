@@ -10,4 +10,7 @@ sealed class CourierUnloadingScanBoxData {
 
     object Empty : CourierUnloadingScanBoxData()
 
+    data class UnloadingCompleted(val qrCode: String, val address: String) :
+        CourierUnloadingScanBoxData()
+
 }
