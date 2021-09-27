@@ -650,7 +650,7 @@ class AppRemoteRepositoryImpl(
                     id = it.id,
                     dstOfficeID = it.dstOfficeID,
                     loadingAt = it.loadingAt,
-                    deliveredAt = null
+                    deliveredAt = it.deliveredAt
                 )
             courierTaskStatusesIntransitRequest.add(courierTaskStatusIntransitRequest)
         }

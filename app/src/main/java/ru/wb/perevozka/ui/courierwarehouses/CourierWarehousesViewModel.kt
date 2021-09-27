@@ -13,6 +13,7 @@ import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.couriermap.Empty
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapEnclosingCircle
 import ru.wb.perevozka.utils.map.MapPoint
@@ -75,7 +76,9 @@ class CourierWarehousesViewModel(
         initItems(warehouseItems)
         saveMapMarkers(mapMarkers)
         interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
         val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
+        LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
         interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
         hideProgress()
     }

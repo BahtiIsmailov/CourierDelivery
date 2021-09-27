@@ -18,6 +18,8 @@ const val DELAY_NETWORK_REQUEST_MS = 400L
 
 const val COURIER_COMPANY_ID = "318"
 
+const val COURIER_NAME = "COURIER"
+
 const val PREFIX_QR_CODE = "\$1:1:"
 
 const val DEFAULT_ARRIVAL_TIME_COURIER_MIN = 20

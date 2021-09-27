@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.app.COURIER_COMPANY_ID
+import ru.wb.perevozka.app.COURIER_NAME
 import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
@@ -29,7 +30,9 @@ class AppLoaderViewModel(
             .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
                 {
                     if (tokenManager.isContains()) {
-                        if (tokenManager.userCompanyId() == COURIER_COMPANY_ID) toCourier()
+                        if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
+                            || tokenManager.resources().contains(COURIER_NAME)
+                        ) toCourier()
                         else toDelivery()
                     } else toAuth()
                 },

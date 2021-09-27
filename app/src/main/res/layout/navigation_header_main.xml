@@ -162,7 +162,7 @@
             android:layout_alignParentTop="true"
             android:gravity="center"
             android:text="@string/status_not_assigned_empty"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
         <RelativeLayout
             android:id="@+id/layout_data"

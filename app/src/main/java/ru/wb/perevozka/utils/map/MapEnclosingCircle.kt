@@ -1,5 +1,6 @@
 package ru.wb.perevozka.utils.map
 
+import ru.wb.perevozka.utils.LogUtils
 import kotlin.math.pow
 
 class MapEnclosingCircle {
@@ -12,8 +13,11 @@ class MapEnclosingCircle {
         for (i in 0 until n) {
             for (j in i + 1 until n) {
                 val tmpCircle = circleFrom(points[i], points[j])
-                if (tmpCircle.radius > memCircle.radius && isValidCircle(tmpCircle, points))
-                    memCircle = tmpCircle
+                LogUtils { logDebugApp("tmpCircle " + tmpCircle.toString()) }
+                if (tmpCircle.radius > memCircle.radius) {
+                    if (n == 3 || isValidCircle(tmpCircle, points))
+                        memCircle = tmpCircle
+                }
             }
         }
         return memCircle
