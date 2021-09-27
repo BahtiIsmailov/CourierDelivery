@@ -24,7 +24,6 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
-import java.util.concurrent.TimeUnit
 
 class CourierLoadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -50,18 +49,14 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun observeCourierBoxesCount(): Observable<List<CourierBoxEntity>> {
-        return courierLocalRepository.observeLoadingBoxes().toObservable()
-            .doOnNext { LogUtils { logDebugApp("observeCourierBoxesCount " + it.size) } }
+    private fun observeCourierBoxesCount(): Single<List<CourierBoxEntity>> {
+        return courierLocalRepository.observeLoadingBoxes().firstOrError()
     }
 
     override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
-        return Observable.combineLatest(observeBoxDefinitionResult(),
-            observeCourierBoxesCount().distinct(),
-            { boxDefinitionResult, boxes ->
-                LogUtils { logDebugApp("boxDefinitionResult, boxes " + boxDefinitionResult.toString() + " " + boxes) }
-                Pair(boxDefinitionResult, boxes)
-            })
+        return observeBoxDefinitionResult().flatMapSingle { scanResult ->
+            observeCourierBoxesCount().map { boxes -> Pair(scanResult, boxes) }
+        }
             .flatMap { processData ->
                 LogUtils { logDebugApp("flatMap processData " + processData) }
 

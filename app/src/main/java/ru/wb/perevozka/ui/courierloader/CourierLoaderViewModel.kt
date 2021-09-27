@@ -31,9 +31,9 @@ class CourierLoaderViewModel(
     init {
         // TODO: 24.09.2021 выключить для тестирования
         //toCourierWarehouse()
-        //toLoadingScanner()
+        toLoadingScanner()
         //toIntransit()
-        checkUserState()
+        //checkUserState()
     }
 
     private fun checkUserState() {
