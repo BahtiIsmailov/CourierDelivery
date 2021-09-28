@@ -20,8 +20,8 @@ import org.osmdroid.views.overlay.OverlayLayoutParams
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.databinding.MapFragmentBinding
 import ru.wb.perevozka.ui.scanner.hasPermissions
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.MapCircle
-
 
 class CourierMapFragment : Fragment() {
 
@@ -130,7 +130,9 @@ class CourierMapFragment : Fragment() {
 
     private fun zoomAllPoint(it: MapCircle) {
         val point = with(it.point) { GeoPoint(x, y) }
-        mapController.setZoom(it.radius * 7)
+        val zoom = it.radius * 7
+        LogUtils { logDebugApp("zoomAllPoint " + zoom) }
+        mapController.setZoom(zoom)
         mapController.animateTo(point)
     }
 

@@ -57,7 +57,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/name"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Заказ № 3245934" />
+        tools:text="Заказ 3245934" />
 
     <TextView
         android:id="@+id/name"

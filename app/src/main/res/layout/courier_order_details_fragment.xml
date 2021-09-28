@@ -14,15 +14,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <org.osmdroid.views.MapView
+    <fragment
         android:id="@+id/map"
+        class="ru.wb.perevozka.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        tools:layout="@layout/map_fragment" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dip"
+        android:background="#EDEEF0"
+        app:layout_constraintBottom_toTopOf="@+id/order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="20dp"/>
 
     <TextView
         android:id="@+id/order"
@@ -35,7 +46,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/volume"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Заказ № 3245934" />
+        tools:text="Заказ 3245934" />
 
     <TextView
         android:id="@+id/volume"
@@ -107,10 +118,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
         android:divider="@null"
         android:dividerHeight="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/order"
+        app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
@@ -142,7 +152,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal" />
-
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/center_vertical"

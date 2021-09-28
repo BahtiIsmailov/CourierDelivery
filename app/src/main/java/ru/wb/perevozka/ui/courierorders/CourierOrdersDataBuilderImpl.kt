@@ -13,7 +13,7 @@ class CourierOrdersDataBuilderImpl(
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
-            order = "Заказ № " + courierOrderEntity.id.toString(),
+            order = "Заказ " + courierOrderEntity.id.toString(),
             volume = resourceProvider.getBoxCountAndVolume(
                 courierOrderEntity.minBoxesCount,
                 courierOrderEntity.minVolume

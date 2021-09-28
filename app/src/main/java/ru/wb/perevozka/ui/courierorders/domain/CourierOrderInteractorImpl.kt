@@ -12,6 +12,7 @@ import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import java.util.concurrent.TimeUnit
 
 class CourierOrderInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -21,7 +22,8 @@ class CourierOrderInteractorImpl(
 ) : CourierOrderInteractor {
 
     override fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
-        return appRemoteRepository.courierOrders(srcOfficeID)
+        return Completable.timer(1, TimeUnit.SECONDS)
+            .andThen(appRemoteRepository.courierOrders(srcOfficeID))
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

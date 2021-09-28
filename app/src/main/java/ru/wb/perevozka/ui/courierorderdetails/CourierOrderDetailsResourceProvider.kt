@@ -39,4 +39,8 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
     fun getConfirmDialogMessage(arriveFor: Int, volume: Int) =
         context.getString(R.string.courier_orders_details_dialog_message, arriveFor, volume)
 
+    fun getOfficeMapIcon() = R.drawable.ic_unload_office_map_empty
+
+    fun getOfficeMapSelectedIcon() = R.drawable.ic_unload_office_map_empty_select
+
 }

@@ -62,7 +62,7 @@ class CourierOrderFragment : Fragment() {
         (activity as NavToolbarListener).hideToolbar()
         initRecyclerView()
         initAdapter()
-        initListener()
+        initListeners()
         initStateObserve()
         initReturnResult()
     }
@@ -86,7 +86,7 @@ class CourierOrderFragment : Fragment() {
         }
     }
 
-    private fun initListener() {
+    private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.update.setOnClickListener { viewModel.onUpdateClick() }
     }

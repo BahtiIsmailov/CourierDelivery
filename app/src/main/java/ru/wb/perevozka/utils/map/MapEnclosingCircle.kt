@@ -8,15 +8,24 @@ class MapEnclosingCircle {
     fun minimumEnclosingCircle(points: List<CoordinatePoint>): MapCircle {
         val n = points.size
         var memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
-        if (points.isEmpty()) MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
-        if (n == 1) MapCircle(CoordinatePoint(points[0].x, points[0].y), 0.0)
-        for (i in 0 until n) {
-            for (j in i + 1 until n) {
-                val tmpCircle = circleFrom(points[i], points[j])
-                LogUtils { logDebugApp("tmpCircle " + tmpCircle.toString()) }
-                if (tmpCircle.radius > memCircle.radius) {
-                    if (n == 3 || isValidCircle(tmpCircle, points))
-                        memCircle = tmpCircle
+        if (points.isEmpty()) {
+            memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
+        } else if (n == 1) {
+            memCircle = MapCircle(CoordinatePoint(points[0].x, points[0].y), 1.0)
+        } else if (n == 2) {
+            val point1 = CoordinatePoint(points[0].x, points[0].y)
+            val point2 = CoordinatePoint(points[1].x, points[1].y)
+            memCircle = circleFrom(point1, point2)
+            LogUtils { logDebugApp("memCircle " + memCircle.toString()) }
+        } else {
+            for (i in 0 until n) {
+                for (j in i + 1 until n) {
+                    val tmpCircle = circleFrom(points[i], points[j])
+                    LogUtils { logDebugApp("tmpCircle " + tmpCircle.toString()) }
+                    if (tmpCircle.radius > memCircle.radius) {
+                        if (n == 3 || isValidCircle(tmpCircle, points))
+                            memCircle = tmpCircle
+                    }
                 }
             }
         }
@@ -26,6 +35,7 @@ class MapEnclosingCircle {
     private fun circleFrom(pointA: CoordinatePoint, pointB: CoordinatePoint): MapCircle {
         val pointCenter = center(pointA, pointB)
         val radius = distance(pointA, pointB) / 2.0
+        LogUtils { logDebugApp("radius " + radius.toString()) }
         return MapCircle(pointCenter, radius)
     }
 

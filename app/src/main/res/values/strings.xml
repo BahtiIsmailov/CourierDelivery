@@ -214,11 +214,11 @@
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
     <string name="courier_order_dialog_positive_button_error">Ok</string>
 
-    <string name="courier_orders_details_order">Заказ № %1$d</string>
+    <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
 
-    <string name="courier_orders_confirm_order">Заказ № %1$d</string>
+    <string name="courier_orders_confirm_order">Заказ %1$d</string>
     <string name="courier_orders_confirm_coast">%1$s ₽</string>
     <string name="courier_orders_confirm_car_number">• %1$s</string>
     <string name="courier_orders_confirm_arrive">• за %1$s мин</string>

@@ -9,8 +9,15 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
+import ru.wb.perevozka.ui.couriermap.CourierMapMarker
+import ru.wb.perevozka.ui.couriermap.CourierMapState
+import ru.wb.perevozka.ui.couriermap.Empty
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.utils.map.CoordinatePoint
+import ru.wb.perevozka.utils.map.MapEnclosingCircle
+import ru.wb.perevozka.utils.map.MapPoint
 import java.text.DecimalFormat
 
 class CourierOrderDetailsViewModel(
@@ -32,10 +39,6 @@ class CourierOrderDetailsViewModel(
     val orderDetails: LiveData<CourierOrderDetailsUIState>
         get() = _orderDetails
 
-    private val _mapPoint = MutableLiveData<CourierOrderDetailsMapPoint>()
-    val mapPoint: LiveData<CourierOrderDetailsMapPoint>
-        get() = _mapPoint
-
     private val _navigationState = SingleLiveEvent<CourierOrderDetailsNavigationState>()
     val navigationState: LiveData<CourierOrderDetailsNavigationState>
         get() = _navigationState
@@ -44,10 +47,16 @@ class CourierOrderDetailsViewModel(
     val progressState: LiveData<CourierOrderDetailsProgressState>
         get() = _progressState
 
-    private var copyCourierOrderDetailsItems = mutableListOf<CourierOrderDetailsItem>()
+    private var courierOrderDetailsItems = mutableListOf<CourierOrderDetailsItem>()
 
-    private fun copyCourierOrderDetailsItems(items: List<CourierOrderDetailsItem>) {
-        copyCourierOrderDetailsItems = items.toMutableList()
+    private var mapMarkers = mutableListOf<CourierMapMarker>()
+
+    private fun saveCourierOrderDetailsItems(items: List<CourierOrderDetailsItem>) {
+        courierOrderDetailsItems = items.toMutableList()
+    }
+
+    private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
+        this.mapMarkers = mapMarkers.toMutableList()
     }
 
     init {
@@ -84,18 +93,26 @@ class CourierOrderDetailsViewModel(
 
     private fun initOrderItems(dstOffices: List<CourierOrderDstOfficeLocalEntity>) {
         val items = mutableListOf<CourierOrderDetailsItem>()
+        val coordinatePoints = mutableListOf<CoordinatePoint>()
+        val mapMarkers = mutableListOf<CourierMapMarker>()
         dstOffices.forEachIndexed { index, item ->
-            items.add(
-                CourierOrderDetailsItem(
-                    index,
-                    item.fullAddress,
-                    item.longitude,
-                    item.latitude,
-                    false
-                )
-            )
+            items.add(CourierOrderDetailsItem(index, item.fullAddress, false))
+            coordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
+            val mapPoint = MapPoint(index.toString(), item.latitude, item.longitude)
+            val mapMarker = Empty(mapPoint, resourceProvider.getOfficeMapIcon())
+            mapMarkers.add(mapMarker)
         }
-        copyCourierOrderDetailsItems(items)
+        saveCourierOrderDetailsItems(items)
+        initItems(items)
+        saveMapMarkers(mapMarkers)
+        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
+        val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
+        LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
+        interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
+    }
+
+    private fun initItems(items: MutableList<CourierOrderDetailsItem>) {
         _orderDetails.value = if (items.isEmpty()) CourierOrderDetailsUIState.Empty
         else CourierOrderDetailsUIState.InitItems(items)
     }
@@ -183,23 +200,21 @@ class CourierOrderDetailsViewModel(
     }
 
     private fun changeItemSelected(selectIndex: Int) {
-        copyCourierOrderDetailsItems.forEachIndexed { index, item ->
+        courierOrderDetailsItems.forEachIndexed { index, item ->
             val copyReception = if (selectIndex == index) {
-                copyCourierOrderDetailsItems[index].copy(isSelected = !item.isSelected)
+                courierOrderDetailsItems[index].copy(isSelected = !item.isSelected)
             } else {
-                copyCourierOrderDetailsItems[index].copy(isSelected = false)
+                courierOrderDetailsItems[index].copy(isSelected = false)
             }
-            copyCourierOrderDetailsItems[index] = copyReception
+            courierOrderDetailsItems[index] = copyReception
         }
         _orderDetails.value =
-            if (copyCourierOrderDetailsItems.isEmpty()) CourierOrderDetailsUIState.Empty
-            else CourierOrderDetailsUIState.InitItems(copyCourierOrderDetailsItems)
+            if (courierOrderDetailsItems.isEmpty()) CourierOrderDetailsUIState.Empty
+            else CourierOrderDetailsUIState.InitItems(courierOrderDetailsItems)
     }
 
     private fun navigateToPoint(index: Int) {
-        val itemSelected = copyCourierOrderDetailsItems[index]
-        _mapPoint.value =
-            CourierOrderDetailsMapPoint.NavigateToPoint(itemSelected.lat, itemSelected.long)
+
     }
 
     data class NavigateToMessageInfo(

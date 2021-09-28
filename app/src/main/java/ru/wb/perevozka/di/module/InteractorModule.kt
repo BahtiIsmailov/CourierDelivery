@@ -399,12 +399,14 @@ val interactorModule = module {
     fun provideCourierOrderDetailsInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager
+        userManager: UserManager,
+        courierMapRepository: CourierMapRepository
     ): CourierOrderDetailsInteractor {
         return CourierOrderDetailsInteractorImpl(
             rxSchedulerFactory,
             courierLocalRepository,
-            userManager
+            userManager,
+            courierMapRepository
         )
     }
 
@@ -559,7 +561,7 @@ val interactorModule = module {
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierOrderInteractor(get(), get(), get(), get()) }
-    single { provideCourierOrderDetailsInteractor(get(), get(), get()) }
+    single { provideCourierOrderDetailsInteractor(get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierOrderConfirmInteractor(get(), get(), get(), get()) }

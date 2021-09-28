@@ -50,7 +50,7 @@ class CourierWarehousesFragment : Fragment() {
         initView()
         initRecyclerView()
         initObservable()
-        initListener()
+        initListeners()
         initReturnResult()
         viewModel.update()
     }
@@ -138,7 +138,7 @@ class CourierWarehousesFragment : Fragment() {
 
     }
 
-    private fun initListener() {
+    private fun initListeners() {
         binding.update.setOnClickListener { viewModel.onUpdateClick() }
     }
 

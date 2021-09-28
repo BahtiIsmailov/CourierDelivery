@@ -19,7 +19,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Заказ № 3245934" />
+        tools:text="Заказ 3245934" />
 
     <TextView
         android:id="@+id/volume"

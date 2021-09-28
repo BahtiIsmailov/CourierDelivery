@@ -15,7 +15,7 @@
         app:layout_constraintGuide_percent="0.5" />
 
     <fragment
-        android:id="@+id/scanner"
+        android:id="@+id/map"
         class="ru.wb.perevozka.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -56,22 +56,16 @@
 
     </RelativeLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/items"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginBottom="20dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/update"
-        app:layout_constraintTop_toBottomOf="@+id/content_center">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/items"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:clipToPadding="false"
-            tools:listitem="@layout/courier_warehouse_item_layout" />
-
-    </androidx.core.widget.NestedScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/content_center"
+        tools:listitem="@layout/courier_warehouse_item_layout" />
 
     <View
         android:id="@+id/overlay_boxes"
