@@ -43,6 +43,7 @@ import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.perevozka.ui.scanner.hasPermissions
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
+import ru.wb.perevozka.views.ProgressImageButtonMode
 
 
 class CourierIntransitFragment : Fragment() {
@@ -201,6 +202,7 @@ class CourierIntransitFragment : Fragment() {
                 }
                 CourierIntransitItemState.CompleteDelivery -> {
                     binding.scanQrPvz.visibility = INVISIBLE
+                    binding.scanQrPvzComplete.visibility = VISIBLE
                     binding.completeDelivery.visibility = VISIBLE
                 }
             }
@@ -247,10 +249,14 @@ class CourierIntransitFragment : Fragment() {
                 CourierIntransitNavigationState.NavigateToMap -> {
                     crossFade(binding.mapLayout, binding.scannerLayout)
                     binding.scanQrPvz.setState(ProgressButtonMode.ENABLE)
+                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
                 }
                 CourierIntransitNavigationState.NavigateToScanner -> {
                     crossFade(binding.scannerLayout, binding.mapLayout)
                     binding.scanQrPvz.setState(ProgressButtonMode.DISABLE)
+                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierIntransitNavigationState.NavigateToUnloadingScanner -> {
                     findNavController().navigate(
@@ -313,8 +319,9 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
         binding.closeScannerLayout.setOnClickListener { viewModel.closeScannerClick() }
+        binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
+        binding.scanQrPvzComplete.setOnClickListener { viewModel.scanQrPvzClick() }
         binding.completeDelivery.setOnClickListener { viewModel.completeDeliveryClick() }
     }
 

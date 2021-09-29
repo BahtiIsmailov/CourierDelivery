@@ -2,6 +2,7 @@ package ru.wb.perevozka.network.api.app
 
 import io.reactivex.Completable
 import io.reactivex.Single
+import retrofit2.http.Path
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
@@ -10,6 +11,7 @@ import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnti
 import ru.wb.perevozka.network.api.app.entity.*
 import ru.wb.perevozka.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import ru.wb.perevozka.network.api.app.entity.warehousescan.WarehouseScanEntity
+import ru.wb.perevozka.network.api.app.remote.courier.CourierTaskBoxesResponse
 import ru.wb.perevozka.network.api.app.remote.flightsstatus.StatusStateEntity
 import ru.wb.perevozka.network.api.app.remote.flightstatuses.FlightStatusesResponse
 import ru.wb.perevozka.network.api.app.remote.time.TimeResponse
@@ -105,6 +107,8 @@ interface AppRemoteRepository {
     fun deleteTask(taskID: String): Completable
 
     fun taskStatuses(taskID: String): Single<CourierTaskStatusesEntity>
+
+    fun taskBoxes(taskID: String): Single<CourierTaskBoxesEntity>
 
     fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable
 

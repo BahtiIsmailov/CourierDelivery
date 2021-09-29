@@ -61,8 +61,6 @@ class CourierUnloadingScanViewModel(
     val bottomProgressEvent: LiveData<CourierUnloadingScanBottomState>
         get() = _bottomEvent
 
-    //val  = MutableLiveData<Boolean>()
-
     init {
         initToolbar()
         observeNetworkState()

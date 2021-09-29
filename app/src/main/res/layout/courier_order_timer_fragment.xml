@@ -226,7 +226,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/refuse_order"
         app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="Я прибыл"
+        app:progress_button_name="Начать погрузку"
         app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/button_default_text_disable"
         app:progress_button_text_color_enable="@color/button_default_text_enable"

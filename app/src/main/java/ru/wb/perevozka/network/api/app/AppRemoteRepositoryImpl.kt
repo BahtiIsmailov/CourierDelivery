@@ -624,6 +624,25 @@ class AppRemoteRepositoryImpl(
             }
     }
 
+    override fun taskBoxes(taskID: String): Single<CourierTaskBoxesEntity> {
+        return remote.taskBoxes(apiVersion(), taskID).map { response ->
+            val courierTaskBoxEntity = mutableListOf<CourierTaskBoxEntity>()
+            response.data.forEach {
+                with(it) {
+                    courierTaskBoxEntity.add(
+                        CourierTaskBoxEntity(
+                            id = id,
+                            dstOfficeID = dstOfficeID,
+                            loadingAt = loadingAt,
+                            deliveredAt = deliveredAt ?: ""
+                        )
+                    )
+                }
+            }
+            CourierTaskBoxesEntity(courierTaskBoxEntity, response.count)
+        }
+    }
+
     override fun taskStart(
         taskID: String,
         courierTaskStartEntity: CourierTaskStartEntity

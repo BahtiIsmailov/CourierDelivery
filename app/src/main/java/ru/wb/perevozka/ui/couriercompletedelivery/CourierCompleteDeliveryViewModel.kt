@@ -7,9 +7,9 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
 
 class CourierCompleteDeliveryViewModel(
-    private val parameters: CourierCompleteDeliveryParameters,
+    parameters: CourierCompleteDeliveryParameters,
     compositeDisposable: CompositeDisposable,
-    private val resourceProvider: CourierCompleteDeliveryResourceProvider,
+    resourceProvider: CourierCompleteDeliveryResourceProvider,
     private val interactor: CourierCompleteDeliveryInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 

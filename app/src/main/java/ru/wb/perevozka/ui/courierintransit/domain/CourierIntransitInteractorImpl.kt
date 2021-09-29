@@ -113,7 +113,7 @@ class CourierIntransitInteractorImpl(
                     id = id,
                     dstOfficeID = dstOfficeId,
                     loadingAt = loadingAt,
-                    deliveredAt = deliveredAt
+                    deliveredAt = if (deliveredAt.isEmpty()) null else deliveredAt
                 )
             }
         }.toList()

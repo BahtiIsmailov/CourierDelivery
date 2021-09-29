@@ -43,7 +43,7 @@ interface CourierBoxDao {
     @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
     fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
 
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId AND deliveredAt != ''")
+    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
     fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
 
     @Query("SELECT COALESCE(id, '') AS id, COALESCE(address, '') AS address FROM CourierBoxEntity WHERE dstOfficeId = :officeId AND deliveredAt != '' ORDER BY deliveredAt DESC LIMIT 1")
@@ -58,7 +58,7 @@ interface CourierBoxDao {
     @Query("SELECT CourierOrder.minPrice AS amount, Counter.deliveredCount AS unloadedCount, Counter.fromCount AS fromCount FROM (SELECT minPrice FROM CourierOrderLocalEntity) AS CourierOrder, (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity) AS Counter")
     fun completeDeliveryResult(): Single<CompleteDeliveryResult>
 
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId IN (SELECT visited_office_dst_office_id FROM CourierOrderVisitedOfficeLocalEntity WHERE visited_office_is_unload = 0) AND deliveredAt != ''")
+    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId IN (SELECT visited_office_dst_office_id FROM CourierOrderVisitedOfficeLocalEntity WHERE visited_office_is_unload = 0)")
     fun readNotUnloadingBoxes(): Single<List<CourierBoxEntity>>
 
     @Query("DELETE FROM CourierOrderVisitedOfficeLocalEntity")

@@ -198,6 +198,12 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
     ): Single<CourierTaskStatusesResponse>
 
+    @GET("{version}/tasks/{taskID}/boxes")
+    fun taskBoxes(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+    ): Single<CourierTaskBoxesResponse>
+
     @POST("{version}/tasks/{taskID}/statuses/start")
     fun taskStart(
         @Path(value = "version", encoded = true) version: String,
