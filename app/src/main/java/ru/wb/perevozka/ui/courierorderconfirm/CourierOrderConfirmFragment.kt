@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -37,9 +38,15 @@ class CourierOrderConfirmFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initObservable()
         initListeners()
         initReturnResult()
+    }
+
+    private fun initView() {
+        binding.toolbarLayout.toolbarTitle.text = "Подтверждение заказа"
+        binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
     private fun initReturnResult() {
@@ -74,8 +81,8 @@ class CourierOrderConfirmFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog ->
-                    showRefuseOrderDialog(it.title, it.message)
+                is CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog -> {}
+                    //showRefuseOrderDialog(it.title, it.message)
                 is CourierOrderConfirmNavigationState.NavigateToDialogInfo ->
                     showTimeIsOutDialog(it.title, it.message, it.button)
                 CourierOrderConfirmNavigationState.NavigateToWarehouse -> {

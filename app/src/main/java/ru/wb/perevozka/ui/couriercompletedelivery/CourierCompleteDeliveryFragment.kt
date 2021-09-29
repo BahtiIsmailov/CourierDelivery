@@ -1,18 +1,35 @@
 package ru.wb.perevozka.ui.couriercompletedelivery
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.databinding.CourierCompleteDeliveryFragmentBinding
+import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsFragment
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
+import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 class CourierCompleteDeliveryFragment : Fragment() {
 
-    private val viewModel by viewModel<CourierCompleteDeliveryViewModel>()
+    companion object {
+        const val COURIER_COMPLETE_DELIVERY_KEY = "courier_complete_delivery_key"
+    }
+
+    private val viewModel by viewModel<CourierCompleteDeliveryViewModel> {
+        parametersOf(
+            requireArguments().getParcelable<CourierCompleteDeliveryParameters>(
+                COURIER_COMPLETE_DELIVERY_KEY
+            )
+        )
+    }
 
     private var _binding: CourierCompleteDeliveryFragmentBinding? = null
     private val binding get() = _binding!!
@@ -66,3 +83,10 @@ class CourierCompleteDeliveryFragment : Fragment() {
     }
 
 }
+
+@Parcelize
+data class CourierCompleteDeliveryParameters(
+    val amount: Int,
+    val unloadedCount: Int,
+    val fromCount: Int
+) : Parcelable

@@ -9,11 +9,11 @@ class CourierCompleteDeliveryInteractorImpl(
     private val courierLocalRepository: CourierLocalRepository,
 ) : CourierCompleteDeliveryInteractor {
 
-    override fun getCompleteDeliveryResult(): Single<CompleteDeliveryResult> {
-        return courierLocalRepository.completeDeliveryResult()
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
+//    override fun getCompleteDeliveryResult(): Single<CompleteDeliveryResult> {
+//        return courierLocalRepository.completeDeliveryResult()
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
 
 }
 
-data class CompleteDeliveryResult(val amount: Int, val unloadedCount: Int, val fromCount: Int)
+//data class CompleteDeliveryResult(val amount: Int, val unloadedCount: Int, val fromCount: Int)

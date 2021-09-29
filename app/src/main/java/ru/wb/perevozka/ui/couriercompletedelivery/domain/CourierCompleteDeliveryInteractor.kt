@@ -4,6 +4,6 @@ import io.reactivex.Single
 
 interface CourierCompleteDeliveryInteractor {
 
-    fun getCompleteDeliveryResult() : Single<CompleteDeliveryResult>
+//    fun getCompleteDeliveryResult() : Single<CompleteDeliveryResult>
 
 }

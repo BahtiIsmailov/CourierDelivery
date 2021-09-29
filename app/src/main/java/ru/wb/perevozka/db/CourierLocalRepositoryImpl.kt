@@ -10,7 +10,7 @@ import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.db.entity.courierlocal.*
-import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
+import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 

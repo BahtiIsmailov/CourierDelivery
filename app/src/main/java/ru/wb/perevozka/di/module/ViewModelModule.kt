@@ -8,6 +8,7 @@ import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
+import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
 import ru.wb.perevozka.ui.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.courierdata.UserFormViewModel
@@ -130,7 +131,7 @@ val viewModelModule = module {
         )
     }
     viewModel { CourierUnloadingUnknownBoxViewModel() }
-    viewModel { CourierCompleteDeliveryViewModel(get(), get(), get()) }
+    viewModel { (parameters: CourierCompleteDeliveryParameters) -> CourierCompleteDeliveryViewModel(parameters, get(), get(), get()) }
     viewModel { CourierMapViewModel(get(), get(), get()) }
 
 

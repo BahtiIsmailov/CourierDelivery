@@ -61,6 +61,7 @@ class CourierLoadingScanFragment : Fragment() {
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
     }
 
     private var isDialogActive: Boolean = false
@@ -218,7 +219,6 @@ class CourierLoadingScanFragment : Fragment() {
                     )
                     binding.address.text = state.address
                     binding.receive.text = state.accepted
-                    binding.listLayout.setOnClickListener { viewModel.onListClicked() }
 
                     binding.timeDigit.visibility = View.GONE
                     binding.timer.visibility = View.GONE
@@ -249,7 +249,6 @@ class CourierLoadingScanFragment : Fragment() {
                         )
                     )
                     binding.receive.text = state.accepted
-                    binding.listLayout.setOnClickListener { viewModel.onListClicked() }
                 }
                 is CourierLoadingScanBoxState.UnknownBox -> {
                     holdBackButtonOnScanBox()
@@ -275,7 +274,6 @@ class CourierLoadingScanFragment : Fragment() {
                         )
                     )
                     binding.receive.text = state.accepted
-                    binding.listLayout.setOnClickListener { viewModel.onListClicked() }
                 }
 
             }
@@ -405,7 +403,8 @@ class CourierLoadingScanFragment : Fragment() {
 
     private fun initListener() {
         binding.complete.setOnClickListener { viewModel.onCompleteLoaderClicked() }
-        binding.listLayout.setOnClickListener { viewModel.onListClicked() }
+        // TODO: 28.09.2021 включить для отладки
+        //binding.listLayout.setOnClickListener { viewModel.onListClicked() }
     }
 
     override fun onDestroyView() {

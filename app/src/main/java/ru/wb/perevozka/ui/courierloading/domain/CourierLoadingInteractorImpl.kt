@@ -98,7 +98,7 @@ class CourierLoadingInteractorImpl(
                                     CourierLoadingScanBoxData.BoxAdded(
                                         qrcode,
                                         address
-                                    ), count
+                                    ), count + 1
                                 )
                             )
                             .doOnComplete {
@@ -111,7 +111,7 @@ class CourierLoadingInteractorImpl(
                         saveBoxLocal(courierBoxEntity).andThen(
                             justProcessData(
                                 CourierLoadingScanBoxData.BoxAdded(qrcode, address),
-                                count
+                                count + 1
                             )
                         )
                     }

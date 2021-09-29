@@ -327,6 +327,10 @@
         android:name="ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryFragment"
         android:label=""
         tools:layout="@layout/courier_complete_delivery_fragment">
+        <argument
+            android:name="courier_complete_delivery_key"
+            app:argType="ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters"
+            app:nullable="false" />
         <action
             android:id="@+id/action_courierCompleteDeliveryFragment_to_courierLoaderFragment"
             app:destination="@id/courierLoaderFragment"

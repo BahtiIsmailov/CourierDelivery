@@ -176,6 +176,7 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     }
 
     private fun startScanner() {
+        LogUtils { logDebugApp("Scanner startScanner()") }
         scannerView.setResultHandler(this)
 
         if (hasPermission(Manifest.permission.CAMERA)) {

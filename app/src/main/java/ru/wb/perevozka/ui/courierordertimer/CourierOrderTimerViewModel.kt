@@ -88,7 +88,8 @@ class CourierOrderTimerViewModel(
                 name,
                 resourceProvider.getCoast(coast),
                 resourceProvider.getBoxCountAndVolume(boxesCount, volume),
-                resourceProvider.getPvz(countPvz)
+                resourceProvider.getPvz(countPvz),
+                if (gate.isEmpty()) "-" else gate
             )
         }
     }

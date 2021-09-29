@@ -34,6 +34,7 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.adapters.DefaultAdapterDelegate
 import ru.wb.perevozka.databinding.CourierIntransitFragmentBinding
 import ru.wb.perevozka.mvvm.model.base.BaseItem
+import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitCompleteDelegate
 import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitEmptyDelegate
 import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitFaildDelegate
@@ -258,9 +259,15 @@ class CourierIntransitFragment : Fragment() {
                         )
                     )
                 }
-                CourierIntransitNavigationState.NavigateToCompleteDelivery -> {
+                is CourierIntransitNavigationState.NavigateToCompleteDelivery -> {
                     findNavController().navigate(
-                        CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierCompleteDeliveryFragment()
+                        CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierCompleteDeliveryFragment(
+                            CourierCompleteDeliveryParameters(
+                                it.amount,
+                                it.unloadedCount,
+                                it.fromCount
+                            )
+                        )
                     )
                 }
             }

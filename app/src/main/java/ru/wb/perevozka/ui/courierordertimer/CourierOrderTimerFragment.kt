@@ -60,6 +60,7 @@ class CourierOrderTimerFragment : Fragment() {
                     binding.coast.text = it.coast
                     binding.volume.text = it.countBoxAndVolume
                     binding.pvz.text = it.countPvz
+                    binding.gateDigit.text = it.gate
                 }
             }
         }

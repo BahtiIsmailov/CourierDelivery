@@ -6,7 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
-import ru.wb.perevozka.ui.couriercompletedelivery.domain.CompleteDeliveryResult
+import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 

@@ -25,6 +25,7 @@ class TimerProgressView : View {
     @FloatRange(from = MIN_PROGRESS_SCALE.toDouble(), to = MAX_PROGRESS_SCALE.toDouble())
     private var progress = DEFAULT_PROGRESS_VALUE
     private var progressWidth = DEFAULT_STROKE_WIDTH_SCALE
+    private var isDividerScale = DEFAULT_IS_DIVIDER_SCALE
 
     private var scaleCurrentColor = DEFAULT_SCALE_CURRENT_COLOR
     private var scaleWaitColor = DEFAULT_SCALE_WAIT_COLOR
@@ -68,6 +69,12 @@ class TimerProgressView : View {
                     R.styleable.TimerProgressView_ap_progress_width,
                     DEFAULT_STROKE_WIDTH_SCALE
                 )
+
+                isDividerScale = array.getBoolean(
+                    R.styleable.TimerProgressView_ap_is_divider,
+                    DEFAULT_IS_DIVIDER_SCALE
+                )
+
                 scaleCurrentColor = array.getColor(
                     R.styleable.TimerProgressView_ap_progress_scale_current_color,
                     DEFAULT_SCALE_CURRENT_COLOR
@@ -120,7 +127,27 @@ class TimerProgressView : View {
 
     override fun onDraw(canvas: Canvas) {
         initParam(canvas)
+        drawDivider()
         drawArc(currentAngle)
+    }
+
+    private fun drawDivider() {
+        if (!isDividerScale) return
+        val scaleWidth = dpToPx(progressWidth).toFloat() / 2
+        val backgroundPaint = Paint()
+        backgroundPaint.style = Paint.Style.STROKE
+        backgroundPaint.isAntiAlias = true
+        backgroundPaint.strokeCap = Paint.Cap.ROUND
+        backgroundPaint.color = scaleWaitColor
+        backgroundPaint.strokeWidth = scaleWidth
+        val pRadiusScale = radiusBox * RADIUS_SCALE
+        canvas!!.drawLine(
+            pCenter.x.toFloat() - pRadiusScale,
+            pCenter.y.toFloat(),
+            pCenter.x.toFloat() + pRadiusScale,
+            pCenter.y.toFloat(),
+            backgroundPaint
+        )
     }
 
     private fun initParam(canvas: Canvas) {
@@ -248,6 +275,7 @@ class TimerProgressView : View {
         private const val START_ARC_ANGLE = -90
 
         private const val DEFAULT_STROKE_WIDTH_SCALE = 5
+        private const val DEFAULT_IS_DIVIDER_SCALE = false
         private const val RADIUS_SCALE = 0.95f
     }
 }

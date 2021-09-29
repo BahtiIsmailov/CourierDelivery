@@ -62,10 +62,11 @@ class CourierOrderConfirmViewModel(
     }
 
     fun refuseOrderClick() {
-        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog(
-            "Отказаться от заказа",
-            "Вы уверены, что хотите отказаться от заказа?"
-        )
+//        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog(
+//            "Отказаться от заказа",
+//            "Вы уверены, что хотите отказаться от заказа?"
+//        )
+        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToWarehouse
     }
 
     fun confirmOrderClick() {

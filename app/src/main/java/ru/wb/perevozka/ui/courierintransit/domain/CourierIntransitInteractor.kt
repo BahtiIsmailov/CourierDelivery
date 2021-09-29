@@ -3,12 +3,13 @@ package ru.wb.perevozka.ui.courierintransit.domain
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 
 interface CourierIntransitInteractor {
 
-    fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
+    fun observeBoxesGroupByOffice(): Observable<List<CourierIntransitGroupByOfficeEntity>>
 
     fun observeOfficeIdScanProcess(): Observable<Int>
 
@@ -16,6 +17,6 @@ interface CourierIntransitInteractor {
 
     fun startTime(): Observable<Long>
 
-    fun completeDelivery(): Completable
+    fun completeDelivery(): Single<CompleteDeliveryResult>
 
 }

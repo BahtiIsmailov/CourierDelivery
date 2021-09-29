@@ -8,10 +8,12 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
+import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryState
 import ru.wb.perevozka.ui.courierintransit.delegates.items.BaseIntransitItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitEmptyItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitFailedItem
+import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
@@ -196,14 +198,19 @@ class CourierIntransitViewModel(
 
     fun completeDeliveryClick() {
         _progressState.value = CourierIntransitProgressState.Progress
-        addSubscription(interactor.completeDelivery()
-            .subscribe({ completeDeliveryComplete() }, { completeDeliveryError(it) })
+        addSubscription(
+            interactor.completeDelivery()
+                .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
         )
     }
 
-    private fun completeDeliveryComplete() {
+    private fun completeDeliveryComplete(completeDeliveryResult: CompleteDeliveryResult) {
         _progressState.value = CourierIntransitProgressState.ProgressComplete
-        _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery
+        _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
+            completeDeliveryResult.amount,
+            completeDeliveryResult.unloadedCount,
+            completeDeliveryResult.fromCount
+        )
     }
 
     private fun completeDeliveryError(throwable: Throwable) {

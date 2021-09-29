@@ -8,6 +8,7 @@ sealed class CourierOrderTimerInfoUIState {
         val coast: String,
         val countBoxAndVolume: String,
         val countPvz: String,
+        val gate: String,
     ) : CourierOrderTimerInfoUIState()
 
 }

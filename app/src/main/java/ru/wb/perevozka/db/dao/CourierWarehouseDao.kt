@@ -21,7 +21,7 @@ interface CourierWarehouseDao {
     @Query("DELETE FROM CourierWarehouseLocalEntity")
     fun deleteAll()
 
-    @Query("SELECT Warehouse.name AS name, CourierOrder.order_id AS orderId, CourierOrder.minPrice AS price, CourierOrder.minBoxesCount AS boxesCount, CourierOrder.minVolume AS volume, CourierOrderDstOffice.countPvz AS countPvz, CourierOrder.reservedDuration AS reservedDuration, CourierOrder.reservedAt AS reservedAt FROM (SELECT name FROM CourierWarehouseLocalEntity) AS Warehouse, (SELECT * FROM CourierOrderLocalEntity) AS CourierOrder, (SELECT COUNT(*) as countPvz FROM CourierOrderDstOfficeLocalEntity) AS CourierOrderDstOffice")
+    @Query("SELECT Warehouse.name AS name, CourierOrder.order_id AS orderId, CourierOrder.minPrice AS price, CourierOrder.minBoxesCount AS boxesCount, CourierOrder.minVolume AS volume, COALESCE(CourierOrder.gate, '-') AS gate, CourierOrderDstOffice.countPvz AS countPvz, CourierOrder.reservedDuration AS reservedDuration, CourierOrder.reservedAt AS reservedAt FROM (SELECT name FROM CourierWarehouseLocalEntity) AS Warehouse, (SELECT * FROM CourierOrderLocalEntity) AS CourierOrder, (SELECT COUNT(*) as countPvz FROM CourierOrderDstOfficeLocalEntity) AS CourierOrderDstOffice")
     fun courierTimerEntity(): Single<CourierTimerEntity>
 
 }

@@ -196,7 +196,6 @@ class CourierOrderDetailsViewModel(
 
     fun onItemClick(index: Int) {
         changeItemSelected(index)
-        navigateToPoint(index)
     }
 
     private fun changeItemSelected(selectIndex: Int) {
@@ -211,10 +210,24 @@ class CourierOrderDetailsViewModel(
         _orderDetails.value =
             if (courierOrderDetailsItems.isEmpty()) CourierOrderDetailsUIState.Empty
             else CourierOrderDetailsUIState.InitItems(courierOrderDetailsItems)
+
+        navigateToPoint(selectIndex, courierOrderDetailsItems[selectIndex].isSelected)
     }
 
-    private fun navigateToPoint(index: Int) {
-
+    private fun navigateToPoint(selectIndex: Int, isSelected: Boolean) {
+        mapMarkers.forEach { item ->
+            item.icon = if (item.point.id == selectIndex.toString()) {
+                if (isSelected) resourceProvider.getOfficeMapSelectedIcon() else resourceProvider.getOfficeMapIcon()
+            } else {
+                resourceProvider.getOfficeMapIcon()
+            }
+        }
+        mapMarkers.find { it.point.id == selectIndex.toString() }?.apply {
+            mapMarkers.remove(this)
+            mapMarkers.add(this)
+        }
+        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 
     data class NavigateToMessageInfo(

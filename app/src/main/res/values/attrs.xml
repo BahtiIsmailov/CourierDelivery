@@ -3,6 +3,7 @@
 
     <declare-styleable name="TimerProgressView">
         <attr name="ap_progress" format="float" />
+        <attr name="ap_is_divider" format="boolean" />
         <attr name="ap_progress_width" format="integer" />
         <attr name="ap_progress_scale_current_color" format="color" />
         <attr name="ap_progress_scale_wait_color" format="color" />

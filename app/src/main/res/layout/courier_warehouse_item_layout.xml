@@ -7,8 +7,18 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingLeft="20dp"
-    android:paddingTop="20dp"
     android:paddingRight="20dp">
+
+    <ImageView
+        android:id="@+id/selected_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/courier_background_select_warehouse"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/item_layout"
@@ -19,38 +29,22 @@
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
+        android:padding="16dp"
         app:layout_constraintEnd_toStartOf="@+id/image_details"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <TextView
+            android:id="@+id/name_warehouse"
+            style="@style/LargeBlackRegularText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/selected_background"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/name_warehouse"
-                app:layout_constraintEnd_toEndOf="@+id/name_warehouse"
-                app:layout_constraintStart_toStartOf="@+id/name_warehouse"
-                app:layout_constraintTop_toTopOf="@+id/name_warehouse"
-                app:srcCompat="@drawable/courier_background_select_warehouse"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/name_warehouse"
-                style="@style/LargeBlackRegularText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="г. Подольск, ул. Троицкая, 20" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="г. Подольск, ул. Троицкая, 20" />
 
         <TextView
             android:id="@+id/full_address_warehouse"
@@ -71,7 +65,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:padding="10dp"
+        android:padding="16dp"
         android:src="@drawable/ic_navigate_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

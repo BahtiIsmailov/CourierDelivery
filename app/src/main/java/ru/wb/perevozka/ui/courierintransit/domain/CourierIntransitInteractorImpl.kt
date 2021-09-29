@@ -3,6 +3,7 @@ package ru.wb.perevozka.ui.courierintransit.domain
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.IntransitTimeRepository
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
@@ -25,9 +26,13 @@ class CourierIntransitInteractorImpl(
     private val timeFormatter: TimeFormatter
 ) : CourierIntransitInteractor {
 
-    override fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>> {
+    override fun observeBoxesGroupByOffice(): Observable<List<CourierIntransitGroupByOfficeEntity>> {
         return courierLocalRepository.observeBoxesGroupByOffice()
-            .compose(rxSchedulerFactory.applyFlowableSchedulers())
+            .flatMapSingle { list ->
+                Observable.fromIterable(list).filter { it.fromCount > 0 }.toList()
+            }
+            .toObservable()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun observeOfficeIdScanProcess(): Observable<Int> {
@@ -52,7 +57,11 @@ class CourierIntransitInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun completeDelivery(): Completable {
+    private fun getCompleteDeliveryResult(): Single<CompleteDeliveryResult> {
+        return courierLocalRepository.completeDeliveryResult()
+    }
+
+    override fun completeDelivery(): Single<CompleteDeliveryResult> {
         return courierLocalRepository.readNotUnloadingBoxes()
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
             .flatMapCompletable { intransitBoxes ->
@@ -76,8 +85,9 @@ class CourierIntransitInteractorImpl(
 //                Completable.timer(2, TimeUnit.SECONDS)
                 taskStatusesEnd(it)
             })
-            .doOnComplete { clearData() }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+            .andThen(getCompleteDeliveryResult())
+            .doOnSuccess { clearData() }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     private fun clearData() {
@@ -136,3 +146,5 @@ class CourierIntransitInteractorImpl(
     private fun courierLoadingScanBoxData() = courierLocalRepository.orderData()
 
 }
+
+data class CompleteDeliveryResult(val amount: Int, val unloadedCount: Int, val fromCount: Int)

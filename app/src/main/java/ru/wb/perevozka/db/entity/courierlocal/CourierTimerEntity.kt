@@ -7,6 +7,7 @@ data class CourierTimerEntity(
     val boxesCount: Int,
     val volume: Int,
     val countPvz: Int,
+    val gate: String,
     val reservedDuration: String,
     val reservedAt: String
 )

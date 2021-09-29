@@ -7,6 +7,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
 
 class CourierCompleteDeliveryViewModel(
+    private val parameters: CourierCompleteDeliveryParameters,
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: CourierCompleteDeliveryResourceProvider,
     private val interactor: CourierCompleteDeliveryInteractor,
@@ -21,16 +22,10 @@ class CourierCompleteDeliveryViewModel(
         get() = _navigateToBack
 
     init {
-        addSubscription(interactor.getCompleteDeliveryResult()
-            .map {
-                with(it) {
-                    CourierCompleteDeliveryState.InfoDelivery(
-                        resourceProvider.getAmountInfo(amount),
-                        resourceProvider.getDeliveredInfo(unloadedCount, fromCount)
-                    )
-                }
-            }
-            .subscribe({ _infoState.value = it }) {})
+        _infoState.value = CourierCompleteDeliveryState.InfoDelivery(
+            resourceProvider.getAmountInfo(parameters.amount),
+            resourceProvider.getDeliveredInfo(parameters.unloadedCount, parameters.fromCount)
+        )
     }
 
     fun onCompleteDeliveryClick() {
