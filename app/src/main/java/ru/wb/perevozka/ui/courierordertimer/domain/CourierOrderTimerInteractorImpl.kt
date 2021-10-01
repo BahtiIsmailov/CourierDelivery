@@ -6,10 +6,12 @@ import io.reactivex.Single
 import ru.wb.perevozka.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.TaskTimerRepository
+import ru.wb.perevozka.db.entity.TaskStatus
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.utils.time.TimeFormatter
 
@@ -18,12 +20,16 @@ class CourierOrderTimerInteractorImpl(
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
-    private val timeFormatter: TimeFormatter
+    private val timeFormatter: TimeFormatter,
+    private val userManager: UserManager
 ) : CourierOrderTimerInteractor {
 
     override fun deleteTask(): Completable {
         return taskId().flatMapCompletable { appRemoteRepository.deleteTask(it) }
-            .doOnComplete { taskTimerRepository.stopTimer() }
+            .doOnComplete {
+                taskTimerRepository.stopTimer()
+                userManager.saveStatusTask(TaskStatus.EMPTY.status)
+            }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

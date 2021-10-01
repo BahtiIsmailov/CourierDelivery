@@ -6,5 +6,8 @@ interface UserManager {
     fun phone(): String
     fun saveCarNumber(number: String)
     fun carNumber(): String
-    fun clear()
+    fun saveStatusTask(status: String)
+    fun statusTask(): String
+    fun clearAll()
+    fun clearStatus()
 }

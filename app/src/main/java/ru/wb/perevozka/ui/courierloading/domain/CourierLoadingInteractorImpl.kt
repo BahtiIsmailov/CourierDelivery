@@ -9,6 +9,7 @@ import ru.wb.perevozka.app.PREFIX_QR_CODE
 import ru.wb.perevozka.db.AppLocalRepository
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.TaskTimerRepository
+import ru.wb.perevozka.db.entity.TaskStatus
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
@@ -19,6 +20,7 @@ import ru.wb.perevozka.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
@@ -34,7 +36,8 @@ class CourierLoadingInteractorImpl(
     private val timeManager: TimeManager,
     private val screenManager: ScreenManager,
     private val courierLocalRepository: CourierLocalRepository,
-    private val taskTimerRepository: TaskTimerRepository
+    private val taskTimerRepository: TaskTimerRepository,
+    private val userManager: UserManager
 ) : CourierLoadingInteractor {
 
     private val scanLoaderProgressSubject = PublishSubject.create<CourierLoadingProgressData>()
@@ -103,6 +106,7 @@ class CourierLoadingInteractorImpl(
                             )
                             .doOnComplete {
                                 taskTimerRepository.stopTimer()
+                                userManager.saveStatusTask(TaskStatus.STARTED.status)
                                 loaderComplete()
                             }
                             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -233,6 +237,7 @@ class CourierLoadingInteractorImpl(
                     // TODO: 24.09.2021 выключить для тестирования
                     //Completable.timer(3, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
                     appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
+                        .doOnComplete { userManager.saveStatusTask(TaskStatus.INTRANSIT.status) }
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }
             }

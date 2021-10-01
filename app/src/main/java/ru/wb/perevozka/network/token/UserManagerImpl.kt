@@ -25,8 +25,22 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
         return worker.load(AppPreffsKeys.CAR_NUMBER_KEY, "")
     }
 
-    override fun clear() {
+    override fun saveStatusTask(status: String) {
+        worker.save(AppPreffsKeys.STATUS_TASK_KEY, status)
+    }
+
+    override fun statusTask(): String {
+        return worker.load(AppPreffsKeys.STATUS_TASK_KEY, "")
+    }
+
+    override fun clearAll() {
         worker.delete(AppPreffsKeys.PHONE_KEY)
+        worker.delete(AppPreffsKeys.CAR_NUMBER_KEY)
+        worker.delete(AppPreffsKeys.STATUS_TASK_KEY)
+    }
+
+    override fun clearStatus() {
+        worker.delete(AppPreffsKeys.STATUS_TASK_KEY)
     }
 
 }

@@ -48,6 +48,9 @@ interface CourierOrderDao {
     @Query("UPDATE CourierOrderDstOfficeLocalEntity SET dst_office_visited_at = :visitedAt WHERE dst_office_id = :officeId")
     fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable
 
+    @Query("INSERT INTO CourierOrderVisitedOfficeLocalEntity SELECT dstOfficeId, MAX(deliveredAt) as visitedAt, COUNT(CASE WHEN deliveredAt != '' THEN 1 END) == COUNT(*) AS isUnload FROM CourierBoxEntity GROUP BY dstOfficeId")
+    fun updateVisitedOfficeByBoxes(): Completable
+
     // TODO: 15.09.2021 вынести в отдельный DAO
     //==============================================================================================
     //order visited office

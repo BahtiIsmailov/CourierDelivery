@@ -2,8 +2,10 @@ package ru.wb.perevozka.ui.courierorderconfirm.domain
 
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import io.reactivex.subjects.BehaviorSubject
 import ru.wb.perevozka.db.CourierLocalRepository
+import ru.wb.perevozka.db.entity.TaskStatus
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
@@ -31,6 +33,7 @@ class CourierOrderConfirmInteractorImpl(
             .map { it.toString() }
             .firstOrError()
             .flatMapCompletable{ appRemoteRepository.anchorTask(it, userManager.carNumber()) }
+            .doOnComplete { userManager.saveStatusTask(TaskStatus.TIMER.status) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

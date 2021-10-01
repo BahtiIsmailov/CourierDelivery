@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.perevozka.db.Optional
+import ru.wb.perevozka.db.entity.TaskStatus
 import ru.wb.perevozka.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
@@ -588,7 +589,7 @@ class AppRemoteRepositoryImpl(
                 reservedAt = task.reservedAt,
                 startedAt = task.startedAt ?: "",
                 reservedDuration = task.reservedDuration,
-                status = task.status ?: ""
+                status = task.status ?: TaskStatus.TIMER.status
             )
         }
     }

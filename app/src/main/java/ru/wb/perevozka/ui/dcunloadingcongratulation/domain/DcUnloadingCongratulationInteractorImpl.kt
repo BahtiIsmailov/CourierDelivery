@@ -26,7 +26,7 @@ class DcUnloadingCongratulationInteractorImpl(
                 )
             })
             .firstOrError()
-            .doOnSuccess { appLocalRepository.deleteAll() }
+            .doOnSuccess { appLocalRepository.clearAll() }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

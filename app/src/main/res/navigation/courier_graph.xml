@@ -52,6 +52,9 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_auth_navigation"
+            app:destination="@id/auth_navigation" />
     </fragment>
 
     <fragment
@@ -337,5 +340,7 @@
             app:popUpTo="@id/courierLoaderFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
+    <include app:graph="@navigation/auth_graph" />
 
 </navigation>

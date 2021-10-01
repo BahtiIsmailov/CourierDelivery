@@ -25,7 +25,7 @@ class AppInteractorImpl(
 
     override fun exitAuth() {
         authRemoteRepository.clearToken()
-        appLocalRepository.deleteAll()
+        appLocalRepository.clearAll()
     }
 
     override fun observeCountBoxes(): Observable<AppDeliveryResult> {

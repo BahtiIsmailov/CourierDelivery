@@ -427,14 +427,16 @@ val interactorModule = module {
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
-        timeFormatter: TimeFormatter
+        timeFormatter: TimeFormatter,
+        userManager: UserManager
     ): CourierOrderTimerInteractor {
         return CourierOrderTimerInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
             courierLocalRepository,
             taskTimerRepository,
-            timeFormatter
+            timeFormatter,
+            userManager
         )
     }
 
@@ -461,7 +463,8 @@ val interactorModule = module {
         timeManager: TimeManager,
         screenManager: ScreenManager,
         courierLocalRepository: CourierLocalRepository,
-        taskTimerRepository: TaskTimerRepository
+        taskTimerRepository: TaskTimerRepository,
+        userManager: UserManager
     ): CourierLoadingInteractor {
         return CourierLoadingInteractorImpl(
             rxSchedulerFactory,
@@ -472,7 +475,8 @@ val interactorModule = module {
             timeManager,
             screenManager,
             courierLocalRepository,
-            taskTimerRepository
+            taskTimerRepository,
+            userManager
         )
     }
 
@@ -563,10 +567,11 @@ val interactorModule = module {
     single { provideCourierOrderInteractor(get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
-    single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get()) }
+    single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideCourierOrderConfirmInteractor(get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
+            get(),
             get(),
             get(),
             get(),

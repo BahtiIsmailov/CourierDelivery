@@ -281,7 +281,7 @@ class AppLocalRepositoryImpl(
         return flightBoxDao.getAppDelivered()
     }
 
-    override fun deleteAll() {
+    override fun clearAll() {
         appDatabase.clearAllTables()
     }
 

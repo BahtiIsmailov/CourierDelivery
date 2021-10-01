@@ -89,7 +89,7 @@ class AuthRemoteRepositoryImpl(
 
     override fun clearToken() {
         tokenManager.clear()
-        userManager.clear()
+        userManager.clearAll()
     }
 
     override fun userPhone(): String {

@@ -13,7 +13,7 @@ import ru.wb.perevozka.ui.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.splash.OnUserInfo
-import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.views.ProgressImageButtonMode
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
@@ -34,6 +34,11 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initObserver()
+        initListeners()
+    }
+
+    private fun initListeners() {
+        binding.update.setOnClickListener { viewModel.update() }
     }
 
     private fun initView() {
@@ -76,6 +81,29 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                     findNavController().navigate(
                         CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierIntransitFragment()
                     )
+                }
+                CourierLoaderNavigationState.NavigateToPhone -> findNavController().navigate(
+                    CourierLoaderFragmentDirections.actionCourierLoaderFragmentToAuthNavigation()
+                )
+            }
+        }
+
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is CourierLoaderUIState.Error -> {
+                    binding.progress.visibility = View.INVISIBLE
+                    binding.titleProgress.visibility = View.INVISIBLE
+                    binding.errorMessage.visibility = View.VISIBLE
+                    binding.errorMessage.text = state.message
+                    binding.update.visibility = View.VISIBLE
+                    binding.update.setState(ProgressImageButtonMode.ENABLED)
+                }
+                CourierLoaderUIState.Progress -> {
+                    binding.progress.visibility = View.VISIBLE
+                    binding.titleProgress.visibility = View.VISIBLE
+                    binding.errorMessage.visibility = View.INVISIBLE
+                    binding.update.visibility = View.VISIBLE
+                    binding.update.setState(ProgressImageButtonMode.DISABLED)
                 }
             }
         }

@@ -64,6 +64,11 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.updateVisitedAtOffice(officeId, visitedAt)
     }
 
+    override fun updateVisitedOfficeByBoxes(): Completable {
+        return courierOrderDao.updateVisitedOfficeByBoxes()
+    }
+
+
     override fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable {
         return courierOrderDao.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
     }
