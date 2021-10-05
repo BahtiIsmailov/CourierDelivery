@@ -11,6 +11,8 @@ import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntit
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.ui.couriermap.CourierMapState
+import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.managers.TimeManager
@@ -23,7 +25,8 @@ class CourierIntransitInteractorImpl(
     private val scannerRepository: ScannerRepository,
     private val intransitTimeRepository: IntransitTimeRepository,
     private val timeManager: TimeManager,
-    private val timeFormatter: TimeFormatter
+    private val timeFormatter: TimeFormatter,
+    private val courierMapRepository: CourierMapRepository,
 ) : CourierIntransitInteractor {
 
     override fun observeBoxesGroupByOffice(): Observable<List<CourierIntransitGroupByOfficeEntity>> {
@@ -144,6 +147,15 @@ class CourierIntransitInteractorImpl(
     }
 
     private fun courierLoadingScanBoxData() = courierLocalRepository.orderData()
+
+    override fun observeMapAction(): Observable<String> {
+        return courierMapRepository.observeMapAction()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun mapState(state: CourierMapState) {
+        courierMapRepository.mapState(state)
+    }
 
 }
 

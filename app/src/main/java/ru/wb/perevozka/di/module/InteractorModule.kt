@@ -507,7 +507,8 @@ val interactorModule = module {
         scannerRepository: ScannerRepository,
         intransitTimeRepository: IntransitTimeRepository,
         timeManager: TimeManager,
-        timeFormatter: TimeFormatter
+        timeFormatter: TimeFormatter,
+        courierMapRepository: CourierMapRepository
     ): CourierIntransitInteractor {
         return CourierIntransitInteractorImpl(
             rxSchedulerFactory,
@@ -516,7 +517,8 @@ val interactorModule = module {
             scannerRepository,
             intransitTimeRepository,
             timeManager,
-            timeFormatter
+            timeFormatter,
+            courierMapRepository
         )
     }
 
@@ -594,7 +596,18 @@ val interactorModule = module {
             get()
         )
     }
-    factory { provideCourierIntransitInteractor(get(), get(), get(), get(), get(), get(), get()) }
+    factory {
+        provideCourierIntransitInteractor(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
 

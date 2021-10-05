@@ -8,9 +8,7 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.couriermap.CourierMapMarker
-import ru.wb.perevozka.ui.couriermap.CourierMapState
-import ru.wb.perevozka.ui.couriermap.Empty
+import ru.wb.perevozka.ui.couriermap.*
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.utils.LogUtils
@@ -67,6 +65,7 @@ class CourierWarehousesViewModel(
         warehouses.forEachIndexed { index, item ->
             val warehouseItem = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
             warehouseItems.add(warehouseItem)
+
             coordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
             val mapPoint = MapPoint(index.toString(), item.latitude, item.longitude)
             val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
@@ -74,13 +73,37 @@ class CourierWarehousesViewModel(
         }
         saveWarehouseItems(warehouseItems)
         initItems(warehouseItems)
+
+
+        //==========================================================================================
+        // TODO: 04.10.2021 для тестирования
+//        val m = Empty(moscowMapPoint(), resourceProvider.getWarehouseMapIcon())
+//        mapMarkers.add(m)
+//        val t = Empty(testMapPoint(), resourceProvider.getWarehouseMapIcon())
+//        mapMarkers.add(t)
+//
+//        coordinatePoints.add(CoordinatePoint(moscowMapPoint().lat, moscowMapPoint().long))
+//        coordinatePoints.add(CoordinatePoint(testMapPoint().lat, testMapPoint().long))
+        //==========================================================================================
+
         saveMapMarkers(mapMarkers)
-        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
-        LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
-        val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
-        LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
-        interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
+        initMap(mapMarkers, coordinatePoints)
         hideProgress()
+    }
+
+    private fun initMap(
+        mapMarkers: MutableList<CourierMapMarker>,
+        coordinatePoints: MutableList<CoordinatePoint>
+    ) {
+        if (mapMarkers.isEmpty()) {
+            interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
+        } else {
+            interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+            LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
+            val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
+            LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
+            interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
+        }
     }
 
     private fun courierWarehouseError(throwable: Throwable) {

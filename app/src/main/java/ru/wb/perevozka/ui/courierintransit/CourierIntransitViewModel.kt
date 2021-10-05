@@ -8,18 +8,17 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryState
 import ru.wb.perevozka.ui.courierintransit.delegates.items.BaseIntransitItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitEmptyItem
 import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitFailedItem
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
+import ru.wb.perevozka.ui.couriermap.*
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
-import ru.wb.perevozka.utils.map.MapCircle
 import ru.wb.perevozka.utils.map.MapEnclosingCircle
 import ru.wb.perevozka.utils.map.MapPoint
 import ru.wb.perevozka.utils.time.DateTimeFormatter
@@ -38,10 +37,6 @@ class CourierIntransitViewModel(
     val orderDetails: LiveData<CourierIntransitItemState>
         get() = _orderDetails
 
-    private val _mapPoint = MutableLiveData<CourierIntransitMapPoint>()
-    val mapPoint: LiveData<CourierIntransitMapPoint>
-        get() = _mapPoint
-
     private val _navigationState = SingleLiveEvent<CourierIntransitNavigationState>()
     val navigationState: LiveData<CourierIntransitNavigationState>
         get() = _navigationState
@@ -56,14 +51,14 @@ class CourierIntransitViewModel(
 
     private var copyIntransitItems = mutableListOf<BaseIntransitItem>()
 
-    private var mapPointItems = mutableListOf<CourierIntransitMapPointItem>()
+    private var mapMarkers = mutableListOf<CourierMapMarker>()
 
     private fun copyItems(items: List<BaseIntransitItem>) {
         copyIntransitItems = items.toMutableList()
     }
 
-    private fun copyMapPoints(items: List<CourierIntransitMapPointItem>) {
-        mapPointItems = items.toMutableList()
+    private fun copyMapPoints(items: List<CourierMapMarker>) {
+        mapMarkers = items.toMutableList()
     }
 
     init {
@@ -105,7 +100,6 @@ class CourierIntransitViewModel(
     private fun initOfficesComplete(dstOffices: List<CourierIntransitGroupByOfficeEntity>) {
         val items = mutableListOf<BaseIntransitItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
-        val mapPointItems = mutableListOf<CourierIntransitMapPointItem>()
         var deliveredCountTotal = 0
         var fromCountTotal = 0
         dstOffices.forEachIndexed { index, item ->
@@ -113,7 +107,7 @@ class CourierIntransitViewModel(
                 deliveredCountTotal += deliveredCount
                 fromCountTotal += fromCount
                 val intransitItem: BaseIntransitItem
-                val mapPointItem: CourierIntransitMapPointItem
+                val mapMarker: CourierMapMarker
                 if (deliveredCount == 0) {
                     intransitItem = CourierIntransitEmptyItem(
                         id = index,
@@ -123,7 +117,7 @@ class CourierIntransitViewModel(
                         isSelected = DEFAULT_SELECT_ITEM,
                         idView = index
                     )
-                    mapPointItem = Empty(
+                    mapMarker = Empty(
                         MapPoint(index.toString(), latitude, longitude),
                         resourceProvider.getEmptyMapIcon()
                     )
@@ -137,7 +131,7 @@ class CourierIntransitViewModel(
                             isSelected = DEFAULT_SELECT_ITEM,
                             idView = index
                         )
-                        mapPointItem = Complete(
+                        mapMarker = Complete(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getCompleteMapIcon()
                         )
@@ -150,7 +144,7 @@ class CourierIntransitViewModel(
                             isSelected = DEFAULT_SELECT_ITEM,
                             idView = index
                         )
-                        mapPointItem = Failed(
+                        mapMarker = Failed(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getFailedMapIcon()
                         )
@@ -158,7 +152,7 @@ class CourierIntransitViewModel(
                 }
                 items.add(intransitItem)
                 coordinatePoints.add(CoordinatePoint(latitude, longitude))
-                mapPointItems.add(mapPointItem)
+                this@CourierIntransitViewModel.mapMarkers.add(mapMarker)
             }
         }
         copyItems(items)
@@ -166,9 +160,8 @@ class CourierIntransitViewModel(
             resourceProvider.getBoxCountAndTotal(deliveredCountTotal, fromCountTotal)
         initItems(items, boxTotalCount)
 
-        val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
-        copyMapPoints(mapPointItems)
-        initMap(mapPointItems, startNavigation)
+        copyMapPoints(this.mapMarkers)
+        initMap(this.mapMarkers, coordinatePoints)
 
         if (deliveredCountTotal == fromCountTotal)
             _orderDetails.value = CourierIntransitItemState.CompleteDelivery
@@ -180,17 +173,19 @@ class CourierIntransitViewModel(
     }
 
     private fun initMap(
-        mapPoints: MutableList<CourierIntransitMapPointItem>,
-        coordinatePoints: MapCircle
+        mapMarkers: MutableList<CourierMapMarker>,
+        coordinatePoints: MutableList<CoordinatePoint>
     ) {
-        if (mapPoints.isEmpty()) {
-            _mapPoint.value = CourierIntransitMapPoint.NavigateToPoint(moscowMapPoint())
+        if (mapMarkers.isEmpty()) {
+            interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
         } else {
-            _mapPoint.value = CourierIntransitMapPoint.InitMapPoint(mapPoints, coordinatePoints)
+            interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+            LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
+            val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
+            LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
+            interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
         }
     }
-
-    private fun moscowMapPoint() = MapPoint("0", 55.751244, 37.618423)
 
     fun scanQrPvzClick() {
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
@@ -268,7 +263,7 @@ class CourierIntransitViewModel(
     }
 
     private fun navigateToPoint(selectIndex: Int, isSelected: Boolean) {
-        mapPointItems.forEach { item ->
+        mapMarkers.forEach { item ->
             val icon = if (item.point.id == selectIndex.toString()) {
                 if (isSelected) getSelectedIcon(item) else getNormalIcon(item)
             } else {
@@ -276,25 +271,24 @@ class CourierIntransitViewModel(
             }
             item.icon = icon
         }
-        mapPointItems.find { it.point.id == selectIndex.toString() }?.apply {
-            mapPointItems.remove(this)
-            mapPointItems.add(this)
+        mapMarkers.find { it.point.id == selectIndex.toString() }?.apply {
+            mapMarkers.remove(this)
+            mapMarkers.add(this)
         }
-
-        _mapPoint.value = CourierIntransitMapPoint.UpdateMapPoints(mapPointItems)
-        _mapPoint.value = CourierIntransitMapPoint.NavigateToPointById(selectIndex.toString())
+        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 
-    private fun getNormalIcon(item: CourierIntransitMapPointItem) =
-        when (item) {
+    private fun getNormalIcon(mapMarker: CourierMapMarker) =
+        when (mapMarker) {
             is Empty -> resourceProvider.getEmptyMapIcon()
             is Failed -> resourceProvider.getFailedMapIcon()
             is Complete -> resourceProvider.getCompleteMapIcon()
             else -> resourceProvider.getEmptyMapIcon()
         }
 
-    private fun getSelectedIcon(item: CourierIntransitMapPointItem) =
-        when (item) {
+    private fun getSelectedIcon(mapMarker: CourierMapMarker) =
+        when (mapMarker) {
             is Empty -> resourceProvider.getEmptyMapSelectedIcon()
             is Failed -> resourceProvider.getFailedMapSelectedIcon()
             is Complete -> resourceProvider.getCompleteMapSelectIcon()
