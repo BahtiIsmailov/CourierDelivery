@@ -32,6 +32,10 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.courierTimerEntity()
     }
 
+    override fun courierLoadingInfoEntity(): Single<CourierLoadingInfoEntity> {
+        return courierWarehouseDao.courierLoadingInfoEntity()
+    }
+
     override fun deleteAllWarehouse() {
         courierWarehouseDao.deleteAll()
     }

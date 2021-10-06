@@ -22,6 +22,8 @@ interface CourierLocalRepository {
 
     fun courierTimerEntity(): Single<CourierTimerEntity>
 
+    fun courierLoadingInfoEntity(): Single<CourierLoadingInfoEntity>
+
     fun deleteAllWarehouse()
 
     //==============================================================================================

@@ -11,6 +11,7 @@ import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.TaskTimerRepository
 import ru.wb.perevozka.db.entity.TaskStatus
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierLoadingInfoEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
@@ -242,6 +243,11 @@ class CourierLoadingInteractorImpl(
                 }
             }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun info(): Single<CourierLoadingInfoEntity> {
+        return courierLocalRepository.courierLoadingInfoEntity()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     private fun convertToCourierTaskStatusesIntransitEntity(item: List<CourierBoxEntity>) =

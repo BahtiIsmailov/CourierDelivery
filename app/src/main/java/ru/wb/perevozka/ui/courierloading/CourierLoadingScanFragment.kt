@@ -77,6 +77,7 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun initObserver() {
+
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
             showSimpleDialog(it)
@@ -110,9 +111,9 @@ class CourierLoadingScanFragment : Fragment() {
                     showTimeIsOutDialog(it.title, it.message, it.button)
                 }
                 CourierLoadingScanTimerState.Stopped -> {
-                    binding.timeDigit.visibility = View.GONE
-                    binding.timer.visibility = View.GONE
+                    binding.timerLayout.visibility = View.GONE
                 }
+                is CourierLoadingScanTimerState.Info -> binding.gateDigit.text = it.gate
             }
         }
 
@@ -141,7 +142,6 @@ class CourierLoadingScanFragment : Fragment() {
                 }
             }
         }
-
         viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -189,17 +189,20 @@ class CourierLoadingScanFragment : Fragment() {
                             R.color.disable_scan_status
                         )
                     )
-                    binding.qrCode.text = "0000000000"
-                    binding.qrCode.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.light_text
-                        )
-                    )
-                    binding.address.text = "-"
-                    binding.receive.text = "0 шт."
-                    binding.listLayout.setOnClickListener { null }
-                    binding.complete.setState(ProgressButtonMode.DISABLE)
+                    binding.timerLayout.visibility = View.VISIBLE
+                    binding.scannerInfoLayout.visibility = View.GONE
+
+//                    binding.qrCode.text = "0000000000"
+//                    binding.qrCode.setTextColor(
+//                        ContextCompat.getColor(
+//                            requireContext(),
+//                            R.color.light_text
+//                        )
+//                    )
+//                    binding.address.text = "-"
+//                    binding.receive.text = "0 шт."
+//                    binding.listLayout.setOnClickListener { null }
+//                    binding.complete.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierLoadingScanBoxState.BoxInit -> {
                     holdBackButtonOnScanBox()

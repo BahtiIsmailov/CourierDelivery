@@ -73,6 +73,20 @@ class CourierLoadingScanViewModel(
         observeInitScanProcess()
         observeScanProcess()
         observeScanProgress()
+
+
+        getGate()
+    }
+
+    private fun getGate() {
+        addSubscription(
+            interactor.info().subscribe(
+                {
+                    _orderTimer.value =
+                        CourierLoadingScanTimerState.Info(if (it.gate.isEmpty()) "-" else it.gate)
+                },
+                { _orderTimer.value = CourierLoadingScanTimerState.Info("-") })
+        )
     }
 
     private fun observeTimer() {

@@ -5,7 +5,9 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierLoadingInfoEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 
@@ -30,5 +32,7 @@ interface CourierLoadingInteractor {
     fun deleteTask(): Completable
 
     fun confirmLoadingBoxes(): Completable
+
+    fun info(): Single<CourierLoadingInfoEntity>
 
 }
