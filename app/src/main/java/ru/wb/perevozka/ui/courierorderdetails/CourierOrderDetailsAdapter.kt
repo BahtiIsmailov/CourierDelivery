@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierOrderDetailsLayoutBinding
+import ru.wb.perevozka.ui.courierwarehouses.CourierWarehouseItem
 
 class CourierOrderDetailsAdapter(
     context: Context,
@@ -52,6 +53,14 @@ class CourierOrderDetailsAdapter(
             itemView.setOnClickListener(this)
         }
 
+    }
+
+    fun clear() {
+        items.clear()
+    }
+
+    fun addItems(items: List<CourierOrderDetailsItem>) {
+        this.items.addAll(items)
     }
 
 }

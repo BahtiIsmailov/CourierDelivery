@@ -11,6 +11,7 @@ import ru.wb.perevozka.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.perevozka.db.AppLocalRepository
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.TaskStatus
+import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
@@ -80,7 +81,8 @@ class CourierLoaderViewModel(
                 val timer = Completable.timer(1000, TimeUnit.MILLISECONDS)
                 val taskMy = appRemoteRepository.tasksMy().map { it }
                 val localTaskId =
-                    courierLocalRepository.orderData().map { it.courierOrderLocalEntity.id }.onErrorReturn { -1 }
+                    courierLocalRepository.orderData().map { it.courierOrderLocalEntity.id }
+                        .onErrorReturn { -1 }
                 val zipData = Single.zip(taskMy, localTaskId,
                     { remoteTask, localTaskId -> tasksMyComplete(remoteTask, localTaskId) })
                     .flatMap { it }
@@ -103,10 +105,10 @@ class CourierLoaderViewModel(
     ): Single<CourierLoaderNavigationState> {
         val remoteTaskId = courierTasksMyEntity.id
         return if (remoteTaskId == localTaskId) {
-            saveCurrentOrderAndOffices(courierTasksMyEntity)
+            saveWarehouseAndOrderAndOffices(courierTasksMyEntity)
         } else {
             clearData()
-            saveCurrentOrderAndOffices(courierTasksMyEntity)
+            saveWarehouseAndOrderAndOffices(courierTasksMyEntity)
                 .andThen(
                     if (courierTasksMyEntity.status != TaskStatus.TIMER.status)
                         syncBoxesAndVisitedOffice(
@@ -142,14 +144,15 @@ class CourierLoaderViewModel(
             )
         }.toList()
 
-    private fun saveCurrentOrderAndOffices(courierTasksMyEntity: CourierTasksMyEntity): Completable {
+    private fun saveWarehouseAndOrderAndOffices(courierTasksMyEntity: CourierTasksMyEntity): Completable {
+        val courierWarehouseLocalEntity = courierWarehouseLocalEntity(courierTasksMyEntity)
         val courierOrderLocalEntity = courierOrderLocalEntity(courierTasksMyEntity)
         val courierDstOfficesEntity = courierDstOffices(courierTasksMyEntity)
+        courierLocalRepository.deleteAllWarehouse()
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
-        return courierLocalRepository.saveCurrentOrderAndOffices(
-            courierOrderLocalEntity,
-            courierDstOfficesEntity
+        return courierLocalRepository.saveWarehouseAndOrderAndOffices(
+            courierWarehouseLocalEntity, courierOrderLocalEntity, courierDstOfficesEntity
         )
     }
 
@@ -179,6 +182,18 @@ class CourierLoaderViewModel(
             }
         }
         return courierOrderDstOfficesLocalEntity
+    }
+
+    private fun courierWarehouseLocalEntity(courierTasksMyEntity: CourierTasksMyEntity): CourierWarehouseLocalEntity {
+        return with(courierTasksMyEntity.srcOffice) {
+            CourierWarehouseLocalEntity(
+                id = id,
+                name = name,
+                fullAddress = fullAddress,
+                longitude = long,
+                latitude = lat
+            )
+        }
     }
 
     private fun courierOrderLocalEntity(courierTasksMyEntity: CourierTasksMyEntity): CourierOrderLocalEntity {

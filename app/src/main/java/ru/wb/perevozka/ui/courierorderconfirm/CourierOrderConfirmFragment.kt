@@ -81,12 +81,13 @@ class CourierOrderConfirmFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog -> {}
-                    //showRefuseOrderDialog(it.title, it.message)
+                is CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog -> {
+                }
+                //showRefuseOrderDialog(it.title, it.message)
                 is CourierOrderConfirmNavigationState.NavigateToDialogInfo ->
                     showTimeIsOutDialog(it.title, it.message, it.button)
-                CourierOrderConfirmNavigationState.NavigateToWarehouse -> {
-                    findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierWarehouseFragment())
+                CourierOrderConfirmNavigationState.NavigateToBack -> {
+                    findNavController().popBackStack()
                 }
                 CourierOrderConfirmNavigationState.NavigateToTimer -> {
                     findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierOrderTimerFragment())

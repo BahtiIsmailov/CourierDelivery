@@ -13,7 +13,7 @@ sealed class CourierOrderConfirmNavigationState {
         val title: String, val message: String
     ) : CourierOrderConfirmNavigationState()
 
-    object NavigateToWarehouse: CourierOrderConfirmNavigationState()
+    object NavigateToBack: CourierOrderConfirmNavigationState()
 
     object NavigateToTimer: CourierOrderConfirmNavigationState()
 

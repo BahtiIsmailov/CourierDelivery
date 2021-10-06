@@ -48,6 +48,32 @@ class CourierWarehousesViewModel(
         this.mapMarkers = mapMarkers.toMutableList()
     }
 
+    init {
+        addSubscription(
+            interactor.observeMapAction().subscribe({
+                when (it) {
+                    is CourierMapAction.ItemClick -> {
+                    }
+                    CourierMapAction.PermissionComplete -> {
+                        LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
+                        getWarehouse()
+                    }
+                }
+            },
+                {}
+            ))
+    }
+
+    fun update() {
+        LogUtils { logDebugApp("update() getWarehouse()") }
+        getWarehouse()
+    }
+
+    fun onUpdateClick() {
+        showProgress()
+        getWarehouse()
+    }
+
     private fun getWarehouse() {
         addSubscription(
             interactor.warehouses()
@@ -148,15 +174,6 @@ class CourierWarehousesViewModel(
         warehouseItems = warehouses.toMutableList()
     }
 
-    fun onUpdateClick() {
-        showProgress()
-        getWarehouse()
-    }
-
-    fun update() {
-        getWarehouse()
-    }
-
     fun onItemClick(index: Int) {
         changeItemSelected(index)
     }
@@ -210,6 +227,7 @@ class CourierWarehousesViewModel(
                     oldEntity.id,
                     oldEntity.name
                 )
+            clearSubscription()
         }
         hideProgress()
     }

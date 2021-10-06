@@ -22,13 +22,19 @@ interface CourierLocalRepository {
 
     fun courierTimerEntity(): Single<CourierTimerEntity>
 
-    fun deleteAllCurrentWarehouse()
+    fun deleteAllWarehouse()
 
     //==============================================================================================
     //order and offices
     //==============================================================================================
 
-    fun saveCurrentOrderAndOffices(
+    fun saveWarehouseAndOrderAndOffices(
+        courierWarehouseLocalEntity: CourierWarehouseLocalEntity,
+        courierOrderLocalEntity: CourierOrderLocalEntity,
+        courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
+    ): Completable
+
+    fun saveOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
     ): Completable

@@ -65,6 +65,7 @@ class CourierOrderDetailsFragment : Fragment() {
         initObservable()
         initListeners()
         initProgressDialog()
+        viewModel.update()
     }
 
     private fun initObservable() {
@@ -102,6 +103,11 @@ class CourierOrderDetailsFragment : Fragment() {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
                     binding.takeOrder.setState(ProgressButtonMode.DISABLE)
+                }
+                is CourierOrderDetailsUIState.UpdateItems -> {
+                    adapter.clear()
+                    adapter.addItems(it.items)
+                    adapter.notifyDataSetChanged()
                 }
             }
         }

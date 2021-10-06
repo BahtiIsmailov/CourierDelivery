@@ -32,13 +32,23 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.courierTimerEntity()
     }
 
-    override fun deleteAllCurrentWarehouse() {
+    override fun deleteAllWarehouse() {
         courierWarehouseDao.deleteAll()
     }
 
-    override fun saveCurrentOrderAndOffices(
+    override fun saveWarehouseAndOrderAndOffices(
+        courierWarehouseLocalEntity: CourierWarehouseLocalEntity,
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
+    ): Completable {
+        return courierWarehouseDao.insert(courierWarehouseLocalEntity)
+            .andThen(courierOrderDao.insertOrder(courierOrderLocalEntity))
+            .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
+    }
+
+    override fun saveOrderAndOffices(
+        courierOrderLocalEntity: CourierOrderLocalEntity,
+        courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>
     ): Completable {
         return courierOrderDao.insertOrder(courierOrderLocalEntity)
             .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))

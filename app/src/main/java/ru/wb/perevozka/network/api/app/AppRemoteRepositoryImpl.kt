@@ -555,31 +555,33 @@ class AppRemoteRepositoryImpl(
             timeManager.saveStartedTaskTime(task.startedAt ?: "") //"2021-09-21T17:00:01.992+03:00"
             val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
             task.dstOffices.forEach {
-                val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
-                    id = it.id,
-                    name = it.name,
-                    fullAddress = it.fullAddress,
-                    long = it.long,
-                    lat = it.lat
-                )
-                courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+                if (it.id != -1) {
+                    val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
+                        id = it.id,
+                        name = it.name ?: "",
+                        fullAddress = it.fullAddress ?: "",
+                        long = it.long,
+                        lat = it.lat
+                    )
+                    courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+                }
             }
 
-//            val srcOffice = with(task.srcOffice) {
-//                CourierTasksMySrcOfficeEntity(
-//                    id = id,
-//                    name = name,
-//                    fullAddress = fullAddress,
-//                    long = long,
-//                    lat = lat
-//                )
-//            }
+            val srcOffice = with(task.srcOffice) {
+                CourierTasksMySrcOfficeEntity(
+                    id = id,
+                    name = name,
+                    fullAddress = fullAddress,
+                    long = long,
+                    lat = lat
+                )
+            }
 
             CourierTasksMyEntity(
                 id = task.id,
                 routeID = task.routeID ?: 0,
                 gate = task.gate ?: "",
-//                srcOffice = srcOffice,
+                srcOffice = srcOffice,
                 minPrice = task.minPrice,
                 minVolume = task.minVolume,
                 minBoxesCount = task.minBoxesCount,
@@ -694,15 +696,18 @@ class AppRemoteRepositoryImpl(
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
         val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
         courierOrderResponse.dstOffices.forEach { dstOffice ->
-            dstOffices.add(
-                CourierOrderDstOfficeEntity(
-                    id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    long = dstOffice.long,
-                    lat = dstOffice.lat,
+            // TODO: 05.10.2021 убрать после исправлениня на беке получение минусового id
+            if (dstOffice.id != -1) {
+                dstOffices.add(
+                    CourierOrderDstOfficeEntity(
+                        id = dstOffice.id,
+                        name = dstOffice.name ?: "",
+                        fullAddress = dstOffice.fullAddress ?: "",
+                        long = dstOffice.long,
+                        lat = dstOffice.lat,
+                    )
                 )
-            )
+            }
         }
         return with(courierOrderResponse) {
             CourierOrderEntity(

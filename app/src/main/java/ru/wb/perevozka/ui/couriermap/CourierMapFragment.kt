@@ -78,15 +78,11 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            var grang = true
+            var grand = true
             permissions.entries.forEach {
-                if (!it.value) {
-                    grang = false
-                }
+                if (!it.value) grand = false
             }
-            if (grang) {
-                initMapView()
-            }
+            if (grand) initMapView()
         }
 
     private fun initPermission() {
@@ -97,7 +93,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             )
         ) {
             initMapView()
-            viewModel.onInitPermission()
         } else {
             requestMultiplePermissions.launch(
                 arrayOf(
@@ -115,14 +110,14 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             requireActivity(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
-        Configuration.getInstance().userAgentValue =
-            BuildConfig.APPLICATION_ID
+        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapController = binding.map.controller
         mapController.setZoom(12.0)
         binding.map.setBuiltInZoomControls(false)
         binding.map.setMultiTouchControls(true)
+        viewModel.onInitPermission()
     }
 
     private fun initMapMarker(id: String, lat: Double, long: Double, icon: Int) {
@@ -171,6 +166,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
         mapController.setZoom(it.radius)
         mapController.animateTo(point)
+        mapController.setCenter(point)
     }
 
     private fun updateMarkers(mapPoints: List<CourierMapMarker>) {

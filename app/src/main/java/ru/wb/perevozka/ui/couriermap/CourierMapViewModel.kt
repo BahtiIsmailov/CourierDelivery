@@ -18,7 +18,7 @@ class CourierMapViewModel(
     class Point(val x: Double, val y: Double)
 
     private val points = listOf(
-        Point(0.01, 15.5),
+        Point(0.01, 14.6),
         Point(0.05, 12.5),
         Point(0.1, 12.0),
         Point(0.5, 9.0),
@@ -35,7 +35,7 @@ class CourierMapViewModel(
         get() = _mapState
 
     init {
-        subscribeMapState()
+//        subscribeMapState()
     }
 
     private fun subscribeMapState() {
@@ -53,7 +53,10 @@ class CourierMapViewModel(
                             _mapState.value = CourierMapState.ZoomAllMarkers(startNavigation)
                         }
                     }
-                }, {})
+                },
+                {
+                    LogUtils { logDebugApp("subscribeMapState() error " + it) }
+                })
         )
     }
 
@@ -87,6 +90,8 @@ class CourierMapViewModel(
     }
 
     fun onInitPermission() {
+        LogUtils { logDebugApp("CourierMapViewModel onInitPermission()") }
+        subscribeMapState()
         interactor.onInitPermission()
     }
 

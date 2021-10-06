@@ -1,7 +1,6 @@
 package ru.wb.perevozka.ui.courierintransit.domain
 
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.perevozka.db.CourierLocalRepository
@@ -11,6 +10,7 @@ import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntit
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.ui.couriermap.CourierMapAction
 import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepository
 import ru.wb.perevozka.ui.scanner.domain.ScannerRepository
@@ -95,7 +95,7 @@ class CourierIntransitInteractorImpl(
 
     private fun clearData() {
         timeManager.clear()
-        courierLocalRepository.deleteAllCurrentWarehouse()
+        courierLocalRepository.deleteAllWarehouse()
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
         courierLocalRepository.deleteAllLoadingBoxes()
@@ -148,7 +148,7 @@ class CourierIntransitInteractorImpl(
 
     private fun courierLoadingScanBoxData() = courierLocalRepository.orderData()
 
-    override fun observeMapAction(): Observable<String> {
+    override fun observeMapAction(): Observable<CourierMapAction> {
         return courierMapRepository.observeMapAction()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }

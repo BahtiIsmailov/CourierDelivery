@@ -50,6 +50,9 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
     }
 
     private fun timeConfirmCodeDisposable() {
+        durationTime = 0
+        arrivalTime = 0
+        publishCallState(TimerStateImpl(durationTime, 0))
         if (timerDisposable != null) {
             timerDisposable!!.dispose()
             timerDisposable = null

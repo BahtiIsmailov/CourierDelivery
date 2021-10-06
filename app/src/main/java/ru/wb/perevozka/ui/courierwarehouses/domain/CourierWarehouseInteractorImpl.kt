@@ -8,6 +8,7 @@ import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.ui.couriermap.CourierMapAction
 import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepository
 import ru.wb.perevozka.ui.splash.domain.AppSharedRepository
@@ -28,7 +29,7 @@ class CourierWarehouseInteractorImpl(
     }
 
     override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
-        courierLocalRepository.deleteAllCurrentWarehouse()
+        courierLocalRepository.deleteAllWarehouse()
         return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
@@ -45,7 +46,7 @@ class CourierWarehouseInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun observeMapAction(): Observable<String> {
+    override fun observeMapAction(): Observable<CourierMapAction> {
         return courierMapRepository.observeMapAction()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }

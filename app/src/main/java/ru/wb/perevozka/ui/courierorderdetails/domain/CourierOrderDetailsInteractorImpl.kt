@@ -7,6 +7,7 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.UserManager
+import ru.wb.perevozka.ui.couriermap.CourierMapAction
 import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.couriermap.domain.CourierMapRepository
 
@@ -26,7 +27,7 @@ class CourierOrderDetailsInteractorImpl(
         return userManager.carNumber().isNotEmpty()
     }
 
-    override fun observeMapAction(): Observable<String> {
+    override fun observeMapAction(): Observable<CourierMapAction> {
         return courierMapRepository.observeMapAction()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }

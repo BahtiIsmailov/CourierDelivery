@@ -61,6 +61,9 @@ class CourierOrderDetailsViewModel(
 
     init {
         initToolbar()
+    }
+
+    fun update() {
         initOrder()
     }
 
@@ -199,19 +202,19 @@ class CourierOrderDetailsViewModel(
     }
 
     private fun changeItemSelected(selectIndex: Int) {
+        updateItems(selectIndex)
+        navigateToPoint(selectIndex, courierOrderDetailsItems[selectIndex].isSelected)
+    }
+
+    private fun updateItems(selectIndex: Int) {
         courierOrderDetailsItems.forEachIndexed { index, item ->
-            val copyReception = if (selectIndex == index) {
-                courierOrderDetailsItems[index].copy(isSelected = !item.isSelected)
-            } else {
-                courierOrderDetailsItems[index].copy(isSelected = false)
-            }
-            courierOrderDetailsItems[index] = copyReception
+            val isSelected = if (selectIndex == index) !item.isSelected else false
+            val itemCheckSelected = courierOrderDetailsItems[index].copy(isSelected = isSelected)
+            courierOrderDetailsItems[index] = itemCheckSelected
         }
         _orderDetails.value =
             if (courierOrderDetailsItems.isEmpty()) CourierOrderDetailsUIState.Empty
-            else CourierOrderDetailsUIState.InitItems(courierOrderDetailsItems)
-
-        navigateToPoint(selectIndex, courierOrderDetailsItems[selectIndex].isSelected)
+            else CourierOrderDetailsUIState.UpdateItems(selectIndex, courierOrderDetailsItems)
     }
 
     private fun navigateToPoint(selectIndex: Int, isSelected: Boolean) {

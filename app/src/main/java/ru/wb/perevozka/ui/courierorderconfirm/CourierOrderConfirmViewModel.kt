@@ -66,7 +66,7 @@ class CourierOrderConfirmViewModel(
 //            "Отказаться от заказа",
 //            "Вы уверены, что хотите отказаться от заказа?"
 //        )
-        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToWarehouse
+        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
     fun confirmOrderClick() {
@@ -93,11 +93,11 @@ class CourierOrderConfirmViewModel(
     }
 
     fun returnToListOrderClick() {
-        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToWarehouse
+        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
     fun refuseOrderConfirmClick() {
-        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToWarehouse
+        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
     private fun courierWarehouseError(throwable: Throwable) {

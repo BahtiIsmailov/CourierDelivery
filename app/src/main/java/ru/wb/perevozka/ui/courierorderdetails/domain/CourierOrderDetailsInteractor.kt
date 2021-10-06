@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
+import ru.wb.perevozka.ui.couriermap.CourierMapAction
 import ru.wb.perevozka.ui.couriermap.CourierMapState
 
 interface CourierOrderDetailsInteractor {
@@ -13,7 +14,7 @@ interface CourierOrderDetailsInteractor {
 
     fun carNumberIsConfirm(): Boolean
 
-    fun observeMapAction(): Observable<String>
+    fun observeMapAction(): Observable<CourierMapAction>
 
     fun mapState(state: CourierMapState)
 

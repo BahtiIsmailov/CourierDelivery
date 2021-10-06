@@ -13,6 +13,7 @@ import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
@@ -50,7 +51,9 @@ class CourierOrderTimerViewModel(
                     {
                         initOrderInfo(it)
                         initTimer(it.reservedDuration, it.reservedAt)
-                    }, {}
+                    }, {
+                        LogUtils {logDebugApp("initOrder() error " + it)}
+                    }
                 )
         )
     }

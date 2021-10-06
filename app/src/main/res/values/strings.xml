@@ -196,11 +196,11 @@
     <string name="confirm_info_dialog_button">Понятно</string>
 
     <string name="courier_warehouse_title">Склады</string>
-    <string name="courier_warehouse_empty_list">Извините, все заказы в работе</string>
+    <string name="courier_warehouse_empty_list">Свободных заказов нет</string>
     <string name="courier_warehouse_dialog_title_error">Склады</string>
     <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
     <string name="courier_warehouse_dialog_positive_button_error">Ok</string>
-    <string name="courier_warehouse_dialog_empty_list">Извините, все заказы в работе</string>
+    <string name="courier_warehouse_dialog_empty_list">Свободных заказов нет</string>
     <string name="courier_warehouse_search_empty">Ничего не найдено</string>
 
     <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>

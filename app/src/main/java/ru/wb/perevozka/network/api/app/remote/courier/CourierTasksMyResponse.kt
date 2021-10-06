@@ -4,7 +4,7 @@ data class CourierTasksMyResponse(
     val id: Int,
     val routeID: Int?,
     val gate: String?,
-//    val srcOffice: CourierTaskMySrcOfficeResponse,
+    val srcOffice: CourierTaskMySrcOfficeResponse,
     val minPrice: Int,
     val minVolume: Int,
     val minBoxesCount: Int,

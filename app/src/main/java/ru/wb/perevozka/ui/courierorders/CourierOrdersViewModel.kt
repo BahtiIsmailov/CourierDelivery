@@ -49,20 +49,6 @@ class CourierOrdersViewModel(
         initOrders()
     }
 
-    fun onItemClick(idView: Int) {
-        val courierOrderEntity = copyCourierOrdersEntity[idView]
-        addSubscription(
-            interactor.clearAndSaveSelectedOrder(courierOrderEntity)
-                .subscribe({
-                    _navigationState.value =
-                        CourierOrdersNavigationState.NavigateToOrderDetails(
-                            parameters.address,
-                            copyCourierOrdersEntity[idView]
-                        )
-                }, {})
-        )
-    }
-
     private fun observeNetworkState() {
         addSubscription(
             interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
@@ -139,6 +125,20 @@ class CourierOrdersViewModel(
 
     private fun progressComplete() {
         _progressState.value = CourierOrdersProgressState.Complete
+    }
+
+    fun onItemClick(idView: Int) {
+        val courierOrderEntity = copyCourierOrdersEntity[idView]
+        addSubscription(
+            interactor.clearAndSaveSelectedOrder(courierOrderEntity)
+                .subscribe({
+                    _navigationState.value =
+                        CourierOrdersNavigationState.NavigateToOrderDetails(
+                            parameters.address,
+                            copyCourierOrdersEntity[idView]
+                        )
+                }, {})
+        )
     }
 
     fun onUpdateClick() {

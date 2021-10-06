@@ -7,7 +7,6 @@ import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderSrcOfficeLocalEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -69,7 +68,7 @@ class CourierOrderInteractorImpl(
                 )
             }
         }
-        return courierLocalRepository.saveCurrentOrderAndOffices(
+        return courierLocalRepository.saveOrderAndOffices(
             courierOrderLocalEntity,
             courierOrderDstOfficesLocalEntity
         ).compose(rxSchedulerFactory.applyCompletableSchedulers())

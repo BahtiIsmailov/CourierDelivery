@@ -3,6 +3,7 @@ package ru.wb.perevozka.ui.courierintransit.domain
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
+import ru.wb.perevozka.ui.couriermap.CourierMapAction
 import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 
@@ -18,7 +19,7 @@ interface CourierIntransitInteractor {
 
     fun completeDelivery(): Single<CompleteDeliveryResult>
 
-    fun observeMapAction(): Observable<String>
+    fun observeMapAction(): Observable<CourierMapAction>
 
     fun mapState(state: CourierMapState)
 
