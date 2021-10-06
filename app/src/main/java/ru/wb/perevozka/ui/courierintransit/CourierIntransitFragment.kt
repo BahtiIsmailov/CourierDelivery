@@ -309,18 +309,6 @@ class CourierIntransitFragment : Fragment() {
         _binding = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        binding.map.onResume()
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.map.onPause()
-    }
-
-
     override fun onStart() {
         super.onStart()
         viewModel.onStartScanner()

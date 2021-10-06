@@ -22,6 +22,7 @@ import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapEnclosingCircle
 import ru.wb.perevozka.utils.map.MapPoint
 import ru.wb.perevozka.utils.time.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
@@ -68,20 +69,6 @@ class CourierIntransitViewModel(
         initScanner()
     }
 
-    private fun initScanner() {
-        addSubscription(interactor.observeOfficeIdScanProcess().subscribe({
-            _navigationState.value = CourierIntransitNavigationState.NavigateToUnloadingScanner(it)
-        }, {}))
-    }
-
-    private fun initTime() {
-        addSubscription(interactor.startTime().subscribe({
-            _intransitTime.value = CourierIntransitTimeState.Time(
-                DateTimeFormatter.getDigitFullTime(it.toInt())
-            )
-        }, {}))
-    }
-
     private fun initToolbar() {
         _toolbarLabelState.value = Label(resourceProvider.getLabel())
     }
@@ -92,6 +79,27 @@ class CourierIntransitViewModel(
                 .subscribe({ initOfficesComplete(it) }, { initOfficesError(it) })
         )
     }
+
+    private fun initTime() {
+        addSubscription(interactor.startTime().subscribe({
+            _intransitTime.value = CourierIntransitTimeState.Time(
+                DateTimeFormatter.getDigitFullTime(it.toInt())
+            )
+        }, {}))
+    }
+
+    private fun initScanner() {
+        addSubscription(interactor.observeOfficeIdScanProcess()
+            .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
+            .subscribe({
+                _navigationState.value =
+                    CourierIntransitNavigationState.NavigateToUnloadingScanner(it)
+            }, {
+                LogUtils { logDebugApp("initScanner error office scan " + it) }
+            })
+        )
+    }
+
 
     private fun initOfficesError(it: Throwable) {
         LogUtils { logDebugApp("initOrderItemsError " + it) }

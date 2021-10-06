@@ -25,6 +25,7 @@ import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.splash.OnCourierScanner
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.views.ProgressButtonMode
 
 class CourierLoadingScanFragment : Fragment() {
@@ -145,6 +146,7 @@ class CourierLoadingScanFragment : Fragment() {
         viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
+            LogUtils { logDebugApp("viewModel.beepEvent " + state) }
             when (state) {
                 is CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
                 is CourierLoadingScanBeepState.UnknownBox -> beepError()
@@ -223,13 +225,18 @@ class CourierLoadingScanFragment : Fragment() {
                     binding.address.text = state.address
                     binding.receive.text = state.accepted
 
-                    binding.timeDigit.visibility = View.GONE
-                    binding.timer.visibility = View.GONE
+                    binding.timerLayout.visibility = View.GONE
+                    binding.scannerInfoLayout.visibility = View.VISIBLE
+
                     binding.complete.setState(ProgressButtonMode.ENABLE)
 
                 }
                 is CourierLoadingScanBoxState.BoxAdded -> {
                     holdBackButtonOnScanBox()
+
+                    binding.timerLayout.visibility = View.GONE
+                    binding.scannerInfoLayout.visibility = View.VISIBLE
+
                     binding.status.text = "ПОГРУЗИТЕ В МАШИНУ"
                     binding.status.setBackgroundColor(
                         ContextCompat.getColor(
@@ -423,8 +430,8 @@ class CourierLoadingScanFragment : Fragment() {
         play(R.raw.sound_scan_error)
     }
 
-    private fun play(resid: Int) {
-        MediaPlayer.create(context, resid).start()
+    private fun play(resId: Int) {
+        MediaPlayer.create(context, resId).start()
     }
 
 }
