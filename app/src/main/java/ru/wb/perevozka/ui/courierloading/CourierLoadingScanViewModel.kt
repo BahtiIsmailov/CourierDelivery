@@ -156,6 +156,7 @@ class CourierLoadingScanViewModel(
     private fun observeInitScanProcess() {
         addSubscription(interactor.scannedBoxes()
             .map { list ->
+                LogUtils { logDebugApp(" observeInitScanProcess " + list.size) }
                 if (list.isEmpty()) {
                     observeTimer()
                     CourierLoadingScanBoxState.Empty

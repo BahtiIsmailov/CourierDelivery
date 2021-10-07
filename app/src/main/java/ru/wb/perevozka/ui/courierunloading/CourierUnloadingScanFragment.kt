@@ -170,7 +170,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.receive.text = state.accepted
                     binding.receiveLayout.isEnabled = false
                     binding.address.text = state.address
-                    binding.complete.setState(ProgressButtonMode.DISABLE)
+                    binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
                 is CourierUnloadingScanBoxState.BoxInit -> {
                     binding.status.text = state.status

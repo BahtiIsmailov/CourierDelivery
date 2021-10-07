@@ -150,7 +150,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.UpdateMapMarkers -> updateMarkers(it.pointsState)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
-
+                CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
             }
         }
     }
@@ -190,6 +190,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun navigateToMyLocation() {
+        if (!serviceOnConnected) return
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -244,8 +245,11 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.onPause()
     }
 
+    private var serviceOnConnected = false
+
     override fun onConnected(p0: Bundle?) {
-        binding.myLocation.visibility = View.VISIBLE
+        serviceOnConnected = true
+        //binding.myLocation.visibility = View.VISIBLE
     }
 
     override fun onConnectionSuspended(p0: Int) {

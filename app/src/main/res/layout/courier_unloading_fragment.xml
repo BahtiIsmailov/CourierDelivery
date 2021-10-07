@@ -167,7 +167,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="@string/courier_unloading_scanner_complete"
-        app:progress_button_state="disable"
+        app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/button_default_text_disable"
         app:progress_button_text_color_enable="@color/button_default_text_enable"
         app:progress_button_text_color_progress="@color/button_default_text_progress" />

@@ -13,4 +13,6 @@ sealed class CourierMapState {
 
     data class NavigateToPoint(val mapPoint: MapPoint) : CourierMapState()
 
+    object NavigateToMyLocation : CourierMapState()
+
 }

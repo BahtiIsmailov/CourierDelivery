@@ -53,29 +53,28 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun observeCourierBoxesCount(): Single<List<CourierBoxEntity>> {
+    private fun observeCourierBoxes(): Single<List<CourierBoxEntity>> {
         return courierLocalRepository.observeLoadingBoxes().firstOrError()
     }
 
     override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
-        return observeBoxDefinitionResult().flatMapSingle { scanResult ->
-            observeCourierBoxesCount().map { boxes -> Pair(scanResult, boxes) }
-        }
-            .flatMap { processData ->
-                LogUtils { logDebugApp("flatMap processData " + processData) }
+        return observeBoxDefinitionResult().flatMap { scanResult ->
+            observeCourierBoxes().flatMapObservable { boxes ->
 
-                val orderDstOffice = processData.first.orderDstOffice
-                val count = processData.second.size
-                val qrcode = processData.first.parseQrCode.code
+                LogUtils { logDebugApp("flatMap processData " + scanResult + " / " + boxes.size) }
+
+                val orderDstOffice = scanResult.orderDstOffice
+                val count = boxes.size
+                val qrcode = scanResult.parseQrCode.code
 
                 if (orderDstOffice == null) {
-                    LogUtils { logDebugApp("orderDstOffice == null") }
+                    LogUtils { logDebugApp("orderDstOffice == null UnknownBox") }
                     justProcessData(CourierLoadingScanBoxData.UnknownBox(qrcode), count)
                 } else {
 
                     val address = orderDstOffice.fullAddress
                     val dstOfficeId = orderDstOffice.id
-                    val loadingAt = processData.first.loadingAt
+                    val loadingAt = scanResult.loadingAt
 
                     val courierBoxEntity = CourierBoxEntity(
                         id = qrcode,
@@ -85,8 +84,8 @@ class CourierLoadingInteractorImpl(
                         deliveredAt = ""
                     )
 
-                    if (processData.second.isEmpty()) {
-                        LogUtils { logDebugApp("processData.second isEmpty() " + processData.second) }
+                    if (boxes.isEmpty()) {
+                        LogUtils { logDebugApp("processData.second isEmpty() " + boxes) }
                         loaderProgress()
                         val courierTaskStartEntity =
                             CourierTaskStartEntity(
@@ -94,37 +93,38 @@ class CourierLoadingInteractorImpl(
                                 dstOfficeID = dstOfficeId,
                                 loadingAt = loadingAt
                             )
+                        val boxAdded =
+                            justProcessData(CourierLoadingScanBoxData.BoxAdded(qrcode, address), 1)
 
-                        taskStart(processData.first.taskId, courierTaskStartEntity)
+                        taskStart(scanResult.taskId, courierTaskStartEntity)
                             .andThen(saveBoxLocal(courierBoxEntity))
-                            .andThen(
-                                justProcessData(
-                                    CourierLoadingScanBoxData.BoxAdded(
-                                        qrcode,
-                                        address
-                                    ), count + 1
-                                )
-                            )
-                            .doOnComplete {
-                                taskTimerRepository.stopTimer()
-                                userManager.saveStatusTask(TaskStatus.STARTED.status)
-                                loaderComplete()
-                            }
+                            .andThen(boxAdded)
+                            .doOnComplete { firstBoxAddedComplete() }
                             .compose(rxSchedulerFactory.applyObservableSchedulers())
                     } else {
-                        LogUtils { logDebugApp("processData.second " + processData.second) }
+                        LogUtils { logDebugApp("processData.second " + boxes.size) }
                         saveBoxLocal(courierBoxEntity).andThen(
-                            justProcessData(
-                                CourierLoadingScanBoxData.BoxAdded(qrcode, address),
-                                count + 1
-                            )
-                        )
+                            observeCourierBoxes().map { it.size }
+                                .flatMapObservable { count1 ->
+                                    justProcessData(
+                                        CourierLoadingScanBoxData.BoxAdded(
+                                            qrcode,
+                                            address
+                                        ), count1
+                                    )
+                                })
                     }
-
                 }
             }
+        }
             .doOnError { loaderComplete() }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    private fun firstBoxAddedComplete() {
+        taskTimerRepository.stopTimer()
+        userManager.saveStatusTask(TaskStatus.STARTED.status)
+        loaderComplete()
     }
 
     private fun justProcessData(

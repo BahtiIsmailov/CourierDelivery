@@ -122,7 +122,8 @@ class CourierWarehousesViewModel(
         coordinatePoints: MutableList<CoordinatePoint>
     ) {
         if (mapMarkers.isEmpty()) {
-            interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
+            interactor.mapState(CourierMapState.NavigateToMyLocation)
+//            interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
         } else {
             interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
             LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }

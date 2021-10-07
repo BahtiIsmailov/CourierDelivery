@@ -52,6 +52,7 @@ class CourierMapViewModel(
                                 it.startNavigation.copy(radius = zoomRadius)
                             _mapState.value = CourierMapState.ZoomAllMarkers(startNavigation)
                         }
+                        CourierMapState.NavigateToMyLocation -> _mapState.value = it
                     }
                 },
                 {

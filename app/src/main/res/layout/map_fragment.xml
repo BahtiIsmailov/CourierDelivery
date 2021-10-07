@@ -66,6 +66,7 @@
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_pvz_gps"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/imageView5"
         app:layout_constraintEnd_toEndOf="parent" />
 
