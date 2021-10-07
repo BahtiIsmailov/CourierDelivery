@@ -258,8 +258,8 @@
     <string name="courier_unloading_dialog_message">Выгружено • %1$d из %2$d</string>
 
     <string name="courier_complete_delivery_title">Спасибо за проделанную работу!</string>
-    <string name="courier_complete_delivery_earned">Вы заработали</string>
-    <string name="courier_complete_delivery_delivered">Вы доставили</string>
+    <string name="courier_complete_delivery_earned">Заработано</string>
+    <string name="courier_complete_delivery_delivered">Доставлено</string>
     <string name="courier_complete_delivery_amount">%1$d ₽</string>
     <string name="courier_complete_delivery_count">%1$d / %2$d</string>
 
@@ -376,7 +376,7 @@
     <string name="force_termination_complete_delivery">Завершить доставку</string>
 
     <string name="congratulation_label" />
-    <string name="congratulation_title">Вы завершили доставку</string>
+    <string name="congratulation_title">Доставка завершена</string>
     <string name="congratulation_info">Осталось вернуть возратные коробки\nна РЦ</string>
     <string name="congratulation_info_count">%1$d / %2$d</string>
     <string name="congratulation_complete_delivery">Перейти к возврату на РЦ</string>

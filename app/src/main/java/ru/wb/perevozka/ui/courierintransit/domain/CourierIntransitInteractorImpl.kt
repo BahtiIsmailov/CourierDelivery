@@ -3,6 +3,8 @@ package ru.wb.perevozka.ui.courierintransit.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import ru.wb.perevozka.app.PREFIX_QR_CODE
+import ru.wb.perevozka.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.IntransitTimeRepository
 import ru.wb.perevozka.db.entity.courierboxes.CourierBoxEntity
@@ -128,6 +130,7 @@ class CourierIntransitInteractorImpl(
 
     private fun observeOfficeIdScan(): Observable<Int> {
         return scannerRepository.observeBarcodeScanned()
+            .filter { it.startsWith(PREFIX_QR_OFFICE_CODE) }
             .map { parseQrCode(it) }
             .flatMap { scanOfficeId ->
                 courierLoadingScanBoxData().map { it.dstOffices }

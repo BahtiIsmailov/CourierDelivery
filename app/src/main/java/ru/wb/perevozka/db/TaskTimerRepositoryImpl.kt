@@ -25,6 +25,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         if (timerDisposable == null) {
             timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
                 .subscribe({ onTimeConfirmCode(it) }) { }
+            publishCallState(TimerStateImpl(durationTime, arrivalTime))
         }
     }
 

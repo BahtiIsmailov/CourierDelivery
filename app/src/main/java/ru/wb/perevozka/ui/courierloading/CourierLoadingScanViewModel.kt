@@ -263,14 +263,26 @@ class CourierLoadingScanViewModel(
 
     private fun scanProcessError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getScanDialogMessage()
+            is NoInternetException -> {
+                NavigateToMessageInfo(
+                    "Интернет-сщудинеие отсутствует",
+                    "Проверте соединение и повторите попытку",
+                    "Понятно"
+                )
+            }
+            is BadRequestException ->
+                NavigateToMessageInfo(
+                    "Операция не выполнена", throwable.error.message, "Понятно"
+                )
+
+            else -> NavigateToMessageInfo(
+                "Сервис недоступен", "Повторите операцию позднее", "Понятно"
+            )
         }
+
+        // TODO: 07.10.2021 привести диалог
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
-        )
+        _navigateToMessageInfo.value = message
     }
 
     fun onStopScanner() {

@@ -81,7 +81,7 @@ class CourierLoadingScanFragment : Fragment() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showSimpleDialog(it)
+            showEmptyOrderDialog(it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -316,32 +316,56 @@ class CourierLoadingScanFragment : Fragment() {
         }
     }
 
-    private fun showSimpleDialog(it: CourierLoadingScanViewModel.NavigateToMessageInfo) {
+//    private fun showSimpleDialog(it: CourierLoadingScanViewModel.NavigateToMessageInfo) {
+//        val builder: AlertDialog.Builder =
+//            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+//        val viewGroup: ViewGroup = binding.main
+//        val dialogView: View =
+//            LayoutInflater.from(requireContext())
+//                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
+//        val title: TextView = dialogView.findViewById(R.id.title)
+//        val message: TextView = dialogView.findViewById(R.id.message)
+//        val negative: Button = dialogView.findViewById(R.id.negative)
+//        builder.setView(dialogView)
+//
+//        val alertDialog: AlertDialog = builder.create()
+//
+//        title.text = it.title
+//        message.text = it.message
+//        negative.setOnClickListener {
+//            isDialogActive = false
+//            alertDialog.dismiss()
+//        }
+//        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+//        negative.text = it.button
+//        alertDialog.setOnDismissListener {
+//            isDialogActive = false
+//            viewModel.onStartScanner()
+//        }
+//        alertDialog.show()
+//    }
+
+    private fun showEmptyOrderDialog(title: String, message: String, button: String) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.main
         val dialogView: View =
             LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
-        val title: TextView = dialogView.findViewById(R.id.title)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
+                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
+        val titleText: TextView = dialogView.findViewById(R.id.title)
+        val messageText: TextView = dialogView.findViewById(R.id.message)
+        val positive: Button = dialogView.findViewById(R.id.positive)
+
         builder.setView(dialogView)
-
         val alertDialog: AlertDialog = builder.create()
-
-        title.text = it.title
-        message.text = it.message
-        negative.setOnClickListener {
-            isDialogActive = false
+        titleText.text = title
+        messageText.text = message
+        positive.setOnClickListener {
             alertDialog.dismiss()
+            findNavController().popBackStack()
         }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = it.button
-        alertDialog.setOnDismissListener {
-            isDialogActive = false
-            viewModel.onStartScanner()
-        }
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        positive.text = button
         alertDialog.show()
     }
 

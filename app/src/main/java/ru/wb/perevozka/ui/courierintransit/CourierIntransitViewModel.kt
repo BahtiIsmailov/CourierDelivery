@@ -67,6 +67,20 @@ class CourierIntransitViewModel(
         initOffices()
         initTime()
         initScanner()
+
+        addSubscription(
+            interactor.observeMapAction().subscribe({
+                when (it) {
+                    is CourierMapAction.ItemClick -> {
+                    }
+                    CourierMapAction.PermissionComplete -> {
+                        LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
+                        initOffices()
+                    }
+                }
+            },
+                {}
+            ))
     }
 
     private fun initToolbar() {

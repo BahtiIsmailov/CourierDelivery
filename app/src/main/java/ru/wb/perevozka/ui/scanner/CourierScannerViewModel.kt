@@ -10,6 +10,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.scanner.domain.ScannerInteractor
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
+import ru.wb.perevozka.utils.LogUtils
 import java.util.concurrent.TimeUnit
 
 class CourierScannerViewModel(
@@ -29,6 +30,7 @@ class CourierScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
+        LogUtils{logDebugApp("onBarcodeScanned(barcode: String) " + barcode)}
         if (barcode.startsWith(PREFIX_QR_CODE)
             || barcode.uppercase().startsWith(PREFIX_QR_OFFICE_CODE)
         ) {
