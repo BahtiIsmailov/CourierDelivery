@@ -24,6 +24,7 @@ import ru.wb.perevozka.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.perevozka.ui.courierorders.delegates.OnCourierOrderCallback
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
@@ -59,12 +60,17 @@ class CourierOrderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as NavToolbarListener).hideToolbar()
+        initView()
         initRecyclerView()
         initAdapter()
         initListeners()
         initStateObserve()
         initReturnResult()
+    }
+
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
+        (activity as NavDrawerListener).lock()
     }
 
     private fun initReturnResult() {

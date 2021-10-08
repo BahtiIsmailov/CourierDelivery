@@ -22,6 +22,7 @@ import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIAL
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIALOG_RESULT
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIALOG_TAG
 import ru.wb.perevozka.ui.splash.KeyboardListener
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
@@ -76,6 +77,7 @@ class CourierWarehousesFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).showToolbar()
+        (activity as NavDrawerListener).unlock()
         (activity as KeyboardListener).panMode()
     }
 

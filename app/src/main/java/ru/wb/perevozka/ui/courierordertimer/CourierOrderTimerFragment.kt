@@ -20,6 +20,7 @@ import ru.wb.perevozka.databinding.CourierOrderTimerFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 
@@ -48,6 +49,7 @@ class CourierOrderTimerFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
+        (activity as NavDrawerListener).lock()
     }
 
     private fun initObservable() {

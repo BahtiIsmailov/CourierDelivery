@@ -189,8 +189,8 @@ class CourierUnloadingScanViewModel(
                     accepted
                 )
                 _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
-                _bottomEvent.value =
-                    if (scanProcess.unloadingCounter > 0) CourierUnloadingScanBottomState.Enable else CourierUnloadingScanBottomState.Disable
+//                _bottomEvent.value =
+//                    if (scanProcess.unloadingCounter > 0) CourierUnloadingScanBottomState.Enable else CourierUnloadingScanBottomState.Disable
             }
             CourierUnloadingScanBoxData.Empty -> _boxStateUI.value =
                 CourierUnloadingScanBoxState.Empty(

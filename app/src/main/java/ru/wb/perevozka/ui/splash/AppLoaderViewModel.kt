@@ -9,6 +9,8 @@ import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
 import ru.wb.perevozka.ui.NetworkViewModel
+import ru.wb.perevozka.utils.LogUtils
+import java.net.UnknownHostException
 
 class AppLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -29,6 +31,7 @@ class AppLoaderViewModel(
         addSubscription(repository.refreshAccessTokensSync()
             .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
                 {
+                    LogUtils { logDebugApp("refreshTokenAndNavigateToApp complete") }
                     if (tokenManager.isContains()) {
                         if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
                             || tokenManager.resources().contains(COURIER_NAME)
@@ -36,7 +39,19 @@ class AppLoaderViewModel(
                         else toDelivery()
                     } else toAuth()
                 },
-                { toAuth() }
+                {
+                    LogUtils { logDebugApp("refreshTokenAndNavigateToApp error " + it) }
+                    if (it is UnknownHostException) {
+                        if (tokenManager.isContains()) {
+                            if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
+                                || tokenManager.resources().contains(COURIER_NAME)
+                            ) toCourier()
+                            else toAuth()
+                        } else toAuth()
+                    } else {
+                        toAuth()
+                    }
+                }
             ))
     }
 

@@ -26,6 +26,7 @@ import ru.wb.perevozka.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
 
@@ -61,11 +62,16 @@ class CourierOrderDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initRecyclerView()
         initObservable()
         initListeners()
         initProgressDialog()
         viewModel.update()
+    }
+
+    private fun initView() {
+        (activity as NavDrawerListener).lock()
     }
 
     private fun initObservable() {

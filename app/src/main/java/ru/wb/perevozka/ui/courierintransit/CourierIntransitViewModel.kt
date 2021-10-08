@@ -8,10 +8,7 @@ import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.courierintransit.delegates.items.BaseIntransitItem
-import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
-import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitEmptyItem
-import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitFailedItem
+import ru.wb.perevozka.ui.courierintransit.delegates.items.*
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.perevozka.ui.couriermap.*
@@ -145,33 +142,58 @@ class CourierIntransitViewModel(
                     )
                 } else {
                     if (deliveredCount == fromCount) {
-                        intransitItem = CourierIntransitCompleteItem(
-                            id = index,
-                            fullAddress = address,
-                            deliveryCount = deliveredCount.toString(),
-                            fromCount = fromCount.toString(),
-                            isSelected = DEFAULT_SELECT_ITEM,
-                            idView = index
-                        )
+                        intransitItem = if (isUnloaded) {
+                            CourierIntransitCompleteItem(
+                                id = index,
+                                fullAddress = address,
+                                deliveryCount = deliveredCount.toString(),
+                                fromCount = fromCount.toString(),
+                                isSelected = DEFAULT_SELECT_ITEM,
+                                idView = index
+                            )
+                        } else {
+                            CourierIntransitIsUnloadedItem(
+                                id = index,
+                                fullAddress = address,
+                                deliveryCount = deliveredCount.toString(),
+                                fromCount = fromCount.toString(),
+                                isSelected = DEFAULT_SELECT_ITEM,
+                                idView = index
+                            )
+                        }
+
                         mapMarker = Complete(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getCompleteMapIcon()
                         )
                     } else {
-                        intransitItem = CourierIntransitFailedItem(
-                            id = index,
-                            fullAddress = address,
-                            deliveryCount = deliveredCount.toString(),
-                            fromCount = fromCount.toString(),
-                            isSelected = DEFAULT_SELECT_ITEM,
-                            idView = index
-                        )
+                        intransitItem = if (isUnloaded) {
+                            CourierIntransitFailedItem(
+                                id = index,
+                                fullAddress = address,
+                                deliveryCount = deliveredCount.toString(),
+                                fromCount = fromCount.toString(),
+                                isSelected = DEFAULT_SELECT_ITEM,
+                                idView = index
+                            )
+                        } else {
+                            CourierIntransitIsUnloadedItem(
+                                id = index,
+                                fullAddress = address,
+                                deliveryCount = deliveredCount.toString(),
+                                fromCount = fromCount.toString(),
+                                isSelected = DEFAULT_SELECT_ITEM,
+                                idView = index
+                            )
+                        }
+
                         mapMarker = Failed(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getFailedMapIcon()
                         )
                     }
                 }
+
                 items.add(intransitItem)
                 coordinatePoints.add(CoordinatePoint(latitude, longitude))
                 this@CourierIntransitViewModel.mapMarkers.add(mapMarker)

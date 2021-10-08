@@ -19,6 +19,7 @@ import ru.wb.perevozka.databinding.CourierOrderConfirmFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 
 
 class CourierOrderConfirmFragment : Fragment() {
@@ -45,6 +46,7 @@ class CourierOrderConfirmFragment : Fragment() {
     }
 
     private fun initView() {
+        (activity as NavDrawerListener).lock()
         binding.toolbarLayout.toolbarTitle.text = "Подтверждение заказа"
         binding.toolbarLayout.back.visibility = INVISIBLE
     }

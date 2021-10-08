@@ -26,11 +26,9 @@ import ru.wb.perevozka.adapters.DefaultAdapterDelegate
 import ru.wb.perevozka.databinding.CourierIntransitFragmentBinding
 import ru.wb.perevozka.mvvm.model.base.BaseItem
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
-import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitCompleteDelegate
-import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitEmptyDelegate
-import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitFaildDelegate
-import ru.wb.perevozka.ui.courierintransit.delegates.OnCourierIntransitCallback
+import ru.wb.perevozka.ui.courierintransit.delegates.*
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 import ru.wb.perevozka.views.ProgressImageButtonMode
@@ -77,6 +75,7 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
+        (activity as NavDrawerListener).lock()
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
@@ -244,7 +243,6 @@ class CourierIntransitFragment : Fragment() {
         messageText.text = message
         positive.setOnClickListener {
             alertDialog.dismiss()
-            findNavController().popBackStack()
         }
         positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         positive.text = button
@@ -300,6 +298,7 @@ class CourierIntransitFragment : Fragment() {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitFaildDelegate(requireContext(), itemCallback))
+            addDelegate(CourierIntransitIsUnloadedDelegate(requireContext(), itemCallback))
         }
         binding.routes.adapter = adapter
     }

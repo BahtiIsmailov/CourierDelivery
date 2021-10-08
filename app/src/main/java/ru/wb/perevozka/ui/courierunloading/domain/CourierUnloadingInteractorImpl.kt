@@ -217,15 +217,7 @@ class CourierUnloadingInteractorImpl(
                     val saveRemote =
                         appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
                     saveRemote.doOnComplete { loaderComplete() }
-                        .onErrorResumeNext {
-                            insertVisitedAtOffice(
-                                CourierOrderVisitedOfficeLocalEntity(
-                                    dstOfficeId = officeId,
-                                    visitedAt = timeManager.getLocalTime(),
-                                    isUnload = false
-                                )
-                            )
-                        }.andThen(
+                        .andThen(
                             insertVisitedAtOffice(
                                 CourierOrderVisitedOfficeLocalEntity(
                                     dstOfficeId = officeId,
@@ -234,6 +226,15 @@ class CourierUnloadingInteractorImpl(
                                 )
                             )
                         )
+                        .onErrorResumeNext {
+                            insertVisitedAtOffice(
+                                CourierOrderVisitedOfficeLocalEntity(
+                                    dstOfficeId = officeId,
+                                    visitedAt = timeManager.getLocalTime(),
+                                    isUnload = false
+                                )
+                            )
+                        }
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }
             }

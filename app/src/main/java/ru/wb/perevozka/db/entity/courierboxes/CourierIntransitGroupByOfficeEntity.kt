@@ -7,4 +7,5 @@ data class CourierIntransitGroupByOfficeEntity(
     val longitude: Double,
     val latitude: Double,
     val visitedAt: String,
+    val isUnloaded: Boolean,
 )

@@ -23,6 +23,7 @@ import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.splash.OnCourierScanner
 import ru.wb.perevozka.utils.LogUtils
@@ -61,6 +62,7 @@ class CourierLoadingScanFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
+        (activity as NavDrawerListener).lock()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
     }

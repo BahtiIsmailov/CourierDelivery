@@ -11,10 +11,7 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.databinding.CourierCompleteDeliveryFragmentBinding
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsFragment
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters
-import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
+import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 
 class CourierCompleteDeliveryFragment : Fragment() {
@@ -52,6 +49,7 @@ class CourierCompleteDeliveryFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
+        (activity as NavDrawerListener).lock()
     }
 
     private fun initObserver() {

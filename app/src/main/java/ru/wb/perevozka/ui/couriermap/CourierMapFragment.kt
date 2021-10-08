@@ -23,6 +23,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.OverlayItem
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.MapFragmentBinding
