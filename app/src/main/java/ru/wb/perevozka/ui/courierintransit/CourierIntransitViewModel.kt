@@ -11,6 +11,8 @@ import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierintransit.delegates.items.*
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
+import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitScanOfficeData
+import ru.wb.perevozka.ui.courierloading.CourierLoadingScanBeepState
 import ru.wb.perevozka.ui.couriermap.*
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
@@ -38,6 +40,11 @@ class CourierIntransitViewModel(
     private val _navigationState = SingleLiveEvent<CourierIntransitNavigationState>()
     val navigationState: LiveData<CourierIntransitNavigationState>
         get() = _navigationState
+
+    private val _beepEvent =
+        SingleLiveEvent<CourierIntransitScanOfficeBeepState>()
+    val beepEvent: LiveData<CourierIntransitScanOfficeBeepState>
+        get() = _beepEvent
 
     private val _progressState = MutableLiveData<CourierIntransitProgressState>()
     val progressState: LiveData<CourierIntransitProgressState>
@@ -103,8 +110,17 @@ class CourierIntransitViewModel(
         addSubscription(interactor.observeOfficeIdScanProcess()
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe({
-                _navigationState.value =
-                    CourierIntransitNavigationState.NavigateToUnloadingScanner(it)
+                when (it) {
+                    is CourierIntransitScanOfficeData.Office -> {
+                        _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
+                        _navigationState.value =
+                            CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
+                        onCleared()
+                    }
+                    CourierIntransitScanOfficeData.UnknownOffice -> {
+                        _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownOffice
+                    }
+                }
             }, {
                 LogUtils { logDebugApp("initScanner error office scan " + it) }
             })
@@ -117,8 +133,12 @@ class CourierIntransitViewModel(
     }
 
     private fun initOfficesComplete(dstOffices: List<CourierIntransitGroupByOfficeEntity>) {
+
+        LogUtils { logDebugApp("initOfficesComplete ===================================================== ") }
         val items = mutableListOf<BaseIntransitItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
+        val markers = mutableListOf<CourierMapMarker>()
+
         var deliveredCountTotal = 0
         var fromCountTotal = 0
         dstOffices.forEachIndexed { index, item ->
@@ -196,7 +216,7 @@ class CourierIntransitViewModel(
 
                 items.add(intransitItem)
                 coordinatePoints.add(CoordinatePoint(latitude, longitude))
-                this@CourierIntransitViewModel.mapMarkers.add(mapMarker)
+                markers.add(mapMarker)
             }
         }
         copyItems(items)
@@ -204,8 +224,8 @@ class CourierIntransitViewModel(
             resourceProvider.getBoxCountAndTotal(deliveredCountTotal, fromCountTotal)
         initItems(items, boxTotalCount)
 
-        copyMapPoints(this.mapMarkers)
-        initMap(this.mapMarkers, coordinatePoints)
+        copyMapPoints(markers)
+        initMap(markers, coordinatePoints)
 
         if (deliveredCountTotal == fromCountTotal)
             _orderDetails.value = CourierIntransitItemState.CompleteDelivery

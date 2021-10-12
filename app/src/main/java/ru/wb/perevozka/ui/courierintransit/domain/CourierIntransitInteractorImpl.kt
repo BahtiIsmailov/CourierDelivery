@@ -40,7 +40,7 @@ class CourierIntransitInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun observeOfficeIdScanProcess(): Observable<Int> {
+    override fun observeOfficeIdScanProcess(): Observable<CourierIntransitScanOfficeData> {
         return observeOfficeIdScan()
     }
 
@@ -128,14 +128,17 @@ class CourierIntransitInteractorImpl(
             .map { it.courierOrderLocalEntity.id.toString() }
             .first("")
 
-    private fun observeOfficeIdScan(): Observable<Int> {
+    private fun observeOfficeIdScan(): Observable<CourierIntransitScanOfficeData> {
         return scannerRepository.observeBarcodeScanned()
             .filter { it.startsWith(PREFIX_QR_OFFICE_CODE) }
             .map { parseQrCode(it) }
             .flatMap { scanOfficeId ->
                 courierLoadingScanBoxData().map { it.dstOffices }
                     .map { offices -> offices.find { it.id.toString() == scanOfficeId }?.id ?: 0 }
-                    .filter { it != 0 }
+                    .map {
+                        if (it == 0) CourierIntransitScanOfficeData.UnknownOffice
+                        else CourierIntransitScanOfficeData.Office(it)
+                    }
                     .toObservable()
             }
             .compose(rxSchedulerFactory.applyObservableSchedulers())

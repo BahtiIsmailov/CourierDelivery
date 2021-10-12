@@ -47,6 +47,7 @@ class CourierMapViewModel(
                         is CourierMapState.NavigateToPoint -> _mapState.value = it
                         is CourierMapState.UpdateMapMarkers -> _mapState.value = it
                         is CourierMapState.ZoomAllMarkers -> {
+                            LogUtils { logDebugApp("CourierMapState.ZoomAllMarkers") }
                             val zoomRadius = calculateZoom(it.startNavigation.radius)
                             val startNavigation: MapCircle =
                                 it.startNavigation.copy(radius = zoomRadius)

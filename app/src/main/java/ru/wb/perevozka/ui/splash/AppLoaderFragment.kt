@@ -32,7 +32,7 @@ class AppLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
     }
 
     private fun initView() {
-        (activity as NavToolbarListener).hideBackButton()
+        (activity as NavToolbarListener).hideToolbar()
     }
 
     private fun initObserver() {

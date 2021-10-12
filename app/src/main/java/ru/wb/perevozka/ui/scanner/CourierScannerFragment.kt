@@ -198,7 +198,7 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun beepScan() {
         val mediaPlayer = MediaPlayer.create(
             context,
-            R.raw.sound_scanner_scan
+            R.raw.qr_box_scan_accepted
         )
         mediaPlayer.start()
     }

@@ -96,6 +96,7 @@ class CourierLoaderViewModel(
     }
 
     private fun navigateTo(navigationState: CourierLoaderNavigationState) {
+        _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value = navigationState
     }
 
@@ -226,11 +227,13 @@ class CourierLoaderViewModel(
         when (throwable) {
             is NullPointerException -> {
                 clearData()
+                _state.value = CourierLoaderUIState.Complete
                 _navigationDrawerState.value = toCourierWarehouse()
             }
             is NoInternetException -> {
                 val localStatus = userManager.statusTask()
                 if (localStatus.isNotEmpty()) {
+                    _state.value = CourierLoaderUIState.Complete
                     _navigationDrawerState.value = getNavigationState(localStatus)
                 } else {
                     errorState("Интернет-соединение отсутствует")
@@ -251,10 +254,12 @@ class CourierLoaderViewModel(
     }
 
     private fun toUserForm(phone: String) {
+        _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToCourierUserForm(phone)
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
+        _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }

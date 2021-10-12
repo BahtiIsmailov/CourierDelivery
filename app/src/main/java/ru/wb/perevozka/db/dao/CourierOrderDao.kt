@@ -58,4 +58,9 @@ interface CourierOrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
 
+    @Query("UPDATE CourierOrderVisitedOfficeLocalEntity SET visited_office_is_unload = 1")
+    fun insertAllVisitedOffice(): Completable
+
+
+
 }

@@ -11,7 +11,7 @@ interface CourierIntransitInteractor {
 
     fun observeBoxesGroupByOffice(): Observable<List<CourierIntransitGroupByOfficeEntity>>
 
-    fun observeOfficeIdScanProcess(): Observable<Int>
+    fun observeOfficeIdScanProcess(): Observable<CourierIntransitScanOfficeData>
 
     fun scannerAction(scannerAction: ScannerState)
 

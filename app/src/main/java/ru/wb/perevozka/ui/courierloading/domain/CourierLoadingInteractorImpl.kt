@@ -93,12 +93,12 @@ class CourierLoadingInteractorImpl(
                                 dstOfficeID = dstOfficeId,
                                 loadingAt = loadingAt
                             )
-                        val boxAdded =
-                            justProcessData(CourierLoadingScanBoxData.BoxAdded(qrcode, address), 1)
+                        val boxFirstAdded =
+                            justProcessData(CourierLoadingScanBoxData.BoxFirstAdded(qrcode, address), 1)
 
                         taskStart(scanResult.taskId, courierTaskStartEntity)
                             .andThen(saveBoxLocal(courierBoxEntity))
-                            .andThen(boxAdded)
+                            .andThen(boxFirstAdded)
                             .doOnComplete { firstBoxAddedComplete() }
                             .compose(rxSchedulerFactory.applyObservableSchedulers())
                     } else {

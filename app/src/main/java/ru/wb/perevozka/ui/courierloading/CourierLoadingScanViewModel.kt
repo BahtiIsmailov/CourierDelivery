@@ -61,10 +61,10 @@ class CourierLoadingScanViewModel(
     val boxStateUI: LiveData<CourierLoadingScanBoxState>
         get() = _boxStateUI
 
-    private val _bottomEvent =
-        MutableLiveData<CourierLoadingScanBottomState>()
-    val bottomProgressEvent: LiveData<CourierLoadingScanBottomState>
-        get() = _bottomEvent
+//    private val _bottomEvent =
+//        MutableLiveData<CourierLoadingScanBottomState>()
+//    val bottomProgressEvent: LiveData<CourierLoadingScanBottomState>
+//        get() = _bottomEvent
 
     //val  = MutableLiveData<Boolean>()
 
@@ -207,24 +207,33 @@ class CourierLoadingScanViewModel(
         val scanBoxData = scanProcess.scanBoxData
         val accepted = resourceProvider.getAccepted(scanProcess.count)
         when (scanBoxData) {
+            is CourierLoadingScanBoxData.BoxFirstAdded -> {
+                _boxStateUI.value = with(scanBoxData) {
+                    CourierLoadingScanBoxState.BoxAdded(qrCode, address, accepted)
+                }
+                _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
+                _orderTimer.value = CourierLoadingScanTimerState.Stopped
+            }
             is CourierLoadingScanBoxData.BoxAdded -> {
                 _boxStateUI.value = with(scanBoxData) {
                     CourierLoadingScanBoxState.BoxAdded(qrCode, address, accepted)
                 }
                 _beepEvent.value = CourierLoadingScanBeepState.BoxAdded
-                _orderTimer.value = CourierLoadingScanTimerState.Stopped
-                _bottomEvent.value = CourierLoadingScanBottomState.Enable
             }
             is CourierLoadingScanBoxData.UnknownBox -> {
+                if (scanProcess.count == 0) {
+                    _boxStateUI.value = CourierLoadingScanBoxState.UnknownBoxTimer
+                } else {
+                    _boxStateUI.value = CourierLoadingScanBoxState.UnknownBox(
+                        scanBoxData.qrCode,
+                        resourceProvider.getEmptyAddress(),
+                        accepted
+                    )
+                }
                 _navigationEvent.value = CourierLoadingScanNavAction.NavigateToUnknownBox
-                _boxStateUI.value = CourierLoadingScanBoxState.UnknownBox(
-                    scanBoxData.qrCode,
-                    resourceProvider.getEmptyAddress(),
-                    accepted
-                )
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
-                _bottomEvent.value =
-                    if (scanProcess.count > 0) CourierLoadingScanBottomState.Enable else CourierLoadingScanBottomState.Disable
+//                _bottomEvent.value =
+//                    if (scanProcess.count > 0) CourierLoadingScanBottomState.Enable else CourierLoadingScanBottomState.Disable
             }
             CourierLoadingScanBoxData.Empty -> _boxStateUI.value = CourierLoadingScanBoxState.Empty
         }

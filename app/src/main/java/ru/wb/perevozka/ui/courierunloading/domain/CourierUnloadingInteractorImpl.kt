@@ -208,12 +208,17 @@ class CourierUnloadingInteractorImpl(
     }
 
     override fun confirmUnloading(officeId: Int): Completable {
-        return courierLocalRepository.readAllUnloadingBoxesByOfficeId(officeId)
+        val insertVisitedAtOfficeIsNotUnload = insertVisitedAtOffice(
+            CourierOrderVisitedOfficeLocalEntity(
+                dstOfficeId = officeId,
+                visitedAt = timeManager.getLocalTime(),
+                isUnload = false
+            )
+        )
+        return insertVisitedAtOfficeIsNotUnload.andThen(courierLocalRepository.readNotUnloadingBoxes())
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
             .flatMapCompletable { statusesIntransit ->
                 taskId().flatMapCompletable { taskId ->
-                    //val debugTimer = Completable.timer(3, TimeUnit.SECONDS)
-                    // TODO: 16.09.2021 включить после отладки сканера
                     val saveRemote =
                         appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
                     saveRemote.doOnComplete { loaderComplete() }
@@ -226,24 +231,18 @@ class CourierUnloadingInteractorImpl(
                                 )
                             )
                         )
-                        .onErrorResumeNext {
-                            insertVisitedAtOffice(
-                                CourierOrderVisitedOfficeLocalEntity(
-                                    dstOfficeId = officeId,
-                                    visitedAt = timeManager.getLocalTime(),
-                                    isUnload = false
-                                )
-                            )
-                        }
+                        .andThen(insertAllVisitedOffice())
+                        .onErrorResumeNext { Completable.complete() }
                         .compose(rxSchedulerFactory.applyCompletableSchedulers())
                 }
+                    .compose(rxSchedulerFactory.applyCompletableSchedulers())
             }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     private fun insertVisitedAtOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity) =
         courierLocalRepository.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
 
+    private fun insertAllVisitedOffice() = courierLocalRepository.insertAllVisitedOffice()
 
     private fun convertToCourierTaskStatusesIntransitEntity(item: List<CourierBoxEntity>) =
         Observable.fromIterable(item).map {

@@ -37,12 +37,13 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
         initListeners()
     }
 
-    private fun initListeners() {
-        binding.update.setOnClickListener { viewModel.update() }
+    private fun initView() {
+        (activity as NavToolbarListener).hideToolbar()
+        //(activity as NavToolbarListener).hideBackButton()
     }
 
-    private fun initView() {
-        (activity as NavToolbarListener).hideBackButton()
+    private fun initListeners() {
+        binding.update.setOnClickListener { viewModel.update() }
     }
 
     private fun initObserver() {
@@ -52,6 +53,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
         }
 
         viewModel.navigationDrawerState.observe(viewLifecycleOwner) { state ->
+
             when (state) {
 
                 is CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration -> findNavController().navigate(
@@ -92,7 +94,6 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
             when (state) {
                 is CourierLoaderUIState.Error -> {
                     binding.progress.visibility = View.INVISIBLE
-                    binding.titleProgress.visibility = View.INVISIBLE
                     binding.errorMessage.visibility = View.VISIBLE
                     binding.errorMessage.text = state.message
                     binding.update.visibility = View.VISIBLE
@@ -100,10 +101,16 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 }
                 CourierLoaderUIState.Progress -> {
                     binding.progress.visibility = View.VISIBLE
-                    binding.titleProgress.visibility = View.VISIBLE
                     binding.errorMessage.visibility = View.INVISIBLE
                     binding.update.visibility = View.VISIBLE
                     binding.update.setState(ProgressImageButtonMode.DISABLED)
+                }
+                CourierLoaderUIState.Complete -> {
+                    binding.logo.visibility = View.INVISIBLE
+                    binding.progress.visibility = View.INVISIBLE
+                    binding.errorMessage.visibility = View.INVISIBLE
+                    binding.update.visibility = View.INVISIBLE
+                    binding.update.setState(ProgressImageButtonMode.ENABLED)
                 }
             }
         }

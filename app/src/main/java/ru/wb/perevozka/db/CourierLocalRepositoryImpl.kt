@@ -87,6 +87,10 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
     }
 
+    override fun insertAllVisitedOffice(): Completable {
+        return courierOrderDao.insertAllVisitedOffice()
+    }
+
     override fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity> {
         return courierOrderDao.findOfficeById(officeId)
     }

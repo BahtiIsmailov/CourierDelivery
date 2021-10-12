@@ -29,24 +29,11 @@ class CourierUnloadingUnknownBoxFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.navigateToBack.observe(viewLifecycleOwner) {
-            showToolbar()
-            findNavController().popBackStack()
-        }
+        viewModel.navigateToBack.observe(viewLifecycleOwner) { findNavController().popBackStack() }
 
         binding.understand.setOnClickListener {
             viewModel.onUnderstandClick()
         }
-
-        hideToolbar()
-    }
-
-    private fun hideToolbar() {
-        (activity as NavToolbarListener).hideToolbar()
-    }
-
-    private fun showToolbar() {
-        (activity as NavToolbarListener).showToolbar()
     }
 
     override fun onDestroyView() {

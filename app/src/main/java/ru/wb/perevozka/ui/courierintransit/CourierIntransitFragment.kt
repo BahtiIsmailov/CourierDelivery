@@ -1,10 +1,10 @@
 package ru.wb.perevozka.ui.courierintransit
 
-import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_UP
@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Completable
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.adapters.DefaultAdapterDelegate
@@ -84,6 +85,13 @@ class CourierIntransitFragment : Fragment() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CourierIntransitScanOfficeBeepState.Office -> scanOfficeAccepted()
+                CourierIntransitScanOfficeBeepState.UnknownOffice -> scanOfficeFailed()
+            }
         }
 
         viewModel.intransitTime.observe(viewLifecycleOwner) {
@@ -308,6 +316,11 @@ class CourierIntransitFragment : Fragment() {
         _binding = null
     }
 
+    override fun onResume() {
+        super.onResume()
+        //MediaPlayer.create(context, resId)
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.onStartScanner()
@@ -316,6 +329,18 @@ class CourierIntransitFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         viewModel.onStopScanner()
+    }
+
+    private fun scanOfficeAccepted() {
+        play(R.raw.qr_office_accepted)
+    }
+
+    private fun scanOfficeFailed() {
+        play(R.raw.qr_office_failed)
+    }
+
+    private fun play(resId: Int) {
+        Completable.create { MediaPlayer.create(context, resId).start() }.subscribe()
     }
 
 }

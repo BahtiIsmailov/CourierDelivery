@@ -328,11 +328,12 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun beepSuccess() {
-        play(R.raw.sound_scan_success)
+        // TODO: 11.10.2021 unused
+        //play(R.raw.sound_scan_success)
     }
 
     private fun beepError() {
-        play(R.raw.sound_scan_error)
+        play(R.raw.qr_box_scan_failed)
     }
 
     private fun play(resId: Int) {

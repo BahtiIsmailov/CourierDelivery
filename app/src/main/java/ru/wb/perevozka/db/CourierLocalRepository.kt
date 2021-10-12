@@ -55,6 +55,8 @@ interface CourierLocalRepository {
 
     fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
 
+    fun insertAllVisitedOffice(): Completable
+
     fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity>
 
     //==============================================================================================

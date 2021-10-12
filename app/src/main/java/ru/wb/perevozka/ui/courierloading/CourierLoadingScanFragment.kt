@@ -26,7 +26,6 @@ import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.splash.OnCourierScanner
-import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.views.ProgressButtonMode
 
 class CourierLoadingScanFragment : Fragment() {
@@ -148,10 +147,10 @@ class CourierLoadingScanFragment : Fragment() {
         viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
-            LogUtils { logDebugApp("viewModel.beepEvent " + state) }
             when (state) {
-                is CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
-                is CourierLoadingScanBeepState.UnknownBox -> beepError()
+                CourierLoadingScanBeepState.BoxFirstAdded -> beepFirstSuccess()
+                CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
+                CourierLoadingScanBeepState.UnknownBox -> beepUnknown()
             }
         }
 
@@ -168,19 +167,19 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
-        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
-            when (progress) {
-                CourierLoadingScanBottomState.Disable -> binding.complete.setState(
-                    ProgressButtonMode.DISABLE
-                )
-                CourierLoadingScanBottomState.Enable -> binding.complete.setState(
-                    ProgressButtonMode.ENABLE
-                )
-                CourierLoadingScanBottomState.Progress -> binding.complete.setState(
-                    ProgressButtonMode.PROGRESS
-                )
-            }
-        }
+//        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
+//            when (progress) {
+//                CourierLoadingScanBottomState.Disable -> binding.complete.setState(
+//                    ProgressButtonMode.DISABLE
+//                )
+//                CourierLoadingScanBottomState.Enable -> binding.complete.setState(
+//                    ProgressButtonMode.ENABLE
+//                )
+//                CourierLoadingScanBottomState.Progress -> binding.complete.setState(
+//                    ProgressButtonMode.PROGRESS
+//                )
+//            }
+//        }
 
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -261,8 +260,13 @@ class CourierLoadingScanFragment : Fragment() {
                         )
                     )
                     binding.receive.text = state.accepted
+                    binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
                 is CourierLoadingScanBoxState.UnknownBox -> {
+
+                    binding.timerLayout.visibility = View.GONE
+                    binding.scannerInfoLayout.visibility = View.VISIBLE
+
                     holdBackButtonOnScanBox()
                     binding.status.text = "КОРОБКУ БРАТЬ ЗАПРЕЩЕНО"
                     binding.status.setBackgroundColor(
@@ -286,8 +290,19 @@ class CourierLoadingScanFragment : Fragment() {
                         )
                     )
                     binding.receive.text = state.accepted
+                    binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
-
+                CourierLoadingScanBoxState.UnknownBoxTimer -> {
+                    binding.timerLayout.visibility = View.VISIBLE
+                    binding.scannerInfoLayout.visibility = View.GONE
+                    binding.status.text = "КОРОБКУ БРАТЬ ЗАПРЕЩЕНО"
+                    binding.status.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.unknown_scan_status
+                        )
+                    )
+                }
             }
         }
     }
@@ -448,12 +463,17 @@ class CourierLoadingScanFragment : Fragment() {
         _binding = null
     }
 
-    private fun beepSuccess() {
-        play(R.raw.sound_scan_success)
+    private fun beepFirstSuccess() {
+        play(R.raw.qr_box_first_accepted)
     }
 
-    private fun beepError() {
-        play(R.raw.sound_scan_error)
+    private fun beepSuccess() {
+        // TODO: 11.10.2021 ignore
+//        play(R.raw.sound_scan_success)
+    }
+
+    private fun beepUnknown() {
+        play(R.raw.qr_box_scan_failed)
     }
 
     private fun play(resId: Int) {

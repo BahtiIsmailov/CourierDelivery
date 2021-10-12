@@ -125,12 +125,15 @@ class CourierUnloadingScanViewModel(
 
     private fun confirmUnloadingComplete() {
         LogUtils { logDebugApp("confirmUnloadingComplete") }
+        clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
+
     }
 
     private fun confirmUnloadingError() {
         LogUtils { logDebugApp("confirmUnloadingError") }
+        clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
     }
