@@ -7,6 +7,7 @@ import ru.wb.perevozka.ui.auth.CheckSmsParameters
 import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
+import ru.wb.perevozka.ui.courieragreement.CourierAgreementViewModel
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
@@ -72,6 +73,7 @@ val viewModelModule = module {
 
     viewModel { CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
+    viewModel { CourierAgreementViewModel(get()) }
 
     viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get())

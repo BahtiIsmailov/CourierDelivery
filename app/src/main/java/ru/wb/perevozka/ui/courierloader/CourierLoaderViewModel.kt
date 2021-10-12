@@ -62,6 +62,9 @@ class CourierLoaderViewModel(
 
         checkUserState()
 
+        //_navigationDrawerState.value = toAgreement()
+        //toUserForm("123456789")
+
         //clearData()
         //_navigationDrawerState.value = toPhone()
     }
@@ -273,6 +276,8 @@ class CourierLoaderViewModel(
     private fun toLoadingScanner() = CourierLoaderNavigationState.NavigateToScanner
 
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
+
+    private fun toAgreement() = CourierLoaderNavigationState.NavigateToAgreement
 
     private fun errorState(message: String) {
         _state.value = CourierLoaderUIState.Error(message)

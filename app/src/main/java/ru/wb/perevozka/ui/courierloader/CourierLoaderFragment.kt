@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierLoaderFragmentBinding
+import ru.wb.perevozka.ui.courieragreement.CourierAgreementNavigationState
 import ru.wb.perevozka.ui.courierdata.CourierDataParameters
 import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.splash.OnUserInfo
+import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.views.ProgressImageButtonMode
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
@@ -87,6 +90,11 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 CourierLoaderNavigationState.NavigateToPhone -> findNavController().navigate(
                     CourierLoaderFragmentDirections.actionCourierLoaderFragmentToAuthNavigation()
                 )
+                CourierLoaderNavigationState.NavigateToAgreement -> {
+                    findNavController().navigate(
+                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierAgreementFragment()
+                    )
+                }
             }
         }
 

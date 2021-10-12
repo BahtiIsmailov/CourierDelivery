@@ -355,10 +355,54 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@android:color/transparent"
                     android:lineSpacingExtra="4sp"
-                    android:paddingStart="10dp"
                     android:text="@string/user_form_complete" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp">
+
+                    <CheckBox
+                        android:id="@+id/checked_agreement"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
+                        android:background="@android:color/transparent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/overlay_agreement"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="@+id/checked_agreement"
+                        app:layout_constraintEnd_toEndOf="@+id/checked_agreement"
+                        app:layout_constraintStart_toStartOf="@+id/checked_agreement"
+                        app:layout_constraintTop_toTopOf="@+id/checked_agreement" />
+
+                    <TextView
+                        android:id="@+id/text_agreement"
+                        style="@style/LargeDarkRegularText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:lineSpacingExtra="4sp"
+                        android:maxLines="2"
+                        android:text="@string/user_form_agreement"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/checked_agreement"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <CheckBox
                     android:id="@+id/checked_personal"
@@ -367,9 +411,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@android:color/transparent"
                     android:lineSpacingExtra="4sp"
-                    android:paddingStart="10dp"
                     android:text="@string/user_form_personal" />
 
                 <ru.wb.perevozka.views.ProgressButtonView

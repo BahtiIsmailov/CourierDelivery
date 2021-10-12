@@ -3,12 +3,18 @@ package ru.wb.perevozka.ui.courierdata
 import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ScrollView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
@@ -28,7 +34,6 @@ import ru.wb.perevozka.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.perevozka.ui.courierdata.CourierDataFragment.TextChangesInterface
-import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.date.DatePickerDialog
@@ -37,6 +42,11 @@ import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.utils.time.DateTimeFormatter
 import ru.wb.perevozka.views.ProgressButtonMode
 import java.util.*
+import android.text.TextUtils
+import androidx.fragment.app.setFragmentResultListener
+import ru.wb.perevozka.ui.courieragreement.CourierAgreementFragment
+import ru.wb.perevozka.ui.courieragreement.CourierAgreementFragment.Companion.VALUE_RESULT_KEY
+import ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters
 
 
 class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
@@ -63,6 +73,26 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         initListener()
         initInputMethod()
         initObservers()
+        setLinkAgreement()
+        initAgreementResult()
+    }
+
+    private fun initAgreementResult() {
+        setFragmentResultListener(CourierAgreementFragment.BUNDLE_RESULT_KEY) { _, bundle ->
+            if (bundle.containsKey(VALUE_RESULT_KEY)) {
+                val isConfirm = bundle.get(VALUE_RESULT_KEY) as Boolean
+                binding.checkedAgreement.isChecked = isConfirm
+                updateChecked()
+            }
+        }
+    }
+
+    private fun updateChecked() {
+        viewModel.onCheckedClick(
+            binding.checkedComplete.isChecked,
+            binding.checkedAgreement.isChecked,
+            binding.checkedPersonal.isChecked
+        )
     }
 
     private fun initView() {
@@ -81,12 +111,9 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
         viewModel.onFormChanges(changeFieldObservables())
 
-        binding.checkedComplete.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onCheckedClick(isChecked, binding.checkedPersonal.isChecked)
-        }
-        binding.checkedPersonal.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onCheckedClick(isChecked, binding.checkedComplete.isChecked)
-        }
+        binding.checkedComplete.setOnCheckedChangeListener { _, _ -> updateChecked() }
+        binding.checkedPersonal.setOnCheckedChangeListener { _, _ -> updateChecked() }
+//        binding.checkedAgreement.setOnClickListener { viewModel.onShowAgreementClick() }
 
     }
 
@@ -329,6 +356,11 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                             )
                         )
                     }
+                    CourierDataNavAction.NavigateToAgreement -> {
+                        findNavController().navigate(
+                            CourierDataFragmentDirections.actionUserFormFragmentToCourierAgreementFragment()
+                        )
+                    }
                 }
             })
 
@@ -367,6 +399,28 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         const val PHONE_KEY = "phone_key"
         const val DATE_TIME_PICKER_FRAGMENT = "date_time_picker_fragment"
         const val DATE_PICKER_PATTERN = "dd.MM.yyyy"
+    }
+
+    private val clickableSpan: ClickableSpan = object : ClickableSpan() {
+
+        override fun onClick(widget: View) {
+            viewModel.onShowAgreementClick()
+        }
+
+        override fun updateDrawState(ds: TextPaint) {
+            super.updateDrawState(ds)
+            ds.color = ContextCompat.getColor(requireContext(), R.color.text_clickable)
+        }
+
+    }
+
+    private fun setLinkAgreement() {
+        val link = getString(R.string.user_form_agreement_link)
+        val spannable = SpannableString(link)
+        spannable.setSpan(clickableSpan, 0, link.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val cs = TextUtils.expandTemplate(getString(R.string.user_form_agreement), spannable)
+        binding.textAgreement.text = cs
+        binding.textAgreement.movementMethod = LinkMovementMethod.getInstance()
     }
 
 }

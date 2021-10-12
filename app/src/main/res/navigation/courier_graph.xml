@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_courierLoaderFragment_to_auth_navigation"
             app:destination="@id/auth_navigation" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierAgreementFragment"
+            app:destination="@id/courierAgreementFragment" />
     </fragment>
 
     <fragment
@@ -87,6 +90,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_userFormFragment_to_courierAgreementFragment"
+            app:destination="@id/courierAgreementFragment" />
     </fragment>
 
     <fragment
@@ -342,5 +348,11 @@
     </fragment>
 
     <include app:graph="@navigation/auth_graph" />
+
+    <fragment
+        android:id="@+id/courierAgreementFragment"
+        android:name="ru.wb.perevozka.ui.courieragreement.CourierAgreementFragment"
+        android:label="CourierAgreementFragment"
+        tools:layout="@layout/courier_agreement_fragment" />
 
 </navigation>

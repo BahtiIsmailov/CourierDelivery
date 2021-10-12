@@ -356,8 +356,8 @@ class UserFormViewModel(
         )
     }
 
-    fun onCheckedClick(isComplete: Boolean, isPersonal: Boolean) {
-        _loaderState.value = if (isComplete && isPersonal) {
+    fun onCheckedClick(isComplete: Boolean, isAgreement: Boolean, isPersonal: Boolean) {
+        _loaderState.value = if (isComplete && isAgreement && isPersonal) {
             CourierDataUILoaderState.Enable
         } else {
             CourierDataUILoaderState.Disable
@@ -402,6 +402,10 @@ class UserFormViewModel(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
         )
+    }
+
+    fun onShowAgreementClick() {
+        _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 
 }
