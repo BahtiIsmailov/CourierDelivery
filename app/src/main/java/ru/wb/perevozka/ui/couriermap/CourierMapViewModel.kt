@@ -6,6 +6,7 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapCircle
 import ru.wb.perevozka.utils.map.MapPoint
 
@@ -34,10 +35,6 @@ class CourierMapViewModel(
     val mapState: LiveData<CourierMapState>
         get() = _mapState
 
-    init {
-//        subscribeMapState()
-    }
-
     private fun subscribeMapState() {
         addSubscription(
             interactor.subscribeMapState().subscribe(
@@ -45,15 +42,18 @@ class CourierMapViewModel(
                     when (it) {
                         is CourierMapState.NavigateToMarker -> _mapState.value = it
                         is CourierMapState.NavigateToPoint -> _mapState.value = it
-                        is CourierMapState.UpdateMapMarkers -> _mapState.value = it
-                        is CourierMapState.ZoomAllMarkers -> {
+                        is CourierMapState.UpdateMarkers -> _mapState.value = it
+                        is CourierMapState.NavigateToPointByZoomRadius -> {
                             LogUtils { logDebugApp("CourierMapState.ZoomAllMarkers") }
                             val zoomRadius = calculateZoom(it.startNavigation.radius)
                             val startNavigation: MapCircle =
                                 it.startNavigation.copy(radius = zoomRadius)
-                            _mapState.value = CourierMapState.ZoomAllMarkers(startNavigation)
+                            _mapState.value =
+                                CourierMapState.NavigateToPointByZoomRadius(startNavigation)
                         }
                         CourierMapState.NavigateToMyLocation -> _mapState.value = it
+                        is CourierMapState.UpdateAndNavigateToMyLocationPoint -> _mapState.value = it
+                        CourierMapState.UpdateMyLocation -> _mapState.value = it
                     }
                 },
                 {
@@ -101,10 +101,16 @@ class CourierMapViewModel(
         interactor.onItemClick(index)
     }
 
+    fun onForcedLocationUpdate(point: CoordinatePoint) {
+        interactor.onForcedLocationUpdate(point)
+    }
+
 }
 
 fun moscowMapPoint() = MapPoint("0", 55.751244, 37.618423)
 //fun moscowMapPoint() = MapPoint("0", 0.01, 37.618423)
 
-//fun testMapPoint() = MapPoint("1", 55.755244, 37.618423)
-//fun testMapPoint() = MapPoint("1", -0.01, 37.618423)
+fun testMapPoint0() = MapPoint("0", 55.758958, 37.369545)
+fun testMapPoint1() = MapPoint("1", 55.758958, 37.842315)
+
+fun myCoordinatePoint() = CoordinatePoint(55.759958, 37.852315)

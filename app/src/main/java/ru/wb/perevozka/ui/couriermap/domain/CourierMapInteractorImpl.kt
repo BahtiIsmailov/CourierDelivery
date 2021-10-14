@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.ui.couriermap.CourierMapAction
 import ru.wb.perevozka.ui.couriermap.CourierMapState
+import ru.wb.perevozka.utils.map.CoordinatePoint
 
 class CourierMapInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -20,6 +21,10 @@ class CourierMapInteractorImpl(
 
     override fun onInitPermission() {
         courierMapRepository.mapAction(CourierMapAction.PermissionComplete)
+    }
+
+    override fun onForcedLocationUpdate(point: CoordinatePoint) {
+        courierMapRepository.mapAction(CourierMapAction.ForcedLocationUpdate(point))
     }
 
 }

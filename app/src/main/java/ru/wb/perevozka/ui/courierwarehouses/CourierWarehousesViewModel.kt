@@ -3,6 +3,7 @@ package ru.wb.perevozka.ui.courierwarehouses
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_DISTANCE
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -40,8 +41,14 @@ class CourierWarehousesViewModel(
 
     private var mapMarkers = mutableListOf<CourierMapMarker>()
 
+    private var coordinatePoints = mutableListOf<CoordinatePoint>()
+
     private fun saveWarehouseEntities(warehouseEntities: List<CourierWarehouseLocalEntity>) {
         this.warehouseEntities = warehouseEntities.toMutableList()
+    }
+
+    private fun saveCoordinatePoints(mapMarkers: List<CoordinatePoint>) {
+        this.coordinatePoints = mapMarkers.toMutableList()
     }
 
     private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
@@ -58,6 +65,9 @@ class CourierWarehousesViewModel(
                         LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
                         getWarehouse()
                     }
+                    is CourierMapAction.AutomatedLocationUpdate -> {
+                    }
+                    is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
                 }
             },
                 {}
@@ -100,37 +110,34 @@ class CourierWarehousesViewModel(
         saveWarehouseItems(warehouseItems)
         initItems(warehouseItems)
 
-
         //==========================================================================================
         // TODO: 04.10.2021 для тестирования
-//        val m = Empty(moscowMapPoint(), resourceProvider.getWarehouseMapIcon())
-//        mapMarkers.add(m)
-//        val t = Empty(testMapPoint(), resourceProvider.getWarehouseMapIcon())
-//        mapMarkers.add(t)
-//
-//        coordinatePoints.add(CoordinatePoint(moscowMapPoint().lat, moscowMapPoint().long))
-//        coordinatePoints.add(CoordinatePoint(testMapPoint().lat, testMapPoint().long))
+        mapMarkers.clear()
+        val m = Empty(testMapPoint0(), resourceProvider.getWarehouseMapIcon())
+        mapMarkers.add(m)
+        val t = Empty(testMapPoint1(), resourceProvider.getWarehouseMapIcon())
+        mapMarkers.add(t)
+
+        coordinatePoints.clear()
+        coordinatePoints.add(CoordinatePoint(testMapPoint0().lat, testMapPoint0().long))
+        coordinatePoints.add(CoordinatePoint(testMapPoint1().lat, testMapPoint1().long))
         //==========================================================================================
 
+        saveCoordinatePoints(coordinatePoints)
         saveMapMarkers(mapMarkers)
-        initMap(mapMarkers, coordinatePoints)
-        hideProgress()
+        interactor.mapState(CourierMapState.UpdateMyLocation)
+
     }
 
-    private fun initMap(
-        mapMarkers: MutableList<CourierMapMarker>,
-        coordinatePoints: MutableList<CoordinatePoint>
-    ) {
-        if (mapMarkers.isEmpty()) {
-            interactor.mapState(CourierMapState.NavigateToMyLocation)
-//            interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
-        } else {
-            interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
-            LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
-            val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
-            LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
-            interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
-        }
+    private fun initMapByLocation(myLocation: CoordinatePoint) {
+        LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) myLocation " + myLocation.toString()) }
+        val mapCircle = MapEnclosingCircle().minimumCircleRelativelyMyLocation(
+            coordinatePoints, myLocation, MAP_WAREHOUSE_DISTANCE / 2
+        )
+        LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) mapCircle " + mapCircle) }
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
+        interactor.mapState(CourierMapState.NavigateToPointByZoomRadius(mapCircle))
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
@@ -204,7 +211,7 @@ class CourierWarehousesViewModel(
             mapMarkers.remove(this)
             mapMarkers.add(this)
         }
-        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 

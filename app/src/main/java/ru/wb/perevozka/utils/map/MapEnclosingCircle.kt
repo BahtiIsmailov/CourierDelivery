@@ -5,6 +5,24 @@ import kotlin.math.pow
 
 class MapEnclosingCircle {
 
+    fun minimumCircleRelativelyMyLocation(
+        points: List<CoordinatePoint>,
+        myLocation: CoordinatePoint,
+        searchDistance: Double
+    ): MapCircle {
+        val memCircle = MapCircle(myLocation, 0.0)
+        var minDistance = searchDistance
+        for (i in points.indices) {
+            val distance = distance(myLocation, points[i])
+            if (distance < searchDistance) {
+                return memCircle.copy(radius = searchDistance)
+            }
+            if (i == 0) minDistance = distance
+            if (distance < minDistance) minDistance = distance
+        }
+        return memCircle.copy(radius = minDistance)
+    }
+
     fun minimumEnclosingCircle(points: List<CoordinatePoint>): MapCircle {
         val n = points.size
         var memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)

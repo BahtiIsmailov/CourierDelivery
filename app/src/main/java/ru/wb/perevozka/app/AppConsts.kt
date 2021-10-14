@@ -16,4 +16,9 @@ object AppConsts {
 
     const val REPEAT_SMS_TICK: Long = 1000
     const val REPEAT_SMS_DURATION: Long = 120000
+
+    private const val WAREHOUSE_DISTANCE = 30
+    private const val MAP_DISTANCE_DIVIDER = 14.1831
+    const val MAP_WAREHOUSE_DISTANCE = MAP_DISTANCE_DIVIDER / WAREHOUSE_DISTANCE
+
 }
