@@ -12,7 +12,7 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppExtras
 import kotlin.properties.Delegates
 
-
+@Deprecated("")
 class SimpleResultDialogFragment : DialogFragment() {
 
     private lateinit var title: String

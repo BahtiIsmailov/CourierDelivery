@@ -87,7 +87,7 @@ class CourierOrderConfirmFragment : Fragment() {
                 }
                 //showRefuseOrderDialog(it.title, it.message)
                 is CourierOrderConfirmNavigationState.NavigateToDialogInfo ->
-                    showTimeIsOutDialog(it.title, it.message, it.button)
+                    showDialogInfo(it.title, it.message, it.button)
                 CourierOrderConfirmNavigationState.NavigateToBack -> {
                     findNavController().popBackStack()
                 }
@@ -118,7 +118,7 @@ class CourierOrderConfirmFragment : Fragment() {
         }
     }
 
-    private fun showTimeIsOutDialog(title: String, message: String, button: String) {
+    private fun showDialogInfo(title: String, message: String, button: String) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.layout
@@ -135,20 +135,22 @@ class CourierOrderConfirmFragment : Fragment() {
         messageText.text = message
         positive.setOnClickListener {
             alertDialog.dismiss()
-            viewModel.returnToListOrderClick()
+//            viewModel.returnToListOrderClick()
         }
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        positive.text = button
+
 
         alertDialog.setCanceledOnTouchOutside(false)
         alertDialog.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 alertDialog.dismiss()
-                viewModel.returnToListOrderClick()
+//                viewModel.returnToListOrderClick()
             }
             true
         }
 
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
+
         alertDialog.show()
     }
 
@@ -169,7 +171,7 @@ class CourierOrderConfirmFragment : Fragment() {
         val alertDialog: AlertDialog = builder.create()
 
         titleLayout.setBackgroundColor(
-            ContextCompat.getColor(requireActivity(), R.color.dialog_alarm)
+            ContextCompat.getColor(requireActivity(), R.color.dialog_title_alarm)
         )
         titleText.text = title
         messageText.text = message

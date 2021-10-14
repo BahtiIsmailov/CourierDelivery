@@ -45,9 +45,9 @@ class DialogInfoFragment : DialogFragment() {
         val positive: Button = dialogView.findViewById(R.id.positive)
         builder.setView(dialogView)
         val color = when (DialogStyle.values()[style]) {
-            DialogStyle.INFO -> R.color.dialog_info
-            DialogStyle.WARNING -> R.color.dialog_warning
-            DialogStyle.ERROR -> R.color.dialog_alarm
+            DialogStyle.INFO -> R.color.dialog_title_info
+            DialogStyle.WARNING -> R.color.dialog_title_warning
+            DialogStyle.ERROR -> R.color.dialog_title_alarm
         }
         titleLayout.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
         title.text = this.title

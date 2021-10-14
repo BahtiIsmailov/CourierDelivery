@@ -2,7 +2,6 @@ package ru.wb.perevozka.ui.courierordertimer
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +11,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierOrderTimerFragmentBinding
-import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavDrawerListener
@@ -164,7 +160,7 @@ class CourierOrderTimerFragment : Fragment() {
         val alertDialog: AlertDialog = builder.create()
 
         titleLayout.setBackgroundColor(
-            ContextCompat.getColor(requireActivity(), R.color.dialog_alarm)
+            ContextCompat.getColor(requireActivity(), R.color.dialog_title_alarm)
         )
         titleText.text = title
         messageText.text = message

@@ -92,9 +92,9 @@ class CourierOrderConfirmViewModel(
         courierWarehouseError(throwable)
     }
 
-    fun returnToListOrderClick() {
-        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
-    }
+//    fun returnToListOrderClick() {
+//        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
+//    }
 
     fun refuseOrderConfirmClick() {
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack

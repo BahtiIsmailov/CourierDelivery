@@ -189,10 +189,7 @@ class CourierOrderDetailsFragment : Fragment() {
         val alertDialog: AlertDialog = builder.create()
         titleText.text = title
         messageText.text = message
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            findNavController().popBackStack()
-        }
+        positive.setOnClickListener { alertDialog.dismiss() }
         positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
         positive.text = button
         alertDialog.show()
