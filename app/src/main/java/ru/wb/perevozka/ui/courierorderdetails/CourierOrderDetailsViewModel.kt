@@ -99,7 +99,7 @@ class CourierOrderDetailsViewModel(
         val coordinatePoints = mutableListOf<CoordinatePoint>()
         val mapMarkers = mutableListOf<CourierMapMarker>()
         dstOffices.forEachIndexed { index, item ->
-            items.add(CourierOrderDetailsItem(index, item.fullAddress, false))
+            items.add(CourierOrderDetailsItem(index, item.name, false))
             coordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
             val mapPoint = MapPoint(index.toString(), item.latitude, item.longitude)
             val mapMarker = Empty(mapPoint, resourceProvider.getOfficeMapIcon())

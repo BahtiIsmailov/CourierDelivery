@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/current_box"
-        style="@style/MediumLightRegularText"
+        style="@style/LargeLightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/count_box"
-        style="@style/MediumBlackRegularText"
+        style="@style/LargeBlackRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -35,7 +35,7 @@
 
     <TextView
         android:id="@+id/status_box"
-        style="@style/MediumBlackRegularText"
+        style="@style/LargeBlackRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -66,7 +66,7 @@
 
     <TextView
         android:id="@+id/empty_box"
-        style="@style/MediumLightRegularText"
+        style="@style/LargeLightRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"

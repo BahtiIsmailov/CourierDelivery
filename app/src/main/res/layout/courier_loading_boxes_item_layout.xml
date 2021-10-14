@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/info"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/qr_code"

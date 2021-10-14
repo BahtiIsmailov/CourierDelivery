@@ -237,7 +237,7 @@
 
     <ImageView
         android:layout_width="0dp"
-        android:layout_height="30dp"
+        android:layout_height="@dimen/shadow_list"
         android:layout_marginBottom="10dp"
         android:src="@drawable/gradient_light_top"
         app:layout_constraintEnd_toEndOf="parent"
@@ -246,7 +246,7 @@
 
     <ImageView
         android:layout_width="0dp"
-        android:layout_height="30dp"
+        android:layout_height="@dimen/shadow_list"
         android:layout_marginBottom="10dp"
         android:src="@drawable/gradient_light_bottom"
         app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz"

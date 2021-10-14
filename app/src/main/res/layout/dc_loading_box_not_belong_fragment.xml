@@ -75,7 +75,7 @@
 
     <TextView
         android:id="@+id/code"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
@@ -98,7 +98,7 @@
 
     <TextView
         android:id="@+id/address"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"

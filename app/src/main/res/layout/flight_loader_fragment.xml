@@ -49,7 +49,7 @@
 
     <TextView
         android:id="@+id/title_progress"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -76,7 +76,7 @@
 
     <TextView
         android:id="@+id/error_message"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"

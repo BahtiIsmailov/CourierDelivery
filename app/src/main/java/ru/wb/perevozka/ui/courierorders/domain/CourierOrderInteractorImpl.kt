@@ -21,8 +21,7 @@ class CourierOrderInteractorImpl(
 ) : CourierOrderInteractor {
 
     override fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
-        return Completable.timer(1, TimeUnit.SECONDS)
-            .andThen(appRemoteRepository.courierOrders(srcOfficeID))
+        return appRemoteRepository.courierOrders(srcOfficeID)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

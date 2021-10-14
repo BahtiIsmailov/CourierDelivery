@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/route_legend_description_text"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/route_legend_color_image"

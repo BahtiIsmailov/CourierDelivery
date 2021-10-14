@@ -5,6 +5,7 @@
     android:id="@+id/box_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
     android:background="?android:selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
@@ -27,11 +28,11 @@
         android:id="@+id/image_dot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_order_route_dot"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintStart_toStartOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="@+id/selected_background"
-        app:layout_constraintStart_toStartOf="@+id/selected_background" />
+        app:srcCompat="@drawable/ic_order_route_dot" />
 
     <TextView
         android:id="@+id/fullAddressWarehouse"

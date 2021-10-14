@@ -91,7 +91,7 @@
 
         <TextView
             android:id="@+id/routes_title_text"
-            style="@style/MediumBlackRegularText"
+            style="@style/LargeBlackRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"

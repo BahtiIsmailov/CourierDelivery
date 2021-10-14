@@ -47,7 +47,7 @@
 
     <style name="TextToolbar">
         <item name="android:textColor">@color/toolbar_text</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:textStyle">bold</item>
@@ -99,6 +99,7 @@
 
     <style name="RegularBaseFont" parent="@android:style/Widget.TextView">
         <item name="android:fontFamily">@font/regular</item>
+        <item name="android:lineSpacingExtra">@dimen/line_spacing</item>
     </style>
 
     <style name="MediumBaseFont" parent="@android:style/Widget.TextView">
@@ -127,25 +128,25 @@
     </style>
 
 
-    <style name="MediumBlackRegularText" parent="RegularBaseFont">
-        <item name="android:textSize">@dimen/medium_text</item>
-        <item name="android:textColor">@color/black_text</item>>
-    </style>
+    <!--    <style name="MediumBlackRegularText" parent="RegularBaseFont">-->
+    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
+    <!--        <item name="android:textColor">@color/black_text</item>>-->
+    <!--    </style>-->
 
-    <style name="MediumDarkRegularText" parent="RegularBaseFont">
-        <item name="android:textSize">@dimen/medium_text</item>
-        <item name="android:textColor">@color/dark_text</item>>
-    </style>
+    <!--    <style name="LargeDarkRegularText" parent="RegularBaseFont">-->
+    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
+    <!--        <item name="android:textColor">@color/dark_text</item>>-->
+    <!--    </style>-->
 
-    <style name="MediumLightRegularText" parent="RegularBaseFont">
-        <item name="android:textSize">@dimen/medium_text</item>
-        <item name="android:textColor">@color/light_text</item>>
-    </style>
+    <!--    <style name="LargeLightRegularText" parent="RegularBaseFont">-->
+    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
+    <!--        <item name="android:textColor">@color/light_text</item>>-->
+    <!--    </style>-->
 
-    <style name="MediumSmallBrightRegularText" parent="RegularBaseFont">
-        <item name="android:textSize">@dimen/medium_text</item>
-        <item name="android:textColor">@color/bright_text</item>
-    </style>
+    <!--    <style name="LargeBrightSmallRegularText" parent="RegularBaseFont">-->
+    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
+    <!--        <item name="android:textColor">@color/bright_text</item>-->
+    <!--    </style>-->
 
 
     <style name="LargeBlackRegularText" parent="RegularBaseFont">

@@ -81,7 +81,7 @@
 
     <TextView
         android:id="@+id/car_number_prefix"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -92,7 +92,7 @@
 
     <TextView
         android:id="@+id/car_number"
-        style="@style/MediumBlackRegularText"
+        style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
@@ -117,7 +117,7 @@
 
     <TextView
         android:id="@+id/arrive_prefix"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -128,7 +128,7 @@
 
     <TextView
         android:id="@+id/arrive"
-        style="@style/MediumBlackRegularText"
+        style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
@@ -153,7 +153,7 @@
 
     <TextView
         android:id="@+id/pvz"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -178,7 +178,7 @@
 
     <TextView
         android:id="@+id/volume"
-        style="@style/MediumDarkRegularText"
+        style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

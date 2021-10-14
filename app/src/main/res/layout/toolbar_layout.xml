@@ -3,21 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="?actionBarSize"
+    android:layout_height="wrap_content"
     android:background="@color/white">
-
-    <TextView
-        android:id="@+id/toolbar_title"
-        style="@style/TextToolbar"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_toStartOf="@+id/no_internet_image"
-        android:layout_toEndOf="@+id/back"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="2"
-        tools:text="Доставка" />
 
     <ImageView
         android:id="@+id/back"
@@ -31,12 +18,19 @@
         android:visibility="visible"
         tools:ignore="ContentDescription" />
 
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="#F0EDF2"
-        android:layout_alignParentBottom="true"/>
+    <TextView
+        android:id="@+id/toolbar_title"
+        style="@style/TextToolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_toStartOf="@+id/no_internet_image"
+        android:layout_toEndOf="@+id/back"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:minHeight="?actionBarSize"
+        tools:text="Доставка Доставка Доставка Доставка Доставка Доставка Доставка" />
 
     <ImageView
         android:id="@+id/no_internet_image"
@@ -51,5 +45,12 @@
         android:visibility="invisible"
         app:srcCompat="@drawable/ic_nav_no_internet_toolbar"
         tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@+id/toolbar_title"
+        android:background="#F0EDF2" />
 
 </RelativeLayout>

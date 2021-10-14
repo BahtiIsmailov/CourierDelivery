@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/redo_count"
-        style="@style/MediumLightRegularText"
+        style="@style/LargeLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -49,7 +49,7 @@
 
     <TextView
         android:id="@+id/undo_count"
-        style="@style/MediumLightRegularText"
+        style="@style/LargeLightRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"

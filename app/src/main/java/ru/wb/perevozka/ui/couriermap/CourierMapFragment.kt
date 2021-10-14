@@ -138,7 +138,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private fun navigateToMarker(id: String) {
         binding.map.overlays.find { (it as Marker).id == id }?.apply {
-            mapController.animateTo((this as Marker).position)
+            mapController.setCenter((this as Marker).position)
         }
         mapController.setZoom(16.0)
     }
@@ -159,14 +159,13 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun navigateToPoint(it: MapPoint) {
         val point = GeoPoint(it.lat, it.long)
         mapController.setZoom(14.0)
-        mapController.animateTo(point)
+        mapController.setCenter(point)
     }
 
     private fun zoomAllPoint(it: MapCircle) {
         val point = with(it.point) { GeoPoint(x, y) }
         LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
         mapController.setZoom(it.radius)
-        mapController.animateTo(point)
         mapController.setCenter(point)
     }
 
