@@ -16,6 +16,8 @@ import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.perevozka.ui.auth.domain.NumberPhoneInteractorImpl
+import ru.wb.perevozka.ui.courierbilling.domain.CourierBillingInteractor
+import ru.wb.perevozka.ui.courierbilling.domain.CourierBillingInteractorImpl
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
 import ru.wb.perevozka.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
@@ -529,6 +531,13 @@ val interactorModule = module {
         return CourierMapInteractorImpl(rxSchedulerFactory, courierMapRepository)
     }
 
+    fun provideCourierBillingInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+    ): CourierBillingInteractor {
+        return CourierBillingInteractorImpl(rxSchedulerFactory, appRemoteRepository)
+    }
+
     fun provideCourierCompleteDeliveryInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         courierLocalRepository: CourierLocalRepository
@@ -610,5 +619,6 @@ val interactorModule = module {
     }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
+    factory { provideCourierBillingInteractor(get(), get()) }
 
 }

@@ -693,6 +693,28 @@ class AppRemoteRepositoryImpl(
         return remote.putCarNumbers(apiVersion(), carNumberRequest)
     }
 
+    override fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity> {
+        return remote.billing(apiVersion(), isShowTransaction)
+            .map {
+                val billingTransactions = mutableListOf<BillingTransactionEntity>()
+                it.transactions.forEach {
+                    billingTransactions.add(
+                        BillingTransactionEntity(
+                            uuid = it.uuid,
+                            value = it.value,
+                            createdAt = it.createdAt
+                        )
+                    )
+                }
+                BillingCommonEntity(
+                    id = it.id,
+                    balance = it.balance,
+                    entity = BillingEntity(id = it.entity.id, name = it.entity.name),
+                    transactions = billingTransactions
+                )
+            }
+    }
+
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
         val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
         courierOrderResponse.dstOffices.forEach { dstOffice ->

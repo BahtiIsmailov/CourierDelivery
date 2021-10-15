@@ -121,4 +121,6 @@ interface AppRemoteRepository {
 
     fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable
 
+    fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
+
 }

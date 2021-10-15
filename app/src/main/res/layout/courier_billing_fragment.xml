@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_content_light"
+    tools:context=".ui.flights.FlightsFragment">
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:indeterminateTint="@color/color_progress"
+        app:layout_constraintBottom_toBottomOf="@+id/content_center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/content_center" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/content_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/coast"
+        style="@style/ExtraLargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        tools:text="3200 \u20BD" />
+
+    <TextView
+        android:id="@+id/details"
+        style="@style/VeryLargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="Детализация"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coast" />
+
+    <View
+        android:id="@+id/view_divider1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:background="#EDEEF0"
+        app:layout_constraintEnd_toEndOf="@+id/details"
+        app:layout_constraintStart_toStartOf="@+id/details"
+        app:layout_constraintTop_toBottomOf="@+id/details" />
+
+    <View
+        android:id="@+id/view_divider"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginTop="11dp"
+        android:background="#642CA3"
+        app:layout_constraintEnd_toEndOf="@+id/details"
+        app:layout_constraintStart_toStartOf="@+id/details"
+        app:layout_constraintTop_toBottomOf="@+id/details" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/orders"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="20dp"
+        android:background="@color/background_content_light"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/update"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_divider"
+        tools:listitem="@layout/courier_billing_positive_delegate" />
+
+    <View
+        android:id="@+id/overlay_boxes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <RelativeLayout
+        android:id="@+id/empty_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/update"
+        app:layout_constraintTop_toTopOf="@+id/view_divider1">
+
+        <ImageView
+            android:id="@+id/return_danger"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_info"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/empty_title"
+            style="@style/LargeDarkRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/return_danger"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:gravity="center"
+            android:text="@string/courier_warehouse_empty_list" />
+
+    </RelativeLayout>
+
+    <ru.wb.perevozka.views.ProgressButtonView
+        android:id="@+id/update"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progress_button_background="@drawable/progress_image_button_round_default"
+        app:progress_button_name="@string/courier_orders_update"
+        app:progress_button_state="disable"
+        app:progress_button_text_color_disable="@color/button_default_text_disable"
+        app:progress_button_text_color_enable="@color/button_default_text_enable"
+        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

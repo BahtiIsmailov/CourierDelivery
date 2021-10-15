@@ -191,6 +191,10 @@
         <item name="android:textColor">@color/bright_text</item>
     </style>
 
+    <style name="ExtraLargeBlackRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/black_text</item>
+    </style>
 
     <style name="ExtraLargeDarkRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>

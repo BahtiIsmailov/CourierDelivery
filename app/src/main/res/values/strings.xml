@@ -2,6 +2,7 @@
     <string name="app_name">WB Go</string>
 
     <string name="app_nav_delivery">Доставка</string>
+    <string name="app_nav_billing">Баланс</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
     <string name="app_nav_update_app">Проверить обновления</string>
     <string name="app_version">%s</string>
@@ -445,5 +446,9 @@
     <string name="user_form_agreement">Подтверждаю согласие с ^1</string>
     <string name="user_form_agreement_link">договором оферты</string>
     <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
+
+    <string name="support_empty_ticket_list">Список заявок пуст\nобновите экран или\nсоздайте новую заявку</string>
+
+    <string name="courier_billing_date_and_time">%1$s • %2$s</string>
 
 </resources>

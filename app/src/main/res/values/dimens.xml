@@ -35,7 +35,7 @@
 <!--    <dimen name="medium_text">14sp</dimen>-->
     <dimen name="large_text">16sp</dimen>
     <dimen name="very_large_text">20sp</dimen>
-    <dimen name="extra_large_text">27sp</dimen>
+    <dimen name="extra_large_text">24sp</dimen>
     <dimen name="line_spacing">4dp</dimen>
 
     <dimen name="card_view_elevation">2dp</dimen>
