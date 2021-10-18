@@ -2,14 +2,12 @@ package ru.wb.perevozka.ui.courierorderconfirm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.perevozka.network.exceptions.BadRequestException
-import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
 import java.text.DecimalFormat
 
 class CourierOrderConfirmViewModel(
@@ -25,6 +23,10 @@ class CourierOrderConfirmViewModel(
     private val _navigationState = SingleLiveEvent<CourierOrderConfirmNavigationState>()
     val navigationState: LiveData<CourierOrderConfirmNavigationState>
         get() = _navigationState
+
+    private val _dialogErrorInfoState = SingleLiveEvent<NavigateToDialogInfo>()
+    val dialogErrorState: SingleLiveEvent<NavigateToDialogInfo>
+        get() = _dialogErrorInfoState
 
     private val _progressState = MutableLiveData<CourierOrderConfirmProgressState>()
     val progressState: LiveData<CourierOrderConfirmProgressState>
@@ -69,10 +71,14 @@ class CourierOrderConfirmViewModel(
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
-    fun confirmOrderClick() {
+    private fun actionProgress() = Completable.fromAction {
         _progressState.value = CourierOrderConfirmProgressState.Progress
+    }
+
+    fun confirmOrderClick() {
         addSubscription(
-            interactor.anchorTask()
+            actionProgress()
+                .andThen(interactor.anchorTask())
                 .subscribe(
                     { anchorTaskComplete() },
                     { anchorTaskError(it) })
@@ -101,29 +107,8 @@ class CourierOrderConfirmViewModel(
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> CourierOrderConfirmNavigationState.NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> CourierOrderConfirmNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> CourierOrderConfirmNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
         progressComplete()
-        _navigationState.value = message
-
+        _dialogErrorInfoState.value = messageError(throwable, resourceProvider)
     }
 
     fun onCancelLoadClick() {

@@ -223,12 +223,12 @@ class UserFormViewModel(
     }
 
     private fun mapAction(action: CourierDataUIAction) = when (action) {
-        is CourierDataUIAction.FocusChange -> checkFocus(action)
-        is CourierDataUIAction.TextChange -> checkText(action)
-        is CourierDataUIAction.CompleteClick -> checkAll(action)
+        is CourierDataUIAction.FocusChange -> checkFieldFocus(action)
+        is CourierDataUIAction.TextChange ->  checkFieldText(action) //CourierDataUIState.Skip //
+        is CourierDataUIAction.CompleteClick -> checkFieldAll(action)
     }
 
-    private fun checkAll(action: CourierDataUIAction.CompleteClick): CourierDataUIState {
+    private fun checkFieldAll(action: CourierDataUIAction.CompleteClick): CourierDataUIState {
         val iterator = action.userData.iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
@@ -313,7 +313,7 @@ class UserFormViewModel(
         }
     }
 
-    private fun checkFocus(action: CourierDataUIAction.FocusChange) =
+    private fun checkFieldFocus(action: CourierDataUIAction.FocusChange) =
         when (action.type) {
             CourierDataQueryType.SURNAME -> checkFocusSurnameWrapper(action)
             CourierDataQueryType.NAME -> checkFocusNameWrapper(action)
@@ -329,7 +329,7 @@ class UserFormViewModel(
             )
         }
 
-    private fun checkText(action: CourierDataUIAction.TextChange) =
+    private fun checkFieldText(action: CourierDataUIAction.TextChange) =
         when (action.type) {
             CourierDataQueryType.SURNAME -> checkTextSurnameWrapper(action)
             CourierDataQueryType.NAME -> checkTextNameWrapper(action)
@@ -349,11 +349,11 @@ class UserFormViewModel(
 
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
-        addSubscription(
-            interactor.courierDocuments(courierDocumentsEntity).subscribe(
-                { couriersFormComplete() },
-                { couriersFormError(it) })
-        )
+//        addSubscription(
+//            interactor.courierDocuments(courierDocumentsEntity).subscribe(
+//                { couriersFormComplete() },
+//                { couriersFormError(it) })
+//        )
     }
 
     fun onCheckedClick(isComplete: Boolean, isAgreement: Boolean, isPersonal: Boolean) {

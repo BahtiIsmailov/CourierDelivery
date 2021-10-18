@@ -6,7 +6,6 @@ import java.util.*
 
 abstract class BaseMessageResourceProvider(private val context: Context) {
 
-    fun getGenericInternetTitleError() = context.getString(R.string.unknown_internet_title_error)
     fun getGenericInternetMessageError() = context.getString(R.string.unknown_internet_message_error)
     fun getGenericInternetButtonError() = context.getString(R.string.unknown_internet_button_error)
 

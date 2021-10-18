@@ -1,10 +1,10 @@
 package ru.wb.perevozka.ui.courierexpects.domain
 
 import io.reactivex.Single
+import ru.wb.perevozka.app.COURIER_ROLE
 import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
-import java.util.concurrent.TimeUnit
 
 class CourierExpectsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -14,11 +14,9 @@ class CourierExpectsInteractorImpl(
 
     override fun isRegisteredStatus(): Single<Boolean> {
         val refreshToken = refreshTokenRepository.refreshAccessTokensSync()
-        val isEmptyTokenResources = Single.fromCallable { tokenManager.resources().isEmpty() }
+        val isEmptyTokenResources =
+            Single.fromCallable { tokenManager.resources().contains(COURIER_ROLE) }
         return refreshToken.andThen(isEmptyTokenResources)
-            // TODO: 19.08.2021 выключить после тестирования
-            .delay(1, TimeUnit.SECONDS)
-            .map { true }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

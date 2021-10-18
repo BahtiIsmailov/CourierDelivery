@@ -9,6 +9,8 @@ import ru.wb.perevozka.db.entity.TaskStatus
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierAnchorEntity
+import ru.wb.perevozka.network.exceptions.BadRequestException
+import ru.wb.perevozka.network.exceptions.Error
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.auth.signup.TimerOverStateImpl
@@ -28,11 +30,18 @@ class CourierOrderConfirmInteractorImpl(
     private var durationTime = 0
 
     override fun anchorTask(): Completable {
-        return  courierLocalRepository.observeOrderData()
+        //return Completable.error(BadRequestException(Error("Error", "500", null)))
+//        return Completable.error(ExceptionInInitializerError())
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+//        return Completable.timer(1000, TimeUnit.MILLISECONDS)
+//            .andThen(Completable.error(BadRequestException(Error("Error", "500", null))))
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+
+        return courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id }
             .map { it.toString() }
             .firstOrError()
-            .flatMapCompletable{ appRemoteRepository.anchorTask(it, userManager.carNumber()) }
+            .flatMapCompletable { appRemoteRepository.anchorTask(it, userManager.carNumber()) }
             .doOnComplete { userManager.saveStatusTask(TaskStatus.TIMER.status) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }

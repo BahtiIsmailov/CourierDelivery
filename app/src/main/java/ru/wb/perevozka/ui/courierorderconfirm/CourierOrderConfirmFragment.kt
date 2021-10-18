@@ -16,10 +16,12 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierOrderConfirmFragmentBinding
+import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
+import ru.wb.perevozka.utils.LogUtils
 
 
 class CourierOrderConfirmFragment : Fragment() {
@@ -74,6 +76,10 @@ class CourierOrderConfirmFragment : Fragment() {
             }
         }
 
+        viewModel.dialogErrorState.observe(viewLifecycleOwner) {
+            showDialogInfo(it.title, it.message, it.button)
+        }
+
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierOrderConfirmProgressState.Progress -> showProgressDialog()
@@ -85,9 +91,6 @@ class CourierOrderConfirmFragment : Fragment() {
             when (it) {
                 is CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog -> {
                 }
-                //showRefuseOrderDialog(it.title, it.message)
-                is CourierOrderConfirmNavigationState.NavigateToDialogInfo ->
-                    showDialogInfo(it.title, it.message, it.button)
                 CourierOrderConfirmNavigationState.NavigateToBack -> {
                     findNavController().popBackStack()
                 }
@@ -113,6 +116,7 @@ class CourierOrderConfirmFragment : Fragment() {
     }
 
     private fun closeProgressDialog() {
+        parentFragmentManager.fragments.forEach { frg -> LogUtils { frg.tag?.let { logDebugApp(it) } } }
         parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
             if (it is ProgressDialogFragment) it.dismiss()
         }

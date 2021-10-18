@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.app.COURIER_COMPANY_ID
-import ru.wb.perevozka.app.COURIER_NAME
+import ru.wb.perevozka.app.COURIER_ROLE
 import ru.wb.perevozka.network.headers.RefreshTokenRepository
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
 import ru.wb.perevozka.network.token.TokenManager
@@ -34,7 +34,7 @@ class AppLoaderViewModel(
                     LogUtils { logDebugApp("refreshTokenAndNavigateToApp complete") }
                     if (tokenManager.isContains()) {
                         if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
-                            || tokenManager.resources().contains(COURIER_NAME)
+                            || tokenManager.resources().contains(COURIER_ROLE)
                         ) toCourier()
                         else toDelivery()
                     } else toAuth()
@@ -44,7 +44,7 @@ class AppLoaderViewModel(
                     if (it is UnknownHostException) {
                         if (tokenManager.isContains()) {
                             if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
-                                || tokenManager.resources().contains(COURIER_NAME)
+                                || tokenManager.resources().contains(COURIER_ROLE)
                             ) toCourier()
                             else toAuth()
                         } else toAuth()
