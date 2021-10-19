@@ -224,7 +224,7 @@ class UserFormViewModel(
 
     private fun mapAction(action: CourierDataUIAction) = when (action) {
         is CourierDataUIAction.FocusChange -> checkFieldFocus(action)
-        is CourierDataUIAction.TextChange ->  checkFieldText(action) //CourierDataUIState.Skip //
+        is CourierDataUIAction.TextChange ->  checkFieldText(action)
         is CourierDataUIAction.CompleteClick -> checkFieldAll(action)
     }
 
@@ -349,11 +349,11 @@ class UserFormViewModel(
 
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
-//        addSubscription(
-//            interactor.courierDocuments(courierDocumentsEntity).subscribe(
-//                { couriersFormComplete() },
-//                { couriersFormError(it) })
-//        )
+        addSubscription(
+            interactor.courierDocuments(courierDocumentsEntity).subscribe(
+                { couriersFormComplete() },
+                { couriersFormError(it) })
+        )
     }
 
     fun onCheckedClick(isComplete: Boolean, isAgreement: Boolean, isPersonal: Boolean) {
