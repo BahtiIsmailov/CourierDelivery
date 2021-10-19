@@ -14,6 +14,7 @@ class CourierOrdersDataBuilderImpl(
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
             order = "Заказ " + courierOrderEntity.id.toString(),
+            arrive = resourceProvider.getArrive(courierOrderEntity.reservedDuration),
             volume = resourceProvider.getBoxCountAndVolume(
                 courierOrderEntity.minBoxesCount,
                 courierOrderEntity.minVolume

@@ -88,6 +88,7 @@ class CourierOrderDetailsViewModel(
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
                 resourceProvider.getOrder(id),
                 resourceProvider.getCoast(coast),
+                resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration),
                 resourceProvider.getBoxCountAndVolume(minBoxesCount, minVolume),
                 resourceProvider.getPvz(pvz)
             )

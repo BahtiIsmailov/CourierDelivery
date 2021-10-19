@@ -84,6 +84,7 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderInfo -> {
                     binding.order.text = it.order
+                    binding.arrive.text = it.arrive
                     binding.volume.text = it.countBoxAndVolume
                     binding.pvz.text = it.countPvz
                     binding.coast.text = it.coast

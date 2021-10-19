@@ -16,6 +16,10 @@ class CourierOrdersResourceProvider(private val context: Context) :
     fun getErrorOrderDialogPositiveButton() =
         context.getString(R.string.courier_order_dialog_positive_button_error)
 
+    fun getArrive(arrive: String): String {
+        return context.getString(R.string.courier_orders_confirm_arrive, arrive)
+    }
+
     fun getBoxCountAndVolume(boxCount: Int, volume: Int): String {
         val v = context.resources.getQuantityString(R.plurals.volume, abs(volume), volume)
         return context.getString(R.string.courier_orders_count, boxCount, v)

@@ -23,6 +23,10 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_details_coast, amount)
     }
 
+    fun getArrive(arrive: String): String {
+        return context.getString(R.string.courier_orders_confirm_arrive, arrive)
+    }
+
     fun getPvz(pvz: Int): String {
         return context.getString(R.string.courier_orders_details_pvz, pvz)
     }

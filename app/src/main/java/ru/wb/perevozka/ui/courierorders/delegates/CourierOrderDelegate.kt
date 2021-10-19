@@ -29,6 +29,7 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
         holder.itemView.tag = item
         val binding = holder.binding
         binding.order.text = item.order
+        binding.arrive.text = item.arrive
         binding.volume.text = item.volume
         binding.pvz.text = item.pvzCount
         binding.coast.text = item.coast

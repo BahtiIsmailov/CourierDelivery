@@ -35,6 +35,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/icon_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.06" />
+
     <TextView
         android:id="@+id/order"
         style="@style/LargeBlackRegularText"
@@ -42,11 +49,47 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="26dp"
+        android:layout_marginBottom="12dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/volume"
+        app:layout_constraintBottom_toTopOf="@+id/arrive_prefix"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Заказ 3245934" />
+
+    <TextView
+        android:id="@+id/arrive_prefix"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Прибыть "
+        app:layout_constraintBottom_toTopOf="@+id/volume"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image" />
+
+    <TextView
+        android:id="@+id/arrive"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
+        app:layout_constraintStart_toEndOf="@+id/arrive_prefix"
+        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
+        tools:text="• за 20 мин" />
+
+    <ImageView
+        android:id="@+id/volume_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
+        app:srcCompat="@drawable/ic_clock"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/volume"
@@ -54,7 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/pvz"
         app:layout_constraintStart_toEndOf="@+id/show_route_image"
         app:layout_constraintVertical_bias="0"
@@ -64,12 +107,12 @@
         android:id="@+id/show_route_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="@+id/volume"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
         app:layout_constraintTop_toTopOf="@+id/volume"
         app:srcCompat="@drawable/ic_box_and_volume"
         tools:ignore="ContentDescription" />
@@ -91,12 +134,12 @@
         android:id="@+id/pvz_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="@+id/pvz"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
         app:layout_constraintTop_toTopOf="@+id/pvz"
         app:srcCompat="@drawable/ic_pvz_count"
         tools:ignore="ContentDescription" />
