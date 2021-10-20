@@ -3,7 +3,8 @@ package ru.wb.perevozka.ui.courierwarehouses
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_DISTANCE
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -131,13 +132,18 @@ class CourierWarehousesViewModel(
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
         LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) myLocation " + myLocation.toString()) }
-        val mapCircle = MapEnclosingCircle().minimumCircleRelativelyMyLocation(
-            coordinatePoints, myLocation, MAP_WAREHOUSE_DISTANCE / 2
+
+//        val searchLocation = CoordinatePoint(
+//            myLocation.latitude + MAP_WAREHOUSE_LAT_DISTANCE,
+//            myLocation.longitude + MAP_WAREHOUSE_LON_DISTANCE
+//        )
+        val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
+            coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
         )
-        LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) mapCircle " + mapCircle) }
+        LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) boundingBox " + boundingBox) }
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
-        interactor.mapState(CourierMapState.NavigateToPointByZoomRadius(mapCircle))
+        interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
     }
 
     private fun courierWarehouseError(throwable: Throwable) {

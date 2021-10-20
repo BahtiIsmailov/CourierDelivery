@@ -21,10 +21,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
 import ru.wb.perevozka.databinding.MapFragmentBinding
 import ru.wb.perevozka.ui.scanner.hasPermissions
 import ru.wb.perevozka.utils.LogUtils
@@ -147,13 +150,16 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun initObservable() {
         viewModel.mapState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierMapState.NavigateToPointByZoomRadius -> zoomAllPoint(it.startNavigation)
+                is CourierMapState.NavigateToPointByZoomRadius -> navigateToPointByZoomRadius(it.startNavigation)
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
-                is CourierMapState.UpdateMarkers -> updateMarkers(it.pointsState)
+                is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
                 CourierMapState.UpdateMyLocation -> forcedLocationUpdate()
-                is CourierMapState.UpdateAndNavigateToMyLocationPoint -> updateAndNavigateToMyLocationPoint(it.point)
+                is CourierMapState.UpdateAndNavigateToMyLocationPoint -> updateAndNavigateToMyLocationPoint(
+                    it.point
+                )
+                is CourierMapState.ZoomToCenterBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
             }
         }
     }
@@ -164,12 +170,45 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         mapController.setCenter(point)
     }
 
-    private fun zoomAllPoint(it: MapCircle) {
-        val point = with(it.point) { GeoPoint(x, y) }
-        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
-        mapController.setZoom(it.radius)
-        mapController.setCenter(point)
+    private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
+        val geoPoint = GeoPoint(boundingBox.centerLatitude, boundingBox.centerLongitude)
+        mapController.setCenter(geoPoint)
+        binding.map.zoomToBoundingBox(boundingBox, false)
     }
+
+    private fun navigateToPointByZoomRadius(it: MapCircle) {
+
+        val point = it.point
+        val radius = it.radius
+
+        val maxLat = point.latitude + MAP_WAREHOUSE_LAT_DISTANCE
+        val maxLong = point.longitude + MAP_WAREHOUSE_LON_DISTANCE
+        val minLat = point.latitude - MAP_WAREHOUSE_LAT_DISTANCE
+        val minLong = point.longitude - MAP_WAREHOUSE_LON_DISTANCE
+        val boundingBox = BoundingBox(maxLat, maxLong, minLat, minLong)
+
+        //mapController.zoomToSpan(boundingBox.latitudeSpan, boundingBox.longitudeSpanWithDateLine)
+        //val geoPoint = with(it.point) { GeoPoint(latitude, longitude) }
+        val geoPoint =
+            with(it.point) { GeoPoint(boundingBox.centerLatitude, boundingBox.centerLongitude) }
+
+
+        mapController.setCenter(geoPoint)
+        binding.map.zoomToBoundingBox(boundingBox, false)
+
+
+//        val point = with(it.point) { GeoPoint(x, y) }
+//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
+//        mapController.setZoom(it.radius)
+//        mapController.setCenter(point)
+    }
+
+//    private fun navigateToPointByZoomRadius(it: MapCircle) {
+//        val point = with(it.point) { GeoPoint(x, y) }
+//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
+//        mapController.setZoom(it.radius)
+//        mapController.setCenter(point)
+//    }
 
     private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
         binding.map.overlays.clear()
@@ -227,8 +266,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
         drawMapMarker(
             MY_LOCATION_ID,
-            point.x,
-            point.y,
+            point.latitude,
+            point.longitude,
             R.drawable.ic_my_location
         )
     }
