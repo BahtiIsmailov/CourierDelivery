@@ -1,0 +1,3 @@
+package ru.wb.perevozka.ui.courierstartdelivery.domain
+
+interface CourierStartDeliveryInteractor

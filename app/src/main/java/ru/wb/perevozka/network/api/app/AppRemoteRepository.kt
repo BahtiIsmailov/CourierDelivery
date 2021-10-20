@@ -112,6 +112,11 @@ interface AppRemoteRepository {
 
     fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable
 
+    fun taskStatusesReady(
+        taskID: String,
+        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+    ): Single<CourierTaskStatusesIntransitCoastEntity>
+
     fun taskStatusesIntransit(
         taskID: String,
         courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>

@@ -225,14 +225,8 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierIntransitFragment"
-            app:destination="@id/courierIntransitFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/courierLoaderFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierStartDeliveryFragment"
+            app:destination="@id/courierStartDeliveryFragment" />
     </fragment>
 
     <fragment
@@ -354,5 +348,25 @@
         android:name="ru.wb.perevozka.ui.courieragreement.CourierAgreementFragment"
         android:label="CourierAgreementFragment"
         tools:layout="@layout/courier_agreement_fragment" />
+    <fragment
+        android:id="@+id/courierStartDeliveryFragment"
+        android:name="ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryFragment"
+        android:label="CourierStartDeliveryFragment"
+        tools:layout="@layout/courier_start_delivery_fragment">
+
+        <argument
+            android:name="courier_start_delivery_key"
+            app:argType="ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_courierStartDeliveryFragment_to_courierIntransitFragment"
+            app:destination="@id/courierIntransitFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/courierLoaderFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

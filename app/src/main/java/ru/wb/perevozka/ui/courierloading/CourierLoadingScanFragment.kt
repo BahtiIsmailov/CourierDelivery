@@ -18,6 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierLoadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryParameters
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT
@@ -137,8 +138,12 @@ class CourierLoadingScanFragment : Fragment() {
                 }
                 CourierLoadingScanNavAction.NavigateToWarehouse ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
-                CourierLoadingScanNavAction.NavigateToIntransit ->
-                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierIntransitFragment())
+                is CourierLoadingScanNavAction.NavigateToIntransit ->
+                    findNavController().navigate(
+                        CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierStartDeliveryFragment(
+                            CourierStartDeliveryParameters(state.amount, state.count)
+                        )
+                    )
                 is CourierLoadingScanNavAction.NavigateToDialogInfo -> {
                     showDialogInfo(state.type, state.title, state.message, state.button)
                 }

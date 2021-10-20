@@ -211,6 +211,13 @@ interface AppApi {
         @Body courierTaskStartRequest: List<CourierTaskStartRequest>
     ): Completable
 
+    @POST("{version}/tasks/{taskID}/statuses/ready")
+    fun taskStatusesReady(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") flightID: String,
+        @Body courierTaskStatusesIntransitRequest: List<CourierTaskStatusesIntransitRequest>
+    ): Single<CourierTaskStatusesIntransitResponse>
+
     @POST("{version}/tasks/{taskID}/statuses/intransit")
     fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,

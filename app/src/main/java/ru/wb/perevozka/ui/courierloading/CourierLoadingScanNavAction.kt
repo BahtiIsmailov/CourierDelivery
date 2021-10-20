@@ -12,7 +12,7 @@ sealed class CourierLoadingScanNavAction {
 
     object NavigateToWarehouse : CourierLoadingScanNavAction()
 
-    object NavigateToIntransit : CourierLoadingScanNavAction()
+    data class NavigateToIntransit(val amount: Int, val count: Int) : CourierLoadingScanNavAction()
 
     data class NavigateToDialogInfo(
         val type: Int,

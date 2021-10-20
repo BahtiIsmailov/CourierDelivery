@@ -591,7 +591,8 @@ class AppRemoteRepositoryImpl(
                 reservedAt = task.reservedAt,
                 startedAt = task.startedAt ?: "",
                 reservedDuration = task.reservedDuration,
-                status = task.status ?: TaskStatus.TIMER.status
+                status = task.status ?: TaskStatus.TIMER.status,
+                cost = task.cost ?: 0
             )
         }
     }
@@ -658,6 +659,29 @@ class AppRemoteRepositoryImpl(
                 deliveredAt = null
             )
         return remote.taskStart(apiVersion(), taskID, listOf(courierTaskStartRequest))
+    }
+
+    override fun taskStatusesReady(
+        taskID: String,
+        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+    ): Single<CourierTaskStatusesIntransitCoastEntity> {
+        val courierTaskStatusesIntransitRequest =
+            mutableListOf<CourierTaskStatusesIntransitRequest>()
+        courierTaskStatusesIntransitEntity.forEach {
+            val courierTaskStatusIntransitRequest =
+                CourierTaskStatusesIntransitRequest(
+                    id = it.id,
+                    dstOfficeID = it.dstOfficeID,
+                    loadingAt = it.loadingAt,
+                    deliveredAt = it.deliveredAt
+                )
+            courierTaskStatusesIntransitRequest.add(courierTaskStatusIntransitRequest)
+        }
+        return remote.taskStatusesReady(
+            apiVersion(),
+            taskID,
+            courierTaskStatusesIntransitRequest
+        ).map { CourierTaskStatusesIntransitCoastEntity(it.coast) }
     }
 
     override fun taskStatusesIntransit(

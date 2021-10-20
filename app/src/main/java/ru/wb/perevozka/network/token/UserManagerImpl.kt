@@ -25,6 +25,14 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
         return worker.load(AppPreffsKeys.CAR_NUMBER_KEY, "")
     }
 
+    override fun saveCostTask(cost: Int) {
+        worker.save(AppPreffsKeys.COST_KEY, cost)
+    }
+
+    override fun costTask(): Int {
+        return worker.load(AppPreffsKeys.COST_KEY, 0)
+    }
+
     override fun saveStatusTask(status: String) {
         worker.save(AppPreffsKeys.STATUS_TASK_KEY, status)
     }
@@ -37,6 +45,7 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
         worker.delete(AppPreffsKeys.PHONE_KEY)
         worker.delete(AppPreffsKeys.CAR_NUMBER_KEY)
         worker.delete(AppPreffsKeys.STATUS_TASK_KEY)
+        worker.delete(AppPreffsKeys.COST_KEY)
     }
 
     override fun clearStatus() {

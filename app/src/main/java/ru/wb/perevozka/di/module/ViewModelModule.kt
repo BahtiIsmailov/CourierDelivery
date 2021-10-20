@@ -27,6 +27,8 @@ import ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsViewModel
 import ru.wb.perevozka.ui.courierorders.CourierOrderParameters
 import ru.wb.perevozka.ui.courierorders.CourierOrdersViewModel
 import ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerViewModel
+import ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryParameters
+import ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryViewModel
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanViewModel
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingUnknownBoxViewModel
@@ -123,7 +125,7 @@ val viewModelModule = module {
     }
 
     viewModel { CourierScannerViewModel(get(), get()) }
-    viewModel { CourierIntransitViewModel(get(), get(), get()) }
+    viewModel { CourierIntransitViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
             parameters,
@@ -134,6 +136,7 @@ val viewModelModule = module {
     }
     viewModel { CourierUnloadingUnknownBoxViewModel() }
     viewModel { (parameters: CourierCompleteDeliveryParameters) -> CourierCompleteDeliveryViewModel(parameters, get(), get(), get()) }
+    viewModel { (parameters: CourierStartDeliveryParameters) -> CourierStartDeliveryViewModel(parameters, get(), get(), get()) }
     viewModel { CourierMapViewModel(get(), get(), get()) }
 
 

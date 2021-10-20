@@ -6,6 +6,7 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
+import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierintransit.delegates.items.*
@@ -27,6 +28,7 @@ class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
+    private val userManager: UserManager
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -266,7 +268,7 @@ class CourierIntransitViewModel(
     private fun completeDeliveryComplete(completeDeliveryResult: CompleteDeliveryResult) {
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
-            completeDeliveryResult.amount,
+            userManager.costTask(),
             completeDeliveryResult.unloadedCount,
             completeDeliveryResult.fromCount
         )

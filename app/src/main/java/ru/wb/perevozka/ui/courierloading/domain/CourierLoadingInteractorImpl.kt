@@ -27,6 +27,7 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
+import java.util.concurrent.TimeUnit
 
 class CourierLoadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -94,7 +95,12 @@ class CourierLoadingInteractorImpl(
                                 loadingAt = loadingAt
                             )
                         val boxFirstAdded =
-                            justProcessData(CourierLoadingScanBoxData.BoxFirstAdded(qrcode, address), 1)
+                            justProcessData(
+                                CourierLoadingScanBoxData.BoxFirstAdded(
+                                    qrcode,
+                                    address
+                                ), 1
+                            )
 
                         taskStart(scanResult.taskId, courierTaskStartEntity)
                             .andThen(saveBoxLocal(courierBoxEntity))
@@ -231,19 +237,25 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun confirmLoadingBoxes(): Completable {
+    override fun confirmLoadingBoxes(): Single<CourierCompleteData> {
         return courierLocalRepository.readAllLoadingBoxes()
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
-            .flatMapCompletable { statusesIntransit ->
-                taskId().flatMapCompletable { taskId ->
-                    // TODO: 24.09.2021 выключить для тестирования
+            .flatMap { intransitBoxes ->
+                taskId().flatMap { taskId ->
+                    // TODO: 24.09.2021 включить для тестирования
                     //Completable.timer(3, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-                    appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
-                        .doOnComplete { userManager.saveStatusTask(TaskStatus.INTRANSIT.status) }
-                        .compose(rxSchedulerFactory.applyCompletableSchedulers())
+                    //Completable.timer(3, TimeUnit.SECONDS).andThen(Single.just(CourierCompleteData(1200, 10)))
+                    appRemoteRepository.taskStatusesReady(taskId, intransitBoxes)
+                        .map { it.coast }
+                        .doOnSuccess {
+                            userManager.saveStatusTask(TaskStatus.INTRANSIT.status)
+                            userManager.saveCostTask(it)
+                        }
+                        .map { CourierCompleteData(it, intransitBoxes.size) }
+                        .compose(rxSchedulerFactory.applySingleSchedulers())
                 }
             }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun info(): Single<CourierLoadingInfoEntity> {

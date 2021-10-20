@@ -113,10 +113,10 @@ class CourierLoaderViewModel(
     ): Single<CourierLoaderNavigationState> {
         val remoteTaskId = courierTasksMyEntity.id
         return if (remoteTaskId == localTaskId) {
-            saveWarehouseAndOrderAndOffices(courierTasksMyEntity)
+            saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
         } else {
             clearData()
-            saveWarehouseAndOrderAndOffices(courierTasksMyEntity)
+            saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
                 .andThen(
                     if (courierTasksMyEntity.status != TaskStatus.TIMER.status)
                         syncBoxesAndVisitedOffice(
@@ -152,13 +152,14 @@ class CourierLoaderViewModel(
             )
         }.toList()
 
-    private fun saveWarehouseAndOrderAndOffices(courierTasksMyEntity: CourierTasksMyEntity): Completable {
+    private fun saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity: CourierTasksMyEntity): Completable {
         val courierWarehouseLocalEntity = courierWarehouseLocalEntity(courierTasksMyEntity)
         val courierOrderLocalEntity = courierOrderLocalEntity(courierTasksMyEntity)
         val courierDstOfficesEntity = courierDstOffices(courierTasksMyEntity)
         courierLocalRepository.deleteAllWarehouse()
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
+        userManager.saveCostTask(courierTasksMyEntity.cost)
         return courierLocalRepository.saveWarehouseAndOrderAndOffices(
             courierWarehouseLocalEntity, courierOrderLocalEntity, courierDstOfficesEntity
         )

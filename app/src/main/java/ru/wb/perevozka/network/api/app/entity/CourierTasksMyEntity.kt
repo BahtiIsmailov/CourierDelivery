@@ -15,4 +15,5 @@ data class CourierTasksMyEntity(
     val startedAt: String,
     val reservedDuration: String,
     val status: String,
+    val cost: Int,
 )

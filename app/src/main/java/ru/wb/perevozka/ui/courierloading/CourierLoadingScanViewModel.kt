@@ -11,10 +11,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
-import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
-import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingProcessData
-import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingProgressData
-import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingScanBoxData
+import ru.wb.perevozka.ui.courierloading.domain.*
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
@@ -114,13 +111,16 @@ class CourierLoadingScanViewModel(
         _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
         addSubscription(
             interactor.confirmLoadingBoxes()
-                .subscribe({ confirmLoadingBoxesComplete() }, { confirmLoadingBoxesError(it) })
+                .subscribe({ confirmLoadingBoxesComplete(it) }, { confirmLoadingBoxesError(it) })
         )
     }
 
-    private fun confirmLoadingBoxesComplete() {
+    private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
         _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
-        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit
+        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit(
+            courierCompleteData.amount,
+            courierCompleteData.countBox
+        )
     }
 
     private fun confirmLoadingBoxesError(it: Throwable) {

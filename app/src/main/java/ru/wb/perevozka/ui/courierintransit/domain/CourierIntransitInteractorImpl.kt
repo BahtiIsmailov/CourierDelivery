@@ -165,4 +165,4 @@ class CourierIntransitInteractorImpl(
 
 }
 
-data class CompleteDeliveryResult(val amount: Int, val unloadedCount: Int, val fromCount: Int)
+data class CompleteDeliveryResult(val unloadedCount: Int, val fromCount: Int)

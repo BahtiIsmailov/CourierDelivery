@@ -15,4 +15,5 @@ data class CourierTasksMyResponse(
     val startedAt: String?,
     val reservedDuration: String,
     val status: String?,
+    val cost: Int?,
 )

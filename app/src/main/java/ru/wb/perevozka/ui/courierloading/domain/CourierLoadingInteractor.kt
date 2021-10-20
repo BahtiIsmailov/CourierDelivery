@@ -31,7 +31,7 @@ interface CourierLoadingInteractor {
 
     fun deleteTask(): Completable
 
-    fun confirmLoadingBoxes(): Completable
+    fun confirmLoadingBoxes(): Single<CourierCompleteData>
 
     fun info(): Single<CourierLoadingInfoEntity>
 
