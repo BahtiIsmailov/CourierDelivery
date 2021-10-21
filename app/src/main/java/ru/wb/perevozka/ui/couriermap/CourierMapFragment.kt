@@ -35,9 +35,20 @@ import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapCircle
 import ru.wb.perevozka.utils.map.MapPoint
 
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+
+
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private val viewModel by viewModel<CourierMapViewModel>()
+
+    companion object {
+        private const val REQUEST_ERROR = 0
+        private const val MY_LOCATION_ID = "my_location_id"
+        private const val MIN_ZOOM = 8.0
+        private const val MAX_ZOOM = 20.0
+        private const val SIZE_IN_PIXELS = 100
+    }
 
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
@@ -121,6 +132,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         mapController.setZoom(12.0)
         binding.map.setBuiltInZoomControls(false)
         binding.map.setMultiTouchControls(true)
+        binding.map.minZoomLevel = MIN_ZOOM
+        binding.map.maxZoomLevel = MAX_ZOOM
         viewModel.onInitPermission()
     }
 
@@ -171,9 +184,19 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
-        val geoPoint = GeoPoint(boundingBox.centerLatitude, boundingBox.centerLongitude)
-        mapController.setCenter(geoPoint)
-        binding.map.zoomToBoundingBox(boundingBox, false)
+        LogUtils { logDebugApp("zoomToCenterBoundingBox(boundingBox: BoundingBox) " + boundingBox.toString()) }
+        with(binding.map) {
+            if (height > 0) {
+                zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+            } else {
+                viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+                        viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
+                })
+            }
+        }
     }
 
     private fun navigateToPointByZoomRadius(it: MapCircle) {
@@ -299,11 +322,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 )
             }
         }
-    }
-
-    companion object {
-        private const val REQUEST_ERROR = 0
-        private const val MY_LOCATION_ID = "my_location_id"
     }
 
     override fun onDestroyView() {

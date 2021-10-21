@@ -57,6 +57,10 @@ class CourierWarehousesViewModel(
     }
 
     init {
+
+    }
+
+    private fun observeMapAction() {
         addSubscription(
             interactor.observeMapAction().subscribe({
                 when (it) {
@@ -71,13 +75,18 @@ class CourierWarehousesViewModel(
                     is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
                 }
             },
-                {}
+                {
+                    LogUtils { logDebugApp("interactor.observeMapAction().subscribe " + it) }
+                }
             ))
     }
 
     fun update() {
-        LogUtils { logDebugApp("update() getWarehouse()") }
+        LogUtils { logDebugApp("update()") }
+        observeMapAction()
+        LogUtils { logDebugApp("update() observeMapAction()") }
         getWarehouse()
+        LogUtils { logDebugApp("update() getWarehouse()") }
     }
 
     fun onUpdateClick() {
@@ -96,6 +105,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete(warehouses: List<CourierWarehouseLocalEntity>) {
+        LogUtils { logDebugApp("courierWarehouseComplete() " + warehouses.toString()) }
         val warehouseItems = mutableListOf<CourierWarehouseItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
         val mapMarkers = mutableListOf<CourierMapMarker>()
@@ -113,15 +123,15 @@ class CourierWarehousesViewModel(
 
         //==========================================================================================
         // TODO: 04.10.2021 для тестирования
-        mapMarkers.clear()
-        val m = Empty(testMapPoint0(), resourceProvider.getWarehouseMapIcon())
-        mapMarkers.add(m)
-        val t = Empty(testMapPoint1(), resourceProvider.getWarehouseMapIcon())
-        mapMarkers.add(t)
-
-        coordinatePoints.clear()
-        coordinatePoints.add(CoordinatePoint(testMapPoint0().lat, testMapPoint0().long))
-        coordinatePoints.add(CoordinatePoint(testMapPoint1().lat, testMapPoint1().long))
+//        mapMarkers.clear()
+//        val m = Empty(testMapPoint0(), resourceProvider.getWarehouseMapIcon())
+//        mapMarkers.add(m)
+//        val t = Empty(testMapPoint1(), resourceProvider.getWarehouseMapIcon())
+//        mapMarkers.add(t)
+//
+//        coordinatePoints.clear()
+//        coordinatePoints.add(CoordinatePoint(testMapPoint0().lat, testMapPoint0().long))
+//        coordinatePoints.add(CoordinatePoint(testMapPoint1().lat, testMapPoint1().long))
         //==========================================================================================
 
         saveCoordinatePoints(coordinatePoints)
@@ -132,11 +142,6 @@ class CourierWarehousesViewModel(
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
         LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) myLocation " + myLocation.toString()) }
-
-//        val searchLocation = CoordinatePoint(
-//            myLocation.latitude + MAP_WAREHOUSE_LAT_DISTANCE,
-//            myLocation.longitude + MAP_WAREHOUSE_LON_DISTANCE
-//        )
         val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
             coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
         )
@@ -144,9 +149,11 @@ class CourierWarehousesViewModel(
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
         interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
+        progressComplete()
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
+        LogUtils { logDebugApp("courierWarehouseError() " + throwable.toString()) }
         val message = when (throwable) {
             is NoInternetException -> CourierWarehousesNavigationState.NavigateToDialogInfo(
                 DialogStyle.WARNING.ordinal,
