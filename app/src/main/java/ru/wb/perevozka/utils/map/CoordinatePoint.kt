@@ -1,3 +1,3 @@
 package ru.wb.perevozka.utils.map
 
-data class CoordinatePoint(val x: Double, val y: Double)
+data class CoordinatePoint(val latitude: Double, val longitude: Double)

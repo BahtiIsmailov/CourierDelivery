@@ -58,13 +58,6 @@ class CourierLoadingScanViewModel(
     val boxStateUI: LiveData<CourierLoadingScanBoxState>
         get() = _boxStateUI
 
-//    private val _bottomEvent =
-//        MutableLiveData<CourierLoadingScanBottomState>()
-//    val bottomProgressEvent: LiveData<CourierLoadingScanBottomState>
-//        get() = _bottomEvent
-
-    //val  = MutableLiveData<Boolean>()
-
     init {
         observeNetworkState()
         observeInitScanProcess()

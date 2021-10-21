@@ -21,20 +21,34 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.OverlayItem
 import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
 import ru.wb.perevozka.databinding.MapFragmentBinding
 import ru.wb.perevozka.ui.scanner.hasPermissions
 import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapCircle
 import ru.wb.perevozka.utils.map.MapPoint
+
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+
 
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private val viewModel by viewModel<CourierMapViewModel>()
+
+    companion object {
+        private const val REQUEST_ERROR = 0
+        private const val MY_LOCATION_ID = "my_location_id"
+        private const val MIN_ZOOM = 8.0
+        private const val MAX_ZOOM = 20.0
+        private const val SIZE_IN_PIXELS = 100
+    }
 
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
@@ -118,10 +132,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         mapController.setZoom(12.0)
         binding.map.setBuiltInZoomControls(false)
         binding.map.setMultiTouchControls(true)
+        binding.map.minZoomLevel = MIN_ZOOM
+        binding.map.maxZoomLevel = MAX_ZOOM
         viewModel.onInitPermission()
     }
 
-    private fun initMapMarker(id: String, lat: Double, long: Double, icon: Int) {
+    private fun drawMapMarker(id: String, lat: Double, long: Double, icon: Int) {
         val marker = Marker(binding.map)
         marker.setOnMarkerClickListener { marker, _ ->
             viewModel.onItemClick(marker.id)
@@ -147,11 +163,16 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun initObservable() {
         viewModel.mapState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierMapState.ZoomAllMarkers -> zoomAllPoint(it.startNavigation)
+                is CourierMapState.NavigateToPointByZoomRadius -> navigateToPointByZoomRadius(it.startNavigation)
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
-                is CourierMapState.UpdateMapMarkers -> updateMarkers(it.pointsState)
+                is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
+                CourierMapState.UpdateMyLocation -> forcedLocationUpdate()
+                is CourierMapState.UpdateAndNavigateToMyLocationPoint -> updateAndNavigateToMyLocationPoint(
+                    it.point
+                )
+                is CourierMapState.ZoomToCenterBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
             }
         }
     }
@@ -162,12 +183,55 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         mapController.setCenter(point)
     }
 
-    private fun zoomAllPoint(it: MapCircle) {
-        val point = with(it.point) { GeoPoint(x, y) }
-        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
-        mapController.setZoom(it.radius)
-        mapController.setCenter(point)
+    private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
+        LogUtils { logDebugApp("zoomToCenterBoundingBox(boundingBox: BoundingBox) " + boundingBox.toString()) }
+        with(binding.map) {
+            if (height > 0) {
+                zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+            } else {
+                viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+                        viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
+                })
+            }
+        }
     }
+
+    private fun navigateToPointByZoomRadius(it: MapCircle) {
+
+        val point = it.point
+        val radius = it.radius
+
+        val maxLat = point.latitude + MAP_WAREHOUSE_LAT_DISTANCE
+        val maxLong = point.longitude + MAP_WAREHOUSE_LON_DISTANCE
+        val minLat = point.latitude - MAP_WAREHOUSE_LAT_DISTANCE
+        val minLong = point.longitude - MAP_WAREHOUSE_LON_DISTANCE
+        val boundingBox = BoundingBox(maxLat, maxLong, minLat, minLong)
+
+        //mapController.zoomToSpan(boundingBox.latitudeSpan, boundingBox.longitudeSpanWithDateLine)
+        //val geoPoint = with(it.point) { GeoPoint(latitude, longitude) }
+        val geoPoint =
+            with(it.point) { GeoPoint(boundingBox.centerLatitude, boundingBox.centerLongitude) }
+
+
+        mapController.setCenter(geoPoint)
+        binding.map.zoomToBoundingBox(boundingBox, false)
+
+
+//        val point = with(it.point) { GeoPoint(x, y) }
+//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
+//        mapController.setZoom(it.radius)
+//        mapController.setCenter(point)
+    }
+
+//    private fun navigateToPointByZoomRadius(it: MapCircle) {
+//        val point = with(it.point) { GeoPoint(x, y) }
+//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
+//        mapController.setZoom(it.radius)
+//        mapController.setCenter(point)
+//    }
 
     private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
         binding.map.overlays.clear()
@@ -176,7 +240,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private fun initMapMarkers(mapPoints: List<CourierMapMarker>) {
         mapPoints.forEach { item ->
-            initMapMarker(
+            drawMapMarker(
                 item.point.id,
                 item.point.lat,
                 item.point.long,
@@ -190,7 +254,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun navigateToMyLocation() {
-        if (!serviceOnConnected) return
+        if (!serviceOnConnected) return //навигироваться по дефолту
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -208,15 +272,56 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 locationRequest
             ) { location ->
                 LogUtils { logDebugApp("Location : " + location.latitude + " / " + location.longitude) }
-                navigateToPoint(MapPoint(MY_ID, location.latitude, location.longitude))
-                initMapMarker(MY_ID, location.latitude, location.longitude, R.drawable.ic_pvz_my)
+                navigateToPoint(MapPoint(MY_LOCATION_ID, location.latitude, location.longitude))
+                drawMapMarker(
+                    MY_LOCATION_ID,
+                    location.latitude,
+                    location.longitude,
+                    R.drawable.ic_my_location
+                )
             }
         }
     }
 
-    companion object {
-        private const val REQUEST_ERROR = 0
-        private const val MY_ID = "where_i_am"
+    private fun updateAndNavigateToMyLocationPoint(point: CoordinatePoint) {
+        binding.map.overlays.find { (it as Marker).id == MY_LOCATION_ID }?.apply {
+            binding.map.overlays.remove(this)
+        }
+        drawMapMarker(
+            MY_LOCATION_ID,
+            point.latitude,
+            point.longitude,
+            R.drawable.ic_my_location
+        )
+    }
+
+    private fun forcedLocationUpdate() {
+        if (!serviceOnConnected) return //вернуть по дефолту
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val locationRequest = LocationRequest.create()
+            locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            locationRequest.numUpdates = 1
+            locationRequest.interval = 0
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                googleApiClient,
+                locationRequest
+            ) { location ->
+                //LogUtils { logDebugApp("Location : " + location.latitude + " / " + location.longitude) }
+                viewModel.onForcedLocationUpdate(
+                    CoordinatePoint(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -13,7 +13,6 @@ import ru.wb.perevozka.ui.courierintransit.delegates.items.*
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitScanOfficeData
-import ru.wb.perevozka.ui.courierloading.CourierLoadingScanBeepState
 import ru.wb.perevozka.ui.couriermap.*
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
@@ -245,11 +244,11 @@ class CourierIntransitViewModel(
         if (mapMarkers.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
         } else {
-            interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
             LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
             val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
             LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
-            interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
+            interactor.mapState(CourierMapState.NavigateToPointByZoomRadius(startNavigation))
         }
     }
 
@@ -341,7 +340,7 @@ class CourierIntransitViewModel(
             mapMarkers.remove(this)
             mapMarkers.add(this)
         }
-        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 

@@ -109,11 +109,11 @@ class CourierOrderDetailsViewModel(
         saveCourierOrderDetailsItems(items)
         initItems(items)
         saveMapMarkers(mapMarkers)
-        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
         val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
         LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
-        interactor.mapState(CourierMapState.ZoomAllMarkers(startNavigation))
+        interactor.mapState(CourierMapState.NavigateToPointByZoomRadius(startNavigation))
     }
 
     private fun initItems(items: MutableList<CourierOrderDetailsItem>) {
@@ -230,7 +230,7 @@ class CourierOrderDetailsViewModel(
             mapMarkers.remove(this)
             mapMarkers.add(this)
         }
-        interactor.mapState(CourierMapState.UpdateMapMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 
