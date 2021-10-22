@@ -148,6 +148,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     binding.repeatSmsTimer.visibility = View.GONE
                     binding.repeatSms.isEnabled = true
                     binding.repeatSms.visibility = VISIBLE
+                    binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatPasswordProgress.visibility = View.GONE
                 }
                 is CheckSmsUIRepeatState.RepeatPasswordTimer -> {

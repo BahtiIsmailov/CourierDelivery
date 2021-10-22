@@ -13,6 +13,7 @@ import ru.wb.perevozka.ui.auth.domain.CheckSmsInteractor
 import ru.wb.perevozka.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
+import ru.wb.perevozka.utils.LogUtils
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
@@ -51,6 +52,7 @@ class CheckSmsViewModel(
         fetchTitle()
         subscribeTimer()
         restartTimer(if (parameters.ttl > 0) parameters.ttl else DURATION_TIME_INIT)
+        LogUtils { logDebugApp("init parameters.ttl " + parameters.ttl) }
     }
 
     private fun fetchTitle() {
@@ -75,6 +77,7 @@ class CheckSmsViewModel(
     }
 
     private fun checkSmsError(throwable: Throwable) {
+        LogUtils { logDebugApp("checkSmsError(throwable: Throwable) " + throwable.toString()) }
         _checkSmsUIState.value = when (throwable) {
             is NoInternetException -> CheckSmsUIState.MessageError(
                 throwable.message,
@@ -142,6 +145,7 @@ class CheckSmsViewModel(
     }
 
     private fun fetchingPasswordError(throwable: Throwable) {
+        LogUtils { logDebugApp("fetchingPasswordError(throwable: Throwable) " + throwable.toString()) }
         when (throwable) {
             is NoInternetException -> _repeatStateUI.value =
                 CheckSmsUIRepeatState.ErrorPassword(
