@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.getScopeName
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthCheckSmsFragmentBinding
@@ -95,7 +96,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             }
         }
 
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+        viewModel.checkSmsUIState.observe(viewLifecycleOwner, { state ->
             when (state) {
                 CheckSmsUIState.Progress -> {
                     binding.smsCodeProgress.visibility = VISIBLE
@@ -111,13 +112,14 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = false
                 }
-                CheckSmsUIState.Error -> {
+                is CheckSmsUIState.Error -> {
                     binding.viewPinCode.text?.clear()
                     binding.smsCodeProgress.visibility = INVISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                     binding.viewKeyboard.clear()
                     binding.bottomInfo.visibility = VISIBLE
+                    binding.bottomInfo.text = state.title
                     binding.repeatSms.isEnabled = true
                 }
                 is CheckSmsUIState.MessageError -> {

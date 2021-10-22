@@ -34,9 +34,9 @@ class CheckSmsViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _stateUI = MutableLiveData<CheckSmsUIState>()
-    val stateUI: LiveData<CheckSmsUIState>
-        get() = _stateUI
+    private val _checkSmsUIState = MutableLiveData<CheckSmsUIState>()
+    val checkSmsUIState: LiveData<CheckSmsUIState>
+        get() = _checkSmsUIState
 
     private val _repeatStateUI = MutableLiveData<CheckSmsUIRepeatState>()
     val repeatStateUI: LiveData<CheckSmsUIRepeatState>
@@ -70,18 +70,28 @@ class CheckSmsViewModel(
     }
 
     private fun formatSmsComplete(code: String) {
-        _stateUI.value = CheckSmsUIState.CodeFormat(code)
+        _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)
         if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
     }
 
     private fun checkSmsError(throwable: Throwable) {
-        _stateUI.value = when (throwable) {
+        _checkSmsUIState.value = when (throwable) {
             is NoInternetException -> CheckSmsUIState.MessageError(
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> CheckSmsUIState.Error
+            is BadRequestException -> {
+                with(throwable.error) {
+                    val restartTimer = if (data == null) {
+                        DURATION_TIME_INIT
+                    } else {
+                        if (data.ttl == 0) DURATION_TIME_INIT else data.ttl
+                    }
+                    restartTimer(restartTimer)
+                    CheckSmsUIState.Error(message)
+                }
+            }
             else -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
@@ -164,7 +174,7 @@ class CheckSmsViewModel(
     }
 
     private fun fetchAuth(password: String) {
-        _stateUI.value = CheckSmsUIState.Progress
+        _checkSmsUIState.value = CheckSmsUIState.Progress
         val phone = formatPhone()
         addSubscription(interactor.auth(phone, password)
             .subscribe(
@@ -177,7 +187,7 @@ class CheckSmsViewModel(
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     private fun authComplete() {
-        _stateUI.value = CheckSmsUIState.Complete
+        _checkSmsUIState.value = CheckSmsUIState.Complete
         _navigationEvent.value = CheckSmsNavigationState.NavigateToAppLoader
     }
 

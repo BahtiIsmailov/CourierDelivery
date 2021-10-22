@@ -85,12 +85,12 @@ android {
 
     }
 
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
-            outputFileName = "../../../../../apk/" + fileName
-        }
-    }
+//    android.applicationVariants.all { variant ->
+//        variant.outputs.all {
+//            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
+//            outputFileName = "../../../../../apk/" + fileName
+//        }
+//    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
