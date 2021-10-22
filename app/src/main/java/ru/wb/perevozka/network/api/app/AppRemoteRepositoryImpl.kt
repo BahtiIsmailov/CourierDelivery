@@ -55,6 +55,11 @@ class AppRemoteRepositoryImpl(
     private val timeManager: TimeManager,
 ) : AppRemoteRepository {
 
+    companion object {
+        private const val COST_DIVIDER = 100
+
+    }
+
     override fun flight(): Single<FlightDataEntity> {
         return remote.flight(apiVersion())
             .map {
@@ -592,7 +597,7 @@ class AppRemoteRepositoryImpl(
                 startedAt = task.startedAt ?: "",
                 reservedDuration = task.reservedDuration,
                 status = task.status ?: TaskStatus.TIMER.status,
-                cost = task.cost ?: 0
+                cost = (task.cost ?: 0) / COST_DIVIDER
             )
         }
     }
@@ -664,7 +669,7 @@ class AppRemoteRepositoryImpl(
     override fun taskStatusesReady(
         taskID: String,
         courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
-    ): Single<CourierTaskStatusesIntransitCoastEntity> {
+    ): Single<CourierTaskStatusesIntransitCostEntity> {
         val courierTaskStatusesIntransitRequest =
             mutableListOf<CourierTaskStatusesIntransitRequest>()
         courierTaskStatusesIntransitEntity.forEach {
@@ -681,7 +686,7 @@ class AppRemoteRepositoryImpl(
             apiVersion(),
             taskID,
             courierTaskStatusesIntransitRequest
-        ).map { CourierTaskStatusesIntransitCoastEntity(it.coast) }
+        ).map { CourierTaskStatusesIntransitCostEntity(it.cost / COST_DIVIDER) }
     }
 
     override fun taskStatusesIntransit(
