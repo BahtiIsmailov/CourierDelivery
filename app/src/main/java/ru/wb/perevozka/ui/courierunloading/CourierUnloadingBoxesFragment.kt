@@ -53,7 +53,7 @@ class CourierUnloadingBoxesFragment : Fragment() {
 
     private fun initObservable() {
 
-        viewModel.navigateToMessage.observe(viewLifecycleOwner) {
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
             InformationDialogFragment.newInstance(it.title, it.message, it.button)
                 .show(parentFragmentManager, "INFO_MESSAGE_TAG")
         }

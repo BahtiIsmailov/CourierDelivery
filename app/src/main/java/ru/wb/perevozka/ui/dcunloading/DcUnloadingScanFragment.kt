@@ -25,6 +25,7 @@ import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.utils.SoftKeyboard
 import ru.wb.perevozka.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class DcUnloadingScanFragment : Fragment() {
 
@@ -83,7 +84,7 @@ class DcUnloadingScanFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
             isDialogActive = true
             showSimpleDialog(it)
         }
@@ -189,7 +190,7 @@ class DcUnloadingScanFragment : Fragment() {
 
     }
 
-    private fun showSimpleDialog(it: DcUnloadingScanViewModel.NavigateToMessageInfo) {
+    private fun showSimpleDialog(it: NavigateToInformation) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.main

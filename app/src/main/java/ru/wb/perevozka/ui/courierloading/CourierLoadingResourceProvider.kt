@@ -5,10 +5,11 @@ import ru.wb.perevozka.R
 
 class CourierLoadingResourceProvider(private val context: Context) {
 
-    fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
-    fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
-    fun getScanDialogButton() =
-        context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
+    //unuse
+//    fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
+//    fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
+//    fun getScanDialogButton() =
+//        context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
 
     fun getSwitchDialogButton() =
         context.getString(R.string.dc_loading_scan_switch_dialog_message_error)

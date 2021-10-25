@@ -13,6 +13,7 @@ import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class DcLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -33,8 +34,8 @@ class DcLoadingBoxesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessage: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToInformation>()
+    val navigateToMessage: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     private val _enableRemove = MutableLiveData<Boolean>()
@@ -113,7 +114,7 @@ class DcLoadingBoxesViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton())
@@ -158,6 +159,6 @@ class DcLoadingBoxesViewModel(
 
     object NavigateToBack
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

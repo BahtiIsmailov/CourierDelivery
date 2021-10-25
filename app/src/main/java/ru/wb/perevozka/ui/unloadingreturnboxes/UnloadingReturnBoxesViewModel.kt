@@ -13,6 +13,7 @@ import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class UnloadingReturnBoxesViewModel(
     private val parameters: UnloadingReturnParameters,
@@ -34,8 +35,8 @@ class UnloadingReturnBoxesViewModel(
     val navigateToBack: LiveData<NavigateToBack>
         get() = _navigateToBack
 
-    private val _navigateToMessage = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessage: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessage = MutableLiveData<NavigateToInformation>()
+    val navigateToMessage: LiveData<NavigateToInformation>
         get() = _navigateToMessage
 
     private val _enableRemove = MutableLiveData<Boolean>()
@@ -111,7 +112,7 @@ class UnloadingReturnBoxesViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
-        _navigateToMessage.value = NavigateToMessageInfo(
+        _navigateToMessage.value = NavigateToInformation(
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton())
@@ -150,8 +151,6 @@ class UnloadingReturnBoxesViewModel(
     }
 
     object NavigateToBack
-
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
     data class Label(val label: String)
 

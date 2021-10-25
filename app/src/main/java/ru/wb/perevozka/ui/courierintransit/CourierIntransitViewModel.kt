@@ -368,13 +368,6 @@ class CourierIntransitViewModel(
         interactor.scannerAction(ScannerState.Start)
     }
 
-    data class NavigateToMessageInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
-
     data class Label(val label: String)
 
     companion object {

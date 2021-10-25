@@ -11,6 +11,7 @@ import ru.wb.perevozka.ui.dcunloading.DcUnloadingScanViewModel
 import ru.wb.perevozka.ui.dcunloadingcongratulation.domain.DcUnloadingCongratulationInteractor
 import ru.wb.perevozka.utils.managers.ScreenManager
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class DcUnloadingCongratulationViewModel(
     compositeDisposable: CompositeDisposable,
@@ -27,14 +28,15 @@ class DcUnloadingCongratulationViewModel(
     val navigateToBack: LiveData<NavigateToFlight>
         get() = _navigateToBack
 
-    private val _navigateToMessageInfo =
-        SingleLiveEvent<DcUnloadingScanViewModel.NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<DcUnloadingScanViewModel.NavigateToMessageInfo>
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToInformation>()
+    val navigateToMessageInfo: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     init {
-        addSubscription(interactor.congratulation().subscribe(
-            congratulationComplete(), { congratulationError(it) }))
+        addSubscription(
+            interactor.congratulation().subscribe(
+                congratulationComplete(), { congratulationError(it) })
+        )
     }
 
     private fun congratulationComplete(): (t: DcCongratulationEntity) -> Unit =
@@ -42,8 +44,10 @@ class DcUnloadingCongratulationViewModel(
             with(it) {
                 val delivered =
                     resourceProvider.getInfo(dcUnloadingCount, unloadingCount + dcUnloadingCount)
-                val returned = resourceProvider.getInfo(dcUnloadingReturnCount,
-                    returnCount + dcUnloadingReturnCount)
+                val returned = resourceProvider.getInfo(
+                    dcUnloadingReturnCount,
+                    returnCount + dcUnloadingReturnCount
+                )
                 _infoState.value = InfoComplete(delivered, returned)
             }
         }
@@ -54,8 +58,9 @@ class DcUnloadingCongratulationViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
-        _navigateToMessageInfo.value = DcUnloadingScanViewModel.NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
+        _navigateToMessageInfo.value = NavigateToInformation(
+            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
+        )
     }
 
     fun onCompleteClick() {

@@ -81,7 +81,7 @@ class CourierLoadingScanFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
             isDialogActive = true
             showEmptyOrderDialog(it.title, it.message, it.button)
         }

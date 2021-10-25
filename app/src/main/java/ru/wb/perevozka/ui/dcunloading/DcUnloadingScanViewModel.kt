@@ -14,6 +14,7 @@ import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingInteractor
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import java.util.concurrent.TimeUnit
 
 class DcUnloadingScanViewModel(
@@ -51,9 +52,9 @@ class DcUnloadingScanViewModel(
     val navigationEvent: LiveData<DcUnloadingScanNavAction>
         get() = _navigationEvent
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _navigateToInformation = SingleLiveEvent<NavigateToInformation>()
+    val navigateToInformation: LiveData<NavigateToInformation>
+        get() = _navigateToInformation
 
     val bottomProgressEvent = MutableLiveData<Boolean>()
 
@@ -156,7 +157,7 @@ class DcUnloadingScanViewModel(
             else -> resourceProvider.getScanDialogMessage()
         }
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToInformation.value = NavigateToInformation(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
@@ -201,7 +202,5 @@ class DcUnloadingScanViewModel(
     fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
     }
-
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

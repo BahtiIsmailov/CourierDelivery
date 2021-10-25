@@ -14,6 +14,7 @@ import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierloading.domain.*
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
@@ -39,9 +40,9 @@ class CourierLoadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _navigateToInformation = SingleLiveEvent<NavigateToInformation>()
+    val navigateToInformation: LiveData<NavigateToInformation>
+        get() = _navigateToInformation
 
     private val _beepEvent =
         SingleLiveEvent<CourierLoadingScanBeepState>()
@@ -245,17 +246,6 @@ class CourierLoadingScanViewModel(
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }
 
-    private fun switchScreenError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getSwitchDialogButton()
-        }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
-        )
-    }
-
     private fun observeScanProcessError(throwable: Throwable) {
         val error = if (throwable is CompositeException) {
             throwable.exceptions[0]
@@ -266,25 +256,25 @@ class CourierLoadingScanViewModel(
     private fun scanProcessError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> {
-                NavigateToMessageInfo(
+                NavigateToInformation(
                     "Интернет-сщудинеие отсутствует",
                     "Проверте соединение и повторите попытку",
                     "Понятно"
                 )
             }
             is BadRequestException ->
-                NavigateToMessageInfo(
+                NavigateToInformation(
                     "Операция не выполнена", throwable.error.message, "Понятно"
                 )
 
-            else -> NavigateToMessageInfo(
+            else -> NavigateToInformation(
                 "Сервис недоступен", "Повторите операцию позднее", "Понятно"
             )
         }
 
         // TODO: 07.10.2021 привести диалог
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToMessageInfo.value = message
+        _navigateToInformation.value = message
     }
 
     fun onStopScanner() {
@@ -299,7 +289,7 @@ class CourierLoadingScanViewModel(
         onStartScanner()
     }
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
         updateTimer(duration, downTickSec)

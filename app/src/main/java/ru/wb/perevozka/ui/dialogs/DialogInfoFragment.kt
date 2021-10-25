@@ -58,16 +58,16 @@ class DialogInfoFragment : DialogFragment() {
             sendResult()
         }
 
-        val progressDialog = builder.create()
-        progressDialog.setCanceledOnTouchOutside(false)
-        progressDialog.setOnKeyListener { _, keyCode, event ->
+        val infoDialog = builder.create()
+        infoDialog.setCanceledOnTouchOutside(false)
+        infoDialog.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                progressDialog.dismiss()
+                infoDialog.dismiss()
                 sendResult()
             }
             true
         }
-        return progressDialog
+        return infoDialog
     }
 
     private fun sendResult() {
@@ -102,3 +102,7 @@ class DialogInfoFragment : DialogFragment() {
     }
 
 }
+
+data class NavigateToMessageInfo(
+    val type: Int, val title: String, val message: String, val button: String
+)

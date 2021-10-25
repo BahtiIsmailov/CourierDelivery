@@ -5,6 +5,7 @@ import ru.wb.perevozka.R
 
 class CourierUnloadingResourceProvider(private val context: Context) {
 
+    //unuse
     fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
     fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
     fun getScanDialogButton() =

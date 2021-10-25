@@ -22,6 +22,7 @@ import ru.wb.perevozka.databinding.CourierUnloadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
@@ -84,7 +85,7 @@ class CourierUnloadingScanFragment : Fragment() {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
             isDialogActive = true
             showSimpleDialog(it)
         }
@@ -246,7 +247,7 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showSimpleDialog(it: CourierUnloadingScanViewModel.NavigateToMessageInfo) {
+    private fun showSimpleDialog(it: NavigateToInformation) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.main

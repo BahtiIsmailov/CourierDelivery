@@ -13,6 +13,7 @@ import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProcessData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProgressData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingScanBoxData
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import java.util.concurrent.TimeUnit
@@ -37,9 +38,9 @@ class CourierUnloadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _navigateToInformation = SingleLiveEvent<NavigateToInformation>()
+    val navigateToInformation: LiveData<NavigateToInformation>
+        get() = _navigateToInformation
 
     private val _beepEvent =
         SingleLiveEvent<CourierUnloadingScanBeepState>()
@@ -248,16 +249,17 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    private fun switchScreenError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getSwitchDialogButton()
-        }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
-        )
-    }
+    //unuse
+//    private fun switchScreenError(throwable: Throwable) {
+//        val message = when (throwable) {
+//            is NoInternetException -> throwable.message
+//            is BadRequestException -> throwable.error.message
+//            else -> resourceProvider.getSwitchDialogButton()
+//        }
+//        _navigateToMessageInfo.value = NavigateToMessageInfo(
+//            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
+//        )
+//    }
 
     private fun observeScanProcessError(throwable: Throwable) {
         LogUtils { logDebugApp("observeScanProcessError " + throwable) }
@@ -274,7 +276,7 @@ class CourierUnloadingScanViewModel(
             else -> resourceProvider.getScanDialogMessage()
         }
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToInformation.value = NavigateToInformation(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }
@@ -289,6 +291,6 @@ class CourierUnloadingScanViewModel(
 
     data class Label(val label: String)
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }
