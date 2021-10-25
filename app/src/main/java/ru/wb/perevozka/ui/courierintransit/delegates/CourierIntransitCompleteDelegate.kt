@@ -13,7 +13,7 @@ import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitEmpty
 class CourierIntransitCompleteDelegate(
     context: Context,
     private val onCourierIntransitCallback: OnCourierIntransitCallback
-) : BaseAdapterDelegate<CourierIntransitCompleteItem?, CourierIntransitCompleteDelegate.RouterViewHolder?>(
+) : BaseAdapterDelegate<CourierIntransitCompleteItem, CourierIntransitCompleteDelegate.RouterViewHolder>(
     context
 ) {
     override fun isForViewType(item: BaseItem): Boolean {

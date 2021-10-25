@@ -305,8 +305,9 @@ class CourierIntransitFragment : Fragment() {
         adapter = with(DefaultAdapterDelegate()) {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
-            addDelegate(CourierIntransitFaildDelegate(requireContext(), itemCallback))
-            addDelegate(CourierIntransitIsUnloadedDelegate(requireContext(), itemCallback))
+            addDelegate(CourierIntransitFailedUnloadingAllDelegate(requireContext(), itemCallback))
+            addDelegate(CourierIntransitFailedUnloadingExpectsDelegate(requireContext(), itemCallback))
+            addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
         binding.routes.adapter = adapter
     }

@@ -56,7 +56,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:paddingBottom="8dp"
-        android:textColor="@color/invalid"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
         app:layout_constraintTop_toBottomOf="@+id/address"
@@ -95,7 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_intransit_is_unloading"
+        android:src="@drawable/ic_intransit_is_unloading_expects"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="parent" />

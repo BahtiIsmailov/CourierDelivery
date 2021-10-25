@@ -224,9 +224,6 @@ class CourierUnloadingScanViewModel(
                 }
                 _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
                 _bottomEvent.value = CourierUnloadingScanBottomState.Enable
-                LogUtils { logDebugApp("scanProcess.unloadingCounter " + scanProcess.unloadingCounter) }
-                confirmUnloadingClick()
-
             }
         }
     }
