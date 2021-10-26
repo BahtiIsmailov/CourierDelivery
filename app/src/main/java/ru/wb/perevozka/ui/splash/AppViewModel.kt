@@ -109,6 +109,10 @@ class AppViewModel(
         interactor.exitAuth()
     }
 
+    fun onBillingClick() {
+        //interactor.exitAuth()
+    }
+
     private fun updateDrawer() {
         fetchVersionApp()
     }

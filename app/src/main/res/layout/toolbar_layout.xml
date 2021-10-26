@@ -51,6 +51,7 @@
         android:layout_width="fill_parent"
         android:layout_height="1dip"
         android:layout_below="@+id/toolbar_title"
-        android:background="#F0EDF2" />
+        android:background="#F0EDF2"
+        android:visibility="invisible" />
 
 </RelativeLayout>

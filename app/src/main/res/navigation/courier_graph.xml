@@ -369,4 +369,10 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <fragment
+        android:id="@+id/courierBalanceFragment"
+        android:name="ru.wb.perevozka.ui.courierbilling.CourierBillingFragment"
+        android:label="CourierBalanceFragment"
+        tools:layout="@layout/courier_billing_fragment"/>
+
 </navigation>

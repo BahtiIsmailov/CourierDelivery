@@ -5,6 +5,7 @@ import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.perevozka.network.api.app.remote.CarNumberRequest
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
+import ru.wb.perevozka.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.perevozka.network.api.app.remote.boxinfo.BoxInfoResponse
 import ru.wb.perevozka.network.api.app.remote.courier.*
 import ru.wb.perevozka.network.api.app.remote.deleteboxesfromflight.RemoveBoxesFromFlightRequest
@@ -236,5 +237,11 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Body carNumbersRequest: List<CarNumberRequest>
     ): Completable
+
+    @GET("{version}/billing/account")
+    fun billing(
+        @Path(value = "version", encoded = true) version: String,
+        @Query("showTransactions") isShowTransactions: Boolean
+    ): Single<BillingCommonResponse>
 
 }

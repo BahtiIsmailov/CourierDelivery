@@ -158,4 +158,6 @@
     <color name="complete_scan_status">#2CA364</color>
     <color name="unknown_scan_status">#B00020</color>
 
+    <color name="support_tab_number_background">#B3B6D8F1</color>
+
 </resources>

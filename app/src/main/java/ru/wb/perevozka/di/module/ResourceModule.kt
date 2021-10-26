@@ -3,6 +3,7 @@ package ru.wb.perevozka.di.module
 import android.app.Application
 import org.koin.dsl.module
 import ru.wb.perevozka.ui.auth.AuthResourceProvider
+import ru.wb.perevozka.ui.courierbilling.CourierBillingResourceProvider
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
 import ru.wb.perevozka.ui.courierdata.CourierDataResourceProvider
@@ -69,6 +70,11 @@ val resourceModule = module {
     fun provideCourierOrderTimerResourceProvider(application: Application): CourierOrderTimerResourceProvider {
         return CourierOrderTimerResourceProvider(application)
     }
+
+    fun provideCourierBillingResourceProvider(application: Application): CourierBillingResourceProvider {
+        return CourierBillingResourceProvider(application)
+    }
+
 
     fun provideCourierScannerLoadingResourceProvider(application: Application): CourierLoadingResourceProvider {
         return CourierLoadingResourceProvider(application)
@@ -165,6 +171,7 @@ val resourceModule = module {
     single { provideCourierCompleteDeliveryResourceProvider(get()) }
     single { provideCourierStartDeliveryResourceProvider(get()) }
     single { provideCourierMapResourceProvider(get()) }
+    single { provideCourierBillingResourceProvider(get()) }
 
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }

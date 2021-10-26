@@ -191,6 +191,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     }
 
     private fun initListener() {
+
+        with(binding.navView) {
+            findViewById<View>(R.id.billing_layout).setOnClickListener {
+                //viewModel.onBillingClick()
+                navController.navigate(R.id.courierBalanceFragment)
+            }
+        }
+
         with(binding.navView) {
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()

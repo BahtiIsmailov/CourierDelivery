@@ -8,6 +8,7 @@ import ru.wb.perevozka.ui.auth.CheckSmsViewModel
 import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
 import ru.wb.perevozka.ui.courieragreement.CourierAgreementViewModel
+import ru.wb.perevozka.ui.courierbilling.CourierBillingViewModel
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
@@ -137,6 +138,14 @@ val viewModelModule = module {
     viewModel { CourierUnloadingUnknownBoxViewModel() }
     viewModel { (parameters: CourierCompleteDeliveryParameters) -> CourierCompleteDeliveryViewModel(parameters, get(), get(), get()) }
     viewModel { (parameters: CourierStartDeliveryParameters) -> CourierStartDeliveryViewModel(parameters, get(), get(), get()) }
+    viewModel { (parameters: CourierCompleteDeliveryParameters) ->
+        CourierCompleteDeliveryViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModel { CourierMapViewModel(get(), get(), get()) }
 
 
@@ -164,6 +173,8 @@ val viewModelModule = module {
         CourierOrdersViewModel(parameters, get(), get(), get(), get())
     }
 
+    viewModel { CourierBillingViewModel(get(), get(), get(), get()) }
+
     viewModel { (parameters: UnloadingScanParameters) ->
         UnloadingScanViewModel(parameters, get(), get(), get())
     }
@@ -184,16 +195,10 @@ val viewModelModule = module {
         ForcedTerminationViewModel(parameters, get(), get(), get(), get())
     }
 
-    viewModel {
-        CongratulationViewModel(get(), get(), get())
-    }
+    viewModel { CongratulationViewModel(get(), get(), get()) }
 
-    viewModel {
-        DcUnloadingScanViewModel(get(), get(), get())
-    }
-    viewModel {
-        DcUnloadingHandleViewModel(get(), get(), get(), get())
-    }
+    viewModel { DcUnloadingScanViewModel(get(), get(), get()) }
+    viewModel { DcUnloadingHandleViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: DcUnloadingBoxNotBelongParameters) ->
         DcUnloadingBoxNotBelongModel(parameters)
     }
