@@ -8,11 +8,27 @@ import kotlin.math.abs
 class CourierBillingResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
+    fun getTitle(): String {
+        return context.getString(R.string.courier_billing_title)
+    }
+
     fun getAmount(amount: String): String {
         return context.getString(R.string.courier_orders_details_coast, amount)
     }
 
-    fun getBoxDateAndTime(date: String, time: String): String =
-        context.getString(R.string.courier_billing_date_and_time, date, time)
+    fun getBillingTime(time: String) =
+        context.getString(R.string.courier_billing_date_and_time, time)
+
+    fun getEmptyList(): String {
+        return context.getString(R.string.courier_billing_empty_list)
+    }
+
+    fun getPositiveAmount(amount: String): String {
+        return context.getString(R.string.courier_billing_positive_amount, amount)
+    }
+
+    fun getNegativeAmount(amount: String): String {
+        return context.getString(R.string.courier_billing_negative_amount, amount)
+    }
 
 }

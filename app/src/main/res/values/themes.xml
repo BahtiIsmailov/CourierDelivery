@@ -128,25 +128,25 @@
     </style>
 
 
-    <!--    <style name="MediumBlackRegularText" parent="RegularBaseFont">-->
-    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
-    <!--        <item name="android:textColor">@color/black_text</item>>-->
-    <!--    </style>-->
+    <style name="MediumBlackRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/black_text</item>>
+    </style>
 
-    <!--    <style name="LargeDarkRegularText" parent="RegularBaseFont">-->
-    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
-    <!--        <item name="android:textColor">@color/dark_text</item>>-->
-    <!--    </style>-->
+    <style name="MediumDarkRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/dark_text</item>>
+    </style>
 
-    <!--    <style name="LargeLightRegularText" parent="RegularBaseFont">-->
-    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
-    <!--        <item name="android:textColor">@color/light_text</item>>-->
-    <!--    </style>-->
+    <style name="MediumLightRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/light_text</item>>
+    </style>
 
-    <!--    <style name="LargeBrightSmallRegularText" parent="RegularBaseFont">-->
-    <!--        <item name="android:textSize">@dimen/medium_text</item>-->
-    <!--        <item name="android:textColor">@color/bright_text</item>-->
-    <!--    </style>-->
+    <style name="MediumBrightSmallRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/bright_text</item>
+    </style>
 
 
     <style name="LargeBlackRegularText" parent="RegularBaseFont">

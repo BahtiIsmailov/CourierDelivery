@@ -35,6 +35,7 @@ class CourierBillingNegativeDelegate(
         holder.itemView.tag = item
         val binding = holder.binding
         binding.date.text = item.date
+        binding.time.text = item.time
         binding.amount.text = item.amount
     }
 

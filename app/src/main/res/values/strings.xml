@@ -447,8 +447,12 @@
     <string name="user_form_agreement_link">договором оферты</string>
     <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
 
+    <string name="courier_billing_title">Ваш баланс</string>
     <string name="support_empty_ticket_list">Список заявок пуст\nобновите экран или\nсоздайте новую заявку</string>
+    <string name="courier_billing_date_and_time">&#160;• %1$s</string>
+    <string name="courier_billing_empty_list">У вас пока нет\nвыполненных операций</string>
+    <string name="courier_billing_positive_amount">+ %1$s ₽</string>
+    <string name="courier_billing_negative_amount">- %1$s ₽</string>
 
-    <string name="courier_billing_date_and_time">%1$s • %2$s</string>
 
 </resources>

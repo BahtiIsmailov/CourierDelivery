@@ -8,19 +8,6 @@
     android:background="@color/background_content_light"
     tools:context=".ui.flights.FlightsFragment">
 
-    <ProgressBar
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:indeterminateTint="@color/color_progress"
-        app:layout_constraintBottom_toBottomOf="@+id/content_center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/content_center" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/content_center"
         android:layout_width="0dp"
@@ -49,7 +36,7 @@
 
     <TextView
         android:id="@+id/details"
-        style="@style/VeryLargeDarkRegularText"
+        style="@style/MediumBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
@@ -80,14 +67,14 @@
         app:layout_constraintTop_toBottomOf="@+id/details" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/orders"
+        android:id="@+id/operations"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
         android:layout_marginBottom="20dp"
         android:background="@color/background_content_light"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/update"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_divider"
@@ -115,47 +102,53 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/update"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="@+id/view_divider1">
-
-        <ImageView
-            android:id="@+id/return_danger"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_info"
-            android:visibility="gone"
-            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/empty_title"
             style="@style/LargeDarkRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/return_danger"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
             android:gravity="center"
-            android:text="@string/courier_warehouse_empty_list" />
+            android:text="@string/courier_billing_empty_list" />
+
+        <ru.wb.perevozka.views.ProgressButtonView
+            android:id="@+id/update"
+            android:layout_width="108dp"
+            android:layout_height="36dp"
+            android:layout_below="@+id/empty_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:progress_button_background="@drawable/progress_image_button_round_default"
+            app:progress_button_name="@string/courier_orders_update"
+            app:progress_button_state="enable"
+            app:progress_button_text_color_disable="@color/button_default_text_disable"
+            app:progress_button_text_color_enable="@color/button_default_text_enable"
+            app:progress_button_text_color_progress="@color/button_default_text_progress" />
 
     </RelativeLayout>
 
-    <ru.wb.perevozka.views.ProgressButtonView
-        android:id="@+id/update"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:indeterminateTint="@color/color_progress"
+        app:layout_constraintBottom_toBottomOf="@+id/content_center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="@string/courier_orders_update"
-        app:progress_button_state="disable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:layout_constraintTop_toTopOf="@+id/content_center" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

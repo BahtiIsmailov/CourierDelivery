@@ -18,24 +18,26 @@ class CourierBillingDataBuilderImpl(
         val amount = entity.value
         val decimal = DecimalFormat("#,###.##")
 
-        val date = timeFormatter.dateTimeWithoutTimezoneFromString(entity.createdAt)
-        val dateFormat = timeFormatter.format(date, TimeFormatType.ONLY_DATE)
-        val timeFormat = timeFormatter.format(date, TimeFormatType.ONLY_TIME)
-        val formatDate = resourceProvider.getBoxDateAndTime(dateFormat, timeFormat)
+        val dateTime = timeFormatter.dateTimeWithoutTimezoneFromString(entity.createdAt)
+        val dateFormat = timeFormatter.format(dateTime, TimeFormatType.ONLY_DATE)
+        val time = timeFormatter.format(dateTime, TimeFormatType.ONLY_TIME)
+        val timeFormat = resourceProvider.getBillingTime(time)
 
         return if (amount > 0) {
             val formatAmount = decimal.format(amount)
             CourierBillingPositiveItem(
-                date = formatDate,
-                amount = "+ " + formatAmount + " ₽",
+                date = dateFormat,
+                time = timeFormat,
+                amount = resourceProvider.getPositiveAmount(formatAmount),
                 idView = index
             )
 
         } else {
             val formatAmount = decimal.format(amount * -1)
             CourierBillingNegativeItem(
-                date = formatDate,
-                amount = "- " + formatAmount + " ₽",
+                date = dateFormat,
+                time = timeFormat,
+                amount = resourceProvider.getNegativeAmount(formatAmount),
                 idView = index
             )
         }

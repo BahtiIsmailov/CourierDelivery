@@ -693,6 +693,10 @@ class AppRemoteRepositoryImpl(
         return remote.putCarNumbers(apiVersion(), carNumberRequest)
     }
 
+    companion object {
+        private const val AMOUNT_DIVIDER = 100
+    }
+
     override fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity> {
         return remote.billing(apiVersion(), isShowTransaction)
             .map {
@@ -701,14 +705,14 @@ class AppRemoteRepositoryImpl(
                     billingTransactions.add(
                         BillingTransactionEntity(
                             uuid = it.uuid,
-                            value = it.value,
+                            value = it.value / AMOUNT_DIVIDER,
                             createdAt = it.createdAt
                         )
                     )
                 }
                 BillingCommonEntity(
                     id = it.id,
-                    balance = it.balance,
+                    balance = it.balance / AMOUNT_DIVIDER,
                     entity = BillingEntity(id = it.entity.id, name = it.entity.name),
                     transactions = billingTransactions
                 )

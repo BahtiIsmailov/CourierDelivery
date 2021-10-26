@@ -48,10 +48,15 @@ class CourierBillingViewModel(
     init {
         initToolbarLabel()
         initBalanceAndTransactions()
+        initProgress()
+    }
+
+    private fun initProgress() {
+        _billingItems.value = CourierBillingState.Init
     }
 
     private fun initToolbarLabel() {
-        _toolbarLabelState.value = Label("Ваш баланс")
+        _toolbarLabelState.value = Label(resourceProvider.getTitle())
     }
 
     private fun initBalanceAndTransactions() {
@@ -74,28 +79,29 @@ class CourierBillingViewModel(
 //                                1000 * i * -1
 //                            } else {
 //                                5000 * i
-//                            }, "2021-04-22T12:32:25+03:00"
+//                            },
+//                            if (i % 2 > 0) {
+//                                "2021-04-22T12:32:25+03:00"
+//                            } else {
+//                                "2021-04-25T16:32:25+03:00"
+//                            }
 //                        )
 //                        items.add(dataBuilder.buildOrderItem(i, billing))
 //                    }
 
                     if (items.isEmpty()) {
                         _billingItems.value =
-                            CourierBillingState.Empty("Ни одной операции еще не проведено")
+                            CourierBillingState.Empty(resourceProvider.getEmptyList())
                     } else {
                         _billingItems.value = CourierBillingState.ShowBilling(items)
                     }
-                    _progressState.value = CourierBillingProgressState.Complete
+                    progressComplete()
                 },
 
                 {
                     billingError(it)
                 })
         )
-    }
-
-    private fun showProgress() {
-        _progressState.value = CourierBillingProgressState.Progress
     }
 
     private fun billingError(throwable: Throwable) {
@@ -126,6 +132,10 @@ class CourierBillingViewModel(
 
     private fun progressComplete() {
         _progressState.value = CourierBillingProgressState.Complete
+    }
+
+    private fun showProgress() {
+        _progressState.value = CourierBillingProgressState.Progress
     }
 
     fun onUpdateClick() {

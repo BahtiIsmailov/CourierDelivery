@@ -118,19 +118,22 @@ class CourierBillingFragment : Fragment() {
 
         viewModel.billingItems.observe(viewLifecycleOwner) { state ->
             when (state) {
+                CourierBillingState.Init -> {
+                    binding.emptyList.visibility = GONE
+                    binding.progress.visibility = GONE
+                    binding.progress.visibility = VISIBLE
+                }
                 is CourierBillingState.ShowBilling -> {
                     binding.emptyList.visibility = GONE
                     binding.progress.visibility = GONE
-                    binding.orders.visibility = VISIBLE
-                    binding.update.setState(ProgressButtonMode.ENABLE)
+                    binding.operations.visibility = VISIBLE
                     displayItems(state.items)
                 }
                 is CourierBillingState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.progress.visibility = GONE
-                    binding.orders.visibility = GONE
+                    binding.operations.visibility = GONE
                     binding.emptyTitle.text = state.info
-                    binding.update.setState(ProgressButtonMode.ENABLE)
                 }
             }
         }
@@ -157,8 +160,8 @@ class CourierBillingFragment : Fragment() {
 
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.orders.layoutManager = layoutManager
-        binding.orders.setHasFixedSize(true)
+        binding.operations.layoutManager = layoutManager
+        binding.operations.setHasFixedSize(true)
         initSmoothScroller()
     }
 
@@ -182,7 +185,7 @@ class CourierBillingFragment : Fragment() {
             addDelegate(CourierBillingPositiveDelegate(requireContext(), callback))
             addDelegate(CourierBillingNegativeDelegate(requireContext(), callback))
         }
-        binding.orders.adapter = adapter
+        binding.operations.adapter = adapter
     }
 
     private fun showDialogInfo(
