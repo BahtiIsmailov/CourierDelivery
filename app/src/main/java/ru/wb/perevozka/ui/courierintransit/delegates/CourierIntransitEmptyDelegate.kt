@@ -12,7 +12,7 @@ import ru.wb.perevozka.ui.courierintransit.delegates.items.CourierIntransitEmpty
 class CourierIntransitEmptyDelegate(
     context: Context,
     private val onCourierIntransitCallback: OnCourierIntransitCallback
-) : BaseAdapterDelegate<CourierIntransitEmptyItem?, CourierIntransitEmptyDelegate.RouterViewHolder?>(
+) : BaseAdapterDelegate<CourierIntransitEmptyItem, CourierIntransitEmptyDelegate.RouterViewHolder>(
     context
 ) {
     override fun isForViewType(item: BaseItem): Boolean {

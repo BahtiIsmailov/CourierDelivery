@@ -3,12 +3,14 @@ package ru.wb.perevozka.ui.courierintransit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.app.AppConsts
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
+import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitUnloadingExpectsDelegate
 import ru.wb.perevozka.ui.courierintransit.delegates.items.*
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
@@ -82,6 +84,8 @@ class CourierIntransitViewModel(
                         LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
                         initOffices()
                     }
+                    is CourierMapAction.AutomatedLocationUpdate -> {}
+                    is CourierMapAction.ForcedLocationUpdate -> {}
                 }
             },
                 {}
@@ -173,7 +177,7 @@ class CourierIntransitViewModel(
                                 idView = index
                             )
                         } else {
-                            CourierIntransitIsUnloadedItem(
+                            CourierIntransitUnloadingExpectsItem(
                                 id = index,
                                 fullAddress = address,
                                 deliveryCount = deliveredCount.toString(),
@@ -189,7 +193,7 @@ class CourierIntransitViewModel(
                         )
                     } else {
                         intransitItem = if (isUnloaded) {
-                            CourierIntransitFailedItem(
+                            CourierIntransitFailedUnloadingAllItem(
                                 id = index,
                                 fullAddress = address,
                                 deliveryCount = deliveredCount.toString(),
@@ -198,7 +202,7 @@ class CourierIntransitViewModel(
                                 idView = index
                             )
                         } else {
-                            CourierIntransitIsUnloadedItem(
+                            CourierIntransitFaledUnloadingExpectsItem(
                                 id = index,
                                 fullAddress = address,
                                 deliveryCount = deliveredCount.toString(),
@@ -246,9 +250,8 @@ class CourierIntransitViewModel(
         } else {
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
             LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
-            val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
-            LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
-            interactor.mapState(CourierMapState.NavigateToPointByZoomRadius(startNavigation))
+            val boundingBox = MapEnclosingCircle().minimumBoundingBox(coordinatePoints)
+            interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
         }
     }
 

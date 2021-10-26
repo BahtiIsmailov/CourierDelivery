@@ -61,6 +61,29 @@ class MapEnclosingCircle {
         return BoundingBox(maxLat, maxLong, minLat, minLong)
     }
 
+    fun minimumBoundingBox(points: List<CoordinatePoint>): BoundingBox {
+        var maxLat = Double.MAX_VALUE
+        var maxLong = Double.MAX_VALUE
+        var minLat = Double.MIN_VALUE
+        var minLong = Double.MIN_VALUE
+        for (i in points.indices) {
+            val point = points[i]
+            val lat: Double = point.latitude
+            val lon: Double = point.longitude
+            if (i == 0) {
+                maxLat = lat
+                maxLong = lon
+                minLat = lat
+                minLong = lon
+            }
+            if (lat > maxLat) maxLat = lat
+            if (lon > maxLong) maxLong = lon
+            if (lat < minLat) minLat = lat
+            if (lon < minLong) minLong = lon
+        }
+        return BoundingBox(maxLat, maxLong, minLat, minLong)
+    }
+
     fun minimumEnclosingCircle(points: List<CoordinatePoint>): MapCircle {
         val n = points.size
         var memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
