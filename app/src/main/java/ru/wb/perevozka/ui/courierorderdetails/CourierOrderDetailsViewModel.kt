@@ -111,9 +111,8 @@ class CourierOrderDetailsViewModel(
         saveMapMarkers(mapMarkers)
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
-        val startNavigation = MapEnclosingCircle().minimumEnclosingCircle(coordinatePoints)
-        LogUtils { logDebugApp("startNavigation " + startNavigation.toString()) }
-        interactor.mapState(CourierMapState.NavigateToPointByZoomRadius(startNavigation))
+        val boundingBox = MapEnclosingCircle().minimumBoundingBox(coordinatePoints)
+        interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
     }
 
     private fun initItems(items: MutableList<CourierOrderDetailsItem>) {
