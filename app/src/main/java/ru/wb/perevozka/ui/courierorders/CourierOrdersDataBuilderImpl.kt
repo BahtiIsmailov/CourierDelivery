@@ -20,7 +20,7 @@ class CourierOrdersDataBuilderImpl(
                 courierOrderEntity.minVolume
             ),
             pvzCount = "" + courierOrderEntity.dstOffices.size + " ПВЗ",
-            coast = "" + coast + " ₽",
+            coast = "от " + coast + " ₽",
             idView = index
         )
     }

@@ -216,7 +216,7 @@
     <string name="courier_order_dialog_positive_button_error">Ok</string>
 
     <string name="courier_orders_details_order">Заказ %1$d</string>
-    <string name="courier_orders_details_coast">%1$s ₽</string>
+    <string name="courier_orders_details_coast">от %1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>

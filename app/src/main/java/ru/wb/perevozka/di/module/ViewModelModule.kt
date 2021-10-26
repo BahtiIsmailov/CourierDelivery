@@ -136,7 +136,6 @@ val viewModelModule = module {
         )
     }
     viewModel { CourierUnloadingUnknownBoxViewModel() }
-    viewModel { (parameters: CourierCompleteDeliveryParameters) -> CourierCompleteDeliveryViewModel(parameters, get(), get(), get()) }
     viewModel { (parameters: CourierStartDeliveryParameters) -> CourierStartDeliveryViewModel(parameters, get(), get(), get()) }
     viewModel { (parameters: CourierCompleteDeliveryParameters) ->
         CourierCompleteDeliveryViewModel(
