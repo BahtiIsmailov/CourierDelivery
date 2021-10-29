@@ -1,5 +1,8 @@
 package ru.wb.perevozka.db
 
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Single
 import ru.wb.perevozka.db.entity.dcunloadedboxes.DcReturnHandleBarcodeEntity
 import ru.wb.perevozka.db.entity.dcunloadedboxes.DcUnloadingBarcodeEntity
 import ru.wb.perevozka.db.entity.dcunloadedboxes.DcUnloadingScanBoxEntity
@@ -17,9 +20,6 @@ import ru.wb.perevozka.db.entity.warehousematchingboxes.WarehouseMatchingBoxEnti
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingCounterEntity
 import ru.wb.perevozka.ui.splash.domain.AppDeliveryResult
 import ru.wb.perevozka.ui.unloadingcongratulation.domain.DeliveryResult
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Single
 
 interface AppLocalRepository {
 
@@ -166,8 +166,6 @@ interface AppLocalRepository {
     //==============================================================================================
 
     fun observeDcUnloadingCounter(): Flowable<DcUnloadingCounterEntity>
-
-    //==============================================================================================
 
     fun clearAll()
 

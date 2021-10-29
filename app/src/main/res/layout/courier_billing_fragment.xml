@@ -34,6 +34,17 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:text="3200 \u20BD" />
 
+    <ImageView
+        android:id="@+id/account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_billing_account"
+        app:layout_constraintBottom_toBottomOf="@+id/coast"
+        app:layout_constraintStart_toEndOf="@+id/coast"
+        app:layout_constraintTop_toTopOf="@+id/coast" />
+
     <TextView
         android:id="@+id/details"
         style="@style/MediumBlackRegularText"

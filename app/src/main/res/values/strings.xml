@@ -461,5 +461,14 @@
     <string name="courier_billing_positive_amount">+ %1$s ₽</string>
     <string name="courier_billing_negative_amount">- %1$s ₽</string>
 
+    <string name="courier_billing_account_create_title">Счет для вывода стредств</string>
+    <string name="courier_billing_account_edit_title">Редактировать счет</string>
+    <string name="courier_billing_account_save">Сохранить</string>
+
+    <string name="courier_billing_account_selector_title">Вывод средсв</string>
+    <string name="courier_billing_account_selector_balance">%1$s ₽</string>
+    <string name="courier_billing_account_selector_amount_button_init">Вывести</string>
+    <string name="courier_billing_account_selector_amount_button">Вывести %1$s ₽</string>
+
 
 </resources>

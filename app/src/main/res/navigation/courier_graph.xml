@@ -373,6 +373,57 @@
         android:id="@+id/courierBalanceFragment"
         android:name="ru.wb.perevozka.ui.courierbilling.CourierBillingFragment"
         android:label="CourierBalanceFragment"
-        tools:layout="@layout/courier_billing_fragment"/>
+        tools:layout="@layout/courier_billing_fragment">
+        <action
+            android:id="@+id/action_courierBalanceFragment_to_courierBillingAccountDataFragment"
+            app:destination="@id/courierBillingAccountDataFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierBalanceFragment_to_courierBillingAccountSelectorFragment"
+            app:destination="@id/courierBillingAccountSelectorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierBillingAccountDataFragment"
+        android:name="ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataFragment"
+        android:label="CourierBillingAccountDataFragment"
+        tools:layout="@layout/courier_billing_data_fragment">
+
+        <argument
+            android:name="courier_billing_data_amount_key"
+            app:argType="ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters"
+            app:nullable="false" />
+
+        <action
+            android:id="@+id/action_courierBillingAccountDataFragment_to_courierBillingAccountSelectorFragment"
+            app:destination="@id/courierBillingAccountSelectorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierBillingAccountSelectorFragment"
+        android:name="ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorFragment"
+        android:label="CourierBillingAccountSelectorFragment"
+        tools:layout="@layout/courier_billing_account_selector_fragment">
+
+        <argument
+            android:name="courier_billing_account_selector_amount_key"
+            app:argType="ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_courierBillingAccountSelectorFragment_to_courierBillingAccountDataFragment"
+            app:destination="@id/courierBillingAccountDataFragment" />
+
+    </fragment>
 
 </navigation>

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.mvvm.model.base.BaseItem
-import ru.wb.perevozka.network.api.app.entity.BillingTransactionEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -21,8 +20,8 @@ class CourierBillingViewModel(
     private val resourceProvider: CourierBillingResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _toolbarLabelState = MutableLiveData<Label>()
-    val toolbarLabelState: LiveData<Label>
+    private val _toolbarLabelState = MutableLiveData<String>()
+    val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
 
     private val _balanceInfo = MutableLiveData<String>()
@@ -51,20 +50,23 @@ class CourierBillingViewModel(
         initProgress()
     }
 
+    private fun initToolbarLabel() {
+        _toolbarLabelState.value = resourceProvider.getTitle()
+    }
+
     private fun initProgress() {
         _billingItems.value = CourierBillingState.Init
     }
 
-    private fun initToolbarLabel() {
-        _toolbarLabelState.value = Label(resourceProvider.getTitle())
-    }
+    private var balance = 0
 
     private fun initBalanceAndTransactions() {
         addSubscription(
             interactor.billing().subscribe(
                 {
+                    balance = it.balance
                     val decimalFormat = DecimalFormat("#,###.##")
-                    val balance = decimalFormat.format(it.balance)
+                    val balance = decimalFormat.format(balance)
                     _balanceInfo.value = resourceProvider.getAmount(balance)
                     val items = mutableListOf<BaseItem>()
                     it.transactions.forEachIndexed { index, billingTransactionEntity ->
@@ -143,6 +145,25 @@ class CourierBillingViewModel(
         initBalanceAndTransactions()
     }
 
+    fun onAccountClick() {
+        showProgress()
+        addSubscription(
+            interactor.accounts().subscribe(
+                { accountsComplete() },
+                { accountsError(it) })
+        )
+    }
+
+    private fun accountsComplete() {
+        _navigationState.value = CourierBillingNavigationState.NavigateToAccountSelector(balance)
+        progressComplete()
+    }
+
+    private fun accountsError(throwable: Throwable) {
+        _navigationState.value = CourierBillingNavigationState.NavigateToAccountCreate("", balance)
+        progressComplete()
+    }
+
     fun onItemClick(id: Int) {
 
     }
@@ -150,7 +171,5 @@ class CourierBillingViewModel(
     fun onCancelLoadClick() {
         clearSubscription()
     }
-
-    data class Label(val label: String)
 
 }

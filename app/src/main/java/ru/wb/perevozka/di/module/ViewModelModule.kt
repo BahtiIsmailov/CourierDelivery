@@ -9,6 +9,10 @@ import ru.wb.perevozka.ui.auth.NumberPhoneViewModel
 import ru.wb.perevozka.ui.config.ConfigViewModel
 import ru.wb.perevozka.ui.courieragreement.CourierAgreementViewModel
 import ru.wb.perevozka.ui.courierbilling.CourierBillingViewModel
+import ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
+import ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataViewModel
+import ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
+import ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorViewModel
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
@@ -136,7 +140,14 @@ val viewModelModule = module {
         )
     }
     viewModel { CourierUnloadingUnknownBoxViewModel() }
-    viewModel { (parameters: CourierStartDeliveryParameters) -> CourierStartDeliveryViewModel(parameters, get(), get(), get()) }
+    viewModel { (parameters: CourierStartDeliveryParameters) ->
+        CourierStartDeliveryViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModel { (parameters: CourierCompleteDeliveryParameters) ->
         CourierCompleteDeliveryViewModel(
             parameters,
@@ -146,7 +157,22 @@ val viewModelModule = module {
         )
     }
     viewModel { CourierMapViewModel(get(), get(), get()) }
-
+    viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
+        CourierBillingAccountDataViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
+    viewModel { (parameters: CourierBillingAccountSelectorAmountParameters) ->
+        CourierBillingAccountSelectorViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
 
     viewModel { ScannerViewModel(get(), get()) }
 

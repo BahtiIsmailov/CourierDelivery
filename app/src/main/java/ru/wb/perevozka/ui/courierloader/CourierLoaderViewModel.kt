@@ -62,9 +62,8 @@ class CourierLoaderViewModel(
 
         checkUserState()
 
-        //toCouriersCompleteRegistration("89104020582")
-
         //toUserForm("123456789")
+        //toCouriersCompleteRegistration("89104020582")
 
         //_navigationDrawerState.value = toAgreement()
         //toUserForm("123456789")
@@ -257,7 +256,9 @@ class CourierLoaderViewModel(
     }
 
     private fun clearData() {
-        appLocalRepository.clearAll()
+        courierLocalRepository.deleteAllWarehouse()
+        courierLocalRepository.deleteAllOrder()
+        courierLocalRepository.deleteAllOrderOffices()
         userManager.clearStatus()
     }
 

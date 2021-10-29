@@ -4,6 +4,8 @@ import android.app.Application
 import org.koin.dsl.module
 import ru.wb.perevozka.ui.auth.AuthResourceProvider
 import ru.wb.perevozka.ui.courierbilling.CourierBillingResourceProvider
+import ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataResourceProvider
+import ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorResourceProvider
 import ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
 import ru.wb.perevozka.ui.courierdata.CourierDataResourceProvider
@@ -100,6 +102,14 @@ val resourceModule = module {
         return CourierMapResourceProvider(application)
     }
 
+    fun provideCourierBillingAccountDataResourceProvider(application: Application): CourierBillingAccountDataResourceProvider {
+        return CourierBillingAccountDataResourceProvider(application)
+    }
+
+    fun provideCourierBillingAccountSelectorResourceProvider(application: Application): CourierBillingAccountSelectorResourceProvider {
+        return CourierBillingAccountSelectorResourceProvider(application)
+    }
+
     fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
         return FlightLoaderProvider(application)
     }
@@ -172,6 +182,8 @@ val resourceModule = module {
     single { provideCourierStartDeliveryResourceProvider(get()) }
     single { provideCourierMapResourceProvider(get()) }
     single { provideCourierBillingResourceProvider(get()) }
+    single { provideCourierBillingAccountDataResourceProvider(get()) }
+    single { provideCourierBillingAccountSelectorResourceProvider(get()) }
 
     single { provideFlightLoaderProvider(get()) }
     single { provideFlightResourceProvider(get()) }

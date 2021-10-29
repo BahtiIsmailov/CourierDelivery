@@ -214,10 +214,15 @@
     </style>
 
     <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/colorOnSecondary</item>
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
         <item name="android:textSize">@dimen/very_large_text</item>
         <item name="android:textColor">@color/black_text</item>
-        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidth">0.5dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/box_corner_radius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/box_corner_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/box_corner_radius</item>
+        <item name="boxCornerRadiusTopStart">@dimen/box_corner_radius</item>
     </style>
 
     <style name="LargeRegularText" parent="RegularBaseFont">
