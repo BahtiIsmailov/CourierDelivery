@@ -3,14 +3,12 @@ package ru.wb.perevozka.ui.courierintransit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.AppConsts
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitUnloadingExpectsDelegate
 import ru.wb.perevozka.ui.courierintransit.delegates.items.*
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
@@ -263,6 +261,14 @@ class CourierIntransitViewModel(
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
+                .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
+        )
+    }
+
+    fun onForcedCompleteClick() {
+        _progressState.value = CourierIntransitProgressState.Progress
+        addSubscription(
+            interactor.forcedCompleteDelivery()
                 .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
         )
     }

@@ -205,6 +205,7 @@ class CourierIntransitFragment : Fragment() {
         binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
         binding.scanQrPvzComplete.setOnClickListener { viewModel.scanQrPvzClick() }
         binding.completeDelivery.setOnClickListener { viewModel.completeDeliveryClick() }
+        binding.forcedComplete.setOnClickListener { viewModel.onForcedCompleteClick() }
     }
 
     // TODO: 20.08.2021 переработать

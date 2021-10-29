@@ -19,6 +19,8 @@ interface CourierIntransitInteractor {
 
     fun completeDelivery(): Single<CompleteDeliveryResult>
 
+    fun forcedCompleteDelivery(): Single<CompleteDeliveryResult>
+
     fun observeMapAction(): Observable<CourierMapAction>
 
     fun mapState(state: CourierMapState)

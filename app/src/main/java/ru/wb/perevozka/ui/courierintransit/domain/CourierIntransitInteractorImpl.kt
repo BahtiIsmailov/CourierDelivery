@@ -3,7 +3,6 @@ package ru.wb.perevozka.ui.courierintransit.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import ru.wb.perevozka.app.PREFIX_QR_CODE
 import ru.wb.perevozka.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.db.IntransitTimeRepository
@@ -78,10 +77,7 @@ class CourierIntransitInteractorImpl(
                     taskId().flatMapCompletable { taskId ->
                         // TODO: 24.09.2021 выключить для тестирования
 //                        Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-                        taskStatusesIntransit(
-                            taskId,
-                            intransitBoxes
-                        )
+                        taskStatusesIntransit(taskId, intransitBoxes)
                     }
                 }
             }
@@ -90,6 +86,25 @@ class CourierIntransitInteractorImpl(
 //                Completable.timer(2, TimeUnit.SECONDS)
                 taskStatusesEnd(it)
             })
+            .andThen(getCompleteDeliveryResult())
+            .doOnSuccess { clearData() }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    override fun forcedCompleteDelivery(): Single<CompleteDeliveryResult> {
+        return courierLocalRepository.readAllLoadingBoxes()
+            .flatMap {
+                convertToForcedCourierTaskStatusesIntransitEntity(
+                    it,
+                    timeManager.getLocalTime()
+                )
+            }
+            .flatMapCompletable { intransitBoxes ->
+                taskId().flatMapCompletable { taskId ->
+                    taskStatusesIntransit(taskId, intransitBoxes)
+                }
+            }
+            .andThen(taskId().flatMapCompletable { taskStatusesEnd(it) })
             .andThen(getCompleteDeliveryResult())
             .doOnSuccess { clearData() }
             .compose(rxSchedulerFactory.applySingleSchedulers())
@@ -119,6 +134,21 @@ class CourierIntransitInteractorImpl(
                     dstOfficeID = dstOfficeId,
                     loadingAt = loadingAt,
                     deliveredAt = if (deliveredAt.isEmpty()) null else deliveredAt
+                )
+            }
+        }.toList()
+
+    private fun convertToForcedCourierTaskStatusesIntransitEntity(
+        item: List<CourierBoxEntity>,
+        localTime: String
+    ) =
+        Observable.fromIterable(item).map {
+            with(it) {
+                CourierTaskStatusesIntransitEntity(
+                    id = id,
+                    dstOfficeID = dstOfficeId,
+                    loadingAt = if (loadingAt.isEmpty()) localTime else loadingAt,
+                    deliveredAt = localTime
                 )
             }
         }.toList()
