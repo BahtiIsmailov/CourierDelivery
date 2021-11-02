@@ -77,7 +77,10 @@ class CourierBillingAccountSelectorFragment :
     }
 
     private fun initListener() {
-        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().popBackStack()
+            hideKeyboard()
+        }
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()
         }
