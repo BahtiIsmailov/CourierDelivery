@@ -64,6 +64,8 @@ class CourierBillingAccountSelectorViewModel(
 
     private var localBalance: Int = 0
     private var copyCourierBillingAccountEntity = mutableListOf<CourierBillingAccountEntity>()
+    private var copyCourierBillingAccountSelectorAdapterItems =
+        mutableListOf<CourierBillingAccountSelectorAdapterItem>()
 
     init {
         localBalance = parameters.balance
@@ -79,7 +81,8 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun initBalance() {
-        val balance = decimalFormat(localBalance)
+        val decimalFormat = DecimalFormat("#,###.##")
+        val balance = decimalFormat.format(localBalance)
         _balanceState.value = resourceProvider.getBalance(balance)
     }
 
@@ -93,15 +96,19 @@ class CourierBillingAccountSelectorViewModel(
     private fun initAccounts() {
         addSubscription(interactor.accounts()
             .doOnSuccess { copyCourierBillingAccountEntity = it.toMutableList() }
-            .flatMap {
-                Observable.fromIterable(it)
-                    .map { resourceProvider.getFormatAccount(it.bank, it.account) }
-                    .toList()
-            }
             .map {
-                it.add("Добавить счет")
-                it
+                val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
+                it.forEach {
+                    list.add(
+                        CourierBillingAccountSelectorAdapterItem.Edit(
+                            resourceProvider.getFormatAccount(it.bank, it.account)
+                        )
+                    )
+                }
+                list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
+                list
             }
+            .doOnSuccess { copyCourierBillingAccountSelectorAdapterItems = it.toMutableList() }
             .subscribe({
                 _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
             }, {})
@@ -125,7 +132,9 @@ class CourierBillingAccountSelectorViewModel(
         } else {
             val balanceFromText = amountFromString(text)
             val balance = decimalFormat(balanceFromText)
-            if (localBalance >= balanceFromText) {
+            if (balanceFromText == 0) {
+                CourierBillingAccountSelectorUIState.Error(balance, "Сумма недоступна", type)
+            } else if (localBalance >= balanceFromText) {
                 CourierBillingAccountSelectorUIState.Complete(balance, type)
             } else {
                 CourierBillingAccountSelectorUIState.Error(balance, "Сумма недоступна", type)
@@ -187,7 +196,11 @@ class CourierBillingAccountSelectorViewModel(
                 } else {
                     val balanceFromText = amountFromString(action.text)
                     val balance = decimalFormat(balanceFromText)
-                    if (localBalance >= balanceFromText) {
+                    if (balanceFromText == 0) {
+                        CourierBillingAccountSelectorBalanceAction.Error(
+                            resourceProvider.getWithdrawBalance(balance)
+                        )
+                    } else if (localBalance >= balanceFromText) {
                         CourierBillingAccountSelectorBalanceAction.Complete(
                             resourceProvider.getWithdrawBalance(balance)
                         )
@@ -250,7 +263,8 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     fun onAccountSelectClick(id: Int) {
-        _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(id)
+        val selected = if (id == copyCourierBillingAccountEntity.size) 0 else id
+        _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(selected)
     }
 
     private fun paymentsComplete(amount: Int) {
@@ -261,7 +275,6 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun paymentsError(throwable: Throwable) {
         val message = when (throwable) {
-
             is NoInternetException -> Message(
                 DialogStyle.INFO.ordinal,
                 throwable.message,

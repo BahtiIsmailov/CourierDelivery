@@ -14,9 +14,9 @@
         android:layout_marginStart="16dp"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
-        android:focusable="true"
         android:padding="10dp"
-        android:src="@drawable/ic_billing_add_account" />
+        android:src="@drawable/ic_billing_add_account"
+        tools:ignore="KeyboardInaccessibleWidget" />
 
     <TextView
         android:id="@+id/text1"
@@ -31,3 +31,4 @@
         tools:text="Добавить счет" />
 
 </LinearLayout>
+

@@ -70,36 +70,6 @@ class CourierBillingAccountSelectorFragment :
         initListener()
         initInputMethod()
         initObservers()
-
-//        val counting = listOf(
-//            "ПАО «Сбербанк» ****3132",
-//            "ПАО «Сбербанк» ****3133",
-//            "АО «АЛЬФА-БАНК» ****3132",
-//            "Добавить счет"
-//        )
-//        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-//            requireContext(),
-//            ru.wb.perevozka.R.layout.billing_account_add_adapter_layout,
-//            counting
-//        )
-//
-//        binding.filledExposedDropdown.setAdapter(adapter)
-
-//        val accounts = listOf(
-//            "ПАО «Сбербанк» ****3132",
-//            "ПАО «Сбербанк» ****3133",
-//            "АО «АЛЬФА-БАНК» ****3132",
-//            "Добавить счет"
-//        )
-//        binding.spinnerAccountTest.adapter =
-//            CourierBillingAccountSelectorAdapter(
-//                requireContext(),
-//                accounts,
-//                object : OnCourierBillingAccountSelectorCallback {
-//                    override fun onEditClick(idView: Int) {
-//                        viewModel.onEditAccountClick(idView)
-//                    }
-//                })
     }
 
     private fun initView() {
@@ -197,8 +167,6 @@ class CourierBillingAccountSelectorFragment :
         viewModel.balanceState.observe(viewLifecycleOwner) {
             binding.balance.text = it
             binding.amount.text?.clear()
-            binding.amount.isSelected = false
-            binding.amount.isFocusable = false
         }
 
         viewModel.balanceChangeState.observe(viewLifecycleOwner) {
@@ -286,9 +254,7 @@ class CourierBillingAccountSelectorFragment :
                     }
 
                     val adapter = CourierBillingAccountSelectorAdapter(
-                        requireContext(),
-                        it.accounts,
-                        callback
+                        requireContext(), it.items, callback
                     )
                     adapter.notifyDataSetChanged()
 
@@ -305,7 +271,7 @@ class CourierBillingAccountSelectorFragment :
                         }
 
                         override fun onNothingSelected(p0: AdapterView<*>?) {
-//                            TODO("Not yet implemented")
+
                         }
 
 
@@ -349,9 +315,10 @@ class CourierBillingAccountSelectorFragment :
         viewModel.loaderState.observe(viewLifecycleOwner,
             { state ->
                 when (state) {
-                    CourierBillingAccountSelectorUILoaderState.Disable -> binding.next.setState(
-                        ProgressButtonMode.DISABLE
-                    )
+                    CourierBillingAccountSelectorUILoaderState.Disable -> {
+                        binding.next.setState(ProgressButtonMode.DISABLE)
+                        binding.overlayBoxes.visibility = View.GONE
+                    }
                     CourierBillingAccountSelectorUILoaderState.Enable -> {
                         binding.next.setState(ProgressButtonMode.ENABLE)
                         binding.overlayBoxes.visibility = View.GONE

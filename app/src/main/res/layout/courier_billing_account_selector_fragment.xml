@@ -92,6 +92,10 @@
 
             </LinearLayout>
 
+            <!--                    android:background="@drawable/spinner_background"-->
+
+            <!--            android:background="@drawable/rounded_billing_transperent_layout"-->
+
         </FrameLayout>
 
     </ScrollView>
