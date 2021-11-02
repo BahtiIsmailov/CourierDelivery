@@ -57,7 +57,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/surname_layout"
+                    android:id="@+id/amount_layout"
                     style="@style/TextInputLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -69,12 +69,13 @@
                     tools:ignore="MissingConstraints">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/surname"
+                        android:id="@+id/amount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Сумма списания \u20BD"
                         android:inputType="number"
                         android:letterSpacing="0.04"
+                        android:maxLength="6"
                         android:paddingTop="@dimen/auth_padding_top"
                         android:paddingBottom="@dimen/auth_padding_bottom" />
 

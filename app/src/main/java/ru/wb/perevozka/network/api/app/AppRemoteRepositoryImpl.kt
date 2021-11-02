@@ -36,6 +36,7 @@ import ru.wb.perevozka.network.api.app.remote.flightboxtobalance.FlightBoxToBala
 import ru.wb.perevozka.network.api.app.remote.flightlog.FlightLogRequest
 import ru.wb.perevozka.network.api.app.remote.flightsstatus.*
 import ru.wb.perevozka.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import ru.wb.perevozka.network.api.app.remote.payments.PaymentRequest
 import ru.wb.perevozka.network.api.app.remote.pvz.BoxFromPvzBalanceCurrentOfficeRequest
 import ru.wb.perevozka.network.api.app.remote.pvz.BoxFromPvzBalanceRequest
 import ru.wb.perevozka.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxResponse
@@ -742,6 +743,22 @@ class AppRemoteRepositoryImpl(
                     transactions = billingTransactions
                 )
             }
+    }
+
+    override fun payments(paymentEntity: PaymentEntity): Completable {
+        val paymentRequest = with(paymentEntity) {
+            PaymentRequest(
+                amount = amount,
+                recipientBankName = recipientBankName,
+                recipientName = recipientName,
+                recipientBankBik = recipientBankBik,
+                recipientCorrespondentAccount = recipientCorrespondentAccount,
+                recipientAccount = recipientAccount,
+                recipientInn = recipientInn,
+                recipientKpp = recipientKpp
+            )
+        }
+        return remote.payments(apiVersion(), paymentRequest)
     }
 
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {

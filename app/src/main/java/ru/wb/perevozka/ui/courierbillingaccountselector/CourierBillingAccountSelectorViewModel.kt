@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.api.app.entity.CourierBillingAccountEntity
+import ru.wb.perevozka.network.api.app.entity.PaymentEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -57,7 +58,15 @@ class CourierBillingAccountSelectorViewModel(
     val loaderState: LiveData<CourierBillingAccountSelectorUILoaderState>
         get() = _loaderState
 
+    private val _balanceChangeState = MutableLiveData<CourierBillingAccountSelectorBalanceAction>()
+    val balanceChangeState: LiveData<CourierBillingAccountSelectorBalanceAction>
+        get() = _balanceChangeState
+
+    private var localBalance: Int = 0
+    private var copyCourierBillingAccountEntity = mutableListOf<CourierBillingAccountEntity>()
+
     init {
+        localBalance = parameters.balance
         initToolbarLabel()
         initBalance()
         initAccounts()
@@ -70,8 +79,7 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun initBalance() {
-        val decimalFormat = DecimalFormat("#,###.##")
-        val balance = decimalFormat.format(parameters.balance)
+        val balance = decimalFormat(localBalance)
         _balanceState.value = resourceProvider.getBalance(balance)
     }
 
@@ -82,13 +90,12 @@ class CourierBillingAccountSelectorViewModel(
         )
     }
 
-    private var copyCourierBillingAccountEntity = mutableListOf<CourierBillingAccountEntity>()
-
     private fun initAccounts() {
         addSubscription(interactor.accounts()
             .doOnSuccess { copyCourierBillingAccountEntity = it.toMutableList() }
             .flatMap {
-                Observable.fromIterable(it).map { it.bank + " " + "****" + it.account.takeLast(4) }
+                Observable.fromIterable(it)
+                    .map { resourceProvider.getFormatAccount(it.bank, it.account) }
                     .toList()
             }
             .map {
@@ -114,14 +121,24 @@ class CourierBillingAccountSelectorViewModel(
         type: CourierBillingAccountSelectorQueryType
     ): CourierBillingAccountSelectorUIState {
         return if (text.isEmpty()) {
-            CourierBillingAccountSelectorUIState.Error(text, type)
+            CourierBillingAccountSelectorUIState.Empty("Введите сумму", type)
         } else {
-            CourierBillingAccountSelectorUIState.Complete(text, type)
+            val balanceFromText = amountFromString(text)
+            val balance = decimalFormat(balanceFromText)
+            if (localBalance >= balanceFromText) {
+                CourierBillingAccountSelectorUIState.Complete(balance, type)
+            } else {
+                CourierBillingAccountSelectorUIState.Error(balance, "Сумма недоступна", type)
+            }
         }
     }
 
+    private fun amountFromString(text: String) = text.replace("\\s".toRegex(), "").toInt()
+
     fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
         addSubscription(Observable.merge(changeObservables)
+            .doOnNext { LogUtils { logDebugApp(it.toString()) } }
+            .distinctUntilChanged()
             .map { mapAction(it) }
             .subscribe(
                 { _formUIState.value = it },
@@ -151,7 +168,7 @@ class CourierBillingAccountSelectorViewModel(
         }
         return if (action.userData.isEmpty()) {
             // TODO: 20.08.2021 выполнить загрузку данных пользователя
-            CourierBillingAccountSelectorUIState.Next
+            CourierBillingAccountSelectorUIState.NextComplete
         } else {
             CourierBillingAccountSelectorUIState.ErrorFocus("", action.userData.first().type)
         }
@@ -164,18 +181,56 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun checkFieldText(action: CourierBillingAccountSelectorUIAction.TextChange) =
         when (action.type) {
-            CourierBillingAccountSelectorQueryType.SURNAME -> checkTextSurnameWrapper(action)
+            CourierBillingAccountSelectorQueryType.SURNAME -> {
+                _balanceChangeState.value = if (action.text.isEmpty()) {
+                    CourierBillingAccountSelectorBalanceAction.Init(resourceProvider.getWithdrawBalanceInit())
+                } else {
+                    val balanceFromText = amountFromString(action.text)
+                    val balance = decimalFormat(balanceFromText)
+                    if (localBalance >= balanceFromText) {
+                        CourierBillingAccountSelectorBalanceAction.Complete(
+                            resourceProvider.getWithdrawBalance(balance)
+                        )
+                    } else {
+                        CourierBillingAccountSelectorBalanceAction.Error(
+                            resourceProvider.getWithdrawBalance(balance)
+                        )
+                    }
+                }
+
+                checkTextSurnameWrapper(action)
+            }
+
         }
+
+    private fun decimalFormat(balanceFromText: Int): String {
+        val decimalFormat = DecimalFormat("#,###.##")
+        return decimalFormat.format(balanceFromText)
+    }
 
     private fun isNotCheck(state: CourierBillingAccountSelectorUIState) =
         state is CourierBillingAccountSelectorUIState.Complete
 
-    fun onNextClick(courierDocumentsEntity: CourierBillingAccountEntity) {
+    fun onNextCompleteClick(accountId: Long, amount: String) {
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
+        val amountFromText = amountFromString(amount)
+        val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
+        val paymentEntity = with(courierBillingAccountEntity) {
+            PaymentEntity(
+                amount = amountFromText,
+                recipientBankName = bank,
+                recipientName = "$firstName $surName $middleName",
+                recipientBankBik = bik,
+                recipientCorrespondentAccount = corAccount,
+                recipientAccount = account,
+                recipientInn = innBank,
+                recipientKpp = kpp
+            )
+        }
         addSubscription(
-            interactor.courierDocuments(courierDocumentsEntity).subscribe(
-                { couriersFormComplete() },
-                { couriersFormError(it) })
+            interactor.payments(paymentEntity).subscribe(
+                { paymentsComplete(amountFromText) },
+                { paymentsError(it) })
         )
     }
 
@@ -183,22 +238,14 @@ class CourierBillingAccountSelectorViewModel(
         if (idView == copyCourierBillingAccountEntity.size) {
             _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
                 "",
-                parameters.balance
+                localBalance
             )
         } else {
             val account = copyCourierBillingAccountEntity[idView].account
             _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
                 account,
-                parameters.balance
+                localBalance
             )
-        }
-    }
-
-    fun onCheckedClick(isComplete: Boolean, isAgreement: Boolean, isPersonal: Boolean) {
-        _loaderState.value = if (isComplete && isAgreement && isPersonal) {
-            CourierBillingAccountSelectorUILoaderState.Enable
-        } else {
-            CourierBillingAccountSelectorUILoaderState.Disable
         }
     }
 
@@ -206,11 +253,13 @@ class CourierBillingAccountSelectorViewModel(
         _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(id)
     }
 
-    private fun couriersFormComplete() {
+    private fun paymentsComplete(amount: Int) {
+        localBalance -= amount
+        initBalance()
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
     }
 
-    private fun couriersFormError(throwable: Throwable) {
+    private fun paymentsError(throwable: Throwable) {
         val message = when (throwable) {
 
             is NoInternetException -> Message(

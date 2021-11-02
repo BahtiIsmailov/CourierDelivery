@@ -467,8 +467,11 @@
 
     <string name="courier_billing_account_selector_title">Вывод средсв</string>
     <string name="courier_billing_account_selector_balance">%1$s ₽</string>
+    <string name="courier_billing_account_selector_format">%1$s ****%2$s</string>
     <string name="courier_billing_account_selector_amount_button_init">Вывести</string>
     <string name="courier_billing_account_selector_amount_button">Вывести %1$s ₽</string>
+    <string name="courier_billing_account_selector_withdraw_balance">Вывести %1$s ₽</string>
+    <string name="courier_billing_account_selector_withdraw_balance_init">Вывести</string>
 
 
 </resources>

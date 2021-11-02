@@ -20,6 +20,7 @@ import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierBillingAccountSelectorFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
@@ -28,6 +29,8 @@ import ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSel
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.utils.LogUtils
+import ru.wb.perevozka.utils.SoftKeyboard
 import ru.wb.perevozka.views.ProgressButtonMode
 import java.util.*
 
@@ -108,7 +111,6 @@ class CourierBillingAccountSelectorFragment :
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()
         }
-
         viewModel.onFormChanges(changeFieldObservables())
     }
 
@@ -125,8 +127,8 @@ class CourierBillingAccountSelectorFragment :
 
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
-                binding.surnameLayout,
-                binding.surname,
+                binding.amountLayout,
+                binding.amount,
                 CourierBillingAccountSelectorQueryType.SURNAME
             )
         )
@@ -138,7 +140,7 @@ class CourierBillingAccountSelectorFragment :
 
     private fun getFormUserData() = mutableListOf(
         CourierData(
-            binding.surname.text.toString(),
+            binding.amount.text.toString(),
             CourierBillingAccountSelectorQueryType.SURNAME
         )
     )
@@ -166,6 +168,7 @@ class CourierBillingAccountSelectorFragment :
         return TextChangesInterface { textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
+                .doOnNext { LogUtils { logDebugApp("Edit amount " + it) } }
                 .map { it.toString() }
                 .map { CourierBillingAccountSelectorUIAction.TextChange(it, queryType) }
             val focusChanges = editText.focusChanges()
@@ -193,6 +196,26 @@ class CourierBillingAccountSelectorFragment :
 
         viewModel.balanceState.observe(viewLifecycleOwner) {
             binding.balance.text = it
+            binding.amount.text?.clear()
+            binding.amount.isSelected = false
+            binding.amount.isFocusable = false
+        }
+
+        viewModel.balanceChangeState.observe(viewLifecycleOwner) {
+            when (it) {
+                is CourierBillingAccountSelectorBalanceAction.Init -> {
+                    binding.next.setState(ProgressButtonMode.DISABLE)
+                    binding.next.setText(it.text)
+                }
+                is CourierBillingAccountSelectorBalanceAction.Complete -> {
+                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.next.setText(it.text)
+                }
+                is CourierBillingAccountSelectorBalanceAction.Error -> {
+                    binding.next.setState(ProgressButtonMode.DISABLE)
+                    binding.next.setText(it.text)
+                }
+            }
         }
 
         viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
@@ -213,15 +236,28 @@ class CourierBillingAccountSelectorFragment :
 
         viewModel.formUIState.observe(viewLifecycleOwner) { state ->
             when (state) {
+                is CourierBillingAccountSelectorUIState.Empty -> {
+                    val textLayout =
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                    textLayout?.error = state.message
+                }
                 is CourierBillingAccountSelectorUIState.Complete -> {
                     val textLayout =
                         changeText.find { it.type == state.typeBillingAccount }?.textLayout
-                    textLayout?.error = getText(ru.wb.perevozka.R.string.error_empty)
+                    textLayout?.error = getText(R.string.error_empty)
+
+                    val text = changeText.find { it.type == state.typeBillingAccount }?.text
+                    text?.setText(state.formatBalance)
+                    text?.setSelection(state.formatBalance.length)
                 }
                 is CourierBillingAccountSelectorUIState.Error -> {
                     val textLayout =
                         changeText.find { it.type == state.typeBillingAccount }?.textLayout
-                    textLayout?.error = getText(ru.wb.perevozka.R.string.error)
+                    textLayout?.error = state.message
+
+                    val text = changeText.find { it.type == state.typeBillingAccount }?.text
+                    text?.setText(state.formatBalance)
+                    text?.setSelection(state.formatBalance.length)
                 }
                 is CourierBillingAccountSelectorUIState.ErrorFocus -> {
                     changeText.find { it.type == state.typeBillingAccount }?.text?.let {
@@ -230,9 +266,13 @@ class CourierBillingAccountSelectorFragment :
                         scrollToViewTop(binding.scrollView, it)
                     }
                 }
-                CourierBillingAccountSelectorUIState.Next -> {
-                    //viewModel.onNextClick(getCourierDocumentsEntity())
+                CourierBillingAccountSelectorUIState.NextComplete -> {
+                    viewModel.onNextCompleteClick(
+                        binding.spinnerAccount.selectedItemId,
+                        binding.amount.text.toString()
+                    )
                 }
+
             }
         }
 
@@ -317,6 +357,7 @@ class CourierBillingAccountSelectorFragment :
                         binding.overlayBoxes.visibility = View.GONE
                     }
                     CourierBillingAccountSelectorUILoaderState.Progress -> {
+                        hideKeyboard()
                         binding.next.setState(ProgressButtonMode.PROGRESS)
                         binding.overlayBoxes.visibility = View.VISIBLE
                     }
@@ -337,6 +378,10 @@ class CourierBillingAccountSelectorFragment :
     private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
             .show(parentFragmentManager, DIALOG_INFO_TAG)
+    }
+
+    private fun hideKeyboard() {
+        SoftKeyboard.hideKeyBoard(requireActivity())
     }
 
 }

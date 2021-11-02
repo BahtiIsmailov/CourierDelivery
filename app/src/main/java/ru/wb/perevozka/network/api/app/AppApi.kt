@@ -17,6 +17,7 @@ import ru.wb.perevozka.network.api.app.remote.flightsstatus.StatusResponse
 import ru.wb.perevozka.network.api.app.remote.flightsstatus.StatusStateResponse
 import ru.wb.perevozka.network.api.app.remote.flightsstatus.StatusesStateResponse
 import ru.wb.perevozka.network.api.app.remote.flightstatuses.FlightStatusesResponse
+import ru.wb.perevozka.network.api.app.remote.payments.PaymentRequest
 import ru.wb.perevozka.network.api.app.remote.pvz.BoxFromPvzBalanceRequest
 import ru.wb.perevozka.network.api.app.remote.pvz.BoxFromPvzBalanceResponse
 import ru.wb.perevozka.network.api.app.remote.pvzmatchingboxes.PvzMatchingBoxesResponse
@@ -243,5 +244,11 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
     ): Single<BillingCommonResponse>
+
+    @POST("{version}/payments")
+    fun payments(
+        @Path(value = "version", encoded = true) version: String,
+        @Body paymentRequest: PaymentRequest
+    ): Completable
 
 }

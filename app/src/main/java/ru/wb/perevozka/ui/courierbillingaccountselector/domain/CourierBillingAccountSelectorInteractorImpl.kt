@@ -6,6 +6,7 @@ import io.reactivex.Single
 import ru.wb.perevozka.db.CourierLocalRepository
 import ru.wb.perevozka.network.api.app.AppRemoteRepository
 import ru.wb.perevozka.network.api.app.entity.CourierBillingAccountEntity
+import ru.wb.perevozka.network.api.app.entity.PaymentEntity
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
@@ -31,6 +32,11 @@ class CourierBillingAccountSelectorInteractorImpl(
     override fun accounts(): Single<List<CourierBillingAccountEntity>> {
         return courierLocalRepository.readAllAccounts()
             .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    override fun payments(paymentEntity: PaymentEntity): Completable {
+        return appRemoteRepository.payments(paymentEntity)
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
 }
