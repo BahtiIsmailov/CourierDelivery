@@ -5,6 +5,7 @@ import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.perevozka.network.api.app.remote.CarNumberRequest
 import ru.wb.perevozka.network.api.app.remote.CourierDocumentsRequest
+import ru.wb.perevozka.network.api.app.remote.VersionAppResponse
 import ru.wb.perevozka.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.perevozka.network.api.app.remote.boxinfo.BoxInfoResponse
 import ru.wb.perevozka.network.api.app.remote.courier.*
@@ -243,5 +244,10 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
     ): Single<BillingCommonResponse>
+
+    @GET("{version}/settings/mobile-version")
+    fun version(
+        @Path(value = "version", encoded = true) version: String
+    ): Single<VersionAppResponse>
 
 }

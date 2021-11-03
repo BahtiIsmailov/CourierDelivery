@@ -744,6 +744,10 @@ class AppRemoteRepositoryImpl(
             }
     }
 
+    override fun appVersion(): Single<String> {
+        return remote.version(tokenManager.apiVersion()).map { it.version }
+    }
+
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
         val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
         courierOrderResponse.dstOffices.forEach { dstOffice ->

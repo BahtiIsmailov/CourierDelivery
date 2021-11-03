@@ -45,6 +45,8 @@ import ru.wb.perevozka.ui.courierstartdelivery.domain.CourierStartDeliveryIntera
 import ru.wb.perevozka.ui.courierstartdelivery.domain.CourierStartDeliveryInteractorImpl
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractorImpl
+import ru.wb.perevozka.ui.courierversioncontrol.domain.CourierVersionControlInteractor
+import ru.wb.perevozka.ui.courierversioncontrol.domain.CourierVersionControlInteractorImpl
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
@@ -550,6 +552,16 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierVersionControlInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
+    ): CourierVersionControlInteractor {
+        return CourierVersionControlInteractorImpl(
+            rxSchedulerFactory,
+            courierLocalRepository,
+        )
+    }
+
     fun provideCourierStartDeliveryInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         courierLocalRepository: CourierLocalRepository
@@ -630,6 +642,7 @@ val interactorModule = module {
         )
     }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
+    factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
     factory { provideCourierBillingInteractor(get(), get()) }
