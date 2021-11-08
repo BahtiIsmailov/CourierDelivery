@@ -1,18 +1,31 @@
 package ru.wb.perevozka.ui.splash
 
+import android.Manifest
+import android.content.*
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.View.*
+import android.view.WindowManager
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.navigation.NavController
@@ -24,7 +37,14 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.wb.logistics.BuildConfig
+import com.wb.logistics.R
+import com.wb.logistics.databinding.SplashActivityBinding
+import com.wb.logistics.ui.dialogs.InformationDialogFragment
+import com.wb.logistics.ui.flightsloader.FlightActionStatus
+import com.wb.logistics.utils.LogUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.*
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.SplashActivityBinding
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -35,8 +55,7 @@ import java.util.*
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
-    OnUserInfo, OnCourierScanner,
-    NavDrawerListener, KeyboardListener {
+    OnUserInfo, NavDrawerListener, KeyboardListener, OnCourierScanner {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -57,6 +76,30 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         initObserver()
         initView()
         initListener()
+    }
+
+    private fun showInstallOption(destination: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val contentUri = FileProvider.getUriForFile(
+                this,
+                BuildConfig.APPLICATION_ID + PROVIDER_PATH,
+                File(destination)
+            )
+            val install = Intent(Intent.ACTION_VIEW)
+            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            install.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            install.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+            install.data = contentUri
+            this.startActivity(install)
+            finish()
+        } else {
+            val uri = Uri.parse("$FILE_BASE_PATH$destination")
+            val install = Intent(Intent.ACTION_VIEW)
+            install.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            install.setDataAndType(uri, APP_INSTALL_PATH)
+            this.startActivity(install)
+            finish()
+        }
     }
 
     private fun initToolbar() {
@@ -185,7 +228,63 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
 
         viewModel.versionApp.observe(this) {
             with(binding.navView) {
-                findViewById<TextView>(R.id.version_app_text).text = it
+                findViewById<TextView>(R.id.version_app).text = it
+            }
+        }
+
+        viewModel.appVersionState.observe(this) {
+            when (it) {
+                is AppVersionState.Update -> {
+                    findViewById<View>(R.id.check_version_layout).visibility = GONE
+                    findViewById<View>(R.id.update_version_layout).isEnabled = true
+                    findViewById<View>(R.id.update_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.update_image).visibility = VISIBLE
+                    findViewById<ProgressBar>(R.id.update_progress).visibility = INVISIBLE
+                    findViewById<TextView>(R.id.current_version_update_title).text =
+                        getString(R.string.app_update_version,
+                            it.fileName.substringBefore(".apk"))
+                    findViewById<TextView>(R.id.update_version_app).text =
+                        getString(R.string.app_update_version_status)
+
+                }
+                AppVersionState.UpdateProgress -> {
+                    findViewById<View>(R.id.check_version_layout).visibility = GONE
+                    findViewById<View>(R.id.update_version_layout).isEnabled = false
+                    findViewById<View>(R.id.update_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.update_image).visibility = INVISIBLE
+                    findViewById<ProgressBar>(R.id.update_progress).visibility = VISIBLE
+                    findViewById<TextView>(R.id.update_version_app).text =
+                        getString(R.string.app_update_version_load_status)
+                }
+                is AppVersionState.UpdateComplete -> showInstallOption(it.pathFile)
+                is AppVersionState.UpdateError -> {
+                    findViewById<View>(R.id.update_version_layout).visibility = GONE
+                    findViewById<View>(R.id.check_version_layout).isEnabled = true
+                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
+                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
+                    Toast.makeText(this,
+                        getString(R.string.app_update_version_error),
+                        Toast.LENGTH_LONG).show()
+                }
+                is AppVersionState.UpToDate -> {
+                    findViewById<View>(R.id.update_version_layout).visibility = GONE
+                    findViewById<View>(R.id.check_version_layout).isEnabled = true
+                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
+                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
+                    Toast.makeText(this,
+                        getString(R.string.app_update_version_up_to_date),
+                        Toast.LENGTH_LONG).show()
+                }
+                AppVersionState.UpToDateProgress -> {
+                    findViewById<View>(R.id.update_version_layout).visibility = GONE
+                    findViewById<View>(R.id.check_version_layout).isEnabled = false
+                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
+                    findViewById<ImageView>(R.id.check_version).visibility = INVISIBLE
+                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = VISIBLE
+                }
+
             }
         }
     }
@@ -199,6 +298,18 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             }
         }
 
+        binding.navView.findViewById<View>(R.id.check_version_layout).setOnClickListener {
+            viewModel.checkUpdateVersionApp()
+        }
+
+        binding.navView.findViewById<View>(R.id.update_version_layout).setOnClickListener {
+            if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                updateVersionApp()
+            } else {
+                requestPermissionExtStorage()
+            }
+        }
+
         with(binding.navView) {
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()
@@ -207,6 +318,40 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                 Navigation.findNavController(this@AppActivity, R.id.nav_auth_host_fragment)
                     .navigate(R.id.load_navigation)
             }
+        }
+
+    }
+
+    private fun requestPermissionExtStorage() {
+        requestPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    private fun updateVersionApp() {
+        val destination = "$cacheDir/"
+        viewModel.updateVersionApp(destination)
+    }
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                updateVersionApp()
+            } else {
+                // TODO: 06.08.2021 добавить разметку перехода в настройки разрешений
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+//                        val uri = Uri.fromParts(AppConsts.APP_PACKAGE, packageName, null)
+//                        intent.data = uri
+//                        startActivityForResult(intent, PERMISSION_EXT_STORAGE_REQUEST_CODE)
+//                    }
+//                }
+            }
+        }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PERMISSION_EXT_STORAGE_REQUEST_CODE) {
+            requestPermissionExtStorage()
         }
 
 //        binding.layoutHost.toolbarLayout.search.setOnQueryTextListener(object :
@@ -370,6 +515,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         isLoadingCourierBox = true
     }
 
+
+    companion object {
+        const val PERMISSION_EXT_STORAGE_REQUEST_CODE = 500
+        private const val FILE_BASE_PATH = "file://"
+        private const val PROVIDER_PATH = ".provider"
+        private const val APP_INSTALL_PATH = "\"application/vnd.android.package-archive\""
+    }
+
 }
 
 interface NavToolbarListener {
@@ -402,4 +555,14 @@ interface OnFlightsStatus {
 
 interface OnCourierScanner {
     fun holdBackButtonOnScanBox()
+}
+
+fun AppActivity.hasPermissions(vararg permissions: String): Boolean =
+    permissions.all(::hasPermission)
+
+fun AppActivity.hasPermission(permission: String): Boolean {
+    return ActivityCompat.checkSelfPermission(
+        this,
+        permission
+    ) == PackageManager.PERMISSION_GRANTED
 }
