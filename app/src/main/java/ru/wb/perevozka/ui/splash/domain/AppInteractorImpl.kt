@@ -1,28 +1,22 @@
 package ru.wb.perevozka.ui.splash.domain
 
-import com.wb.logistics.db.AppLocalRepository
-import com.wb.logistics.network.api.auth.AuthRemoteRepository
-import com.wb.logistics.network.monitor.NetworkMonitorRepository
-import com.wb.logistics.network.rx.RxSchedulerFactory
-import com.wb.logistics.ui.splash.AppVersionState
-import com.wb.logistics.utils.managers.DeviceManager
-import com.wb.logistics.utils.managers.ScreenManager
-import com.wb.logistics.utils.managers.ScreenManagerImpl
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import ru.wb.perevozka.db.AppLocalRepository
 import ru.wb.perevozka.network.api.auth.AuthRemoteRepository
 import ru.wb.perevozka.network.monitor.NetworkMonitorRepository
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.network.rx.RxSchedulerFactory
+import ru.wb.perevozka.ui.auth.AppVersionState
+import ru.wb.perevozka.utils.managers.DeviceManager
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.ScreenManagerImpl
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 class AppInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,

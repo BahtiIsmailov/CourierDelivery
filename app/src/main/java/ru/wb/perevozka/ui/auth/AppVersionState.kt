@@ -1,4 +1,4 @@
-package com.wb.logistics.ui.splash
+package ru.wb.perevozka.ui.auth
 
 sealed class AppVersionState {
     object UpToDate : AppVersionState()

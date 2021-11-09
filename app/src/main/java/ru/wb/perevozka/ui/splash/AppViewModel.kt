@@ -2,12 +2,12 @@ package ru.wb.perevozka.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.api.app.FlightStatus
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
+import ru.wb.perevozka.ui.auth.AppVersionState
 import ru.wb.perevozka.ui.splash.domain.AppInteractor
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.managers.DeviceManager
@@ -73,7 +73,6 @@ class AppViewModel(
                 LogUtils { logDebugApp(it.toString()) }
             })
         )
-            }))
     }
 
     private fun observeCountBoxes() {

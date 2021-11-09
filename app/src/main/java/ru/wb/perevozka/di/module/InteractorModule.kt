@@ -82,6 +82,7 @@ import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractor
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractorImpl
+import ru.wb.perevozka.utils.managers.DeviceManager
 import ru.wb.perevozka.utils.managers.ScreenManager
 import ru.wb.perevozka.utils.managers.TimeManager
 import ru.wb.perevozka.utils.time.TimeFormatter
@@ -144,6 +145,7 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         appSharedRepository: AppSharedRepository,
         screenManager: ScreenManager,
+        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
@@ -151,7 +153,8 @@ val interactorModule = module {
             authRemoteRepository,
             appLocalRepository,
             appSharedRepository,
-            screenManager
+            screenManager,
+            deviceManager
         )
     }
 
@@ -564,7 +567,7 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }

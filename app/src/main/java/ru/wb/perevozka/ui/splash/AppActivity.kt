@@ -6,17 +6,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.View.*
-import android.view.WindowManager
 import android.view.*
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View.*
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -37,20 +29,16 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.wb.logistics.BuildConfig
-import com.wb.logistics.R
-import com.wb.logistics.databinding.SplashActivityBinding
-import com.wb.logistics.ui.dialogs.InformationDialogFragment
-import com.wb.logistics.ui.flightsloader.FlightActionStatus
-import com.wb.logistics.utils.LogUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.*
+import ru.wb.perevozka.BuildConfig
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.SplashActivityBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.auth.AppVersionState
 import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.SoftKeyboard
+import java.io.*
 import java.util.*
 
 
