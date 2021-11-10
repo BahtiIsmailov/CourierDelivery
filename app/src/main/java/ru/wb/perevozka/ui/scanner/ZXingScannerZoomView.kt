@@ -106,10 +106,14 @@ open class ZXingScannerZoomView : ZXingScannerView {
         override fun drawViewFinderMask(canvas: Canvas) {
             canvas.save()
             val rectPath = Path()
-            rectPath.addRoundRect(RectF(framingRect.left.toFloat(),
-                framingRect.top.toFloat(),
-                framingRect.right.toFloat(),
-                framingRect.bottom.toFloat()), CORNER_RADIUS, CORNER_RADIUS, Path.Direction.CCW)
+            rectPath.addRoundRect(
+                RectF(
+                    framingRect.left.toFloat(),
+                    framingRect.top.toFloat(),
+                    framingRect.right.toFloat(),
+                    framingRect.bottom.toFloat()
+                ), CORNER_RADIUS, CORNER_RADIUS, Path.Direction.CCW
+            )
             canvas.clipOutPath(rectPath)
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), mFinderMaskPaint)
             canvas.restore()

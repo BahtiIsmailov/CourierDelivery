@@ -209,7 +209,7 @@
             android:background="@color/disable_scan_status"
             android:gravity="center"
             android:letterSpacing="0.2"
-            android:text="Отсканируйте баркод ПВЗ"
+            android:text="Отсканируйте QR ПВЗ"
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:textStyle="bold"

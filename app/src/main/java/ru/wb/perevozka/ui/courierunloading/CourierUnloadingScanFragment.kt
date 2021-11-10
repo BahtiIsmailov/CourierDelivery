@@ -1,7 +1,6 @@
 package ru.wb.perevozka.ui.courierunloading
 
 import android.app.AlertDialog
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.KeyEvent
@@ -12,6 +11,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
@@ -25,6 +25,7 @@ import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
+import ru.wb.perevozka.ui.splash.OnSoundPlayer
 import ru.wb.perevozka.views.ProgressButtonMode
 
 class CourierUnloadingScanFragment : Fragment() {
@@ -45,6 +46,8 @@ class CourierUnloadingScanFragment : Fragment() {
     private var _binding: CourierUnloadingFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private var isDialogActive: Boolean = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -58,6 +61,16 @@ class CourierUnloadingScanFragment : Fragment() {
         initView()
         initListener()
         initObserver()
+        initReturnResult()
+    }
+
+    private fun initReturnResult() {
+        setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onStartScanner()
+            }
+        }
     }
 
     private fun initView() {
@@ -66,8 +79,6 @@ class CourierUnloadingScanFragment : Fragment() {
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.visibility = View.INVISIBLE
     }
-
-    private var isDialogActive: Boolean = false
 
     override fun onStart() {
         super.onStart()
@@ -86,7 +97,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showSimpleDialog(it)
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -128,7 +139,8 @@ class CourierUnloadingScanFragment : Fragment() {
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
-                is CourierUnloadingScanBeepState.UnknownBox -> beepError()
+                is CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
+                CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
             }
         }
 
@@ -246,33 +258,14 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showSimpleDialog(it: CourierUnloadingScanViewModel.NavigateToMessageInfo) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
-        val title: TextView = dialogView.findViewById(R.id.title)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        builder.setView(dialogView)
-
-        val alertDialog: AlertDialog = builder.create()
-
-        title.text = it.title
-        message.text = it.message
-        negative.setOnClickListener {
-            isDialogActive = false
-            alertDialog.dismiss()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = it.button
-        alertDialog.setOnDismissListener {
-            isDialogActive = false
-            viewModel.onStartScanner()
-        }
-        alertDialog.show()
+    private fun showDialogInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     // TODO: 27.08.2021 переработать
@@ -332,12 +325,16 @@ class CourierUnloadingScanFragment : Fragment() {
         //play(R.raw.sound_scan_success)
     }
 
-    private fun beepError() {
-        play(R.raw.qr_box_scan_failed)
+    private fun beepUnknownQR() {
+        play(R.raw.unloading_scan_unknown_qr)
+    }
+
+    private fun beepUnknownBox() {
+        play(R.raw.unloading_unknown_box)
     }
 
     private fun play(resId: Int) {
-        MediaPlayer.create(context, resId).start()
+        (activity as OnSoundPlayer).play(resId)
     }
 
 }

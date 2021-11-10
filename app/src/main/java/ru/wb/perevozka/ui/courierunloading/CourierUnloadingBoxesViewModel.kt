@@ -10,6 +10,7 @@ import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
+import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
@@ -113,6 +114,7 @@ class CourierUnloadingBoxesViewModel(
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
         _navigateToMessageInfo.value = NavigateToMessageInfo(
+            DialogStyle.ERROR.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton()
@@ -160,6 +162,6 @@ class CourierUnloadingBoxesViewModel(
 
     object NavigateToBack
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+    data class NavigateToMessageInfo(val type: Int, val title: String, val message: String, val button: String)
 
 }

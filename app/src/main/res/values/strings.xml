@@ -245,6 +245,10 @@
     <string name="courier_loading_boxes_index">%1$d.</string>
     <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
 
+    <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
+    <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
+    <string name="courier_uloading_scan_dialog_positive_button_error">Ok</string>
+
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
 

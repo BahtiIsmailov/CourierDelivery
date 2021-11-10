@@ -1,5 +1,8 @@
 package ru.wb.perevozka.ui.splash
 
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
@@ -35,7 +38,7 @@ import java.util.*
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
-    OnUserInfo, OnCourierScanner,
+    OnUserInfo, OnCourierScanner, OnSoundPlayer,
     NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -47,6 +50,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: OnDestinationChangedListener
 
+    private val player = MediaPlayer()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
@@ -57,6 +62,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         initObserver()
         initView()
         initListener()
+
+
     }
 
     private fun initToolbar() {
@@ -370,6 +377,16 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         isLoadingCourierBox = true
     }
 
+    override fun play(resId: Int) {
+        val source =
+            Uri.parse("android.resource://$packageName/raw/$resId")
+        player.reset()
+        player.setDataSource(this, source)
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        player.prepare()
+        player.start()
+    }
+
 }
 
 interface NavToolbarListener {
@@ -402,4 +419,8 @@ interface OnFlightsStatus {
 
 interface OnCourierScanner {
     fun holdBackButtonOnScanBox()
+}
+
+interface OnSoundPlayer {
+    fun play(resId: Int)
 }

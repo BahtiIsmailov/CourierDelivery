@@ -478,7 +478,7 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun beepUnknown() {
-        play(R.raw.qr_box_scan_failed)
+        play(R.raw.unloading_scan_unknown_qr)
     }
 
     private fun play(resId: Int) {
