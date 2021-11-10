@@ -15,6 +15,7 @@ import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import java.util.concurrent.TimeUnit
 
 class DcLoadingScanViewModel(
@@ -32,8 +33,8 @@ class DcLoadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToInformation>()
+    val navigateToMessageInfo: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     private val _beepEvent =
@@ -204,7 +205,7 @@ class DcLoadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getSwitchDialogButton()
         }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
@@ -222,7 +223,7 @@ class DcLoadingScanViewModel(
             else -> resourceProvider.getScanDialogMessage()
         }
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
@@ -239,6 +240,6 @@ class DcLoadingScanViewModel(
             .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

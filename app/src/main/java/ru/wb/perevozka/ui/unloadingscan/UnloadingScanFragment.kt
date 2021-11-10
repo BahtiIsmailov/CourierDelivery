@@ -34,6 +34,7 @@ import ru.wb.perevozka.views.ProgressImageButtonMode
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class UnloadingScanFragment : Fragment() {
 
@@ -236,7 +237,7 @@ class UnloadingScanFragment : Fragment() {
 
     }
 
-    private fun showSimpleDialog(it: UnloadingScanViewModel.NavigateToMessageInfo) {
+    private fun showSimpleDialog(it: NavigateToInformation) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.main

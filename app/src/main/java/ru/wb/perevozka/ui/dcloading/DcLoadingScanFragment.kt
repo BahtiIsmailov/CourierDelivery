@@ -23,6 +23,7 @@ import ru.wb.perevozka.ui.dcloading.views.ReceptionParkingMode
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressImageButtonMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 
 class DcLoadingFragment : Fragment() {
@@ -183,7 +184,7 @@ class DcLoadingFragment : Fragment() {
         }
     }
 
-    private fun showSimpleDialog(it: DcLoadingScanViewModel.NavigateToMessageInfo) {
+    private fun showSimpleDialog(it: NavigateToInformation) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val viewGroup: ViewGroup = binding.main

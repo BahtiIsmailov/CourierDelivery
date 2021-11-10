@@ -31,15 +31,6 @@ class CourierUnloadingResourceProvider(private val context: Context) {
 
     fun getIndex(index: Int) = context.getString(R.string.courier_loading_boxes_index, index)
 
-//    fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
-//        return context.getString(
-//            R.string.unnamed_barcode_format_number,
-//            index,
-//            barcode.take(4),
-//            barcode.takeLast(4)
-//        )
-//    }
-
     fun getReadyStatus(): String =
         context.getString(R.string.courier_unloading_scanner_ready_status)
 

@@ -34,9 +34,9 @@ class CourierUnloadingBoxesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessage: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _navigateToInformation = MutableLiveData<NavigateToMessageInfo>()
+    val navigateToInformation: LiveData<NavigateToMessageInfo>
+        get() = _navigateToInformation
 
     private val _enableRemove = MutableLiveData<Boolean>()
     val enableRemove: LiveData<Boolean>
@@ -113,7 +113,7 @@ class CourierUnloadingBoxesViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToInformation.value = NavigateToMessageInfo(
             DialogStyle.ERROR.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,

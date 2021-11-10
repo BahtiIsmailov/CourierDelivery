@@ -14,6 +14,7 @@ import ru.wb.perevozka.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class FlightDeliveriesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -42,8 +43,8 @@ class FlightDeliveriesViewModel(
 
     private var copyScannedBoxes = mutableListOf<DeliveryBoxGroupByOfficeEntity>()
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToInformation>()
+    val navigateToMessageInfo: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     init {
@@ -166,7 +167,7 @@ class FlightDeliveriesViewModel(
             else -> resourceProvider.getCompleteDeliveryDialogMessage()
         }
         _stateUIProgress.value = FlightDeliveriesUIProgressState.CompleteDeliveryNormal
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getCompleteDeliveryDialogTitle(),
             message,
             resourceProvider.getCompleteDeliveryDialogButton())
@@ -176,7 +177,5 @@ class FlightDeliveriesViewModel(
         addSubscription(interactor.observeNetworkConnected()
             .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
-
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

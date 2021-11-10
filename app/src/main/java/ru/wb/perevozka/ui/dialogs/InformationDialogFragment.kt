@@ -79,3 +79,5 @@ class InformationDialogFragment : DialogFragment() {
     }
 
 }
+
+data class NavigateToInformation(val title: String, val message: String, val button: String)

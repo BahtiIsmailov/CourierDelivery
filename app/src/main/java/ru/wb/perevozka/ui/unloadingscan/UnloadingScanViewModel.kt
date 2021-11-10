@@ -16,6 +16,7 @@ import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingData
 import ru.wb.perevozka.ui.unloadingscan.domain.UnloadingInteractor
 import ru.wb.perevozka.utils.LogUtils
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import java.util.concurrent.TimeUnit
 
 class UnloadingScanViewModel(
@@ -67,8 +68,8 @@ class UnloadingScanViewModel(
     val navigationEvent: LiveData<UnloadingScanNavAction>
         get() = _navigationEvent
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToInformation>()
+    val navigateToMessageInfo: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     val bottomProgressEvent = MutableLiveData<Boolean>()
@@ -232,7 +233,7 @@ class UnloadingScanViewModel(
             else -> resourceProvider.getScanDialogMessage()
         }
         onStopScanner()
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 
@@ -277,6 +278,6 @@ class UnloadingScanViewModel(
             .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

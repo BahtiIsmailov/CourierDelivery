@@ -9,6 +9,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class ForcedTerminationViewModel(
     private val parameters: ForcedTerminationParameters,
@@ -30,8 +31,8 @@ class ForcedTerminationViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessage: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToInformation>()
+    val navigateToMessage: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     init {
@@ -75,7 +76,7 @@ class ForcedTerminationViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getErrorCompleteUnloading()
         }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton())
@@ -85,7 +86,5 @@ class ForcedTerminationViewModel(
     private fun observeNetworkState() {
         addSubscription(interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {}))
     }
-
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

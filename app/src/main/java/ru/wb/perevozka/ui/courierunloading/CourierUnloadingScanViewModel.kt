@@ -13,6 +13,7 @@ import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProcessData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProgressData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingScanBoxData
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import ru.wb.perevozka.ui.dialogs.DialogStyle
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
@@ -38,9 +39,9 @@ class CourierUnloadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _navigateToInformation = SingleLiveEvent<NavigateToInformation>()
+    val navigateToInformation: LiveData<NavigateToInformation>
+        get() = _navigateToInformation
 
     private val _beepEvent =
         SingleLiveEvent<CourierUnloadingScanBeepState>()

@@ -14,6 +14,7 @@ import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.couriermap.Empty
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToMessageInfo
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapEnclosingCircle
@@ -169,29 +170,29 @@ class CourierOrderDetailsViewModel(
 
     }
 
-    private fun courierWarehouseError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToMessageInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
-                throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        progressComplete()
-    }
+//    private fun courierWarehouseError(throwable: Throwable) {
+//        val message = when (throwable) {
+//            is NoInternetException -> NavigateToMessageInfo(
+//                DialogStyle.WARNING.ordinal,
+//                throwable.message,
+//                resourceProvider.getGenericInternetMessageError(),
+//                resourceProvider.getGenericInternetButtonError()
+//            )
+//            is BadRequestException -> NavigateToMessageInfo(
+//                DialogStyle.ERROR.ordinal,
+//                throwable.error.message,
+//                resourceProvider.getGenericServiceMessageError(),
+//                resourceProvider.getGenericServiceButtonError()
+//            )
+//            else -> NavigateToMessageInfo(
+//                DialogStyle.ERROR.ordinal,
+//                resourceProvider.getGenericServiceTitleError(),
+//                resourceProvider.getGenericServiceMessageError(),
+//                resourceProvider.getGenericServiceButtonError()
+//            )
+//        }
+//        progressComplete()
+//    }
 
     fun onCancelLoadClick() {
         clearSubscription()
@@ -232,13 +233,6 @@ class CourierOrderDetailsViewModel(
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
-
-    data class NavigateToMessageInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
 
     data class Label(val label: String)
 

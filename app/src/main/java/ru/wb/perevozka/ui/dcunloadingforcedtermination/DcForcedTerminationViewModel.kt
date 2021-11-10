@@ -9,6 +9,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractor
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class DcForcedTerminationViewModel(
     compositeDisposable: CompositeDisposable,
@@ -24,8 +25,8 @@ class DcForcedTerminationViewModel(
     val navigateToBack: LiveData<DcForcedTerminationNavAction>
         get() = _navigateAction
 
-    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToInformation>()
+    val navigateToMessageInfo: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
@@ -69,7 +70,7 @@ class DcForcedTerminationViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getForcedDialogMessage()
         }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToInformation(
             resourceProvider.getForcedDialogTitle(),
             message,
             resourceProvider.getForcedDialogButton())
@@ -80,6 +81,6 @@ class DcForcedTerminationViewModel(
             .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

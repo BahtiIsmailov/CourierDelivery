@@ -16,10 +16,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierLoadingBoxesFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
-import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
-import ru.wb.perevozka.views.ProgressImageButtonMode
 
 class CourierLoadingBoxesFragment : Fragment() {
 
@@ -54,9 +54,9 @@ class CourierLoadingBoxesFragment : Fragment() {
 
     private fun initObservable() {
 
-        viewModel.navigateToMessage.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            DialogInfoFragment.newInstance(it.type, it.title, it.message, it.button)
+                .show(parentFragmentManager, DIALOG_INFO_TAG)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
