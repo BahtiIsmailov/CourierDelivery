@@ -42,7 +42,7 @@
         android:visibility="gone"
         app:constraint_referenced_ids="continue_acceptance" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/return_balance"
         android:layout_width="0dp"
         android:layout_height="72dp"
@@ -58,7 +58,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline_center_vertical"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/continue_acceptance"
         android:layout_width="0dp"
         android:layout_height="72dp"
@@ -73,7 +73,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/scan_boxes"
         android:layout_width="match_parent"
         android:layout_height="72dp"

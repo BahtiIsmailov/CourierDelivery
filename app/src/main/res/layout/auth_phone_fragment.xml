@@ -60,7 +60,7 @@
         app:layout_constraintStart_toStartOf="@+id/phone_number_title"
         app:layout_constraintTop_toBottomOf="@+id/phone_number_title" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardNumericView
+    <ru.wb.go.ui.auth.keyboard.KeyboardNumericView
         android:id="@+id/view_keyboard"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -76,7 +76,7 @@
         custom:layout_constraintLeft_toLeftOf="parent"
         custom:layout_constraintRight_toRightOf="parent" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/next"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"

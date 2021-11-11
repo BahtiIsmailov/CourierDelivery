@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ru.wb.perevozka.ui.auth.keyboard.PasswordDotsView
+    <ru.wb.go.ui.auth.keyboard.PasswordDotsView
         android:id="@+id/view_pin_code"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -51,7 +51,7 @@
         custom:layout_constraintTop_toTopOf="@+id/guideline22"
         tools:text="@string/input_sms_repeat_no_timer" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardNumericView
+    <ru.wb.go.ui.auth.keyboard.KeyboardNumericView
         android:id="@+id/view_keyboard"
         android:layout_width="0dp"
         android:layout_height="0dp"

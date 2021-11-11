@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/scanner"
-        class="ru.wb.perevozka.ui.scanner.CourierScannerFragment"
+        class="ru.wb.go.ui.scanner.CourierScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_center_horizontal"
@@ -148,7 +148,7 @@
 
         </LinearLayout>
 
-        <ru.wb.perevozka.views.ProgressButtonView
+        <ru.wb.go.views.ProgressButtonView
             android:id="@+id/complete"
             android:layout_width="match_parent"
             android:layout_height="@dimen/auth_button_height"
@@ -178,7 +178,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status">
 
-        <ru.wb.perevozka.ui.courierordertimer.view.TimerProgressView
+        <ru.wb.go.ui.courierordertimer.view.TimerProgressView
             android:id="@+id/timer"
             android:layout_width="0dp"
             android:layout_height="0dp"
