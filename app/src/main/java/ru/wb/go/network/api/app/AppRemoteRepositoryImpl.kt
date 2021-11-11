@@ -663,7 +663,8 @@ class AppRemoteRepositoryImpl(
                 loadingAt = courierTaskStartEntity.loadingAt,
                 deliveredAt = null
             )
-        return remote.taskStart(apiVersion(), taskID, listOf(courierTaskStartRequest))
+        val boxes = listOf(courierTaskStartRequest)
+        return remote.taskStart(apiVersion(), taskID, boxes)
     }
 
     override fun taskStatusesReady(

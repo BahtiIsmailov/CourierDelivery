@@ -11,9 +11,9 @@ android {
     signingConfigs {
         release {
             keyAlias 'wbgo'
-            keyPassword 'Gd53U1Jks_store'
+            keyPassword 'W9jUStPGd53U1Jks_store'
             storeFile file('../private/release.jks')
-            storePassword 'Gd53U1Jks_store'
+            storePassword 'W9jUStPGd53U1Jks_store'
         }
     }
 
