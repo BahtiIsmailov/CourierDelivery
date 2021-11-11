@@ -3,20 +3,19 @@ package ru.wb.perevozka.ui.courierintransit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.AppConsts
 import ru.wb.perevozka.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.token.UserManager
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.courierintransit.delegates.CourierIntransitUnloadingExpectsDelegate
 import ru.wb.perevozka.ui.courierintransit.delegates.items.*
 import ru.wb.perevozka.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.perevozka.ui.courierintransit.domain.CourierIntransitScanOfficeData
 import ru.wb.perevozka.ui.couriermap.*
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
@@ -35,6 +34,14 @@ class CourierIntransitViewModel(
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
+
+    private val _navigateToInformation = SingleLiveEvent<ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo>()
+    val navigateToInformation: LiveData<ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo>
+        get() = _navigateToInformation
+
+    private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogConfirmInfo
 
     private val _orderDetails = MutableLiveData<CourierIntransitItemState>()
     val orderDetails: LiveData<CourierIntransitItemState>
@@ -280,26 +287,26 @@ class CourierIntransitViewModel(
         LogUtils { logDebugApp(throwable.toString()) }
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         val message = when (throwable) {
-            is NoInternetException -> CourierIntransitNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is NoInternetException -> ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 "Интернет-соединение отсутствует",
                 throwable.message,
                 "Понятно"
             )
-            is BadRequestException -> CourierIntransitNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is BadRequestException -> ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> CourierIntransitNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            else -> ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-        _navigationState.value = message
+        _navigateToInformation.value = message
     }
 
     fun closeScannerClick() {

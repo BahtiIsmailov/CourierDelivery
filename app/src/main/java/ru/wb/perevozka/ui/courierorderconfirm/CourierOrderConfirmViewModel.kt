@@ -8,6 +8,7 @@ import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import java.text.DecimalFormat
 
 class CourierOrderConfirmViewModel(
@@ -24,9 +25,9 @@ class CourierOrderConfirmViewModel(
     val navigationState: LiveData<CourierOrderConfirmNavigationState>
         get() = _navigationState
 
-    private val _dialogErrorInfoState = SingleLiveEvent<NavigateToDialogInfo>()
-    val dialogErrorState: SingleLiveEvent<NavigateToDialogInfo>
-        get() = _dialogErrorInfoState
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
 
     private val _progressState = MutableLiveData<CourierOrderConfirmProgressState>()
     val progressState: LiveData<CourierOrderConfirmProgressState>
@@ -64,10 +65,6 @@ class CourierOrderConfirmViewModel(
     }
 
     fun refuseOrderClick() {
-//        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToRefuseOrderDialog(
-//            "Отказаться от заказа",
-//            "Вы уверены, что хотите отказаться от заказа?"
-//        )
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
@@ -108,7 +105,7 @@ class CourierOrderConfirmViewModel(
 
     private fun courierWarehouseError(throwable: Throwable) {
         progressComplete()
-        _dialogErrorInfoState.value = messageError(throwable, resourceProvider)
+        _navigateToDialogInfo.value = messageError(throwable, resourceProvider)
     }
 
     fun onCancelLoadClick() {

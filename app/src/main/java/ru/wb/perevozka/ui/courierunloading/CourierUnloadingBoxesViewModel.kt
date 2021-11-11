@@ -10,7 +10,8 @@ import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.courierloading.domain.CourierLoadingInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
@@ -34,8 +35,8 @@ class CourierUnloadingBoxesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToInformation = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToInformation: LiveData<NavigateToMessageInfo>
+    private val _navigateToInformation = MutableLiveData<NavigateToDialogInfo>()
+    val navigateToInformation: LiveData<NavigateToDialogInfo>
         get() = _navigateToInformation
 
     private val _enableRemove = MutableLiveData<Boolean>()
@@ -113,8 +114,8 @@ class CourierUnloadingBoxesViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
-        _navigateToInformation.value = NavigateToMessageInfo(
-            DialogStyle.ERROR.ordinal,
+        _navigateToInformation.value = NavigateToDialogInfo(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton()
@@ -161,7 +162,5 @@ class CourierUnloadingBoxesViewModel(
     }
 
     object NavigateToBack
-
-    data class NavigateToMessageInfo(val type: Int, val title: String, val message: String, val button: String)
 
 }

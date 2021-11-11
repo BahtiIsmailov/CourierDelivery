@@ -18,7 +18,7 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthPhoneFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
@@ -136,7 +136,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
                 is NumberPhoneUIState.NumberNotFound -> {
                     showDialog(
-                        DialogStyle.WARNING.ordinal,
+                        DialogInfoStyle.WARNING.ordinal,
                         state.title,
                         state.message,
                         state.button
@@ -147,7 +147,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
                 is NumberPhoneUIState.Error -> {
                     showDialog(
-                        DialogStyle.WARNING.ordinal, state.title,
+                        DialogInfoStyle.WARNING.ordinal, state.title,
                         state.message,
                         state.button
                     )
@@ -171,9 +171,13 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

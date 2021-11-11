@@ -2,6 +2,9 @@ package ru.wb.perevozka.ui.flightdeliveries
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.deliveryboxes.DeliveryBoxGroupByOfficeEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -10,11 +13,9 @@ import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.Label
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.flightdeliveries.domain.FlightDeliveriesInteractor
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.NavigateToInformation
+import ru.wb.perevozka.ui.flightdeliveries.domain.FlightDeliveriesInteractor
 
 class FlightDeliveriesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -168,6 +169,7 @@ class FlightDeliveriesViewModel(
         }
         _stateUIProgress.value = FlightDeliveriesUIProgressState.CompleteDeliveryNormal
         _navigateToMessageInfo.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getCompleteDeliveryDialogTitle(),
             message,
             resourceProvider.getCompleteDeliveryDialogButton())

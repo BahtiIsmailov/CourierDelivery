@@ -103,6 +103,10 @@ class CourierOrderFragment : Fragment() {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
+        }
+
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
             when (it) {
                 is NetworkState.Failed -> {
@@ -117,10 +121,6 @@ class CourierOrderFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierOrdersNavigationState.NavigateToBack -> { }
-                is CourierOrdersNavigationState.NavigateToDialogInfo -> with(it) {
-                    showDialogInfo(type, title, message, button)
-                }
                 is CourierOrdersNavigationState.NavigateToOrderDetails -> {
                     findNavController().navigate(
                         CourierOrderFragmentDirections.actionCourierOrderFragmentToCourierOrderDetailsFragment(
@@ -157,6 +157,20 @@ class CourierOrderFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun showDialogInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = style,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
     override fun onDestroyView() {
@@ -200,16 +214,6 @@ class CourierOrderFragment : Fragment() {
             )
         }
         binding.orders.adapter = adapter
-    }
-
-    private fun showDialogInfo(
-        style: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
-    ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

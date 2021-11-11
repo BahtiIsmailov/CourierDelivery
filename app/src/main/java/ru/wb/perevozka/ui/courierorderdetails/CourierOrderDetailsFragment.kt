@@ -24,8 +24,6 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.perevozka.db.entity.courier.CourierOrderEntity
-import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
-import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
@@ -130,8 +128,6 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 is CourierOrderDetailsNavigationState.NavigateToDialogConfirm ->
                     showConfirmDialog(it.title, it.message)
-                is CourierOrderDetailsNavigationState.NavigateToDialogInfo ->
-                    showEmptyOrderDialog(it.title, it.message, it.button)
                 is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment()
@@ -243,11 +239,6 @@ class CourierOrderDetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

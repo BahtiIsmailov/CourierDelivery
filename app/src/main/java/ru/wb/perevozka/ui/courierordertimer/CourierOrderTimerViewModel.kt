@@ -3,7 +3,6 @@ package ru.wb.perevozka.ui.courierordertimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
@@ -12,8 +11,9 @@ import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
-import ru.wb.perevozka.ui.dialogs.NavigateToMessageInfo
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogConfirmInfo
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
@@ -31,6 +31,15 @@ class CourierOrderTimerViewModel(
     private val _orderInfo = MutableLiveData<CourierOrderTimerInfoUIState>()
     val orderInfo: LiveData<CourierOrderTimerInfoUIState>
         get() = _orderInfo
+
+    private val _navigateToDialogTimeIsOut = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogTimeIsOut: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogTimeIsOut
+
+
+    private val _navigateToDialogRefuseOrder = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogRefuseOrder
 
     private val _navigationState = SingleLiveEvent<CourierOrderTimerNavigationState>()
     val navigationState: LiveData<CourierOrderTimerNavigationState>
@@ -53,7 +62,7 @@ class CourierOrderTimerViewModel(
                         initOrderInfo(it)
                         initTimer(it.reservedDuration, it.reservedAt)
                     }, {
-                        LogUtils {logDebugApp("initOrder() error " + it)}
+                        LogUtils { logDebugApp("initOrder() error " + it) }
                     }
                 )
         )
@@ -75,8 +84,8 @@ class CourierOrderTimerViewModel(
     private fun onHandleSignUpError() {}
 
     private fun timeIsOut() {
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToDialogInfo(
-            DialogStyle.WARNING.ordinal,
+        _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
+            DialogInfoStyle.WARNING.ordinal,
             "Время вышло",
             "К сожалению, вы не успели приехать вовремя. Заказ был отменён",
             "Вернуться к списку заказов"
@@ -103,9 +112,12 @@ class CourierOrderTimerViewModel(
     }
 
     fun refuseOrderClick() {
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToRefuseOrderDialog(
+        _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
+            DialogInfoStyle.WARNING.ordinal,
             "Отказаться от заказа",
-            "Вы уверены, что хотите отказаться от заказа?"
+            "Вы уверены, что хотите отказаться от заказа?",
+            resourceProvider.getDialogTimerPositiveButton(),
+            resourceProvider.getDialogTimerNegativeButton()
         )
     }
 
@@ -133,20 +145,20 @@ class CourierOrderTimerViewModel(
 
     private fun courierWarehouseError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> NavigateToMessageInfo(
-                DialogStyle.WARNING.ordinal,
+            is NoInternetException -> ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
+            is BadRequestException -> ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
+            else -> ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
@@ -158,13 +170,6 @@ class CourierOrderTimerViewModel(
     fun onCancelLoadClick() {
         clearSubscription()
     }
-
-//    data class NavigateToMessageInfo(
-//        val type: Int,
-//        val title: String,
-//        val message: String,
-//        val button: String
-//    )
 
     data class Label(val label: String)
 

@@ -2,13 +2,14 @@ package ru.wb.perevozka.ui.dcunloadingforcedtermination
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractor
-import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class DcForcedTerminationViewModel(
@@ -71,6 +72,7 @@ class DcForcedTerminationViewModel(
             else -> resourceProvider.getForcedDialogMessage()
         }
         _navigateToMessageInfo.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getForcedDialogTitle(),
             message,
             resourceProvider.getForcedDialogButton())
@@ -80,7 +82,5 @@ class DcForcedTerminationViewModel(
         addSubscription(interactor.observeNetworkConnected()
             .subscribe({ _toolbarNetworkState.value = it }, {}))
     }
-
-//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

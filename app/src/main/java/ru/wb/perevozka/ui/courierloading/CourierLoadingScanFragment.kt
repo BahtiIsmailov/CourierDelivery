@@ -1,14 +1,10 @@
 package ru.wb.perevozka.ui.courierloading
 
-import android.app.AlertDialog
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -19,10 +15,14 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierLoadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryParameters
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_POSITIVE_KEY
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
-import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
@@ -53,11 +53,28 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun initReturnResult() {
-        setFragmentResultListener(DIALOG_INFO_RESULT) { _, bundle ->
+        setFragmentResultListener(DIALOG_EMPTY_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                viewModel.onDialogInfoConfirmClick()
+//                viewModel.onDialogInfoConfirmClick()
+                findNavController().popBackStack()
             }
         }
+
+        setFragmentResultListener(DIALOG_LOADING_CONFIRM_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.onConfirmLoadingClick()
+            }
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
+                viewModel.onCancelLoadingClick()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_TIME_IS_OUT_INFO_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                viewModel.returnToListOrderClick()
+            }
+        }
+
     }
 
     private fun initView() {
@@ -81,9 +98,13 @@ class CourierLoadingScanFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
+        viewModel.navigateToEmptyDialog.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showEmptyOrderDialog(it.title, it.message, it.button)
+            showEmptyOrderDialog(it.type, it.title, it.message, it.button)
+        }
+
+        viewModel.navigateToErrorMessage.observe(viewLifecycleOwner) {
+            showEmptyOrderDialog(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -111,7 +132,7 @@ class CourierLoadingScanFragment : Fragment() {
                     binding.timer.setProgress(it.timeAnalog)
                 }
                 is CourierLoadingScanTimerState.TimeIsOut -> {
-                    showTimeIsOutDialog(it.title, it.message, it.button)
+                    showTimeIsOutDialog(it.type, it.title, it.message, it.button)
                 }
                 CourierLoadingScanTimerState.Stopped -> {
                     binding.timerLayout.visibility = View.GONE
@@ -129,12 +150,13 @@ class CourierLoadingScanFragment : Fragment() {
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierLoadingBoxesFragment())
                 }
                 CourierLoadingScanNavAction.NavigateToConfirmDialog -> {
-                    showConfirmDialog(
-                        "Завершить погрузку?",
-                        "Вы уверены, что хотите начать развозить коробки"
+                    showDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        getString(R.string.courier_loading_dialog_done_title),
+                        getString(R.string.courier_loading_dialog_done_message),
+                        getString(R.string.courier_order_scanner_dialog_positive_button),
+                        getString(R.string.courier_order_scanner_dialog_negative_button)
                     )
-                }
-                CourierLoadingScanNavAction.NavigateToBack -> {
                 }
                 CourierLoadingScanNavAction.NavigateToWarehouse ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
@@ -144,9 +166,6 @@ class CourierLoadingScanFragment : Fragment() {
                             CourierStartDeliveryParameters(state.amount, state.count)
                         )
                     )
-                is CourierLoadingScanNavAction.NavigateToDialogInfo -> {
-                    showDialogInfo(state.type, state.title, state.message, state.button)
-                }
             }
         }
         viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
@@ -172,20 +191,6 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
-//        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
-//            when (progress) {
-//                CourierLoadingScanBottomState.Disable -> binding.complete.setState(
-//                    ProgressButtonMode.DISABLE
-//                )
-//                CourierLoadingScanBottomState.Enable -> binding.complete.setState(
-//                    ProgressButtonMode.ENABLE
-//                )
-//                CourierLoadingScanBottomState.Progress -> binding.complete.setState(
-//                    ProgressButtonMode.PROGRESS
-//                )
-//            }
-//        }
-
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierLoadingScanBoxState.Empty -> {
@@ -199,18 +204,6 @@ class CourierLoadingScanFragment : Fragment() {
                     )
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.scannerInfoLayout.visibility = View.GONE
-
-//                    binding.qrCode.text = "0000000000"
-//                    binding.qrCode.setTextColor(
-//                        ContextCompat.getColor(
-//                            requireContext(),
-//                            R.color.light_text
-//                        )
-//                    )
-//                    binding.address.text = "-"
-//                    binding.receive.text = "0 шт."
-//                    binding.listLayout.setOnClickListener { null }
-//                    binding.complete.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierLoadingScanBoxState.BoxInit -> {
                     holdBackButtonOnScanBox()
@@ -317,16 +310,6 @@ class CourierLoadingScanFragment : Fragment() {
         (activity as OnCourierScanner).holdBackButtonOnScanBox()
     }
 
-    private fun showDialogInfo(
-        style: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
-    ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
-
     private fun showProgressDialog() {
         val progressDialog = ProgressDialogFragment.newInstance()
         progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
@@ -338,129 +321,79 @@ class CourierLoadingScanFragment : Fragment() {
         }
     }
 
-//    private fun showSimpleDialog(it: CourierLoadingScanViewModel.NavigateToMessageInfo) {
-//        val builder: AlertDialog.Builder =
-//            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-//        val viewGroup: ViewGroup = binding.main
-//        val dialogView: View =
-//            LayoutInflater.from(requireContext())
-//                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
-//        val title: TextView = dialogView.findViewById(R.id.title)
-//        val message: TextView = dialogView.findViewById(R.id.message)
-//        val negative: Button = dialogView.findViewById(R.id.negative)
-//        builder.setView(dialogView)
-//
-//        val alertDialog: AlertDialog = builder.create()
-//
-//        title.text = it.title
-//        message.text = it.message
-//        negative.setOnClickListener {
-//            isDialogActive = false
-//            alertDialog.dismiss()
-//        }
-//        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-//        negative.text = it.button
-//        alertDialog.setOnDismissListener {
-//            isDialogActive = false
-//            viewModel.onStartScanner()
-//        }
-//        alertDialog.show()
-//    }
-
-    private fun showEmptyOrderDialog(title: String, message: String, button: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            findNavController().popBackStack()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
-        alertDialog.show()
+    private fun showErrorOrderDialog(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
-    private fun showTimeIsOutDialog(title: String, message: String, button: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.returnToListOrderClick()
-        }
-
-        alertDialog.setCanceledOnTouchOutside(false)
-        alertDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                alertDialog.dismiss()
-                viewModel.returnToListOrderClick()
-            }
-            true
-        }
-
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
-        alertDialog.show()
+    private fun showEmptyOrderDialog(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            DIALOG_EMPTY_INFO_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
-    // TODO: 27.08.2021 переработать
-    private fun showConfirmDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        val positive: Button = dialogView.findViewById(R.id.positive)
+    private fun showTimeIsOutDialog(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            DIALOG_TIME_IS_OUT_INFO_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
+        )
+            .show(parentFragmentManager, DIALOG_INFO_TAG)
+    }
 
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        negative.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.onCancelLoadingClick()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_order_scanner_dialog_negative_button)
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.confirmLoadingClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = getString(R.string.courier_order_scanner_dialog_positive_button)
-        alertDialog.show()
+    private fun showDialogConfirmInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            DIALOG_LOADING_CONFIRM_TAG,
+            style,
+            title,
+            message,
+            positiveButtonName,
+            negativeButtonName
+        ).show(parentFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initListener() {
         binding.complete.setOnClickListener { viewModel.onCompleteLoaderClicked() }
         // TODO: 28.09.2021 включить для отладки
         //binding.listLayout.setOnClickListener { viewModel.onListClicked() }
+    }
+
+    companion object {
+        const val DIALOG_LOADING_CONFIRM_TAG = "DIALOG_LOADING_CONFIRM_TAG"
+        const val DIALOG_EMPTY_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
+        const val DIALOG_TIME_IS_OUT_INFO_TAG = "DIALOG_TIME_IS_OUT_INFO_TAG"
+
     }
 
     override fun onDestroyView() {

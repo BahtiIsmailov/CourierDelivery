@@ -6,8 +6,8 @@ import io.reactivex.disposables.Disposable
 import ru.wb.perevozka.mvvm.BaseMessageResourceProvider
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
-import ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmNavigationState
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 
 abstract class NetworkViewModel(private val compositeDisposable: CompositeDisposable) :
     ViewModel() {
@@ -30,19 +30,19 @@ abstract class NetworkViewModel(private val compositeDisposable: CompositeDispos
     ): NavigateToDialogInfo {
         return when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
+                DialogInfoStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
@@ -50,13 +50,6 @@ abstract class NetworkViewModel(private val compositeDisposable: CompositeDispos
         }
 
     }
-
-    data class NavigateToDialogInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
 
 }
 

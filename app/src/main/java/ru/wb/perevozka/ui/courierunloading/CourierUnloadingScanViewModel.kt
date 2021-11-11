@@ -13,8 +13,9 @@ import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProcessData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingProgressData
 import ru.wb.perevozka.ui.courierunloading.domain.CourierUnloadingScanBoxData
-import ru.wb.perevozka.ui.dialogs.NavigateToInformation
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogConfirmInfo
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import java.util.concurrent.TimeUnit
@@ -39,9 +40,13 @@ class CourierUnloadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToInformation = SingleLiveEvent<NavigateToInformation>()
-    val navigateToInformation: LiveData<NavigateToInformation>
-        get() = _navigateToInformation
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
+
+    private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogConfirmInfo
 
     private val _beepEvent =
         SingleLiveEvent<CourierUnloadingScanBeepState>()
@@ -238,9 +243,12 @@ class CourierUnloadingScanViewModel(
         onStopScanner()
         addSubscription(
             interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
-                _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToConfirmDialog(
+                _navigateToDialogConfirmInfo.value = NavigateToDialogConfirmInfo(
+                    DialogInfoStyle.INFO.ordinal,
                     resourceProvider.getUnloadingDialogTitle(),
-                    resourceProvider.getUnloadingDialogMessage(it.unloadedCount, it.fromCount)
+                    resourceProvider.getUnloadingDialogMessage(it.unloadedCount, it.fromCount),
+                    resourceProvider.getUnloadingDialogPositive(),
+                    resourceProvider.getUnloadingDialogNegative()
                 )
             },
                 { onStartScanner() })
@@ -263,8 +271,8 @@ class CourierUnloadingScanViewModel(
         }
         onStopScanner()
         _beepEvent.value = CourierUnloadingScanBeepState.UnknownQR
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            DialogStyle.ERROR.ordinal,
+        _navigateToDialogInfo.value = NavigateToDialogInfo(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }
@@ -278,12 +286,5 @@ class CourierUnloadingScanViewModel(
     }
 
     data class Label(val label: String)
-
-    data class NavigateToMessageInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
 
 }

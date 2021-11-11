@@ -11,10 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -27,6 +25,8 @@ import ru.wb.perevozka.mvvm.model.base.BaseItem
 import ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.perevozka.ui.courierintransit.delegates.*
 import ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.ui.splash.OnSoundPlayer
@@ -69,8 +69,17 @@ class CourierIntransitFragment : Fragment() {
         initAdapter()
         initObservable()
         initListeners()
+        initReturnDialogResult()
         initProgressDialog()
         shortAnimationDuration = resources.getInteger(android.R.integer.config_longAnimTime)
+    }
+
+    private fun initReturnDialogResult() {
+        setFragmentResultListener(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.confirmTakeOrderClick()
+            }
+        }
     }
 
     private fun initView() {
@@ -84,6 +93,10 @@ class CourierIntransitFragment : Fragment() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -132,12 +145,12 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
+        viewModel.navigateToDialogConfirmInfo.observe(viewLifecycleOwner) {
+            showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
+        }
+
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierIntransitNavigationState.NavigateToDialogConfirm ->
-                    showConfirmDialog(it.title, it.message)
-                is CourierIntransitNavigationState.NavigateToDialogInfo ->
-                    showEmptyOrderDialog(it.title, it.message, it.button)
                 CourierIntransitNavigationState.NavigateToMap -> {
                     crossFade(binding.mapLayout, binding.scannerLayout)
                     binding.scanQrPvz.setState(ProgressButtonMode.ENABLE)
@@ -172,6 +185,21 @@ class CourierIntransitFragment : Fragment() {
         }
 
     }
+
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    }
+
 
     private fun displayItems(items: List<BaseItem>) {
         adapter.clear()
@@ -232,57 +260,20 @@ class CourierIntransitFragment : Fragment() {
         progressDialog.show()
     }
 
-    // TODO: 27.08.2021 переработать
-    private fun showEmptyOrderDialog(title: String, message: String, button: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
-        alertDialog.show()
-    }
-
-    // TODO: 27.08.2021 переработать
-    private fun showConfirmDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        negative.setOnClickListener { alertDialog.dismiss() }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_orders_details_dialog_negative_button)
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.confirmTakeOrderClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = getString(R.string.courier_orders_details_dialog_positive_button)
-        alertDialog.show()
+    private fun showDialogConfirmInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            type = style,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initRecyclerView() {

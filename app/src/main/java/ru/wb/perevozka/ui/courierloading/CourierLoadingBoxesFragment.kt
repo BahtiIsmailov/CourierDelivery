@@ -17,7 +17,6 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierLoadingBoxesFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
-import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 import ru.wb.perevozka.views.ProgressButtonMode
 
@@ -52,11 +51,24 @@ class CourierLoadingBoxesFragment : Fragment() {
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_loading_boxes_label)
     }
 
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    }
+
     private fun initObservable() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            DialogInfoFragment.newInstance(it.type, it.title, it.message, it.button)
-                .show(parentFragmentManager, DIALOG_INFO_TAG)
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {

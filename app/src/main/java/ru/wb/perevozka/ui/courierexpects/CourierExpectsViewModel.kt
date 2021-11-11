@@ -8,7 +8,8 @@ import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierexpects.domain.CourierExpectsInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 
 class CouriersCompleteRegistrationViewModel(
     parameters: CourierExpectsParameters,
@@ -17,8 +18,8 @@ class CouriersCompleteRegistrationViewModel(
     private val interactor: CourierExpectsInteractor,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _navigateToMessageState = SingleLiveEvent<Message>()
-    val navigateToMessageState: LiveData<Message>
+    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToMessageState: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageState
 
     private val _infoState = MutableLiveData<String>()
@@ -36,21 +37,19 @@ class CouriersCompleteRegistrationViewModel(
     fun onUpdateStatusClick() {
         _progressState.value = CourierExpectsProgressState.Progress
         addSubscription(
-            interactor.isRegisteredStatus()
-                .map {
-                    when (it) {
-                        true -> CourierExpectsNavAction.NavigateToCouriers
-                        false -> CourierExpectsNavAction.NavigateToCouriersDialog(
-                            DialogStyle.INFO.ordinal,
-                            resourceProvider.notConfirmDataTitle(),
-                            resourceProvider.notConfirmDataMessage(),
-                            resourceProvider.notConfirmDataPositive()
-                        )
-                    }
-                }.subscribe(
+            interactor.isRegisteredStatus().subscribe(
                     {
                         _progressState.value = CourierExpectsProgressState.Complete
-                        _navAction.value = it
+
+                        when (it) {
+                            true -> _navAction.value = CourierExpectsNavAction.NavigateToCouriers
+                            false -> _navigateToMessageState.value = NavigateToDialogInfo(
+                                DialogInfoStyle.INFO.ordinal,
+                                resourceProvider.notConfirmDataTitle(),
+                                resourceProvider.notConfirmDataMessage(),
+                                resourceProvider.notConfirmDataPositive()
+                            )
+                        }
                     },
                     { isRegisteredStatusError(it) })
         )
@@ -60,22 +59,22 @@ class CouriersCompleteRegistrationViewModel(
     private fun isRegisteredStatusError(throwable: Throwable) {
         _progressState.value = CourierExpectsProgressState.Complete
         when (throwable) {
-            is NoInternetException -> _navigateToMessageState.value = Message(
-                DialogStyle.WARNING.ordinal,
+            is NoInternetException -> _navigateToMessageState.value = NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> {
-                _navigateToMessageState.value = Message(
-                    DialogStyle.WARNING.ordinal,
+                _navigateToMessageState.value = NavigateToDialogInfo(
+                    DialogInfoStyle.WARNING.ordinal,
                     throwable.error.message,
                     resourceProvider.getGenericServiceMessageError(),
                     resourceProvider.getGenericServiceButtonError()
                 )
             }
-            else -> _navigateToMessageState.value = Message(
-                DialogStyle.ERROR.ordinal,
+            else -> _navigateToMessageState.value = NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
@@ -83,5 +82,3 @@ class CouriersCompleteRegistrationViewModel(
         }
     }
 }
-
-data class Message(val style: Int, val title: String, val message: String, val button: String)

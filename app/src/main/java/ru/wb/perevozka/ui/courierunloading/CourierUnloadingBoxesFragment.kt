@@ -52,18 +52,23 @@ class CourierUnloadingBoxesFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        )
             .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
     private fun initObservable() {
 
-        viewModel.navigateToMessage.observe(viewLifecycleOwner) {
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
             showDialogInfo(it.type, it.title, it.message, it.button)
         }
 

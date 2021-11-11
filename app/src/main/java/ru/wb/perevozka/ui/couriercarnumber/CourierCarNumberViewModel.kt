@@ -8,6 +8,7 @@ import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.perevozka.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
@@ -20,6 +21,10 @@ class CourierCarNumberViewModel(
         SingleLiveEvent<CourierCarNumberNavigationState>()
     val navigationState: LiveData<CourierCarNumberNavigationState>
         get() = _navigationState
+
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
 
     private val _stateUI = SingleLiveEvent<CourierCarNumberUIState>()
     val stateUI: LiveData<CourierCarNumberUIState>
@@ -124,7 +129,7 @@ class CourierCarNumberViewModel(
 //                resourceProvider.getGenericServiceButtonError()
 //            )
 //        }
-//        _navigationState.value = message
+//        _navigateToDialogInfo.value = message
 
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer

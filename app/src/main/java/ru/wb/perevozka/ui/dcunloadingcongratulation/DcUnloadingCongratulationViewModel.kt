@@ -2,16 +2,16 @@ package ru.wb.perevozka.ui.dcunloadingcongratulation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.dcunloadedboxes.DcCongratulationEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.dcunloading.DcUnloadingScanViewModel
 import ru.wb.perevozka.ui.dcunloadingcongratulation.domain.DcUnloadingCongratulationInteractor
-import ru.wb.perevozka.utils.managers.ScreenManager
-import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.NavigateToInformation
+import ru.wb.perevozka.utils.managers.ScreenManager
 
 class DcUnloadingCongratulationViewModel(
     compositeDisposable: CompositeDisposable,
@@ -59,6 +59,7 @@ class DcUnloadingCongratulationViewModel(
             else -> resourceProvider.getScanDialogMessage()
         }
         _navigateToMessageInfo.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }

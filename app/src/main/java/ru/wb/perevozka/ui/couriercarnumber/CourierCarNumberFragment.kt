@@ -18,7 +18,7 @@ import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierCarNumberFragmentBinding
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
@@ -87,11 +87,12 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                         CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderConfirmFragment()
                     )
                 }
-                is CourierCarNumberNavigationState.NavigateToDialogInfo -> {
-                    with(state) { showDialogInfo(type, title, message, button) }
-                }
             }
         })
+
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
+        }
 
         viewModel.stateBackspaceUI.observe(viewLifecycleOwner) {
             when (it) {
@@ -112,8 +113,8 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                     binding.numberNotFound.visibility = INVISIBLE
                 }
                 is CourierCarNumberUIState.NumberNotFound -> {
-                    showDialog(
-                        DialogStyle.WARNING.ordinal,
+                    showDialogInfo(
+                        DialogInfoStyle.WARNING.ordinal,
                         state.title,
                         state.message,
                         state.button
@@ -122,8 +123,9 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                     binding.viewKeyboard.active()
                 }
                 is CourierCarNumberUIState.Error -> {
-                    showDialog(
-                        DialogStyle.WARNING.ordinal, state.title,
+                    showDialogInfo(
+                        DialogInfoStyle.WARNING.ordinal,
+                        state.title,
                         state.message,
                         state.button
                     )
@@ -162,18 +164,17 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
     private fun showDialogInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
-
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

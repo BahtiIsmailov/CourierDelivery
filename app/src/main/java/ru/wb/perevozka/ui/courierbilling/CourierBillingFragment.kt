@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
@@ -23,7 +22,6 @@ import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
-import ru.wb.perevozka.views.ProgressButtonMode
 
 
 class CourierBillingFragment : Fragment() {
@@ -106,12 +104,13 @@ class CourierBillingFragment : Fragment() {
             }
         }
 
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
+        }
+
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierBillingNavigationState.NavigateToBack -> {
-                }
-                is CourierBillingNavigationState.NavigateToDialogInfo -> with(it) {
-                    showDialogInfo(type, title, message, button)
                 }
             }
         }
@@ -189,13 +188,17 @@ class CourierBillingFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

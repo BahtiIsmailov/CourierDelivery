@@ -2,14 +2,15 @@ package ru.wb.perevozka.ui.unloadingforcedtermination
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
-import ru.wb.perevozka.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.NavigateToInformation
+import ru.wb.perevozka.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
 
 class ForcedTerminationViewModel(
     private val parameters: ForcedTerminationParameters,
@@ -77,6 +78,7 @@ class ForcedTerminationViewModel(
             else -> resourceProvider.getErrorCompleteUnloading()
         }
         _navigateToMessageInfo.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton())

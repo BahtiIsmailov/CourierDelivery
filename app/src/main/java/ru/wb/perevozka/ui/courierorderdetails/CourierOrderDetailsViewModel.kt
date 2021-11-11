@@ -5,16 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.perevozka.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.perevozka.network.exceptions.BadRequestException
-import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.couriermap.CourierMapMarker
 import ru.wb.perevozka.ui.couriermap.CourierMapState
 import ru.wb.perevozka.ui.couriermap.Empty
 import ru.wb.perevozka.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
-import ru.wb.perevozka.ui.dialogs.NavigateToMessageInfo
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapEnclosingCircle

@@ -25,4 +25,13 @@ class CourierOrderTimerResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_count, boxCount, v)
     }
 
+
+    fun getDialogTimerPositiveButton(): String {
+        return context.getString(R.string.courier_orders_timer_dialog_positive_button)
+    }
+
+    fun getDialogTimerNegativeButton(): String {
+        return context.getString(R.string.courier_orders_timer_dialog_negative_button)
+    }
+
 }

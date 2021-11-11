@@ -13,8 +13,8 @@ import ru.wb.perevozka.ui.auth.signup.TimerState
 import ru.wb.perevozka.ui.auth.signup.TimerStateHandler
 import ru.wb.perevozka.ui.courierloading.domain.*
 import ru.wb.perevozka.ui.courierordertimer.domain.CourierOrderTimerInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
-import ru.wb.perevozka.ui.dialogs.NavigateToInformation
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.DateTimeFormatter
@@ -40,9 +40,13 @@ class CourierLoadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToInformation = SingleLiveEvent<NavigateToInformation>()
-    val navigateToInformation: LiveData<NavigateToInformation>
-        get() = _navigateToInformation
+    private val _navigateToEmptyMessage = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToEmptyDialog: LiveData<NavigateToDialogInfo>
+        get() = _navigateToEmptyMessage
+
+    private val _navigateToErrorMessage = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToErrorMessage: LiveData<NavigateToDialogInfo>
+        get() = _navigateToErrorMessage
 
     private val _beepEvent =
         SingleLiveEvent<CourierLoadingScanBeepState>()
@@ -100,7 +104,7 @@ class CourierLoadingScanViewModel(
         )
     }
 
-    fun confirmLoadingClick() {
+    fun onConfirmLoadingClick() {
         onStopScanner()
         _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
         addSubscription(
@@ -125,26 +129,26 @@ class CourierLoadingScanViewModel(
 
     private fun confirmLoadingError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> CourierLoadingScanNavAction.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is NoInternetException -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 "Интернет-соединение отсутствует",
                 throwable.message,
                 "Понятно"
             )
-            is BadRequestException -> CourierLoadingScanNavAction.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is BadRequestException -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> CourierLoadingScanNavAction.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-        _navigationEvent.value = message
+        _navigateToErrorMessage.value = message
     }
 
     private fun observeInitScanProcess() {
@@ -256,25 +260,28 @@ class CourierLoadingScanViewModel(
     private fun scanProcessError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> {
-                NavigateToInformation(
+                NavigateToDialogInfo(
+                    DialogInfoStyle.ERROR.ordinal,
                     "Интернет-сщудинеие отсутствует",
                     "Проверте соединение и повторите попытку",
                     "Понятно"
                 )
             }
             is BadRequestException ->
-                NavigateToInformation(
+                NavigateToDialogInfo(
+                    DialogInfoStyle.ERROR.ordinal,
                     "Операция не выполнена", throwable.error.message, "Понятно"
                 )
 
-            else -> NavigateToInformation(
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 "Сервис недоступен", "Повторите операцию позднее", "Понятно"
             )
         }
 
         // TODO: 07.10.2021 привести диалог
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToInformation.value = message
+        _navigateToEmptyMessage.value = message
     }
 
     fun onStopScanner() {
@@ -285,9 +292,9 @@ class CourierLoadingScanViewModel(
         interactor.scannerAction(ScannerState.Start)
     }
 
-    fun onDialogInfoConfirmClick() {
-        onStartScanner()
-    }
+//    fun onDialogInfoConfirmClick() {
+//        onStartScanner()
+//    }
 
 //    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
@@ -305,7 +312,7 @@ class CourierLoadingScanViewModel(
 
     override fun onTimeIsOverState() {
         _orderTimer.value = CourierLoadingScanTimerState.TimeIsOut(
-            DialogStyle.WARNING.ordinal,
+            DialogInfoStyle.WARNING.ordinal,
             "Время вышло",
             "К сожалению, вы не успели приехать вовремя. Заказ был отменён",
             "Вернуться к списку заказов"

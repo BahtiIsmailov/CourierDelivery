@@ -11,7 +11,8 @@ import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierdata.domain.CourierDataInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.utils.LogUtils
 import java.util.*
 
@@ -22,9 +23,9 @@ class UserFormViewModel(
     private val resourceProvider: CourierDataResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
-    private val _navigateToMessageState = SingleLiveEvent<Message>()
-    val navigateToMessageState: LiveData<Message>
-        get() = _navigateToMessageState
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToMessageInfo
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
@@ -373,27 +374,27 @@ class UserFormViewModel(
     private fun couriersFormError(throwable: Throwable) {
         val message = when (throwable) {
 
-            is NoInternetException -> Message(
-                DialogStyle.INFO.ordinal,
+            is NoInternetException -> NavigateToDialogInfo(
+                DialogInfoStyle.INFO.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> Message(
-                DialogStyle.INFO.ordinal,
+            is BadRequestException -> NavigateToDialogInfo(
+                DialogInfoStyle.INFO.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> Message(
-                DialogStyle.ERROR.ordinal,
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
         _loaderState.value = CourierDataUILoaderState.Enable
-        _navigateToMessageState.value = message
+        _navigateToMessageInfo.value = message
 
     }
 
@@ -409,5 +410,3 @@ class UserFormViewModel(
     }
 
 }
-
-data class Message(val style: Int, val title: String, val message: String, val button: String)

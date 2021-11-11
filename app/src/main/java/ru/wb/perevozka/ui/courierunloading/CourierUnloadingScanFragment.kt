@@ -1,14 +1,10 @@
 package ru.wb.perevozka.ui.courierunloading
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -20,7 +16,14 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.CourierUnloadingFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_POSITIVE_KEY
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_RESULT_TAG
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
+import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT_TAG
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.perevozka.ui.dialogs.ProgressDialogFragment
 import ru.wb.perevozka.ui.splash.NavDrawerListener
@@ -61,14 +64,23 @@ class CourierUnloadingScanFragment : Fragment() {
         initView()
         initListener()
         initObserver()
-        initReturnResult()
+        initReturnDialogResult()
     }
 
-    private fun initReturnResult() {
-        setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT) { _, bundle ->
-            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+    private fun initReturnDialogResult() {
+        setFragmentResultListener(DIALOG_INFO_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 isDialogActive = false
                 viewModel.onStartScanner()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.confirmUnloadingClick()
+            }
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
+                viewModel.cancelUnloadingClick()
             }
         }
     }
@@ -95,9 +107,13 @@ class CourierUnloadingScanFragment : Fragment() {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
             showDialogInfo(it.type, it.title, it.message, it.button)
+        }
+
+        viewModel.navigateToDialogConfirmInfo.observe(viewLifecycleOwner) {
+            showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -122,14 +138,9 @@ class CourierUnloadingScanFragment : Fragment() {
                 is CourierUnloadingScanNavAction.NavigateToUnknownBox -> {
                     findNavController().navigate(CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierUnloadingUnknownBoxFragment())
                 }
-                is CourierUnloadingScanNavAction.NavigateToConfirmDialog -> {
-                    showConfirmDialog(state.title, state.message)
-                }
                 CourierUnloadingScanNavAction.NavigateToIntransit ->
                     findNavController().navigate(CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment())
                 CourierUnloadingScanNavAction.NavigateToBoxes -> {
-                }
-                is CourierUnloadingScanNavAction.NavigateToDialogInfo -> {
                 }
             }
         }
@@ -242,11 +253,6 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun colorBlack() = ContextCompat.getColor(requireContext(), R.color.black_text)
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
-
     private fun showProgressDialog() {
         val progressDialog = ProgressDialogFragment.newInstance()
         progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
@@ -259,55 +265,33 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
-    // TODO: 27.08.2021 переработать
-    private fun showConfirmDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-
-        alertDialog.setCanceledOnTouchOutside(false)
-        alertDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                alertDialog.dismiss()
-                viewModel.cancelUnloadingClick()
-            }
-            true
-        }
-
-        titleText.text = title
-        messageText.text = message
-        negative.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.cancelUnloadingClick()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_order_scanner_dialog_negative_button)
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.confirmUnloadingClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = getString(R.string.courier_order_scanner_dialog_positive_button)
-        alertDialog.show()
+    private fun showDialogConfirmInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
+        ).show(parentFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initListener() {

@@ -83,6 +83,10 @@ class CourierWarehousesFragment : Fragment() {
 
     private fun initObservable() {
 
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
+        }
+
         viewModel.warehouses.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
@@ -133,8 +137,6 @@ class CourierWarehousesFragment : Fragment() {
                             CourierOrderParameters(it.officeId, it.address)
                         )
                     )
-                is CourierWarehousesNavigationState.NavigateToDialogInfo ->
-                    with(it) { showDialogInfo(type, title, message, button) }
             }
         }
 
@@ -165,13 +167,17 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

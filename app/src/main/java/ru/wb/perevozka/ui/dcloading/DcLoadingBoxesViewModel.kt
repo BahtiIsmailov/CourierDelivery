@@ -2,18 +2,19 @@ package ru.wb.perevozka.ui.dcloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class DcLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -55,7 +56,8 @@ class DcLoadingBoxesViewModel(
             .flatMap { convertBoxes(it) }
             .doOnNext { copyConvertBoxes(it) }
             .subscribe({ changeBoxesComplete(it) },
-                { changeBoxesError(it) }))
+                { changeBoxesError(it) })
+        )
     }
 
     private fun convertBoxes(boxes: List<FlightBoxEntity>) =
@@ -68,12 +70,14 @@ class DcLoadingBoxesViewModel(
         val date = timeFormatter.dateTimeWithoutTimezoneFromString(item.updatedAt)
         val dateFormat = resourceProvider.getBoxDateAndTime(
             timeFormatter.format(date, TimeFormatType.ONLY_DATE),
-            timeFormatter.format(date, TimeFormatType.ONLY_TIME))
+            timeFormatter.format(date, TimeFormatType.ONLY_TIME)
+        )
         DcLoadingBoxesItem(
             item.barcode,
             resourceProvider.getIndexUnnamedBarcode(singleIncrement(index), item.barcode),
             resourceProvider.getBoxTimeAndAddress(dateFormat, item.dstOffice.fullAddress),
-            false)
+            false
+        )
     }
 
     private val singleIncrement = { index: Int -> index + 1 }
@@ -115,9 +119,11 @@ class DcLoadingBoxesViewModel(
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
         _navigateToMessageInfo.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,
-            resourceProvider.getBoxPositiveButton())
+            resourceProvider.getBoxPositiveButton()
+        )
         _boxes.value = DcLoadingBoxesUIState.ProgressComplete
         changeDisableAllCheckedBox()
     }
@@ -154,11 +160,10 @@ class DcLoadingBoxesViewModel(
 
     private fun observeNetworkState() {
         addSubscription(interactor.observeNetworkConnected()
-            .subscribe({ _toolbarNetworkState.value = it }, {}))
+            .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
 
     object NavigateToBack
-
-//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

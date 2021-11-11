@@ -3,16 +3,20 @@ package ru.wb.perevozka.ui.courierwarehouses
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
 import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
+import ru.wb.perevozka.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
 import ru.wb.perevozka.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
-import ru.wb.perevozka.ui.couriermap.*
+import ru.wb.perevozka.ui.couriermap.CourierMapAction
+import ru.wb.perevozka.ui.couriermap.CourierMapMarker
+import ru.wb.perevozka.ui.couriermap.CourierMapState
+import ru.wb.perevozka.ui.couriermap.Empty
 import ru.wb.perevozka.ui.courierwarehouses.domain.CourierWarehouseInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.map.CoordinatePoint
 import ru.wb.perevozka.utils.map.MapEnclosingCircle
@@ -27,6 +31,10 @@ class CourierWarehousesViewModel(
     private val _warehouses = MutableLiveData<CourierWarehouseItemState>()
     val warehouses: LiveData<CourierWarehouseItemState>
         get() = _warehouses
+
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
 
     private val _navigationState = SingleLiveEvent<CourierWarehousesNavigationState>()
     val navigationState: LiveData<CourierWarehousesNavigationState>
@@ -155,26 +163,26 @@ class CourierWarehousesViewModel(
     private fun courierWarehouseError(throwable: Throwable) {
         LogUtils { logDebugApp("courierWarehouseError() " + throwable.toString()) }
         val message = when (throwable) {
-            is NoInternetException -> CourierWarehousesNavigationState.NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
+            is NoInternetException -> NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> CourierWarehousesNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is BadRequestException -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> CourierWarehousesNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-        _navigationState.value = message
+        _navigateToDialogInfo.value = message
         if (warehouseItems.isEmpty()) {
             _warehouses.value = CourierWarehouseItemState.Empty(message.title)
         }
@@ -234,9 +242,9 @@ class CourierWarehousesViewModel(
     ) {
         if (warehouseEntities.find { it.id == oldEntity.id } == null) {
             courierWarehouseComplete(warehouseEntities)
-            _navigationState.value =
-                CourierWarehousesNavigationState.NavigateToDialogInfo(
-                    DialogStyle.WARNING.ordinal,
+            _navigateToDialogInfo.value =
+                NavigateToDialogInfo(
+                    DialogInfoStyle.WARNING.ordinal,
                     resourceProvider.getDialogEmptyTitle(),
                     resourceProvider.getDialogEmptyMessage(),
                     resourceProvider.getDialogEmptyButton(),

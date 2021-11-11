@@ -4,14 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.mvvm.model.base.BaseItem
-import ru.wb.perevozka.network.api.app.entity.BillingTransactionEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierbilling.domain.CourierBillingInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 import java.text.DecimalFormat
 
 class CourierBillingViewModel(
@@ -24,6 +24,10 @@ class CourierBillingViewModel(
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
+
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
 
     private val _balanceInfo = MutableLiveData<String>()
     val balanceInfo: LiveData<String>
@@ -106,26 +110,26 @@ class CourierBillingViewModel(
 
     private fun billingError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> CourierBillingNavigationState.NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
+            is NoInternetException -> NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> CourierBillingNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is BadRequestException -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> CourierBillingNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-        _navigationState.value = message
+        _navigateToDialogInfo.value = message
         _billingItems.value = CourierBillingState.Empty(message.title)
         progressComplete()
     }

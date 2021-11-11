@@ -2,18 +2,19 @@ package ru.wb.perevozka.ui.unloadingreturnboxes
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.dcloading.DcLoadingResourceProvider
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 import ru.wb.perevozka.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.time.TimeFormatType
 import ru.wb.perevozka.utils.time.TimeFormatter
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import ru.wb.perevozka.ui.dialogs.NavigateToInformation
 
 class UnloadingReturnBoxesViewModel(
     private val parameters: UnloadingReturnParameters,
@@ -113,6 +114,7 @@ class UnloadingReturnBoxesViewModel(
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
         _navigateToMessage.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton())

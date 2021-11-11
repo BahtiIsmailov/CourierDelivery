@@ -14,13 +14,14 @@ import androidx.fragment.app.setFragmentResult
 import ru.wb.perevozka.R
 import ru.wb.perevozka.app.AppExtras
 
-class DialogInfoFragment : DialogFragment() {
+class DialogConfirmInfoFragment : DialogFragment() {
 
     private lateinit var resultTag: String
     private var style: Int = 0
     private lateinit var title: String
     private lateinit var message: String
     private lateinit var positive: String
+    private lateinit var negative: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,17 +35,19 @@ class DialogInfoFragment : DialogFragment() {
             title = arguments.getString(AppExtras.EXTRA_DIALOG_TITLE, "")
             message = arguments.getString(AppExtras.EXTRA_DIALOG_MESSAGE, "")
             positive = arguments.getString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, "")
+            negative = arguments.getString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, "")
         }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =
-            requireActivity().layoutInflater.inflate(R.layout.custom_dialog_info_fragment, null)
+            requireActivity().layoutInflater.inflate(R.layout.custom_layout_dialog_result, null)
         val titleLayout: View = dialogView.findViewById(R.id.title_layout)
         val title: TextView = dialogView.findViewById(R.id.title)
         val message: TextView = dialogView.findViewById(R.id.message)
         val positive: Button = dialogView.findViewById(R.id.positive)
+        val negative: Button = dialogView.findViewById(R.id.negative)
         builder.setView(dialogView)
         val color = when (DialogInfoStyle.values()[style]) {
             DialogInfoStyle.INFO -> R.color.dialog_title_info
@@ -52,12 +55,20 @@ class DialogInfoFragment : DialogFragment() {
             DialogInfoStyle.ERROR -> R.color.dialog_title_alarm
         }
         titleLayout.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
+
         title.text = this.title
         message.text = this.message
         positive.text = this.positive
+        negative.text = this.negative
+
         positive.setOnClickListener {
             dismiss()
-            sendResult(resultTag)
+            sendPositiveResult(resultTag)
+        }
+
+        negative.setOnClickListener {
+            dismiss()
+            sendNegativeResult(resultTag)
         }
 
         val dialog = builder.create()
@@ -65,27 +76,36 @@ class DialogInfoFragment : DialogFragment() {
         dialog.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 dialog.dismiss()
-                sendResult(resultTag)
+                sendNegativeResult(resultTag)
             }
             true
         }
+
         return dialog
     }
 
-    private fun sendResult(resultTag: String) {
+    private fun sendPositiveResult(resultTag: String) {
         setFragmentResult(
             resultTag,
-            bundleOf(DIALOG_INFO_BACK_KEY to DIALOG_INFO_BACK_VALUE)
+            bundleOf(DIALOG_CONFIRM_INFO_POSITIVE_KEY to DIALOG_CONFIRM_INFO_POSITIVE_VALUE)
+        )
+    }
+
+    private fun sendNegativeResult(resultTag: String) {
+        setFragmentResult(
+            resultTag,
+            bundleOf(DIALOG_CONFIRM_INFO_NEGATIVE_KEY to DIALOG_CONFIRM_INFO_NEGATIVE_VALUE)
         )
     }
 
     companion object {
         fun newInstance(
-            resultTag: String = DIALOG_INFO_RESULT_TAG,
+            resultTag: String = DIALOG_CONFIRM_INFO_RESULT_TAG,
             type: Int,
             title: String,
             message: String,
             positiveButtonName: String,
+            negativeButtonName: String,
         ): DialogInfoFragment {
             val args = Bundle()
             args.putString(AppExtras.EXTRA_DIALOG_RESULT_TAG, resultTag)
@@ -93,20 +113,27 @@ class DialogInfoFragment : DialogFragment() {
             args.putString(AppExtras.EXTRA_DIALOG_TITLE, title)
             args.putString(AppExtras.EXTRA_DIALOG_MESSAGE, message)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
+            args.putString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, negativeButtonName)
             val fragment = DialogInfoFragment()
             fragment.arguments = args
             return fragment
         }
 
-        const val DIALOG_INFO_RESULT_TAG = "DIALOG_INFO_RESULT_TAG"
-        const val DIALOG_INFO_BACK_KEY = "DIALOG_INFO_BACK_KEY"
-        const val DIALOG_INFO_BACK_VALUE = 1000
-        const val DIALOG_INFO_TAG = "DIALOG_INFO_TAG"
+        const val DIALOG_CONFIRM_INFO_RESULT_TAG = "DIALOG_CONFIRM_INFO_RESULT_TAG"
+        const val DIALOG_CONFIRM_INFO_POSITIVE_KEY = "DIALOG_CONFIRM_INFO_POSITIVE_KEY"
+        const val DIALOG_CONFIRM_INFO_POSITIVE_VALUE = 1000
+        const val DIALOG_CONFIRM_INFO_NEGATIVE_KEY = "DIALOG_CONFIRM_INFO_NEGATIVE_KEY"
+        const val DIALOG_CONFIRM_INFO_NEGATIVE_VALUE = 2000
+        const val DIALOG_CONFIRM_INFO_TAG = "DIALOG_CONFIRM_INFO_TAG"
 
     }
 
 }
 
-data class NavigateToDialogInfo(
-    val type: Int, val title: String, val message: String, val button: String
+data class NavigateToDialogConfirmInfo(
+    val type: Int,
+    val title: String,
+    val message: String,
+    val positive: String,
+    val negative: String
 )

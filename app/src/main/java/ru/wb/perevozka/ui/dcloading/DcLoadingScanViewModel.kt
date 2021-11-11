@@ -2,6 +2,9 @@ package ru.wb.perevozka.ui.dcloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.exceptions.CompositeException
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -11,11 +14,9 @@ import ru.wb.perevozka.ui.dcloading.domain.DcLoadingInteractor
 import ru.wb.perevozka.ui.dcloading.domain.ScanBoxData
 import ru.wb.perevozka.ui.dcloading.domain.ScanProcessData
 import ru.wb.perevozka.ui.dcloading.domain.ScanProgressData
-import ru.wb.perevozka.ui.scanner.domain.ScannerState
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.exceptions.CompositeException
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.NavigateToInformation
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import java.util.concurrent.TimeUnit
 
 class DcLoadingScanViewModel(
@@ -68,7 +69,8 @@ class DcLoadingScanViewModel(
                     DcLoadingScanBoxState.BoxInit(
                         list.size.toString(),
                         gate,
-                        lastBox.barcode)
+                        lastBox.barcode
+                    )
                 }
 
             }).subscribe { boxStateUI.value = it })
@@ -117,13 +119,15 @@ class DcLoadingScanViewModel(
                     DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
                         resourceProvider.getBoxNotBelongDcTitle(),
                         scanBoxData.barcode,
-                        scanBoxData.address)
+                        scanBoxData.address
+                    )
                 boxStateUI.value =
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxDeny(
                             accepted,
                             resourceProvider.getEmptyGate(),
-                            barcode)
+                            barcode
+                        )
                     }
                 _beepEvent.value = DcLoadingScanBeepState.BoxSkipAdded
             }
@@ -133,13 +137,15 @@ class DcLoadingScanViewModel(
                     DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
                         resourceProvider.getBoxNotBelongFlightTitle(),
                         scanBoxData.barcode,
-                        scanBoxData.address)
+                        scanBoxData.address
+                    )
                 boxStateUI.value =
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxDeny(
                             accepted,
                             resourceProvider.getEmptyGate(),
-                            barcode)
+                            barcode
+                        )
                     }
             }
             is ScanBoxData.BoxHasBeenAdded -> {
@@ -149,7 +155,8 @@ class DcLoadingScanViewModel(
                         DcLoadingScanBoxState.BoxHasBeenAdded(
                             accepted,
                             gate,
-                            barcode)
+                            barcode
+                        )
                     }
             }
             ScanBoxData.Empty -> boxStateUI.value = DcLoadingScanBoxState.Empty
@@ -159,13 +166,15 @@ class DcLoadingScanViewModel(
                     DcLoadingScanNavAction.NavigateToReceptionBoxNotBelong(
                         resourceProvider.getBoxNotBelongInfoTitle(),
                         scanBoxData.barcode,
-                        resourceProvider.getBoxNotBelongAddress())
+                        resourceProvider.getBoxNotBelongAddress()
+                    )
                 boxStateUI.value =
                     with(scanBoxData) {
                         DcLoadingScanBoxState.BoxDeny(
                             accepted,
                             resourceProvider.getEmptyGate(),
-                            barcode)
+                            barcode
+                        )
                     }
             }
         }
@@ -187,15 +196,16 @@ class DcLoadingScanViewModel(
 
     fun onCompleteClicked() {
         bottomProgressEvent.value = true
-        addSubscription(interactor.switchScreen().subscribe(
-            {
-                _navigationEvent.value = DcLoadingScanNavAction.NavigateToFlightDeliveries
-                bottomProgressEvent.value = false
-            },
-            {
-                bottomProgressEvent.value = false
-                switchScreenError(it)
-            })
+        addSubscription(
+            interactor.switchScreen().subscribe(
+                {
+                    _navigationEvent.value = DcLoadingScanNavAction.NavigateToFlightDeliveries
+                    bottomProgressEvent.value = false
+                },
+                {
+                    bottomProgressEvent.value = false
+                    switchScreenError(it)
+                })
         )
     }
 
@@ -206,7 +216,9 @@ class DcLoadingScanViewModel(
             else -> resourceProvider.getSwitchDialogButton()
         }
         _navigateToMessageInfo.value = NavigateToInformation(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
+            DialogInfoStyle.ERROR.ordinal,
+            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
+        )
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
@@ -224,7 +236,9 @@ class DcLoadingScanViewModel(
         }
         interactor.scannerAction(ScannerState.Stop)
         _navigateToMessageInfo.value = NavigateToInformation(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
+            DialogInfoStyle.ERROR.ordinal,
+            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
+        )
     }
 
     fun onStopScanner() {
@@ -237,9 +251,8 @@ class DcLoadingScanViewModel(
 
     private fun observeNetworkState() {
         addSubscription(interactor.observeNetworkConnected()
-            .subscribe({ _toolbarNetworkState.value = it }, {}))
+            .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
-
-//    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
 
 }

@@ -16,13 +16,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.component.getScopeName
 import org.koin.core.parameter.parametersOf
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.AuthCheckSmsFragmentBinding
 import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.dialogs.DialogInfoFragment
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.splash.NavDrawerListener
 import ru.wb.perevozka.ui.splash.NavToolbarListener
 
@@ -125,7 +124,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                 is CheckSmsUIState.MessageError -> {
                     binding.viewPinCode.text?.clear()
                     showDialog(
-                        DialogStyle.WARNING.ordinal, state.title,
+                        DialogInfoStyle.WARNING.ordinal, state.title,
                         state.message,
                         state.button
                     )
@@ -173,7 +172,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     binding.repeatSms.visibility = VISIBLE
                     binding.repeatPasswordProgress.visibility = View.GONE
                     showDialog(
-                        DialogStyle.WARNING.ordinal,
+                        DialogInfoStyle.WARNING.ordinal,
                         state.title,
                         state.message,
                         state.button
@@ -228,9 +227,13 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
     companion object {

@@ -11,7 +11,8 @@ import ru.wb.perevozka.network.monitor.NetworkState
 import ru.wb.perevozka.ui.NetworkViewModel
 import ru.wb.perevozka.ui.SingleLiveEvent
 import ru.wb.perevozka.ui.courierorders.domain.CourierOrderInteractor
-import ru.wb.perevozka.ui.dialogs.DialogStyle
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
+import ru.wb.perevozka.ui.dialogs.NavigateToDialogInfo
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
@@ -28,6 +29,10 @@ class CourierOrdersViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
 
     private val _orders = MutableLiveData<CourierOrdersState>()
     val orders: LiveData<CourierOrdersState>
@@ -74,8 +79,8 @@ class CourierOrdersViewModel(
             }
             .map {
                 if (it.isEmpty()) {
-                    _navigationState.value = CourierOrdersNavigationState.NavigateToDialogInfo(
-                        DialogStyle.WARNING.ordinal,
+                    _navigateToDialogInfo.value = NavigateToDialogInfo(
+                        DialogInfoStyle.WARNING.ordinal,
                         "Заказ забрали",
                         "Этот заказ уже взят в работу",
                         "Понятно"
@@ -99,26 +104,26 @@ class CourierOrdersViewModel(
 
     private fun ordersError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> CourierOrdersNavigationState.NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
+            is NoInternetException -> NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> CourierOrdersNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            is BadRequestException -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 throwable.error.message,
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> CourierOrdersNavigationState.NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-        _navigationState.value = message
+        _navigateToDialogInfo.value = message
         _orders.value = CourierOrdersState.Empty(message.title)
         progressComplete()
     }

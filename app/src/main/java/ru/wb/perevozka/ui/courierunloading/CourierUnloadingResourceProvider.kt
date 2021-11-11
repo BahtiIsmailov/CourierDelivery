@@ -54,4 +54,10 @@ class CourierUnloadingResourceProvider(private val context: Context) {
     fun getUnloadingDialogMessage(deliveredCount: Int, fromCount: Int): String =
         context.getString(R.string.courier_unloading_dialog_message, deliveredCount, fromCount)
 
+    fun getUnloadingDialogPositive(): String =
+        context.getString(R.string.courier_order_scanner_dialog_positive_button)
+
+    fun getUnloadingDialogNegative(): String =
+        context.getString(R.string.courier_order_scanner_dialog_negative_button)
+
 }

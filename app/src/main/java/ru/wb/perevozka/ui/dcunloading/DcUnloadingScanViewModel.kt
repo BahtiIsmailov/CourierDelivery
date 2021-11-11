@@ -2,6 +2,8 @@ package ru.wb.perevozka.ui.dcunloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.perevozka.network.exceptions.BadRequestException
 import ru.wb.perevozka.network.exceptions.NoInternetException
 import ru.wb.perevozka.network.monitor.NetworkState
@@ -11,10 +13,9 @@ import ru.wb.perevozka.ui.dcloading.domain.ScanProgressData
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingAction
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingData
 import ru.wb.perevozka.ui.dcunloading.domain.DcUnloadingInteractor
-import ru.wb.perevozka.ui.scanner.domain.ScannerState
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.NavigateToInformation
+import ru.wb.perevozka.ui.scanner.domain.ScannerState
 import java.util.concurrent.TimeUnit
 
 class DcUnloadingScanViewModel(
@@ -158,6 +159,7 @@ class DcUnloadingScanViewModel(
         }
         interactor.scannerAction(ScannerState.Stop)
         _navigateToInformation.value = NavigateToInformation(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton())
     }
 

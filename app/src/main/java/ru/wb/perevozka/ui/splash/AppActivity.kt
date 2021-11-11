@@ -11,9 +11,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -31,6 +29,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.perevozka.R
 import ru.wb.perevozka.databinding.SplashActivityBinding
 import ru.wb.perevozka.network.monitor.NetworkState
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.perevozka.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
+import ru.wb.perevozka.ui.dialogs.DialogInfoStyle
 import ru.wb.perevozka.ui.dialogs.InformationDialogFragment
 import ru.wb.perevozka.utils.LogUtils
 import ru.wb.perevozka.utils.SoftKeyboard
@@ -328,12 +329,22 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         }
     }
 
+//    private fun showExitDialog() {
+//        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
+//            .setMessage(R.string.exit_app)
+//            .setPositiveButton(R.string.exit_app_ok) { _, _ -> finish() }
+//            .setNegativeButton(R.string.exit_app_cancel) { dialogInterface, _ -> dialogInterface.cancel() }
+//            .show()
+//    }
+
     private fun showExitDialog() {
-        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogCustom))
-            .setMessage(R.string.exit_app)
-            .setPositiveButton(R.string.exit_app_ok) { _, _ -> finish() }
-            .setNegativeButton(R.string.exit_app_cancel) { dialogInterface, _ -> dialogInterface.cancel() }
-            .show()
+        DialogConfirmInfoFragment.newInstance(
+            type = DialogInfoStyle.INFO.ordinal,
+            title = getText(R.string.exit_app).toString(),
+            message = "",
+            positiveButtonName = getText(R.string.exit_app_ok).toString(),
+            negativeButtonName = getText(R.string.exit_app_cancel).toString()
+        ).show(supportFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
     override fun userInfo(name: String, company: String) {
