@@ -241,6 +241,11 @@ class CourierLoadingScanViewModel(
     }
 
     fun onCompleteLoaderClicked() {
+        //        Firebase.analytics.logEvent("confirmLoadingClick", "", )
+//        Firebase.analytics.logEvent("loading") {
+//            param("confirmLoadingClick", "onConfirm")
+//            param("count_load_box", 11)
+//        }
         onStopScanner()
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }

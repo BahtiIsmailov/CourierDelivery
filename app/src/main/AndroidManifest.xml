@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.wb.go">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,7 +18,7 @@
         android:name="ru.wb.go.app.App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_go"
-        android:label="@string/app_name"
+        android:label="${appName}"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_go_round"
         android:supportsRtl="true"
@@ -27,6 +28,7 @@
             android:name="ru.wb.go.ui.splash.AppActivity"
             android:screenOrientation="locked"
             android:theme="@style/Splash"
+            android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,6 +45,11 @@
             android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="false"
+            tools:replace="android:value"/>
 
     </application>
 

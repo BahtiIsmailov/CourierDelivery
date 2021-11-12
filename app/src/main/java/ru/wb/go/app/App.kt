@@ -2,12 +2,13 @@ package ru.wb.go.app
 
 import android.app.Application
 import android.content.Context
-import ru.wb.go.di.module.*
-import ru.wb.go.network.monitor.NetworkMonitor
+import com.google.firebase.analytics.FirebaseAnalytics
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import ru.wb.go.di.module.*
+import ru.wb.go.network.monitor.NetworkMonitor
 
 class App : Application() {
 
@@ -15,6 +16,7 @@ class App : Application() {
         super.onCreate()
         initDI()
         initNetworkMonitor()
+        initFirebaseAnalytics()
     }
 
     private fun initDI() {
@@ -36,6 +38,11 @@ class App : Application() {
                 )
             )
         }
+    }
+
+    private fun initFirebaseAnalytics() {
+        //val isEnable: Boolean = !BuildConfig.DEBUG
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(true)
     }
 
     private fun initNetworkMonitor() {
