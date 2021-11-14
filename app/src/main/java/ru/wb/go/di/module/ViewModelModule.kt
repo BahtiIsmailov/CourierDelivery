@@ -33,6 +33,7 @@ import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryViewModel
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanViewModel
 import ru.wb.go.ui.courierunloading.CourierUnloadingUnknownBoxViewModel
+import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.dcloading.*
 import ru.wb.go.ui.dcunloading.*
@@ -74,7 +75,20 @@ val viewModelModule = module {
         CheckSmsViewModel(parameters, get(), get(), get())
     }
 
-    viewModel { CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel {
+        CourierLoaderViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+    viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
     viewModel { CourierAgreementViewModel(get()) }
 
@@ -136,7 +150,14 @@ val viewModelModule = module {
         )
     }
     viewModel { CourierUnloadingUnknownBoxViewModel() }
-    viewModel { (parameters: CourierStartDeliveryParameters) -> CourierStartDeliveryViewModel(parameters, get(), get(), get()) }
+    viewModel { (parameters: CourierStartDeliveryParameters) ->
+        CourierStartDeliveryViewModel(
+            parameters,
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModel { (parameters: CourierCompleteDeliveryParameters) ->
         CourierCompleteDeliveryViewModel(
             parameters,

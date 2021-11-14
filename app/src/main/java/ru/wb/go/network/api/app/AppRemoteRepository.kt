@@ -126,4 +126,6 @@ interface AppRemoteRepository {
 
     fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
 
+    fun appVersion(): Single<String>
+
 }

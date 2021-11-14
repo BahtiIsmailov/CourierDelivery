@@ -2,12 +2,12 @@ package ru.wb.go.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.FlightStatus
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
+import ru.wb.go.ui.auth.AppVersionState
 import ru.wb.go.ui.splash.domain.AppInteractor
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.DeviceManager
@@ -35,6 +35,10 @@ class AppViewModel(
     private val _counterBoxesActionStatus = MutableLiveData<CounterBoxesActionStatus>()
     val counterBoxesActionStatus: LiveData<CounterBoxesActionStatus>
         get() = _counterBoxesActionStatus
+
+    private val _appVersionState = MutableLiveData<AppVersionState>()
+    val appVersionState: LiveData<AppVersionState>
+        get() = _appVersionState
 
     init {
         fetchNetworkState()
@@ -115,6 +119,36 @@ class AppViewModel(
 
     private fun updateDrawer() {
         fetchVersionApp()
+    }
+
+    fun checkUpdateVersionApp() {
+        // TODO: 14.11.2021 выключено до актуализации FTP сервера
+//        _appVersionState.value = AppVersionState.UpToDateProgress
+//        addSubscription(interactor.checkUpdateApp()
+//            .subscribe({ checkUpdateVersionAppComplete(it) }, { checkUpdateVersionAppError() }))
+    }
+
+    private fun checkUpdateVersionAppComplete(appVersionState: AppVersionState) {
+        _appVersionState.value = appVersionState
+    }
+
+    private fun checkUpdateVersionAppError() {
+        _appVersionState.value = AppVersionState.UpdateError
+    }
+
+    fun updateVersionApp(destination: String) {
+        // TODO: 14.11.2021 выключено до актуализации FTP сервера
+//        _appVersionState.value = AppVersionState.UpdateProgress
+//        addSubscription(interactor.getUpdateApp(destination)
+//            .subscribe({ getUpdateAppComplete(it) }, { getUpdateAppError() }))
+    }
+
+    private fun getUpdateAppComplete(appVersionState: AppVersionState) {
+        _appVersionState.value = appVersionState
+    }
+
+    private fun getUpdateAppError() {
+        _appVersionState.value = AppVersionState.UpdateError
     }
 
 }

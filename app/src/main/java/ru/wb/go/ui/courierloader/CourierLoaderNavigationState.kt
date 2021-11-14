@@ -9,6 +9,7 @@ sealed class CourierLoaderNavigationState {
     object NavigateToTimer : CourierLoaderNavigationState()
     object NavigateToScanner : CourierLoaderNavigationState()
     object NavigateToIntransit : CourierLoaderNavigationState()
+    object NavigateToAppUpdate : CourierLoaderNavigationState()
     object NavigateToPhone : CourierLoaderNavigationState()
     object NavigateToAgreement : CourierLoaderNavigationState()
 }

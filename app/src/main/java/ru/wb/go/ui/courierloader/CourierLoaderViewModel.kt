@@ -27,6 +27,7 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
 class CourierLoaderViewModel(
@@ -37,7 +38,8 @@ class CourierLoaderViewModel(
     private val appRemoteRepository: AppRemoteRepository,
     private val authRemoteRepository: AuthRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
-    private val userManager: UserManager
+    private val userManager: UserManager,
+    private val deviceManager: DeviceManager
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -55,6 +57,24 @@ class CourierLoaderViewModel(
 
     init {
         initDrawer()
+        initVersion()
+    }
+
+    private fun initVersion() {
+        addSubscription(
+            appRemoteRepository.appVersion().compose(rxSchedulerFactory.applySingleSchedulers()).subscribe(
+                { version ->
+                    val locals = versionCodeToInt(deviceManager.appVersion)
+                    val remotes = versionCodeToInt(version)
+                    if (isVersionActual(locals, remotes)) loadApp()
+                    else toAppUpdate()
+                },
+                {})
+        )
+    }
+
+    private fun loadApp() {
+
         // TODO: 24.09.2021 выключить для тестирования
         //toCourierWarehouse()
         //toLoadingScanner()
@@ -71,6 +91,14 @@ class CourierLoaderViewModel(
 
         //clearData()
         //_navigationDrawerState.value = toPhone()
+    }
+
+    private fun isVersionActual(locals: Int, remotes: Int): Boolean {
+        return locals >= remotes
+    }
+
+    private fun versionCodeToInt(code: String): Int {
+        return code.replace("\\D+".toRegex(), "").toInt()
     }
 
     private fun initDrawer() {
@@ -281,6 +309,10 @@ class CourierLoaderViewModel(
     private fun toLoadingScanner() = CourierLoaderNavigationState.NavigateToScanner
 
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
+
+    private fun toAppUpdate() {
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToAppUpdate
+    }
 
     private fun toAgreement() = CourierLoaderNavigationState.NavigateToAgreement
 

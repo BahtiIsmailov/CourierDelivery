@@ -45,6 +45,8 @@ import ru.wb.go.ui.courierstartdelivery.domain.CourierStartDeliveryInteractor
 import ru.wb.go.ui.courierstartdelivery.domain.CourierStartDeliveryInteractorImpl
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractorImpl
+import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractor
+import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractorImpl
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.go.ui.dcloading.domain.DcLoadingInteractor
@@ -82,6 +84,7 @@ import ru.wb.go.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
 import ru.wb.go.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
 import ru.wb.go.ui.unloadingscan.domain.UnloadingInteractor
 import ru.wb.go.ui.unloadingscan.domain.UnloadingInteractorImpl
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ScreenManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
@@ -144,6 +147,7 @@ val interactorModule = module {
         appLocalRepository: AppLocalRepository,
         appSharedRepository: AppSharedRepository,
         screenManager: ScreenManager,
+        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
@@ -151,7 +155,8 @@ val interactorModule = module {
             authRemoteRepository,
             appLocalRepository,
             appSharedRepository,
-            screenManager
+            screenManager,
+            deviceManager
         )
     }
 
@@ -550,6 +555,16 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierVersionControlInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
+    ): CourierVersionControlInteractor {
+        return CourierVersionControlInteractorImpl(
+            rxSchedulerFactory,
+            courierLocalRepository,
+        )
+    }
+
     fun provideCourierStartDeliveryInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         courierLocalRepository: CourierLocalRepository
@@ -564,7 +579,7 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideFlightsInteractor(get(), get(), get()) }
     single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
@@ -630,6 +645,7 @@ val interactorModule = module {
         )
     }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
+    factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
     factory { provideCourierBillingInteractor(get(), get()) }

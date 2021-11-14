@@ -95,6 +95,11 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                         CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierAgreementFragment()
                     )
                 }
+                CourierLoaderNavigationState.NavigateToAppUpdate -> {
+                    findNavController().navigate(
+                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierVersionControlFragment()
+                    )
+                }
             }
         }
 
