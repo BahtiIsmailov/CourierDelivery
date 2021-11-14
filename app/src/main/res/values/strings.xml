@@ -36,6 +36,9 @@
     <string name="courier_expects_message" />
     <string name="courier_expects_positive">Понятно</string>
 
+    <string name="splash_uri_play_market">market://details?id=%s</string>
+    <string name="splash_uri_google">https://play.google.com/store/apps/details?id=%s</string>
+
     <!--pin-->
     <string name="input_sms_repeat_status_timer">Повторная отправка кода %s</string>
     <string name="input_sms_repeat_no_timer">Отправить код повторно</string>
@@ -387,6 +390,10 @@
     <string name="congratulation_info">Осталось вернуть возратные коробки\nна РЦ</string>
     <string name="congratulation_info_count">%1$d / %2$d</string>
     <string name="congratulation_complete_delivery">Перейти к возврату на РЦ</string>
+
+    <string name="courier_version_control_title">Доступна новая версия!</string>
+    <string name="courier_version_control_info">Обновите приложение, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_update">Обновить</string>
 
     <string name="dc_congratulation_title">Вы завершили рейс</string>
     <string name="dc_congratulation_info">Спасибо за проделанную работу!</string>

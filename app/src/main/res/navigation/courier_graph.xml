@@ -58,6 +58,9 @@
         <action
             android:id="@+id/action_courierLoaderFragment_to_courierAgreementFragment"
             app:destination="@id/courierAgreementFragment" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierVersionControlFragment"
+            app:destination="@id/courierVersionControlFragment" />
     </fragment>
 
     <fragment
@@ -374,5 +377,11 @@
         android:name="ru.wb.perevozka.ui.courierbilling.CourierBillingFragment"
         android:label="CourierBalanceFragment"
         tools:layout="@layout/courier_billing_fragment"/>
+
+    <fragment
+        android:id="@+id/courierVersionControlFragment"
+        android:name="ru.wb.perevozka.ui.courierversioncontrol.CourierVersionControlFragment"
+        android:label="CourierVersionControlFragment"
+        tools:layout="@layout/courier_version_control_fragment"/>
 
 </navigation>
