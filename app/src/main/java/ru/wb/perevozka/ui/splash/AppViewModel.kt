@@ -122,9 +122,10 @@ class AppViewModel(
     }
 
     fun checkUpdateVersionApp() {
-        _appVersionState.value = AppVersionState.UpToDateProgress
-        addSubscription(interactor.checkUpdateApp()
-            .subscribe({ checkUpdateVersionAppComplete(it) }, { checkUpdateVersionAppError() }))
+        // TODO: 14.11.2021 выключено до актуализации FTP сервера
+//        _appVersionState.value = AppVersionState.UpToDateProgress
+//        addSubscription(interactor.checkUpdateApp()
+//            .subscribe({ checkUpdateVersionAppComplete(it) }, { checkUpdateVersionAppError() }))
     }
 
     private fun checkUpdateVersionAppComplete(appVersionState: AppVersionState) {
@@ -136,9 +137,10 @@ class AppViewModel(
     }
 
     fun updateVersionApp(destination: String) {
-        _appVersionState.value = AppVersionState.UpdateProgress
-        addSubscription(interactor.getUpdateApp(destination)
-            .subscribe({ getUpdateAppComplete(it) }, { getUpdateAppError() }))
+        // TODO: 14.11.2021 выключено до актуализации FTP сервера
+//        _appVersionState.value = AppVersionState.UpdateProgress
+//        addSubscription(interactor.getUpdateApp(destination)
+//            .subscribe({ getUpdateAppComplete(it) }, { getUpdateAppError() }))
     }
 
     private fun getUpdateAppComplete(appVersionState: AppVersionState) {
@@ -148,6 +150,5 @@ class AppViewModel(
     private fun getUpdateAppError() {
         _appVersionState.value = AppVersionState.UpdateError
     }
-
 
 }

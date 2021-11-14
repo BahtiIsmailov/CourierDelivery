@@ -392,7 +392,8 @@
     <string name="congratulation_complete_delivery">Перейти к возврату на РЦ</string>
 
     <string name="courier_version_control_title">Доступна новая версия!</string>
-    <string name="courier_version_control_info">Обновите приложение, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_info">Запросите новую версию\nУстановите её, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_info_">Обновите приложение, чтобы\nпродолжить работу</string>
     <string name="courier_version_control_update">Обновить</string>
 
     <string name="dc_congratulation_title">Вы завершили рейс</string>

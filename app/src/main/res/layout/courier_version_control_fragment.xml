@@ -45,6 +45,7 @@
     <ru.wb.perevozka.views.ProgressButtonView
         android:id="@+id/complete_delivery"
         android:layout_width="0dp"
+        android:visibility="gone"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
