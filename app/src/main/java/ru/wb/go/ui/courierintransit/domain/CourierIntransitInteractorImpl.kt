@@ -3,7 +3,6 @@ package ru.wb.go.ui.courierintransit.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import ru.wb.go.app.PREFIX_QR_CODE
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
@@ -11,6 +10,8 @@ import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierTaskStatusesIntransitEntity
+import ru.wb.go.network.monitor.NetworkMonitorRepository
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -22,6 +23,7 @@ import ru.wb.go.utils.time.TimeFormatter
 
 class CourierIntransitInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val scannerRepository: ScannerRepository,
@@ -30,6 +32,11 @@ class CourierIntransitInteractorImpl(
     private val timeFormatter: TimeFormatter,
     private val courierMapRepository: CourierMapRepository,
 ) : CourierIntransitInteractor {
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
 
     override fun observeBoxesGroupByOffice(): Observable<List<CourierIntransitGroupByOfficeEntity>> {
         return courierLocalRepository.observeBoxesGroupByOffice()
@@ -69,30 +76,30 @@ class CourierIntransitInteractorImpl(
     override fun completeDelivery(): Single<CompleteDeliveryResult> {
         return courierLocalRepository.readNotUnloadingBoxes()
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
-            .flatMapCompletable { intransitBoxes ->
-                if (intransitBoxes.isEmpty()) {
-                    // TODO: 24.09.2021 выключить для тестирования
-                    //Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-                    Completable.complete()
-                } else {
-                    taskId().flatMapCompletable { taskId ->
-                        // TODO: 24.09.2021 выключить для тестирования
-//                        Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-                        taskStatusesIntransit(
-                            taskId,
-                            intransitBoxes
-                        )
-                    }
-                }
-            }
-            .andThen(taskId().flatMapCompletable {
-                // TODO: 24.09.2021 выключить для тестирования
-//                Completable.timer(2, TimeUnit.SECONDS)
-                taskStatusesEnd(it)
-            })
+            .flatMapCompletable { sendIntransitBoxes(it) }
+            .andThen(taskToEnd())
             .andThen(getCompleteDeliveryResult())
             .doOnSuccess { clearData() }
             .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    private fun sendIntransitBoxes(intransitBoxes: List<CourierTaskStatusesIntransitEntity>) =
+        if (intransitBoxes.isEmpty()) {
+            // TODO: 24.09.2021 выключить для тестирования
+            //Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
+            Completable.complete()
+        } else {
+            taskId().flatMapCompletable { taskId ->
+                // TODO: 24.09.2021 выключить для тестирования
+                // Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
+                taskStatusesIntransit(taskId, intransitBoxes)
+            }
+        }
+
+    private fun taskToEnd() = taskId().flatMapCompletable {
+        // TODO: 24.09.2021 выключить для тестирования
+        // Completable.timer(2, TimeUnit.SECONDS)
+        taskStatusesEnd(it)
     }
 
     private fun clearData() {
@@ -111,8 +118,8 @@ class CourierIntransitInteractorImpl(
         intransitBoxes: List<CourierTaskStatusesIntransitEntity>
     ) = appRemoteRepository.taskStatusesIntransit(taskId, intransitBoxes)
 
-    private fun convertToCourierTaskStatusesIntransitEntity(item: List<CourierBoxEntity>) =
-        Observable.fromIterable(item).map {
+    private fun convertToCourierTaskStatusesIntransitEntity(boxes: List<CourierBoxEntity>) =
+        Observable.fromIterable(boxes).map {
             with(it) {
                 CourierTaskStatusesIntransitEntity(
                     id = id,

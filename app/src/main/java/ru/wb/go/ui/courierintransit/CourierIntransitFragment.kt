@@ -26,6 +26,7 @@ import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.courierintransit.delegates.*
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
@@ -85,6 +86,15 @@ class CourierIntransitFragment : Fragment() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkState.Failed ->
+                    binding.toolbarLayout.noInternetImage.visibility = VISIBLE
+                is NetworkState.Complete ->
+                    binding.toolbarLayout.noInternetImage.visibility = INVISIBLE
+            }
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -306,7 +316,12 @@ class CourierIntransitFragment : Fragment() {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitFailedUnloadingAllDelegate(requireContext(), itemCallback))
-            addDelegate(CourierIntransitFailedUnloadingExpectsDelegate(requireContext(), itemCallback))
+            addDelegate(
+                CourierIntransitFailedUnloadingExpectsDelegate(
+                    requireContext(),
+                    itemCallback
+                )
+            )
             addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
         binding.routes.adapter = adapter

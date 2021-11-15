@@ -3,14 +3,13 @@ package ru.wb.go.ui.courierintransit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.app.AppConsts
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.courierintransit.delegates.CourierIntransitUnloadingExpectsDelegate
 import ru.wb.go.ui.courierintransit.delegates.items.*
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
@@ -35,6 +34,10 @@ class CourierIntransitViewModel(
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
 
     private val _orderDetails = MutableLiveData<CourierIntransitItemState>()
     val orderDetails: LiveData<CourierIntransitItemState>
@@ -71,29 +74,22 @@ class CourierIntransitViewModel(
 
     init {
         initToolbar()
+        observeNetworkState()
         initOffices()
         initTime()
         initScanner()
-
-        addSubscription(
-            interactor.observeMapAction().subscribe({
-                when (it) {
-                    is CourierMapAction.ItemClick -> {
-                    }
-                    CourierMapAction.PermissionComplete -> {
-                        LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
-                        initOffices()
-                    }
-                    is CourierMapAction.AutomatedLocationUpdate -> {}
-                    is CourierMapAction.ForcedLocationUpdate -> {}
-                }
-            },
-                {}
-            ))
+        observeMapAction()
     }
 
     private fun initToolbar() {
         _toolbarLabelState.value = Label(resourceProvider.getLabel())
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected()
+                .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
 
     private fun initOffices() {
@@ -132,6 +128,25 @@ class CourierIntransitViewModel(
         )
     }
 
+    private fun observeMapAction() {
+        addSubscription(
+            interactor.observeMapAction().subscribe({
+                when (it) {
+                    is CourierMapAction.ItemClick -> {
+                    }
+                    CourierMapAction.PermissionComplete -> {
+                        LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
+                        initOffices()
+                    }
+                    is CourierMapAction.AutomatedLocationUpdate -> {
+                    }
+                    is CourierMapAction.ForcedLocationUpdate -> {
+                    }
+                }
+            },
+                {}
+            ))
+    }
 
     private fun initOfficesError(it: Throwable) {
         LogUtils { logDebugApp("initOrderItemsError " + it) }

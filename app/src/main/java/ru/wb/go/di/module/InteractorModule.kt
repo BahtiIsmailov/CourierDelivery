@@ -511,6 +511,7 @@ val interactorModule = module {
 
     fun provideCourierIntransitInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         scannerRepository: ScannerRepository,
@@ -521,6 +522,7 @@ val interactorModule = module {
     ): CourierIntransitInteractor {
         return CourierIntransitInteractorImpl(
             rxSchedulerFactory,
+            networkMonitorRepository,
             appRemoteRepository,
             courierLocalRepository,
             scannerRepository,
@@ -634,6 +636,7 @@ val interactorModule = module {
     }
     factory {
         provideCourierIntransitInteractor(
+            get(),
             get(),
             get(),
             get(),
