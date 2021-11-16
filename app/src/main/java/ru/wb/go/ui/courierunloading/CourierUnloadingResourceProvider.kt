@@ -5,14 +5,9 @@ import ru.wb.go.R
 
 class CourierUnloadingResourceProvider(private val context: Context) {
 
-    fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
-    fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
-    fun getScanDialogButton() =
-        context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
-
-    fun getSwitchDialogButton() =
-        context.getString(R.string.dc_loading_scan_switch_dialog_message_error)
-
+    fun getScanDialogTitle() = context.getString(R.string.courier_unloading_dialog_title_error)
+    fun getScanDialogMessage() = context.getString(R.string.courier_unloading_dialog_message_error)
+    fun getScanDialogButton() = context.getString(R.string.courier_unloading_dialog_button_error)
 
     fun getBoxDialogTitle() = context.getString(R.string.dc_loading_boxes_remove_dialog_title_error)
 
@@ -33,33 +28,28 @@ class CourierUnloadingResourceProvider(private val context: Context) {
 
     fun getIndex(index: Int) = context.getString(R.string.courier_loading_boxes_index, index)
 
-    fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
-        return context.getString(
-            R.string.unnamed_barcode_format_number,
-            index,
-            barcode.take(4),
-            barcode.takeLast(4)
-        )
-    }
+    fun getReadyStatus(): String =
+        context.getString(R.string.courier_unloading_scanner_ready_status)
 
-    fun getReadyStatus(): String = context.getString(R.string.courier_unloading_scanner_ready_status)
+    fun getReadyUnknownBox(): String =
+        context.getString(R.string.courier_unloading_scanner_unknown_status)
 
-    fun getReadyUnknownBox(): String = context.getString(R.string.courier_unloading_scanner_unknown_status)
-
-    fun getReadyAddedBox(): String = context.getString(R.string.courier_unloading_scanner_added_status)
+    fun getReadyAddedBox(): String =
+        context.getString(R.string.courier_unloading_scanner_added_status)
 
     fun getEmptyQr(): String = context.getString(R.string.courier_unloading_scanner_empty_qr)
 
-    fun getEmptyAddress(): String = context.getString(R.string.courier_unloading_scanner_empty_address)
+    fun getEmptyAddress(): String =
+        context.getString(R.string.courier_unloading_scanner_empty_address)
 
     fun getAccepted(deliveredCount: Int, fromCount: Int): String =
         context.getString(R.string.courier_unloading_scanner_accepted, deliveredCount, fromCount)
 
-    fun getUnloadingDialogTitle(): String = context.getString(R.string.courier_unloading_dialog_complete_title)
+    fun getUnloadingDialogTitle(): String =
+        context.getString(R.string.courier_unloading_dialog_complete_title)
 
     fun getUnloadingDialogMessage(deliveredCount: Int, fromCount: Int): String =
         context.getString(R.string.courier_unloading_dialog_message, deliveredCount, fromCount)
-
 
 
 }

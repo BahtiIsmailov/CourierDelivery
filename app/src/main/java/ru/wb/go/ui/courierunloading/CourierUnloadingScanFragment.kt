@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
@@ -58,6 +59,16 @@ class CourierUnloadingScanFragment : Fragment() {
         initView()
         initListener()
         initObserver()
+        initReturnResult()
+    }
+
+    private fun initReturnResult() {
+        setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onStartScanner()
+            }
+        }
     }
 
     private fun initView() {
@@ -86,7 +97,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showSimpleDialog(it)
+            showDialog(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -246,34 +257,34 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showSimpleDialog(it: CourierUnloadingScanViewModel.NavigateToMessageInfo) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
-        val title: TextView = dialogView.findViewById(R.id.title)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        builder.setView(dialogView)
-
-        val alertDialog: AlertDialog = builder.create()
-
-        title.text = it.title
-        message.text = it.message
-        negative.setOnClickListener {
-            isDialogActive = false
-            alertDialog.dismiss()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = it.button
-        alertDialog.setOnDismissListener {
-            isDialogActive = false
-            viewModel.onStartScanner()
-        }
-        alertDialog.show()
-    }
+//    private fun showSimpleDialog(it: CourierUnloadingScanViewModel.NavigateToMessageInfo) {
+//        val builder: AlertDialog.Builder =
+//            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+//        val viewGroup: ViewGroup = binding.main
+//        val dialogView: View =
+//            LayoutInflater.from(requireContext())
+//                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
+//        val title: TextView = dialogView.findViewById(R.id.title)
+//        val message: TextView = dialogView.findViewById(R.id.message)
+//        val negative: Button = dialogView.findViewById(R.id.negative)
+//        builder.setView(dialogView)
+//
+//        val alertDialog: AlertDialog = builder.create()
+//
+//        title.text = it.title
+//        message.text = it.message
+//        negative.setOnClickListener {
+//            isDialogActive = false
+//            alertDialog.dismiss()
+//        }
+//        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+//        negative.text = it.button
+//        alertDialog.setOnDismissListener {
+//            isDialogActive = false
+//            viewModel.onStartScanner()
+//        }
+//        alertDialog.show()
+//    }
 
     // TODO: 27.08.2021 переработать
     private fun showConfirmDialog(title: String, message: String) {

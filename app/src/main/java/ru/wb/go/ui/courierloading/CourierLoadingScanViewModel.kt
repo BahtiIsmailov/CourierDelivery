@@ -63,8 +63,6 @@ class CourierLoadingScanViewModel(
         observeInitScanProcess()
         observeScanProcess()
         observeScanProgress()
-
-
         getGate()
     }
 
