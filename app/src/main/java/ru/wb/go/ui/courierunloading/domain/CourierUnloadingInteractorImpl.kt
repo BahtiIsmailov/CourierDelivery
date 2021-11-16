@@ -208,39 +208,36 @@ class CourierUnloadingInteractorImpl(
     }
 
     override fun confirmUnloading(officeId: Int): Completable {
-        val insertVisitedAtOfficeIsNotUnload = insertVisitedAtOffice(
-            CourierOrderVisitedOfficeLocalEntity(
-                dstOfficeId = officeId,
-                visitedAt = timeManager.getLocalTime(),
-                isUnload = false
-            )
-        )
-        return insertVisitedAtOfficeIsNotUnload.andThen(courierLocalRepository.readNotUnloadingBoxes())
+        return insertVisitedAtOffice(officeId, false)
+            .andThen(readNotUnloadingBoxes())
             .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
-            .flatMapCompletable { statusesIntransit ->
-                taskId().flatMapCompletable { taskId ->
-                    val saveRemote =
-                        appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
-                    saveRemote.doOnComplete { loaderComplete() }
-                        .andThen(
-                            insertVisitedAtOffice(
-                                CourierOrderVisitedOfficeLocalEntity(
-                                    dstOfficeId = officeId,
-                                    visitedAt = timeManager.getLocalTime(),
-                                    isUnload = true
-                                )
-                            )
-                        )
-                        .andThen(insertAllVisitedOffice())
-                        .onErrorResumeNext { Completable.complete() }
-                        .compose(rxSchedulerFactory.applyCompletableSchedulers())
-                }
-                    .compose(rxSchedulerFactory.applyCompletableSchedulers())
+            .zipWith(taskId()) { statusesIntransit, taskId ->
+                taskStatusesIntransit(statusesIntransit, taskId)
+                    .doOnComplete { loaderComplete() }
+                    .andThen(insertVisitedAtOffice(officeId, true))
+                    .andThen(insertAllVisitedOffice())
             }
+            .onErrorReturn { Completable.complete() }
+            .flatMapCompletable { it }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun insertVisitedAtOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity) =
-        courierLocalRepository.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
+    private fun taskStatusesIntransit(
+        statusesIntransit: List<CourierTaskStatusesIntransitEntity>,
+        taskId: String
+    ) = appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
+
+    private fun readNotUnloadingBoxes() = courierLocalRepository.readNotUnloadingBoxes()
+
+    private fun insertVisitedAtOffice(officeId: Int, isUnloaded: Boolean): Completable {
+        val courierOrderVisitedOfficeLocalEntity = CourierOrderVisitedOfficeLocalEntity(
+            dstOfficeId = officeId,
+            visitedAt = timeManager.getLocalTime(),
+            isUnload = isUnloaded
+        )
+        return courierLocalRepository.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
+    }
+
 
     private fun insertAllVisitedOffice() = courierLocalRepository.insertAllVisitedOffice()
 
@@ -262,6 +259,7 @@ class CourierUnloadingInteractorImpl(
             .first("")
 
 }
+
 
 data class ParseQrCode(val code: String, val dstOfficeId: Int)
 
