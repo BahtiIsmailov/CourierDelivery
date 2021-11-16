@@ -75,7 +75,7 @@ class CourierIntransitViewModel(
     init {
         initToolbar()
         observeNetworkState()
-        initOffices()
+        observeBoxesGroupByOffice()
         initTime()
         initScanner()
         observeMapAction()
@@ -92,9 +92,14 @@ class CourierIntransitViewModel(
         )
     }
 
-    private fun initOffices() {
+    private fun observeBoxesGroupByOffice() {
         addSubscription(
             interactor.observeBoxesGroupByOffice()
+                .map { offices ->
+                    offices.toMutableList().sortedWith(
+                        compareBy({ it.isUnloaded }, { it.deliveredCount == it.fromCount })
+                    )
+                }
                 .subscribe({ initOfficesComplete(it) }, { initOfficesError(it) })
         )
     }
@@ -136,7 +141,7 @@ class CourierIntransitViewModel(
                     }
                     CourierMapAction.PermissionComplete -> {
                         LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
-                        initOffices()
+                        observeBoxesGroupByOffice()
                     }
                     is CourierMapAction.AutomatedLocationUpdate -> {
                     }
@@ -167,7 +172,7 @@ class CourierIntransitViewModel(
                 fromCountTotal += fromCount
                 val intransitItem: BaseIntransitItem
                 val mapMarker: CourierMapMarker
-                if (deliveredCount == 0) {
+                if (deliveredCount == 0 && visitedAt.isEmpty()) {
                     intransitItem = CourierIntransitEmptyItem(
                         id = index,
                         fullAddress = address,
@@ -182,8 +187,8 @@ class CourierIntransitViewModel(
                     )
                 } else {
                     if (deliveredCount == fromCount) {
-                        intransitItem = if (isUnloaded) {
-                            CourierIntransitCompleteItem(
+                        if (isUnloaded) {
+                            intransitItem = CourierIntransitCompleteItem(
                                 id = index,
                                 fullAddress = address,
                                 deliveryCount = deliveredCount.toString(),
@@ -191,21 +196,28 @@ class CourierIntransitViewModel(
                                 isSelected = DEFAULT_SELECT_ITEM,
                                 idView = index
                             )
+
+                            mapMarker = Complete(
+                                MapPoint(index.toString(), latitude, longitude),
+                                resourceProvider.getCompleteMapIcon()
+                            )
+
                         } else {
-                            CourierIntransitUnloadingExpectsItem(
+                            intransitItem = CourierIntransitUnloadingExpectsItem(
                                 id = index,
                                 fullAddress = address,
                                 deliveryCount = deliveredCount.toString(),
                                 fromCount = fromCount.toString(),
                                 isSelected = DEFAULT_SELECT_ITEM,
                                 idView = index
+                            )
+
+                            mapMarker = Wait(
+                                MapPoint(index.toString(), latitude, longitude),
+                                resourceProvider.getWaitMapIcon()
                             )
                         }
 
-                        mapMarker = Complete(
-                            MapPoint(index.toString(), latitude, longitude),
-                            resourceProvider.getCompleteMapIcon()
-                        )
                     } else {
                         intransitItem = if (isUnloaded) {
                             CourierIntransitFailedUnloadingAllItem(
@@ -367,6 +379,7 @@ class CourierIntransitViewModel(
             is Empty -> resourceProvider.getEmptyMapIcon()
             is Failed -> resourceProvider.getFailedMapIcon()
             is Complete -> resourceProvider.getCompleteMapIcon()
+            is Wait -> resourceProvider.getWaitMapIcon()
             else -> resourceProvider.getEmptyMapIcon()
         }
 
@@ -375,6 +388,7 @@ class CourierIntransitViewModel(
             is Empty -> resourceProvider.getEmptyMapSelectedIcon()
             is Failed -> resourceProvider.getFailedMapSelectedIcon()
             is Complete -> resourceProvider.getCompleteMapSelectIcon()
+            is Wait -> resourceProvider.getWaitMapSelectedIcon()
             else -> resourceProvider.getEmptyMapSelectedIcon()
         }
 

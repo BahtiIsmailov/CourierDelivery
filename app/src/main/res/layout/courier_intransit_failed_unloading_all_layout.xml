@@ -95,7 +95,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_unload_office_faild"
+        android:src="@drawable/ic_unload_failed_office"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="parent" />
