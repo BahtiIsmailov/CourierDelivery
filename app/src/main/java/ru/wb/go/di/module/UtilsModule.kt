@@ -2,10 +2,15 @@ package ru.wb.go.di.module
 
 import android.app.Application
 import com.google.gson.Gson
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import ru.wb.go.app.AppConfig
 import ru.wb.go.db.AppLocalRepository
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.TokenManager
+import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.analytics.YandexMetricManagerImpl
 import ru.wb.go.utils.managers.*
 import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.prefs.SharedWorkerImpl
@@ -13,8 +18,6 @@ import ru.wb.go.utils.reader.ConfigReader
 import ru.wb.go.utils.reader.ConfigReaderImpl
 import ru.wb.go.utils.time.TimeFormatter
 import ru.wb.go.utils.time.TimeFormatterImpl
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
 
 const val PATH_CONFIG_NAMED = "pathConfig"
 
@@ -58,11 +61,17 @@ val utilsModule = module {
         appLocalRepository: AppLocalRepository,
         timeManager: TimeManager,
     ): ScreenManager {
-        return ScreenManagerImpl(worker,
+        return ScreenManagerImpl(
+            worker,
             rxSchedulerFactory,
             appRemoteRepository,
             appLocalRepository,
-            timeManager)
+            timeManager
+        )
+    }
+
+    fun provideYandexMetricManager(tokenManager: TokenManager): YandexMetricManager {
+        return YandexMetricManagerImpl(tokenManager)
     }
 
     single { provideSharedWorker(get(), get()) }
@@ -73,5 +82,6 @@ val utilsModule = module {
     single { provideTimeFormatter() }
     single { provideTimeManager(get(), get()) }
     single { provideScreenManager(get(), get(), get(), get(), get()) }
+    single { provideYandexMetricManager(get()) }
 
 }

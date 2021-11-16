@@ -140,7 +140,7 @@ val viewModelModule = module {
     }
 
     viewModel { CourierScannerViewModel(get(), get()) }
-    viewModel { CourierIntransitViewModel(get(), get(), get(), get()) }
+    viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
             parameters,

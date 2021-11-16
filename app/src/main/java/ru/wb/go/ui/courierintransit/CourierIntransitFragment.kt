@@ -212,8 +212,8 @@ class CourierIntransitFragment : Fragment() {
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.closeScannerLayout.setOnClickListener { viewModel.closeScannerClick() }
-        binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.scanQrPvzClick() }
+        binding.scanQrPvz.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDelivery.setOnClickListener { viewModel.completeDeliveryClick() }
     }
 

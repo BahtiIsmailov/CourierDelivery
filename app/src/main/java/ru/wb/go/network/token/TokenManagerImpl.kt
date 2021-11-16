@@ -11,6 +11,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return VERSION_API
     }
 
+    override fun wbUserID(): String {
+        return tokenResource().extra.wbUserID.toString()
+    }
+
     override fun saveToken(token: TokenEntity) {
         worker.save(AppPreffsKeys.TOKEN_KEY, token)
     }
@@ -28,15 +32,15 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     override fun userName(): String {
-        return tokenResource().sub ?: ""
+        return tokenResource().sub
     }
 
     override fun userCompany(): String {
-        return tokenResource().extra.company ?: ""
+        return tokenResource().extra.company
     }
 
     override fun userCompanyId(): String {
-        return tokenResource().extra.companyID.toString() ?: ""
+        return tokenResource().extra.companyID.toString()
     }
 
     override fun userPhone(): String {
