@@ -238,10 +238,10 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.closeScannerLayout.setOnClickListener { viewModel.closeScannerClick() }
-        binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.scanQrPvzClick() }
-        binding.completeDelivery.setOnClickListener { viewModel.completeDeliveryClick() }
+        binding.scanQrPvz.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
+        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
     }
 
     // TODO: 20.08.2021 переработать

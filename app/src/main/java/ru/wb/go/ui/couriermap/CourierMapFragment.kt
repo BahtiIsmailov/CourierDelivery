@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -35,8 +36,6 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapCircle
 import ru.wb.go.utils.map.MapPoint
 
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-
 
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
@@ -47,6 +46,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         private const val MY_LOCATION_ID = "my_location_id"
         private const val MIN_ZOOM = 8.0
         private const val MAX_ZOOM = 20.0
+        private const val DEFAULT_POINT_ZOOM = 13.0
         private const val SIZE_IN_PIXELS = 100
     }
 
@@ -179,7 +179,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private fun navigateToPoint(it: MapPoint) {
         val point = GeoPoint(it.lat, it.long)
-        mapController.setZoom(14.0)
+        mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
     }
 

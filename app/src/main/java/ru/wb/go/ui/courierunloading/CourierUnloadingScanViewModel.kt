@@ -123,6 +123,10 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onConfirmUnloadingClick() {
+        confirmUnloading()
+    }
+
+    private fun confirmUnloading() {
         _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
             interactor.confirmUnloading(parameters.officeId)
@@ -244,7 +248,7 @@ class CourierUnloadingScanViewModel(
         addSubscription(
             interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
                 if (it.fromCount == it.unloadedCount) {
-                    confirmUnloadingComplete()
+                    confirmUnloading()
                 } else {
                     _navigateToDialogConfirmInfo.value = NavigateToDialogConfirmInfo(
                         DialogInfoStyle.ERROR.ordinal,

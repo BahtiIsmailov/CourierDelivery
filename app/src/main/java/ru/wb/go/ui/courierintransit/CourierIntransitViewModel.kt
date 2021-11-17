@@ -292,11 +292,12 @@ class CourierIntransitViewModel(
         }
     }
 
-    fun scanQrPvzClick() {
+    fun onScanQrPvzClick() {
+        onStartScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
     }
 
-    fun completeDeliveryClick() {
+    fun onCompleteDeliveryClick() {
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
@@ -339,7 +340,8 @@ class CourierIntransitViewModel(
         _navigateToInformation.value = message
     }
 
-    fun closeScannerClick() {
+    fun onCloseScannerClick() {
+        onStopScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToMap
     }
 

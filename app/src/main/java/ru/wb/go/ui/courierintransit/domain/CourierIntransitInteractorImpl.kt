@@ -137,7 +137,7 @@ class CourierIntransitInteractorImpl(
 
     private fun observeOfficeIdScan(): Observable<CourierIntransitScanOfficeData> {
         return scannerRepository.observeBarcodeScanned()
-            .filter { it.startsWith(PREFIX_QR_OFFICE_CODE) }
+//            .filter { it.startsWith(PREFIX_QR_OFFICE_CODE) }
             .map { parseQrCode(it) }
             .flatMap { scanOfficeId ->
                 courierLoadingScanBoxData().map { it.dstOffices }
@@ -152,7 +152,7 @@ class CourierIntransitInteractorImpl(
     }
 
     private fun parseQrCode(qrCode: String): String {
-        return getSplitInfo(qrCode)[1]
+        return if (qrCode.startsWith(PREFIX_QR_OFFICE_CODE)) getSplitInfo(qrCode)[1] else "0"
     }
 
     private fun getSplitInfo(input: String): List<String> {

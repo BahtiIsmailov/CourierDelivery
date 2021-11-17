@@ -27,7 +27,6 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.ScreenManager
 import ru.wb.go.utils.managers.TimeManager
-import java.util.concurrent.TimeUnit
 
 class CourierLoadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -156,7 +155,6 @@ class CourierLoadingInteractorImpl(
 
     private fun observeBoxDefinitionResult(): Observable<CourierBoxDefinitionResult> {
         return scannerRepository.observeBarcodeScanned()
-            .filter { it.startsWith(PREFIX_QR_CODE) }
             .map { parseQrCode(it) }
             .flatMapSingle { boxDefinitionResult(it) }
     }
@@ -191,8 +189,12 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun parseQrCode(qrCode: String): ParseQrCode {
-        val parseParams = getSplitInfo(getInfo(qrCode))
-        return ParseQrCode(parseParams[0], parseParams[1])
+        return if (qrCode.startsWith(PREFIX_QR_CODE)) {
+            val parseParams = getSplitInfo(getInfo(qrCode))
+            ParseQrCode(parseParams[0], parseParams[1])
+        } else {
+            ParseQrCode("", "")
+        }
     }
 
     private fun getSplitInfo(input: String): List<String> {
