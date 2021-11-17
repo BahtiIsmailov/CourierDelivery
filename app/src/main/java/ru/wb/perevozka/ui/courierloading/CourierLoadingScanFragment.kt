@@ -402,7 +402,8 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun beepFirstSuccess() {
-        play(R.raw.qr_box_first_accepted)
+        // TODO: 17.11.2021 выключено до замены мелодии
+        //play(R.raw.qr_box_first_accepted)
     }
 
     private fun beepSuccess() {
