@@ -191,7 +191,6 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun stopScanner() {
         LogUtils { logDebugApp("Scanner stopScanner()") }
-        viewModel.clearMemoryBarcode()
         scannerView.stopCamera()
     }
 

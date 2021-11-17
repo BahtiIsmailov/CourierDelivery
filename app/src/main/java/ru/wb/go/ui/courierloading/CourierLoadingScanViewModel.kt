@@ -270,7 +270,7 @@ class CourierLoadingScanViewModel(
         val message = when (throwable) {
             is NoInternetException -> {
                 NavigateToMessageInfo(
-                    "Интернет-сщудинеие отсутствует",
+                    "Интернет-соединеие отсутствует",
                     "Проверте соединение и повторите попытку",
                     "Понятно"
                 )

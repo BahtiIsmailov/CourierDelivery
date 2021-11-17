@@ -465,7 +465,7 @@
     <string name="user_form_agreement_link">договором оферты</string>
     <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
 
-    <string name="start_delivery_title">Заказ взят в работу</string>
+    <string name="start_delivery_title">Погрузка завершена</string>
     <string name="start_delivery_amount">Стоимость задания</string>
     <string name="start_delivery_count">коробки</string>
     <string name="start_delivery">Начать доставку</string>
