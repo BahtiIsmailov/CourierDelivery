@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/authLoaderFragment"
-        android:name="ru.wb.perevozka.ui.auth.AuthLoaderFragment"
+        android:name="ru.wb.go.ui.auth.AuthLoaderFragment"
         android:label=""
         tools:layout="@layout/auth_loader_fragment">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/authNumberPhoneFragment"
-        android:name="ru.wb.perevozka.ui.auth.NumberPhoneFragment"
+        android:name="ru.wb.go.ui.auth.NumberPhoneFragment"
         android:label="@string/auth_number_phone_toolbar_label"
         tools:layout="@layout/auth_phone_fragment">
         <action
@@ -37,17 +37,17 @@
 
     <activity
         android:id="@+id/authConfigActivity"
-        android:name="ru.wb.perevozka.ui.config.ConfigActivity"
+        android:name="ru.wb.go.ui.config.ConfigActivity"
         tools:layout="@layout/config_activity" />
 
     <fragment
         android:id="@+id/checkSmsFragment"
-        android:name="ru.wb.perevozka.ui.auth.CheckSmsFragment"
+        android:name="ru.wb.go.ui.auth.CheckSmsFragment"
         android:label="CheckSmsFragment"
         tools:layout="@layout/auth_check_sms_fragment">
         <argument
             android:name="check_sms_key"
-            app:argType="ru.wb.perevozka.ui.auth.CheckSmsParameters"
+            app:argType="ru.wb.go.ui.auth.CheckSmsParameters"
             app:nullable="false" />
     </fragment>
 

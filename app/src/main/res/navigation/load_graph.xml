@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/authLoaderFragment"
-        android:name="ru.wb.perevozka.ui.splash.AppLoaderFragment"
+        android:name="ru.wb.go.ui.splash.AppLoaderFragment"
         android:label="@string/auth_load"
         tools:layout="@layout/app_loader_fragment">
 

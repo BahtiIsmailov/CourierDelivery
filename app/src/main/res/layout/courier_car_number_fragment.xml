@@ -54,7 +54,7 @@
         app:layout_constraintStart_toStartOf="@+id/car_number"
         app:layout_constraintTop_toBottomOf="@+id/car_number" />
 
-    <ru.wb.perevozka.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
+    <ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
         android:id="@+id/view_keyboard"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -78,7 +78,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/cancel"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
@@ -95,7 +95,7 @@
         app:progress_button_text_color_enable="@color/button_default_text_enable1"
         app:progress_button_text_color_progress="@color/button_default_text_progress" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/confirm"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"

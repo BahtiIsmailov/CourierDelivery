@@ -57,7 +57,7 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <ru.wb.perevozka.ui.unloadingscan.views.UnloadingAcceptedView
+            <ru.wb.go.ui.unloadingscan.views.UnloadingAcceptedView
                 android:id="@+id/unloading_box"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
@@ -72,7 +72,7 @@
                 app:unloading_accepted_box="0/0"
                 app:unloading_accepted_state="empty_box" />
 
-            <ru.wb.perevozka.ui.unloadingscan.views.UnloadingReturnView
+            <ru.wb.go.ui.unloadingscan.views.UnloadingReturnView
                 android:id="@+id/return_box"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
@@ -87,7 +87,7 @@
                 app:unloading_return_box="0/0"
                 app:unloading_return_state="empty_box" />
 
-            <ru.wb.perevozka.ui.unloadingscan.views.UnloadingInfoView
+            <ru.wb.go.ui.unloadingscan.views.UnloadingInfoView
                 android:id="@+id/info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
 
     </FrameLayout>
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/manual_input"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -128,7 +128,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline_button" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -23,12 +23,12 @@
                 android:text="@string/debug_panel_caption"
                 android:textSize="18sp" />
 
-            <ru.wb.perevozka.views.SelectorView
+            <ru.wb.go.views.SelectorView
                 android:id="@+id/auth_api_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <ru.wb.perevozka.views.SelectorView
+            <ru.wb.go.views.SelectorView
                 android:id="@+id/app_api_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

@@ -43,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@+id/status"
         tools:listitem="@layout/flight_pick_point_delegte" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/go_to_delivery"
         android:layout_width="match_parent"
         android:layout_height="72dp"

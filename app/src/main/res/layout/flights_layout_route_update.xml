@@ -38,7 +38,7 @@
         app:layout_constraintStart_toStartOf="@id/content_left"
         app:layout_constraintTop_toTopOf="@+id/content_top" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/update"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/map"
-        class="ru.wb.perevozka.ui.couriermap.CourierMapFragment"
+        class="ru.wb.go.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/content_center"
@@ -97,7 +97,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/content_center" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/update"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"

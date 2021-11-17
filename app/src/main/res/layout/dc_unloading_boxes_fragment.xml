@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ru.wb.perevozka.views.WrapContentListView
+    <ru.wb.go.views.WrapContentListView
         android:id="@+id/boxes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -24,7 +24,7 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:listitem="@layout/dc_unloading_boxes_item_layout" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"

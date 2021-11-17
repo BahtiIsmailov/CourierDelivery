@@ -53,7 +53,7 @@
         android:gravity="center_vertical"
         tools:text="4 шт." />
 
-    <ru.wb.perevozka.views.WrapContentListView
+    <ru.wb.go.views.WrapContentListView
         android:id="@+id/boxes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -64,7 +64,7 @@
         android:dividerHeight="0dp"
         tools:listitem="@layout/forced_termination_legend" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="match_parent"
         android:layout_height="72dp"

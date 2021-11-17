@@ -41,7 +41,7 @@
         app:layout_constraintTop_toBottomOf="@+id/self_employed_title" />
 
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/update_status"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"

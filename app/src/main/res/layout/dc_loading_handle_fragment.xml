@@ -69,7 +69,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ru.wb.perevozka.views.ProgressImageButtonView
+        <ru.wb.go.views.ProgressImageButtonView
             android:id="@+id/accept"
             android:layout_width="0dp"
             android:layout_height="@dimen/auth_button_height"
