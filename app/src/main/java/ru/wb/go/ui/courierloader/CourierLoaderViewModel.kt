@@ -27,6 +27,7 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
@@ -39,7 +40,8 @@ class CourierLoaderViewModel(
     private val authRemoteRepository: AuthRemoteRepository,
     private val appLocalRepository: AppLocalRepository,
     private val userManager: UserManager,
-    private val deviceManager: DeviceManager
+    private val deviceManager: DeviceManager,
+    private val configManager: ConfigManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -60,17 +62,25 @@ class CourierLoaderViewModel(
         initVersion()
     }
 
+    // TODO: 17.11.2021 реализовать локальное хранилище версии исполльзовать его при отсутствии инета
     private fun initVersion() {
         addSubscription(
-            appRemoteRepository.appVersion().compose(rxSchedulerFactory.applySingleSchedulers()).subscribe(
-                { version ->
-                    val locals = versionCodeToInt(deviceManager.appVersion)
-                    val remotes = versionCodeToInt(version)
-                    if (isVersionActual(locals, remotes)) loadApp()
-                    else toAppUpdate()
-                },
-                {})
+            appRemoteRepository.appVersion().compose(rxSchedulerFactory.applySingleSchedulers())
+                .subscribe(
+                    { version ->
+                        val remotes = versionCodeToInt(version)
+                        configManager.saveAppVersion(remotes)
+                        appStart(remotes)
+                    },
+                    {
+                        appStart(configManager.readAppVersion())
+                    })
         )
+    }
+
+    private fun appStart(remotes: Int) {
+        if (isVersionActual(remotes)) loadApp()
+        else toAppUpdate()
     }
 
     private fun loadApp() {
@@ -93,8 +103,8 @@ class CourierLoaderViewModel(
         //_navigationDrawerState.value = toPhone()
     }
 
-    private fun isVersionActual(locals: Int, remotes: Int): Boolean {
-        return locals >= remotes
+    private fun isVersionActual(remotes: Int): Boolean {
+        return versionCodeToInt(deviceManager.appVersion) >= remotes
     }
 
     private fun versionCodeToInt(code: String): Int {

@@ -1,6 +1,7 @@
 package ru.wb.go.utils.managers
 
 import ru.wb.go.app.AppPreffsKeys.APP_SERVER_KEY
+import ru.wb.go.app.AppPreffsKeys.APP_VERSION_KEY
 import ru.wb.go.app.AppPreffsKeys.AUTH_SERVER_KEY
 import ru.wb.go.ui.config.data.ConfigDao
 import ru.wb.go.ui.config.data.KeyValueDao
@@ -41,6 +42,14 @@ class ConfigManagerImpl(private val reader: ConfigReader, private val worker: Sh
 
     override fun readAppServerUrl(): String {
         return serverUrl(readDaoAppServerUrl())
+    }
+
+    override fun saveAppVersion(version: Int) {
+        worker.save(APP_VERSION_KEY, version)
+    }
+
+    override fun readAppVersion(): Int {
+        return worker.load(APP_VERSION_KEY, 0)
     }
 
     private fun serverUrl(keyValueDao: KeyValueDao?): String {
