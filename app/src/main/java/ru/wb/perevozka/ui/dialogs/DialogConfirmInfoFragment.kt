@@ -106,7 +106,7 @@ class DialogConfirmInfoFragment : DialogFragment() {
             message: String,
             positiveButtonName: String,
             negativeButtonName: String,
-        ): DialogInfoFragment {
+        ): DialogConfirmInfoFragment {
             val args = Bundle()
             args.putString(AppExtras.EXTRA_DIALOG_RESULT_TAG, resultTag)
             args.putInt(AppExtras.EXTRA_DIALOG_TYPE, type)
@@ -114,7 +114,7 @@ class DialogConfirmInfoFragment : DialogFragment() {
             args.putString(AppExtras.EXTRA_DIALOG_MESSAGE, message)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
             args.putString(AppExtras.EXTRA_DIALOG_NEGATIVE_BUTTON_TITLE, negativeButtonName)
-            val fragment = DialogInfoFragment()
+            val fragment = DialogConfirmInfoFragment()
             fragment.arguments = args
             return fragment
         }

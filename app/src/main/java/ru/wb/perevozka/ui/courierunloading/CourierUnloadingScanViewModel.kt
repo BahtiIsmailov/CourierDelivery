@@ -118,11 +118,11 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    fun cancelUnloadingClick() {
+    fun onCancelUnloadingClick() {
         onStartScanner()
     }
 
-    fun confirmUnloadingClick() {
+    fun onConfirmUnloadingClick() {
         _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
             interactor.confirmUnloading(parameters.officeId)
@@ -243,13 +243,20 @@ class CourierUnloadingScanViewModel(
         onStopScanner()
         addSubscription(
             interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
-                _navigateToDialogConfirmInfo.value = NavigateToDialogConfirmInfo(
-                    DialogInfoStyle.INFO.ordinal,
-                    resourceProvider.getUnloadingDialogTitle(),
-                    resourceProvider.getUnloadingDialogMessage(it.unloadedCount, it.fromCount),
-                    resourceProvider.getUnloadingDialogPositive(),
-                    resourceProvider.getUnloadingDialogNegative()
-                )
+                if (it.fromCount == it.unloadedCount) {
+                    confirmUnloadingComplete()
+                } else {
+                    _navigateToDialogConfirmInfo.value = NavigateToDialogConfirmInfo(
+                        DialogInfoStyle.ERROR.ordinal,
+                        resourceProvider.getUnloadingDialogTitle(),
+                        resourceProvider.getUnloadingDialogMessage(
+                            it.unloadedCount,
+                            it.fromCount
+                        ),
+                        resourceProvider.getUnloadingDialogPositive(),
+                        resourceProvider.getUnloadingDialogNegative()
+                    )
+                }
             },
                 { onStartScanner() })
         )

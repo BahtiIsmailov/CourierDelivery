@@ -77,10 +77,10 @@ class CourierUnloadingScanFragment : Fragment() {
 
         setFragmentResultListener(DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
-                viewModel.confirmUnloadingClick()
+                viewModel.onConfirmUnloadingClick()
             }
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                viewModel.cancelUnloadingClick()
+                viewModel.onCancelUnloadingClick()
             }
         }
     }

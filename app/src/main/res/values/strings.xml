@@ -246,7 +246,7 @@
     <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
 
     <string name="courier_loading_dialog_done_title">Завершить погрузку?</string>
-    <string name="courier_loading_dialog_done_message">Вы уверены, что хотите начать развозить коробки</string>
+    <string name="courier_loading_dialog_done_message">Вы больше не сможете погрузить коробки</string>
 
     <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
     <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>

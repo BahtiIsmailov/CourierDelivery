@@ -367,19 +367,19 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun showDialogConfirmInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String,
         negativeButtonName: String
     ) {
         DialogConfirmInfoFragment.newInstance(
-            DIALOG_LOADING_CONFIRM_TAG,
-            style,
-            title,
-            message,
-            positiveButtonName,
-            negativeButtonName
+            resultTag = DIALOG_LOADING_CONFIRM_TAG,
+            type= type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
         ).show(parentFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
