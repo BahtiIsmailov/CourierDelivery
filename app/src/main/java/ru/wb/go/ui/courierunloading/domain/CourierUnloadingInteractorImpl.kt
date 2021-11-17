@@ -164,7 +164,7 @@ class CourierUnloadingInteractorImpl(
 
     private fun parseQrCode(qrCode: String): ParseQrCode {
         val parseParams = getSplitInfo(getInfo(qrCode))
-        return ParseQrCode(parseParams[0], parseParams[1].toInt())
+        return ParseQrCode(parseParams[0], parseParams[1].trim().toInt())
     }
 
     private fun getSplitInfo(input: String): List<String> {

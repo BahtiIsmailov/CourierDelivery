@@ -82,7 +82,7 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
-            manifestPlaceholders = [appName: "WB Go Debug"]
+            manifestPlaceholders = [appName: "WB Go debug"]
             signingConfig signingConfigs.debug
         }
 

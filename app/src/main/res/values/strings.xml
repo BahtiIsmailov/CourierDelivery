@@ -267,6 +267,10 @@
     <string name="courier_unloading_dialog_complete_title">Завершить выгрузку?</string>
     <string name="courier_unloading_dialog_message">Выгружено • %1$d из %2$d</string>
 
+    <string name="courier_unloading_dialog_title_error">QR-код не распознан</string>
+    <string name="courier_unloading_dialog_message_error">Отсканируйте QR-код повторно</string>
+    <string name="courier_unloading_dialog_button_error">Понятно</string>
+
     <string name="courier_complete_delivery_title">Спасибо за проделанную работу!</string>
     <string name="courier_complete_delivery_earned">Заработано</string>
     <string name="courier_complete_delivery_delivered">Доставлено</string>

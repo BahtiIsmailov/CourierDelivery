@@ -27,4 +27,8 @@ class CourierIntransitResourceProvider(private val context: Context) :
 
     fun getFailedMapSelectedIcon() = R.drawable.ic_unload_office_map_failed_select
 
+    fun getWaitMapIcon() = R.drawable.ic_unload_wait_office_map
+
+    fun getWaitMapSelectedIcon() = R.drawable.ic_unload_wait_office_map_selected
+
 }

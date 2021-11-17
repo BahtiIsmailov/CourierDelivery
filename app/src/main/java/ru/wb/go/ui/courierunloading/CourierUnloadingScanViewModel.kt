@@ -13,6 +13,7 @@ import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProcessData
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProgressData
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingScanBoxData
+import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
 import java.util.concurrent.TimeUnit
@@ -245,17 +246,6 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    private fun switchScreenError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getSwitchDialogButton()
-        }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
-        )
-    }
-
     private fun observeScanProcessError(throwable: Throwable) {
         LogUtils { logDebugApp("observeScanProcessError " + throwable) }
         val error = if (throwable is CompositeException) {
@@ -272,6 +262,7 @@ class CourierUnloadingScanViewModel(
         }
         interactor.scannerAction(ScannerState.Stop)
         _navigateToMessageInfo.value = NavigateToMessageInfo(
+            DialogStyle.ERROR.ordinal,
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }
@@ -286,6 +277,11 @@ class CourierUnloadingScanViewModel(
 
     data class Label(val label: String)
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+    data class NavigateToMessageInfo(
+        val type: Int,
+        val title: String,
+        val message: String,
+        val button: String
+    )
 
 }
