@@ -32,6 +32,10 @@ class FlightDeliveriesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _stateUINav = SingleLiveEvent<FlightDeliveriesUINavState>()
     val stateUINav: LiveData<FlightDeliveriesUINavState>
         get() = _stateUINav

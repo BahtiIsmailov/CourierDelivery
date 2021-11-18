@@ -30,6 +30,10 @@ class NumberPhoneViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _stateUI = SingleLiveEvent<NumberPhoneUIState>()
     val stateUI: LiveData<NumberPhoneUIState>
         get() = _stateUI

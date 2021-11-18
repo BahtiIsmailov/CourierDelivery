@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.DcUnloadingScanFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
@@ -20,12 +21,11 @@ import ru.wb.go.ui.dcunloading.DcUnloadingHandleFragment.Companion.DC_UNLOADING_
 import ru.wb.go.ui.dcunloading.DcUnloadingHandleFragment.Companion.DC_UNLOADING_HANDLE_BARCODE_RESULT
 import ru.wb.go.ui.dcunloading.views.DcUnloadingAcceptedMode
 import ru.wb.go.ui.dcunloading.views.DcUnloadingInfoMode
+import ru.wb.go.ui.dialogs.NavigateToInformation
 import ru.wb.go.ui.splash.KeyboardListener
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.views.ProgressImageButtonMode
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.wb.go.ui.dialogs.NavigateToInformation
 
 class DcUnloadingScanFragment : Fragment() {
 
@@ -90,15 +90,17 @@ class DcUnloadingScanFragment : Fragment() {
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
-                }
-
-                is NetworkState.Complete -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
-                }
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         val eventObserver = Observer<DcUnloadingScanNavAction> { state ->

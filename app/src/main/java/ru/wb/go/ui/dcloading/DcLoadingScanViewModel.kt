@@ -34,6 +34,10 @@ class DcLoadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _navigateToMessageInfo = SingleLiveEvent<NavigateToInformation>()
     val navigateToMessageInfo: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo

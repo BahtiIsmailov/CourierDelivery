@@ -20,6 +20,7 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -30,7 +31,8 @@ class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
-    private val userManager: UserManager
+    private val userManager: UserManager,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -40,6 +42,10 @@ class CourierIntransitViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigateToInformation = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToInformation: LiveData<NavigateToDialogInfo>
@@ -85,6 +91,7 @@ class CourierIntransitViewModel(
     init {
         initToolbar()
         observeNetworkState()
+        fetchVersionApp()
         observeBoxesGroupByOffice()
         initTime()
         initScanner()
@@ -93,6 +100,10 @@ class CourierIntransitViewModel(
 
     private fun initToolbar() {
         _toolbarLabelState.value = Label(resourceProvider.getLabel())
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun observeNetworkState() {

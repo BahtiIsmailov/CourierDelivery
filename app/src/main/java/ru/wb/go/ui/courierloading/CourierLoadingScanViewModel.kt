@@ -17,6 +17,7 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -25,6 +26,7 @@ class CourierLoadingScanViewModel(
     private val resourceProvider: CourierLoadingResourceProvider,
     private val interactor: CourierLoadingInteractor,
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
+    private val deviceManager: DeviceManager,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
@@ -39,6 +41,10 @@ class CourierLoadingScanViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigateToEmptyMessage = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToEmptyDialog: LiveData<NavigateToDialogInfo>
@@ -69,10 +75,15 @@ class CourierLoadingScanViewModel(
 
     init {
         observeNetworkState()
+        fetchVersionApp()
         observeInitScanProcess()
         observeScanProcess()
         observeScanProgress()
         getGate()
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun getGate() {

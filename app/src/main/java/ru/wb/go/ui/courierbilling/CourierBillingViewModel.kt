@@ -12,6 +12,7 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.managers.DeviceManager
 import java.text.DecimalFormat
 
 class CourierBillingViewModel(
@@ -19,6 +20,7 @@ class CourierBillingViewModel(
     private val interactor: CourierBillingInteractor,
     private val dataBuilder: CourierBillingDataBuilder,
     private val resourceProvider: CourierBillingResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -36,6 +38,10 @@ class CourierBillingViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _billingItems = MutableLiveData<CourierBillingState>()
     val billingItems: LiveData<CourierBillingState>

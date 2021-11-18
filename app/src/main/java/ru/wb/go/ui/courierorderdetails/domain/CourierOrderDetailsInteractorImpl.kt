@@ -4,7 +4,8 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
-import ru.wb.go.network.api.app.AppRemoteRepository
+import ru.wb.go.network.monitor.NetworkMonitorRepository
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -13,6 +14,7 @@ import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 
 class CourierOrderDetailsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val userManager: UserManager,
     private val courierMapRepository: CourierMapRepository,
@@ -34,6 +36,11 @@ class CourierOrderDetailsInteractorImpl(
 
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
 }

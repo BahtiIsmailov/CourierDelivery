@@ -14,6 +14,7 @@ import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 import java.util.*
 
 class UserFormViewModel(
@@ -21,6 +22,7 @@ class UserFormViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierDataInteractor,
     private val resourceProvider: CourierDataResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigateToMessageInfo = SingleLiveEvent<NavigateToDialogInfo>()
@@ -30,6 +32,10 @@ class UserFormViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigationEvent =
         SingleLiveEvent<CourierDataNavAction>()

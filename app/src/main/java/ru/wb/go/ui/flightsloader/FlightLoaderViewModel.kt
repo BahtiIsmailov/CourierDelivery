@@ -22,6 +22,10 @@ class FlightLoaderViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _navHeader = MutableLiveData<UserInfoEntity>()
     val navHeader: LiveData<UserInfoEntity>
         get() = _navHeader

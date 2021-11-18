@@ -13,6 +13,7 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.time.TimeFormatType
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -21,6 +22,7 @@ class CourierUnloadingBoxesViewModel(
     private val interactor: CourierLoadingInteractor,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val timeFormatter: TimeFormatter,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _boxes = MutableLiveData<CourierUnloadingBoxesUIState>()
@@ -35,6 +37,10 @@ class CourierUnloadingBoxesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _navigateToInformation = MutableLiveData<NavigateToDialogInfo>()
     val navigateToInformation: LiveData<NavigateToDialogInfo>
         get() = _navigateToInformation
@@ -46,8 +52,13 @@ class CourierUnloadingBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<CourierUnloadingBoxesItem>()
 
     init {
+        fetchVersionApp()
         observeNetworkState()
         observeScannedBoxes()
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun observeScannedBoxes() {

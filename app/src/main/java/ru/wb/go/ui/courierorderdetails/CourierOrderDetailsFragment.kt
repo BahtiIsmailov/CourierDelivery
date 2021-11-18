@@ -24,6 +24,7 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.go.db.entity.courier.CourierOrderEntity
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavDrawerListener
@@ -78,6 +79,20 @@ class CourierOrderDetailsFragment : Fragment() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
+            }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.orderInfo.observe(viewLifecycleOwner) {

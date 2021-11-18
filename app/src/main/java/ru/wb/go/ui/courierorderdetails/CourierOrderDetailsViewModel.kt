@@ -5,16 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
-import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -25,11 +24,20 @@ class CourierOrderDetailsViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierOrderDetailsInteractor,
     private val resourceProvider: CourierOrderDetailsResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _orderInfo = MutableLiveData<CourierOrderDetailsInfoUIState>()
     val orderInfo: LiveData<CourierOrderDetailsInfoUIState>
@@ -60,7 +68,19 @@ class CourierOrderDetailsViewModel(
     }
 
     init {
+        observeNetworkState()
+        fetchVersionApp()
         initToolbar()
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+        )
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     fun update() {

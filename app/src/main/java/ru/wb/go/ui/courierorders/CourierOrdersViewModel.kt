@@ -13,6 +13,7 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.managers.DeviceManager
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
@@ -20,6 +21,7 @@ class CourierOrdersViewModel(
     private val interactor: CourierOrderInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -29,6 +31,10 @@ class CourierOrdersViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
@@ -50,6 +56,7 @@ class CourierOrdersViewModel(
 
     init {
         observeNetworkState()
+        fetchVersionApp()
         initToolbarLabel()
         initOrders()
     }
@@ -62,6 +69,10 @@ class CourierOrdersViewModel(
 
     private fun initToolbarLabel() {
         _toolbarLabelState.value = Label(parameters.address)
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun initOrders() {

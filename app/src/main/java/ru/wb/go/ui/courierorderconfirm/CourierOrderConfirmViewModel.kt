@@ -5,21 +5,32 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.managers.DeviceManager
 import java.text.DecimalFormat
 
 class CourierOrderConfirmViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierOrderConfirmInteractor,
     private val resourceProvider: CourierOrderConfirmResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _orderInfo = MutableLiveData<CourierOrderConfirmInfoUIState>()
     val orderInfo: LiveData<CourierOrderConfirmInfoUIState>
         get() = _orderInfo
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigationState = SingleLiveEvent<CourierOrderConfirmNavigationState>()
     val navigationState: LiveData<CourierOrderConfirmNavigationState>
@@ -35,7 +46,19 @@ class CourierOrderConfirmViewModel(
 
 
     init {
+        observeNetworkState()
+        fetchVersionApp()
         initOrder()
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+        )
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun initOrder() {

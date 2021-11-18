@@ -48,7 +48,7 @@
             android:clickable="true"
             android:focusable="true"
             android:visibility="invisible"
-            app:srcCompat="@drawable/ic_nav_no_internet_toolbar"
+            app:srcCompat="@drawable/ic_inet_failed"
             tools:ignore="ContentDescription" />
 
     </androidx.appcompat.widget.Toolbar>

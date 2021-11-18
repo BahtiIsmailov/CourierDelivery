@@ -72,7 +72,7 @@ val viewModelModule = module {
 
     viewModel { NumberPhoneViewModel(get(), get(), get()) }
     viewModel { (parameters: CheckSmsParameters) ->
-        CheckSmsViewModel(parameters, get(), get(), get())
+        CheckSmsViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel {
@@ -94,7 +94,7 @@ val viewModelModule = module {
     viewModel { CourierAgreementViewModel(get()) }
 
     viewModel { (parameters: CourierDataParameters) ->
-        UserFormViewModel(parameters, get(), get(), get())
+        UserFormViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: CourierExpectsParameters) ->
         CouriersCompleteRegistrationViewModel(
@@ -110,13 +110,14 @@ val viewModelModule = module {
             parameters,
             get(),
             get(),
+            get(),
             get()
         )
     }
 
     viewModel { CourierCarNumberViewModel(get(), get(), get()) }
 
-    viewModel { CourierOrderConfirmViewModel(get(), get(), get()) }
+    viewModel { CourierOrderConfirmViewModel(get(), get(), get(), get()) }
 
     viewModel { CourierOrderTimerViewModel(get(), get(), get()) }
 
@@ -124,6 +125,7 @@ val viewModelModule = module {
 
     viewModel {
         CourierLoadingBoxesViewModel(
+            get(),
             get(),
             get(),
             get(),
@@ -136,15 +138,17 @@ val viewModelModule = module {
             get(),
             get(),
             get(),
+            get(),
             get()
         )
     }
 
     viewModel { CourierScannerViewModel(get(), get()) }
-    viewModel { CourierIntransitViewModel(get(), get(), get(), get()) }
+    viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
             parameters,
+            get(),
             get(),
             get(),
             get()
@@ -191,10 +195,10 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrdersViewModel(parameters, get(), get(), get(), get())
+        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get())
     }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get()) }
+    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: UnloadingScanParameters) ->
         UnloadingScanViewModel(parameters, get(), get(), get())

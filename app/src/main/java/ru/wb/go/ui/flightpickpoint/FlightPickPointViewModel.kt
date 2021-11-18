@@ -2,6 +2,9 @@ package ru.wb.go.ui.flightpickpoint
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.deliveryboxes.PickupPointBoxGroupByOfficeEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
@@ -11,9 +14,6 @@ import ru.wb.go.ui.Label
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.flightpickpoint.domain.FlightPickPointInteractor
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
 
 class FlightPickPointViewModel(
     compositeDisposable: CompositeDisposable,
@@ -33,6 +33,10 @@ class FlightPickPointViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _stateUI = SingleLiveEvent<FlightPickPointUIState>()
     val stateUI: LiveData<FlightPickPointUIState>

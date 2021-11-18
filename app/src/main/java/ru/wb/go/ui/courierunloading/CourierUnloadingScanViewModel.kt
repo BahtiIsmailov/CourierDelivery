@@ -18,6 +18,7 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
 class CourierUnloadingScanViewModel(
@@ -25,7 +26,7 @@ class CourierUnloadingScanViewModel(
     compositeDisposable: CompositeDisposable,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
-
+    private val deviceManager: DeviceManager,
     ) : NetworkViewModel(compositeDisposable) {
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -39,6 +40,10 @@ class CourierUnloadingScanViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
@@ -70,10 +75,15 @@ class CourierUnloadingScanViewModel(
 
     init {
         initToolbar()
+        fetchVersionApp()
         observeNetworkState()
         observeInitScanProcess()
         observeScanProcess()
         observeScanProgress()
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun observeInitScanProcess() {
@@ -182,6 +192,16 @@ class CourierUnloadingScanViewModel(
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
         when (scanBoxData) {
+            is CourierUnloadingScanBoxData.ScannerReady -> {
+                _boxStateUI.value = with(scanBoxData) {
+                    CourierUnloadingScanBoxState.ScannerReady(
+                        resourceProvider.getReadyStatus(),
+                        qrCode,
+                        address,
+                        accepted
+                    )
+                }
+            }
             is CourierUnloadingScanBoxData.BoxAdded -> {
                 _boxStateUI.value = with(scanBoxData) {
                     CourierUnloadingScanBoxState.BoxAdded(
@@ -203,8 +223,6 @@ class CourierUnloadingScanViewModel(
                     accepted
                 )
                 _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
-//                _bottomEvent.value =
-//                    if (scanProcess.unloadingCounter > 0) CourierUnloadingScanBottomState.Enable else CourierUnloadingScanBottomState.Disable
             }
             CourierUnloadingScanBoxData.Empty -> _boxStateUI.value =
                 CourierUnloadingScanBoxState.Empty(
@@ -213,17 +231,6 @@ class CourierUnloadingScanViewModel(
                     resourceProvider.getEmptyAddress(),
                     accepted
                 )
-            is CourierUnloadingScanBoxData.ScannerReady -> {
-                _boxStateUI.value = with(scanBoxData) {
-                    CourierUnloadingScanBoxState.ScannerReady(
-                        resourceProvider.getReadyStatus(),
-                        qrCode,
-                        address,
-                        accepted
-                    )
-                }
-
-            }
             is CourierUnloadingScanBoxData.UnloadingCompleted -> {
                 _boxStateUI.value = with(scanBoxData) {
                     CourierUnloadingScanBoxState.BoxAdded(
@@ -233,7 +240,6 @@ class CourierUnloadingScanViewModel(
                         accepted
                     )
                 }
-                _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
                 _bottomEvent.value = CourierUnloadingScanBottomState.Enable
             }
         }

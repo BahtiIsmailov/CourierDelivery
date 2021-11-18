@@ -35,16 +35,30 @@
     <ImageView
         android:id="@+id/no_internet_image"
         android:layout_width="?actionBarSize"
-        android:layout_height="?actionBarSize"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/toolbar_version"
         android:layout_alignParentEnd="true"
         android:layout_gravity="end"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         android:scaleType="center"
-        android:visibility="invisible"
-        app:srcCompat="@drawable/ic_nav_no_internet_toolbar"
+        android:visibility="visible"
+        app:srcCompat="@drawable/ic_inet_failed"
         tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/toolbar_version"
+        style="@style/SmallBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/no_internet_image"
+        android:layout_alignBottom="@+id/toolbar_title"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        tools:text="1.2.3" />
 
     <View
         android:id="@+id/divider1"

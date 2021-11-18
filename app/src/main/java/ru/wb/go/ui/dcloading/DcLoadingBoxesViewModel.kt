@@ -35,6 +35,10 @@ class DcLoadingBoxesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _navigateToMessageInfo = MutableLiveData<NavigateToInformation>()
     val navigateToMessage: LiveData<NavigateToInformation>
         get() = _navigateToMessageInfo

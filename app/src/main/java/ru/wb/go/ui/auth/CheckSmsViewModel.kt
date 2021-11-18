@@ -14,12 +14,14 @@ import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.DeviceManager
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
     compositeDisposable: CompositeDisposable,
     private val interactor: CheckSmsInteractor,
     private val resourceProvider: AuthResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
     private val _stateTitleUI = MutableLiveData<InitTitle>()
@@ -34,6 +36,10 @@ class CheckSmsViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _checkSmsUIState = MutableLiveData<CheckSmsUIState>()
     val checkSmsUIState: LiveData<CheckSmsUIState>
