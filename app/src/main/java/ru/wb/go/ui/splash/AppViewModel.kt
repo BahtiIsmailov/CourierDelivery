@@ -42,6 +42,7 @@ class AppViewModel(
 
     init {
         fetchNetworkState()
+        fetchVersionApp()
         updateDrawer()
         observeUpdatedStatus()
         observeCountBoxes()

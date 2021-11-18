@@ -52,7 +52,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private val viewModel by viewModel<AppViewModel>()
 
     private lateinit var binding: SplashActivityBinding
-    private lateinit var networkIcon: ImageView
+//    private lateinit var networkIcon: ImageView
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -97,10 +97,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     }
 
     private fun initToolbar() {
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        val title = toolbar.findViewById<View>(R.id.toolbar_title) as TextView
+        val toolbar: Toolbar = binding.layoutHost.toolbarLayout.toolbar
         setSupportActionBar(toolbar)
-        title.text = toolbar.title
+        binding.layoutHost.toolbarLayout.toolbarTitle.text = toolbar.title
         supportActionBar!!.setDisplayShowTitleEnabled(false)
     }
 
@@ -135,18 +134,29 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private fun initObserver() {
 
         viewModel.networkState.observe(this) {
+
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
+            }
+            binding.layoutHost.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(this, ic)
+            )
+
             when (it) {
                 is NetworkState.Failed -> {
-                    networkIcon.visibility = VISIBLE
-                    findViewById<TextView>(R.id.inet_app_status_make_text).visibility = GONE
-                    findViewById<TextView>(R.id.inet_app_status_no_text).visibility = VISIBLE
+                    binding.navigationHeaderMain.inetAppStatusMakeText.visibility = GONE
+                    binding.navigationHeaderMain.inetAppStatusNoText.visibility = VISIBLE
                 }
                 is NetworkState.Complete -> {
-                    networkIcon.visibility = GONE
-                    findViewById<TextView>(R.id.inet_app_status_make_text).visibility = VISIBLE
-                    findViewById<TextView>(R.id.inet_app_status_no_text).visibility = GONE
+                    binding.navigationHeaderMain.inetAppStatusMakeText.visibility = VISIBLE
+                    binding.navigationHeaderMain.inetAppStatusNoText.visibility = GONE
                 }
             }
+        }
+
+        viewModel.versionApp.observe(this) {
+            binding.layoutHost.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.flightsActionState.observe(this) { status ->
@@ -154,14 +164,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
             when (status) {
                 is AppUIState.NotAssigned -> flightNotAssigned(status.delivery)
                 is AppUIState.Loading -> {
-                    with(binding.navView) {
-                        findViewById<TextView>(R.id.delivery).text = status.deliveryId
-                        findViewById<TextView>(R.id.status_not_assigned).visibility = GONE
-                        findViewById<TextView>(R.id.status_in_transit).visibility = GONE
-                        findViewById<TextView>(R.id.status_loading_progress).visibility = VISIBLE
+                    with(binding.navigationHeaderMain) {
+                        deliveryText.text = status.deliveryId
+                        statusNotAssigned.visibility = GONE
+                        statusInTransit.visibility = GONE
+                        statusLoadingProgress.visibility = VISIBLE
 
-                        findViewById<TextView>(R.id.info_empty).visibility = GONE
-                        findViewById<View>(R.id.layout_data).visibility = VISIBLE
+                        infoEmpty.visibility = GONE
+                        layoutData.visibility = VISIBLE
                     }
                 }
                 is AppUIState.InTransit -> {
@@ -235,8 +245,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                     findViewById<ImageView>(R.id.update_image).visibility = VISIBLE
                     findViewById<ProgressBar>(R.id.update_progress).visibility = INVISIBLE
                     findViewById<TextView>(R.id.current_version_update_title).text =
-                        getString(R.string.app_update_version,
-                            it.fileName.substringBefore(".apk"))
+                        getString(
+                            R.string.app_update_version,
+                            it.fileName.substringBefore(".apk")
+                        )
                     findViewById<TextView>(R.id.update_version_app).text =
                         getString(R.string.app_update_version_status)
 
@@ -257,9 +269,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                     findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
                     findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
                     findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
-                    Toast.makeText(this,
+                    Toast.makeText(
+                        this,
                         getString(R.string.app_update_version_error),
-                        Toast.LENGTH_LONG).show()
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 is AppVersionState.UpToDate -> {
                     findViewById<View>(R.id.update_version_layout).visibility = GONE
@@ -267,9 +281,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                     findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
                     findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
                     findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
-                    Toast.makeText(this,
+                    Toast.makeText(
+                        this,
                         getString(R.string.app_update_version_up_to_date),
-                        Toast.LENGTH_LONG).show()
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 AppVersionState.UpToDateProgress -> {
                     findViewById<View>(R.id.update_version_layout).visibility = GONE
@@ -380,9 +396,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     }
 
     private fun initView() {
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        networkIcon = toolbar.findViewById(R.id.no_internet_image)
-        networkIcon.setOnClickListener { showNetworkDialog() }
+//        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        networkIcon = toolbar.findViewById(R.id.no_internet_image)
+        binding.layoutHost.toolbarLayout.noInternetImage.setOnClickListener { showNetworkDialog() }
     }
 
     override fun onSupportNavigateUp(): Boolean {

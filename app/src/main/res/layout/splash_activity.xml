@@ -17,7 +17,9 @@
         android:fitsSystemWindows="true"
         android:theme="@style/MenuTextAppearance">
 
-        <include layout="@layout/navigation_header_main" />
+        <include
+            android:id="@+id/navigation_header_main"
+            layout="@layout/navigation_header_main" />
 
     </com.google.android.material.navigation.NavigationView>
 

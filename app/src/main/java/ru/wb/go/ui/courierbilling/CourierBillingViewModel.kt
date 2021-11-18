@@ -56,9 +56,22 @@ class CourierBillingViewModel(
         get() = _navigationState
 
     init {
+        observeNetworkState()
+        fetchVersionApp()
         initToolbarLabel()
         initBalanceAndTransactions()
         initProgress()
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected()
+                .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun initProgress() {
