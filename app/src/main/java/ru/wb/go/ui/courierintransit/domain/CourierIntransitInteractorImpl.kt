@@ -130,10 +130,11 @@ class CourierIntransitInteractorImpl(
             }
         }.toList()
 
-    private fun taskId() =
+    override fun taskId(): Single<String> =
         courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id.toString() }
             .first("")
+            .compose(rxSchedulerFactory.applySingleSchedulers())
 
     private fun observeOfficeIdScan(): Observable<CourierIntransitScanOfficeData> {
         return scannerRepository.observeBarcodeScanned()

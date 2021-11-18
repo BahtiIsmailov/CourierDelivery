@@ -9,9 +9,14 @@ class CourierIntransitResourceProvider(private val context: Context) :
 
     fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
 
+    fun getLabelId(id : String): String {
+        return context.getString(R.string.courier_intransit_label_id, id)
+    }
+
     fun getLabel(): String {
         return context.getString(R.string.courier_intransit_label)
     }
+
 
     fun getBoxCountAndTotal(unload: Int, total: Int): String {
         return context.getString(R.string.courier_intransit_count, unload, total)

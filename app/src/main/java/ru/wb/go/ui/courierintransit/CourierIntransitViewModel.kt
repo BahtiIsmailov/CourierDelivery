@@ -99,7 +99,11 @@ class CourierIntransitViewModel(
     }
 
     private fun initToolbar() {
-        _toolbarLabelState.value = Label(resourceProvider.getLabel())
+        addSubscription(
+            interactor.taskId().subscribe(
+                { _toolbarLabelState.value = Label(resourceProvider.getLabelId(it)) },
+                { _toolbarLabelState.value = Label(resourceProvider.getLabel()) })
+        )
     }
 
     private fun fetchVersionApp() {

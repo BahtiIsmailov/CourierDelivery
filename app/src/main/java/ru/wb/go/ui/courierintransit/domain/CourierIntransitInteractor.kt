@@ -26,4 +26,6 @@ interface CourierIntransitInteractor {
 
     fun mapState(state: CourierMapState)
 
+    fun taskId(): Single<String>
+
 }
