@@ -53,6 +53,21 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun initReturnResult() {
+
+        setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onStartScanner()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_EMPTY_INFO_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+//                viewModel.onDialogInfoConfirmClick()
+                findNavController().popBackStack()
+            }
+        }
+
         setFragmentResultListener(DIALOG_EMPTY_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
 //                viewModel.onDialogInfoConfirmClick()
@@ -105,6 +120,11 @@ class CourierLoadingScanFragment : Fragment() {
 
         viewModel.navigateToErrorMessage.observe(viewLifecycleOwner) {
             showEmptyOrderDialog(it.type, it.title, it.message, it.button)
+        }
+
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            isDialogActive = true
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -375,12 +395,26 @@ class CourierLoadingScanFragment : Fragment() {
     ) {
         DialogConfirmInfoFragment.newInstance(
             resultTag = DIALOG_LOADING_CONFIRM_TAG,
-            type= type,
+            type = type,
             title = title,
             message = message,
             positiveButtonName = positiveButtonName,
             negativeButtonName = negativeButtonName
         ).show(parentFragmentManager, DIALOG_CONFIRM_INFO_TAG)
+    }
+
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun initListener() {

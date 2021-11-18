@@ -67,7 +67,9 @@ class CourierLoadingInteractorImpl(
                 val count = boxes.size
                 val qrcode = scanResult.parseQrCode.code
 
-                if (orderDstOffice == null) {
+                if (qrcode == "") {
+                    justProcessData(CourierLoadingScanBoxData.UnknownQr(qrcode), count)
+                } else if (orderDstOffice == null) {
                     LogUtils { logDebugApp("orderDstOffice == null UnknownBox") }
                     justProcessData(CourierLoadingScanBoxData.UnknownBox(qrcode), count)
                 } else {

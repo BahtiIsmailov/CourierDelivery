@@ -48,6 +48,10 @@ class CourierLoadingScanViewModel(
     val navigateToErrorMessage: LiveData<NavigateToDialogInfo>
         get() = _navigateToErrorMessage
 
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
+
     private val _beepEvent =
         SingleLiveEvent<CourierLoadingScanBeepState>()
     val beepEvent: LiveData<CourierLoadingScanBeepState>
@@ -228,10 +232,17 @@ class CourierLoadingScanViewModel(
                 }
                 _navigationEvent.value = CourierLoadingScanNavAction.NavigateToUnknownBox
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
-//                _bottomEvent.value =
-//                    if (scanProcess.count > 0) CourierLoadingScanBottomState.Enable else CourierLoadingScanBottomState.Disable
             }
             CourierLoadingScanBoxData.Empty -> _boxStateUI.value = CourierLoadingScanBoxState.Empty
+            is CourierLoadingScanBoxData.UnknownQr -> {
+                onStopScanner()
+                _navigateToDialogInfo.value = NavigateToDialogInfo(
+                    DialogInfoStyle.ERROR.ordinal,
+                    resourceProvider.getScanDialogTitle(),
+                    resourceProvider.getScanDialogMessage(),
+                    resourceProvider.getScanDialogButton()
+                )
+            }
         }
     }
 

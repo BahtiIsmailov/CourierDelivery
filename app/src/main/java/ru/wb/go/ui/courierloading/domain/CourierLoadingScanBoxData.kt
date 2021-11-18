@@ -8,6 +8,8 @@ sealed class CourierLoadingScanBoxData {
 
     data class UnknownBox(val qrCode: String) : CourierLoadingScanBoxData()
 
+    data class UnknownQr(val qrCode: String) : CourierLoadingScanBoxData()
+
     object Empty : CourierLoadingScanBoxData()
 
 }
