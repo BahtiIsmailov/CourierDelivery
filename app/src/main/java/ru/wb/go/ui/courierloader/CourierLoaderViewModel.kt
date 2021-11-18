@@ -153,19 +153,25 @@ class CourierLoaderViewModel(
         return if (remoteTaskId == localTaskId) {
             saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
         } else {
-            clearData()
-            saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
-                .andThen(
-                    if (courierTasksMyEntity.status != TaskStatus.TIMER.status)
-                        syncBoxesAndVisitedOffice(
-                            remoteTaskId.toString(),
-                            courierTasksMyEntity.dstOffices
-                        )
-                    else Completable.complete()
-                )
+            syncWarehouseAndBoxes(courierTasksMyEntity, remoteTaskId)
         }
             .doOnComplete { userManager.saveStatusTask(courierTasksMyEntity.status) }
             .andThen(Single.just(getNavigationState(courierTasksMyEntity.status)))
+    }
+
+    private fun syncWarehouseAndBoxes(
+        courierTasksMyEntity: CourierTasksMyEntity,
+        remoteTaskId: Int
+    ): Completable {
+        clearData()
+        return saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
+            .andThen(
+                if (courierTasksMyEntity.status != TaskStatus.TIMER.status)
+                    syncBoxesAndVisitedOffice(
+                        remoteTaskId.toString(), courierTasksMyEntity.dstOffices
+                    )
+                else Completable.complete()
+            )
     }
 
     fun syncBoxesAndVisitedOffice(taskId: String, dstOffices: List<CourierTaskMyDstOfficeEntity>) =
