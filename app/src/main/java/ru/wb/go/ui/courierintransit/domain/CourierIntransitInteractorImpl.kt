@@ -112,11 +112,13 @@ class CourierIntransitInteractorImpl(
     }
 
     private fun taskStatusesEnd(taskId: String) = appRemoteRepository.taskStatusesEnd(taskId)
+        .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     private fun taskStatusesIntransit(
         taskId: String,
         intransitBoxes: List<CourierTaskStatusesIntransitEntity>
     ) = appRemoteRepository.taskStatusesIntransit(taskId, intransitBoxes)
+        .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
     private fun convertToCourierTaskStatusesIntransitEntity(boxes: List<CourierBoxEntity>) =
         Observable.fromIterable(boxes).map {
@@ -145,7 +147,7 @@ class CourierIntransitInteractorImpl(
                     .map { offices -> offices.find { it.id.toString() == scanOfficeId }?.id ?: 0 }
                     .map {
                         if (it == 0) CourierIntransitScanOfficeData.UnknownOffice
-                        else CourierIntransitScanOfficeData.Office(it)
+                        else CourierIntransitScanOfficeData.NecessaryOffice(it)
                     }
                     .toObservable()
             }

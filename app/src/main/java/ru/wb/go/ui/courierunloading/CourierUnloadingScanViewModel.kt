@@ -18,6 +18,7 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
@@ -27,7 +28,8 @@ class CourierUnloadingScanViewModel(
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
     private val deviceManager: DeviceManager,
-    ) : NetworkViewModel(compositeDisposable) {
+    private val metric: YandexMetricManager,
+) : NetworkViewModel(compositeDisposable) {
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
@@ -133,6 +135,9 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onConfirmUnloadingClick() {
+        metric.onTechUIEventLog(
+            SCREEN_TAG, "onConfirmUnloadingClick", "confirmUnloading"
+        )
         confirmUnloading()
     }
 
@@ -140,20 +145,22 @@ class CourierUnloadingScanViewModel(
         _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
             interactor.confirmUnloading(parameters.officeId)
-                .subscribe({ confirmUnloadingComplete() }, { confirmUnloadingError() })
+                .subscribe({ confirmUnloadingComplete() }, { confirmUnloadingError(it) })
         )
     }
 
     private fun confirmUnloadingComplete() {
-        LogUtils { logDebugApp("confirmUnloadingComplete") }
+        metric.onTechUIEventLog(
+            SCREEN_TAG, "confirmUnloadingComplete", "navigate to intransit"
+        )
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
 
     }
 
-    private fun confirmUnloadingError() {
-        LogUtils { logDebugApp("confirmUnloadingError") }
+    private fun confirmUnloadingError(throwable: Throwable) {
+        metric.onTechErrorLog(SCREEN_TAG, "confirmUnloadingError", throwable.toString())
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
@@ -187,7 +194,9 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
-        LogUtils { logDebugApp("Unloading Observe Scan Process Complete " + scanProcess) }
+        metric.onTechUIEventLog(
+            SCREEN_TAG, "observeScanProcessComplete", "scanProcess " + scanProcess
+        )
         val scanBoxData = scanProcess.scanBoxData
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
@@ -273,7 +282,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
-        LogUtils { logDebugApp("observeScanProcessError " + throwable) }
+        metric.onTechErrorLog(SCREEN_TAG, "observeScanProcessError", throwable.toString())
         val error = if (throwable is CompositeException) {
             throwable.exceptions[0]
         } else throwable
@@ -300,6 +309,10 @@ class CourierUnloadingScanViewModel(
 
     fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierUnloadingScan"
     }
 
     data class Label(val label: String)

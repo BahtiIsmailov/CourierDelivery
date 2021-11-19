@@ -144,13 +144,23 @@ class CourierIntransitViewModel(
             .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
             .subscribe({
                 when (it) {
-                    is CourierIntransitScanOfficeData.Office -> {
+                    is CourierIntransitScanOfficeData.NecessaryOffice -> {
+                        metric.onTechUIEventLog(
+                            SCREEN_TAG,
+                            "observeOfficeIdScanProcess",
+                            "NecessaryOffice " + it.id
+                        )
                         _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
                         _navigationState.value =
                             CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
                         onCleared()
                     }
                     CourierIntransitScanOfficeData.UnknownOffice -> {
+                        metric.onTechUIEventLog(
+                            SCREEN_TAG,
+                            "observeOfficeIdScanProcess",
+                            "UnknownOffice"
+                        )
                         _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownOffice
                     }
                 }
@@ -310,11 +320,13 @@ class CourierIntransitViewModel(
     }
 
     fun onScanQrPvzClick() {
-        metric.onTechUIEventLog(SCREEN_TAG, "onScanQrPvzClick", "onScanQrPvzClick")
+        metric.onTechUIEventLog(SCREEN_TAG, "onScanQrPvzClick", "start and navigate to scanner")
+        onStartScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
     }
 
     fun onCompleteDeliveryClick() {
+        metric.onTechUIEventLog(SCREEN_TAG, "onCompleteDeliveryClick", "start complete delivery")
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
@@ -323,6 +335,11 @@ class CourierIntransitViewModel(
     }
 
     private fun completeDeliveryComplete(completeDeliveryResult: CompleteDeliveryResult) {
+        metric.onTechUIEventLog(
+            SCREEN_TAG,
+            "completeDeliveryComplete",
+            "unloadedCount " + completeDeliveryResult.unloadedCount + "/ fromCount " + completeDeliveryResult.fromCount
+        )
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
             userManager.costTask(),
@@ -333,6 +350,7 @@ class CourierIntransitViewModel(
 
     private fun completeDeliveryError(throwable: Throwable) {
         LogUtils { logDebugApp(throwable.toString()) }
+        metric.onTechErrorLog(SCREEN_TAG, "completeDeliveryError", throwable.toString())
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
@@ -358,6 +376,7 @@ class CourierIntransitViewModel(
     }
 
     fun onCloseScannerClick() {
+        metric.onTechUIEventLog(SCREEN_TAG, "onCloseScannerClick", "NavigateToMap")
         onStopScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToMap
     }

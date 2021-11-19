@@ -23,7 +23,7 @@ class YandexMetricManagerImpl(val tokenManager: TokenManager) : YandexMetricMana
     }
 
     private fun split(method: String, message: String): String {
-        return method + SPACE + message
+        return tokenManager.wbUserID() + SPACE + method + SPACE + message
     }
 
     private fun sendReportEvent(eventName: String) {
