@@ -20,6 +20,7 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
@@ -32,6 +33,7 @@ class CourierIntransitViewModel(
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val userManager: UserManager,
+    private val metric: YandexMetricManager,
     private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
@@ -308,7 +310,7 @@ class CourierIntransitViewModel(
     }
 
     fun onScanQrPvzClick() {
-        onStartScanner()
+        metric.onTechUIEventLog(SCREEN_TAG, "onScanQrPvzClick", "onScanQrPvzClick")
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
     }
 
@@ -431,6 +433,7 @@ class CourierIntransitViewModel(
 
     companion object {
         const val DEFAULT_SELECT_ITEM = false
+        const val SCREEN_TAG = "CourierIntransit"
     }
 
 }
