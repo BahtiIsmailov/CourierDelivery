@@ -68,7 +68,7 @@
                 android:layout_gravity="end"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 tools:text="1.2.3" />
 
         </RelativeLayout>
