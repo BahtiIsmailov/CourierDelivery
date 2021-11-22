@@ -4,15 +4,12 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
-import ru.wb.go.db.AppLocalRepository
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.auth.AppVersionState
 import ru.wb.go.utils.managers.DeviceManager
-import ru.wb.go.utils.managers.ScreenManager
-import ru.wb.go.utils.managers.ScreenManagerImpl
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -22,9 +19,7 @@ class AppInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val authRemoteRepository: AuthRemoteRepository,
-    private val appLocalRepository: AppLocalRepository,
     private val appSharedRepository: AppSharedRepository,
-    private val screenManager: ScreenManager,
     private val deviceManager: DeviceManager,
 ) : AppInteractor {
 
@@ -35,22 +30,10 @@ class AppInteractorImpl(
 
     override fun exitAuth() {
         authRemoteRepository.clearToken()
-        appLocalRepository.clearAll()
-    }
-
-    override fun observeCountBoxes(): Observable<AppDeliveryResult> {
-        return appLocalRepository.observeNavDrawerCountBoxes()
-            .toObservable()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun onSearchChange(query: String) {
         appSharedRepository.search(query)
-    }
-
-    override fun observeUpdatedStatus(): Observable<ScreenManagerImpl.NavigateComplete> {
-        return screenManager.observeUpdatedStatus()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun checkUpdateApp(): Single<AppVersionState> {
@@ -135,10 +118,3 @@ class AppInteractorImpl(
     }
 
 }
-
-data class AppDeliveryResult(
-    val acceptedCount: Int,
-    val returnCount: Int,
-    val deliveryCount: Int,
-    val debtCount: Int,
-)

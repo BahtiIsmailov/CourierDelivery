@@ -6,7 +6,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import ru.wb.go.app.PREFIX_QR_CODE
-import ru.wb.go.db.AppLocalRepository
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.db.entity.TaskStatus
@@ -15,7 +14,6 @@ import ru.wb.go.db.entity.courierlocal.CourierLoadingInfoEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
-import ru.wb.go.network.api.app.FlightStatus
 import ru.wb.go.network.api.app.entity.CourierTaskStartEntity
 import ru.wb.go.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -25,17 +23,14 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.managers.ScreenManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierLoadingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
-    private val appLocalRepository: AppLocalRepository,
     private val scannerRepository: ScannerRepository,
     private val timeManager: TimeManager,
-    private val screenManager: ScreenManager,
     private val courierLocalRepository: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
     private val userManager: UserManager
@@ -222,10 +217,6 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun updatedAt() = Single.just(timeManager.getLocalTime())
-
-    override fun switchScreen(): Completable {
-        return screenManager.saveState(FlightStatus.DCLOADING)
-    }
 
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepository.scannerState(scannerAction)

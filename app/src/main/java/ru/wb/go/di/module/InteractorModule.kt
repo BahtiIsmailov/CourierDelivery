@@ -1,7 +1,6 @@
 package ru.wb.go.di.module
 
 import org.koin.dsl.module
-import ru.wb.go.db.AppLocalRepository
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
 import ru.wb.go.db.TaskTimerRepository
@@ -49,46 +48,15 @@ import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractor
 import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractorImpl
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
-import ru.wb.go.ui.dcloading.domain.DcLoadingInteractor
-import ru.wb.go.ui.dcloading.domain.DcLoadingInteractorImpl
-import ru.wb.go.ui.dcunloading.domain.DcUnloadingInteractor
-import ru.wb.go.ui.dcunloading.domain.DcUnloadingInteractorImpl
-import ru.wb.go.ui.dcunloadingcongratulation.domain.DcUnloadingCongratulationInteractor
-import ru.wb.go.ui.dcunloadingcongratulation.domain.DcUnloadingCongratulationInteractorImpl
-import ru.wb.go.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractor
-import ru.wb.go.ui.dcunloadingforcedtermination.domain.DcForcedTerminationInteractorImpl
-import ru.wb.go.ui.flightdeliveries.domain.FlightDeliveriesInteractor
-import ru.wb.go.ui.flightdeliveries.domain.FlightDeliveriesInteractorImpl
-import ru.wb.go.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractor
-import ru.wb.go.ui.flightdeliveriesdetails.domain.FlightDeliveriesDetailsInteractorImpl
-import ru.wb.go.ui.flightpickpoint.domain.FlightPickPointInteractor
-import ru.wb.go.ui.flightpickpoint.domain.FlightPickPointInteractorImpl
-import ru.wb.go.ui.flights.domain.FlightsInteractor
-import ru.wb.go.ui.flights.domain.FlightsInteractorImpl
-import ru.wb.go.ui.flightsloader.domain.FlightsLoaderInteractor
-import ru.wb.go.ui.flightsloader.domain.FlightsLoaderInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.splash.domain.AppInteractor
 import ru.wb.go.ui.splash.domain.AppInteractorImpl
 import ru.wb.go.ui.splash.domain.AppSharedRepository
-import ru.wb.go.ui.unloadingboxes.domain.UnloadingBoxesInteractor
-import ru.wb.go.ui.unloadingboxes.domain.UnloadingBoxesInteractorImpl
-import ru.wb.go.ui.unloadingcongratulation.domain.CongratulationInteractorImpl
-import ru.wb.go.ui.unloadingforcedtermination.domain.ForcedTerminationInteractor
-import ru.wb.go.ui.unloadingforcedtermination.domain.ForcedTerminationInteractorImpl
-import ru.wb.go.ui.unloadinghandle.domain.UnloadingHandleInteractor
-import ru.wb.go.ui.unloadinghandle.domain.UnloadingHandleInteractorImpl
-import ru.wb.go.ui.unloadingreturnboxes.domain.UnloadingReturnInteractor
-import ru.wb.go.ui.unloadingreturnboxes.domain.UnloadingReturnInteractorImpl
-import ru.wb.go.ui.unloadingscan.domain.UnloadingInteractor
-import ru.wb.go.ui.unloadingscan.domain.UnloadingInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
-import ru.wb.go.utils.managers.ScreenManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
-import ru.wb.go.ui.unloadingcongratulation.domain.CongratulationInteractor as CongratulationInteractor1
 
 val interactorModule = module {
 
@@ -144,90 +112,15 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
-        appLocalRepository: AppLocalRepository,
         appSharedRepository: AppSharedRepository,
-        screenManager: ScreenManager,
         deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
-            appLocalRepository,
             appSharedRepository,
-            screenManager,
             deviceManager
-        )
-    }
-
-    fun provideFlightsLoaderInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        authRemoteRepository: AuthRemoteRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-    ): FlightsLoaderInteractor {
-        return FlightsLoaderInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            authRemoteRepository,
-            timeManager,
-            screenManager
-        )
-    }
-
-    fun provideFlightsInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-    ): FlightsInteractor {
-        return FlightsInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            appLocalRepository
-        )
-    }
-
-    fun provideFlightDeliveriesDetailsInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appLocalRepository: AppLocalRepository,
-    ): FlightDeliveriesDetailsInteractor {
-        return FlightDeliveriesDetailsInteractorImpl(rxSchedulerFactory, appLocalRepository)
-    }
-
-    fun provideFlightPickPointInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        screenManager: ScreenManager,
-    ): FlightPickPointInteractor {
-        return FlightPickPointInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            screenManager
-        )
-    }
-
-    fun provideFlightDeliveriesInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        screenManager: ScreenManager,
-    ): FlightDeliveriesInteractor {
-        return FlightDeliveriesInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            screenManager
         )
     }
 
@@ -235,144 +128,6 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory, scannerRepository: ScannerRepository,
     ): ScannerInteractor {
         return ScannerInteractorImpl(rxSchedulerFactory, scannerRepository)
-    }
-
-    fun provideReceptionInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        scannerRepository: ScannerRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-    ): DcLoadingInteractor {
-        return DcLoadingInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            scannerRepository,
-            timeManager,
-            screenManager
-        )
-    }
-
-    fun provideUnloadingBoxesInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appLocalRepository: AppLocalRepository,
-    ): UnloadingBoxesInteractor {
-        return UnloadingBoxesInteractorImpl(rxSchedulerFactory, appLocalRepository)
-    }
-
-    fun provideUnloadingHandleInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appLocalRepository: AppLocalRepository,
-    ): UnloadingHandleInteractor {
-        return UnloadingHandleInteractorImpl(rxSchedulerFactory, appLocalRepository)
-    }
-
-    fun provideUnloadingReturnInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        timeManager: TimeManager,
-    ): UnloadingReturnInteractor {
-        return UnloadingReturnInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            appLocalRepository,
-            timeManager
-        )
-    }
-
-    fun provideUnloadingInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        scannerRepository: ScannerRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-    ): UnloadingInteractor {
-        return UnloadingInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            scannerRepository,
-            timeManager,
-            screenManager
-        )
-    }
-
-    fun provideForcedTerminationInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-    ): ForcedTerminationInteractor {
-        return ForcedTerminationInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            timeManager,
-            screenManager
-        )
-    }
-
-    fun provideCongratulationInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appLocalRepository: AppLocalRepository,
-    ): CongratulationInteractor1 {
-        return CongratulationInteractorImpl(rxSchedulerFactory, appLocalRepository)
-    }
-
-    fun provideDcUnloadingInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        scannerRepository: ScannerRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-    ): DcUnloadingInteractor {
-        return DcUnloadingInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            scannerRepository,
-            timeManager,
-            screenManager
-        )
-    }
-
-    fun provideDcForcedTerminationInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        timeManager: TimeManager,
-        screenManager: ScreenManager,
-    ): DcForcedTerminationInteractor {
-        return DcForcedTerminationInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            appLocalRepository,
-            timeManager,
-            screenManager
-        )
-    }
-
-    fun provideDcUnloadingCongratulationInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appLocalRepository: AppLocalRepository,
-    ): DcUnloadingCongratulationInteractor {
-        return DcUnloadingCongratulationInteractorImpl(rxSchedulerFactory, appLocalRepository)
     }
 
     fun provideCourierWarehouseInteractor(
@@ -471,10 +226,8 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
         scannerRepository: ScannerRepository,
         timeManager: TimeManager,
-        screenManager: ScreenManager,
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
         userManager: UserManager
@@ -483,10 +236,8 @@ val interactorModule = module {
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
-            appLocalRepository,
             scannerRepository,
             timeManager,
-            screenManager,
             courierLocalRepository,
             taskTimerRepository,
             userManager
@@ -499,7 +250,6 @@ val interactorModule = module {
         appRemoteRepository: AppRemoteRepository,
         scannerRepository: ScannerRepository,
         timeManager: TimeManager,
-        screenManager: ScreenManager,
         courierLocalRepository: CourierLocalRepository,
     ): CourierUnloadingInteractor {
         return CourierUnloadingInteractorImpl(
@@ -508,7 +258,6 @@ val interactorModule = module {
             appRemoteRepository,
             scannerRepository,
             timeManager,
-            screenManager,
             courierLocalRepository
         )
     }
@@ -590,26 +339,8 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get(), get(), get()) }
-    single { provideFlightsLoaderInteractor(get(), get(), get(), get(), get(), get(), get()) }
-    single { provideFlightsInteractor(get(), get(), get()) }
-    single { provideFlightDeliveriesDetailsInteractor(get(), get()) }
-    single { provideFlightPickPointInteractor(get(), get(), get(), get(), get()) }
-    single { provideFlightDeliveriesInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
-    single { provideReceptionInteractor(get(), get(), get(), get(), get(), get(), get()) }
-
-    factory { provideUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
-
-    single { provideUnloadingBoxesInteractor(get(), get()) }
-    single { provideUnloadingHandleInteractor(get(), get()) }
-    single { provideUnloadingReturnInteractor(get(), get(), get(), get()) }
-
-    single { provideForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCongratulationInteractor(get(), get()) }
-    single { provideDcUnloadingInteractor(get(), get(), get(), get(), get(), get(), get()) }
-    single { provideDcForcedTerminationInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideDcUnloadingCongratulationInteractor(get(), get()) }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
@@ -627,14 +358,11 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-            get(),
-            get(),
             get()
         )
     }
     factory {
         provideCourierUnloadingInteractor(
-            get(),
             get(),
             get(),
             get(),

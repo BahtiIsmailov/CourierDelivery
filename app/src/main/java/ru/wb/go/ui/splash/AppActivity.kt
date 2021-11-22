@@ -52,11 +52,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     private val viewModel by viewModel<AppViewModel>()
 
     private lateinit var binding: SplashActivityBinding
-//    private lateinit var networkIcon: ImageView
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var onDestinationChangedListener: OnDestinationChangedListener
 
     private val player = MediaPlayer()
 
@@ -66,7 +64,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initToolbar()
-        initNavController()
         initObserver()
         initView()
         initListener()
@@ -101,34 +98,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         setSupportActionBar(toolbar)
         binding.layoutHost.toolbarLayout.toolbarTitle.text = toolbar.title
         supportActionBar!!.setDisplayShowTitleEnabled(false)
-    }
-
-    private fun initNavController() {
-        binding.navView.itemIconTintList = null
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
-
-        navController = navHostFragment.navController
-        onDestinationChangedListener =
-            OnDestinationChangedListener { _: NavController, navDestination: NavDestination, _: Bundle? ->
-                when (navDestination.id) {
-                    R.id.unloadingScanFragment -> ignoreChangeToolbar()
-                    else -> {
-                        updateTitle(navDestination.label.toString())
-                    }
-                }
-            }
-        navController.addOnDestinationChangedListener(onDestinationChangedListener)
-
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.flightsFragment, R.id.courierWarehouseFragment),
-            binding.drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-    }
-
-    private fun ignoreChangeToolbar() {
-
     }
 
     private fun initObserver() {
@@ -456,19 +425,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.courierWarehouseFragment,
-            R.id.flightDeliveriesFragment, R.id.congratulationFragment,
+            R.id.couriersCompleteRegistrationFragment,R.id.courierWarehouseFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment -> showExitDialog()
             R.id.courierScannerLoadingScanFragment -> {
                 if (isLoadingCourierBox) showExitDialog() else super.onBackPressed()
-            }
-            R.id.unloadingScanFragment -> {
-                val toolbar = findViewById<Toolbar>(R.id.toolbar)
-                if (toolbar.navigationIcon == null) {
-                    showExitDialog()
-                } else {
-                    super.onBackPressed()
-                }
             }
             else -> {
                 super.onBackPressed()

@@ -5,9 +5,6 @@ import com.google.gson.Gson
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.app.AppConfig
-import ru.wb.go.db.AppLocalRepository
-import ru.wb.go.network.api.app.AppRemoteRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.analytics.YandexMetricManagerImpl
@@ -54,22 +51,6 @@ val utilsModule = module {
         return TimeManagerImpl(worker, timeFormatter)
     }
 
-    fun provideScreenManager(
-        worker: SharedWorker,
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        appLocalRepository: AppLocalRepository,
-        timeManager: TimeManager,
-    ): ScreenManager {
-        return ScreenManagerImpl(
-            worker,
-            rxSchedulerFactory,
-            appRemoteRepository,
-            appLocalRepository,
-            timeManager
-        )
-    }
-
     fun provideYandexMetricManager(tokenManager: TokenManager): YandexMetricManager {
         return YandexMetricManagerImpl(tokenManager)
     }
@@ -81,7 +62,6 @@ val utilsModule = module {
     single { provideConfigManager(get(), get()) }
     single { provideTimeFormatter() }
     single { provideTimeManager(get(), get()) }
-    single { provideScreenManager(get(), get(), get(), get(), get()) }
     single { provideYandexMetricManager(get()) }
 
 }

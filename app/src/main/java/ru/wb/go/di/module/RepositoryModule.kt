@@ -2,7 +2,9 @@ package ru.wb.go.di.module
 
 import org.koin.dsl.module
 import ru.wb.go.db.*
-import ru.wb.go.db.dao.*
+import ru.wb.go.db.dao.CourierBoxDao
+import ru.wb.go.db.dao.CourierOrderDao
+import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.network.api.app.AppApi
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppRemoteRepositoryImpl
@@ -49,24 +51,6 @@ val deliveryRepositoryModule = module {
         return RefreshTokenRepositoryImpl(api, tokenManager)
     }
 
-    fun provideLocalRepository(
-        appDatabase: AppDatabase,
-        flightDao: FlightDao,
-        flightMatchingDao: FlightBoxDao,
-        warehouseMatchingBoxDao: WarehouseMatchingBoxDao,
-        pvzMatchingBoxDao: PvzMatchingBoxDao,
-        deliveryErrorBoxDao: DeliveryErrorBoxDao,
-    ): AppLocalRepository {
-        return AppLocalRepositoryImpl(
-            appDatabase,
-            flightDao,
-            flightMatchingDao,
-            warehouseMatchingBoxDao,
-            pvzMatchingBoxDao,
-            deliveryErrorBoxDao
-        )
-    }
-
     fun provideCourierLocalRepository(
         courierWarehouseDao: CourierWarehouseDao,
         courierOrderDao: CourierOrderDao,
@@ -106,7 +90,6 @@ val deliveryRepositoryModule = module {
     single { provideAuthRemoteRepository(get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
-    single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }

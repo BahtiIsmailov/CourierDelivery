@@ -7,7 +7,6 @@ import io.reactivex.Single
 import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierlocal.CourierLoadingInfoEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
-import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.scanner.domain.ScannerState
 
@@ -22,8 +21,6 @@ interface CourierLoadingInteractor {
     fun removeScannedBoxes(checkedBoxes: List<String>): Completable
 
     fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
-
-    fun switchScreen(): Completable
 
     fun scannerAction(scannerAction: ScannerState)
 

@@ -12,11 +12,6 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-
-    <!--    tools:node="remove"-->
-
     <application
         android:name="ru.wb.go.app.App"
         android:allowBackup="false"
@@ -41,8 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <nav-graph android:value="@navigation/app_graph" />
+                    <nav-graph android:value="@navigation/courier_graph" />
         </activity>
+
+
 
         <activity
             android:name="ru.wb.go.ui.config.ConfigActivity"
@@ -79,5 +76,9 @@
         </provider>
 
     </application>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
 </manifest>
