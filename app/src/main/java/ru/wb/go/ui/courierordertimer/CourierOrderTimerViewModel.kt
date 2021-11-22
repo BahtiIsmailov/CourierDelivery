@@ -86,9 +86,9 @@ class CourierOrderTimerViewModel(
     private fun timeIsOut() {
         _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
             DialogInfoStyle.WARNING.ordinal,
-            "Время вышло",
-            "К сожалению, вы не успели приехать вовремя. Заказ был отменён",
-            "Вернуться к списку заказов"
+            resourceProvider.getDialogTimerTitle(),
+            resourceProvider.getDialogTimerMessage(),
+            resourceProvider.getDialogTimerButton()
         )
     }
 
@@ -114,8 +114,8 @@ class CourierOrderTimerViewModel(
     fun refuseOrderClick() {
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
-            "Отказаться от заказа",
-            "Вы уверены, что хотите отказаться от заказа?",
+            resourceProvider.getDialogTimerSkipTitle(),
+            resourceProvider.getDialogTimerSkipMessage(),
             resourceProvider.getDialogTimerPositiveButton(),
             resourceProvider.getDialogTimerNegativeButton()
         )
@@ -153,14 +153,14 @@ class CourierOrderTimerViewModel(
             )
             is BadRequestException -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }

@@ -108,29 +108,6 @@ class CourierCarNumberViewModel(
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
-        // TODO: 26.08.2021 Выключено до полной реализации
-//        val message = when (throwable) {
-//            is NoInternetException -> CourierCarNumberNavigationState.NavigateToDialogInfo(
-//                DialogStyle.WARNING.ordinal,
-//                throwable.message,
-//                resourceProvider.getGenericInternetMessageError(),
-//                resourceProvider.getGenericInternetButtonError()
-//            )
-//            is BadRequestException -> CourierCarNumberNavigationState.NavigateToDialogInfo(
-//                DialogStyle.ERROR.ordinal,
-//                throwable.error.message,
-//                resourceProvider.getGenericServiceMessageError(),
-//                resourceProvider.getGenericServiceButtonError()
-//            )
-//            else -> CourierCarNumberNavigationState.NavigateToDialogInfo(
-//                DialogStyle.ERROR.ordinal,
-//                resourceProvider.getGenericServiceTitleError(),
-//                resourceProvider.getGenericServiceMessageError(),
-//                resourceProvider.getGenericServiceButtonError()
-//            )
-//        }
-//        _navigateToDialogInfo.value = message
-
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer
     }

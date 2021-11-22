@@ -123,7 +123,7 @@ class CourierUnloadingBoxesViewModel(
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
+            else -> throwable.toString()
         }
         _navigateToInformation.value = NavigateToDialogInfo(
             DialogInfoStyle.ERROR.ordinal,

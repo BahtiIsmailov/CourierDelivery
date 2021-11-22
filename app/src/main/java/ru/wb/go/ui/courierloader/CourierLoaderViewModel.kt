@@ -42,6 +42,7 @@ class CourierLoaderViewModel(
     private val userManager: UserManager,
     private val deviceManager: DeviceManager,
     private val configManager: ConfigManager,
+    private val resourceProvider: CourierLoaderResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -288,14 +289,14 @@ class CourierLoaderViewModel(
                     _state.value = CourierLoaderUIState.Complete
                     _navigationDrawerState.value = getNavigationState(localStatus)
                 } else {
-                    errorState("Интернет-соединение отсутствует")
+                    errorState(resourceProvider.getGenericInternetTitleError())
                 }
             }
             is BadRequestException -> {
                 errorState(throwable.message.toString())
             }
             else -> {
-                errorState("Сервис временно недоступен")
+                errorState(throwable.toString())
             }
         }
     }

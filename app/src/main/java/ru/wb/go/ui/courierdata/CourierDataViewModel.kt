@@ -14,7 +14,6 @@ import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.managers.DeviceManager
 import java.util.*
 
 class UserFormViewModel(
@@ -22,7 +21,6 @@ class UserFormViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierDataInteractor,
     private val resourceProvider: CourierDataResourceProvider,
-    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable) {
 
     private val _navigateToMessageInfo = SingleLiveEvent<NavigateToDialogInfo>()
@@ -382,20 +380,20 @@ class UserFormViewModel(
 
             is NoInternetException -> NavigateToDialogInfo(
                 DialogInfoStyle.INFO.ordinal,
-                throwable.message,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
                 DialogInfoStyle.INFO.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }

@@ -92,11 +92,11 @@ class CourierOrdersViewModel(
                 if (it.isEmpty()) {
                     _navigateToDialogInfo.value = NavigateToDialogInfo(
                         DialogInfoStyle.WARNING.ordinal,
-                        "Заказ забрали",
-                        "Этот заказ уже взят в работу",
-                        "Понятно"
+                        resourceProvider.getDialogTitle(),
+                        resourceProvider.getDialogMessage(),
+                        resourceProvider.getDialogButton()
                     )
-                    CourierOrdersState.Empty("Этот заказ уже взят в работу")
+                    CourierOrdersState.Empty(resourceProvider.getDialogEmpty())
                 } else CourierOrdersState.ShowOrders(it)
 
             }
@@ -123,14 +123,14 @@ class CourierOrdersViewModel(
             )
             is BadRequestException -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }

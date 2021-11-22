@@ -72,11 +72,12 @@ val viewModelModule = module {
 
     viewModel { NumberPhoneViewModel(get(), get(), get()) }
     viewModel { (parameters: CheckSmsParameters) ->
-        CheckSmsViewModel(parameters, get(), get(), get(), get())
+        CheckSmsViewModel(parameters, get(), get(), get())
     }
 
     viewModel {
         CourierLoaderViewModel(
+            get(),
             get(),
             get(),
             get(),
@@ -94,7 +95,7 @@ val viewModelModule = module {
     viewModel { CourierAgreementViewModel(get()) }
 
     viewModel { (parameters: CourierDataParameters) ->
-        UserFormViewModel(parameters, get(), get(), get(), get())
+        UserFormViewModel(parameters, get(), get(), get())
     }
     viewModel { (parameters: CourierExpectsParameters) ->
         CouriersCompleteRegistrationViewModel(

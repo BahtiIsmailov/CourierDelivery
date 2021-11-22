@@ -113,7 +113,7 @@ class NumberPhoneViewModel(
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
         when (throwable) {
             is NoInternetException -> _stateUI.value = Error(
-                throwable.message,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
@@ -125,15 +125,15 @@ class NumberPhoneViewModel(
                     _stateUI.value = NumberFormatComplete
                 } else {
                     _stateUI.value = NumberNotFound(
+                        resourceProvider.getGenericServiceTitleError(),
                         throwable.error.message,
-                        resourceProvider.getGenericServiceMessageError(),
                         resourceProvider.getGenericServiceButtonError()
                     )
                 }
             }
             else -> _stateUI.value = Error(
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }

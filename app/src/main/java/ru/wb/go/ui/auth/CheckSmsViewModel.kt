@@ -14,14 +14,12 @@ import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.managers.DeviceManager
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
     compositeDisposable: CompositeDisposable,
     private val interactor: CheckSmsInteractor,
     private val resourceProvider: AuthResourceProvider,
-    private val deviceManager: DeviceManager,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
 
     private val _stateTitleUI = MutableLiveData<InitTitle>()
@@ -86,7 +84,7 @@ class CheckSmsViewModel(
         LogUtils { logDebugApp("checkSmsError(throwable: Throwable) " + throwable.toString()) }
         _checkSmsUIState.value = when (throwable) {
             is NoInternetException -> CheckSmsUIState.MessageError(
-                throwable.message,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
@@ -103,7 +101,7 @@ class CheckSmsViewModel(
             }
             else -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
@@ -151,11 +149,10 @@ class CheckSmsViewModel(
     }
 
     private fun fetchingPasswordError(throwable: Throwable) {
-        LogUtils { logDebugApp("fetchingPasswordError(throwable: Throwable) " + throwable.toString()) }
         when (throwable) {
             is NoInternetException -> _repeatStateUI.value =
                 CheckSmsUIRepeatState.ErrorPassword(
-                    throwable.message,
+                    resourceProvider.getGenericInternetTitleError(),
                     resourceProvider.getGenericInternetMessageError(),
                     resourceProvider.getGenericInternetButtonError()
                 )
@@ -173,7 +170,7 @@ class CheckSmsViewModel(
             else -> _repeatStateUI.value =
                 CheckSmsUIRepeatState.ErrorPassword(
                     resourceProvider.getGenericServiceTitleError(),
-                    resourceProvider.getGenericServiceMessageError(),
+                    throwable.toString(),
                     resourceProvider.getGenericServiceButtonError()
                 )
         }

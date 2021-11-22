@@ -349,26 +349,26 @@ class CourierIntransitViewModel(
     }
 
     private fun completeDeliveryError(throwable: Throwable) {
-        LogUtils { logDebugApp(throwable.toString()) }
         metric.onTechErrorLog(SCREEN_TAG, "completeDeliveryError", throwable.toString())
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                "Интернет-соединение отсутствует",
-                throwable.message,
-                "Понятно"
+                DialogInfoStyle.WARNING.ordinal,
+                resourceProvider.getGenericInternetTitleError(),
+                resourceProvider.getGenericInternetMessageError(),
+                resourceProvider.getGenericInternetButtonError()
             )
+
             is BadRequestException -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }

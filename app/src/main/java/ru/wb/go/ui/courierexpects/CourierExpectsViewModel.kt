@@ -38,22 +38,23 @@ class CouriersCompleteRegistrationViewModel(
         _progressState.value = CourierExpectsProgressState.Progress
         addSubscription(
             interactor.isRegisteredStatus().subscribe(
-                    {
-                        _progressState.value = CourierExpectsProgressState.Complete
-
-                        when (it) {
-                            true -> _navAction.value = CourierExpectsNavAction.NavigateToCouriers
-                            false -> _navigateToMessageState.value = NavigateToDialogInfo(
-                                DialogInfoStyle.INFO.ordinal,
-                                resourceProvider.notConfirmDataTitle(),
-                                resourceProvider.notConfirmDataMessage(),
-                                resourceProvider.notConfirmDataPositive()
-                            )
-                        }
-                    },
-                    { isRegisteredStatusError(it) })
+                { isRegisteredStatusComplete(it) },
+                { isRegisteredStatusError(it) })
         )
 
+    }
+
+    private fun isRegisteredStatusComplete(it: Boolean?) {
+        _progressState.value = CourierExpectsProgressState.Complete
+        when (it) {
+            true -> _navAction.value = CourierExpectsNavAction.NavigateToCouriers
+            false -> _navigateToMessageState.value = NavigateToDialogInfo(
+                DialogInfoStyle.INFO.ordinal,
+                resourceProvider.notConfirmDataTitle(),
+                resourceProvider.notConfirmDataMessage(),
+                resourceProvider.notConfirmDataPositive()
+            )
+        }
     }
 
     private fun isRegisteredStatusError(throwable: Throwable) {
@@ -61,22 +62,22 @@ class CouriersCompleteRegistrationViewModel(
         when (throwable) {
             is NoInternetException -> _navigateToMessageState.value = NavigateToDialogInfo(
                 DialogInfoStyle.WARNING.ordinal,
-                throwable.message,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> {
                 _navigateToMessageState.value = NavigateToDialogInfo(
                     DialogInfoStyle.WARNING.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
                     throwable.error.message,
-                    resourceProvider.getGenericServiceMessageError(),
                     resourceProvider.getGenericServiceButtonError()
                 )
             }
             else -> _navigateToMessageState.value = NavigateToDialogInfo(
                 DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }

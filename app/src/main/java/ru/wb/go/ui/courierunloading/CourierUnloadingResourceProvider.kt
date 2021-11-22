@@ -13,9 +13,6 @@ class CourierUnloadingResourceProvider(private val context: Context) {
 
     fun getBoxDialogTitle() = context.getString(R.string.dc_loading_boxes_remove_dialog_title_error)
 
-    fun getErrorRemovedBoxesDialogMessage(): String =
-        context.getString(R.string.dc_loading_boxes_dialog_remove_error)
-
     fun getBoxPositiveButton() =
         context.getString(R.string.dc_loading_boxes_remove_dialog_positive_button_error)
 

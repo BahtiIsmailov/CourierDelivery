@@ -153,65 +153,11 @@ class CourierOrderDetailsViewModel(
                 parameters.order
             )
         }
-//        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogConfirm(
-//            resourceProvider.getConfirmDialogTitle(),
-//            resourceProvider.getConfirmDialogMessage(ARRIVE_FOR_COURIER_MIN, parameters.order.minVolume)
-//        )
     }
-
-    // TODO: 31.08.2021 реализовать далее по flow
-//    fun confirmTakeOrderClick()
-//   {
-//        _progressState.value = CourierOrderDetailsProgressState.Progress
-//        addSubscription(
-//            interactor.anchorTask(parameters.order.id.toString())
-//                .subscribe({
-//                    _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-//                }, {
-//                    _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-//
-//                    // TODO: 25.08.2021 выключено до полной реализации экранов номера автомобиля
-////                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogInfo(
-////                        DialogStyle.WARNING.ordinal,
-////                        "Заказ забрали",
-////                        "Этот заказ уже взят в работу",
-////                        "Вернуться к списку заказов"
-////                    )
-//                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber(
-//                        parameters.title,
-//                        parameters.order
-//                    )
-//                })
-//        )
-//    }
 
     fun confirmTakeOrderClick() {
 
     }
-
-//    private fun courierWarehouseError(throwable: Throwable) {
-//        val message = when (throwable) {
-//            is NoInternetException -> NavigateToMessageInfo(
-//                DialogStyle.WARNING.ordinal,
-//                throwable.message,
-//                resourceProvider.getGenericInternetMessageError(),
-//                resourceProvider.getGenericInternetButtonError()
-//            )
-//            is BadRequestException -> NavigateToMessageInfo(
-//                DialogStyle.ERROR.ordinal,
-//                throwable.error.message,
-//                resourceProvider.getGenericServiceMessageError(),
-//                resourceProvider.getGenericServiceButtonError()
-//            )
-//            else -> NavigateToMessageInfo(
-//                DialogStyle.ERROR.ordinal,
-//                resourceProvider.getGenericServiceTitleError(),
-//                resourceProvider.getGenericServiceMessageError(),
-//                resourceProvider.getGenericServiceButtonError()
-//            )
-//        }
-//        progressComplete()
-//    }
 
     fun onCancelLoadClick() {
         clearSubscription()

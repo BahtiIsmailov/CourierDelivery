@@ -99,11 +99,9 @@
     <ru.wb.go.ui.auth.keyboard.KeyboardNumericView
         android:id="@+id/view_keyboard"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/keyboard_height"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="70dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="70dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

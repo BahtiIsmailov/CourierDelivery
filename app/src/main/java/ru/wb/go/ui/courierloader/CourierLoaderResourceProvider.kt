@@ -1,7 +1,7 @@
-package ru.wb.go.ui.courierdata
+package ru.wb.go.ui.courierloader
 
 import android.content.Context
 import ru.wb.go.mvvm.BaseMessageResourceProvider
 
-class CourierDataResourceProvider(private val context: Context) :
+class CourierLoaderResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context)
