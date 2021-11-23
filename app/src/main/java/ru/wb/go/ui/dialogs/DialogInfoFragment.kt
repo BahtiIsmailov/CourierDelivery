@@ -3,11 +3,10 @@ package ru.wb.go.ui.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -41,17 +40,17 @@ class DialogInfoFragment : DialogFragment() {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =
             requireActivity().layoutInflater.inflate(R.layout.custom_dialog_info_fragment, null)
-        val titleLayout: View = dialogView.findViewById(R.id.title_layout)
+        val titleLayout: ImageView = dialogView.findViewById(R.id.title_layout)
         val title: TextView = dialogView.findViewById(R.id.title)
         val message: TextView = dialogView.findViewById(R.id.message)
         val positive: Button = dialogView.findViewById(R.id.positive)
         builder.setView(dialogView)
-        val color = when (DialogInfoStyle.values()[style]) {
-            DialogInfoStyle.INFO -> R.color.dialog_title_info
-            DialogInfoStyle.WARNING -> R.color.dialog_title_warning
-            DialogInfoStyle.ERROR -> R.color.dialog_title_alarm
+        val imageTitle = when (DialogInfoStyle.values()[style]) {
+            DialogInfoStyle.INFO -> R.drawable.ic_dialog_title_info
+            DialogInfoStyle.WARNING -> R.drawable.ic_dialog_title_warning
+            DialogInfoStyle.ERROR -> R.drawable.ic_dialog_title_alarm
         }
-        titleLayout.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
+        titleLayout.setImageResource(imageTitle)
         title.text = this.title
         message.text = this.message
         positive.text = this.positive

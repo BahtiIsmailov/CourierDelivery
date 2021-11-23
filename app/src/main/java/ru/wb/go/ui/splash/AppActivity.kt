@@ -3,10 +3,10 @@ package ru.wb.go.ui.splash
 import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.view.View.*
@@ -21,32 +21,28 @@ import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.navigation.NavController
-import androidx.navigation.NavController.OnDestinationChangedListener
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.BuildConfig
 import ru.wb.go.R
 import ru.wb.go.databinding.SplashActivityBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.auth.AppVersionState
-import ru.wb.go.ui.dialogs.InformationDialogFragment
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.SoftKeyboard
 import java.io.*
-import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
-import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import java.util.*
 
 
-class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
-    OnUserInfo, OnCourierScanner, OnSoundPlayer,
+class AppActivity : AppCompatActivity(), NavToolbarListener,
+    OnFlightsStatus, OnUserInfo, OnCourierScanner, OnSoundPlayer,
     NavDrawerListener, KeyboardListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -144,14 +140,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
                     }
                 }
                 is AppUIState.InTransit -> {
-                    with(binding.navView) {
-                        findViewById<TextView>(R.id.delivery).text = status.deliveryId
-                        findViewById<TextView>(R.id.status_not_assigned).visibility = GONE
-                        findViewById<TextView>(R.id.status_in_transit).visibility = VISIBLE
-                        findViewById<TextView>(R.id.status_loading_progress).visibility = GONE
+                    with(binding.navigationHeaderMain) {
+                        delivery.text = status.deliveryId
+                        statusNotAssigned.visibility = GONE
+                        statusInTransit.visibility = VISIBLE
+                        statusLoadingProgress.visibility = GONE
 
-                        findViewById<TextView>(R.id.info_empty).visibility = GONE
-                        findViewById<View>(R.id.layout_data).visibility = VISIBLE
+                        infoEmpty.visibility = GONE
+                        layoutData.visibility = VISIBLE
                     }
                 }
             }
@@ -160,39 +156,31 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         viewModel.counterBoxesActionStatus.observe(this) { status ->
             when (status) {
                 is CounterBoxesActionStatus.Accepted -> {
-                    with(binding.navView) {
-                        findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
-                        findViewById<TextView>(R.id.return_text).text = status.returnBox
-                        findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
+                    with(binding.navigationHeaderMain) {
+                        acceptedText.text = status.acceptedBox
+                        returnText.text = status.returnBox
+                        deliveryText.text = status.deliveryBox
 
-                        findViewById<TextView>(R.id.debt_title).setTextColor(
-                            ContextCompat.getColor(
-                                context, R.color.light_text
-                            )
+                        debtTitle.setTextColor(
+                            ContextCompat.getColor(this@AppActivity, R.color.light_text)
                         )
-                        findViewById<TextView>(R.id.debt_text).text = status.debtBox
-                        findViewById<TextView>(R.id.debt_text).setTextColor(
-                            ContextCompat.getColor(
-                                context, R.color.black_text
-                            )
+                        debtText.text = status.debtBox
+                        debtText.setTextColor(
+                            ContextCompat.getColor(this@AppActivity, R.color.black_text)
                         )
                     }
                 }
                 is CounterBoxesActionStatus.AcceptedDebt -> {
-                    with(binding.navView) {
-                        findViewById<TextView>(R.id.accepted_text).text = status.acceptedBox
-                        findViewById<TextView>(R.id.return_text).text = status.returnBox
-                        findViewById<TextView>(R.id.delivery_text).text = status.deliveryBox
-                        findViewById<TextView>(R.id.debt_title).setTextColor(
-                            ContextCompat.getColor(
-                                context, R.color.icon_deny
-                            )
+                    with(binding.navigationHeaderMain) {
+                        acceptedText.text = status.acceptedBox
+                        returnText.text = status.returnBox
+                        deliveryText.text = status.deliveryBox
+                        debtTitle.setTextColor(
+                            ContextCompat.getColor(this@AppActivity, R.color.icon_deny)
                         )
-                        findViewById<TextView>(R.id.debt_text).text = status.debtBox
-                        findViewById<TextView>(R.id.debt_text).setTextColor(
-                            ContextCompat.getColor(
-                                context, R.color.icon_deny
-                            )
+                        debtText.text = status.debtBox
+                        debtText.setTextColor(
+                            ContextCompat.getColor(this@AppActivity, R.color.icon_deny)
                         )
                     }
                 }
@@ -200,70 +188,78 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         }
 
         viewModel.versionApp.observe(this) {
-            with(binding.navView) {
-                findViewById<TextView>(R.id.version_app).text = it
+            with(binding.navigationHeaderMain) {
+                versionApp.text = it
             }
         }
 
         viewModel.appVersionState.observe(this) {
             when (it) {
                 is AppVersionState.Update -> {
-                    findViewById<View>(R.id.check_version_layout).visibility = GONE
-                    findViewById<View>(R.id.update_version_layout).isEnabled = true
-                    findViewById<View>(R.id.update_version_layout).visibility = VISIBLE
-                    findViewById<ImageView>(R.id.update_image).visibility = VISIBLE
-                    findViewById<ProgressBar>(R.id.update_progress).visibility = INVISIBLE
-                    findViewById<TextView>(R.id.current_version_update_title).text =
-                        getString(
-                            R.string.app_update_version,
-                            it.fileName.substringBefore(".apk")
-                        )
-                    findViewById<TextView>(R.id.update_version_app).text =
-                        getString(R.string.app_update_version_status)
-
+                    with(binding.navigationHeaderMain) {
+                        checkVersionLayout.visibility = GONE
+                        updateVersionLayout.isEnabled = true
+                        updateVersionLayout.visibility = VISIBLE
+                        updateImage.visibility = VISIBLE
+                        updateProgress.visibility = INVISIBLE
+                        currentVersionUpdateTitle.text =
+                            getString(
+                                R.string.app_update_version,
+                                it.fileName.substringBefore(".apk")
+                            )
+                        updateVersionApp.text = getString(R.string.app_update_version_status)
+                    }
                 }
                 AppVersionState.UpdateProgress -> {
-                    findViewById<View>(R.id.check_version_layout).visibility = GONE
-                    findViewById<View>(R.id.update_version_layout).isEnabled = false
-                    findViewById<View>(R.id.update_version_layout).visibility = VISIBLE
-                    findViewById<ImageView>(R.id.update_image).visibility = INVISIBLE
-                    findViewById<ProgressBar>(R.id.update_progress).visibility = VISIBLE
-                    findViewById<TextView>(R.id.update_version_app).text =
-                        getString(R.string.app_update_version_load_status)
+                    with(binding.navigationHeaderMain) {
+                        checkVersionLayout.visibility = GONE
+                        updateVersionLayout.isEnabled = false
+                        updateVersionLayout.visibility = VISIBLE
+                        updateImage.visibility = INVISIBLE
+                        updateProgress.visibility = VISIBLE
+                        updateVersionApp.text = getString(R.string.app_update_version_load_status)
+                    }
                 }
                 is AppVersionState.UpdateComplete -> showInstallOption(it.pathFile)
                 is AppVersionState.UpdateError -> {
-                    findViewById<View>(R.id.update_version_layout).visibility = GONE
-                    findViewById<View>(R.id.check_version_layout).isEnabled = true
-                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
-                    findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
-                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
-                    Toast.makeText(
-                        this,
-                        getString(R.string.app_update_version_error),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    with(binding.navigationHeaderMain) {
+                        updateVersionLayout.visibility = GONE
+                        checkVersionLayout.isEnabled = true
+                        checkVersionLayout.visibility = VISIBLE
+                        checkVersion.visibility = VISIBLE
+                        progressCheckUpdate.visibility = INVISIBLE
+                        Toast.makeText(
+                            this@AppActivity,
+                            getString(R.string.app_update_version_error),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
                 }
                 is AppVersionState.UpToDate -> {
-                    findViewById<View>(R.id.update_version_layout).visibility = GONE
-                    findViewById<View>(R.id.check_version_layout).isEnabled = true
-                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
-                    findViewById<ImageView>(R.id.check_version).visibility = VISIBLE
-                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = INVISIBLE
-                    Toast.makeText(
-                        this,
-                        getString(R.string.app_update_version_up_to_date),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                AppVersionState.UpToDateProgress -> {
-                    findViewById<View>(R.id.update_version_layout).visibility = GONE
-                    findViewById<View>(R.id.check_version_layout).isEnabled = false
-                    findViewById<View>(R.id.check_version_layout).visibility = VISIBLE
-                    findViewById<ImageView>(R.id.check_version).visibility = INVISIBLE
-                    findViewById<ProgressBar>(R.id.progress_check_update).visibility = VISIBLE
+                    with(binding.navigationHeaderMain) {
+                        updateVersionLayout.visibility = GONE
+                        checkVersionLayout.isEnabled = true
+                        checkVersionLayout.visibility = VISIBLE
+                        checkVersion.visibility = VISIBLE
+                        progressCheckUpdate.visibility = INVISIBLE
+                        Toast.makeText(
+                            this@AppActivity,
+                            getString(R.string.app_update_version_up_to_date),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
 
+                AppVersionState.UpToDateProgress -> {
+                    with(binding.navigationHeaderMain) {
+                        updateVersionLayout.visibility = GONE
+                        checkVersionLayout.isEnabled = false
+                        checkVersionLayout.visibility = VISIBLE
+                        checkVersion.visibility = INVISIBLE
+                        progressCheckUpdate.visibility = VISIBLE
+                    }
+                }
             }
         }
     }
@@ -397,11 +393,12 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
 //    }
 
     override fun showNetworkDialog() {
-        InformationDialogFragment.newInstance(
-            getString(R.string.nav_no_internet_dialog_title),
-            getString(R.string.nav_no_internet_dialog_description),
-            getString(R.string.nav_no_internet_dialog_button),
-        ).show(supportFragmentManager, "TAG_NETWORK")
+        DialogInfoFragment.newInstance(
+            type = DialogInfoStyle.WARNING.ordinal,
+            title = getString(R.string.nav_no_internet_dialog_title),
+            message = getString(R.string.nav_no_internet_dialog_description),
+            positiveButtonName = getString(R.string.nav_no_internet_dialog_button),
+        ).show(supportFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
     override fun leftIcon(resId: Int) {
@@ -425,7 +422,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.couriersCompleteRegistrationFragment,R.id.courierWarehouseFragment,
+            R.id.couriersCompleteRegistrationFragment, R.id.courierWarehouseFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment -> showExitDialog()
             R.id.courierScannerLoadingScanFragment -> {
                 if (isLoadingCourierBox) showExitDialog() else super.onBackPressed()
@@ -487,14 +484,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         isLoadingCourierBox = true
     }
 
-
-    companion object {
-        const val PERMISSION_EXT_STORAGE_REQUEST_CODE = 500
-        private const val FILE_BASE_PATH = "file://"
-        private const val PROVIDER_PATH = ".provider"
-        private const val APP_INSTALL_PATH = "\"application/vnd.android.package-archive\""
-    }
-
     override fun play(resId: Int) {
         val source =
             Uri.parse("android.resource://$packageName/raw/$resId")
@@ -503,6 +492,13 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
         player.setAudioStreamType(AudioManager.STREAM_MUSIC)
         player.prepare()
         player.start()
+    }
+
+    companion object {
+        const val PERMISSION_EXT_STORAGE_REQUEST_CODE = 500
+        private const val FILE_BASE_PATH = "file://"
+        private const val PROVIDER_PATH = ".provider"
+        private const val APP_INSTALL_PATH = "\"application/vnd.android.package-archive\""
     }
 
 }
