@@ -12,6 +12,7 @@ import ru.wb.go.databinding.KeyboardNumericLayoutBinding
 import java.util.*
 
 class KeyboardNumericView : RelativeLayout {
+
     private var _binding: KeyboardNumericLayoutBinding? = null
     private val binding get() = _binding!!
 
@@ -36,6 +37,37 @@ class KeyboardNumericView : RelativeLayout {
         defStyleAttr
     ) {
         init(attrs)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        val hHalf = w / 2
+        super.onSizeChanged(w, hHalf, oldw, oldh)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+//        val width = measuredWidth
+//        val height = measuredWidth
+//        setMeasuredDimension(width, height)
+
+//        val desiredWidth = 100
+//        val desiredHeight = 100
+
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        val width = when (widthMode) {
+            MeasureSpec.EXACTLY -> widthSize
+            MeasureSpec.AT_MOST -> widthSize
+            else -> measuredWidth
+        }
+        val height = when (heightMode) {
+            MeasureSpec.EXACTLY -> heightSize
+            MeasureSpec.AT_MOST -> heightSize
+            else -> measuredWidth
+        }
+        setMeasuredDimension(width, height)
     }
 
     private fun init(attrs: AttributeSet?) {

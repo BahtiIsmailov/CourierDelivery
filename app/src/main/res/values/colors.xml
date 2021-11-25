@@ -13,8 +13,9 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="transparent">#0000</color>
-    <color name="keyboard_dot">#642CA3</color>
-    <color name="keyboard_dot_background">#F7F2FC</color>
+    <color name="keyboard_dot_select">#642CA3</color>
+    <color name="keyboard_dot_stroke">#D5C0ED</color>
+    <color name="keyboard_dot_background">#D5C0ED</color>
     <color name="keyboard_ripple_color">#80F7F2FC</color>
 
     <color name="toolbar_text">#231D2A</color>
@@ -67,7 +68,7 @@
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
     <color name="text_spannable_phone">#231D2A</color>
-    <color name="text_spannable_time">#8C94A8</color>
+    <color name="text_spannable_time">#642CA3</color>
 
     <color name="text_info">#6F6779</color>
 

@@ -111,7 +111,7 @@
     <string name="auth_create_password_input">Сохранить и войти</string>
 
     <string name="auth_check_sms_toolbar_label">Вход</string>
-    <string name="auth_check_sms_title">На номер %1$s выслано СМС\nс кодом подтверждения</string>
+    <string name="auth_check_sms_title">На номер %1$s выслано СМС с кодом</string>
     <string name="auth_check_sms_hint">Код</string>
     <string name="auth_check_sms_input">Введите код</string>
     <string name="auth_check_sms_incorrect">Код введен неверно</string>

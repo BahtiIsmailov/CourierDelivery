@@ -21,10 +21,13 @@ import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.BuildConfig
 import ru.wb.go.R
@@ -43,7 +46,7 @@ import java.util.*
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
     OnFlightsStatus, OnUserInfo, OnCourierScanner, OnSoundPlayer,
-    NavDrawerListener, KeyboardListener {
+    NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -51,6 +54,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var onDestinationChangedListener: NavController.OnDestinationChangedListener
 
     private val player = MediaPlayer()
 
@@ -60,6 +64,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initToolbar()
+        initNavController()
         initObserver()
         initView()
         initListener()
@@ -94,6 +99,29 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         setSupportActionBar(toolbar)
         binding.layoutHost.toolbarLayout.toolbarTitle.text = toolbar.title
         supportActionBar!!.setDisplayShowTitleEnabled(false)
+    }
+
+    private fun initNavController() {
+        binding.navView.itemIconTintList = null
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
+
+        navController = navHostFragment.navController
+        onDestinationChangedListener =
+            NavController.OnDestinationChangedListener { _: NavController, navDestination: NavDestination, _: Bundle? ->
+                when (navDestination.id) {
+                    else -> {
+                        updateTitle(navDestination.label.toString())
+                    }
+                }
+            }
+        navController.addOnDestinationChangedListener(onDestinationChangedListener)
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.courierWarehouseFragment),
+            binding.drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     private fun initObserver() {
@@ -499,6 +527,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         private const val FILE_BASE_PATH = "file://"
         private const val PROVIDER_PATH = ".provider"
         private const val APP_INSTALL_PATH = "\"application/vnd.android.package-archive\""
+    }
+
+    override fun onPositiveDialogClick() {
+        finish()
+    }
+
+    override fun onNegativeDialogClick() {
+
     }
 
 }

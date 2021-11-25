@@ -1,6 +1,7 @@
 package ru.wb.go.ui.dialogs
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Button
@@ -14,6 +15,13 @@ import ru.wb.go.R
 import ru.wb.go.app.AppExtras
 
 class DialogConfirmInfoFragment : DialogFragment() {
+
+    interface SimpleDialogListener {
+        fun onPositiveDialogClick()
+        fun onNegativeDialogClick()
+    }
+
+    private var simpleDialogListener: SimpleDialogListener? = null
 
     private lateinit var resultTag: String
     private var style: Int = 0
@@ -84,6 +92,7 @@ class DialogConfirmInfoFragment : DialogFragment() {
     }
 
     private fun sendPositiveResult(resultTag: String) {
+        simpleDialogListener?.onPositiveDialogClick()
         setFragmentResult(
             resultTag,
             bundleOf(DIALOG_CONFIRM_INFO_POSITIVE_KEY to DIALOG_CONFIRM_INFO_POSITIVE_VALUE)
@@ -91,10 +100,21 @@ class DialogConfirmInfoFragment : DialogFragment() {
     }
 
     private fun sendNegativeResult(resultTag: String) {
+        simpleDialogListener?.onNegativeDialogClick()
         setFragmentResult(
             resultTag,
             bundleOf(DIALOG_CONFIRM_INFO_NEGATIVE_KEY to DIALOG_CONFIRM_INFO_NEGATIVE_VALUE)
         )
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is SimpleDialogListener) simpleDialogListener = context
+    }
+
+    override fun onDetach() {
+        if (simpleDialogListener != null) simpleDialogListener = null
+        super.onDetach()
     }
 
     companion object {

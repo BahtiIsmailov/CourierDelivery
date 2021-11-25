@@ -45,7 +45,7 @@ class PasswordDotsView : AppCompatEditText {
             setColor(
                 attributes.getInt(
                     R.styleable.DotPasswordView_dotsPasswordColor, ContextCompat.getColor(
-                        context, R.color.keyboard_dot
+                        context, R.color.keyboard_dot_select
                     )
                 )
             )
@@ -135,4 +135,5 @@ class PasswordDotsView : AppCompatEditText {
     companion object {
         const val NUMBER_OF_CIRCLES = 4
     }
+
 }

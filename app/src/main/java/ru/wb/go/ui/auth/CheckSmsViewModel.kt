@@ -81,7 +81,6 @@ class CheckSmsViewModel(
     }
 
     private fun checkSmsError(throwable: Throwable) {
-        LogUtils { logDebugApp("checkSmsError(throwable: Throwable) " + throwable.toString()) }
         _checkSmsUIState.value = when (throwable) {
             is NoInternetException -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericInternetTitleError(),
@@ -96,7 +95,11 @@ class CheckSmsViewModel(
                         if (data.ttl == 0) DURATION_TIME_INIT else data.ttl
                     }
                     restartTimer(restartTimer)
-                    CheckSmsUIState.Error(message)
+                    CheckSmsUIState.MessageError(
+                        "Неверный код",
+                        "Проверте правильность ввода",
+                        "Понятно"
+                    )
                 }
             }
             else -> CheckSmsUIState.MessageError(
