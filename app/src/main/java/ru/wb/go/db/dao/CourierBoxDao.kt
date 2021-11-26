@@ -62,7 +62,10 @@ interface CourierBoxDao {
     fun completeDeliveryResult(): Single<CompleteDeliveryResult>
 
     @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId IN (SELECT visited_office_dst_office_id FROM CourierOrderVisitedOfficeLocalEntity WHERE visited_office_is_unload = 0)")
-    fun readNotUnloadingBoxes(): Single<List<CourierBoxEntity>>
+    fun readNotUnloadingBoxesSync(): Single<List<CourierBoxEntity>>
+
+    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId IN (SELECT visited_office_dst_office_id FROM CourierOrderVisitedOfficeLocalEntity WHERE visited_office_is_unload = 0)")
+    fun readNotUnloadingBoxes(): List<CourierBoxEntity>
 
     @Query("DELETE FROM CourierOrderVisitedOfficeLocalEntity")
     fun deleteAllVisitedOffices()

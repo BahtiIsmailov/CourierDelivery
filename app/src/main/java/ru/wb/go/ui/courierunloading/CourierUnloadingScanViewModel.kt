@@ -153,10 +153,10 @@ class CourierUnloadingScanViewModel(
 
     private fun confirmUnloadingComplete() {
         onTechEventLog("confirmUnloadingComplete")
+        interactor.confirmUnloadingComplete(parameters.officeId)
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
-
     }
 
     private fun confirmUnloadingError(throwable: Throwable) {

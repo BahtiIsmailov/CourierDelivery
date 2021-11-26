@@ -201,18 +201,18 @@ class CourierUnloadingInteractorImpl(
     }
 
     override fun confirmUnloading(officeId: Int): Completable {
-        return insertVisitedAtOffice(officeId, false)
-            .andThen(readNotUnloadingBoxes())
-            .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
-            .zipWith(taskId()) { statusesIntransit, taskId ->
-                taskStatusesIntransit(statusesIntransit, taskId)
-                    .doOnComplete { loaderComplete() }
-                    .andThen(insertVisitedAtOffice(officeId, true))
-                    .andThen(insertAllVisitedOffice())
-            }
-            .onErrorReturn { Completable.complete() }
-            .flatMapCompletable { it }
+        insertVisitedAtOffice(officeId, false)
+        val notUnloadingBoxes = readNotUnloadingBoxes()
+        val loadingConvertBoxes = convertToCourierTaskStatusesIntransitEntity(notUnloadingBoxes)
+        val taskId = taskId()
+        return taskStatusesIntransit(loadingConvertBoxes, taskId)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun confirmUnloadingComplete(officeId: Int) {
+        loaderComplete()
+        insertVisitedAtOffice(officeId, true)
+        insertAllVisitedOffice()
     }
 
     private fun taskStatusesIntransit(
@@ -222,7 +222,7 @@ class CourierUnloadingInteractorImpl(
 
     private fun readNotUnloadingBoxes() = courierLocalRepository.readNotUnloadingBoxes()
 
-    private fun insertVisitedAtOffice(officeId: Int, isUnloaded: Boolean): Completable {
+    private fun insertVisitedAtOffice(officeId: Int, isUnloaded: Boolean) {
         val courierOrderVisitedOfficeLocalEntity = CourierOrderVisitedOfficeLocalEntity(
             dstOfficeId = officeId,
             visitedAt = timeManager.getLocalTime(),
@@ -231,12 +231,14 @@ class CourierUnloadingInteractorImpl(
         return courierLocalRepository.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
     }
 
+    private fun insertAllVisitedOfficeSync() = courierLocalRepository.insertAllVisitedOfficeSync()
 
     private fun insertAllVisitedOffice() = courierLocalRepository.insertAllVisitedOffice()
 
-    private fun convertToCourierTaskStatusesIntransitEntity(item: List<CourierBoxEntity>) =
-        Observable.fromIterable(item).map {
-            with(it) {
+    private fun convertToCourierTaskStatusesIntransitEntity(items: List<CourierBoxEntity>): List<CourierTaskStatusesIntransitEntity> {
+        val convertItems = mutableListOf<CourierTaskStatusesIntransitEntity>()
+        items.forEach {
+            val convertItem = with(it) {
                 CourierTaskStatusesIntransitEntity(
                     id = id,
                     dstOfficeID = dstOfficeId,
@@ -244,15 +246,19 @@ class CourierUnloadingInteractorImpl(
                     deliveredAt = if (deliveredAt.isEmpty()) null else deliveredAt
                 )
             }
-        }.toList()
+            convertItems.add(convertItem)
+        }
+        return convertItems
+    }
 
-    private fun taskId() =
+    private fun taskId() = courierLocalRepository.orderData().courierOrderLocalEntity.id.toString()
+
+    private fun taskIdSync() =
         courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id.toString() }
             .first("")
 
 }
-
 
 data class ParseQrCode(val code: String, val dstOfficeId: Int)
 

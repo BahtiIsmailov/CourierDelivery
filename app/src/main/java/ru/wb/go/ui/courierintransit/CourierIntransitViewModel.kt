@@ -327,6 +327,7 @@ class CourierIntransitViewModel(
             "completeDeliveryComplete",
             "unloadedCount " + completeDeliveryResult.unloadedCount + "/ fromCount " + completeDeliveryResult.fromCount
         )
+        interactor.confirmDeliveryComplete()
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
             userManager.costTask(),

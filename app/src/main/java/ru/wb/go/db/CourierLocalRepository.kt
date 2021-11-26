@@ -55,9 +55,13 @@ interface CourierLocalRepository {
 
     fun updateVisitedOfficeByBoxes(): Completable
 
-    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
+    fun insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
 
-    fun insertAllVisitedOffice(): Completable
+    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity)
+
+    fun insertAllVisitedOfficeSync(): Completable
+
+    fun insertAllVisitedOffice()
 
     fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity>
 
@@ -79,7 +83,9 @@ interface CourierLocalRepository {
 
     fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult>
 
-    fun readNotUnloadingBoxes(): Single<List<CourierBoxEntity>>
+    fun readNotUnloadingBoxesSync(): Single<List<CourierBoxEntity>>
+
+    fun readNotUnloadingBoxes(): List<CourierBoxEntity>
 
     fun deleteAllVisitedOffices()
 

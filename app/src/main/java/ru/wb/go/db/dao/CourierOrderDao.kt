@@ -60,10 +60,16 @@ interface CourierOrderDao {
     //order visited office
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
+    fun insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity)
 
     @Query("UPDATE CourierOrderVisitedOfficeLocalEntity SET visited_office_is_unload = 1")
-    fun insertAllVisitedOffice(): Completable
+    fun insertAllVisitedOfficeSync(): Completable
+
+    @Query("UPDATE CourierOrderVisitedOfficeLocalEntity SET visited_office_is_unload = 1")
+    fun insertAllVisitedOffice()
 
 
 

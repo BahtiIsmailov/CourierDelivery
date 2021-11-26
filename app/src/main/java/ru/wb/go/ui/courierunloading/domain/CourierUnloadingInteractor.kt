@@ -33,4 +33,6 @@ interface CourierUnloadingInteractor {
 
     fun confirmUnloading(officeId: Int): Completable
 
+    fun confirmUnloadingComplete(officeId: Int)
+
 }

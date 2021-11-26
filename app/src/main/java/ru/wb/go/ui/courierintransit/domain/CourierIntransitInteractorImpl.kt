@@ -75,13 +75,19 @@ class CourierIntransitInteractorImpl(
     }
 
     override fun completeDelivery(): Single<CompleteDeliveryResult> {
-        return courierLocalRepository.readNotUnloadingBoxes()
-            .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
-            .flatMapCompletable { sendIntransitBoxes(it) }
+        val notUnloadingBoxes = readNotUnloadingBoxes()
+        val loadingConvertBoxes = convertToCourierTaskStatusesIntransitEntity(notUnloadingBoxes)
+        return sendIntransitBoxes(loadingConvertBoxes)
             .andThen(taskToEnd())
             .andThen(getCompleteDeliveryResult())
-            .doOnSuccess { clearData() }
             .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    private fun readNotUnloadingBoxes() = courierLocalRepository.readNotUnloadingBoxes()
+
+
+    override fun confirmDeliveryComplete() {
+        clearData()
     }
 
     private fun sendIntransitBoxes(intransitBoxes: List<CourierTaskStatusesIntransitEntity>) =
@@ -121,9 +127,11 @@ class CourierIntransitInteractorImpl(
     ) = appRemoteRepository.taskStatusesIntransit(taskId, intransitBoxes)
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
 
-    private fun convertToCourierTaskStatusesIntransitEntity(boxes: List<CourierBoxEntity>) =
-        Observable.fromIterable(boxes).map {
-            with(it) {
+    private fun convertToCourierTaskStatusesIntransitEntity(boxes: List<CourierBoxEntity>): List<CourierTaskStatusesIntransitEntity> {
+
+        val convertItems = mutableListOf<CourierTaskStatusesIntransitEntity>()
+        boxes.forEach {
+            val convertItem = with(it) {
                 CourierTaskStatusesIntransitEntity(
                     id = id,
                     dstOfficeID = dstOfficeId,
@@ -131,7 +139,10 @@ class CourierIntransitInteractorImpl(
                     deliveredAt = if (deliveredAt.isEmpty()) null else deliveredAt
                 )
             }
-        }.toList()
+            convertItems.add(convertItem)
+        }
+        return convertItems
+    }
 
     override fun taskId(): Single<String> =
         courierLocalRepository.observeOrderData()

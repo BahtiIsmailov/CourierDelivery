@@ -86,12 +86,19 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.updateVisitedOfficeByBoxes()
     }
 
+    override fun insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable {
+        return courierOrderDao.insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity)
+    }
 
-    override fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable {
+    override fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity) {
         return courierOrderDao.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
     }
 
-    override fun insertAllVisitedOffice(): Completable {
+    override fun insertAllVisitedOfficeSync(): Completable {
+        return courierOrderDao.insertAllVisitedOfficeSync()
+    }
+
+    override fun insertAllVisitedOffice() {
         return courierOrderDao.insertAllVisitedOffice()
     }
 
@@ -128,7 +135,11 @@ class CourierLocalRepositoryImpl(
             .onErrorReturn { CourierUnloadingInitLastBoxResult("", "") }
     }
 
-    override fun readNotUnloadingBoxes(): Single<List<CourierBoxEntity>> {
+    override fun readNotUnloadingBoxesSync(): Single<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.readNotUnloadingBoxesSync()
+    }
+
+    override fun readNotUnloadingBoxes(): List<CourierBoxEntity> {
         return courierLoadingBoxDao.readNotUnloadingBoxes()
     }
 
