@@ -13,17 +13,19 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.time.TimeFormatType
 import ru.wb.go.utils.time.TimeFormatter
 
 class CourierLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierLoadingInteractor,
     private val resourceProvider: CourierLoadingResourceProvider,
     private val timeFormatter: TimeFormatter,
     private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _boxes = MutableLiveData<CourierLoadingBoxesUIState>()
     val boxes: LiveData<CourierLoadingBoxesUIState>
@@ -170,6 +172,14 @@ class CourierLoadingBoxesViewModel(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
         )
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierLoadingBoxes"
     }
 
     object NavigateToBack

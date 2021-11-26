@@ -13,16 +13,18 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierOrderInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -55,6 +57,7 @@ class CourierOrdersViewModel(
     private var copyCourierOrdersEntity = mutableListOf<CourierOrderEntity>()
 
     init {
+        onTechEventLog("init")
         observeNetworkState()
         fetchVersionApp()
         initToolbarLabel()
@@ -109,11 +112,16 @@ class CourierOrdersViewModel(
     }
 
     private fun ordersComplete(courierOrderUIListState: CourierOrdersState) {
+        onTechEventLog(
+            "ordersComplete",
+            "courierOrderUIListState " + courierOrderUIListState.toString()
+        )
         _progressState.value = CourierOrdersProgressState.Complete
         _orders.value = courierOrderUIListState
     }
 
     private fun ordersError(throwable: Throwable) {
+        onTechErrorLog("ordersError", throwable)
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
                 DialogInfoStyle.WARNING.ordinal,
@@ -144,17 +152,27 @@ class CourierOrdersViewModel(
     }
 
     fun onItemClick(idView: Int) {
+        onTechEventLog("onItemClick")
         val courierOrderEntity = copyCourierOrdersEntity[idView]
         addSubscription(
             interactor.clearAndSaveSelectedOrder(courierOrderEntity)
-                .subscribe({
-                    _navigationState.value =
-                        CourierOrdersNavigationState.NavigateToOrderDetails(
-                            parameters.address,
-                            copyCourierOrdersEntity[idView]
-                        )
-                }, {})
+                .subscribe(
+                    { clearAndSaveSelectedOrderComplete(idView) },
+                    { clearAndSaveSelectedOrderError(it) })
         )
+    }
+
+    private fun clearAndSaveSelectedOrderComplete(idView: Int) {
+        onTechEventLog("clearAndSaveSelectedOrderComplete")
+        _navigationState.value =
+            CourierOrdersNavigationState.NavigateToOrderDetails(
+                parameters.address,
+                copyCourierOrdersEntity[idView]
+            )
+    }
+
+    private fun clearAndSaveSelectedOrderError(throwable: Throwable) {
+        onTechErrorLog("ordersError", throwable)
     }
 
     fun onUpdateClick() {
@@ -164,6 +182,14 @@ class CourierOrdersViewModel(
 
     fun onCancelLoadClick() {
         clearSubscription()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierUnloadingBoxes"
     }
 
     data class Label(val label: String)

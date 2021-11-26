@@ -9,11 +9,13 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CourierScannerViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: ScannerInteractor,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _scannerAction = SingleLiveEvent<ScannerState>()
     val scannerAction: LiveData<ScannerState>
@@ -31,6 +33,15 @@ class CourierScannerViewModel(
             _scannerAction.value = ScannerState.BeepScan
             interactor.barcodeScanned(barcode)
         }
+    }
+
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierScanner"
     }
 
 }

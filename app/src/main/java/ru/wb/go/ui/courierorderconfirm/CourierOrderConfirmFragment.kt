@@ -13,9 +13,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderConfirmFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.utils.LogUtils
@@ -116,8 +114,8 @@ class CourierOrderConfirmFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.refuseOrder.setOnClickListener { viewModel.refuseOrderClick() }
-        binding.confirmOrder.setOnClickListener { viewModel.confirmOrderClick() }
+        binding.refuseOrder.setOnClickListener { viewModel.onRefuseOrderClick() }
+        binding.confirmOrder.setOnClickListener { viewModel.onConfirmOrderClick() }
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarClick() }
     }
 

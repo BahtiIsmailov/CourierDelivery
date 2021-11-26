@@ -10,15 +10,17 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import java.text.DecimalFormat
 
 class CourierOrderConfirmViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierOrderConfirmInteractor,
     private val resourceProvider: CourierOrderConfirmResourceProvider,
     private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderInfo = MutableLiveData<CourierOrderConfirmInfoUIState>()
     val orderInfo: LiveData<CourierOrderConfirmInfoUIState>
@@ -46,6 +48,7 @@ class CourierOrderConfirmViewModel(
 
 
     init {
+        onTechEventLog("init")
         observeNetworkState()
         fetchVersionApp()
         initOrder()
@@ -64,11 +67,16 @@ class CourierOrderConfirmViewModel(
     private fun initOrder() {
         addSubscription(
             interactor.observeOrderData()
-                .subscribe({ initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size) }, {})
+                .subscribe(
+                    { initOrderInfoComplete(it.courierOrderLocalEntity, it.dstOffices.size) },
+                    { initOrderInfoError(it) })
         )
     }
 
-    private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity, pvzCount: Int) {
+    private fun initOrderInfoComplete(
+        courierOrderLocalEntity: CourierOrderLocalEntity, pvzCount: Int
+    ) {
+        onTechEventLog("initOrderInfoComplete", "pvzCount: $pvzCount")
         with(courierOrderLocalEntity) {
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
@@ -83,11 +91,16 @@ class CourierOrderConfirmViewModel(
         }
     }
 
+    private fun initOrderInfoError(throwable: Throwable) {
+        onTechErrorLog("initOrderInfoError", throwable)
+    }
+
     private fun progressComplete() {
         _progressState.value = CourierOrderConfirmProgressState.ProgressComplete
     }
 
-    fun refuseOrderClick() {
+    fun onRefuseOrderClick() {
+        onTechEventLog("onRefuseOrderClick")
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
@@ -95,7 +108,8 @@ class CourierOrderConfirmViewModel(
         _progressState.value = CourierOrderConfirmProgressState.Progress
     }
 
-    fun confirmOrderClick() {
+    fun onConfirmOrderClick() {
+        onTechEventLog("onConfirmOrderClick")
         addSubscription(
             actionProgress()
                 .andThen(interactor.anchorTask())
@@ -106,15 +120,18 @@ class CourierOrderConfirmViewModel(
     }
 
     fun onChangeCarClick() {
+        onTechEventLog("onChangeCarClick")
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToChangeCar
     }
 
     private fun anchorTaskComplete() {
+        onTechEventLog("anchorTaskComplete", "NavigateToTimer")
         _progressState.value = CourierOrderConfirmProgressState.ProgressComplete
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToTimer
     }
 
     private fun anchorTaskError(throwable: Throwable) {
+        onTechErrorLog("anchorTaskError", throwable)
         courierWarehouseError(throwable)
     }
 
@@ -128,9 +145,16 @@ class CourierOrderConfirmViewModel(
     }
 
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
     }
 
-    data class Label(val label: String)
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierUnloadingBoxes"
+    }
 
 }

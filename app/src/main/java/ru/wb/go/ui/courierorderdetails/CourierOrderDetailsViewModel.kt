@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
@@ -13,6 +14,7 @@ import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
@@ -22,10 +24,11 @@ import java.text.DecimalFormat
 class CourierOrderDetailsViewModel(
     private val parameters: CourierOrderDetailsParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierOrderDetailsInteractor,
     private val resourceProvider: CourierOrderDetailsResourceProvider,
     private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -68,6 +71,7 @@ class CourierOrderDetailsViewModel(
     }
 
     init {
+        onTechEventLog("init")
         observeNetworkState()
         fetchVersionApp()
         initToolbar()
@@ -83,7 +87,8 @@ class CourierOrderDetailsViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
-    fun update() {
+    fun onUpdate() {
+        onTechEventLog("onUpdate")
         initOrder()
     }
 
@@ -94,15 +99,24 @@ class CourierOrderDetailsViewModel(
     private fun initOrder() {
         addSubscription(
             interactor.observeOrderData()
-                .subscribe({
-                    initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size)
-                    initOrderItems(it.dstOffices)
-                }, {})
+                .subscribe(
+                    { observeOrderDataComplete(it) },
+                    { observeOrderDataError(it) })
         )
+    }
+
+    private fun observeOrderDataComplete(it: CourierOrderLocalDataEntity) {
+        initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size)
+        initOrderItems(it.dstOffices)
+    }
+
+    private fun observeOrderDataError(throwable: Throwable) {
+        onTechErrorLog("onUpdate", throwable)
     }
 
     private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity, pvz: Int) {
         with(courierOrderLocalEntity) {
+            onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
@@ -144,7 +158,8 @@ class CourierOrderDetailsViewModel(
         _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
     }
 
-    fun takeOrderClick() {
+    fun onTakeOrderClick() {
+        onTechEventLog("onTakeOrderClick")
         _navigationState.value = if (interactor.carNumberIsConfirm()) {
             CourierOrderDetailsNavigationState.NavigateToOrderConfirm
         } else {
@@ -160,10 +175,12 @@ class CourierOrderDetailsViewModel(
     }
 
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
     }
 
     fun onItemClick(index: Int) {
+        onTechEventLog("onItemClick")
         changeItemSelected(index)
     }
 
@@ -197,6 +214,14 @@ class CourierOrderDetailsViewModel(
         }
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierUnloadingBoxes"
     }
 
     data class Label(val label: String)

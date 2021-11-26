@@ -9,13 +9,15 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierCarNumberResourceProvider,
     private val interactor: CourierCarNumberInteractor,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigationState =
         SingleLiveEvent<CourierCarNumberNavigationState>()
@@ -55,7 +57,7 @@ class CourierCarNumberViewModel(
                 .map { keyToNumberSpanFormat(it) }
                 .subscribe(
                     { _stateUI.value = it },
-                    { })
+                    { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }
 
@@ -102,23 +104,31 @@ class CourierCarNumberViewModel(
     }
 
     private fun fetchCarNumberComplete() {
+        onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value =
             CourierCarNumberNavigationState.NavigateToTimer
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
+        onTechErrorLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer
     }
 
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
     }
 
     companion object {
         const val NUMBER_LENGTH_MAX = 9
         const val NUMBER_DROP_COUNT_LAST = 1
+        const val SCREEN_TAG = "CourierCarNumber"
     }
 
 }

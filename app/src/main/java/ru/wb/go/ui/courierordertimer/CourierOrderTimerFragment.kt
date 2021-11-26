@@ -48,13 +48,13 @@ class CourierOrderTimerFragment : Fragment() {
     private fun initReturnDialogResult() {
         setFragmentResultListener(DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                viewModel.returnToListOrderClick()
+                viewModel.onReturnToListOrderClick()
             }
         }
 
         setFragmentResultListener(DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
-                viewModel.refuseOrderConfirmClick()
+                viewModel.onRefuseOrderConfirmClick()
             }
         }
     }
@@ -147,7 +147,7 @@ class CourierOrderTimerFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.refuseOrder.setOnClickListener { viewModel.refuseOrderClick() }
+        binding.refuseOrder.setOnClickListener { viewModel.onRefuseOrderClick() }
         binding.iArrived.setOnClickListener { viewModel.iArrivedClick() }
     }
 

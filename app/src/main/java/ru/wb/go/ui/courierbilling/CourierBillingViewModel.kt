@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.network.api.app.entity.BillingCommonEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -12,16 +13,18 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import java.text.DecimalFormat
 
 class CourierBillingViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierBillingInteractor,
     private val dataBuilder: CourierBillingDataBuilder,
     private val resourceProvider: CourierBillingResourceProvider,
     private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -85,49 +88,51 @@ class CourierBillingViewModel(
     private fun initBalanceAndTransactions() {
         addSubscription(
             interactor.billing().subscribe(
-                {
-                    val decimalFormat = DecimalFormat("#,###.##")
-                    val balance = decimalFormat.format(it.balance)
-                    _balanceInfo.value = resourceProvider.getAmount(balance)
-                    val items = mutableListOf<BaseItem>()
-                    it.transactions.forEachIndexed { index, billingTransactionEntity ->
-                        items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
-                    }
-
-//                    items.clear()
-//                    _balanceInfo.value = resourceProvider.getAmount("21 400")
-//                    for (i in 1..10) {
-//                        val billing = BillingTransactionEntity(
-//                            "5122hhskkjh9", if (i % 2 > 0) {
-//                                1000 * i * -1
-//                            } else {
-//                                5000 * i
-//                            },
-//                            if (i % 2 > 0) {
-//                                "2021-04-22T12:32:25+03:00"
-//                            } else {
-//                                "2021-04-25T16:32:25+03:00"
-//                            }
-//                        )
-//                        items.add(dataBuilder.buildOrderItem(i, billing))
-//                    }
-
-                    if (items.isEmpty()) {
-                        _billingItems.value =
-                            CourierBillingState.Empty(resourceProvider.getEmptyList())
-                    } else {
-                        _billingItems.value = CourierBillingState.ShowBilling(items)
-                    }
-                    progressComplete()
-                },
-
-                {
-                    billingError(it)
-                })
+                { billingComplete(it) },
+                { billingError(it) })
         )
     }
 
+    private fun billingComplete(it: BillingCommonEntity) {
+        onTechEventLog("billingComplete", "transactions size ${it.transactions.size}")
+        val decimalFormat = DecimalFormat("#,###.##")
+        val balance = decimalFormat.format(it.balance)
+        _balanceInfo.value = resourceProvider.getAmount(balance)
+        val items = mutableListOf<BaseItem>()
+        it.transactions.forEachIndexed { index, billingTransactionEntity ->
+            items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
+        }
+
+        // TODO: 26.11.2021 для отладки
+        //                    items.clear()
+        //                    _balanceInfo.value = resourceProvider.getAmount("21 400")
+        //                    for (i in 1..10) {
+        //                        val billing = BillingTransactionEntity(
+        //                            "5122hhskkjh9", if (i % 2 > 0) {
+        //                                1000 * i * -1
+        //                            } else {
+        //                                5000 * i
+        //                            },
+        //                            if (i % 2 > 0) {
+        //                                "2021-04-22T12:32:25+03:00"
+        //                            } else {
+        //                                "2021-04-25T16:32:25+03:00"
+        //                            }
+        //                        )
+        //                        items.add(dataBuilder.buildOrderItem(i, billing))
+        //                    }
+
+        if (items.isEmpty()) {
+            _billingItems.value =
+                CourierBillingState.Empty(resourceProvider.getEmptyList())
+        } else {
+            _billingItems.value = CourierBillingState.ShowBilling(items)
+        }
+        progressComplete()
+    }
+
     private fun billingError(throwable: Throwable) {
+        onTechErrorLog("billingError", throwable)
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
                 DialogInfoStyle.WARNING.ordinal,
@@ -162,6 +167,7 @@ class CourierBillingViewModel(
     }
 
     fun onUpdateClick() {
+        onTechEventLog("onUpdateClick")
         showProgress()
         initBalanceAndTransactions()
     }
@@ -172,6 +178,14 @@ class CourierBillingViewModel(
 
     fun onCancelLoadClick() {
         clearSubscription()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierBilling"
     }
 
     data class Label(val label: String)

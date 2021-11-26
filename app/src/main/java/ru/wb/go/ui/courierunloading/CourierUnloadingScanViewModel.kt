@@ -9,15 +9,11 @@ import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProcessData
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProgressData
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingScanBoxData
+import ru.wb.go.ui.courierunloading.domain.*
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
@@ -25,11 +21,11 @@ import java.util.concurrent.TimeUnit
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
     private val deviceManager: DeviceManager,
-    private val metric: YandexMetricManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
@@ -76,6 +72,7 @@ class CourierUnloadingScanViewModel(
         get() = _bottomEvent
 
     init {
+        onTechEventLog("init")
         initToolbar()
         fetchVersionApp()
         observeNetworkState()
@@ -90,29 +87,35 @@ class CourierUnloadingScanViewModel(
 
     private fun observeInitScanProcess() {
         addSubscription(interactor.readUnloadingLastBox(parameters.officeId)
-            .map { initResult ->
-                val readyStatus = resourceProvider.getReadyStatus()
-                val accepted = resourceProvider.getAccepted(
-                    initResult.deliveredCount,
-                    initResult.fromCount
-                )
-                if (initResult.id.isEmpty()) {
-                    CourierUnloadingScanBoxState.Empty(
-                        readyStatus,
-                        resourceProvider.getEmptyQr(),
-                        resourceProvider.getEmptyAddress(),
-                        accepted
-                    )
-                } else {
-                    CourierUnloadingScanBoxState.BoxInit(
-                        readyStatus, initResult.id, initResult.address, accepted
-                    )
-                }
-            }.subscribe(
-                { _boxStateUI.value = it },
-                { LogUtils { logDebugApp(it.toString()) } }
+            .map { mapInitScanProcess(it) }
+            .subscribe(
+                {
+                    onTechEventLog("observeInitScanProcessComplete")
+                    _boxStateUI.value = it
+                },
+                { onTechErrorLog("observeInitScanProcessError", it) }
             )
         )
+    }
+
+    private fun mapInitScanProcess(initResult: CourierUnloadingLastBoxResult): CourierUnloadingScanBoxState {
+        val readyStatus = resourceProvider.getReadyStatus()
+        val accepted = resourceProvider.getAccepted(
+            initResult.deliveredCount,
+            initResult.fromCount
+        )
+        return if (initResult.id.isEmpty()) {
+            CourierUnloadingScanBoxState.Empty(
+                readyStatus,
+                resourceProvider.getEmptyQr(),
+                resourceProvider.getEmptyAddress(),
+                accepted
+            )
+        } else {
+            CourierUnloadingScanBoxState.BoxInit(
+                readyStatus, initResult.id, initResult.address, accepted
+            )
+        }
     }
 
     private fun initToolbar() {
@@ -131,13 +134,12 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onCancelUnloadingClick() {
+        onTechEventLog("onCancelUnloadingClick")
         onStartScanner()
     }
 
     fun onConfirmUnloadingClick() {
-        metric.onTechUIEventLog(
-            SCREEN_TAG, "onConfirmUnloadingClick", "confirmUnloading"
-        )
+        onTechEventLog("onConfirmUnloadingClick")
         confirmUnloading()
     }
 
@@ -150,9 +152,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun confirmUnloadingComplete() {
-        metric.onTechUIEventLog(
-            SCREEN_TAG, "confirmUnloadingComplete", "navigate to intransit"
-        )
+        onTechEventLog("confirmUnloadingComplete")
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
@@ -160,7 +160,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun confirmUnloadingError(throwable: Throwable) {
-        metric.onTechErrorLog(SCREEN_TAG, "confirmUnloadingError", throwable.toString())
+        onTechErrorLog("confirmUnloadingError", throwable)
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
@@ -177,26 +177,8 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    private fun observeScanProgress() {
-        addSubscription(
-            interactor.scanLoaderProgress()
-                .subscribe({
-                    _progressEvent.value = when (it) {
-                        CourierUnloadingProgressData.Complete -> {
-                            CourierUnloadingScanProgress.LoaderComplete
-                        }
-                        CourierUnloadingProgressData.Progress -> {
-                            CourierUnloadingScanProgress.LoaderProgress
-                        }
-                    }
-                }, {})
-        )
-    }
-
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
-        metric.onTechUIEventLog(
-            SCREEN_TAG, "observeScanProcessComplete", "scanProcess " + scanProcess
-        )
+        onTechEventLog("observeScanProcessComplete", "scanProcess $scanProcess")
         val scanBoxData = scanProcess.scanBoxData
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
@@ -254,6 +236,23 @@ class CourierUnloadingScanViewModel(
         }
     }
 
+    private fun observeScanProgress() {
+        addSubscription(
+            interactor.scanLoaderProgress()
+                .subscribe({
+                    _progressEvent.value = when (it) {
+                        CourierUnloadingProgressData.Complete -> {
+                            CourierUnloadingScanProgress.LoaderComplete
+                        }
+                        CourierUnloadingProgressData.Progress -> {
+                            CourierUnloadingScanProgress.LoaderProgress
+                        }
+                    }
+                },
+                    { onTechErrorLog("observeScanProcessError", it) })
+        )
+    }
+
     fun onListClicked() {
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToBoxes
     }
@@ -282,7 +281,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
-        metric.onTechErrorLog(SCREEN_TAG, "observeScanProcessError", throwable.toString())
+        onTechErrorLog("observeScanProcessError", throwable)
         val error = if (throwable is CompositeException) {
             throwable.exceptions[0]
         } else throwable
@@ -311,10 +310,13 @@ class CourierUnloadingScanViewModel(
         interactor.scannerAction(ScannerState.Start)
     }
 
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
     companion object {
         const val SCREEN_TAG = "CourierUnloadingScan"
     }
 
     data class Label(val label: String)
-
 }

@@ -17,16 +17,17 @@ import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 
 class CourierWarehousesViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierWarehouseInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _warehouses = MutableLiveData<CourierWarehouseItemState>()
     val warehouses: LiveData<CourierWarehouseItemState>
@@ -43,6 +44,10 @@ class CourierWarehousesViewModel(
     private val _progressState = MutableLiveData<CourierWarehousesProgressState>()
     val progressState: LiveData<CourierWarehousesProgressState>
         get() = _progressState
+
+    init {
+        onTechEventLog("init", "init CourierWarehousesViewModel")
+    }
 
     private var warehouseEntities = mutableListOf<CourierWarehouseLocalEntity>()
 
@@ -64,37 +69,34 @@ class CourierWarehousesViewModel(
         this.mapMarkers = mapMarkers.toMutableList()
     }
 
-    init {
-
-    }
-
     private fun observeMapAction() {
         addSubscription(
-            interactor.observeMapAction().subscribe({
-                when (it) {
-                    is CourierMapAction.ItemClick -> {
-                    }
-                    CourierMapAction.PermissionComplete -> {
-                        LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
-                        getWarehouse()
-                    }
-                    is CourierMapAction.AutomatedLocationUpdate -> {
-                    }
-                    is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
-                }
-            },
-                {
-                    LogUtils { logDebugApp("interactor.observeMapAction().subscribe " + it) }
-                }
+            interactor.observeMapAction().subscribe(
+                { observeMapActionComplete(it) },
+                { observeMapActionError(it) }
             ))
     }
 
+    private fun observeMapActionComplete(it: CourierMapAction?) {
+        when (it) {
+            is CourierMapAction.ItemClick -> {
+            }
+            CourierMapAction.PermissionComplete -> {
+                onTechEventLog("observeMapActionComplete", "PermissionComplete")
+                getWarehouse()
+            }
+            is CourierMapAction.AutomatedLocationUpdate -> {
+            }
+            is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
+        }
+    }
+    private fun observeMapActionError(throwable: Throwable) {
+        onTechErrorLog("observeMapActionError", throwable)
+    }
+
     fun update() {
-        LogUtils { logDebugApp("update()") }
         observeMapAction()
-        LogUtils { logDebugApp("update() observeMapAction()") }
         getWarehouse()
-        LogUtils { logDebugApp("update() getWarehouse()") }
     }
 
     fun onUpdateClick() {
@@ -113,7 +115,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete(warehouses: List<CourierWarehouseLocalEntity>) {
-        LogUtils { logDebugApp("courierWarehouseComplete() " + warehouses.toString()) }
+        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouses.size)
         val warehouseItems = mutableListOf<CourierWarehouseItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
         val mapMarkers = mutableListOf<CourierMapMarker>()
@@ -149,11 +151,10 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
-        LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) myLocation " + myLocation.toString()) }
+        onTechEventLog("initMapByLocation", "myLocation coordinate $myLocation")
         val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
             coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
         )
-        LogUtils { logDebugApp("initMapByLocation(myLocation: CoordinatePoint) boundingBox " + boundingBox) }
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
         interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
@@ -161,7 +162,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
-        LogUtils { logDebugApp("courierWarehouseError() " + throwable.toString()) }
+        onTechErrorLog("courierWarehouseError", throwable)
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
                 DialogInfoStyle.WARNING.ordinal,
@@ -204,6 +205,7 @@ class CourierWarehousesViewModel(
     }
 
     fun onItemClick(index: Int) {
+        onTechEventLog("onItemClick", "index $index")
         changeItemSelected(index)
     }
 
@@ -262,6 +264,7 @@ class CourierWarehousesViewModel(
     }
 
     fun onDetailClick(index: Int) {
+        onTechEventLog("onDetailClick", "index $index")
         showProgress()
         val oldEntity = warehouseEntities[index].copy()
         addSubscription(
@@ -283,6 +286,14 @@ class CourierWarehousesViewModel(
 
     fun onCancelLoadClick() {
         clearSubscription()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierWarehouses"
     }
 
 }

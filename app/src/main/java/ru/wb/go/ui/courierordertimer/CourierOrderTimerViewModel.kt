@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
@@ -14,15 +12,16 @@ import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
+) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
     val orderTimer: LiveData<CourierOrderTimerState>
@@ -51,6 +50,7 @@ class CourierOrderTimerViewModel(
 
 
     init {
+        onTechEventLog("init")
         initOrder()
     }
 
@@ -61,8 +61,9 @@ class CourierOrderTimerViewModel(
                     {
                         initOrderInfo(it)
                         initTimer(it.reservedDuration, it.reservedAt)
-                    }, {
-                        LogUtils { logDebugApp("initOrder() error " + it) }
+                    },
+                    {
+                        onTechErrorLog("initOrder", it)
                     }
                 )
         )
@@ -73,7 +74,7 @@ class CourierOrderTimerViewModel(
         interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer
-                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError() })
+                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
         )
     }
 
@@ -81,7 +82,9 @@ class CourierOrderTimerViewModel(
         timerState.handle(this)
     }
 
-    private fun onHandleSignUpError() {}
+    private fun onHandleSignUpError(throwable: Throwable) {
+        onTechErrorLog("onHandleSignUpError", throwable)
+    }
 
     private fun timeIsOut() {
         _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
@@ -111,7 +114,7 @@ class CourierOrderTimerViewModel(
         _progressState.value = CourierOrderTimerProgressState.ProgressComplete
     }
 
-    fun refuseOrderClick() {
+    fun onRefuseOrderClick() {
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
@@ -125,53 +128,33 @@ class CourierOrderTimerViewModel(
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
     }
 
-    fun returnToListOrderClick() {
+    fun onReturnToListOrderClick() {
+        onTechEventLog("onReturnToListOrderClick")
         deleteTask()
     }
 
-    fun refuseOrderConfirmClick() {
+    fun onRefuseOrderConfirmClick() {
+        onTechEventLog("onRefuseOrderConfirmClick")
         deleteTask()
     }
 
     private fun deleteTask() {
         addSubscription(interactor.deleteTask().subscribe(
-            { toWarehouse() }, {})
+            { toWarehouse() }, {
+                onTechErrorLog("onHandleSignUpError", it)
+            })
         )
     }
 
     private fun toWarehouse() {
+        onTechEventLog("toWarehouse")
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }
 
-    private fun courierWarehouseError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        progressComplete()
-    }
-
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
     }
-
-    data class Label(val label: String)
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
         updateTimer(duration, downTickSec)
@@ -185,7 +168,16 @@ class CourierOrderTimerViewModel(
     }
 
     override fun onTimeIsOverState() {
+        onTechEventLog("onTimeIsOverState")
         timeIsOut()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierUnloadingBoxes"
     }
 
 }

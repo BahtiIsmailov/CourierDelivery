@@ -10,13 +10,15 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CouriersCompleteRegistrationViewModel(
     parameters: CourierExpectsParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierExpectsResourceProvider,
     private val interactor: CourierExpectsInteractor,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToMessageState: LiveData<NavigateToDialogInfo>
@@ -34,7 +36,12 @@ class CouriersCompleteRegistrationViewModel(
     val progressState: LiveData<CourierExpectsProgressState>
         get() = _progressState
 
+    init {
+        onTechEventLog("init")
+    }
+
     fun onUpdateStatusClick() {
+        onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierExpectsProgressState.Progress
         addSubscription(
             interactor.isRegisteredStatus().subscribe(
@@ -45,6 +52,7 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun isRegisteredStatusComplete(it: Boolean?) {
+        onTechEventLog("isRegisteredStatusComplete")
         _progressState.value = CourierExpectsProgressState.Complete
         when (it) {
             true -> _navAction.value = CourierExpectsNavAction.NavigateToCouriers
@@ -58,6 +66,7 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun isRegisteredStatusError(throwable: Throwable) {
+        onTechErrorLog("isRegisteredStatusError", throwable)
         _progressState.value = CourierExpectsProgressState.Complete
         when (throwable) {
             is NoInternetException -> _navigateToMessageState.value = NavigateToDialogInfo(
@@ -82,4 +91,13 @@ class CouriersCompleteRegistrationViewModel(
             )
         }
     }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CouriersCompleteRegistration"
+    }
+
 }

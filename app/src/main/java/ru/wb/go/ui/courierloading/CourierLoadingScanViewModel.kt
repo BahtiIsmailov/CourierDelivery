@@ -16,18 +16,19 @@ import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class CourierLoadingScanViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierLoadingResourceProvider,
     private val interactor: CourierLoadingInteractor,
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
     private val deviceManager: DeviceManager,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
+) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
     val orderTimer: LiveData<CourierLoadingScanTimerState>
@@ -100,7 +101,7 @@ class CourierLoadingScanViewModel(
     private fun observeTimer() {
         addSubscription(
             courierOrderTimerInteractor.timer
-                .subscribe({ observeTimerComplete(it) }, { observeTimerError() })
+                .subscribe({ observeTimerComplete(it) }, { observeTimerError(it) })
         )
     }
 
@@ -108,7 +109,9 @@ class CourierLoadingScanViewModel(
         timerState.handle(this)
     }
 
-    private fun observeTimerError() {}
+    private fun observeTimerError(throwable: Throwable) {
+        onTechErrorLog("observeTimerError", throwable)
+    }
 
     private fun observeNetworkState() {
         addSubscription(
@@ -118,6 +121,7 @@ class CourierLoadingScanViewModel(
     }
 
     fun onConfirmLoadingClick() {
+        onTechEventLog("onConfirmLoadingClick")
         onStopScanner()
         _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
         addSubscription(
@@ -127,6 +131,10 @@ class CourierLoadingScanViewModel(
     }
 
     private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
+        onTechEventLog(
+            "confirmLoadingBoxesComplete",
+            "loading box: " + courierCompleteData.countBox
+        )
         _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit(
             courierCompleteData.amount,
@@ -135,6 +143,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun confirmLoadingBoxesError(it: Throwable) {
+        onTechErrorLog("confirmLoadingBoxesError", it)
         _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
 //        onStartScanner()
         confirmLoadingError(it)
@@ -179,10 +188,19 @@ class CourierLoadingScanViewModel(
                     )
                 }
             }.subscribe(
-                { _boxStateUI.value = it },
-                { LogUtils { logDebugApp(it.toString()) } }
+                { initScanProcessComplete(it) },
+                { initScanProcessError(it) }
             )
         )
+    }
+
+    private fun initScanProcessComplete(it: CourierLoadingScanBoxState) {
+        onTechEventLog("initScanProcessError", it.toString())
+        _boxStateUI.value = it
+    }
+
+    private fun initScanProcessError(it: Throwable) {
+        onTechErrorLog("initScanProcessError", it)
     }
 
     private fun observeScanProcess() {
@@ -213,6 +231,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierLoadingProcessData) {
+        onTechEventLog("observeScanProcessComplete", scanProcess.toString())
         val scanBoxData = scanProcess.scanBoxData
         val accepted = resourceProvider.getAccepted(scanProcess.count)
         when (scanBoxData) {
@@ -260,15 +279,18 @@ class CourierLoadingScanViewModel(
     }
 
     fun onCancelLoadingClick() {
+        onTechEventLog("onCancelLoadingClick")
         onStartScanner()
     }
 
     fun onCompleteLoaderClicked() {
+        onTechEventLog("onCompleteLoaderClicked", "NavigateToConfirmDialog")
         onStopScanner()
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
+        onTechErrorLog("observeScanProcessError", throwable)
         val error = if (throwable is CompositeException) {
             throwable.exceptions[0]
         } else throwable
@@ -327,6 +349,7 @@ class CourierLoadingScanViewModel(
     }
 
     override fun onTimeIsOverState() {
+        onTechEventLog("onTimeIsOverState")
         _orderTimer.value = CourierLoadingScanTimerState.TimeIsOut(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getScanDialogTimeIsOutTitle(),
@@ -336,6 +359,7 @@ class CourierLoadingScanViewModel(
     }
 
     fun returnToListOrderClick() {
+        onTechEventLog("returnToListOrderClick")
         deleteTask()
     }
 
@@ -347,6 +371,14 @@ class CourierLoadingScanViewModel(
 
     private fun toWarehouse() {
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToWarehouse
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierLoadingScan"
     }
 
 }

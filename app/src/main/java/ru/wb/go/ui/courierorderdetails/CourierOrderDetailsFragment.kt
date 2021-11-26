@@ -25,8 +25,6 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.views.ProgressButtonMode
 
@@ -68,7 +66,7 @@ class CourierOrderDetailsFragment : Fragment() {
         initObservable()
         initListeners()
         initProgressDialog()
-        viewModel.update()
+        viewModel.onUpdate()
     }
 
     private fun initView() {
@@ -159,7 +157,7 @@ class CourierOrderDetailsFragment : Fragment() {
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.backOrder.setOnClickListener { findNavController().popBackStack() }
-        binding.takeOrder.setOnClickListener { viewModel.takeOrderClick() }
+        binding.takeOrder.setOnClickListener { viewModel.onTakeOrderClick() }
     }
 
     // TODO: 20.08.2021 переработать

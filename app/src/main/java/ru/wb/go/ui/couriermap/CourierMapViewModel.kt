@@ -6,14 +6,16 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 
 class CourierMapViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierMapInteractor,
     private val resourceProvider: CourierMapResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _mapState = MutableLiveData<CourierMapState>()
     val mapState: LiveData<CourierMapState>
@@ -52,6 +54,14 @@ class CourierMapViewModel(
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
         interactor.onForcedLocationUpdate(point)
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierMap"
     }
 
 }

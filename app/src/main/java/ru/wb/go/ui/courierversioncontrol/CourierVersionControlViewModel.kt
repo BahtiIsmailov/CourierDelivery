@@ -5,14 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractor
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierVersionControlViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierVersionControlResourceProvider,
     private val interactor: CourierVersionControlInteractor,
     private val deviceManager: DeviceManager
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
 //    private val _infoState = MutableLiveData<CourierVersionControlState>()
 //    val infoState: LiveData<CourierVersionControlState>
@@ -38,6 +40,7 @@ class CourierVersionControlViewModel(
     }
 
     fun onUpdateClick() {
+        onTechEventLog("onUpdateClick")
         val packageName: String = deviceManager.appPackageName
         _updateFromGooglePlay.value = UpdateFromGooglePlay(resourceProvider.getUriPlayMarket(packageName),
             resourceProvider.getUriGoogle(packageName))
@@ -47,5 +50,13 @@ class CourierVersionControlViewModel(
     object NavigateToWarehouse
     data class UpdateFromGooglePlay(val uriPlayMarket: String, val packageName: String)
     object UpdateFromFtp
+
+    companion object {
+        const val SCREEN_TAG = "CourierVersionControl"
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
 
 }

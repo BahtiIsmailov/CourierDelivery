@@ -51,8 +51,11 @@ val utilsModule = module {
         return TimeManagerImpl(worker, timeFormatter)
     }
 
-    fun provideYandexMetricManager(tokenManager: TokenManager): YandexMetricManager {
-        return YandexMetricManagerImpl(tokenManager)
+    fun provideYandexMetricManager(
+        deviceManager: DeviceManager,
+        tokenManager: TokenManager
+    ): YandexMetricManager {
+        return YandexMetricManagerImpl(deviceManager, tokenManager)
     }
 
     single { provideSharedWorker(get(), get()) }
@@ -62,6 +65,6 @@ val utilsModule = module {
     single { provideConfigManager(get(), get()) }
     single { provideTimeFormatter() }
     single { provideTimeManager(get(), get()) }
-    single { provideYandexMetricManager(get()) }
+    single { provideYandexMetricManager(get(), get()) }
 
 }

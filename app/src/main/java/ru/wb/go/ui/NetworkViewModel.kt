@@ -8,9 +8,15 @@ import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 
-abstract class NetworkViewModel(private val compositeDisposable: CompositeDisposable) :
+abstract class NetworkViewModel(
+    private val compositeDisposable: CompositeDisposable,
+    private val metric: YandexMetricManager,
+) :
     ViewModel() {
+
+    abstract fun getScreenTag(): String
 
     protected fun addSubscription(disposable: Disposable) {
         compositeDisposable.add(disposable)
@@ -49,6 +55,18 @@ abstract class NetworkViewModel(private val compositeDisposable: CompositeDispos
             )
         }
 
+    }
+
+    fun onTechEventLog(method: String, message: String = EMPTY_MESSAGE) {
+        metric.onTechEventLog(getScreenTag(), method, message)
+    }
+
+    fun onTechErrorLog(method: String, error: Throwable) {
+        metric.onTechErrorLog(getScreenTag(), method, error.toString())
+    }
+
+    companion object {
+        const val EMPTY_MESSAGE = ""
     }
 
 }

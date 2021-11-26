@@ -48,7 +48,7 @@ class CourierIntransitFragment : Fragment() {
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
     private val itemCallback = object : OnCourierIntransitCallback {
         override fun onPickToPointClick(idItem: Int) {
-            viewModel.onItemClick(idItem)
+            viewModel.onItemOfficeClick(idItem)
         }
     }
 

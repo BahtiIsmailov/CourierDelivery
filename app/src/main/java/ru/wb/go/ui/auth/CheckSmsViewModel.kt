@@ -13,14 +13,15 @@ import ru.wb.go.ui.auth.domain.CheckSmsInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CheckSmsInteractor,
     private val resourceProvider: AuthResourceProvider,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
+) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _stateTitleUI = MutableLiveData<InitTitle>()
     val stateTitleUI: LiveData<InitTitle>
@@ -56,12 +57,25 @@ class CheckSmsViewModel(
         fetchTitle()
         subscribeTimer()
         restartTimer(if (parameters.ttl > 0) parameters.ttl else DURATION_TIME_INIT)
-        LogUtils { logDebugApp("init parameters.ttl " + parameters.ttl) }
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+        )
     }
 
     private fun fetchTitle() {
         _stateTitleUI.postValue(
             InitTitle(resourceProvider.getTitleCheckSms(parameters.phone), parameters.phone)
+        )
+    }
+
+    private fun subscribeTimer() {
+        addSubscription(
+            interactor.timer.subscribe(
+                { onHandleSignUpTimerState(it) },
+                { onHandleSignUpTimerError(it) })
         )
     }
 
@@ -71,43 +85,19 @@ class CheckSmsViewModel(
                 .doOnNext { switchNext(it) }
                 .subscribe(
                     { formatSmsComplete(it) },
-                    { })
+                    { formatSmsError(it) })
         )
     }
 
-    private fun formatSmsComplete(code: String) {
-        _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)
-        if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
+
+    private fun formatSmsError(throwable: Throwable) {
+        onTechErrorLog("formatSmsError", throwable)
     }
 
-    private fun checkSmsError(throwable: Throwable) {
-        _checkSmsUIState.value = when (throwable) {
-            is NoInternetException -> CheckSmsUIState.MessageError(
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> {
-                with(throwable.error) {
-                    val restartTimer = if (data == null) {
-                        DURATION_TIME_INIT
-                    } else {
-                        if (data.ttl == 0) DURATION_TIME_INIT else data.ttl
-                    }
-                    restartTimer(restartTimer)
-                    CheckSmsUIState.MessageError(
-                        "Неверный код",
-                        "Проверте правильность ввода",
-                        "Понятно"
-                    )
-                }
-            }
-            else -> CheckSmsUIState.MessageError(
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
+    private fun formatSmsComplete(code: String) {
+        onTechEventLog("formatSmsComplete", "code " + code.length)
+        _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)
+        if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
     }
 
     private fun accumulateCode(accumulator: String, item: KeyboardNumericView.ButtonAction) =
@@ -125,17 +115,13 @@ class CheckSmsViewModel(
             if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active
     }
 
-    private fun subscribeTimer() {
-        addSubscription(interactor.timer
-            .subscribe({ onHandleSignUpState(it) })
-            { onHandleSignUpError() })
-    }
-
-    private fun onHandleSignUpState(timerState: TimerState) {
+    private fun onHandleSignUpTimerState(timerState: TimerState) {
         timerState.handle(this)
     }
 
-    private fun onHandleSignUpError() {}
+    private fun onHandleSignUpTimerError(throwable: Throwable) {
+        onTechErrorLog("onHandleSignUpError", throwable)
+    }
 
     fun onRepeatPassword() {
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
@@ -148,10 +134,12 @@ class CheckSmsViewModel(
     }
 
     private fun fetchingPasswordComplete() {
+        onTechEventLog("fetchingPasswordComplete")
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
     private fun fetchingPasswordError(throwable: Throwable) {
+        onTechErrorLog("fetchingPasswordError", throwable)
         when (throwable) {
             is NoInternetException -> _repeatStateUI.value =
                 CheckSmsUIRepeatState.ErrorPassword(
@@ -189,23 +177,49 @@ class CheckSmsViewModel(
         addSubscription(interactor.auth(phone, password)
             .subscribe(
                 { authComplete() },
-                { checkSmsError(it) }
+                { authError(it) }
             )
         )
     }
 
-    private fun formatPhone() = parameters.phone.filter { it.isDigit() }
-
     private fun authComplete() {
+        onTechEventLog("authComplete", "NavigateToAppLoader")
         _checkSmsUIState.value = CheckSmsUIState.Complete
         _navigationEvent.value = CheckSmsNavigationState.NavigateToAppLoader
     }
 
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+    private fun authError(throwable: Throwable) {
+        onTechErrorLog("authError", throwable)
+        _checkSmsUIState.value = when (throwable) {
+            is NoInternetException -> CheckSmsUIState.MessageError(
+                resourceProvider.getGenericInternetTitleError(),
+                resourceProvider.getGenericInternetMessageError(),
+                resourceProvider.getGenericInternetButtonError()
+            )
+            is BadRequestException -> {
+                with(throwable.error) {
+                    val restartTimer = if (data == null) {
+                        DURATION_TIME_INIT
+                    } else {
+                        if (data.ttl == 0) DURATION_TIME_INIT else data.ttl
+                    }
+                    restartTimer(restartTimer)
+                    CheckSmsUIState.MessageError(
+                        "Неверный код",
+                        "Проверте правильность ввода",
+                        "Понятно"
+                    )
+                }
+            }
+            else -> CheckSmsUIState.MessageError(
+                resourceProvider.getGenericServiceTitleError(),
+                throwable.toString(),
+                resourceProvider.getGenericServiceButtonError()
+            )
+        }
     }
+
+    private fun formatPhone() = parameters.phone.filter { it.isDigit() }
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
         val time: String =
@@ -225,6 +239,7 @@ class CheckSmsViewModel(
     }
 
     override fun onTimeIsOverState() {
+        onTechEventLog("onTimeIsOverState")
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
@@ -233,10 +248,15 @@ class CheckSmsViewModel(
         interactor.stopTimer()
     }
 
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
     companion object {
         private const val DURATION_TIME_INIT = 60
         const val TIME_DIVIDER = 60
         const val NUMBER_LENGTH_MAX = 4
+        const val SCREEN_TAG = "CheckSms"
     }
 
     data class InitTitle(val title: String, val phone: String)

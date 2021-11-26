@@ -57,11 +57,12 @@ class CourierIntransitInteractorImpl(
 
     override fun startTime(): Observable<Long> {
         var offsetSec = 0L
+        // TODO: 25.11.2021 переработать с учетом часового пояса
         val startedTaskTime =
             timeFormatter.dateTimeWithoutTimezoneFromString(timeManager.getStartedTaskTime()).millis
         if (startedTaskTime != 0L) {
             val currentTime = timeFormatter.currentDateTime().millis
-            offsetSec = (currentTime - startedTaskTime) / 1000
+            offsetSec = kotlin.math.abs(currentTime - startedTaskTime) / 1000
         }
         return intransitTimeRepository.startTimer()
             .toObservable()

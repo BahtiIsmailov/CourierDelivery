@@ -19,7 +19,6 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
@@ -30,12 +29,12 @@ import java.util.concurrent.TimeUnit
 
 class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val userManager: UserManager,
-    private val metric: YandexMetricManager,
     private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -122,14 +121,15 @@ class CourierIntransitViewModel(
     private fun observeBoxesGroupByOffice() {
         addSubscription(
             interactor.observeBoxesGroupByOffice()
-                .map { offices ->
-                    offices.toMutableList().sortedWith(
-                        compareBy({ it.isUnloaded }, { it.deliveredCount == it.fromCount })
-                    )
-                }
+                .map { sortedOffices(it) }
                 .subscribe({ initOfficesComplete(it) }, { initOfficesError(it) })
         )
     }
+
+    private fun sortedOffices(offices: List<CourierIntransitGroupByOfficeEntity>) =
+        offices.toMutableList().sortedWith(
+            compareBy({ it.isUnloaded }, { it.deliveredCount == it.fromCount })
+        )
 
     private fun initTime() {
         addSubscription(interactor.startTime().subscribe({
@@ -145,28 +145,18 @@ class CourierIntransitViewModel(
             .subscribe({
                 when (it) {
                     is CourierIntransitScanOfficeData.NecessaryOffice -> {
-                        metric.onTechUIEventLog(
-                            SCREEN_TAG,
-                            "observeOfficeIdScanProcess",
-                            "NecessaryOffice " + it.id
-                        )
+                        onTechEventLog("observeOfficeIdScanProcess", "NecessaryOffice " + it.id)
                         _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
                         _navigationState.value =
                             CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
                         onCleared()
                     }
                     CourierIntransitScanOfficeData.UnknownOffice -> {
-                        metric.onTechUIEventLog(
-                            SCREEN_TAG,
-                            "observeOfficeIdScanProcess",
-                            "UnknownOffice"
-                        )
+                        onTechEventLog("observeOfficeIdScanProcess", "UnknownOffice")
                         _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownOffice
                     }
                 }
-            }, {
-                LogUtils { logDebugApp("initScanner error office scan " + it) }
-            })
+            }, { onTechErrorLog("observeOfficeIdScanProcess", it) })
         )
     }
 
@@ -177,7 +167,7 @@ class CourierIntransitViewModel(
                     is CourierMapAction.ItemClick -> {
                     }
                     CourierMapAction.PermissionComplete -> {
-                        LogUtils { logDebugApp("CourierMapAction.PermissionComplete getWarehouse()") }
+                        onTechEventLog("observeMapAction", "PermissionComplete")
                         observeBoxesGroupByOffice()
                     }
                     is CourierMapAction.AutomatedLocationUpdate -> {
@@ -186,17 +176,16 @@ class CourierIntransitViewModel(
                     }
                 }
             },
-                {}
+                { onTechErrorLog("observeMapAction", it) }
             ))
     }
 
     private fun initOfficesError(it: Throwable) {
-        LogUtils { logDebugApp("initOrderItemsError " + it) }
+        onTechErrorLog("initOfficesError", it)
     }
 
     private fun initOfficesComplete(dstOffices: List<CourierIntransitGroupByOfficeEntity>) {
-
-        LogUtils { logDebugApp("initOfficesComplete ===================================================== ") }
+        onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
         val items = mutableListOf<BaseIntransitItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
         val markers = mutableListOf<CourierMapMarker>()
@@ -313,20 +302,19 @@ class CourierIntransitViewModel(
             interactor.mapState(CourierMapState.NavigateToPoint(moscowMapPoint()))
         } else {
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-            LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
             val boundingBox = MapEnclosingCircle().minimumBoundingBox(coordinatePoints)
             interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
         }
     }
 
     fun onScanQrPvzClick() {
-        metric.onTechUIEventLog(SCREEN_TAG, "onScanQrPvzClick", "start and navigate to scanner")
+        onTechEventLog("onScanQrPvzClick")
         onStartScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
     }
 
     fun onCompleteDeliveryClick() {
-        metric.onTechUIEventLog(SCREEN_TAG, "onCompleteDeliveryClick", "start complete delivery")
+        onTechEventLog("onCompleteDeliveryClick")
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
@@ -335,8 +323,7 @@ class CourierIntransitViewModel(
     }
 
     private fun completeDeliveryComplete(completeDeliveryResult: CompleteDeliveryResult) {
-        metric.onTechUIEventLog(
-            SCREEN_TAG,
+        onTechEventLog(
             "completeDeliveryComplete",
             "unloadedCount " + completeDeliveryResult.unloadedCount + "/ fromCount " + completeDeliveryResult.fromCount
         )
@@ -349,7 +336,7 @@ class CourierIntransitViewModel(
     }
 
     private fun completeDeliveryError(throwable: Throwable) {
-        metric.onTechErrorLog(SCREEN_TAG, "completeDeliveryError", throwable.toString())
+        onTechErrorLog("completeDeliveryError", throwable)
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
@@ -376,7 +363,7 @@ class CourierIntransitViewModel(
     }
 
     fun onCloseScannerClick() {
-        metric.onTechUIEventLog(SCREEN_TAG, "onCloseScannerClick", "NavigateToMap")
+        onTechEventLog("onCloseScannerClick")
         onStopScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToMap
     }
@@ -386,10 +373,12 @@ class CourierIntransitViewModel(
     }
 
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
     }
 
-    fun onItemClick(index: Int) {
+    fun onItemOfficeClick(index: Int) {
+        onTechEventLog("onItemOfficeClick")
         changeItemSelected(index)
     }
 
@@ -449,6 +438,10 @@ class CourierIntransitViewModel(
     }
 
     data class Label(val label: String)
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
 
     companion object {
         const val DEFAULT_SELECT_ITEM = false

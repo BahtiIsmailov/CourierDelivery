@@ -5,17 +5,18 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import ru.wb.go.app.PREFIX_QR_CODE
-import ru.wb.go.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.analytics.YandexMetricManager
 import java.util.concurrent.TimeUnit
 
 class ScannerViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: ScannerInteractor,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _scannerAction = SingleLiveEvent<ScannerState>()
     val scannerAction: LiveData<ScannerState>
@@ -43,6 +44,14 @@ class ScannerViewModel(
 
     fun clearMemoryBarcode() {
         oldBarcode = ""
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "Scanner"
     }
 
 }
