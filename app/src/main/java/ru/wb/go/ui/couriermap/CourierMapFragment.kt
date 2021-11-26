@@ -134,6 +134,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.setMultiTouchControls(true)
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
+        binding.map.invalidate()
         viewModel.onInitPermission()
     }
 
@@ -148,6 +149,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val point = GeoPoint(lat, long)
         marker.position = point
         binding.map.overlays.add(marker)
+        binding.map.invalidate()
     }
 
     private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
@@ -157,6 +159,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             mapController.setCenter((this as Marker).position)
         }
         mapController.setZoom(16.0)
+        binding.map.invalidate()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -181,6 +184,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val point = GeoPoint(it.lat, it.long)
         mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
+        binding.map.invalidate()
     }
 
     private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
