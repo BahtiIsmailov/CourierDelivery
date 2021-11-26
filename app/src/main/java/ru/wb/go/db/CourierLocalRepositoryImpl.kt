@@ -11,8 +11,8 @@ import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.db.entity.courierlocal.*
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
 class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
@@ -58,7 +58,11 @@ class CourierLocalRepositoryImpl(
             .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
     }
 
-    override fun orderData(): Single<CourierOrderLocalDataEntity> {
+    override fun orderDataSync(): Single<CourierOrderLocalDataEntity> {
+        return courierOrderDao.orderDataSync()
+    }
+
+    override fun orderData(): CourierOrderLocalDataEntity {
         return courierOrderDao.orderData()
     }
 
@@ -103,7 +107,11 @@ class CourierLocalRepositoryImpl(
         return courierLoadingBoxDao.insertBoxes(boxEntity)
     }
 
-    override fun readAllLoadingBoxes(): Single<List<CourierBoxEntity>> {
+    override fun readAllLoadingBoxesSync(): Single<List<CourierBoxEntity>> {
+        return courierLoadingBoxDao.readAllBoxesSync()
+    }
+
+    override fun readAllLoadingBoxes(): List<CourierBoxEntity> {
         return courierLoadingBoxDao.readAllBoxes()
     }
 

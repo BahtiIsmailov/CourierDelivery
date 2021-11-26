@@ -18,7 +18,7 @@ class YandexMetricManagerImpl(val deviceManager: DeviceManager, val tokenManager
         sendTechReportEvent(loadAsJson(TECH_EVENT, screen, split(method, message)).toString())
     }
 
-    override fun onNetworkLog(method: String, message: String) {
+    override fun onTechNetworkLog(method: String, message: String) {
         sendTechReportEvent(loadAsJson(TECH_NETWORK, method, split(method, message)).toString())
     }
 

@@ -5,9 +5,9 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
-import ru.wb.go.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
 
 @Dao
 interface CourierOrderDao {
@@ -23,7 +23,11 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun orderData(): Single<CourierOrderLocalDataEntity>
+    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+
+    @Transaction
+    @Query("SELECT * FROM CourierOrderLocalEntity")
+    fun orderData(): CourierOrderLocalDataEntity
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")

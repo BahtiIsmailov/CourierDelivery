@@ -163,7 +163,7 @@ class CourierIntransitInteractorImpl(
         return input.split(".")
     }
 
-    private fun courierLoadingScanBoxData() = courierLocalRepository.orderData()
+    private fun courierLoadingScanBoxData() = courierLocalRepository.orderDataSync()
 
     override fun observeMapAction(): Observable<CourierMapAction> {
         return courierMapRepository.observeMapAction()

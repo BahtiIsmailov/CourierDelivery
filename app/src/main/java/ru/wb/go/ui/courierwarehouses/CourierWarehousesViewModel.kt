@@ -151,7 +151,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
-        onTechEventLog("initMapByLocation", "myLocation coordinate $myLocation")
+        onTechEventLog("initMapByLocation")
         val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
             coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
         )

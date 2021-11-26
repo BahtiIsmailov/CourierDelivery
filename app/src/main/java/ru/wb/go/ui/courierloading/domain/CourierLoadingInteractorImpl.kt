@@ -44,7 +44,7 @@ class CourierLoadingInteractorImpl(
     }
 
     override fun scannedBoxes(): Single<List<CourierBoxEntity>> {
-        return courierLocalRepository.readAllLoadingBoxes()
+        return courierLocalRepository.readAllLoadingBoxesSync()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -157,7 +157,7 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun boxDefinitionResult(parseQrCode: ParseQrCode): Single<CourierBoxDefinitionResult> {
-        return Single.zip(orderDstOffices(), updatedAt(), taskId(),
+        return Single.zip(orderDstOffices(), updatedAt(), taskIdSync(),
             { orderDstOffices, updatedAt, taskId ->
                 CourierBoxDefinitionResult(
                     findOfficeById(orderDstOffices, parseQrCode.dstOfficeId),
@@ -171,7 +171,7 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun orderDstOffices(): Single<List<CourierOrderDstOfficeLocalEntity>> {
-        return courierLocalRepository.orderData().map { it.dstOffices }
+        return courierLocalRepository.orderDataSync().map { it.dstOffices }
     }
 
     private fun findOfficeById(
@@ -228,28 +228,21 @@ class CourierLoadingInteractorImpl(
     }
 
     override fun deleteTask(): Completable {
-        return taskId().flatMapCompletable { appRemoteRepository.deleteTask(it) }
+        return taskIdSync().flatMapCompletable { appRemoteRepository.deleteTask(it) }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     override fun confirmLoadingBoxes(): Single<CourierCompleteData> {
-        return courierLocalRepository.readAllLoadingBoxes()
-            .flatMap { convertToCourierTaskStatusesIntransitEntity(it) }
-            .flatMap { intransitBoxes ->
-                taskId().flatMap { taskId ->
-                    // TODO: 24.09.2021 включить для тестирования
-                    //Completable.timer(3, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-                    //Completable.timer(3, TimeUnit.SECONDS).andThen(Single.just(CourierCompleteData(1200, 10)))
-                    appRemoteRepository.taskStatusesReady(taskId, intransitBoxes)
-                        .map { it.coast }
-                        .doOnSuccess {
-                            userManager.saveStatusTask(TaskStatus.INTRANSIT.status)
-                            userManager.saveCostTask(it)
-                        }
-                        .map { CourierCompleteData(it, intransitBoxes.size) }
-                        .compose(rxSchedulerFactory.applySingleSchedulers())
-                }
+        val loadingBoxes = courierLocalRepository.readAllLoadingBoxes()
+        val loadingConvertBoxes = convertToCourierTaskStatusesIntransitEntity(loadingBoxes)
+        val taskId = taskId()
+        return appRemoteRepository.taskStatusesReady(taskId, loadingConvertBoxes)
+            .map { it.coast }
+            .doOnSuccess {
+                userManager.saveStatusTask(TaskStatus.INTRANSIT.status)
+                userManager.saveCostTask(it)
             }
+            .map { CourierCompleteData(it, loadingConvertBoxes.size) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -258,9 +251,10 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun convertToCourierTaskStatusesIntransitEntity(item: List<CourierBoxEntity>) =
-        Observable.fromIterable(item).map {
-            with(it) {
+    private fun convertToCourierTaskStatusesIntransitEntity(items: List<CourierBoxEntity>): List<CourierTaskStatusesIntransitEntity> {
+        val convertItems = mutableListOf<CourierTaskStatusesIntransitEntity>()
+        items.forEach {
+            val convertItem = with(it) {
                 CourierTaskStatusesIntransitEntity(
                     id = id,
                     dstOfficeID = dstOfficeId,
@@ -268,9 +262,14 @@ class CourierLoadingInteractorImpl(
                     deliveredAt = null
                 )
             }
-        }.toList()
+            convertItems.add(convertItem)
+        }
+        return convertItems
+    }
 
-    private fun taskId() =
+    private fun taskId() = courierLocalRepository.orderData().courierOrderLocalEntity.id.toString()
+
+    private fun taskIdSync() =
         courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id.toString() }
             .first("")

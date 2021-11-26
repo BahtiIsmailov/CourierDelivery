@@ -133,7 +133,7 @@ class CourierLoaderViewModel(
                 val timer = Completable.timer(1000, TimeUnit.MILLISECONDS)
                 val taskMy = appRemoteRepository.tasksMy().map { it }
                 val localTaskId =
-                    courierLocalRepository.orderData().map { it.courierOrderLocalEntity.id }
+                    courierLocalRepository.orderDataSync().map { it.courierOrderLocalEntity.id }
                         .onErrorReturn { -1 }
                 val zipData = Single.zip(taskMy, localTaskId,
                     { remoteTask, localTaskId -> tasksMyComplete(remoteTask, localTaskId) })

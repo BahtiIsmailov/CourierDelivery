@@ -41,7 +41,9 @@ interface CourierLocalRepository {
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
     ): Completable
 
-    fun orderData(): Single<CourierOrderLocalDataEntity>
+    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+
+    fun orderData(): CourierOrderLocalDataEntity
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
@@ -67,7 +69,9 @@ interface CourierLocalRepository {
 
     fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
 
-    fun readAllLoadingBoxes(): Single<List<CourierBoxEntity>>
+    fun readAllLoadingBoxesSync(): Single<List<CourierBoxEntity>>
+
+    fun readAllLoadingBoxes(): List<CourierBoxEntity>
 
     fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
 

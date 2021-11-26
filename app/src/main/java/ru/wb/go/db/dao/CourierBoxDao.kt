@@ -20,7 +20,10 @@ interface CourierBoxDao {
     fun insertBoxes(courierBoxes: List<CourierBoxEntity>): Completable
 
     @Query("SELECT * FROM CourierBoxEntity")
-    fun readAllBoxes(): Single<List<CourierBoxEntity>>
+    fun readAllBoxesSync(): Single<List<CourierBoxEntity>>
+
+    @Query("SELECT * FROM CourierBoxEntity")
+    fun readAllBoxes(): List<CourierBoxEntity>
 
     @Query("SELECT * FROM CourierBoxEntity")
     fun observeBoxes(): Flowable<List<CourierBoxEntity>>
