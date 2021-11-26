@@ -463,6 +463,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     private fun showExitDialog() {
         DialogConfirmInfoFragment.newInstance(
+            resultTag = EXIT_DIALOG_TAG,
             type = DialogInfoStyle.INFO.ordinal,
             title = getText(R.string.exit_app).toString(),
             message = "",
@@ -472,7 +473,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     override fun userInfo(name: String, company: String) {
-        LogUtils { logDebugApp("authRemoteRepository.userInfo() " + name) }
         with(binding.navView) {
             findViewById<TextView>(R.id.nav_header_name).text = name
             findViewById<TextView>(R.id.nav_header_company).text = company
@@ -527,13 +527,15 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         private const val FILE_BASE_PATH = "file://"
         private const val PROVIDER_PATH = ".provider"
         private const val APP_INSTALL_PATH = "\"application/vnd.android.package-archive\""
+        private const val EXIT_DIALOG_TAG = "EXIT_DIALOG_TAG"
     }
 
-    override fun onPositiveDialogClick() {
-        finish()
+    override fun onPositiveDialogClick(resultTag: String) {
+        if (resultTag == EXIT_DIALOG_TAG)
+            finish()
     }
 
-    override fun onNegativeDialogClick() {
+    override fun onNegativeDialogClick(resultTag: String) {
 
     }
 

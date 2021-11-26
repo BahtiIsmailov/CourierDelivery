@@ -17,8 +17,8 @@ import ru.wb.go.app.AppExtras
 class DialogConfirmInfoFragment : DialogFragment() {
 
     interface SimpleDialogListener {
-        fun onPositiveDialogClick()
-        fun onNegativeDialogClick()
+        fun onPositiveDialogClick(resultTag: String)
+        fun onNegativeDialogClick(resultTag: String)
     }
 
     private var simpleDialogListener: SimpleDialogListener? = null
@@ -92,7 +92,7 @@ class DialogConfirmInfoFragment : DialogFragment() {
     }
 
     private fun sendPositiveResult(resultTag: String) {
-        simpleDialogListener?.onPositiveDialogClick()
+        simpleDialogListener?.onPositiveDialogClick(resultTag)
         setFragmentResult(
             resultTag,
             bundleOf(DIALOG_CONFIRM_INFO_POSITIVE_KEY to DIALOG_CONFIRM_INFO_POSITIVE_VALUE)
@@ -100,7 +100,7 @@ class DialogConfirmInfoFragment : DialogFragment() {
     }
 
     private fun sendNegativeResult(resultTag: String) {
-        simpleDialogListener?.onNegativeDialogClick()
+        simpleDialogListener?.onNegativeDialogClick(resultTag)
         setFragmentResult(
             resultTag,
             bundleOf(DIALOG_CONFIRM_INFO_NEGATIVE_KEY to DIALOG_CONFIRM_INFO_NEGATIVE_VALUE)
