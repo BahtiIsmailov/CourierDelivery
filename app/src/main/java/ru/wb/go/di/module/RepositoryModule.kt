@@ -24,6 +24,7 @@ import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.ui.splash.domain.AppSharedRepository
 import ru.wb.go.ui.splash.domain.AppSharedRepositoryImpl
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.TimeManager
 
 val deliveryRepositoryModule = module {
@@ -40,8 +41,9 @@ val deliveryRepositoryModule = module {
         api: AppApi,
         tokenManager: TokenManager,
         timeManager: TimeManager,
+        metric: YandexMetricManager
     ): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(api, tokenManager, timeManager)
+        return AppRemoteRepositoryImpl(api, tokenManager, timeManager, metric)
     }
 
     fun provideRefreshTokenRepository(
@@ -88,7 +90,7 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRemoteRepository(get(), get(), get()) }
-    single { provideAppRemoteRepository(get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }

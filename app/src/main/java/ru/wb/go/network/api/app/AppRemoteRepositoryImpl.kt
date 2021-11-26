@@ -7,28 +7,24 @@ import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-import ru.wb.go.db.entity.flighboxes.BoxStatus
 import ru.wb.go.network.api.app.entity.*
-import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
-import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanEntity
-import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.courier.*
-import ru.wb.go.network.api.app.remote.warehouse.BoxToWarehouseBalanceResponse
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.TimeManager
 
 class AppRemoteRepositoryImpl(
     private val remote: AppApi,
     private val tokenManager: TokenManager,
     private val timeManager: TimeManager,
+    private val metric: YandexMetricManager
 ) : AppRemoteRepository {
 
     companion object {
         private const val COST_DIVIDER = 100
-
     }
 
     override fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
@@ -309,30 +305,6 @@ class AppRemoteRepositoryImpl(
                 dstOffices = dstOffices,
                 reservedAt = "",
                 reservedDuration = reservedDuration
-            )
-        }
-    }
-
-    private fun convertWarehouseScannedBox(warehouseScanRemote: BoxToWarehouseBalanceResponse): WarehouseScanEntity {
-        return with(warehouseScanRemote) {
-            WarehouseScanEntity(
-                srcOffice = WarehouseScanSrcOfficeEntity(
-                    id = srcOffice.id,
-                    name = srcOffice.name,
-                    fullAddress = srcOffice.fullAddress,
-                    longitude = srcOffice.long,
-                    latitude = srcOffice.lat
-                ),
-                dstOffice = WarehouseScanDstOfficeEntity(
-                    id = dstOffice.id,
-                    name = dstOffice.name,
-                    fullAddress = dstOffice.fullAddress,
-                    longitude = dstOffice.long,
-                    latitude = dstOffice.lat
-                ),
-                barcode = barcode,
-                updatedAt = updatedAt,
-                status = BoxStatus.values()[status]
             )
         }
     }

@@ -18,6 +18,10 @@ class YandexMetricManagerImpl(val deviceManager: DeviceManager, val tokenManager
         sendTechReportEvent(loadAsJson(TECH_EVENT, screen, split(method, message)).toString())
     }
 
+    override fun onNetworkLog(method: String, message: String) {
+        sendTechReportEvent(loadAsJson(TECH_NETWORK, method, split(method, message)).toString())
+    }
+
     private fun split(method: String, message: String): String {
         return deviceManager.deviceId + SPACE_DIVIDER + tokenManager.wbUserID() + SPACE_DIVIDER + method + SPACE_DIVIDER + message
     }
@@ -48,6 +52,7 @@ class YandexMetricManagerImpl(val deviceManager: DeviceManager, val tokenManager
         private const val TECH_LOG_EVENT = "tech_log"
         private const val TECH_ERROR = "error"
         private const val TECH_EVENT = "event"
+        private const val TECH_NETWORK = "network"
         private const val SPACE_DIVIDER = " / "
     }
 }
