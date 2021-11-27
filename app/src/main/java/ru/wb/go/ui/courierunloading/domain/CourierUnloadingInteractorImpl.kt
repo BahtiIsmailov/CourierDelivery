@@ -209,19 +209,6 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun confirmUnloadingComplete(officeId: Int) {
-        loaderComplete()
-        insertVisitedAtOffice(officeId, true)
-        insertAllVisitedOffice()
-    }
-
-    private fun taskStatusesIntransit(
-        statusesIntransit: List<CourierTaskStatusesIntransitEntity>,
-        taskId: String
-    ) = appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
-
-    private fun readNotUnloadingBoxes() = courierLocalRepository.readNotUnloadingBoxes()
-
     private fun insertVisitedAtOffice(officeId: Int, isUnloaded: Boolean) {
         val courierOrderVisitedOfficeLocalEntity = CourierOrderVisitedOfficeLocalEntity(
             dstOfficeId = officeId,
@@ -231,9 +218,7 @@ class CourierUnloadingInteractorImpl(
         return courierLocalRepository.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
     }
 
-    private fun insertAllVisitedOfficeSync() = courierLocalRepository.insertAllVisitedOfficeSync()
-
-    private fun insertAllVisitedOffice() = courierLocalRepository.insertAllVisitedOffice()
+    private fun readNotUnloadingBoxes() = courierLocalRepository.readNotUnloadingBoxes()
 
     private fun convertToCourierTaskStatusesIntransitEntity(items: List<CourierBoxEntity>): List<CourierTaskStatusesIntransitEntity> {
         val convertItems = mutableListOf<CourierTaskStatusesIntransitEntity>()
@@ -252,6 +237,21 @@ class CourierUnloadingInteractorImpl(
     }
 
     private fun taskId() = courierLocalRepository.orderData().courierOrderLocalEntity.id.toString()
+
+    private fun taskStatusesIntransit(
+        statusesIntransit: List<CourierTaskStatusesIntransitEntity>,
+        taskId: String
+    ) = appRemoteRepository.taskStatusesIntransit(taskId, statusesIntransit)
+
+    override fun confirmUnloadingComplete(officeId: Int) {
+        loaderComplete()
+        insertVisitedAtOffice(officeId, true)
+        insertAllVisitedOffice()
+    }
+
+    private fun insertAllVisitedOfficeSync() = courierLocalRepository.insertAllVisitedOfficeSync()
+
+    private fun insertAllVisitedOffice() = courierLocalRepository.insertAllVisitedOffice()
 
     private fun taskIdSync() =
         courierLocalRepository.observeOrderData()

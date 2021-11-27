@@ -27,13 +27,10 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import ru.wb.go.BuildConfig
 import ru.wb.go.R
-import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
-import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
 import ru.wb.go.databinding.MapFragmentBinding
 import ru.wb.go.ui.scanner.hasPermissions
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.map.CoordinatePoint
-import ru.wb.go.utils.map.MapCircle
 import ru.wb.go.utils.map.MapPoint
 
 
@@ -134,7 +131,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.setMultiTouchControls(true)
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
-        binding.map.invalidate()
+        binding.map.setUseDataConnection(true)
         viewModel.onInitPermission()
     }
 
@@ -149,7 +146,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val point = GeoPoint(lat, long)
         marker.position = point
         binding.map.overlays.add(marker)
-        binding.map.invalidate()
     }
 
     private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
@@ -166,7 +162,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun initObservable() {
         viewModel.mapState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierMapState.NavigateToPointByZoomRadius -> navigateToPointByZoomRadius(it.startNavigation)
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
@@ -203,40 +198,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
-    private fun navigateToPointByZoomRadius(it: MapCircle) {
-
-        val point = it.point
-        val radius = it.radius
-
-        val maxLat = point.latitude + MAP_WAREHOUSE_LAT_DISTANCE
-        val maxLong = point.longitude + MAP_WAREHOUSE_LON_DISTANCE
-        val minLat = point.latitude - MAP_WAREHOUSE_LAT_DISTANCE
-        val minLong = point.longitude - MAP_WAREHOUSE_LON_DISTANCE
-        val boundingBox = BoundingBox(maxLat, maxLong, minLat, minLong)
-
-        //mapController.zoomToSpan(boundingBox.latitudeSpan, boundingBox.longitudeSpanWithDateLine)
-        //val geoPoint = with(it.point) { GeoPoint(latitude, longitude) }
-        val geoPoint =
-            with(it.point) { GeoPoint(boundingBox.centerLatitude, boundingBox.centerLongitude) }
-
-
-        mapController.setCenter(geoPoint)
-        binding.map.zoomToBoundingBox(boundingBox, false)
-
-
-//        val point = with(it.point) { GeoPoint(x, y) }
-//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
-//        mapController.setZoom(it.radius)
-//        mapController.setCenter(point)
-    }
-
-//    private fun navigateToPointByZoomRadius(it: MapCircle) {
-//        val point = with(it.point) { GeoPoint(x, y) }
-//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
-//        mapController.setZoom(it.radius)
-//        mapController.setCenter(point)
-//    }
-
     private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
         binding.map.overlays.clear()
         initMapMarkers(mapPoints)
@@ -251,6 +212,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 item.icon
             )
         }
+        //binding.map.postInvalidate()
     }
 
     private fun initListeners() {
@@ -300,7 +262,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun forcedLocationUpdate() {
-        if (!serviceOnConnected) return //вернуть по дефолту
+        if (!serviceOnConnected) {
+            viewModel.onForcedLocationUpdateDefault()
+            return
+        }
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION

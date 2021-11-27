@@ -29,9 +29,9 @@ class CourierMapViewModel(
                         is CourierMapState.NavigateToMarker -> _mapState.value = it
                         is CourierMapState.NavigateToPoint -> _mapState.value = it
                         is CourierMapState.UpdateMarkers -> _mapState.value = it
-                        is CourierMapState.NavigateToPointByZoomRadius -> _mapState.value = it
                         CourierMapState.NavigateToMyLocation -> _mapState.value = it
-                        is CourierMapState.UpdateAndNavigateToMyLocationPoint -> _mapState.value = it
+                        is CourierMapState.UpdateAndNavigateToMyLocationPoint -> _mapState.value =
+                            it
                         CourierMapState.UpdateMyLocation -> _mapState.value = it
                         is CourierMapState.ZoomToCenterBoundingBox -> _mapState.value = it
                     }
@@ -56,6 +56,10 @@ class CourierMapViewModel(
         interactor.onForcedLocationUpdate(point)
     }
 
+    fun onForcedLocationUpdateDefault() {
+        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+    }
+
     override fun getScreenTag(): String {
         return SCREEN_TAG
     }
@@ -67,6 +71,8 @@ class CourierMapViewModel(
 }
 
 fun moscowMapPoint() = MapPoint("0", 55.751244, 37.618423)
+
+fun moscowCoordinatePoint() = CoordinatePoint(55.751244, 37.618423)
 //fun moscowMapPoint() = MapPoint("0", 0.01, 37.618423)
 
 //myLocation CoordinatePoint(latitude=55.7618109, longitude=37.7777639)
