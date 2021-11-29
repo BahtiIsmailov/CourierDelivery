@@ -18,7 +18,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0'
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.google.gms:google-services:4.3.10'
     }
@@ -33,9 +33,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-//    project.logger.lifecycle("remove root dir apk ${rootProject.rootDir}" + "\\apk")
-//    fileTree("${rootProject.rootDir}" + "\\apk").each { File file ->
-//        project.logger.lifecycle("${file.name}")
-//        delete file
-//    }
 }
