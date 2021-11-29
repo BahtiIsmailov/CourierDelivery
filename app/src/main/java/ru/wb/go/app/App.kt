@@ -26,7 +26,7 @@ class App : Application() {
     private fun initDI() {
         startKoin {
             androidContext(this@App)
-            androidLogger(Level.DEBUG)
+            androidLogger(Level.ERROR)
             modules(
                 listOf(
                     apiModule,

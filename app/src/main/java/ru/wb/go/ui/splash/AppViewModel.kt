@@ -17,7 +17,6 @@ class AppViewModel(
     private val interactor: AppInteractor,
     private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager,
-
     ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _networkState = MutableLiveData<NetworkState>()
