@@ -1,1 +1,0 @@
-package ru.wb.perevozka.reader;public enum MockType {    LIVE, COMPLETE, EMPTY, INVALID, ERROR, STATE0, STATE1, STATE2, STATE3, STATE4, STATE5}

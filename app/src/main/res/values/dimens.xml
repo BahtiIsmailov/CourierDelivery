@@ -59,6 +59,9 @@
     <dimen name="counter_margin_horizontal">10dp</dimen>
     <dimen name="reception_stroke_width">1dp</dimen>
 
+
+    <dimen name="keyboard_height">380dp</dimen>
+
     <dimen name="scanner_zoom_button">30dp</dimen>
 
     <dimen name="shadow_list">12dp</dimen>

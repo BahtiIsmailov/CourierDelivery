@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/authLoaderFragment"
-        android:name="ru.wb.perevozka.ui.splash.AppLoaderFragment"
+        android:name="ru.wb.go.ui.splash.AppLoaderFragment"
         android:label="@string/auth_load"
         tools:layout="@layout/app_loader_fragment">
 
@@ -16,17 +16,12 @@
             app:destination="@id/auth_navigation" />
 
         <action
-            android:id="@+id/action_authLoaderFragment_to_app_navigation"
-            app:destination="@id/app_load_navigation" />
-
-        <action
             android:id="@+id/action_authLoaderFragment_to_courier_navigation"
             app:destination="@id/courier_navigation" />
 
     </fragment>
 
     <include app:graph="@navigation/auth_graph" />
-    <include app:graph="@navigation/app_graph" />
     <include app:graph="@navigation/courier_graph" />
 
 </navigation>

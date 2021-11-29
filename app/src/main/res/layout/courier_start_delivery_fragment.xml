@@ -21,7 +21,7 @@
             android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_start_delivery" />
+            android:src="@drawable/ic_load_complete" />
 
         <TextView
             android:id="@+id/textView2"
@@ -128,7 +128,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/complete_delivery"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"

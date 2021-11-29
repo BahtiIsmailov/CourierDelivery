@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <ru.wb.perevozka.ui.courierordertimer.view.TimerProgressView
+    <ru.wb.go.ui.courierordertimer.view.TimerProgressView
         android:id="@+id/timer"
         android:layout_width="250dp"
         android:layout_height="250dp"
@@ -215,7 +215,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/i_arrived"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"

@@ -5,11 +5,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View
+    <ImageView
         android:id="@+id/title_layout"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@color/dialog_title_info" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_dialog_title_alarm"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/title"
@@ -40,8 +42,8 @@
         android:layout_marginEnd="24dp"
         android:gravity="end"
         android:orientation="horizontal"
-        android:paddingTop="22dp"
-        android:paddingBottom="22dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <Button
             android:id="@+id/negative"

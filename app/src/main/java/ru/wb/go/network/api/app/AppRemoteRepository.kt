@@ -1,0 +1,47 @@
+package ru.wb.go.network.api.app
+
+import io.reactivex.Completable
+import io.reactivex.Single
+import ru.wb.go.db.entity.courier.CourierOrderEntity
+import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.network.api.app.entity.*
+
+interface AppRemoteRepository {
+
+    fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
+
+    fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
+
+    fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+
+    fun tasksMy(): Single<CourierTasksMyEntity>
+
+    fun anchorTask(taskID: String, carNumber: String): Completable
+
+    fun deleteTask(taskID: String): Completable
+
+    fun taskStatuses(taskID: String): Single<CourierTaskStatusesEntity>
+
+    fun taskBoxes(taskID: String): Single<CourierTaskBoxesEntity>
+
+    fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable
+
+    fun taskStatusesReady(
+        taskID: String,
+        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+    ): Single<CourierTaskStatusesIntransitCostEntity>
+
+    fun taskStatusesIntransit(
+        taskID: String,
+        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+    ): Completable
+
+    fun taskStatusesEnd(taskID: String): Completable
+
+    fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable
+
+    fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
+
+    fun appVersion(): Single<String>
+
+}

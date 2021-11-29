@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_a"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -20,7 +20,7 @@
         app:value="BUTTON_A"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_b"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -33,7 +33,7 @@
         app:value="BUTTON_B"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_e"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -46,7 +46,7 @@
         app:value="BUTTON_E"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_k"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -59,7 +59,7 @@
         app:value="BUTTON_K"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_m"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -72,7 +72,7 @@
         app:value="BUTTON_M"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_h"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -85,7 +85,7 @@
         app:value="BUTTON_H"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_o"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -98,7 +98,7 @@
         app:value="BUTTON_O"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_p"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -111,7 +111,7 @@
         app:value="BUTTON_P"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_c"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -124,7 +124,7 @@
         app:value="BUTTON_C"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_t"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -137,7 +137,7 @@
         app:value="BUTTON_T"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_y"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -150,7 +150,7 @@
         app:value="BUTTON_Y"
         custom:strokeWidth="@dimen/dp_0d2" />
 
-    <ru.wb.perevozka.ui.auth.keyboard.KeyboardButtonView
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_x"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -6,6 +6,12 @@
     <string name="app_nav_out_app">Выйти из аккаунта</string>
     <string name="app_nav_update_app">Проверить обновления</string>
     <string name="app_version">%s</string>
+    <string name="app_update_version">Новая версия %s</string>
+    <string name="app_update_version_status">Обновить</string>
+    <string name="app_update_version_load_status">Загрузка…</string>
+    <string name="app_update_version_error">Обновление не установлено. Повторите операцию позднее</string>
+    <string name="app_update_version_up_to_date">Версия актуальна</string>
+
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
@@ -20,15 +26,17 @@
 
     <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
     <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>
-    <string name="unknown_internet_button_error">Понятно</string>
+    <string name="unknown_internet_button_error">OK</string>
 
-    <string name="unknown_service_title_error">Операция не выполнена</string>
-    <string name="unknown_service_message_error">Повторите действие чуть позже</string>
-    <string name="unknown_service_button_error">Понятно</string>
+    <string name="unknown_service_title_error">Ошибка</string>
+    <string name="unknown_service_button_error">OK</string>
 
     <string name="courier_expects_title">Ваши данные еще не подтверждены</string>
     <string name="courier_expects_message" />
-    <string name="courier_expects_positive">Понятно</string>
+    <string name="courier_expects_positive">OK</string>
+
+    <string name="splash_uri_play_market">market://details?id=%s</string>
+    <string name="splash_uri_google">https://play.google.com/store/apps/details?id=%s</string>
 
     <!--pin-->
     <string name="input_sms_repeat_status_timer">Повторная отправка кода %s</string>
@@ -103,7 +111,7 @@
     <string name="auth_create_password_input">Сохранить и войти</string>
 
     <string name="auth_check_sms_toolbar_label">Вход</string>
-    <string name="auth_check_sms_title">На номер %1$s выслано СМС\nс кодом подтверждения</string>
+    <string name="auth_check_sms_title">На номер %1$s выслано СМС с кодом</string>
     <string name="auth_check_sms_hint">Код</string>
     <string name="auth_check_sms_input">Введите код</string>
     <string name="auth_check_sms_incorrect">Код введен неверно</string>
@@ -213,7 +221,7 @@
     <string name="courier_orders_empty_list">Заказы не найдены</string>
     <string name="courier_order_dialog_title_error">Заказы</string>
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
-    <string name="courier_order_dialog_positive_button_error">Ok</string>
+    <string name="courier_order_dialog_positive_button_error">OK</string>
 
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">от %1$s ₽</string>
@@ -225,12 +233,22 @@
     <string name="courier_orders_confirm_arrive">• за %1$s мин</string>
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
+    <string name="courier_orders_confirm_dialog_title">Заказ забрали</string>
+    <string name="courier_orders_confirm_dialog_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_confirm_dialog_button">OK</string>
+    <string name="courier_orders_confirm_dialog_empty">Этот заказ уже взят в работу</string>
 
     <string name="courier_orders_details_dialog_title">Подтвердить взятие заказа?</string>
     <string name="courier_orders_details_dialog_message">Прибыть • за %1$d мин\nТранспорт • от %2$d кубов</string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
 
+    <string name="courier_orders_timer_dialog_title">Время вышло</string>
+    <string name="courier_orders_timer_dialog_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
+    <string name="courier_orders_timer_dialog_button">Вернуться к списку заказов</string>
+
+    <string name="courier_orders_timer_dialog_skip_title">Отказаться от заказа</string>
+    <string name="courier_orders_timer_dialog_skip_message">Вы уверены, что хотите отказаться от заказа?</string>
     <string name="courier_orders_timer_dialog_negative_button">Отмена</string>
     <string name="courier_orders_timer_dialog_positive_button">Отказаться</string>
 
@@ -241,10 +259,21 @@
     <string name="courier_order_scanner_accepted">%1$d шт.</string>
     <string name="courier_order_scanner_dialog_negative_button">Отмена</string>
     <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
+    <string name="courier_order_scanner_title">Время вышло</string>
+    <string name="courier_order_scanner_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
+    <string name="courier_order_scanner_dialog">Вернуться к списку заказов</string>
 
     <string name="courier_loading_boxes_index">%1$d.</string>
     <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
 
+    <string name="courier_loading_dialog_done_title">Завершить погрузку?</string>
+    <string name="courier_loading_dialog_done_message">Вы больше не сможете погрузить коробки</string>
+
+    <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
+    <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
+    <string name="courier_uloading_scan_dialog_positive_button_error">Ok</string>
+
+    <string name="courier_intransit_label_id">Доставка %1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
 
@@ -257,6 +286,10 @@
     <string name="courier_unloading_scanner_empty_address">-</string>
     <string name="courier_unloading_dialog_complete_title">Завершить выгрузку?</string>
     <string name="courier_unloading_dialog_message">Выгружено • %1$d из %2$d</string>
+
+    <string name="courier_unloading_dialog_title_error">QR-код коробки не распознан</string>
+    <string name="courier_unloading_dialog_message_error" />
+    <string name="courier_unloading_dialog_button_error">Понятно</string>
 
     <string name="courier_complete_delivery_title">Спасибо за проделанную работу!</string>
     <string name="courier_complete_delivery_earned">Заработано</string>
@@ -382,6 +415,11 @@
     <string name="congratulation_info_count">%1$d / %2$d</string>
     <string name="congratulation_complete_delivery">Перейти к возврату на РЦ</string>
 
+    <string name="courier_version_control_title">Доступна новая версия!</string>
+    <string name="courier_version_control_info">Запросите новую версию\nУстановите её, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_info_">Обновите приложение, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_update">Обновить</string>
+
     <string name="dc_congratulation_title">Вы завершили рейс</string>
     <string name="dc_congratulation_info">Спасибо за проделанную работу!</string>
     <string name="dc_congratulation_delivered_info">Доставил</string>
@@ -447,7 +485,7 @@
     <string name="user_form_agreement_link">договором оферты</string>
     <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
 
-    <string name="start_delivery_title">Заказ взят в работу</string>
+    <string name="start_delivery_title">Погрузка завершена</string>
     <string name="start_delivery_amount">Стоимость задания</string>
     <string name="start_delivery_count">коробки</string>
     <string name="start_delivery">Начать доставку</string>
