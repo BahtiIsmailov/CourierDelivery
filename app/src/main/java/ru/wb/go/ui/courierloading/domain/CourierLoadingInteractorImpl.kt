@@ -182,6 +182,26 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun saveBoxLocal(courierBoxEntity: CourierBoxEntity): Completable {
+        //для тестирования
+//        val id = courierBoxEntity.id.toInt()
+//        val address = courierBoxEntity.address
+//        val dstOfficeId = courierBoxEntity.dstOfficeId
+//        val loadingAt = courierBoxEntity.loadingAt
+//        val deliveredAt = courierBoxEntity.deliveredAt
+//        val boxes = mutableListOf<CourierBoxEntity>()
+//        for (i in 1..250) {
+//            val box = CourierBoxEntity(
+//                id = (id + i).toString(),
+//                address = address,
+//                dstOfficeId = dstOfficeId,
+//                loadingAt = loadingAt,
+//                deliveredAt = deliveredAt
+//            )
+//            boxes.add(box)
+//        }
+//        return courierLocalRepository.saveLoadingBoxes(boxes)
+        //для тестирования
+
         return courierLocalRepository.saveLoadingBox(courierBoxEntity)
     }
 
