@@ -82,7 +82,6 @@ class CourierLoadingInteractorImpl(
                     )
 
                     if (boxes.isEmpty()) {
-                        LogUtils { logDebugApp("processData.second isEmpty() " + boxes) }
                         loaderProgress()
                         val courierTaskStartEntity =
                             CourierTaskStartEntity(
@@ -182,7 +181,7 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun saveBoxLocal(courierBoxEntity: CourierBoxEntity): Completable {
-        //для тестирования
+        //для тестирования приемки 250 коробок
 //        val id = courierBoxEntity.id.toInt()
 //        val address = courierBoxEntity.address
 //        val dstOfficeId = courierBoxEntity.dstOfficeId
@@ -200,7 +199,6 @@ class CourierLoadingInteractorImpl(
 //            boxes.add(box)
 //        }
 //        return courierLocalRepository.saveLoadingBoxes(boxes)
-        //для тестирования
 
         return courierLocalRepository.saveLoadingBox(courierBoxEntity)
     }

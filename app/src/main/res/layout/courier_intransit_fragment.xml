@@ -277,7 +277,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -294,7 +294,7 @@
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="20dp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:app_background="@drawable/progress_image_button_round_default"
         app:app_icon="@drawable/ic_qr"
         app:app_state="enable"
@@ -323,15 +323,14 @@
         app:progress_button_text_color_enable="@color/button_default_text_enable"
         app:progress_button_text_color_progress="@color/button_default_text_progress" />
 
-
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/forced_complete"
-        android:layout_width="0dp"
+        android:layout_width="70dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

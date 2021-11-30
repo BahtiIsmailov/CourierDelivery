@@ -48,9 +48,9 @@ class CourierIntransitViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToInformation = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToInformation: LiveData<NavigateToDialogInfo>
-        get() = _navigateToInformation
+    private val _navigateToErrorDialog = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToErrorDialog: LiveData<NavigateToDialogInfo>
+        get() = _navigateToErrorDialog
 
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
@@ -76,6 +76,10 @@ class CourierIntransitViewModel(
     private val _intransitTime = MutableLiveData<CourierIntransitTimeState>()
     val intransitTime: LiveData<CourierIntransitTimeState>
         get() = _intransitTime
+
+    private val _isEnableStateEvent = SingleLiveEvent<Boolean>()
+    val isEnableStateEvent: LiveData<Boolean>
+        get() = _isEnableStateEvent
 
     private var copyIntransitItems = mutableListOf<BaseIntransitItem>()
 
@@ -315,6 +319,7 @@ class CourierIntransitViewModel(
 
     fun onCompleteDeliveryClick() {
         onTechEventLog("onCompleteDeliveryClick")
+        _isEnableStateEvent.value = false
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
@@ -322,13 +327,13 @@ class CourierIntransitViewModel(
         )
     }
 
-    fun onForcedCompleteClick() {
-        _progressState.value = CourierIntransitProgressState.Progress
-        addSubscription(
-            interactor.forcedCompleteDelivery()
-                .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
-        )
-    }
+//    fun onForcedCompleteClick() {
+//        _progressState.value = CourierIntransitProgressState.Progress
+//        addSubscription(
+//            interactor.forcedCompleteDelivery()
+//                .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
+//        )
+//    }
 
     private fun completeDeliveryComplete(completeDeliveryResult: CompleteDeliveryResult) {
         onTechEventLog(
@@ -368,7 +373,7 @@ class CourierIntransitViewModel(
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-        _navigateToInformation.value = message
+        _navigateToErrorDialog.value = message
     }
 
     fun onCloseScannerClick() {
@@ -379,6 +384,10 @@ class CourierIntransitViewModel(
 
     fun confirmTakeOrderClick() {
 
+    }
+
+    fun onErrorDialogConfirmClick() {
+        _isEnableStateEvent.value = true
     }
 
     fun onCancelLoadClick() {

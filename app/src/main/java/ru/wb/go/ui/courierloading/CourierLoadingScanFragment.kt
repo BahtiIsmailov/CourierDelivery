@@ -61,17 +61,9 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
-        setFragmentResultListener(DIALOG_EMPTY_INFO_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-//                viewModel.onDialogInfoConfirmClick()
-                findNavController().popBackStack()
-            }
-        }
-
-        setFragmentResultListener(DIALOG_EMPTY_INFO_TAG) { _, bundle ->
-            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-//                viewModel.onDialogInfoConfirmClick()
-                findNavController().popBackStack()
+                viewModel.onErrorDialogConfirmClick()
             }
         }
 
@@ -113,13 +105,8 @@ class CourierLoadingScanFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.navigateToEmptyDialog.observe(viewLifecycleOwner) {
-            isDialogActive = true
-            showEmptyOrderDialog(it.type, it.title, it.message, it.button)
-        }
-
         viewModel.navigateToErrorMessage.observe(viewLifecycleOwner) {
-            showEmptyOrderDialog(it.type, it.title, it.message, it.button)
+            showErrorOrderDialog(it.type, it.title, it.message, it.button)
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
@@ -139,13 +126,6 @@ class CourierLoadingScanFragment : Fragment() {
 
         viewModel.versionApp.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarVersion.text = it
-        }
-
-        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                CourierLoadingScanProgress.LoaderProgress -> showProgressDialog()
-                CourierLoadingScanProgress.LoaderComplete -> closeProgressDialog()
-            }
         }
 
         viewModel.orderTimer.observe(viewLifecycleOwner) {
@@ -185,7 +165,7 @@ class CourierLoadingScanFragment : Fragment() {
                 }
                 CourierLoadingScanNavAction.NavigateToWarehouse ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
-                is CourierLoadingScanNavAction.NavigateToIntransit ->
+                is CourierLoadingScanNavAction.NavigateToStartDelivery ->
                     findNavController().navigate(
                         CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierStartDeliveryFragment(
                             CourierStartDeliveryParameters(state.amount, state.count)
@@ -203,16 +183,17 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
+        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
+                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
+            }
+        }
+
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CourierLoadingScanProgress.LoaderProgress -> {
-                    binding.listLayout.isEnabled = false
-                    binding.complete.setState(ProgressButtonMode.DISABLE)
-                }
-                is CourierLoadingScanProgress.LoaderComplete -> {
-                    binding.listLayout.isEnabled = true
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-                }
+                CourierLoadingScanProgress.LoaderProgress -> showProgressDialog()
+                CourierLoadingScanProgress.LoaderComplete -> closeProgressDialog()
             }
         }
 
@@ -353,21 +334,7 @@ class CourierLoadingScanFragment : Fragment() {
         positiveButtonName: String
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
-
-    private fun showEmptyOrderDialog(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
-    ) {
-        DialogInfoFragment.newInstance(
-            DIALOG_EMPTY_INFO_TAG,
+            DIALOG_ERROR_INFO_TAG,
             type,
             title,
             message,
@@ -430,9 +397,8 @@ class CourierLoadingScanFragment : Fragment() {
 
     companion object {
         const val DIALOG_LOADING_CONFIRM_TAG = "DIALOG_LOADING_CONFIRM_TAG"
-        const val DIALOG_EMPTY_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
+        const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
         const val DIALOG_TIME_IS_OUT_INFO_TAG = "DIALOG_TIME_IS_OUT_INFO_TAG"
-
     }
 
     override fun onDestroyView() {

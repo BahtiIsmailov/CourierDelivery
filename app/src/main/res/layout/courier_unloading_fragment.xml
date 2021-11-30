@@ -75,9 +75,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/courier_unloading_scanner_empty_qr"
-        app:layout_constraintBottom_toBottomOf="@+id/receive_layout"
+        app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
         app:layout_constraintStart_toEndOf="@+id/prefix_qr_code"
-        app:layout_constraintTop_toTopOf="@+id/receive_layout" />
+        app:layout_constraintTop_toTopOf="@+id/counter_layout" />
 
     <View
         android:id="@+id/divider2"
@@ -86,9 +86,9 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:background="#EDEEF0"
-        app:layout_constraintBottom_toBottomOf="@+id/receive_layout"
-        app:layout_constraintEnd_toStartOf="@+id/receive_layout"
-        app:layout_constraintTop_toTopOf="@+id/receive_layout" />
+        app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
+        app:layout_constraintEnd_toStartOf="@+id/counter_layout"
+        app:layout_constraintTop_toTopOf="@+id/counter_layout" />
 
     <LinearLayout
         android:id="@+id/address_layout"
@@ -98,7 +98,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/receive_layout">
+        app:layout_constraintTop_toBottomOf="@+id/counter_layout">
 
         <TextView
             android:id="@+id/address_title"
@@ -124,7 +124,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/receive_layout"
+        android:id="@+id/counter_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"

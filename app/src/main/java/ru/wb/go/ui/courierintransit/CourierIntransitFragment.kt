@@ -26,6 +26,7 @@ import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.courierintransit.delegates.*
+import ru.wb.go.ui.courierloading.CourierLoadingScanFragment
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -55,6 +56,10 @@ class CourierIntransitFragment : Fragment() {
     private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
 
+    companion object {
+        const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -80,6 +85,12 @@ class CourierIntransitFragment : Fragment() {
         setFragmentResultListener(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.confirmTakeOrderClick()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                viewModel.onErrorDialogConfirmClick()
             }
         }
     }
@@ -111,8 +122,8 @@ class CourierIntransitFragment : Fragment() {
             binding.toolbarLayout.toolbarVersion.text = it
         }
 
-        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+        viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
+            showDialogError(it.type, it.title, it.message, it.button)
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -129,6 +140,22 @@ class CourierIntransitFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                true -> {
+                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
+                }
+                false -> {
+                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
+                }
+            }
+        }
+
+        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
 
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
@@ -202,17 +229,18 @@ class CourierIntransitFragment : Fragment() {
 
     }
 
-    private fun showDialogInfo(
+    private fun showDialogError(
         type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            DIALOG_ERROR_INFO_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
         ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
@@ -243,11 +271,12 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+        binding.toolbarLayout.back.setOnClickListener { }
         binding.scanQrPvz.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
         binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
+//        binding.forcedComplete.setOnClickListener { viewModel.onForcedCompleteClick() }
     }
 
     // TODO: 20.08.2021 переработать

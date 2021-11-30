@@ -2,8 +2,10 @@ package ru.wb.go.ui.courierunloading
 
 import android.content.Context
 import ru.wb.go.R
+import ru.wb.go.mvvm.BaseMessageResourceProvider
 
-class CourierUnloadingResourceProvider(private val context: Context) {
+class CourierUnloadingResourceProvider(private val context: Context) :
+    BaseMessageResourceProvider(context) {
 
     fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
 
