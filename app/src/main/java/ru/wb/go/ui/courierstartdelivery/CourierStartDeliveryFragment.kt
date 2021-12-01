@@ -71,6 +71,7 @@ class CourierStartDeliveryFragment : Fragment() {
 
     private fun initListener() {
         binding.completeDelivery.setOnClickListener {
+            binding.completeDelivery.isEnabled = false
             viewModel.onCompleteDeliveryClick()
         }
     }

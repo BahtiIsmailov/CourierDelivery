@@ -30,4 +30,6 @@ interface CourierIntransitInteractor {
 
     fun taskId(): Single<String>
 
+//    fun forcedCompleteDelivery(): Single<CompleteDeliveryResult>
+
 }

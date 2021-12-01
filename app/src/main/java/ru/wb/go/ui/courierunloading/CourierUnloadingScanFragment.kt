@@ -19,7 +19,6 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_POSITIVE_KEY
-import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_RESULT_TAG
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
@@ -36,6 +35,9 @@ class CourierUnloadingScanFragment : Fragment() {
 
     companion object {
         const val COURIER_UNLOADING_ID_KEY = "courier_unloading_id_key"
+        const val DIALOG_SCORE_ERROR_RESULT_TAG = "DIALOG_SCORE_ERROR_RESULT_TAG"
+        const val DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG =
+            "DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG"
     }
 
     private val viewModel by viewModel<CourierUnloadingScanViewModel> {
@@ -68,19 +70,29 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun initReturnDialogResult() {
+
         setFragmentResultListener(DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 isDialogActive = false
-                viewModel.onStartScanner()
+                viewModel.onScoreDialogInfoClick()
             }
         }
 
-        setFragmentResultListener(DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_SCORE_ERROR_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onScoreDialogConfirmClick()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
-                viewModel.onConfirmUnloadingClick()
+                isDialogActive = false
+                viewModel.onConfirmScoreUnloadingClick()
             }
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                viewModel.onCancelUnloadingClick()
+                isDialogActive = false
+                viewModel.onCancelScoreUnloadingClick()
             }
         }
     }
@@ -103,7 +115,9 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun initObserver() {
+
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+            isDialogActive = true
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
@@ -112,7 +126,13 @@ class CourierUnloadingScanFragment : Fragment() {
             showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
-        viewModel.navigateToDialogConfirmInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogScoreError.observe(viewLifecycleOwner) {
+            isDialogActive = true
+            showDialogScoreError(it.type, it.title, it.message, it.button)
+        }
+
+        viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
+            isDialogActive = true
             showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
@@ -137,7 +157,6 @@ class CourierUnloadingScanFragment : Fragment() {
             }
         }
 
-
         val navigationObserver = Observer<CourierUnloadingScanNavAction> { state ->
             when (state) {
                 is CourierUnloadingScanNavAction.NavigateToUnknownBox -> {
@@ -160,30 +179,10 @@ class CourierUnloadingScanFragment : Fragment() {
             }
         }
 
-        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is CourierUnloadingScanProgress.LoaderProgress -> {
-                    binding.receiveLayout.isEnabled = false
-                    binding.complete.setState(ProgressButtonMode.DISABLE)
-                }
-                is CourierUnloadingScanProgress.LoaderComplete -> {
-                    binding.receiveLayout.isEnabled = true
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-                }
-            }
-        }
-
-        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
+        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { progress ->
             when (progress) {
-                CourierUnloadingScanBottomState.Disable -> binding.complete.setState(
-                    ProgressButtonMode.DISABLE
-                )
-                CourierUnloadingScanBottomState.Enable -> binding.complete.setState(
-                    ProgressButtonMode.ENABLE
-                )
-                CourierUnloadingScanBottomState.Progress -> binding.complete.setState(
-                    ProgressButtonMode.PROGRESS
-                )
+                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
+                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
             }
         }
 
@@ -198,7 +197,7 @@ class CourierUnloadingScanFragment : Fragment() {
                         ContextCompat.getColor(requireContext(), R.color.light_text)
                     )
                     binding.receive.text = state.accepted
-                    binding.receiveLayout.isEnabled = false
+                    binding.counterLayout.isEnabled = false
                     binding.address.text = state.address
                     binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
@@ -209,7 +208,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.qrCode.text = state.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.receive.text = state.accepted
-                    binding.receiveLayout.isEnabled = false
+                    binding.counterLayout.isEnabled = false
                     binding.address.text = state.address
                     binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
@@ -283,6 +282,21 @@ class CourierUnloadingScanFragment : Fragment() {
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
+    private fun showDialogScoreError(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            DIALOG_SCORE_ERROR_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
+    }
+
     private fun showDialogConfirmInfo(
         type: Int,
         title: String,
@@ -291,17 +305,18 @@ class CourierUnloadingScanFragment : Fragment() {
         negativeButtonName: String
     ) {
         DialogConfirmInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName,
-            negativeButtonName = negativeButtonName
+            DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName,
+            negativeButtonName
         ).show(parentFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener { viewModel.onCompleteUnloadClicked() }
-        binding.receiveLayout.setOnClickListener { viewModel.onListClicked() }
+        binding.counterLayout.setOnClickListener { viewModel.onListClicked() }
+        binding.complete.setOnClickListener { viewModel.onCompleteUnloadClick() }
     }
 
     override fun onDestroyView() {

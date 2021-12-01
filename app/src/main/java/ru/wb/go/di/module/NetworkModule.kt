@@ -28,6 +28,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.network.token.UserManagerImpl
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.reader.MockResponseImpl
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.prefs.SharedWorker
 import java.net.URI
@@ -176,6 +177,7 @@ val networkModule = module {
         httpLoggingInterceptor: HttpLoggingInterceptor,
         appMockResponseInterceptor: AppMockResponseInterceptor
     ): OkHttpClient {
+        LogUtils { logDebugApp("create app http client") }
         return OkHttpFactory.createAppOkHttpClient(
             certificateStore,
             refreshResponseInterceptor,

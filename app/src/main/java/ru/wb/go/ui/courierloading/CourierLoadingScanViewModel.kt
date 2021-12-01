@@ -47,10 +47,6 @@ class CourierLoadingScanViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToEmptyMessage = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToEmptyDialog: LiveData<NavigateToDialogInfo>
-        get() = _navigateToEmptyMessage
-
     private val _navigateToErrorMessage = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToErrorMessage: LiveData<NavigateToDialogInfo>
         get() = _navigateToErrorMessage
@@ -68,6 +64,10 @@ class CourierLoadingScanViewModel(
         SingleLiveEvent<CourierLoadingScanProgress>()
     val progressEvent: LiveData<CourierLoadingScanProgress>
         get() = _progressEvent
+
+    private val _isEnableStateEvent = SingleLiveEvent<Boolean>()
+    val isEnableStateEvent: LiveData<Boolean>
+        get() = _isEnableStateEvent
 
     private val _boxStateUI =
         MutableLiveData<CourierLoadingScanBoxState>()
@@ -118,35 +118,6 @@ class CourierLoadingScanViewModel(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
         )
-    }
-
-    fun onConfirmLoadingClick() {
-        onTechEventLog("onConfirmLoadingClick")
-        onStopScanner()
-        _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
-        addSubscription(
-            interactor.confirmLoadingBoxes()
-                .subscribe({ confirmLoadingBoxesComplete(it) }, { confirmLoadingBoxesError(it) })
-        )
-    }
-
-    private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
-        onTechEventLog(
-            "confirmLoadingBoxesComplete",
-            "loading box: " + courierCompleteData.countBox
-        )
-        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
-        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToIntransit(
-            courierCompleteData.amount,
-            courierCompleteData.countBox
-        )
-    }
-
-    private fun confirmLoadingBoxesError(it: Throwable) {
-        onTechErrorLog("confirmLoadingBoxesError", it)
-        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
-//        onStartScanner()
-        confirmLoadingError(it)
     }
 
     private fun confirmLoadingError(throwable: Throwable) {
@@ -278,14 +249,48 @@ class CourierLoadingScanViewModel(
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToBoxes
     }
 
+    fun onErrorDialogConfirmClick() {
+        onStartScanner()
+        _isEnableStateEvent.value = true
+    }
+
+    fun onConfirmLoadingClick() {
+        onTechEventLog("onConfirmLoadingClick")
+        _progressEvent.value = CourierLoadingScanProgress.LoaderProgress
+        addSubscription(
+            interactor.confirmLoadingBoxes()
+                .subscribe({ confirmLoadingBoxesComplete(it) }, { confirmLoadingBoxesError(it) })
+        )
+    }
+
+    private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
+        onTechEventLog(
+            "confirmLoadingBoxesComplete",
+            "loading box: " + courierCompleteData.countBox
+        )
+        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
+        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToStartDelivery(
+            courierCompleteData.amount,
+            courierCompleteData.countBox
+        )
+    }
+
+    private fun confirmLoadingBoxesError(it: Throwable) {
+        onTechErrorLog("confirmLoadingBoxesError", it)
+        _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
+        confirmLoadingError(it)
+    }
+
     fun onCancelLoadingClick() {
         onTechEventLog("onCancelLoadingClick")
         onStartScanner()
+        _isEnableStateEvent.value = true
     }
 
     fun onCompleteLoaderClicked() {
         onTechEventLog("onCompleteLoaderClicked", "NavigateToConfirmDialog")
         onStopScanner()
+        _isEnableStateEvent.value = false
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }
 
@@ -325,7 +330,7 @@ class CourierLoadingScanViewModel(
 
         // TODO: 07.10.2021 привести диалог
         interactor.scannerAction(ScannerState.Stop)
-        _navigateToEmptyMessage.value = message
+        _navigateToErrorMessage.value = message
     }
 
     fun onStopScanner() {

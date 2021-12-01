@@ -109,6 +109,25 @@ class CourierIntransitInteractorImpl(
         taskStatusesEnd(it)
     }
 
+//    override fun forcedCompleteDelivery(): Single<CompleteDeliveryResult> {
+//        return courierLocalRepository.readAllLoadingBoxesSync()
+//            .flatMap {
+//                convertToForcedCourierTaskStatusesIntransitEntity(
+//                    it,
+//                    timeManager.getLocalTime()
+//                )
+//            }
+//            .flatMapCompletable { intransitBoxes ->
+//                taskId().flatMapCompletable { taskId ->
+//                    taskStatusesIntransit(taskId, intransitBoxes)
+//                }
+//            }
+//            .andThen(taskId().flatMapCompletable { taskStatusesEnd(it) })
+//            .andThen(getCompleteDeliveryResult())
+//            .doOnSuccess { clearData() }
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+
     private fun clearData() {
         timeManager.clear()
         courierLocalRepository.deleteAllWarehouse()
@@ -144,6 +163,32 @@ class CourierIntransitInteractorImpl(
         return convertItems
     }
 
+//    private fun convertToForcedCourierTaskStatusesIntransitEntity(
+//        item: List<CourierBoxEntity>,
+//        localTime: String
+//    ) =
+//        Observable.fromIterable(item).map {
+//            with(it) {
+//                CourierTaskStatusesIntransitEntity(
+//                    id = id,
+//                    dstOfficeID = dstOfficeId,
+//                    loadingAt = loadingAt, //if (loadingAt.isEmpty()) localTime else
+//                    deliveredAt = localTime
+//                )
+//            }
+//        }.toList()
+//            .map {
+//            it.add(
+//                CourierTaskStatusesIntransitEntity(
+//                    id = "680689061",
+//                    dstOfficeID = 3091,
+//                    loadingAt = "2021-11-29T20:42:52.375+03:00",
+//                    deliveredAt = localTime
+//                )
+//            )
+//            it
+//        }
+
     override fun taskId(): Single<String> =
         courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id.toString() }
@@ -152,7 +197,6 @@ class CourierIntransitInteractorImpl(
 
     private fun observeOfficeIdScan(): Observable<CourierIntransitScanOfficeData> {
         return scannerRepository.observeBarcodeScanned()
-//            .filter { it.startsWith(PREFIX_QR_OFFICE_CODE) }
             .map { parseQrCode(it) }
             .flatMap { scanOfficeId ->
                 courierLoadingScanBoxData().map { it.dstOffices }
