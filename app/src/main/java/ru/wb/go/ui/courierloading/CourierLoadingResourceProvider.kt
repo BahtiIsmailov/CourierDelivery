@@ -9,10 +9,6 @@ class CourierLoadingResourceProvider(private val context: Context) :
 
     fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
 
-    fun getScanDialogTitle() = context.getString(R.string.courier_unloading_dialog_title_error)
-    fun getScanDialogMessage() = context.getString(R.string.courier_unloading_dialog_message_error)
-    fun getScanDialogButton() = context.getString(R.string.courier_unloading_dialog_button_error)
-
     fun getBoxDialogTitle() = context.getString(R.string.dc_loading_boxes_remove_dialog_title_error)
 
     fun getErrorRemovedBoxesDialogMessage(): String =
@@ -31,6 +27,8 @@ class CourierLoadingResourceProvider(private val context: Context) :
         )
 
     fun getIndex(index: Int) = context.getString(R.string.courier_loading_boxes_index, index)
+
+    fun getUnknown(): String = context.getString(R.string.courier_order_scanner_unknown_qr)
 
     fun getEmptyAddress(): String = context.getString(R.string.courier_order_scanner_empty_address)
 

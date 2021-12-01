@@ -77,9 +77,9 @@ class CourierIntransitViewModel(
     val intransitTime: LiveData<CourierIntransitTimeState>
         get() = _intransitTime
 
-    private val _isEnableStateEvent = SingleLiveEvent<Boolean>()
-    val isEnableStateEvent: LiveData<Boolean>
-        get() = _isEnableStateEvent
+    private val _isEnableState = SingleLiveEvent<Boolean>()
+    val isEnableBottomState: LiveData<Boolean>
+        get() = _isEnableState
 
     private var copyIntransitItems = mutableListOf<BaseIntransitItem>()
 
@@ -319,7 +319,7 @@ class CourierIntransitViewModel(
 
     fun onCompleteDeliveryClick() {
         onTechEventLog("onCompleteDeliveryClick")
-        _isEnableStateEvent.value = false
+        _isEnableState.value = false
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
@@ -387,7 +387,7 @@ class CourierIntransitViewModel(
     }
 
     fun onErrorDialogConfirmClick() {
-        _isEnableStateEvent.value = true
+        _isEnableState.value = true
     }
 
     fun onCancelLoadClick() {

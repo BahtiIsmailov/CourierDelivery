@@ -248,9 +248,9 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.disable_scan_status)
+    private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.init_scan_status)
 
-    private fun colorRed() = ContextCompat.getColor(requireContext(), R.color.unknown_scan_status)
+    private fun colorRed() = ContextCompat.getColor(requireContext(), R.color.forbidden_scan_status)
 
     private fun colorGreen() =
         ContextCompat.getColor(requireContext(), R.color.complete_scan_status)

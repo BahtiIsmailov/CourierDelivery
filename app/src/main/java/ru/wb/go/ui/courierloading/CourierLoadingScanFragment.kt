@@ -197,119 +197,68 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
+        viewModel.boxDataStateUI.observe(viewLifecycleOwner) { state ->
+            binding.qrCode.text = state.qrCode
+            binding.address.text = state.address
+            binding.receive.text = state.accepted
+        }
+
+        viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
+                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
+            }
+        }
+
         viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierLoadingScanBoxState.Empty -> {
-                    binding.toolbarLayout.back.visibility = View.VISIBLE
-                    binding.status.text = "НАЧНИТЕ СКАНИРОВАНИЕ"
-                    binding.status.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.disable_scan_status
-                        )
-                    )
+                CourierLoadingScanBoxState.InitScanner -> {
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.scannerInfoLayout.visibility = View.GONE
+                    binding.status.setText(R.string.courier_loading_init_scanner)
+                    binding.status.setBackgroundColor(getColor(R.color.init_scan_status))
                 }
-                is CourierLoadingScanBoxState.BoxInit -> {
+                is CourierLoadingScanBoxState.LoadInCar -> {
                     holdBackButtonOnScanBox()
-                    binding.status.text = "ПОГРУЗИТЕ В МАШИНУ"
-                    binding.status.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.complete_scan_status
-                        )
-                    )
-                    binding.qrCode.text = state.qrCode
-                    binding.qrCode.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black_text
-                        )
-                    )
-                    binding.address.text = state.address
-                    binding.receive.text = state.accepted
-
+                    binding.status.setText(R.string.courier_loading_load_in_car)
+                    binding.status.setBackgroundColor(getColor(R.color.complete_scan_status))
+                    binding.qrCode.setTextColor(getColor(R.color.black_text))
                     binding.timerLayout.visibility = View.GONE
                     binding.scannerInfoLayout.visibility = View.VISIBLE
-
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-
                 }
-                is CourierLoadingScanBoxState.BoxAdded -> {
-                    holdBackButtonOnScanBox()
-
-                    binding.timerLayout.visibility = View.GONE
-                    binding.scannerInfoLayout.visibility = View.VISIBLE
-
-                    binding.status.text = "ПОГРУЗИТЕ В МАШИНУ"
-                    binding.status.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.complete_scan_status
-                        )
-                    )
-                    binding.qrCode.text = state.qrCode
-                    binding.qrCode.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black_text
-                        )
-                    )
-                    binding.address.text = state.address
-                    binding.address.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black_text
-                        )
-                    )
-                    binding.receive.text = state.accepted
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-                }
-                is CourierLoadingScanBoxState.UnknownBox -> {
-
-                    binding.timerLayout.visibility = View.GONE
-                    binding.scannerInfoLayout.visibility = View.VISIBLE
-
-                    holdBackButtonOnScanBox()
-                    binding.status.text = "КОРОБКУ БРАТЬ ЗАПРЕЩЕНО"
-                    binding.status.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.unknown_scan_status
-                        )
-                    )
-                    binding.qrCode.text = state.qrCode
-                    binding.qrCode.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black_text
-                        )
-                    )
-                    binding.address.text = state.address
-                    binding.address.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black_text
-                        )
-                    )
-                    binding.receive.text = state.accepted
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-                }
-                CourierLoadingScanBoxState.UnknownBoxTimer -> {
+                is CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.scannerInfoLayout.visibility = View.GONE
-                    binding.status.text = "КОРОБКУ БРАТЬ ЗАПРЕЩЕНО"
-                    binding.status.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.unknown_scan_status
-                        )
-                    )
+                    binding.status.setText(R.string.courier_loading_forbidden_take)
+                    binding.status.setBackgroundColor(getColor(R.color.forbidden_scan_status))
+                }
+                is CourierLoadingScanBoxState.ForbiddenTakeBox -> {
+                    holdBackButtonOnScanBox()
+                    binding.timerLayout.visibility = View.GONE
+                    binding.scannerInfoLayout.visibility = View.VISIBLE
+                    binding.status.setText(R.string.courier_loading_forbidden_take)
+                    binding.status.setBackgroundColor(getColor(R.color.forbidden_scan_status))
+                    binding.qrCode.setTextColor(getColor(R.color.black_text))
+                    binding.address.setTextColor(getColor(R.color.black_text))
+                }
+                CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
+                    binding.timerLayout.visibility = View.VISIBLE
+                    binding.scannerInfoLayout.visibility = View.GONE
+                    binding.status.setText(R.string.courier_loading_not_recognized_qr)
+                    binding.status.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
+                }
+                CourierLoadingScanBoxState.NotRecognizedQr -> {
+                    holdBackButtonOnScanBox()
+                    binding.timerLayout.visibility = View.GONE
+                    binding.scannerInfoLayout.visibility = View.VISIBLE
+                    binding.status.setText(R.string.courier_loading_not_recognized_qr)
+                    binding.status.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
                 }
             }
         }
     }
+
+    private fun getColor(colorId: Int) = ContextCompat.getColor(requireContext(), colorId)
 
     private fun holdBackButtonOnScanBox() {
         binding.toolbarLayout.back.visibility = View.INVISIBLE

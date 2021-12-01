@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.zxing.Result
@@ -86,7 +87,7 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         scannerView.setIsBorderCornerRounded(true)
         scannerView.setBorderCornerRadius(40)
         scannerView.setBorderAlpha(0.5F)
-        scannerView.setSquareViewFinder(false)
+        scannerView.setSquareViewFinder(true)
         binding.scannerLayout.addView(scannerView)
     }
 
@@ -95,19 +96,28 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
             when (it) {
                 ScannerState.Start -> startScanner()
                 ScannerState.Stop -> stopScanner()
-                ScannerState.LoaderProgress -> loader()
+                ScannerState.LoaderProgress -> loaderProgress()
                 ScannerState.LoaderComplete -> loaderComplete()
                 ScannerState.BeepScan -> beepScan()
+                ScannerState.HoldScanComplete -> hold(R.drawable.ic_scan_complete)
+                ScannerState.HoldScanError -> hold(R.drawable.ic_scan_error)
+                ScannerState.HoldScanUnknown -> hold(R.drawable.ic_scan_unknown)
             }
         }
     }
 
-    private fun loader() {
+    private fun hold(icon: Int) {
+        stopScanner()
+        binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
+        binding.scanStatus.visibility = View.VISIBLE
+    }
+
+    private fun loaderProgress() {
+        stopScanner()
         scannerView.setLaserEnabled(false)
         scannerView.setFlashLoaderEnabled()
         binding.loaderProgress.visibility = View.VISIBLE
         binding.loader.visibility = View.VISIBLE
-        stopLoaderScanner()
     }
 
     private fun loaderComplete() {
@@ -178,15 +188,10 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun startScanner() {
         LogUtils { logDebugApp("Scanner startScanner()") }
         scannerView.setResultHandler(this)
-
+        binding.scanStatus.visibility = View.INVISIBLE
         if (hasPermission(Manifest.permission.CAMERA)) {
             scannerView.startCamera()
         }
-    }
-
-    private fun stopLoaderScanner() {
-        LogUtils { logDebugApp("Scanner stopLoaderScanner()") }
-        scannerView.stopCamera()
     }
 
     private fun stopScanner() {

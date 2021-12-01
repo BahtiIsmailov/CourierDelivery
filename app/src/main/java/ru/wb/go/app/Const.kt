@@ -21,6 +21,7 @@ const val COURIER_COMPANY_ID = "318"
 const val COURIER_ROLE = "COURIER"
 
 const val PREFIX_QR_CODE = "\$1:1:"
+const val PREFIX_QR_CODE_SPLITTER = ":"
 
 const val PREFIX_QR_OFFICE_CODE = "PHX"
 

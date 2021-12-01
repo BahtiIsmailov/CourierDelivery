@@ -2,8 +2,6 @@ package ru.wb.go.ui.scanner
 
 import androidx.lifecycle.LiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.app.PREFIX_QR_CODE
-import ru.wb.go.app.PREFIX_QR_OFFICE_CODE
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
@@ -27,14 +25,9 @@ class CourierScannerViewModel(
 
     fun onBarcodeScanned(barcode: String) {
         LogUtils { logDebugApp("onBarcodeScanned(barcode: String) " + barcode) }
-        if (barcode.startsWith(PREFIX_QR_CODE)
-            || barcode.uppercase().startsWith(PREFIX_QR_OFFICE_CODE)
-        ) {
-            _scannerAction.value = ScannerState.BeepScan
-            interactor.barcodeScanned(barcode)
-        }
+        _scannerAction.value = ScannerState.BeepScan
+        interactor.barcodeScanned(barcode)
     }
-
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

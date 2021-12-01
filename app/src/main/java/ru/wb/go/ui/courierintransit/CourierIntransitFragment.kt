@@ -26,7 +26,6 @@ import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.courierintransit.delegates.*
-import ru.wb.go.ui.courierloading.CourierLoadingScanFragment
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -141,7 +140,7 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
-        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { state ->
+        viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 true -> {
                     binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)

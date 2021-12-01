@@ -5,8 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/delivery_flight_background"
-    tools:context=".ui.flights.FlightsFragment">
+    android:background="@color/delivery_flight_background">
 
     <ImageView
         android:id="@+id/imageView"
@@ -18,7 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/background_scanner_gradient" />
+        app:srcCompat="@drawable/background_scanner_gradient"
+        tools:ignore="ContentDescription" />
 
     <FrameLayout
         android:id="@+id/scanner_layout"
@@ -30,15 +30,30 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/scan_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_scan_complete"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
         android:id="@+id/sun"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:scaleType="fitCenter"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_flash_sun" />
+        app:srcCompat="@drawable/ic_flash_sun"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/permission_info"

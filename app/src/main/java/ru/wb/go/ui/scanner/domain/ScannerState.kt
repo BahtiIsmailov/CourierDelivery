@@ -12,4 +12,8 @@ sealed class ScannerState {
 
     object BeepScan : ScannerState()
 
+    object HoldScanComplete : ScannerState()
+    object HoldScanError : ScannerState()
+    object HoldScanUnknown : ScannerState()
+
 }

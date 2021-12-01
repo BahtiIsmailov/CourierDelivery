@@ -206,7 +206,7 @@
             android:id="@+id/status"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/disable_scan_status"
+            android:background="@color/init_scan_status"
             android:gravity="center"
             android:letterSpacing="0.2"
             android:text="Отсканируйте QR ПВЗ"

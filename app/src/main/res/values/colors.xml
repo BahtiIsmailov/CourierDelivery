@@ -155,9 +155,11 @@
     <color name="disable_icon">#D1CED5</color>
     <color name="enable_icon">#673AB7</color>
 
-    <color name="disable_scan_status">#99939F</color>
+    <color name="init_scan_status">#99939F</color>
     <color name="complete_scan_status">#2CA364</color>
-    <color name="unknown_scan_status">#B00020</color>
+    <color name="forbidden_scan_status">#B00020</color>
+    <color name="not_recognized_scan_status">#FB8C00</color>
+    <color name="start_scan_status">#673AB7</color>
 
     <color name="support_tab_number_background">#B3B6D8F1</color>
 
