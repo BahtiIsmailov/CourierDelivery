@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationServices
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
+import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
@@ -32,6 +33,7 @@ import ru.wb.go.ui.scanner.hasPermissions
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
+import java.io.File
 
 
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
@@ -41,6 +43,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     companion object {
         private const val REQUEST_ERROR = 0
         private const val MY_LOCATION_ID = "my_location_id"
+        private const val OSMD_BASE_PATH = "osmdroid"
+        private const val OSMD_BASE_TILES = "tiles"
         private const val MIN_ZOOM = 9.0
         private const val MAX_ZOOM = 20.0
         private const val DEFAULT_POINT_ZOOM = 13.0
@@ -101,7 +105,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         if (hasPermissions(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         ) {
             initMapView()
@@ -110,7 +113,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
 
@@ -118,11 +120,15 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun initMapView() {
-        Configuration.getInstance().load(
+        val config: IConfigurationProvider = Configuration.getInstance()
+        config.osmdroidBasePath = createOsmdroidBasePath()
+        config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
+        config.userAgentValue = BuildConfig.APPLICATION_ID
+        config.load(
             requireActivity(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
-        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
+
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapController = binding.map.controller
@@ -133,6 +139,19 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.maxZoomLevel = MAX_ZOOM
         binding.map.setUseDataConnection(true)
         viewModel.onInitPermission()
+    }
+
+    private fun createOsmdroidTilePath(osmdroidBasePath: File): File {
+        val osmdroidTilePath = File(osmdroidBasePath, OSMD_BASE_TILES)
+        osmdroidTilePath.mkdirs()
+        return osmdroidTilePath
+    }
+
+    private fun createOsmdroidBasePath(): File {
+        val path: File = requireActivity().filesDir
+        val osmdroidBasePath = File(path, OSMD_BASE_PATH)
+        osmdroidBasePath.mkdirs()
+        return osmdroidBasePath
     }
 
     private fun drawMapMarker(id: String, lat: Double, long: Double, icon: Int) {
