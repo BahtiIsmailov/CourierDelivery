@@ -117,7 +117,6 @@ class CourierUnloadingScanFragment : Fragment() {
     private fun initObserver() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            isDialogActive = true
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
@@ -133,7 +132,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
         viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
+            showDialogConfirmScoreInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -297,7 +296,7 @@ class CourierUnloadingScanFragment : Fragment() {
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
-    private fun showDialogConfirmInfo(
+    private fun showDialogConfirmScoreInfo(
         type: Int,
         title: String,
         message: String,

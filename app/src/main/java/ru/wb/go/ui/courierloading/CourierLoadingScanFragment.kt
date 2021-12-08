@@ -183,13 +183,6 @@ class CourierLoadingScanFragment : Fragment() {
             }
         }
 
-        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
-                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
-            }
-        }
-
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierLoadingScanProgress.LoaderProgress -> showProgressDialog()

@@ -107,7 +107,14 @@ class CourierLoadingInteractorImpl(
             deliveredAt = ""
         )
         return if (countBox == 0) {
-            firstBoxAdded(qrcode, address, dstOfficeId, loadingAt, taskId, courierBoxEntity)
+            firstBoxAdded(
+                qrcode,
+                address,
+                dstOfficeId,
+                loadingAt,
+                taskId,
+                courierBoxEntity
+            ).mergeWith(justProcessData(CourierLoadingScanBoxData.ScannerReady, 1))
         } else {
             scannerRepository.scannerState(ScannerState.HoldScanComplete)
             secondaryBoxAdded(courierBoxEntity, qrcode, address).mergeWith(holdDelay(countBox))

@@ -17,6 +17,7 @@ import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.time.DateTimeFormatter
@@ -65,10 +66,6 @@ class CourierLoadingScanViewModel(
         SingleLiveEvent<CourierLoadingScanProgress>()
     val progressEvent: LiveData<CourierLoadingScanProgress>
         get() = _progressEvent
-
-    private val _isEnableStateEvent = SingleLiveEvent<Boolean>()
-    val isEnableStateEvent: LiveData<Boolean>
-        get() = _isEnableStateEvent
 
     private val _boxStateUI =
         MutableLiveData<CourierLoadingScanBoxState>()
@@ -208,6 +205,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierLoadingProcessData) {
+        LogUtils { logDebugApp("observeScanProcessComplete " + scanProcess.toString()) }
         onTechEventLog("observeScanProcessComplete", scanProcess.toString())
         val scanBoxData = scanProcess.scanBoxData
         val accepted = resourceProvider.getAccepted(scanProcess.count)
@@ -219,6 +217,7 @@ class CourierLoadingScanViewModel(
                     with(scanBoxData) { CourierLoadingScanBoxDataState(qrCode, address, accepted) }
                 _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
                 _orderTimer.value = CourierLoadingScanTimerState.Stopped
+                _isEnableBottomState.value = true
             }
             is CourierLoadingScanBoxData.SecondaryBoxAdded -> {
                 _boxStateUI.value = CourierLoadingScanBoxState.LoadInCar
@@ -265,7 +264,7 @@ class CourierLoadingScanViewModel(
 
     fun onErrorDialogConfirmClick() {
         onStartScanner()
-        _isEnableStateEvent.value = true
+        _isEnableBottomState.value = true
     }
 
     fun onConfirmLoadingClick() {
@@ -298,13 +297,13 @@ class CourierLoadingScanViewModel(
     fun onCancelLoadingClick() {
         onTechEventLog("onCancelLoadingClick")
         onStartScanner()
-        _isEnableStateEvent.value = true
+        _isEnableBottomState.value = true
     }
 
     fun onCompleteLoaderClicked() {
         onTechEventLog("onCompleteLoaderClicked", "NavigateToConfirmDialog")
         onStopScanner()
-        _isEnableStateEvent.value = false
+        _isEnableBottomState.value = false
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
     }
 

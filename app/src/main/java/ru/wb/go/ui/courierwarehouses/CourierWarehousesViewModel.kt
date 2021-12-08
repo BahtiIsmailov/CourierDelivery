@@ -50,12 +50,10 @@ class CourierWarehousesViewModel(
     }
 
     private var warehouseEntities = mutableListOf<CourierWarehouseLocalEntity>()
-
     private var warehouseItems = mutableListOf<CourierWarehouseItem>()
-
     private var mapMarkers = mutableListOf<CourierMapMarker>()
-
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
+    private lateinit var myLocation: CoordinatePoint
 
     private fun saveWarehouseEntities(warehouseEntities: List<CourierWarehouseLocalEntity>) {
         this.warehouseEntities = warehouseEntities.toMutableList()
@@ -152,6 +150,7 @@ class CourierWarehousesViewModel(
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
         onTechEventLog("initMapByLocation")
+        this.myLocation = myLocation
         val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
             coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
         )
@@ -236,6 +235,7 @@ class CourierWarehousesViewModel(
         }
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
+        interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
     }
 
     private fun checkAndNavigate(

@@ -139,6 +139,7 @@ class CourierUnloadingScanViewModel(
     fun onCancelScoreUnloadingClick() {
         onTechEventLog("onCancelUnloadingClick")
         _isEnableStateEvent.value = true
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         onStartScanner()
     }
 
@@ -267,10 +268,11 @@ class CourierUnloadingScanViewModel(
                     "fromCount " + it.fromCount + " unloadedCount " + it.unloadedCount
                 )
                 if (it.fromCount == it.unloadedCount) confirmUnloading()
-                else showUnloadingScore(it)
+                else showUnloadingScoreDialog(it)
             },
                 {
                     onTechErrorLog("readUnloadingBoxCounterError", it)
+                    _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
                     _navigateToDialogScoreError.value = NavigateToDialogInfo(
                         DialogInfoStyle.ERROR.ordinal,
                         resourceProvider.getGenericServiceTitleError(),
@@ -281,7 +283,7 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    private fun showUnloadingScore(it: CourierUnloadingBoxCounterResult) {
+    private fun showUnloadingScoreDialog(it: CourierUnloadingBoxCounterResult) {
         _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getUnloadingDialogTitle(),
