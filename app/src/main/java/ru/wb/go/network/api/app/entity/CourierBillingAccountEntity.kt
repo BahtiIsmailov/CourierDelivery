@@ -5,15 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class CourierBillingAccountEntity(
-    val firstName: String,
     val surName: String,
-    val middleName: String,
     val inn: String,
     @PrimaryKey
     val account: String,
     val bank: String,
+    val corAccount: String = "",
     val bik: String,
-    val kpp: String,
-    val corAccount: String,
-    val innBank: String,
+    val innBank: String = "",
+    val kpp: String = "",
 )

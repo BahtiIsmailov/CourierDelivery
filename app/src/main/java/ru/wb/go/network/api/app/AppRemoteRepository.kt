@@ -8,6 +8,9 @@ import ru.wb.go.db.entity.flighboxes.FlightBoxEntity
 import ru.wb.go.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import ru.wb.go.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.go.network.api.app.entity.*
+import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
+import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.api.app.entity.boxinfo.BoxInfoDataEntity
 import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanEntity
 import ru.wb.go.network.api.app.remote.flightsstatus.StatusStateEntity
@@ -127,5 +130,11 @@ interface AppRemoteRepository {
     fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
 
     fun payments(paymentEntity: PaymentEntity): Completable
+
+    fun getBanks(bic: String): Single<BankEntity>
+
+    fun getBankAccounts(): Single<AccountsEntity>
+
+    fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
 
 }

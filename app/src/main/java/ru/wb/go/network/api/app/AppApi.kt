@@ -5,6 +5,9 @@ import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountsResponse
+import ru.wb.go.network.api.app.remote.bank.BankResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.boxinfo.BoxInfoResponse
 import ru.wb.go.network.api.app.remote.courier.*
@@ -239,6 +242,10 @@ interface AppApi {
         @Body carNumbersRequest: List<CarNumberRequest>
     ): Completable
 
+    //==============================================================================================
+    //billing
+    //==============================================================================================
+
     @GET("{version}/billing/account")
     fun billing(
         @Path(value = "version", encoded = true) version: String,
@@ -250,5 +257,23 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String,
         @Body paymentRequest: PaymentRequest
     ): Completable
+
+    @GET("{version}/banks")
+    fun getBanks(
+        @Path(value = "version", encoded = true) version: String,
+        @Query("bic") bic: String
+    ): Single<BankResponse>
+
+    @GET("{version}/me/bank-accounts")
+    fun getBankAccounts(
+        @Path(value = "version", encoded = true) version: String
+    ): Single<AccountsResponse>
+
+    @PUT("{version}/me/bank-accounts")
+    fun setBankAccounts(
+        @Path(value = "version", encoded = true) version: String,
+        @Body accountRequest: List<AccountRequest>
+    ): Completable
+
 
 }

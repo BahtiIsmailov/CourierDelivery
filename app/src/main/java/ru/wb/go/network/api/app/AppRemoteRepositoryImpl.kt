@@ -20,12 +20,17 @@ import ru.wb.go.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.go.db.entity.warehousematchingboxes.WarehouseMatchingDstOfficeEntity
 import ru.wb.go.db.entity.warehousematchingboxes.WarehouseMatchingSrcOfficeEntity
 import ru.wb.go.network.api.app.entity.*
+import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
+import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.api.app.entity.boxinfo.*
 import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanDstOfficeEntity
 import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanEntity
 import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanSrcOfficeEntity
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.boxinfo.*
 import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.deleteboxesfromflight.DeleteBoxesCurrentOfficeRemote
@@ -556,51 +561,53 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun tasksMy(): Single<CourierTasksMyEntity> {
-        return remote.tasksMy(apiVersion()).map { task ->
-            LogUtils { logDebugApp(task.toString()) }
-            timeManager.saveStartedTaskTime(task.startedAt ?: "") //"2021-09-21T17:00:01.992+03:00"
-            val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
-            task.dstOffices.forEach {
-                if (it.id != -1) {
-                    val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
-                        id = it.id,
-                        name = it.name ?: "",
-                        fullAddress = it.fullAddress ?: "",
-                        long = it.long,
-                        lat = it.lat
-                    )
-                    courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+        return remote.tasksMy(apiVersion())
+            .doOnError { LogUtils { logDebugApp(it.toString()) } }
+            .map { task ->
+                LogUtils { logDebugApp(task.toString()) }
+                timeManager.saveStartedTaskTime(task.startedAt ?: "")
+                val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
+                task.dstOffices.forEach {
+                    if (it.id != -1) {
+                        val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
+                            id = it.id,
+                            name = it.name ?: "",
+                            fullAddress = it.fullAddress ?: "",
+                            long = it.long,
+                            lat = it.lat
+                        )
+                        courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+                    }
                 }
-            }
 
-            val srcOffice = with(task.srcOffice) {
-                CourierTasksMySrcOfficeEntity(
-                    id = id,
-                    name = name,
-                    fullAddress = fullAddress,
-                    long = long,
-                    lat = lat
+                val srcOffice = with(task.srcOffice) {
+                    CourierTasksMySrcOfficeEntity(
+                        id = id,
+                        name = name,
+                        fullAddress = fullAddress,
+                        long = long,
+                        lat = lat,
+                    )
+                }
+
+                CourierTasksMyEntity(
+                    id = task.id,
+                    routeID = task.routeID ?: 0,
+                    gate = task.gate ?: "",
+                    srcOffice = srcOffice,
+                    minPrice = task.minPrice,
+                    minVolume = task.minVolume,
+                    minBoxesCount = task.minBoxesCount,
+                    dstOffices = courierTaskMyDstOfficesEntity,
+                    wbUserID = task.wbUserID,
+                    carNumber = task.carNumber,
+                    reservedAt = task.reservedAt,
+                    startedAt = task.startedAt ?: "",
+                    reservedDuration = task.reservedDuration,
+                    status = task.status ?: TaskStatus.TIMER.status,
+                    cost = (task.cost ?: 0) / COST_DIVIDER
                 )
             }
-
-            CourierTasksMyEntity(
-                id = task.id,
-                routeID = task.routeID ?: 0,
-                gate = task.gate ?: "",
-                srcOffice = srcOffice,
-                minPrice = task.minPrice,
-                minVolume = task.minVolume,
-                minBoxesCount = task.minBoxesCount,
-                dstOffices = courierTaskMyDstOfficesEntity,
-                wbUserID = task.wbUserID,
-                carNumber = task.carNumber,
-                reservedAt = task.reservedAt,
-                startedAt = task.startedAt ?: "",
-                reservedDuration = task.reservedDuration,
-                status = task.status ?: TaskStatus.TIMER.status,
-                cost = (task.cost ?: 0) / COST_DIVIDER
-            )
-        }
     }
 
     override fun anchorTask(
@@ -759,6 +766,32 @@ class AppRemoteRepositoryImpl(
             )
         }
         return remote.payments(apiVersion(), paymentRequest)
+    }
+
+    override fun getBanks(bic: String): Single<BankEntity> {
+        return remote.getBanks(apiVersion(), bic)
+            .map { with(it) { BankEntity(id, it.bic, name, correspondentAccount, isDeleted) } }
+    }
+
+    override fun getBankAccounts(): Single<AccountsEntity> {
+        return remote.getBankAccounts(apiVersion())
+            .map { AccountsEntity(it.inn, it.data.convertToEntity()) }
+    }
+
+    private fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
+        val accountsEntity = mutableListOf<AccountEntity>()
+        forEach { accountsEntity.add(with(it) { AccountEntity(bic, name, correspondentAccount) }) }
+        return accountsEntity
+    }
+
+    override fun setBankAccounts(accountEntities: List<AccountEntity>): Completable {
+        return remote.setBankAccounts(apiVersion(), accountEntities.convertToRequest())
+    }
+
+    private fun List<AccountEntity>.convertToRequest(): List<AccountRequest> {
+        val accountsEntity = mutableListOf<AccountRequest>()
+        forEach { accountsEntity.add(AccountRequest(it.bic, it.name, it.correspondentAccount)) }
+        return accountsEntity
     }
 
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {

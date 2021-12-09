@@ -111,26 +111,6 @@ class CourierBillingAccountDataViewModel(
         return with(focusChange) { predicateChecker(surnamePredicate, text, type) }
     }
 
-    private val namePredicate = { text: String -> text.isEmpty() }
-
-    private fun checkFocusNameWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(namePredicate, text, type) }
-    }
-
-    private fun checkTextNameWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(namePredicate, text, type) }
-    }
-
-    private val middleNamePredicate = { text: String -> text.isEmpty() }
-
-    private fun checkFocusMiddleNameWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(middleNamePredicate, text, type) }
-    }
-
-    private fun checkTextMiddleNameWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(middleNamePredicate, text, type) }
-    }
-
     private val innPredicate = { text: String -> text.length != INN_LENGTH }
 
     private fun checkFocusInnWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
@@ -171,36 +151,6 @@ class CourierBillingAccountDataViewModel(
         return with(focusChange) { predicateChecker(bikPredicate, text, type) }
     }
 
-    private val kppPredicate = { text: String -> text.length != BIK_LENGTH }
-
-    private fun checkFocusKppWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(kppPredicate, text, type) }
-    }
-
-    private fun checkTextKppWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(kppPredicate, text, type) }
-    }
-
-    private val corAccountPredicate = { text: String -> text.length != COR_ACCOUNT_LENGTH }
-
-    private fun checkFocusCorAccountWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(corAccountPredicate, text, type) }
-    }
-
-    private fun checkTextCorAccountWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(corAccountPredicate, text, type) }
-    }
-
-    private val innBankPredicate = { text: String -> text.length != INN_BANK_LENGTH }
-
-    private fun checkFocusInnBankWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(innBankPredicate, text, type) }
-    }
-
-    private fun checkTextInnBankWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-        return with(focusChange) { predicateChecker(innBankPredicate, text, type) }
-    }
-
     fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountDataUIAction>>) {
         addSubscription(Observable.merge(changeObservables)
             .map { mapAction(it) }
@@ -219,29 +169,19 @@ class CourierBillingAccountDataViewModel(
     private fun checkFieldFocus(action: CourierBillingAccountDataUIAction.FocusChange) =
         when (action.type) {
             CourierBillingAccountDataQueryType.SURNAME -> checkFocusSurnameWrapper(action)
-            CourierBillingAccountDataQueryType.NAME -> checkFocusNameWrapper(action)
-            CourierBillingAccountDataQueryType.MIDDLE_NAME -> checkFocusMiddleNameWrapper(action)
             CourierBillingAccountDataQueryType.INN -> checkFocusInnWrapper(action)
             CourierBillingAccountDataQueryType.ACCOUNT -> checkFocusAccountWrapper(action)
             CourierBillingAccountDataQueryType.BANK -> checkFocusBankWrapper(action)
             CourierBillingAccountDataQueryType.BIK -> checkFocusBikWrapper(action)
-            CourierBillingAccountDataQueryType.KPP -> checkFocusKppWrapper(action)
-            CourierBillingAccountDataQueryType.COR_ACCOUNT -> checkFocusCorAccountWrapper(action)
-            CourierBillingAccountDataQueryType.INN_BANK -> checkFocusInnBankWrapper(action)
         }
 
     private fun checkFieldText(action: CourierBillingAccountDataUIAction.TextChange) =
         when (action.type) {
             CourierBillingAccountDataQueryType.SURNAME -> checkTextSurnameWrapper(action)
-            CourierBillingAccountDataQueryType.NAME -> checkTextNameWrapper(action)
-            CourierBillingAccountDataQueryType.MIDDLE_NAME -> checkTextMiddleNameWrapper(action)
             CourierBillingAccountDataQueryType.INN -> checkTextInnWrapper(action)
             CourierBillingAccountDataQueryType.ACCOUNT -> checkTextAccountWrapper(action)
             CourierBillingAccountDataQueryType.BANK -> checkTextBankWrapper(action)
             CourierBillingAccountDataQueryType.BIK -> checkTextBikWrapper(action)
-            CourierBillingAccountDataQueryType.KPP -> checkTextKppWrapper(action)
-            CourierBillingAccountDataQueryType.COR_ACCOUNT -> checkTextCorAccountWrapper(action)
-            CourierBillingAccountDataQueryType.INN_BANK -> checkTextInnBankWrapper(action)
         }
 
     private fun checkFieldAll(action: CourierBillingAccountDataUIAction.CompleteClick): CourierBillingAccountDataUIState {
@@ -251,15 +191,10 @@ class CourierBillingAccountDataViewModel(
             with(item) {
                 val predicate = when (type) {
                     CourierBillingAccountDataQueryType.SURNAME -> surnamePredicate
-                    CourierBillingAccountDataQueryType.NAME -> namePredicate
-                    CourierBillingAccountDataQueryType.MIDDLE_NAME -> middleNamePredicate
                     CourierBillingAccountDataQueryType.INN -> innPredicate
                     CourierBillingAccountDataQueryType.ACCOUNT -> accountPredicate
                     CourierBillingAccountDataQueryType.BANK -> bankPredicate
                     CourierBillingAccountDataQueryType.BIK -> bikPredicate
-                    CourierBillingAccountDataQueryType.KPP -> kppPredicate
-                    CourierBillingAccountDataQueryType.COR_ACCOUNT -> corAccountPredicate
-                    CourierBillingAccountDataQueryType.INN_BANK -> innBankPredicate
                 }
                 if (isCompleteChecker(predicate, text, type)) iterator.remove()
             }

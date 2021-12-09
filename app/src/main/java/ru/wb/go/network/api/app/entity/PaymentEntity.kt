@@ -7,6 +7,6 @@ data class PaymentEntity(
     val recipientBankBik: String,
     val recipientCorrespondentAccount: String,
     val recipientAccount: String,
-    val recipientInn: String,
-    val recipientKpp: String
+    val recipientInn: String = "",
+    val recipientKpp: String = ""
 )

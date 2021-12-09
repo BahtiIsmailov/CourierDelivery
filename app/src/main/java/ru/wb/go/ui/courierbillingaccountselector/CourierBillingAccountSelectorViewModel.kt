@@ -232,7 +232,7 @@ class CourierBillingAccountSelectorViewModel(
             PaymentEntity(
                 amount = amountFromText,
                 recipientBankName = bank,
-                recipientName = "$firstName $surName $middleName",
+                recipientName = "$surName $surName $surName",
                 recipientBankBik = bik,
                 recipientCorrespondentAccount = corAccount,
                 recipientAccount = account,

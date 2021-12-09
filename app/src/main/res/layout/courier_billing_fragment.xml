@@ -45,37 +45,15 @@
         app:layout_constraintStart_toEndOf="@+id/coast"
         app:layout_constraintTop_toTopOf="@+id/coast" />
 
-    <TextView
-        android:id="@+id/details"
-        style="@style/MediumBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:text="Детализация"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coast" />
-
     <View
         android:id="@+id/view_divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="22dp"
         android:background="#EDEEF0"
-        app:layout_constraintEnd_toEndOf="@+id/details"
-        app:layout_constraintStart_toStartOf="@+id/details"
-        app:layout_constraintTop_toBottomOf="@+id/details" />
-
-    <View
-        android:id="@+id/view_divider"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginTop="11dp"
-        android:background="#642CA3"
-        app:layout_constraintEnd_toEndOf="@+id/details"
-        app:layout_constraintStart_toStartOf="@+id/details"
-        app:layout_constraintTop_toBottomOf="@+id/details" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coast" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/operations"
@@ -88,7 +66,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view_divider"
+        app:layout_constraintTop_toBottomOf="@+id/view_divider1"
         tools:listitem="@layout/courier_billing_positive_delegate" />
 
     <View

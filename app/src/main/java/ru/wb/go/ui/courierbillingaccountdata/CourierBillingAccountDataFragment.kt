@@ -105,20 +105,6 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
-                binding.firstNameLayout,
-                binding.firstName,
-                CourierBillingAccountDataQueryType.NAME
-            )
-        )
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.middleNameLayout,
-                binding.middleName,
-                CourierBillingAccountDataQueryType.MIDDLE_NAME
-            )
-        )
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
                 binding.innLayout,
                 binding.inn,
                 CourierBillingAccountDataQueryType.INN
@@ -145,28 +131,6 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 CourierBillingAccountDataQueryType.BIK
             )
         )
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.kppLayout,
-                binding.kpp,
-                CourierBillingAccountDataQueryType.KPP
-            )
-        )
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.corAccountLayout,
-                binding.corAccount,
-                CourierBillingAccountDataQueryType.COR_ACCOUNT
-            )
-        )
-
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.innBankLayout,
-                binding.innBank,
-                CourierBillingAccountDataQueryType.INN_BANK
-            )
-        )
 
         changeTextObservables.add(createClickObserver().initListener(binding.save))
 
@@ -178,43 +142,20 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             binding.surname.text.toString(),
             CourierBillingAccountDataQueryType.SURNAME
         ),
-        CourierAccountData(
-            binding.firstName.text.toString(),
-            CourierBillingAccountDataQueryType.NAME
-        ),
-        CourierAccountData(
-            binding.middleName.text.toString(),
-            CourierBillingAccountDataQueryType.MIDDLE_NAME
-        ),
         CourierAccountData(binding.inn.text.toString(), CourierBillingAccountDataQueryType.INN),
-
         CourierAccountData(
-            binding.account.text.toString(),
-            CourierBillingAccountDataQueryType.ACCOUNT
+            binding.account.text.toString(), CourierBillingAccountDataQueryType.ACCOUNT
         ),
         CourierAccountData(binding.bank.text.toString(), CourierBillingAccountDataQueryType.BANK),
-        CourierAccountData(binding.bik.text.toString(), CourierBillingAccountDataQueryType.BIK),
-        CourierAccountData(
-            binding.corAccount.text.toString(),
-            CourierBillingAccountDataQueryType.COR_ACCOUNT
-        ),
-        CourierAccountData(
-            binding.innBank.text.toString(),
-            CourierBillingAccountDataQueryType.INN_BANK
-        )
+        CourierAccountData(binding.bik.text.toString(), CourierBillingAccountDataQueryType.BIK)
     )
 
     private fun getCourierBillingAccountEntity() = CourierBillingAccountEntity(
         surName = binding.surname.text.toString(),
-        firstName = binding.firstName.text.toString(),
-        middleName = binding.middleName.text.toString(),
         inn = binding.inn.text.toString(),
         account = binding.account.text.toString(),
         bank = binding.bank.text.toString(),
         bik = binding.bik.text.toString(),
-        kpp = binding.kpp.text.toString(),
-        corAccount = binding.corAccount.text.toString(),
-        innBank = binding.innBank.text.toString(),
     )
 
     fun interface ClickEventInterface {
@@ -275,15 +216,10 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                     binding.editAccountLayout.visibility = VISIBLE
                     with(it.field) {
                         binding.surname.setText(surName)
-                        binding.firstName.setText(firstName)
-                        binding.middleName.setText(middleName)
                         binding.inn.setText(inn)
                         binding.account.setText(account)
                         binding.bank.setText(bank)
                         binding.bik.setText(bik)
-                        binding.kpp.setText(kpp)
-                        binding.corAccount.setText(corAccount)
-                        binding.innBank.setText(innBank)
                     }
                 }
             }

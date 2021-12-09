@@ -44,7 +44,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/surname_layout"
-                    style="@style/TextInputLayoutStyle"
+                    style="@style/TextInputDisableLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -59,56 +59,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="Фамилия"
-                        android:letterSpacing="0.04"
-                        android:paddingTop="@dimen/auth_padding_top"
-                        android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/first_name_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="18dp"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/first_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="Имя"
-                        android:letterSpacing="0.04"
-                        android:paddingTop="@dimen/auth_padding_top"
-                        android:paddingBottom="@dimen/auth_padding_bottom"
-                        android:scrollbars="vertical" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/middle_name_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="18dp"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/middle_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="Отчество"
+                        android:hint="ФИО"
                         android:letterSpacing="0.04"
                         android:paddingTop="@dimen/auth_padding_top"
                         android:paddingBottom="@dimen/auth_padding_bottom" />
@@ -117,7 +68,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/inn_layout"
-                    style="@style/TextInputLayoutStyle"
+                    style="@style/TextInputDisableLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -168,33 +119,10 @@
                         android:id="@+id/account"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Номер счета"
+                        android:hint="Расчётный счет"
                         android:inputType="number"
                         android:letterSpacing="0.04"
                         android:maxLength="@integer/account"
-                        android:paddingTop="@dimen/auth_padding_top"
-                        android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/bank_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/bank"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="Банк получателя"
                         android:paddingTop="@dimen/auth_padding_top"
                         android:paddingBottom="@dimen/auth_padding_bottom" />
 
@@ -226,8 +154,8 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/kpp_layout"
-                    style="@style/TextInputLayoutStyle"
+                    android:id="@+id/bank_layout"
+                    style="@style/TextInputDisableLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -238,64 +166,11 @@
                     tools:ignore="MissingConstraints">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/kpp"
+                        android:id="@+id/bank"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="КПП"
-                        android:inputType="number"
-                        android:letterSpacing="0.04"
-                        android:maxLength="@integer/kpp"
-                        android:paddingTop="@dimen/auth_padding_top"
-                        android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/cor_account_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/cor_account"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Кор. счет"
-                        android:inputType="number"
-                        android:letterSpacing="0.04"
-                        android:maxLength="@integer/cor_account"
-                        android:paddingTop="@dimen/auth_padding_top"
-                        android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/inn_bank_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/inn_bank"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="ИНН банка"
-                        android:inputType="number"
-                        android:letterSpacing="0.04"
-                        android:maxLength="@integer/inn_bank"
+                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+                        android:hint="Банк получателя"
                         android:paddingTop="@dimen/auth_padding_top"
                         android:paddingBottom="@dimen/auth_padding_bottom" />
 
@@ -306,7 +181,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/auth_button_height"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginTop="44dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="20dp"
                     app:progress_button_background="@drawable/progress_image_button_round_default"
@@ -317,10 +192,10 @@
                     app:progress_button_text_color_progress="@color/button_default_text_progress" />
 
                 <LinearLayout
+                    android:id="@+id/edit_account_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:id="@+id/edit_account_layout">
+                    android:visibility="gone">
 
                     <ImageButton
                         android:id="@+id/remove_account"
@@ -349,7 +224,6 @@
                         app:progress_button_text_color_disable="@color/button_default_text_disable"
                         app:progress_button_text_color_enable="@color/button_default_text_enable"
                         app:progress_button_text_color_progress="@color/button_default_text_progress" />
-
 
                 </LinearLayout>
 

@@ -44,6 +44,8 @@
     <color name="added">#FB8C00</color>
     <color name="added_trans">#2FFB8C00</color>
     <color name="primary">#642CA3</color>
+    <color name="disable_input_background">#F5F4F6</color>
+
 
     <color name="icon_default">#CCC5D3</color>
     <color name="icon_success">#2CA364</color>
