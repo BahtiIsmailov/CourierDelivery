@@ -6,6 +6,6 @@ data class TokenResource(
     val iat: Int = 0,
     val iss: String = "",
     val sub: String? = "",
-    val extra: Extra = Extra(),
+    val extra: Extra? = Extra(),
     val refreshExpiresAt: Int = 0
 )

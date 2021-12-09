@@ -22,7 +22,6 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_IN
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
@@ -35,6 +34,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
     companion object {
         const val COURIER_UNLOADING_ID_KEY = "courier_unloading_id_key"
+        const val DIALOG_ERROR_RESULT_TAG = "DIALOG_ERROR_RESULT_TAG"
         const val DIALOG_SCORE_ERROR_RESULT_TAG = "DIALOG_SCORE_ERROR_RESULT_TAG"
         const val DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG =
             "DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG"
@@ -71,7 +71,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun initReturnDialogResult() {
 
-        setFragmentResultListener(DIALOG_INFO_RESULT_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_ERROR_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 isDialogActive = false
                 viewModel.onScoreDialogInfoClick()
@@ -122,7 +122,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogError(it.type, it.title, it.message, it.button)
         }
 
         viewModel.navigateToDialogScoreError.observe(viewLifecycleOwner) {
@@ -267,17 +267,18 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showDialogInfo(
+    private fun showDialogError(
         type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            DIALOG_ERROR_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

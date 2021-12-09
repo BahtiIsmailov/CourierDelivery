@@ -3,6 +3,7 @@ package ru.wb.go.db.dao
 import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
@@ -45,6 +46,9 @@ interface CourierBoxDao {
 
     @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
     fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+
+    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId AND id = :boxId")
+    fun readLoadingBoxByOfficeIdAndId(officeId: Int, boxId: String): Maybe<CourierBoxEntity>
 
     @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
     fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>

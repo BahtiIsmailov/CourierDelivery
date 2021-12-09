@@ -327,7 +327,7 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onScoreDialogInfoClick() {
-
+        onStartScanner()
     }
 
     fun onScoreDialogConfirmClick() {

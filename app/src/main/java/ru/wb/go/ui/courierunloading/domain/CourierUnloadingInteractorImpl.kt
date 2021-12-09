@@ -1,9 +1,6 @@
 package ru.wb.go.ui.courierunloading.domain
 
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
 import ru.wb.go.app.PREFIX_QR_CODE
 import ru.wb.go.db.CourierLocalRepository
@@ -97,58 +94,28 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun loaderProgress() {
-        scanLoaderProgressSubject.onNext(CourierUnloadingProgressData.Progress)
-        scannerRepository.scannerState(ScannerState.LoaderProgress)
-    }
-
     private fun observeUnloadingScan(officeId: Int): Observable<CourierUnloadingScanBoxData> {
         return scannerRepository.observeBarcodeScanned()
             .doOnNext { LogUtils { logDebugApp("scannerRepository.observeBarcodeScanned() " + it) } }
             .map { parseQrCode(it) }
-            .flatMapSingle { boxDefinitionResult(officeId, it) }
-            .flatMap { observableStatus(it) }
+            .flatMap { boxDefinitionResult(it) }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun boxDefinitionResult(
-        officeId: Int,
-        parseQrCode: ParseQrCode
-    ): Single<CourierUnloadingDefinitionResult> {
-        return Single.zip(
-            readAllLoadingBoxesByOfficeId(officeId),
-            updatedAt(),
-            { loadingBoxesByOfficeId, updatedAt ->
-                CourierUnloadingDefinitionResult(
-                    loadingBoxesByOfficeId,
-                    parseQrCode,
-                    updatedAt
-                )
-            }
-        ).doOnError { LogUtils { logDebugApp(it.toString()) } }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-
-    private fun observableStatus(result: CourierUnloadingDefinitionResult): Observable<out CourierUnloadingScanBoxData> {
-        with(result) {
-            val box = boxesEntity.find { it.id == parseQrCode.code }
-            return if (box == null) {
-                Observable.just(
-                    CourierUnloadingScanBoxData.UnknownBox(
-                        parseQrCode.code,
-                        EMPTY_ADDRESS
-                    )
-                )
-            } else {
+    private fun boxDefinitionResult(parseQrCode: ParseQrCode)
+            : Observable<out CourierUnloadingScanBoxData> {
+        return readLoadingBoxByOfficeIdAndId(parseQrCode)
+            .flatMapObservable { box ->
                 scannerRepository.scannerState(ScannerState.Stop)
+                val timeScan = timeManager.getLocalTime()
                 val saveAndAddedBox =
-                    saveBox(timeScan, box).andThen(boxAdded(parseQrCode.code, box.address))
+                    saveBox(timeScan, box).andThen(boxAdded(box.id, box.address))
                 val holdScanner = Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.SECONDS)
                     .doOnNext { scannerRepository.scannerState(ScannerState.Start) }
-                    .map { CourierUnloadingScanBoxData.ScannerReady(parseQrCode.code, box.address) }
+                    .map { CourierUnloadingScanBoxData.ScannerReady(box.id, box.address) }
                 Observable.merge(saveAndAddedBox, holdScanner)
             }
-        }
+            .defaultIfEmpty(CourierUnloadingScanBoxData.UnknownBox(parseQrCode.code, EMPTY_ADDRESS))
     }
 
     private fun saveBox(
@@ -186,10 +153,12 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun readAllLoadingBoxesByOfficeId(officeId: Int) =
-        courierLocalRepository.readAllLoadingBoxesByOfficeId(officeId)
-
-    private fun updatedAt() = Single.just(timeManager.getLocalTime())
+    private fun readLoadingBoxByOfficeIdAndId(parseQrCode: ParseQrCode): Maybe<CourierBoxEntity> {
+        return courierLocalRepository.readLoadingBoxByOfficeIdAndId(
+            parseQrCode.dstOfficeId,
+            parseQrCode.code
+        )
+    }
 
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepository.scannerState(scannerAction)
@@ -249,14 +218,7 @@ class CourierUnloadingInteractorImpl(
         insertAllVisitedOffice()
     }
 
-    private fun insertAllVisitedOfficeSync() = courierLocalRepository.insertAllVisitedOfficeSync()
-
     private fun insertAllVisitedOffice() = courierLocalRepository.insertAllVisitedOffice()
-
-    private fun taskIdSync() =
-        courierLocalRepository.observeOrderData()
-            .map { it.courierOrderLocalEntity.id.toString() }
-            .first("")
 
 }
 

@@ -63,7 +63,7 @@ class CourierLoaderViewModel(
     }
 
     private fun initDrawer() {
-        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), "")
+        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
     }
 
     // TODO: 17.11.2021 реализовать локальное хранилище версии исполльзовать его при отсутствии инета

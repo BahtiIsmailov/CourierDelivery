@@ -2,6 +2,7 @@ package ru.wb.go.db
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
@@ -124,6 +125,13 @@ class CourierLocalRepositoryImpl(
 
     override fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>> {
         return courierLoadingBoxDao.readAllLoadingBoxesByOfficeId(officeId)
+    }
+
+    override fun readLoadingBoxByOfficeIdAndId(
+        officeId: Int,
+        id: String
+    ): Maybe<CourierBoxEntity> {
+        return courierLoadingBoxDao.readLoadingBoxByOfficeIdAndId(officeId, id)
     }
 
     override fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>> {

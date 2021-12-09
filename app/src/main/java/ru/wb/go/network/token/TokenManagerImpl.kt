@@ -12,7 +12,7 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     override fun wbUserID(): String {
-        return tokenResource().extra.wbUserID.toString()
+        return tokenResource().extra?.wbUserID.toString()
     }
 
     override fun saveToken(token: TokenEntity) {
@@ -36,15 +36,15 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     override fun userCompany(): String {
-        return tokenResource().extra.company
+        return tokenResource().extra?.company ?: ""
     }
 
     override fun userCompanyId(): String {
-        return tokenResource().extra.companyID.toString()
+        return tokenResource().extra?.companyID.toString()
     }
 
     override fun userPhone(): String {
-        return tokenResource().extra.phone
+        return tokenResource().extra?.phone ?: ""
     }
 
     private fun token(): TokenEntity =
@@ -67,7 +67,7 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     override fun resources(): List<String> {
-        return tokenResource().extra.resources ?: mutableListOf()
+        return tokenResource().extra?.resources ?: mutableListOf()
     }
 
 }
