@@ -98,7 +98,7 @@
         app:layout_constraintGuide_percent="0.5" />
 
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/update"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"

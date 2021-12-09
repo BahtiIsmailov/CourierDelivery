@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/scanner"
-        class="com.wb.perevozka.ui.scanner.ScannerFragment"
+        class="com.wb.go.ui.scanner.ScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
@@ -57,7 +57,7 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <ru.wb.perevozka.ui.dcunloading.views.DcUnloadingAcceptedView
+            <ru.wb.go.ui.dcunloading.views.DcUnloadingAcceptedView
                 android:id="@+id/unloading_box"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
@@ -72,7 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ru.wb.perevozka.ui.dcunloading.views.DcUnloadingInfoView
+            <ru.wb.go.ui.dcunloading.views.DcUnloadingInfoView
                 android:id="@+id/info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
 
     </FrameLayout>
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/manual_input"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -113,7 +113,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline_button" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/complete"
         android:layout_width="0dp"
         android:layout_height="0dp"

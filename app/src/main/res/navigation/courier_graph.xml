@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/courierLoaderFragment"
-        android:name="ru.wb.perevozka.ui.courierloader.CourierLoaderFragment"
+        android:name="ru.wb.go.ui.courierloader.CourierLoaderFragment"
         android:label=""
         tools:layout="@layout/courier_loader_fragment">
         <action
@@ -62,7 +62,7 @@
 
     <fragment
         android:id="@+id/courierWarehouseFragment"
-        android:name="ru.wb.perevozka.ui.courierwarehouses.CourierWarehousesFragment"
+        android:name="ru.wb.go.ui.courierwarehouses.CourierWarehousesFragment"
         android:label="@string/courier_warehouse_title"
         tools:layout="@layout/courier_warehouse_fragment">
         <action
@@ -76,12 +76,12 @@
 
     <fragment
         android:id="@+id/userFormFragment"
-        android:name="ru.wb.perevozka.ui.courierdata.CourierDataFragment"
+        android:name="ru.wb.go.ui.courierdata.CourierDataFragment"
         android:label="UserFormFragment"
         tools:layout="@layout/courier_data_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.courierdata.CourierDataParameters"
+            app:argType="ru.wb.go.ui.courierdata.CourierDataParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_userFormFragment_to_couriersCompleteRegistrationFragment"
@@ -97,12 +97,12 @@
 
     <fragment
         android:id="@+id/couriersCompleteRegistrationFragment"
-        android:name="ru.wb.perevozka.ui.courierexpects.CourierExpectsFragment"
+        android:name="ru.wb.go.ui.courierexpects.CourierExpectsFragment"
         android:label="CouriersCompleteRegistrationFragment"
         tools:layout="@layout/auth_courier_expects_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.perevozka.ui.courierexpects.CourierExpectsParameters"
+            app:argType="ru.wb.go.ui.courierexpects.CourierExpectsParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierWarehouseFragment"
@@ -111,13 +111,13 @@
 
     <fragment
         android:id="@+id/courierOrderFragment"
-        android:name="ru.wb.perevozka.ui.courierorders.CourierOrderFragment"
+        android:name="ru.wb.go.ui.courierorders.CourierOrderFragment"
         android:label=""
         tools:layout="@layout/courier_order_fragment">
 
         <argument
             android:name="courier_order_id_key"
-            app:argType="ru.wb.perevozka.ui.courierorders.CourierOrderParameters"
+            app:argType="ru.wb.go.ui.courierorders.CourierOrderParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_courierOrderFragment_to_courierOrderDetailsFragment"
@@ -131,13 +131,13 @@
 
     <fragment
         android:id="@+id/courierOrderDetailsFragment"
-        android:name="ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsFragment"
+        android:name="ru.wb.go.ui.courierorderdetails.CourierOrderDetailsFragment"
         android:label="CourierOrderDetailsFragment"
         tools:layout="@layout/courier_order_details_fragment">
 
         <argument
             android:name="courier_order_details_id_key"
-            app:argType="ru.wb.perevozka.ui.courierorderdetails.CourierOrderDetailsParameters"
+            app:argType="ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_courierOrderDetailsFragment_to_courierCarNumberFragment"
@@ -159,7 +159,7 @@
 
     <fragment
         android:id="@+id/courierCarNumberFragment"
-        android:name="ru.wb.perevozka.ui.couriercarnumber.CourierCarNumberFragment"
+        android:name="ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment"
         android:label="CourierCarNumberFragment"
         tools:layout="@layout/courier_car_number_fragment">
 
@@ -175,7 +175,7 @@
 
     <fragment
         android:id="@+id/courierOrderTimerFragment"
-        android:name="ru.wb.perevozka.ui.courierordertimer.CourierOrderTimerFragment"
+        android:name="ru.wb.go.ui.courierordertimer.CourierOrderTimerFragment"
         android:label=""
         tools:layout="@layout/courier_order_timer_fragment">
 
@@ -200,7 +200,7 @@
 
     <fragment
         android:id="@+id/courierScannerLoadingScanFragment"
-        android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingScanFragment"
+        android:name="ru.wb.go.ui.courierloading.CourierLoadingScanFragment"
         android:label=""
         tools:layout="@layout/courier_loading_fragment">
         <action
@@ -231,19 +231,19 @@
 
     <fragment
         android:id="@+id/courierScannerLoadingBoxNotBelongFragment"
-        android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingUnknownBoxFragment"
+        android:name="ru.wb.go.ui.courierloading.CourierLoadingUnknownBoxFragment"
         android:label="CourierScannerLoadingBoxNotBelongFragment"
         tools:layout="@layout/courier_loading_unknown_box_fragment" />
 
     <fragment
         android:id="@+id/courierLoadingBoxesFragment"
-        android:name="ru.wb.perevozka.ui.courierloading.CourierLoadingBoxesFragment"
+        android:name="ru.wb.go.ui.courierloading.CourierLoadingBoxesFragment"
         android:label=""
         tools:layout="@layout/courier_loading_boxes_fragment" />
 
     <fragment
         android:id="@+id/courierOrderConfirmFragment"
-        android:name="ru.wb.perevozka.ui.courierorderconfirm.CourierOrderConfirmFragment"
+        android:name="ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmFragment"
         android:label=""
         tools:layout="@layout/courier_order_confirm_fragment">
         <action
@@ -271,7 +271,7 @@
 
     <fragment
         android:id="@+id/courierIntransitFragment"
-        android:name="ru.wb.perevozka.ui.courierintransit.CourierIntransitFragment"
+        android:name="ru.wb.go.ui.courierintransit.CourierIntransitFragment"
         android:label=""
         tools:layout="@layout/courier_intransit_fragment">
         <action
@@ -293,12 +293,12 @@
     </fragment>
     <fragment
         android:id="@+id/courierUnloadingScanFragment"
-        android:name="ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanFragment"
+        android:name="ru.wb.go.ui.courierunloading.CourierUnloadingScanFragment"
         android:label=""
         tools:layout="@layout/courier_unloading_fragment">
         <argument
             android:name="courier_unloading_id_key"
-            app:argType="ru.wb.perevozka.ui.courierunloading.CourierUnloadingScanParameters"
+            app:argType="ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_courierUnloadingScanFragment_to_courierUnloadingUnknownBoxFragment"
@@ -321,18 +321,18 @@
 
     <fragment
         android:id="@+id/courierUnloadingUnknownBoxFragment"
-        android:name="ru.wb.perevozka.ui.courierunloading.CourierUnloadingUnknownBoxFragment"
+        android:name="ru.wb.go.ui.courierunloading.CourierUnloadingUnknownBoxFragment"
         android:label=""
         tools:layout="@layout/courier_unloading_unknown_box_fragment" />
 
     <fragment
         android:id="@+id/courierCompleteDeliveryFragment"
-        android:name="ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryFragment"
+        android:name="ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryFragment"
         android:label=""
         tools:layout="@layout/courier_complete_delivery_fragment">
         <argument
             android:name="courier_complete_delivery_key"
-            app:argType="ru.wb.perevozka.ui.couriercompletedelivery.CourierCompleteDeliveryParameters"
+            app:argType="ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_courierCompleteDeliveryFragment_to_courierLoaderFragment"
@@ -345,18 +345,18 @@
 
     <fragment
         android:id="@+id/courierAgreementFragment"
-        android:name="ru.wb.perevozka.ui.courieragreement.CourierAgreementFragment"
+        android:name="ru.wb.go.ui.courieragreement.CourierAgreementFragment"
         android:label="CourierAgreementFragment"
         tools:layout="@layout/courier_agreement_fragment" />
     <fragment
         android:id="@+id/courierStartDeliveryFragment"
-        android:name="ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryFragment"
+        android:name="ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryFragment"
         android:label="CourierStartDeliveryFragment"
         tools:layout="@layout/courier_start_delivery_fragment">
 
         <argument
             android:name="courier_start_delivery_key"
-            app:argType="ru.wb.perevozka.ui.courierstartdelivery.CourierStartDeliveryParameters"
+            app:argType="ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_courierStartDeliveryFragment_to_courierIntransitFragment"
@@ -371,7 +371,7 @@
 
     <fragment
         android:id="@+id/courierBalanceFragment"
-        android:name="ru.wb.perevozka.ui.courierbilling.CourierBillingFragment"
+        android:name="ru.wb.go.ui.courierbilling.CourierBillingFragment"
         android:label="CourierBalanceFragment"
         tools:layout="@layout/courier_billing_fragment">
         <action
@@ -392,13 +392,13 @@
 
     <fragment
         android:id="@+id/courierBillingAccountDataFragment"
-        android:name="ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataFragment"
+        android:name="ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment"
         android:label="CourierBillingAccountDataFragment"
         tools:layout="@layout/courier_billing_data_fragment">
 
         <argument
             android:name="courier_billing_data_amount_key"
-            app:argType="ru.wb.perevozka.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters"
+            app:argType="ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters"
             app:nullable="false" />
 
         <action
@@ -412,13 +412,13 @@
 
     <fragment
         android:id="@+id/courierBillingAccountSelectorFragment"
-        android:name="ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorFragment"
+        android:name="ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorFragment"
         android:label="CourierBillingAccountSelectorFragment"
         tools:layout="@layout/courier_billing_account_selector_fragment">
 
         <argument
             android:name="courier_billing_account_selector_amount_key"
-            app:argType="ru.wb.perevozka.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters"
+            app:argType="ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_courierBillingAccountSelectorFragment_to_courierBillingAccountDataFragment"

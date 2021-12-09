@@ -100,7 +100,7 @@
 
     </ScrollView>
 
-    <ru.wb.perevozka.views.ProgressButtonView
+    <ru.wb.go.views.ProgressButtonView
         android:id="@+id/next"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"

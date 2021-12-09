@@ -127,7 +127,7 @@
             android:gravity="center"
             android:text="@string/courier_billing_empty_list" />
 
-        <ru.wb.perevozka.views.ProgressButtonView
+        <ru.wb.go.views.ProgressButtonView
             android:id="@+id/update"
             android:layout_width="108dp"
             android:layout_height="36dp"

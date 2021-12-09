@@ -301,7 +301,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <ru.wb.perevozka.views.ProgressButtonView
+                <ru.wb.go.views.ProgressButtonView
                     android:id="@+id/save"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/auth_button_height"
@@ -333,7 +333,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
-                    <ru.wb.perevozka.views.ProgressButtonView
+                    <ru.wb.go.views.ProgressButtonView
                         android:id="@+id/save_change_account"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/auth_button_height"

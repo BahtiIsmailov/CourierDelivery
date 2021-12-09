@@ -60,7 +60,7 @@
         app:layout_constraintTop_toTopOf="@+id/content_center"
         tools:text="Сообщение об ошибке" />
 
-    <ru.wb.perevozka.views.ProgressImageButtonView
+    <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/update"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"
