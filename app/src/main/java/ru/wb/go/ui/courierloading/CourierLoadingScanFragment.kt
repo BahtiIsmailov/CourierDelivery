@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierloading
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +26,7 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.ui.splash.OnCourierScanner
+import ru.wb.go.ui.splash.OnSoundPlayer
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierLoadingScanFragment : Fragment() {
@@ -179,7 +179,8 @@ class CourierLoadingScanFragment : Fragment() {
             when (state) {
                 CourierLoadingScanBeepState.BoxFirstAdded -> beepFirstSuccess()
                 CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
-                CourierLoadingScanBeepState.UnknownBox -> beepUnknown()
+                CourierLoadingScanBeepState.UnknownBox -> beepUnknownBox()
+                CourierLoadingScanBeepState.UnknownQR -> beepUnknownQr()
             }
         }
 
@@ -358,12 +359,16 @@ class CourierLoadingScanFragment : Fragment() {
 //        play(R.raw.sound_scan_success)
     }
 
-    private fun beepUnknown() {
+    private fun beepUnknownBox() {
+        play(R.raw.unloading_unknown_box)
+    }
+
+    private fun beepUnknownQr() {
         play(R.raw.unloading_scan_unknown_qr)
     }
 
     private fun play(resId: Int) {
-        MediaPlayer.create(context, resId).start()
+        (activity as OnSoundPlayer).play(resId)
     }
 
 }

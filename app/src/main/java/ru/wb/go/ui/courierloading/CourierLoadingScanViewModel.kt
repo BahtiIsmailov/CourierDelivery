@@ -251,7 +251,7 @@ class CourierLoadingScanViewModel(
                     resourceProvider.getEmptyAddress(),
                     accepted
                 )
-                _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
+                _beepEvent.value = CourierLoadingScanBeepState.UnknownQR
             }
             CourierLoadingScanBoxData.ScannerReady ->
                 if (scanProcess.count > 0) _isEnableBottomState.value = true

@@ -55,8 +55,7 @@ class CourierUnloadingScanViewModel(
     val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogConfirmScoreInfo
 
-    private val _beepEvent =
-        SingleLiveEvent<CourierUnloadingScanBeepState>()
+    private val _beepEvent = SingleLiveEvent<CourierUnloadingScanBeepState>()
     val beepEvent: LiveData<CourierUnloadingScanBeepState>
         get() = _beepEvent
 
