@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextPaint
+import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
@@ -33,8 +34,11 @@ import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.courieragreement.CourierAgreementFragment
+import ru.wb.go.ui.courieragreement.CourierAgreementFragment.Companion.VALUE_RESULT_KEY
 import ru.wb.go.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
+import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
@@ -43,10 +47,6 @@ import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.time.DateTimeFormatter
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
-import android.text.TextUtils
-import ru.wb.go.ui.courieragreement.CourierAgreementFragment
-import ru.wb.go.ui.courieragreement.CourierAgreementFragment.Companion.VALUE_RESULT_KEY
-import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 
 
 class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
@@ -220,15 +220,15 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     )
 
     private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
-        surName = binding.surname.text.toString(),
-        firstName = binding.firstName.text.toString(),
-        middleName = binding.middleName.text.toString(),
-        inn = binding.inn.text.toString(),
-        passportSeries = binding.passportSeries.text.toString(),
-        passportNumber = binding.passportNumber.text.toString(),
-        passportDateOfIssue = binding.passportDateOfIssue.text.toString(),
-        passportIssuedBy = binding.passportIssuedBy.text.toString(),
-        passportDepartmentCode = binding.passportDepartmentCode.text.toString(),
+        surName = binding.surname.text.toString().trim(),
+        firstName = binding.firstName.text.toString().trim(),
+        middleName = binding.middleName.text.toString().trim(),
+        inn = binding.inn.text.toString().trim(),
+        passportSeries = binding.passportSeries.text.toString().trim(),
+        passportNumber = binding.passportNumber.text.toString().trim(),
+        passportDateOfIssue = binding.passportDateOfIssue.text.toString().trim(),
+        passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
+        passportDepartmentCode = binding.passportDepartmentCode.text.toString().trim(),
     )
 
     private fun dateSelect(view: View, dateText: EditText) {

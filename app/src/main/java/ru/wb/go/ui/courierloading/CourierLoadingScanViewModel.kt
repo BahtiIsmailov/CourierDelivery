@@ -281,6 +281,7 @@ class CourierLoadingScanViewModel(
             "confirmLoadingBoxesComplete",
             "loading box: " + courierCompleteData.countBox
         )
+        onCleared()
         _progressEvent.value = CourierLoadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToStartDelivery(
             courierCompleteData.amount,
