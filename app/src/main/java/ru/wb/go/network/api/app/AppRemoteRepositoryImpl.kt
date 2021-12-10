@@ -236,11 +236,16 @@ class AppRemoteRepositoryImpl(
                 )
             courierTaskStatusesIntransitRequest.add(courierTaskStatusIntransitRequest)
         }
+
+        val fromBoxCount = courierTaskStatusesIntransitRequest.size
+        val unloadingBoxCount = courierTaskStatusesIntransitRequest.filter { it.deliveredAt.isNullOrEmpty() }.size
+        val loadingBoxCount = courierTaskStatusesIntransitRequest.filter { it.deliveredAt != null }.size
+
         return remote.taskStatusesIntransit(
             apiVersion(),
             taskID,
             courierTaskStatusesIntransitRequest
-        ).compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesIntransit"))
+        ).compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesIntransit " + "fromBoxCount " + fromBoxCount + " unloadingBoxCount " + unloadingBoxCount + " loadingBoxCount " + loadingBoxCount))
     }
 
     override fun taskStatusesEnd(taskID: String): Completable {

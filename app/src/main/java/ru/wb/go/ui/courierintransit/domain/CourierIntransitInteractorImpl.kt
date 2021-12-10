@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierintransit.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE
@@ -77,6 +76,8 @@ class CourierIntransitInteractorImpl(
     override fun completeDelivery(): Single<CompleteDeliveryResult> {
         val notUnloadingBoxes = readNotUnloadingBoxes()
         val loadingConvertBoxes = convertToCourierTaskStatusesIntransitEntity(notUnloadingBoxes)
+
+
         return sendIntransitBoxes(loadingConvertBoxes)
             .andThen(taskToEnd())
             .andThen(getCompleteDeliveryResult())
@@ -91,17 +92,20 @@ class CourierIntransitInteractorImpl(
     }
 
     private fun sendIntransitBoxes(intransitBoxes: List<CourierTaskStatusesIntransitEntity>) =
-        if (intransitBoxes.isEmpty()) {
-            // TODO: 24.09.2021 выключить для тестирования
-            //Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-            Completable.complete()
-        } else {
-            taskId().flatMapCompletable { taskId ->
-                // TODO: 24.09.2021 выключить для тестирования
-                // Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-                taskStatusesIntransit(taskId, intransitBoxes)
-            }
-        }
+//        if (intransitBoxes.isEmpty()) {
+//            // TODO: 24.09.2021 выключить для тестирования
+//            //Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
+//            Completable.complete()
+//        } else {
+//            taskId().flatMapCompletable { taskId ->
+//                // TODO: 24.09.2021 выключить для тестирования
+//                // Completable.timer(2, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
+//                taskStatusesIntransit(taskId, intransitBoxes)
+//            }
+//        }
+
+        // TODO: 24.09.2021 для тестирования (всегда отправляем коробки на бэк)
+        taskId().flatMapCompletable { taskId -> taskStatusesIntransit(taskId, intransitBoxes) }
 
     private fun taskToEnd() = taskId().flatMapCompletable {
         // TODO: 24.09.2021 выключить для тестирования

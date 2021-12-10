@@ -61,7 +61,7 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult> {
+    override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult> {
         return courierLocalRepository.readUnloadingBoxCounter(officeId)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
@@ -71,7 +71,7 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun getUnloadingCounterBox(officeId: Int): Single<CourierUnloadingBoxCounterResult> {
+    private fun getUnloadingCounterBox(officeId: Int): Single<CourierUnloadingBoxScoreResult> {
         return courierLocalRepository.observeUnloadingBoxCounter(officeId).firstOrError()
     }
 
@@ -169,13 +169,21 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
-    override fun confirmUnloading(officeId: Int): Completable {
+    override fun confirmUnloading(officeId: Int): Single<CourierBoxScoreResult> {
         insertVisitedAtOffice(officeId, false)
         val notUnloadingBoxes = readNotUnloadingBoxes()
         val loadingConvertBoxes = convertToCourierTaskStatusesIntransitEntity(notUnloadingBoxes)
         val taskId = taskId()
+
+        // TODO: 10.12.2021 для отладки
+        val unloadingBoxCount = loadingConvertBoxes.filter { it.deliveredAt.isNullOrEmpty() }.size
+        val loadingBoxCount = loadingConvertBoxes.filter { it.deliveredAt != null }.size
+        val fromBoxCount = loadingConvertBoxes.size
+        val result = CourierBoxScoreResult(unloadingBoxCount, loadingBoxCount, fromBoxCount)
+
         return taskStatusesIntransit(loadingConvertBoxes, taskId)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+            .andThen(Single.just(result))
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     private fun insertVisitedAtOffice(officeId: Int, isUnloaded: Boolean) {
@@ -226,7 +234,9 @@ data class ParseQrCode(val code: String, val dstOfficeId: Int)
 
 data class CourierUnloadingInitLastBoxResult(val id: String, val address: String)
 
-data class CourierUnloadingBoxCounterResult(val unloadedCount: Int, val fromCount: Int)
+data class CourierUnloadingBoxScoreResult(val unloadedCount: Int, val fromCount: Int)
+
+data class CourierBoxScoreResult(val unloadedCount: Int, val loadedCount: Int, val fromCount: Int)
 
 data class CourierUnloadingLastBoxResult(
     val id: String,

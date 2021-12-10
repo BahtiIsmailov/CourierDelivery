@@ -5,9 +5,14 @@ import org.json.JSONException
 import org.json.JSONObject
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.TimeManager
 import java.util.*
 
-class YandexMetricManagerImpl(val deviceManager: DeviceManager, val tokenManager: TokenManager) :
+class YandexMetricManagerImpl(
+    val deviceManager: DeviceManager,
+    val tokenManager: TokenManager,
+    val timeManager: TimeManager
+) :
     YandexMetricManager {
 
     override fun onTechErrorLog(screen: String, method: String, message: String) {
@@ -23,7 +28,7 @@ class YandexMetricManagerImpl(val deviceManager: DeviceManager, val tokenManager
     }
 
     private fun split(method: String, message: String): String {
-        return deviceManager.deviceId + SPACE_DIVIDER + tokenManager.wbUserID() + SPACE_DIVIDER + method + SPACE_DIVIDER + message
+        return deviceManager.deviceId + SPACE_DIVIDER + tokenManager.wbUserID() + SPACE_DIVIDER + method + SPACE_DIVIDER + message + SPACE_DIVIDER + timeManager.getLocalTime()
     }
 
     private fun sendTechReportEvent(eventBody: String) {

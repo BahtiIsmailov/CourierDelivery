@@ -9,7 +9,7 @@ import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.db.entity.courierlocal.*
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
 interface CourierLocalRepository {
@@ -92,9 +92,9 @@ interface CourierLocalRepository {
 
     fun deleteAllVisitedOffices()
 
-    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult>
+    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult>
 
-    fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxCounterResult>
+    fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxScoreResult>
 
     fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>>
 

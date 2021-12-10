@@ -157,6 +157,13 @@ class CourierIntransitViewModel(
                     }
                     CourierIntransitScanOfficeData.UnknownOffice -> {
                         onTechEventLog("observeOfficeIdScanProcess", "UnknownOffice")
+                        onStopScanner()
+                        _navigateToErrorDialog.value = NavigateToDialogInfo(
+                            DialogInfoStyle.ERROR.ordinal,
+                            resourceProvider.getGenericServiceTitleError(),
+                            "QR код офиса не распознан",
+                            resourceProvider.getGenericServiceButtonError()
+                        )
                         _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownOffice
                     }
                 }
@@ -387,6 +394,7 @@ class CourierIntransitViewModel(
     }
 
     fun onErrorDialogConfirmClick() {
+        onStartScanner()
         _isEnableState.value = true
     }
 

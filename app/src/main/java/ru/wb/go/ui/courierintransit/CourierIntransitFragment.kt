@@ -54,6 +54,7 @@ class CourierIntransitFragment : Fragment() {
 
     private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
+    private var isDialogActive: Boolean = false
 
     companion object {
         const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
@@ -89,6 +90,7 @@ class CourierIntransitFragment : Fragment() {
 
         setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = true
                 viewModel.onErrorDialogConfirmClick()
             }
         }
@@ -122,6 +124,7 @@ class CourierIntransitFragment : Fragment() {
         }
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
+            isDialogActive = true
             showDialogError(it.type, it.title, it.message, it.button)
         }
 
@@ -358,7 +361,7 @@ class CourierIntransitFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.onStartScanner()
+        if (!isDialogActive) viewModel.onStartScanner()
     }
 
     override fun onStop() {

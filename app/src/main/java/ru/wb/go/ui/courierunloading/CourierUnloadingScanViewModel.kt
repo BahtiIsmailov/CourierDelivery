@@ -137,26 +137,29 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onCancelScoreUnloadingClick() {
-        onTechEventLog("onCancelUnloadingClick")
+        onTechEventLog("onCancelScoreUnloadingClick")
         _isEnableStateEvent.value = true
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         onStartScanner()
     }
 
     fun onConfirmScoreUnloadingClick() {
-        onTechEventLog("onConfirmUnloadingClick")
+        onTechEventLog("onConfirmScoreUnloadingClick")
         confirmUnloading()
     }
 
-    private fun confirmUnloading() {
+    private fun confirmUnloading() { //fromCount: Int, unloadedCount: Int
         addSubscription(
             interactor.confirmUnloading(parameters.officeId)
-                .subscribe({ confirmUnloadingComplete() }, { confirmUnloadingError(it) })
+                .subscribe({ confirmUnloadingComplete(it) }, { confirmUnloadingError(it) })
         )
     }
 
-    private fun confirmUnloadingComplete() {
-        onTechEventLog("confirmUnloadingComplete")
+    private fun confirmUnloadingComplete(courierBoxScoreResult: CourierBoxScoreResult) {
+        onTechEventLog(
+            "confirmUnloadingComplete",
+            "fromCount " + courierBoxScoreResult.fromCount + " unloadedCount " + courierBoxScoreResult.unloadedCount + " loadedCount " + courierBoxScoreResult.loadedCount
+        )
         interactor.confirmUnloadingComplete(parameters.officeId)
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
@@ -283,7 +286,7 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    private fun showUnloadingScoreDialog(it: CourierUnloadingBoxCounterResult) {
+    private fun showUnloadingScoreDialog(it: CourierUnloadingBoxScoreResult) {
         _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getUnloadingDialogTitle(),

@@ -12,7 +12,7 @@ import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.db.entity.courierlocal.*
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxCounterResult
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
 class CourierLocalRepositoryImpl(
@@ -155,11 +155,11 @@ class CourierLocalRepositoryImpl(
         courierLoadingBoxDao.deleteAllVisitedOffices()
     }
 
-    override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult> {
+    override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult> {
         return courierLoadingBoxDao.readUnloadingBoxCounter(officeId)
     }
 
-    override fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxCounterResult> {
+    override fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxScoreResult> {
         return courierLoadingBoxDao.observeCounterBox(officeId)
     }
 

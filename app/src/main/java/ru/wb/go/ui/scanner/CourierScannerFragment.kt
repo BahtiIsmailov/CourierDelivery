@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -82,6 +83,7 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     private fun initScanner() {
         scannerView = ZXingScannerZoomView(context)
+        scannerView.setFormats(listOf(BarcodeFormat.QR_CODE))
         scannerView.setBorderColor(Color.WHITE)
         scannerView.setLaserEnabled(true)
         scannerView.setIsBorderCornerRounded(true)
