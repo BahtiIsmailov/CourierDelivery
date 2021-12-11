@@ -54,6 +54,10 @@ class CourierOrdersViewModel(
     val navigationState: LiveData<CourierOrdersNavigationState>
         get() = _navigationState
 
+    private val _holdState = MutableLiveData<Boolean>()
+    val holdState: LiveData<Boolean>
+        get() = _holdState
+
     private var copyCourierOrdersEntity = mutableListOf<CourierOrderEntity>()
 
     init {
@@ -78,7 +82,17 @@ class CourierOrdersViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
+    private fun lockState() {
+        _holdState.value = true
+    }
+
+    private fun unlockState() {
+        _holdState.value = false
+    }
+
     private fun initOrders() {
+        lockState()
+        showProgress()
         addSubscription(interactor.orders(parameters.currentWarehouseId)
             .doOnSuccess { copyCourierOrdersEntity = it.toMutableList() }
             .flatMap { orders ->
@@ -118,6 +132,7 @@ class CourierOrdersViewModel(
         )
         _progressState.value = CourierOrdersProgressState.Complete
         _orders.value = courierOrderUIListState
+        unlockState()
     }
 
     private fun ordersError(throwable: Throwable) {
@@ -145,6 +160,7 @@ class CourierOrdersViewModel(
         _navigateToDialogInfo.value = message
         _orders.value = CourierOrdersState.Empty(message.title)
         progressComplete()
+        unlockState()
     }
 
     private fun progressComplete() {
@@ -153,6 +169,7 @@ class CourierOrdersViewModel(
 
     fun onItemClick(idView: Int) {
         onTechEventLog("onItemClick")
+        lockState()
         val courierOrderEntity = copyCourierOrdersEntity[idView]
         addSubscription(
             interactor.clearAndSaveSelectedOrder(courierOrderEntity)
@@ -164,6 +181,7 @@ class CourierOrdersViewModel(
 
     private fun clearAndSaveSelectedOrderComplete(idView: Int) {
         onTechEventLog("clearAndSaveSelectedOrderComplete")
+        unlockState()
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(
                 parameters.address,
@@ -173,10 +191,10 @@ class CourierOrdersViewModel(
 
     private fun clearAndSaveSelectedOrderError(throwable: Throwable) {
         onTechErrorLog("ordersError", throwable)
+        unlockState()
     }
 
     fun onUpdateClick() {
-        showProgress()
         initOrders()
     }
 
@@ -189,7 +207,7 @@ class CourierOrdersViewModel(
     }
 
     companion object {
-        const val SCREEN_TAG = "CourierUnloadingBoxes"
+        const val SCREEN_TAG = "CourierOrders"
     }
 
     data class Label(val label: String)

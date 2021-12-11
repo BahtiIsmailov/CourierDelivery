@@ -221,7 +221,7 @@ class CourierOrderDetailsViewModel(
     }
 
     companion object {
-        const val SCREEN_TAG = "CourierUnloadingBoxes"
+        const val SCREEN_TAG = "CourierOrderDetails"
     }
 
     data class Label(val label: String)

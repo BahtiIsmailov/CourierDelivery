@@ -39,7 +39,7 @@ class CourierStartDeliveryViewModel(
     }
 
     companion object {
-        const val SCREEN_TAG = "CourierUnloadingBoxes"
+        const val SCREEN_TAG = "CourierStartDelivery"
     }
 
     object NavigateToWarehouse

@@ -11,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.databinding.CourierOrderTimerFragmentBinding
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_POSITIVE_KEY
-import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_RESULT_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT_TAG
@@ -28,6 +28,10 @@ class CourierOrderTimerFragment : Fragment() {
     private lateinit var _binding: CourierOrderTimerFragmentBinding
     private val binding get() = _binding
     private lateinit var progressDialog: AlertDialog
+
+    companion object {
+        const val DIALOG_REFUSE_INFO_TAG = "DIALOG_REFUSE_INFO_TAG"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,9 +56,12 @@ class CourierOrderTimerFragment : Fragment() {
             }
         }
 
-        setFragmentResultListener(DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_REFUSE_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onRefuseOrderConfirmClick()
+            }
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
+                viewModel.onRefuseOrderCancelClick()
             }
         }
     }
@@ -114,6 +121,13 @@ class CourierOrderTimerFragment : Fragment() {
             }
         }
 
+        viewModel.holdState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> binding.holdLayout.visibility = View.VISIBLE
+                false -> binding.holdLayout.visibility = View.GONE
+            }
+        }
+
     }
 
     private fun showDialogTimeIsOut(
@@ -138,6 +152,7 @@ class CourierOrderTimerFragment : Fragment() {
         negativeButtonName: String
     ) {
         DialogConfirmInfoFragment.newInstance(
+            DIALOG_REFUSE_INFO_TAG,
             type = style,
             title = title,
             message = message,

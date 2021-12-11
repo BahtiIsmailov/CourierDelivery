@@ -48,6 +48,9 @@ class CourierOrderTimerViewModel(
     val progressState: LiveData<CourierOrderTimerProgressState>
         get() = _progressState
 
+    private val _holdState = MutableLiveData<Boolean>()
+    val holdState: LiveData<Boolean>
+        get() = _holdState
 
     init {
         onTechEventLog("init")
@@ -67,6 +70,14 @@ class CourierOrderTimerViewModel(
                     }
                 )
         )
+    }
+
+    private fun lockState() {
+        _holdState.value = true
+    }
+
+    private fun unlockState() {
+        _holdState.value = false
     }
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
@@ -115,6 +126,7 @@ class CourierOrderTimerViewModel(
     }
 
     fun onRefuseOrderClick() {
+        lockState()
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
@@ -125,24 +137,39 @@ class CourierOrderTimerViewModel(
     }
 
     fun iArrivedClick() {
+        lockState()
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
+        unlockState()
     }
 
     fun onReturnToListOrderClick() {
         onTechEventLog("onReturnToListOrderClick")
+        lockState()
         deleteTask()
     }
 
     fun onRefuseOrderConfirmClick() {
         onTechEventLog("onRefuseOrderConfirmClick")
+        lockState()
         deleteTask()
     }
 
+    fun onRefuseOrderCancelClick() {
+        unlockState()
+    }
+
     private fun deleteTask() {
-        addSubscription(interactor.deleteTask().subscribe(
-            { toWarehouse() }, {
-                onTechErrorLog("onHandleSignUpError", it)
-            })
+        addSubscription(interactor.deleteTask()
+            .subscribe(
+                {
+                    unlockState()
+                    toWarehouse()
+                },
+                {
+                    unlockState()
+                    onTechErrorLog("onHandleSignUpError", it)
+                }
+            )
         )
     }
 
@@ -177,7 +204,7 @@ class CourierOrderTimerViewModel(
     }
 
     companion object {
-        const val SCREEN_TAG = "CourierUnloadingBoxes"
+        const val SCREEN_TAG = "CourierOrderTimer"
     }
 
 }

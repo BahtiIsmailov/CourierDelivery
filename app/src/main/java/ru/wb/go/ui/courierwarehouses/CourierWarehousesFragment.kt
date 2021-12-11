@@ -128,6 +128,13 @@ class CourierWarehousesFragment : Fragment() {
             }
         }
 
+        viewModel.holdState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> binding.holdLayout.visibility = VISIBLE
+                false -> binding.holdLayout.visibility = GONE
+            }
+        }
+
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()

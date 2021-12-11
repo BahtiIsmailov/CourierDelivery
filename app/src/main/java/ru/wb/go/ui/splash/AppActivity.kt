@@ -451,7 +451,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
             R.id.couriersCompleteRegistrationFragment, R.id.courierWarehouseFragment,
-            R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment -> showExitDialog()
+            R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment,
+            R.id.courierOrderTimerFragment, R.id.courierStartDeliveryFragment -> showExitDialog()
             R.id.courierScannerLoadingScanFragment -> {
                 if (isLoadingCourierBox) showExitDialog() else super.onBackPressed()
             }

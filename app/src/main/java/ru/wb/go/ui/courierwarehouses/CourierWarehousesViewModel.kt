@@ -45,6 +45,10 @@ class CourierWarehousesViewModel(
     val progressState: LiveData<CourierWarehousesProgressState>
         get() = _progressState
 
+    private val _holdState = MutableLiveData<Boolean>()
+    val holdState: LiveData<Boolean>
+        get() = _holdState
+
     init {
         onTechEventLog("init", "init CourierWarehousesViewModel")
     }
@@ -88,6 +92,7 @@ class CourierWarehousesViewModel(
             is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
         }
     }
+
     private fun observeMapActionError(throwable: Throwable) {
         onTechErrorLog("observeMapActionError", throwable)
     }
@@ -98,8 +103,17 @@ class CourierWarehousesViewModel(
     }
 
     fun onUpdateClick() {
+        lockState()
         showProgress()
         getWarehouse()
+    }
+
+    private fun lockState() {
+        _holdState.value = true
+    }
+
+    private fun unlockState() {
+        _holdState.value = false
     }
 
     private fun getWarehouse() {
@@ -145,7 +159,6 @@ class CourierWarehousesViewModel(
         saveCoordinatePoints(coordinatePoints)
         saveMapMarkers(mapMarkers)
         interactor.mapState(CourierMapState.UpdateMyLocation)
-
     }
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
@@ -158,6 +171,7 @@ class CourierWarehousesViewModel(
         interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
         interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
         progressComplete()
+        unlockState()
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
@@ -187,6 +201,7 @@ class CourierWarehousesViewModel(
             _warehouses.value = CourierWarehouseItemState.Empty(message.title)
         }
         progressComplete()
+        unlockState()
     }
 
     private fun progressComplete() {
@@ -261,10 +276,12 @@ class CourierWarehousesViewModel(
             clearSubscription()
         }
         hideProgress()
+        unlockState()
     }
 
     fun onDetailClick(index: Int) {
         onTechEventLog("onDetailClick", "index $index")
+        lockState()
         showProgress()
         val oldEntity = warehouseEntities[index].copy()
         addSubscription(

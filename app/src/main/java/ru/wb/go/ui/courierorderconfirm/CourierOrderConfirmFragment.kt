@@ -111,6 +111,13 @@ class CourierOrderConfirmFragment : Fragment() {
             }
         }
 
+        viewModel.holdState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> binding.holdLayout.visibility = View.VISIBLE
+                false -> binding.holdLayout.visibility = View.GONE
+            }
+        }
+
     }
 
     private fun initListeners() {

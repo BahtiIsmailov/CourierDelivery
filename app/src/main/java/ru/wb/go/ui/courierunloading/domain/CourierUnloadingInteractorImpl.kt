@@ -96,7 +96,7 @@ class CourierUnloadingInteractorImpl(
 
     private fun observeUnloadingScan(officeId: Int): Observable<CourierUnloadingScanBoxData> {
         return scannerRepository.observeBarcodeScanned()
-            .doOnNext { LogUtils { logDebugApp("scannerRepository.observeBarcodeScanned() " + it) } }
+            .doOnNext { LogUtils { logDebugApp("CourierUnloadingInteractorImpl scannerRepository.observeBarcodeScanned() " + it) } }
             .map { parseQrCode(it) }
             .flatMap { boxDefinitionResult(it) }
             .compose(rxSchedulerFactory.applyObservableSchedulers())

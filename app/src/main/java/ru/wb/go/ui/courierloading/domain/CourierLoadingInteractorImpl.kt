@@ -185,6 +185,7 @@ class CourierLoadingInteractorImpl(
 
     private fun observeBoxDefinitionResult(): Observable<CourierBoxDefinitionResult> {
         return scannerRepository.observeBarcodeScanned()
+            .doOnNext { LogUtils { logDebugApp("CourierLoadingInteractorImpl scannerRepository.observeBarcodeScanned() " + it) } }
             .map { parseQrCode(it) }
             .flatMapSingle { boxDefinitionResult(it) }
     }

@@ -46,6 +46,9 @@ class CourierOrderConfirmViewModel(
     val progressState: LiveData<CourierOrderConfirmProgressState>
         get() = _progressState
 
+    private val _holdState = MutableLiveData<Boolean>()
+    val holdState: LiveData<Boolean>
+        get() = _holdState
 
     init {
         onTechEventLog("init")
@@ -64,7 +67,16 @@ class CourierOrderConfirmViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
+    private fun lockState() {
+        _holdState.value = true
+    }
+
+    private fun unlockState() {
+        _holdState.value = false
+    }
+
     private fun initOrder() {
+        lockState()
         addSubscription(
             interactor.observeOrderData()
                 .subscribe(
@@ -89,10 +101,12 @@ class CourierOrderConfirmViewModel(
                 coast = resourceProvider.getCoast(coast)
             )
         }
+        unlockState()
     }
 
     private fun initOrderInfoError(throwable: Throwable) {
         onTechErrorLog("initOrderInfoError", throwable)
+        unlockState()
     }
 
     private fun progressComplete() {
@@ -110,6 +124,7 @@ class CourierOrderConfirmViewModel(
 
     fun onConfirmOrderClick() {
         onTechEventLog("onConfirmOrderClick")
+        lockState()
         addSubscription(
             actionProgress()
                 .andThen(interactor.anchorTask())
@@ -128,11 +143,13 @@ class CourierOrderConfirmViewModel(
         onTechEventLog("anchorTaskComplete", "NavigateToTimer")
         _progressState.value = CourierOrderConfirmProgressState.ProgressComplete
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToTimer
+        unlockState()
     }
 
     private fun anchorTaskError(throwable: Throwable) {
         onTechErrorLog("anchorTaskError", throwable)
         courierWarehouseError(throwable)
+        unlockState()
     }
 
     fun refuseOrderConfirmClick() {
@@ -154,7 +171,7 @@ class CourierOrderConfirmViewModel(
     }
 
     companion object {
-        const val SCREEN_TAG = "CourierUnloadingBoxes"
+        const val SCREEN_TAG = "CourierOrderConfirm"
     }
 
 }

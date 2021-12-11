@@ -162,6 +162,13 @@ class CourierOrderFragment : Fragment() {
             }
         }
 
+        viewModel.holdState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> binding.holdLayout.visibility = VISIBLE
+                false -> binding.holdLayout.visibility = GONE
+            }
+        }
+
     }
 
     private fun showDialogInfo(

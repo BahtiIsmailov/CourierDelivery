@@ -90,7 +90,7 @@ class CourierIntransitFragment : Fragment() {
 
         setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                isDialogActive = true
+                isDialogActive = false
                 viewModel.onErrorDialogConfirmClick()
             }
         }
