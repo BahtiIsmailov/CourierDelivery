@@ -96,20 +96,20 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     private fun changeFieldObservables(): ArrayList<Observable<CourierBillingAccountDataUIAction>> {
         val changeTextObservables = ArrayList<Observable<CourierBillingAccountDataUIAction>>()
 
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.surnameLayout,
-                binding.surname,
-                CourierBillingAccountDataQueryType.SURNAME
-            )
-        )
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.innLayout,
-                binding.inn,
-                CourierBillingAccountDataQueryType.INN
-            )
-        )
+//        changeTextObservables.add(
+//            createFieldChangesObserver().initListener(
+//                binding.surnameLayout,
+//                binding.surname,
+//                CourierBillingAccountDataQueryType.SURNAME
+//            )
+//        )
+//        changeTextObservables.add(
+//            createFieldChangesObserver().initListener(
+//                binding.innLayout,
+//                binding.inn,
+//                CourierDataQueryType.INN
+//            )
+//        )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.accountLayout,
@@ -117,13 +117,13 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 CourierBillingAccountDataQueryType.ACCOUNT
             )
         )
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.bankLayout,
-                binding.bank,
-                CourierBillingAccountDataQueryType.BANK
-            )
-        )
+//        changeTextObservables.add(
+//            createFieldChangesObserver().initListener(
+//                binding.bankLayout,
+//                binding.bank,
+//                CourierBillingAccountDataQueryType.BANK
+//            )
+//        )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.bikLayout,
@@ -138,15 +138,15 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     }
 
     private fun getFormUserData() = mutableListOf(
-        CourierAccountData(
-            binding.surname.text.toString(),
-            CourierBillingAccountDataQueryType.SURNAME
-        ),
-        CourierAccountData(binding.inn.text.toString(), CourierBillingAccountDataQueryType.INN),
+//        CourierAccountData(
+//            binding.surname.text.toString(),
+//            CourierBillingAccountDataQueryType.SURNAME
+//        ),
+//        CourierAccountData(binding.inn.text.toString(), CourierDataQueryType.INN),
         CourierAccountData(
             binding.account.text.toString(), CourierBillingAccountDataQueryType.ACCOUNT
         ),
-        CourierAccountData(binding.bank.text.toString(), CourierBillingAccountDataQueryType.BANK),
+//        CourierAccountData(binding.bank.text.toString(), CourierBillingAccountDataQueryType.BANK),
         CourierAccountData(binding.bik.text.toString(), CourierBillingAccountDataQueryType.BIK)
     )
 
@@ -205,6 +205,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             binding.toolbarLayout.toolbarTitle.text = it
         }
 
+        viewModel.userDataState.observe(viewLifecycleOwner) {
+            binding.surname.setText(it.userName)
+            binding.inn.setText(it.userInn)
+        }
+
         viewModel.initUIState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierBillingAccountDataInitUIState.Create -> {
@@ -251,7 +256,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 is CourierBillingAccountDataUIState.Error -> {
                     val textLayout =
                         changeText.find { it.type == state.typeBillingAccount }?.textLayout
-                    textLayout?.error = getText(R.string.error)
+                    textLayout?.error = state.message//getText(R.string.error)
                 }
                 is CourierBillingAccountDataUIState.ErrorFocus -> {
                     changeText.find { it.type == state.typeBillingAccount }?.text?.let {

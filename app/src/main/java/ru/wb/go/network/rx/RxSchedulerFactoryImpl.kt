@@ -45,4 +45,13 @@ class RxSchedulerFactoryImpl : RxSchedulerFactory {
         }
     }
 
+    override fun <T> applyMaybeSchedulers(): MaybeTransformer<T, T> {
+        return MaybeTransformer { upstream: Maybe<T> ->
+            upstream
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+        }
+    }
+
 }

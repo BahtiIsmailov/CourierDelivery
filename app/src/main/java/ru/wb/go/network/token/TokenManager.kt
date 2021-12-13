@@ -9,6 +9,7 @@ interface TokenManager {
     fun bearerRefreshToken(): String
     fun refreshToken(): String
     fun userName(): String
+    fun userInn(): String
     fun userCompany(): String
     fun userCompanyId(): String
     fun userPhone() : String

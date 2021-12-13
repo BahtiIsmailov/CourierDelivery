@@ -31,6 +31,11 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return tokenResource().sub ?: ""
     }
 
+    // TODO: 09.12.2021 заменить на реальный токен
+    override fun userInn(): String {
+        return "928371627364"
+    }
+
     override fun userCompany(): String {
         return tokenResource().extra.company ?: ""
     }

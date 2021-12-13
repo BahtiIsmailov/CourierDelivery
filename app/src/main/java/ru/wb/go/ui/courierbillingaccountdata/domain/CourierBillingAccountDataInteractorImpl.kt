@@ -32,4 +32,9 @@ class CourierBillingAccountDataInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun getBank(bic: String): Maybe<BankEntity> {
+        return appRemoteRepository.getBank(bic)
+            .compose(rxSchedulerFactory.applyMaybeSchedulers())
+    }
+
 }

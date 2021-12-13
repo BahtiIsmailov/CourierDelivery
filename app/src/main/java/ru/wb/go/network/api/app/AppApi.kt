@@ -1,6 +1,7 @@
 package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CarNumberRequest
@@ -259,10 +260,10 @@ interface AppApi {
     ): Completable
 
     @GET("{version}/banks")
-    fun getBanks(
+    fun getBank(
         @Path(value = "version", encoded = true) version: String,
         @Query("bic") bic: String
-    ): Single<BankResponse>
+    ): Maybe<BankResponse>
 
     @GET("{version}/me/bank-accounts")
     fun getBankAccounts(

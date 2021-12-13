@@ -1,6 +1,7 @@
 package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -131,7 +132,7 @@ interface AppRemoteRepository {
 
     fun payments(paymentEntity: PaymentEntity): Completable
 
-    fun getBanks(bic: String): Single<BankEntity>
+    fun getBank(bic: String): Maybe<BankEntity>
 
     fun getBankAccounts(): Single<AccountsEntity>
 

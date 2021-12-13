@@ -7,5 +7,6 @@ interface RxSchedulerFactory {
     fun <T> applySingleSchedulers(): SingleTransformer<T, T>
     fun <T> applyObservableSchedulers(): ObservableTransformer<T, T>
     fun <T> applyFlowableSchedulers(): FlowableTransformer<T, T>
+    fun <T> applyMaybeSchedulers(): MaybeTransformer<T, T>
     fun applyCompletableSchedulers(): CompletableTransformer
 }

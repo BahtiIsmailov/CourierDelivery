@@ -1,6 +1,7 @@
 package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.Optional
@@ -768,8 +769,8 @@ class AppRemoteRepositoryImpl(
         return remote.payments(apiVersion(), paymentRequest)
     }
 
-    override fun getBanks(bic: String): Single<BankEntity> {
-        return remote.getBanks(apiVersion(), bic)
+    override fun getBank(bic: String): Maybe<BankEntity> {
+        return remote.getBank(apiVersion(), bic)
             .map { with(it) { BankEntity(id, it.bic, name, correspondentAccount, isDeleted) } }
     }
 

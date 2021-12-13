@@ -37,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:text="Данные получателя"
                     android:textStyle="bold" />
 
@@ -49,7 +49,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
                     android:layout_marginTop="24dp"
-                    app:errorEnabled="true"
+                    android:enabled="false"
+                    app:errorEnabled="false"
                     app:errorIconDrawable="@null"
                     app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
                     tools:ignore="MissingConstraints">
@@ -73,7 +74,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
                     android:layout_marginTop="18dp"
-                    app:errorEnabled="true"
+                    android:enabled="false"
+                    app:errorEnabled="false"
                     app:errorIconDrawable="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="18dp"
                     android:text="Банковские реквизиты"
                     android:textStyle="bold" />
 
@@ -134,7 +136,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="18dp"
                     app:errorEnabled="true"
                     app:errorIconDrawable="@null"
                     app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
@@ -159,8 +161,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="24dp"
-                    app:errorEnabled="true"
+                    android:layout_marginTop="18dp"
+                    android:enabled="false"
+                    app:errorEnabled="false"
                     app:errorIconDrawable="@null"
                     app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
                     tools:ignore="MissingConstraints">
