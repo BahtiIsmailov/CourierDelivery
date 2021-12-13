@@ -296,6 +296,7 @@ class CourierBillingAccountSelectorFragment :
                         findNavController().navigate(
                             CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
                                 CourierBillingAccountDataAmountParameters(
+                                    state.inn,
                                     state.account,
                                     state.balance
                                 )
@@ -306,6 +307,7 @@ class CourierBillingAccountSelectorFragment :
                         findNavController().navigate(
                             CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
                                 CourierBillingAccountDataAmountParameters(
+                                    state.inn,
                                     state.account,
                                     state.balance
                                 )
@@ -359,6 +361,7 @@ class CourierBillingAccountSelectorFragment :
 data class CourierData(val text: String, val type: CourierBillingAccountSelectorQueryType)
 
 @Parcelize
-data class CourierBillingAccountSelectorAmountParameters(val balance: Int) : Parcelable
+data class CourierBillingAccountSelectorAmountParameters(val inn: String, val balance: Int) :
+    Parcelable
 
 

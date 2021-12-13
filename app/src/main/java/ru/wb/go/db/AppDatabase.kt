@@ -16,7 +16,6 @@ import ru.wb.go.db.entity.flight.FlightEntity
 import ru.wb.go.db.entity.flight.FlightOfficeEntity
 import ru.wb.go.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
 import ru.wb.go.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
-import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 
 @Database(
     entities = [
@@ -25,7 +24,6 @@ import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
         CourierOrderDstOfficeLocalEntity::class,
         CourierOrderVisitedOfficeLocalEntity::class,
         CourierBoxEntity::class,
-        CourierBillingAccountEntity::class,
         FlightEntity::class,
         FlightOfficeEntity::class,
         WarehouseMatchingBoxEntity::class,
@@ -40,7 +38,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val courierWarehouseDao: CourierWarehouseDao
     abstract val courierOrderDao: CourierOrderDao
     abstract val courierBoxDao: CourierBoxDao
-    abstract val courierAccountDao: CourierAccountDao
     abstract val flightDao: FlightDao
     abstract val flightMatchingDao: FlightBoxDao
     abstract val warehouseMatchingBoxDao: WarehouseMatchingBoxDao

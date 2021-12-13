@@ -11,9 +11,10 @@ sealed class CourierBillingNavigationState {
 
     object NavigateToBack : CourierBillingNavigationState()
 
-    data class NavigateToAccountSelector(val balance: Int) : CourierBillingNavigationState()
+    data class NavigateToAccountSelector(val inn: String, val balance: Int) :
+        CourierBillingNavigationState()
 
-    data class NavigateToAccountCreate(val account: String, val balance: Int) :
+    data class NavigateToAccountCreate(val inn: String, val account: String, val balance: Int) :
         CourierBillingNavigationState()
 
 }

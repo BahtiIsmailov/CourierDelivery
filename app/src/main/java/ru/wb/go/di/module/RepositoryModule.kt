@@ -70,14 +70,12 @@ val deliveryRepositoryModule = module {
     fun provideCourierLocalRepository(
         courierWarehouseDao: CourierWarehouseDao,
         courierOrderDao: CourierOrderDao,
-        courierBoxDao: CourierBoxDao,
-        courierAccountDao: CourierAccountDao
+        courierBoxDao: CourierBoxDao
     ): CourierLocalRepository {
         return CourierLocalRepositoryImpl(
             courierWarehouseDao,
             courierOrderDao,
-            courierBoxDao,
-            courierAccountDao
+            courierBoxDao
         )
     }
 
@@ -109,7 +107,7 @@ val deliveryRepositoryModule = module {
     single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideLocalRepository(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierLocalRepository(get(), get(), get(), get()) }
+    single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }
     single { provideIntransitTimeRepository() }

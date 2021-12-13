@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
-import ru.wb.go.network.api.app.entity.PaymentEntity
+import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -63,7 +62,7 @@ class CourierBillingAccountSelectorViewModel(
         get() = _balanceChangeState
 
     private var localBalance: Int = 0
-    private var copyCourierBillingAccountEntity = mutableListOf<CourierBillingAccountEntity>()
+    private var copyCourierBillingAccountEntity = mutableListOf<AccountEntity>()
     private var copyCourierBillingAccountSelectorAdapterItems =
         mutableListOf<CourierBillingAccountSelectorAdapterItem>()
 
@@ -101,7 +100,7 @@ class CourierBillingAccountSelectorViewModel(
                 it.forEach {
                     list.add(
                         CourierBillingAccountSelectorAdapterItem.Edit(
-                            resourceProvider.getFormatAccount(it.bank, it.account)
+                            resourceProvider.getFormatAccount(it.name, it.correspondentAccount)
                         )
                     )
                 }
@@ -225,37 +224,39 @@ class CourierBillingAccountSelectorViewModel(
         state is CourierBillingAccountSelectorUIState.Complete
 
     fun onNextCompleteClick(accountId: Long, amount: String) {
-        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
-        val amountFromText = amountFromString(amount)
-        val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
-        val paymentEntity = with(courierBillingAccountEntity) {
-            PaymentEntity(
-                amount = amountFromText,
-                recipientBankName = bank,
-                recipientName = "$surName $surName $surName",
-                recipientBankBik = bik,
-                recipientCorrespondentAccount = corAccount,
-                recipientAccount = account,
-                recipientInn = innBank,
-                recipientKpp = kpp
-            )
-        }
-        addSubscription(
-            interactor.payments(paymentEntity).subscribe(
-                { paymentsComplete(amountFromText) },
-                { paymentsError(it) })
-        )
+//        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
+//        val amountFromText = amountFromString(amount)
+//        val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
+//        val paymentEntity = with(courierBillingAccountEntity) {
+//            PaymentEntity(
+//                amount = amountFromText,
+//                recipientBankName = bank,
+//                recipientName = "$surName $surName $surName",
+//                recipientBankBik = bik,
+//                recipientCorrespondentAccount = corAccount,
+//                recipientAccount = account,
+//                recipientInn = innBank,
+//                recipientKpp = kpp
+//            )
+//        }
+//        addSubscription(
+//            interactor.payments(paymentEntity).subscribe(
+//                { paymentsComplete(amountFromText) },
+//                { paymentsError(it) })
+//        )
     }
 
     fun onEditAccountClick(idView: Int) {
         if (idView == copyCourierBillingAccountEntity.size) {
             _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
+                parameters.inn,
                 "",
                 localBalance
             )
         } else {
-            val account = copyCourierBillingAccountEntity[idView].account
+            val account = copyCourierBillingAccountEntity[idView].correspondentAccount
             _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
+                parameters.inn,
                 account,
                 localBalance
             )

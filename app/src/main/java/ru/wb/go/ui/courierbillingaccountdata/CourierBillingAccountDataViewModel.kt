@@ -5,9 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
+import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
@@ -97,17 +99,17 @@ class CourierBillingAccountDataViewModel(
             if (parameters.account.isEmpty()) resourceProvider.getTitleCreate() else resourceProvider.getTitleEdit()
     }
 
-    private fun initStateField() {
-        if (parameters.account.isEmpty()) _initUIState.value =
-            CourierBillingAccountDataInitUIState.Create else {
-            addSubscription(
-                interactor.getAccount(parameters.account)
-                    .subscribe(
-                        { _initUIState.value = CourierBillingAccountDataInitUIState.Edit(it) },
-                        { LogUtils { logDebugApp(it.toString()) } }) //_initUIState.value =CourierBillingAccountDataInitUIState.Create
-            )
-        }
-    }
+//    private fun initStateField() {
+//        if (parameters.account.isEmpty()) _initUIState.value =
+//            CourierBillingAccountDataInitUIState.Create else {
+//            addSubscription(
+//                interactor.getAccount(parameters.account)
+//                    .subscribe(
+//                        { _initUIState.value = CourierBillingAccountDataInitUIState.Edit(it) },
+//                        { LogUtils { logDebugApp(it.toString()) } }) //_initUIState.value =CourierBillingAccountDataInitUIState.Create
+//            )
+//        }
+//    }
 
     private fun predicateMessageChecker(
         predicate: (String) -> String,
@@ -302,14 +304,14 @@ class CourierBillingAccountDataViewModel(
 
     }
 
-    fun onSaveClick(courierDocumentsEntity: CourierBillingAccountEntity) {
-        saveAccount(courierDocumentsEntity)
+    fun onSaveClick(accountEntity: CourierBillingAccountEntity) {
+        saveAccount(accountEntity)
     }
 
-    private fun saveAccount(courierDocumentsEntity: CourierBillingAccountEntity) {
+    private fun saveAccount(accountEntity: CourierBillingAccountEntity) {
         _loaderState.value = CourierBillingAccountDataUILoaderState.Progress
         addSubscription(
-            interactor.saveAccount(courierDocumentsEntity).subscribe(
+            interactor.saveAccountRemote(accountEntity).subscribe(
                 { saveAccountComplete() },
                 { saveAccountError(it) })
         )
@@ -318,7 +320,10 @@ class CourierBillingAccountDataViewModel(
     private fun saveAccountComplete() {
         _loaderState.value = CourierBillingAccountDataUILoaderState.Disable
         _navigationEvent.value =
-            CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.amount)
+            CourierBillingAccountDataNavAction.NavigateToAccountSelector(
+                parameters.inn,
+                parameters.amount
+            )
     }
 
     private fun saveAccountError(throwable: Throwable) {

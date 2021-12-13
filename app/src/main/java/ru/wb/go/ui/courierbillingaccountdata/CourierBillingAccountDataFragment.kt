@@ -1,8 +1,11 @@
 package ru.wb.go.ui.courierbillingaccountdata
 
 import android.app.Activity
+import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -11,6 +14,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ScrollView
+import androidx.core.content.res.getDrawableOrThrow
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
@@ -68,6 +72,9 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         initListener()
         initInputMethod()
         initObservers()
+
+        binding.bikLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.bikLayout.endIconDrawable = requireContext().getProgressBarDrawable()
     }
 
     private fun initView() {
@@ -82,7 +89,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
         viewModel.onFormChanges(changeFieldObservables())
         binding.removeAccount.setOnClickListener { viewModel.onRemoveAccountClick() }
-        binding.saveChangeAccount.setOnClickListener { viewModel.onSaveChangeAccountClick(getCourierBillingAccountEntity()) }
+        binding.saveChangeAccount.setOnClickListener {
+            viewModel.onSaveChangeAccountClick(
+                getCourierBillingAccountEntity()
+            )
+        }
     }
 
     private val changeText = ArrayList<ViewChanges>()
@@ -151,11 +162,9 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     )
 
     private fun getCourierBillingAccountEntity() = CourierBillingAccountEntity(
-        surName = binding.surname.text.toString(),
-        inn = binding.inn.text.toString(),
-        account = binding.account.text.toString(),
-        bank = binding.bank.text.toString(),
-        bik = binding.bik.text.toString(),
+        bic = binding.bik.text.toString(),
+        name = binding.bank.text.toString(),
+        correspondentAccount = binding.account.text.toString(),
     )
 
     fun interface ClickEventInterface {
@@ -220,11 +229,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                     binding.save.visibility = GONE
                     binding.editAccountLayout.visibility = VISIBLE
                     with(it.field) {
-                        binding.surname.setText(surName)
+                        binding.surname.setText(userName)
                         binding.inn.setText(inn)
                         binding.account.setText(account)
-                        binding.bank.setText(bank)
                         binding.bik.setText(bik)
+                        binding.bank.setText(bank)
                     }
                 }
             }
@@ -271,13 +280,26 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             }
         }
 
+
+
+//        viewModel.bicProgressState.observe(viewLifecycleOwner) {
+//            binding.bank.setText(it)
+//        }
+
+        viewModel.bankNameState.observe(viewLifecycleOwner) {
+            binding.bank.setText(it)
+        }
+
         viewModel.navigationEvent.observe(viewLifecycleOwner,
             { state ->
                 when (state) {
                     is CourierBillingAccountDataNavAction.NavigateToAccountSelector -> {
                         findNavController().navigate(
                             CourierBillingAccountDataFragmentDirections.actionCourierBillingAccountDataFragmentToCourierBillingAccountSelectorFragment(
-                                CourierBillingAccountSelectorAmountParameters(state.balance)
+                                CourierBillingAccountSelectorAmountParameters(
+                                    state.inn,
+                                    state.balance
+                                )
                             )
                         )
                     }
@@ -302,6 +324,17 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             })
     }
 
+    fun Context.getProgressBarDrawable(): Drawable {
+        val value = TypedValue()
+        theme.resolveAttribute(android.R.attr.progressBarStyleSmall, value, false)
+        val progressBarStyle = value.data
+        val attributes = intArrayOf(android.R.attr.indeterminateDrawable)
+        val array = obtainStyledAttributes(progressBarStyle, attributes)
+        val drawable = array.getDrawableOrThrow(0)
+        array.recycle()
+        return drawable
+    }
+
     private fun scrollToViewTop(scrollView: ScrollView, childView: View) {
         val delay: Long = 100
         scrollView.postDelayed({ scrollView.smoothScrollTo(0, childView.top) }, delay)
@@ -322,5 +355,8 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 data class CourierAccountData(val text: String, val type: CourierBillingAccountDataQueryType)
 
 @Parcelize
-data class CourierBillingAccountDataAmountParameters(val account: String, val amount: Int) :
-    Parcelable
+data class CourierBillingAccountDataAmountParameters(
+    val inn: String,
+    val account: String,
+    val amount: Int
+) : Parcelable
