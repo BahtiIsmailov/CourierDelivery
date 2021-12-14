@@ -98,11 +98,9 @@ class CourierBillingAccountSelectorViewModel(
             .map {
                 val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
                 it.forEach {
-                    list.add(
-                        CourierBillingAccountSelectorAdapterItem.Edit(
-                            resourceProvider.getFormatAccount(it.name, it.correspondentAccount)
-                        )
-                    )
+                    val text = resourceProvider.getFormatAccount(it.name, it.correspondentAccount)
+                    val shortText = it.name
+                    list.add(CourierBillingAccountSelectorAdapterItem.Edit(text, shortText))
                 }
                 list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
                 list
@@ -247,20 +245,18 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     fun onEditAccountClick(idView: Int) {
-        if (idView == copyCourierBillingAccountEntity.size) {
-            _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
-                parameters.inn,
-                "",
-                localBalance
-            )
-        } else {
-            val account = copyCourierBillingAccountEntity[idView].correspondentAccount
-            _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
-                parameters.inn,
-                account,
-                localBalance
-            )
-        }
+        val account = copyCourierBillingAccountEntity[idView].correspondentAccount
+        _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
+            parameters.inn,
+            account,
+            localBalance
+        )
+    }
+
+    fun onAddAccountClick() {
+        _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
+            parameters.inn, "", localBalance
+        )
     }
 
     fun onAccountSelectClick(id: Int) {

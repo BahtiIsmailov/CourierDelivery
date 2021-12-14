@@ -81,14 +81,49 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Spinner
-                    android:id="@+id/spinner_account"
-                    style="@style/Widget.AppCompat.Spinner.DropDown"
+                <!--                <Spinner-->
+                <!--                    android:id="@+id/spinner_account"-->
+                <!--                    style="@style/Widget.AppCompat.Spinner.DropDown"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="50dp"-->
+                <!--                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:background="@drawable/rounded_billing_transperent_layout" />-->
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/rounded_billing_transperent_layout" />
+                    android:background="@drawable/rounded_billing_transperent_layout"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spinner_account"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:overlapAnchor="false"
+                        android:background="@android:color/transparent"
+                        android:popupBackground="@drawable/spinner_account_rounded_corner"
+                        android:spinnerMode="dropdown" />
+
+                    <ImageView
+                        android:id="@+id/spinner_account_drop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="10dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:src="@drawable/ic_arrow_down" />
+
+                </RelativeLayout>
+
 
             </LinearLayout>
 

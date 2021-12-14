@@ -43,7 +43,7 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/surname_layout"
+                    android:id="@+id/user_name_layout"
                     style="@style/TextInputDisableLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                     tools:ignore="MissingConstraints">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/surname"
+                        android:id="@+id/user_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
@@ -247,14 +247,12 @@
             </LinearLayout>
 
             <View
-                android:id="@+id/overlay_boxes"
+                android:id="@+id/overlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="true"
                 android:focusable="true"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/remove"
-                app:layout_constraintTop_toTopOf="@+id/empty_list" />
+                android:visibility="invisible" />
 
         </FrameLayout>
 

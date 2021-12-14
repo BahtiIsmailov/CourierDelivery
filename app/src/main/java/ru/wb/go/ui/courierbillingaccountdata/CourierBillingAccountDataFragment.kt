@@ -2,14 +2,14 @@ package ru.wb.go.ui.courierbillingaccountdata
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -35,6 +35,7 @@ import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAm
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
 
@@ -44,7 +45,6 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     private val binding get() = _binding!!
 
     private lateinit var inputMethod: InputMethodManager
-
 
     companion object {
         const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
@@ -72,9 +72,6 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         initListener()
         initInputMethod()
         initObservers()
-
-        binding.bikLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        binding.bikLayout.endIconDrawable = requireContext().getProgressBarDrawable()
     }
 
     private fun initView() {
@@ -162,9 +159,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     )
 
     private fun getCourierBillingAccountEntity() = CourierBillingAccountEntity(
-        bic = binding.bik.text.toString(),
-        name = binding.bank.text.toString(),
+        userName = binding.userName.text.toString(),
+        inn = binding.inn.text.toString(),
         correspondentAccount = binding.account.text.toString(),
+        bic = binding.bik.text.toString(),
+        bank = binding.bank.text.toString(),
     )
 
     fun interface ClickEventInterface {
@@ -173,7 +172,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
     private fun createClickObserver(): ClickEventInterface {
         return ClickEventInterface { view ->
-            view.clicks().map { CourierBillingAccountDataUIAction.CompleteClick(getFormUserData()) }
+            view.clicks().map {
+                view.isEnabled = false
+                binding.overlay.visibility = VISIBLE
+                CourierBillingAccountDataUIAction.CompleteClick(getFormUserData())
+            }
         }
     }
 
@@ -208,6 +211,10 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
+    private fun hideKeyboard() {
+        SoftKeyboard.hideKeyBoard(requireActivity())
+    }
+
     private fun initObservers() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
@@ -215,7 +222,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         }
 
         viewModel.userDataState.observe(viewLifecycleOwner) {
-            binding.surname.setText(it.userName)
+            binding.userName.setText(it.userName)
             binding.inn.setText(it.userInn)
         }
 
@@ -229,7 +236,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                     binding.save.visibility = GONE
                     binding.editAccountLayout.visibility = VISIBLE
                     with(it.field) {
-                        binding.surname.setText(userName)
+                        binding.userName.setText(userName)
                         binding.inn.setText(inn)
                         binding.account.setText(account)
                         binding.bik.setText(bik)
@@ -280,11 +287,18 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             }
         }
 
+        viewModel.bicProgressState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> showProgressBic()
+                false -> hideProgressBic()
+            }
+        }
 
-
-//        viewModel.bicProgressState.observe(viewLifecycleOwner) {
-//            binding.bank.setText(it)
-//        }
+        viewModel.keyboardState.observe(viewLifecycleOwner) {
+            when (it) {
+                false -> hideKeyboard()
+            }
+        }
 
         viewModel.bankNameState.observe(viewLifecycleOwner) {
             binding.bank.setText(it)
@@ -309,22 +323,37 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         viewModel.loaderState.observe(viewLifecycleOwner,
             { state ->
                 when (state) {
-                    CourierBillingAccountDataUILoaderState.Disable -> binding.save.setState(
-                        ProgressButtonMode.DISABLE
-                    )
-                    CourierBillingAccountDataUILoaderState.Enable -> {
+                    CourierBillingAccountDataUILoaderState.Disable ->
+                        binding.save.setState(ProgressButtonMode.DISABLE)
+                    CourierBillingAccountDataUILoaderState.Enable ->
                         binding.save.setState(ProgressButtonMode.ENABLE)
-                        binding.overlayBoxes.visibility = View.GONE
-                    }
-                    CourierBillingAccountDataUILoaderState.Progress -> {
+                    CourierBillingAccountDataUILoaderState.Progress ->
                         binding.save.setState(ProgressButtonMode.PROGRESS)
-                        binding.overlayBoxes.visibility = View.VISIBLE
-                    }
                 }
             })
+
+        viewModel.holderState.observe(viewLifecycleOwner,
+            { state ->
+                when (state) {
+                    true -> binding.overlay.visibility = VISIBLE
+                    false -> binding.overlay.visibility = INVISIBLE
+                }
+            })
+
     }
 
-    fun Context.getProgressBarDrawable(): Drawable {
+    private fun hideProgressBic() {
+        binding.bikLayout.endIconMode = TextInputLayout.END_ICON_NONE
+    }
+
+    private fun showProgressBic() {
+        binding.bikLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        val endIcon = requireContext().getProgressBarDrawable()
+        (endIcon as? Animatable)?.start()
+        binding.bikLayout.endIconDrawable = endIcon
+    }
+
+    private fun Context.getProgressBarDrawable(): Drawable {
         val value = TypedValue()
         theme.resolveAttribute(android.R.attr.progressBarStyleSmall, value, false)
         val progressBarStyle = value.data

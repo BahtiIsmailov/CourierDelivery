@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierbillingaccountdata.domain
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
@@ -30,11 +31,13 @@ class CourierBillingAccountDataInteractorImpl(
 //    }
 
     override fun saveAccountRemote(accountEntity: CourierBillingAccountEntity): Completable {
+        // TODO: 13.12.2021 удалить после тестирования
+//        return Completable.timer(4, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
         return appRemoteRepository.setBankAccounts(
             listOf(
                 AccountEntity(
                     bic = accountEntity.bic,
-                    name = accountEntity.name,
+                    name = accountEntity.bank,
                     correspondentAccount = accountEntity.correspondentAccount
                 )
             )
@@ -42,10 +45,10 @@ class CourierBillingAccountDataInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-//    override fun getAccount(account: String): Single<CourierBillingAccountEntity> {
-//        return courierLocalRepository.readAccount(account)
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
+    override fun getAccount(account: String): Single<CourierBillingAccountEntity> {
+        return courierLocalRepository.readAccount(account)
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
 
     override fun getBank(bic: String): Maybe<BankEntity> {
         return appRemoteRepository.getBank(bic)

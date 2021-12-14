@@ -20,7 +20,6 @@ open class CourierBillingAccountSelectorAdapter(
     }
 
     override fun getView(position: Int, view: View?, parent: ViewGroup): View {
-
         var convertView = view
         val holder: ViewHolder
         if (convertView == null) {
@@ -34,7 +33,8 @@ open class CourierBillingAccountSelectorAdapter(
             is CourierBillingAccountSelectorAdapterItem.Edit -> {
                 holder.layoutAdd.visibility = View.GONE
                 holder.layoutEdit.visibility = View.VISIBLE
-                holder.textEdit.text = item.text
+                holder.textEdit.maxLines = 1
+                holder.textEdit.text = item.shortText
             }
             is CourierBillingAccountSelectorAdapterItem.Add -> {
                 holder.layoutAdd.visibility = View.VISIBLE
@@ -59,12 +59,15 @@ open class CourierBillingAccountSelectorAdapter(
             is CourierBillingAccountSelectorAdapterItem.Edit -> {
                 holder.layoutAdd.visibility = View.GONE
                 holder.layoutEdit.visibility = View.VISIBLE
+                holder.textEdit.maxLines = 2
                 holder.textEdit.text = item.text
+                holder.imageEdit.setOnClickListener { callback.onEditClick(position) }
             }
             is CourierBillingAccountSelectorAdapterItem.Add -> {
                 holder.layoutAdd.visibility = View.VISIBLE
                 holder.layoutEdit.visibility = View.GONE
                 holder.textAdd.text = item.text
+                holder.imageAdd.setOnClickListener { callback.onAddClick() }
             }
         }
         return convertView!!
@@ -84,7 +87,7 @@ open class CourierBillingAccountSelectorAdapter(
         var textAdd: TextView = rootView.findViewById(R.id.text_add)
         var layoutEdit: View = rootView.findViewById(R.id.edit_layout)
         var imageEdit: ImageView = rootView.findViewById(R.id.image_edit)
-        var textEdit: TextView = rootView.findViewById(R.id.text_edit)
+        var textEdit: TextView = rootView.findViewById(R.id.text_1)
     }
 
 }

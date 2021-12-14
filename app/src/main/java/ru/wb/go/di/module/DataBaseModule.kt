@@ -29,9 +29,9 @@ val databaseModule = module {
         return database.courierBoxDao
     }
 
-//    fun provideCourierAccountDao(database: AppDatabase): CourierAccountDao {
-//        return database.courierAccountDao
-//    }
+    fun provideCourierAccountDao(database: AppDatabase): CourierAccountDao {
+        return database.courierAccountDao
+    }
 
     fun provideFlightDao(database: AppDatabase): FlightDao {
         return database.flightDao
@@ -57,7 +57,7 @@ val databaseModule = module {
     single { provideCourierWarehouseDao(get()) }
     single { provideCourierOrderDao(get()) }
     single { provideCourierBoxDao(get()) }
-//    single { provideCourierAccountDao(get()) }
+    single { provideCourierAccountDao(get()) }
     single { provideFlightDao(get()) }
     single { provideFlightMatchingDao(get()) }
     single { provideWarehouseMatchingBoxDao(get()) }

@@ -85,6 +85,10 @@ class CourierBillingAccountSelectorFragment :
             (activity as NavToolbarListener).showNetworkDialog()
         }
         viewModel.onFormChanges(changeFieldObservables())
+        binding.spinnerAccountDrop.setOnClickListener {
+            binding.spinnerAccount.performClick()
+        }
+
     }
 
     private val changeText = ArrayList<ViewChanges>()
@@ -254,13 +258,17 @@ class CourierBillingAccountSelectorFragment :
                         override fun onEditClick(idView: Int) {
                             viewModel.onEditAccountClick(idView)
                         }
+
+                        override fun onAddClick() {
+                            viewModel.onAddAccountClick()
+                        }
                     }
 
                     val adapter = CourierBillingAccountSelectorAdapter(
                         requireContext(), it.items, callback
                     )
                     adapter.notifyDataSetChanged()
-
+//                    adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                     binding.spinnerAccount.adapter = adapter
                     binding.spinnerAccount.onItemSelectedListener = object :
                         AdapterView.OnItemSelectedListener {
