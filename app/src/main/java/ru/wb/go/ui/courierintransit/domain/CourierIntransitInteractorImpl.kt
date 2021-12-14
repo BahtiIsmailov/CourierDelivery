@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierintransit.domain
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE
+import ru.wb.go.app.PREFIX_QR_OFFICE_DYNAMIC_CODE
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
 import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
@@ -32,6 +33,10 @@ class CourierIntransitInteractorImpl(
     private val timeFormatter: TimeFormatter,
     private val courierMapRepository: CourierMapRepository,
 ) : CourierIntransitInteractor {
+
+    companion object {
+        const val DEFAULT_OFFICE = "0"
+    }
 
     override fun observeNetworkConnected(): Observable<NetworkState> {
         return networkMonitorRepository.networkConnected()
@@ -203,25 +208,59 @@ class CourierIntransitInteractorImpl(
     private fun observeOfficeIdScan(): Observable<CourierIntransitScanOfficeData> {
         return scannerRepository.observeBarcodeScanned()
             .doOnNext { LogUtils { logDebugApp("CourierIntransitInteractorImpl scannerRepository.observeBarcodeScanned() " + it) } }
-            .map { parseQrCode(it) }
+            .map { parseOfficeIdByQrCode(it) }
             .flatMap { scanOfficeId ->
-                courierLoadingScanBoxData().map { it.dstOffices }
-                    .map { offices -> offices.find { it.id.toString() == scanOfficeId }?.id ?: 0 }
-                    .map {
-                        if (it == 0) CourierIntransitScanOfficeData.UnknownOffice
-                        else CourierIntransitScanOfficeData.NecessaryOffice(it)
+                when (scanOfficeId) {
+                    is ParseQrOfficeResult.Office -> {
+                        courierLoadingScanBoxData()
+                            .map { it.dstOffices }
+                            .map { offices ->
+                                val officeId = scanOfficeId.office.toInt()
+                                if (offices.find { it.id == officeId } == null) {
+                                    CourierIntransitScanOfficeData.UnknownOffice
+                                } else {
+                                    CourierIntransitScanOfficeData.NecessaryOffice(officeId)
+                                }
+                            }
+
                     }
+                    ParseQrOfficeResult.Failed -> {
+                        Single.just(CourierIntransitScanOfficeData.UnknownOffice)
+                    }
+                }
                     .toObservable()
             }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun parseQrCode(qrCode: String): String {
-        return if (qrCode.startsWith(PREFIX_QR_OFFICE_CODE)) getSplitInfo(qrCode)[1] else "0"
+    private fun parseOfficeIdByQrCode(qrCode: String): ParseQrOfficeResult {
+        return if (qrCode.startsWith(PREFIX_QR_OFFICE_CODE))
+            getSplitInfo(qrCode)
+        else if (qrCode.startsWith(PREFIX_QR_OFFICE_DYNAMIC_CODE)) {
+            getSplitDynamicOfficeInfo(qrCode)
+        } else ParseQrOfficeResult.Failed
     }
 
-    private fun getSplitInfo(input: String): List<String> {
-        return input.split(".")
+    private fun getSplitInfo(input: String): ParseQrOfficeResult {
+        return ParseQrOfficeResult.Office(input.split(".")[1])
+    }
+
+    private fun getSplitDynamicOfficeInfo(input: String): ParseQrOfficeResult {
+        val splitter = input.split(";")
+        val officeId = splitter[0].replace("o:", "")
+        val officeHash = splitter[1].replace("c:", "")
+        val currentOfficeHash = getHashByOfficeId(officeId.toInt())
+        return if (currentOfficeHash == officeHash) ParseQrOfficeResult.Office(officeId)
+        else ParseQrOfficeResult.Failed
+    }
+
+    private fun getHashByOfficeId(officeId: Int): String {
+        val startTime =
+            timeFormatter.dateTimeFromStringSimple("2020-01-01T00:00:00.000+03:00").millis
+        val currentTime = timeFormatter.currentDateTime().millis
+        val dif = (currentTime - startTime) / 86400 / 1000
+        val m = (31 * dif * officeId).toString()
+        return m.takeLast(4)
     }
 
     private fun courierLoadingScanBoxData() = courierLocalRepository.orderDataSync()
@@ -235,6 +274,11 @@ class CourierIntransitInteractorImpl(
         courierMapRepository.mapState(state)
     }
 
+}
+
+sealed class ParseQrOfficeResult {
+    object Failed : ParseQrOfficeResult()
+    data class Office(val office: String) : ParseQrOfficeResult()
 }
 
 data class CompleteDeliveryResult(val unloadedCount: Int, val fromCount: Int)

@@ -99,9 +99,10 @@ class CourierBillingViewModel(
         val balance = decimalFormat.format(it.balance)
         _balanceInfo.value = resourceProvider.getAmount(balance)
         val items = mutableListOf<BaseItem>()
-        it.transactions.forEachIndexed { index, billingTransactionEntity ->
-            items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
-        }
+        it.transactions.sortedByDescending { it.createdAt }
+            .forEachIndexed { index, billingTransactionEntity ->
+                items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
+            }
 
         // TODO: 26.11.2021 для отладки
         //                    items.clear()

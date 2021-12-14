@@ -24,6 +24,7 @@ const val PREFIX_QR_CODE = "\$1:1:"
 const val PREFIX_QR_CODE_SPLITTER = ":"
 
 const val PREFIX_QR_OFFICE_CODE = "PHX"
+const val PREFIX_QR_OFFICE_DYNAMIC_CODE = "o"
 
 const val DEFAULT_ARRIVAL_TIME_COURIER_MIN = 20
 
