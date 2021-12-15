@@ -94,22 +94,21 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun observeUnloadingScan(officeId: Int): Observable<CourierUnloadingScanBoxData> {
+    private fun observeUnloadingScan(currentOfficeId: Int): Observable<CourierUnloadingScanBoxData> {
         return scannerRepository.observeBarcodeScanned()
-            .doOnNext { LogUtils { logDebugApp("CourierUnloadingInteractorImpl scannerRepository.observeBarcodeScanned() " + it) } }
+            .doOnNext { LogUtils { logDebugApp("CourierUnloadingInteractorImpl observeUnloadingScan() " + it) } }
             .map { parseQrCode(it) }
-            .flatMap { boxDefinitionResult(it) }
+            .flatMap { boxDefinitionResult(currentOfficeId, it) }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    private fun boxDefinitionResult(parseQrCode: ParseQrCode)
+    private fun boxDefinitionResult(currentOfficeId: Int, parseQrCode: ParseQrCode)
             : Observable<out CourierUnloadingScanBoxData> {
-        return readLoadingBoxByOfficeIdAndId(parseQrCode)
+        return readLoadingBoxByOfficeIdAndId(currentOfficeId, parseQrCode.code)
             .flatMapObservable { box ->
                 scannerRepository.scannerState(ScannerState.Stop)
                 val timeScan = timeManager.getLocalTime()
-                val saveAndAddedBox =
-                    saveBox(timeScan, box).andThen(boxAdded(box.id, box.address))
+                val saveAndAddedBox = saveBox(timeScan, box).andThen(boxAdded(box.id, box.address))
                 val holdScanner = Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.SECONDS)
                     .doOnNext { scannerRepository.scannerState(ScannerState.Start) }
                     .map { CourierUnloadingScanBoxData.ScannerReady(box.id, box.address) }
@@ -153,11 +152,8 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    private fun readLoadingBoxByOfficeIdAndId(parseQrCode: ParseQrCode): Maybe<CourierBoxEntity> {
-        return courierLocalRepository.readLoadingBoxByOfficeIdAndId(
-            parseQrCode.dstOfficeId,
-            parseQrCode.code
-        )
+    private fun readLoadingBoxByOfficeIdAndId(officeId: Int, id: String): Maybe<CourierBoxEntity> {
+        return courierLocalRepository.readLoadingBoxByOfficeIdAndId(officeId, id)
     }
 
     override fun scannerAction(scannerAction: ScannerState) {
