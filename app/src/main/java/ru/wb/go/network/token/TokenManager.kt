@@ -10,6 +10,7 @@ interface TokenManager {
     fun refreshToken(): String
     fun userName(): String
     fun userInn(): String
+    fun userInn(inn: String)
     fun userCompany(): String
     fun userCompanyId(): String
     fun userPhone() : String

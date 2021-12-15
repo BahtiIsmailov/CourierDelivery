@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.mvvm.model.base.BaseItem
-import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -149,16 +148,16 @@ class CourierBillingViewModel(
     fun onAccountClick() {
         showProgress()
         addSubscription(
-            interactor.accountsRemote().subscribe(
+            interactor.updateAccountsIsExist().subscribe(
                 { accountsComplete(it) },
                 { accountsError(it) })
         )
     }
 
-    private fun accountsComplete(accountsEntity: AccountsEntity) {
-        _navigationState.value = if (accountsEntity.data.isEmpty())
-            CourierBillingNavigationState.NavigateToAccountCreate(accountsEntity.inn, "", balance)
-        else CourierBillingNavigationState.NavigateToAccountSelector(accountsEntity.inn, balance)
+    private fun accountsComplete(isAccountsExist: Boolean) {
+        _navigationState.value = if (isAccountsExist)
+            CourierBillingNavigationState.NavigateToAccountSelector(balance)
+        else CourierBillingNavigationState.NavigateToAccountCreate("", balance)
         progressComplete()
     }
 

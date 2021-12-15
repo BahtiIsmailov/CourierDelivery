@@ -7,7 +7,6 @@ import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
-import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -30,12 +29,8 @@ class CourierBillingAccountSelectorInteractorImpl(
 //            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun accounts(): Single<List<AccountEntity>> {
-//        return courierLocalRepository.readAllAccounts()
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-
-        return appRemoteRepository.getBankAccounts()
-            .map { it.data }
+    override fun accounts(): Single<List<CourierBillingAccountEntity>> {
+        return courierLocalRepository.readAllAccounts()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

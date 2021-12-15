@@ -221,14 +221,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             binding.toolbarLayout.toolbarTitle.text = it
         }
 
-        viewModel.userDataState.observe(viewLifecycleOwner) {
-            binding.userName.setText(it.userName)
-            binding.inn.setText(it.userInn)
-        }
-
         viewModel.initUIState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierBillingAccountDataInitUIState.Create -> {
+                is CourierBillingAccountDataInitUIState.Create -> {
+                    binding.userName.setText(it.userName)
+                    binding.inn.setText(it.userInn)
                     binding.save.visibility = VISIBLE
                     binding.editAccountLayout.visibility = GONE
                 }
@@ -310,10 +307,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                     is CourierBillingAccountDataNavAction.NavigateToAccountSelector -> {
                         findNavController().navigate(
                             CourierBillingAccountDataFragmentDirections.actionCourierBillingAccountDataFragmentToCourierBillingAccountSelectorFragment(
-                                CourierBillingAccountSelectorAmountParameters(
-                                    state.inn,
-                                    state.balance
-                                )
+                                CourierBillingAccountSelectorAmountParameters(state.balance)
                             )
                         )
                     }
@@ -385,7 +379,6 @@ data class CourierAccountData(val text: String, val type: CourierBillingAccountD
 
 @Parcelize
 data class CourierBillingAccountDataAmountParameters(
-    val inn: String,
     val account: String,
     val amount: Int
 ) : Parcelable

@@ -104,6 +104,8 @@ interface CourierLocalRepository {
 
     fun saveAccount(courierBillingAccountEntity: CourierBillingAccountEntity): Completable
 
+    fun saveAccounts(courierBillingAccountEntities: List<CourierBillingAccountEntity>): Completable
+
     fun readAllAccounts(): Single<List<CourierBillingAccountEntity>>
 
     fun readAccount(account: String): Single<CourierBillingAccountEntity>

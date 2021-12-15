@@ -31,9 +31,12 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return tokenResource().sub ?: ""
     }
 
-    // TODO: 09.12.2021 заменить на реальный токен
     override fun userInn(): String {
-        return "928371627364"
+        return worker.load(AppPreffsKeys.USER_INN_KEY, "")
+    }
+
+    override fun userInn(inn: String) {
+        worker.save(AppPreffsKeys.USER_INN_KEY, inn)
     }
 
     override fun userCompany(): String {
@@ -61,6 +64,7 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
 
     override fun clear() {
         worker.delete(AppPreffsKeys.TOKEN_KEY)
+        worker.delete(AppPreffsKeys.USER_INN_KEY)
     }
 
     override fun isContains(): Boolean {

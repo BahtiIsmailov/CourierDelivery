@@ -36,7 +36,7 @@ import java.util.*
 
 
 class CourierBillingAccountSelectorFragment :
-    Fragment(ru.wb.go.R.layout.courier_billing_account_selector_fragment) {
+    Fragment(R.layout.courier_billing_account_selector_fragment) {
 
     private var _binding: CourierBillingAccountSelectorFragmentBinding? = null
     private val binding get() = _binding!!
@@ -70,6 +70,7 @@ class CourierBillingAccountSelectorFragment :
         initListener()
         initInputMethod()
         initObservers()
+        viewModel.init()
     }
 
     private fun initView() {
@@ -88,7 +89,6 @@ class CourierBillingAccountSelectorFragment :
         binding.spinnerAccountDrop.setOnClickListener {
             binding.spinnerAccount.performClick()
         }
-
     }
 
     private val changeText = ArrayList<ViewChanges>()
@@ -268,7 +268,6 @@ class CourierBillingAccountSelectorFragment :
                         requireContext(), it.items, callback
                     )
                     adapter.notifyDataSetChanged()
-//                    adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                     binding.spinnerAccount.adapter = adapter
                     binding.spinnerAccount.onItemSelectedListener = object :
                         AdapterView.OnItemSelectedListener {
@@ -284,8 +283,6 @@ class CourierBillingAccountSelectorFragment :
                         override fun onNothingSelected(p0: AdapterView<*>?) {
 
                         }
-
-
                     }
                 }
                 is CourierBillingAccountSelectorDropAction.SetSelected -> {
@@ -293,8 +290,6 @@ class CourierBillingAccountSelectorFragment :
                 }
 
             }
-
-
         }
 
         viewModel.navigationEvent.observe(viewLifecycleOwner,
@@ -304,7 +299,6 @@ class CourierBillingAccountSelectorFragment :
                         findNavController().navigate(
                             CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
                                 CourierBillingAccountDataAmountParameters(
-                                    state.inn,
                                     state.account,
                                     state.balance
                                 )
@@ -315,7 +309,6 @@ class CourierBillingAccountSelectorFragment :
                         findNavController().navigate(
                             CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
                                 CourierBillingAccountDataAmountParameters(
-                                    state.inn,
                                     state.account,
                                     state.balance
                                 )
@@ -369,7 +362,7 @@ class CourierBillingAccountSelectorFragment :
 data class CourierData(val text: String, val type: CourierBillingAccountSelectorQueryType)
 
 @Parcelize
-data class CourierBillingAccountSelectorAmountParameters(val inn: String, val balance: Int) :
+data class CourierBillingAccountSelectorAmountParameters(val balance: Int) :
     Parcelable
 
 

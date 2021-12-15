@@ -212,6 +212,8 @@
                     android:id="@+id/edit_account_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="20dp"
                     android:visibility="gone">
 
                     <ImageButton
@@ -219,7 +221,6 @@
                         android:layout_width="64dp"
                         android:layout_height="@dimen/auth_button_height"
                         android:layout_marginStart="16dp"
-                        android:layout_marginBottom="20dp"
                         android:background="@drawable/progress_image_button_round_refuse"
                         android:src="@drawable/ic_billing_account_remove"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -231,7 +232,6 @@
                         android:layout_height="@dimen/auth_button_height"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/refuse_order"

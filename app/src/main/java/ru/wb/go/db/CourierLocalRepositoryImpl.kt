@@ -175,6 +175,10 @@ class CourierLocalRepositoryImpl(
         return courierAccountDao.insertAccount(courierBillingAccountEntity)
     }
 
+    override fun saveAccounts(courierBillingAccountEntities: List<CourierBillingAccountEntity>): Completable {
+        return courierAccountDao.insertAccounts(courierBillingAccountEntities)
+    }
+
     override fun readAllAccounts(): Single<List<CourierBillingAccountEntity>> {
         return courierAccountDao.readAllAccount()
     }

@@ -75,26 +75,26 @@
                         android:hint="Сумма списания \u20BD"
                         android:inputType="number"
                         android:letterSpacing="0.04"
-                        android:maxLength="6"
+                        android:maxLength="7"
                         android:paddingTop="@dimen/auth_padding_top"
                         android:paddingBottom="@dimen/auth_padding_bottom" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!--                <Spinner-->
-                <!--                    android:id="@+id/spinner_account"-->
-                <!--                    style="@style/Widget.AppCompat.Spinner.DropDown"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="50dp"-->
-                <!--                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"-->
-                <!--                    android:layout_marginTop="10dp"-->
-                <!--                    android:background="@drawable/rounded_billing_transperent_layout" />-->
+                <TextView
+                    style="@style/VeryLargeBlackRegularText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Счет зачисления"
+                    android:textStyle="bold" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="16dp"
                     android:background="@drawable/rounded_billing_transperent_layout"
                     android:orientation="horizontal">
 
@@ -104,8 +104,8 @@
                         android:layout_height="50dp"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
-                        android:overlapAnchor="false"
                         android:background="@android:color/transparent"
+                        android:overlapAnchor="false"
                         android:popupBackground="@drawable/spinner_account_rounded_corner"
                         android:spinnerMode="dropdown" />
 

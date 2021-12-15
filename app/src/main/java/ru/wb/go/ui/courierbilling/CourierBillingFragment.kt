@@ -116,12 +116,12 @@ class CourierBillingFragment : Fragment() {
                 }
                 is CourierBillingNavigationState.NavigateToAccountCreate -> findNavController().navigate(
                     CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountDataFragment(
-                        CourierBillingAccountDataAmountParameters(it.inn, it.account, it.balance)
+                        CourierBillingAccountDataAmountParameters(it.account, it.balance)
                     )
                 )
                 is CourierBillingNavigationState.NavigateToAccountSelector -> findNavController().navigate(
                     CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountSelectorFragment(
-                        CourierBillingAccountSelectorAmountParameters(it.inn, it.balance)
+                        CourierBillingAccountSelectorAmountParameters(it.balance)
                     )
                 )
             }

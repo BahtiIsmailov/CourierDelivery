@@ -14,6 +14,9 @@ interface CourierAccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAccount(courierBillingAccountEntity: CourierBillingAccountEntity): Completable
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAccounts(courierBillingAccountEntities: List<CourierBillingAccountEntity>): Completable
+
     @Query("SELECT * FROM CourierBillingAccountEntity")
     fun readAllAccount(): Single<List<CourierBillingAccountEntity>>
 

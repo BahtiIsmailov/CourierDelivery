@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -62,18 +62,17 @@ class CourierBillingAccountSelectorViewModel(
         get() = _balanceChangeState
 
     private var localBalance: Int = 0
-    private var copyCourierBillingAccountEntity = mutableListOf<AccountEntity>()
+    private var copyCourierBillingAccountEntity = mutableListOf<CourierBillingAccountEntity>()
     private var copyCourierBillingAccountSelectorAdapterItems =
         mutableListOf<CourierBillingAccountSelectorAdapterItem>()
 
-    init {
+    fun init() {
         localBalance = parameters.balance
         initToolbarLabel()
         initBalance()
         initAccounts()
         observeNetworkState()
     }
-
 
     private fun initToolbarLabel() {
         _toolbarLabelState.value = resourceProvider.getTitle()
@@ -98,8 +97,9 @@ class CourierBillingAccountSelectorViewModel(
             .map {
                 val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
                 it.forEach {
-                    val text = resourceProvider.getFormatAccount(it.name, it.correspondentAccount)
-                    val shortText = it.name
+                    val text =
+                        resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
+                    val shortText = it.bank
                     list.add(CourierBillingAccountSelectorAdapterItem.Edit(text, shortText))
                 }
                 list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
@@ -125,7 +125,10 @@ class CourierBillingAccountSelectorViewModel(
         type: CourierBillingAccountSelectorQueryType
     ): CourierBillingAccountSelectorUIState {
         return if (text.isEmpty()) {
-            CourierBillingAccountSelectorUIState.Empty("Введите сумму", type)
+            val balance = decimalFormat(localBalance)
+            CourierBillingAccountSelectorUIState.Empty(
+                "Введите сумму от 0.01 до $balance ₽", type
+            )
         } else {
             val balanceFromText = amountFromString(text)
             val balance = decimalFormat(balanceFromText)
@@ -193,24 +196,17 @@ class CourierBillingAccountSelectorViewModel(
                 } else {
                     val balanceFromText = amountFromString(action.text)
                     val balance = decimalFormat(balanceFromText)
-                    if (balanceFromText == 0) {
-                        CourierBillingAccountSelectorBalanceAction.Error(
-                            resourceProvider.getWithdrawBalance(balance)
-                        )
-                    } else if (localBalance >= balanceFromText) {
-                        CourierBillingAccountSelectorBalanceAction.Complete(
-                            resourceProvider.getWithdrawBalance(balance)
-                        )
-                    } else {
-                        CourierBillingAccountSelectorBalanceAction.Error(
-                            resourceProvider.getWithdrawBalance(balance)
-                        )
-                    }
+                    val drawBalance = resourceProvider.getWithdrawBalance(balance)
+                    if (balanceFromText == 0)
+                        CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
+                    else if (localBalance >= balanceFromText)
+                        CourierBillingAccountSelectorBalanceAction.Complete(drawBalance)
+                    else
+                        CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
                 }
 
                 checkTextSurnameWrapper(action)
             }
-
         }
 
     private fun decimalFormat(balanceFromText: Int): String {
@@ -247,7 +243,6 @@ class CourierBillingAccountSelectorViewModel(
     fun onEditAccountClick(idView: Int) {
         val account = copyCourierBillingAccountEntity[idView].correspondentAccount
         _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
-            parameters.inn,
             account,
             localBalance
         )
@@ -255,7 +250,7 @@ class CourierBillingAccountSelectorViewModel(
 
     fun onAddAccountClick() {
         _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
-            parameters.inn, "", localBalance
+            "", localBalance
         )
     }
 

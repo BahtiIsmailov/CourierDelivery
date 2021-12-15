@@ -24,7 +24,7 @@ class CourierBillingAccountDataViewModel(
     compositeDisposable: CompositeDisposable,
     private val interactor: CourierBillingAccountDataInteractor,
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
-    tokenManager: TokenManager
+    private val tokenManager: TokenManager
 ) : NetworkViewModel(compositeDisposable) {
 
     companion object {
@@ -44,9 +44,9 @@ class CourierBillingAccountDataViewModel(
     val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
 
-    private val _userDataState = MutableLiveData<UserData>()
-    val userDataState: LiveData<UserData>
-        get() = _userDataState
+//    private val _userDataState = MutableLiveData<UserData>()
+//    val userDataState: LiveData<UserData>
+//        get() = _userDataState
 
     private val _initUIState = MutableLiveData<CourierBillingAccountDataInitUIState>()
     val initUIState: LiveData<CourierBillingAccountDataInitUIState>
@@ -93,24 +93,20 @@ class CourierBillingAccountDataViewModel(
         initToolbarLabel()
         observeNetworkState()
         initStateField()
-        initUserData(tokenManager)
-    }
-
-    private fun initUserData(tokenManager: TokenManager) {
-        _userDataState.value = UserData(
-            tokenManager.userName(),
-            parameters.inn //tokenManager.userInn()
-        )
     }
 
     private fun initToolbarLabel() {
         _toolbarLabelState.value =
-            if (parameters.account.isEmpty()) resourceProvider.getTitleCreate() else resourceProvider.getTitleEdit()
+            if (parameters.account.isEmpty()) resourceProvider.getTitleCreate()
+            else resourceProvider.getTitleEdit()
     }
 
     private fun initStateField() {
         if (parameters.account.isEmpty())
-            _initUIState.value = CourierBillingAccountDataInitUIState.Create
+            _initUIState.value = CourierBillingAccountDataInitUIState.Create(
+                tokenManager.userName(),
+                tokenManager.userInn()
+            )
         else {
             addSubscription(
                 interactor.getAccount(parameters.account)
@@ -361,10 +357,7 @@ class CourierBillingAccountDataViewModel(
         _holderState.value = false
         _loaderState.value = CourierBillingAccountDataUILoaderState.Disable
         _navigationEvent.value =
-            CourierBillingAccountDataNavAction.NavigateToAccountSelector(
-                parameters.inn,
-                parameters.amount
-            )
+            CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.amount)
     }
 
     private fun saveAccountError(throwable: Throwable) {
@@ -408,6 +401,6 @@ class CourierBillingAccountDataViewModel(
         saveAccount(courierDocumentsEntity)
     }
 
-    data class UserData(val userName: String, val userInn: String)
+//    data class UserData(val userName: String, val userInn: String)
 
 }
