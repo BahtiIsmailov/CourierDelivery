@@ -416,7 +416,7 @@
     <string name="congratulation_info_count">%1$d / %2$d</string>
     <string name="congratulation_complete_delivery">Перейти к возврату на РЦ</string>
 
-    <string name="courier_version_control_title">Доступна новая версия!</string>
+    <string name="courier_version_control_title">Доступна новая версия %1$s</string>
     <string name="courier_version_control_info">Запросите новую версию\nУстановите её, чтобы\nпродолжить работу</string>
     <string name="courier_version_control_info_">Обновите приложение, чтобы\nпродолжить работу</string>
     <string name="courier_version_control_update">Обновить</string>

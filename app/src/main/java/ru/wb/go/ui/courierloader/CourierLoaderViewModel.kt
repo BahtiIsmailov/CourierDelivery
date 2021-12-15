@@ -66,7 +66,6 @@ class CourierLoaderViewModel(
         _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
     }
 
-    // TODO: 17.11.2021 реализовать локальное хранилище версии исполльзовать его при отсутствии инета
     private fun initVersion() {
         addSubscription(
             appRemoteRepository.appVersion().compose(rxSchedulerFactory.applySingleSchedulers())

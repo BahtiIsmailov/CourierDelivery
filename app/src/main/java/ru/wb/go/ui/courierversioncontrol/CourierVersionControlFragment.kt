@@ -43,6 +43,10 @@ class CourierVersionControlFragment : Fragment() {
 
     private fun initObserver() {
         viewModel.navigateToBack.observe(viewLifecycleOwner) {}
+
+        viewModel.versionTitleState.observe(viewLifecycleOwner) {
+            binding.versionTitle.text = it
+        }
     }
 
     private fun showGoogleStore(uriPlayMarket: String, uriGoogle: String) {

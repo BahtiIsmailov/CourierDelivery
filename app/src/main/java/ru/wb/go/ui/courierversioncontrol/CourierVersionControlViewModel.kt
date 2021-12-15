@@ -16,9 +16,9 @@ class CourierVersionControlViewModel(
     private val deviceManager: DeviceManager
 ) : NetworkViewModel(compositeDisposable, metric) {
 
-//    private val _infoState = MutableLiveData<CourierVersionControlState>()
-//    val infoState: LiveData<CourierVersionControlState>
-//        get() = _infoState
+    private val _versionTitleState = MutableLiveData<String>()
+    val versionTitleState: LiveData<String>
+        get() = _versionTitleState
 
     private val _navigateToBack = MutableLiveData<NavigateToWarehouse>()
     val navigateToBack: LiveData<NavigateToWarehouse>
@@ -33,18 +33,16 @@ class CourierVersionControlViewModel(
         get() = _updateFromFtp
 
     init {
-//        _infoState.value = CourierVersionControlState.InfoDelivery(
-//            resourceProvider.getAmountInfo(parameters.amount),
-//            resourceProvider.getDeliveredInfo(parameters.unloadedCount, parameters.fromCount)
-//        )
+        _versionTitleState.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     fun onUpdateClick() {
         onTechEventLog("onUpdateClick")
         val packageName: String = deviceManager.appPackageName
-        _updateFromGooglePlay.value = UpdateFromGooglePlay(resourceProvider.getUriPlayMarket(packageName),
-            resourceProvider.getUriGoogle(packageName))
-
+        _updateFromGooglePlay.value = UpdateFromGooglePlay(
+            resourceProvider.getUriPlayMarket(packageName),
+            resourceProvider.getUriGoogle(packageName)
+        )
     }
 
     object NavigateToWarehouse

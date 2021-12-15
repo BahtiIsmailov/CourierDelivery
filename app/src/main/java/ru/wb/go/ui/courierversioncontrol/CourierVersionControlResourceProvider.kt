@@ -5,6 +5,8 @@ import ru.wb.go.R
 
 class CourierVersionControlResourceProvider(private val context: Context) {
 
+    fun getVersionApp(version: String) = context.getString(R.string.courier_version_control_title, version)
+
     fun getUriPlayMarket(packageName: String): String {
         return context.getString(R.string.splash_uri_play_market, packageName)
     }
@@ -12,4 +14,5 @@ class CourierVersionControlResourceProvider(private val context: Context) {
     fun getUriGoogle(packageName: String): String {
         return context.getString(R.string.splash_uri_google, packageName)
     }
+
 }
