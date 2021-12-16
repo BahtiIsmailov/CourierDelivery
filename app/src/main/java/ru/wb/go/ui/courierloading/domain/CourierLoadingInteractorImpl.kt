@@ -63,7 +63,8 @@ class CourierLoadingInteractorImpl(
             observeCourierBoxes().flatMapObservable { boxes ->
                 val orderDstOffice = scanResult.orderDstOffice
                 val count = boxes.size
-                val qrcode = scanResult.parseQrCode.code
+                val qrcode = scanResult.parseQrCode.boxId
+                val isBoxExist = scanResult.isBoxExist
                 when {
                     qrcode.isEmpty() -> {
                         scannerRepository.scannerState(ScannerState.HoldScanUnknown)
@@ -71,6 +72,11 @@ class CourierLoadingInteractorImpl(
                             .mergeWith(holdDelay(count))
                     }
                     orderDstOffice == null -> {
+                        scannerRepository.scannerState(ScannerState.HoldScanError)
+                        justProcessData(CourierLoadingScanBoxData.ForbiddenTakeBox(qrcode), count)
+                            .mergeWith(holdDelay(count))
+                    }
+                    isBoxExist -> {
                         scannerRepository.scannerState(ScannerState.HoldScanError)
                         justProcessData(CourierLoadingScanBoxData.ForbiddenTakeBox(qrcode), count)
                             .mergeWith(holdDelay(count))
@@ -90,7 +96,7 @@ class CourierLoadingInteractorImpl(
     private fun qrComplete(
         orderDstOffice: CourierOrderDstOfficeLocalEntity,
         scanResult: CourierBoxDefinitionResult,
-        qrcode: String,
+        boxId: String,
         countBox: Int
     ): Observable<CourierLoadingProcessData> {
 
@@ -100,7 +106,7 @@ class CourierLoadingInteractorImpl(
         val taskId = scanResult.taskId
 
         val courierBoxEntity = CourierBoxEntity(
-            id = qrcode,
+            id = boxId,
             address = address,
             dstOfficeId = dstOfficeId,
             loadingAt = loadingAt,
@@ -108,7 +114,7 @@ class CourierLoadingInteractorImpl(
         )
         return if (countBox == 0) {
             firstBoxAdded(
-                qrcode,
+                boxId,
                 address,
                 dstOfficeId,
                 loadingAt,
@@ -117,7 +123,7 @@ class CourierLoadingInteractorImpl(
             ).mergeWith(justProcessData(CourierLoadingScanBoxData.ScannerReady, 1))
         } else {
             scannerRepository.scannerState(ScannerState.HoldScanComplete)
-            secondaryBoxAdded(courierBoxEntity, qrcode, address).mergeWith(holdDelay(countBox))
+            secondaryBoxAdded(courierBoxEntity, boxId, address).mergeWith(holdDelay(countBox))
         }
     }
 
@@ -191,17 +197,25 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun boxDefinitionResult(parseQrCode: ParseQrCode): Single<CourierBoxDefinitionResult> {
-        return Single.zip(orderDstOffices(), updatedAt(), taskId(),
-            { orderDstOffices, updatedAt, taskId ->
+        return Single.zip(orderDstOffices(), updatedAt(), taskId(), isExistBox(parseQrCode.boxId),
+            { orderDstOffices, updatedAt, taskId, isExistBox ->
                 CourierBoxDefinitionResult(
                     findOfficeById(orderDstOffices, parseQrCode.dstOfficeId),
                     parseQrCode,
                     updatedAt,
-                    taskId
+                    taskId,
+                    isExistBox
                 )
             }
         )
             .doOnError { LogUtils { logDebugApp(it.toString()) } }
+    }
+
+    private fun isExistBox(boxId: String): Single<Boolean> {
+        return courierLocalRepository.findLoadingBoxById(boxId)
+            .map { true }
+            .defaultIfEmpty(false)
+            .toSingle()
     }
 
     private fun orderDstOffices(): Single<List<CourierOrderDstOfficeLocalEntity>> {
@@ -325,4 +339,4 @@ class CourierLoadingInteractorImpl(
 
 }
 
-data class ParseQrCode(val code: String, val dstOfficeId: String)
+data class ParseQrCode(val boxId: String, val dstOfficeId: String)

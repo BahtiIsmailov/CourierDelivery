@@ -111,6 +111,10 @@ class CourierLocalRepositoryImpl(
         return courierLoadingBoxDao.insertBox(boxEntity)
     }
 
+    override fun findLoadingBoxById(id: String): Maybe<CourierBoxEntity> {
+        return courierLoadingBoxDao.findLoadingBoxById(id)
+    }
+
     override fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable {
         return courierLoadingBoxDao.insertBoxes(boxEntity)
     }

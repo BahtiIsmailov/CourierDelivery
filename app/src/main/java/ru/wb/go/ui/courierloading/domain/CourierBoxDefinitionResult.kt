@@ -7,4 +7,5 @@ data class CourierBoxDefinitionResult(
     val parseQrCode: ParseQrCode,
     val loadingAt: String,
     val taskId: String,
+    val isBoxExist: Boolean,
 )

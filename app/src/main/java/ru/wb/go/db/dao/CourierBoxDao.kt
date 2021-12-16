@@ -17,6 +17,9 @@ interface CourierBoxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBox(courierBox: CourierBoxEntity): Completable
 
+    @Query("SELECT * FROM CourierBoxEntity WHERE id = :boxId")
+    fun findLoadingBoxById(boxId: String): Maybe<CourierBoxEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBoxes(courierBoxes: List<CourierBoxEntity>): Completable
 

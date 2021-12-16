@@ -72,6 +72,8 @@ interface CourierLocalRepository {
 
     fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable
 
+    fun findLoadingBoxById(id: String): Maybe<CourierBoxEntity>
+
     fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
 
     fun readAllLoadingBoxesSync(): Single<List<CourierBoxEntity>>
