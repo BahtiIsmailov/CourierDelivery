@@ -12,6 +12,7 @@ import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
@@ -82,6 +83,7 @@ class CourierOrderTimerViewModel(
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
+        LogUtils{logDebugApp("initTimer reservedDuration " + reservedDuration + " reservedAt " + reservedAt)}
         interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer
@@ -137,6 +139,7 @@ class CourierOrderTimerViewModel(
     }
 
     fun iArrivedClick() {
+        onTechEventLog("iArrivedClick")
         lockState()
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
         unlockState()

@@ -192,6 +192,8 @@ class AppRemoteRepositoryImpl(
                 deliveredAt = null
             )
         val boxes = listOf(courierTaskStartRequest)
+//        LogUtils{logDebugApp("taskStart")}
+//        return Completable.error(Throwable())
         return remote.taskStart(apiVersion(), taskID, boxes)
             .compose(rxSchedulerFactory.applyCompletableMetrics("taskStart"))
     }

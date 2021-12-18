@@ -314,6 +314,7 @@ class CourierLoadingScanViewModel(
             throwable.exceptions[0]
         } else throwable
         scanProcessError(error)
+        interactor.scannerAction(ScannerState.LoaderComplete)
     }
 
     private fun scanProcessError(throwable: Throwable) {
@@ -341,7 +342,6 @@ class CourierLoadingScanViewModel(
                 resourceProvider.getGenericServiceButtonError()
             )
         }
-
         // TODO: 07.10.2021 привести диалог
         interactor.scannerAction(ScannerState.Stop)
         _navigateToErrorMessage.value = message

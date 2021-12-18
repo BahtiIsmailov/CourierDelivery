@@ -155,6 +155,7 @@ class CourierLoadingInteractorImpl(
             .andThen(saveBoxLocal(courierBoxEntity))
             .andThen(firstBoxAdded)
             .doOnComplete { firstBoxAddedComplete() }
+            .doOnError { firstBoxLoaderComplete() }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
@@ -197,7 +198,10 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun boxDefinitionResult(parseQrCode: ParseQrCode): Single<CourierBoxDefinitionResult> {
-        return Single.zip(orderDstOffices(), updatedAt(), taskId(), isExistBox(parseQrCode.boxId),
+        return Single.zip(orderDstOffices(),
+            updatedAt(),
+            taskId(),
+            isExistBox(parseQrCode.boxId, parseQrCode.dstOfficeId.toInt()),
             { orderDstOffices, updatedAt, taskId, isExistBox ->
                 CourierBoxDefinitionResult(
                     findOfficeById(orderDstOffices, parseQrCode.dstOfficeId),
@@ -211,8 +215,9 @@ class CourierLoadingInteractorImpl(
             .doOnError { LogUtils { logDebugApp(it.toString()) } }
     }
 
-    private fun isExistBox(boxId: String): Single<Boolean> {
+    private fun isExistBox(boxId: String, dstOfficeId: Int): Single<Boolean> {
         return courierLocalRepository.findLoadingBoxById(boxId)
+            .filter { it.dstOfficeId != dstOfficeId }
             .map { true }
             .defaultIfEmpty(false)
             .toSingle()

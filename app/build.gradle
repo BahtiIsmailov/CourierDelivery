@@ -59,7 +59,7 @@ android {
             applicationId "ru.wb.go"
             minSdkVersion 21
             targetSdkVersion 31
-            versionCode 3
+            versionCode 4
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
