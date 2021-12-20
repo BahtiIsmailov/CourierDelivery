@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.ui.NetworkViewModel
 
 class AuthLoaderViewModel(
     compositeDisposable: CompositeDisposable,

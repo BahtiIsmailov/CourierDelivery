@@ -34,18 +34,6 @@ import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
-import ru.wb.go.BuildConfig
-import ru.wb.go.R
-import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
-import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
-import ru.wb.go.databinding.MapFragmentBinding
-import ru.wb.go.ui.scanner.hasPermissions
-import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.map.CoordinatePoint
-import ru.wb.go.utils.map.MapCircle
-import ru.wb.go.utils.map.MapPoint
-
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 
 
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {

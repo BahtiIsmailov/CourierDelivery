@@ -2,39 +2,12 @@ package ru.wb.go.ui.courierloading
 
 import android.content.Context
 import ru.wb.go.R
+import ru.wb.go.mvvm.BaseMessageResourceProvider
 
-class CourierLoadingResourceProvider(private val context: Context) {
+class CourierLoadingResourceProvider(private val context: Context) :
+    BaseMessageResourceProvider(context) {
 
-    fun getScanDialogTitle() = context.getString(R.string.dc_loading_scan_dialog_title_error)
-    fun getScanDialogMessage() = context.getString(R.string.dc_loading_scan_dialog_message_error)
-    fun getScanDialogButton() =
-        context.getString(R.string.dc_loading_scan_dialog_positive_button_error)
-
-    fun getSwitchDialogButton() =
-        context.getString(R.string.dc_loading_scan_switch_dialog_message_error)
-
-
-    fun getShortHasBeenAddedBox(code: String): String =
-        context.getString(R.string.dc_loading_code_short_has_been_added_box, code)
-
-    fun getBoxTimeAndAddress(time: String, address: String): String =
-        context.getString(R.string.dc_loading_boxes_time, time, address)
-
-
-    fun getIndexAndBarcode(index: Int, barcode: String): String =
-        context.getString(R.string.dc_loading_boxes_index_barcode, index, barcode)
-
-    fun getBoxNotBelongDcTitle(): String =
-        context.getString(R.string.dc_loading_box_not_belong_dc_title)
-
-    fun getBoxNotBelongFlightTitle(): String =
-        context.getString(R.string.dc_loading_box_not_belong_flight_title)
-
-    fun getBoxNotBelongInfoTitle(): String =
-        context.getString(R.string.dc_loading_box_not_belong_info_title)
-
-    fun getBoxNotBelongAddress(): String =
-        context.getString(R.string.dc_loading_box_not_belong_address_title)
+    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
 
     fun getBoxDialogTitle() = context.getString(R.string.dc_loading_boxes_remove_dialog_title_error)
 
@@ -45,28 +18,25 @@ class CourierLoadingResourceProvider(private val context: Context) {
         context.getString(R.string.dc_loading_boxes_remove_dialog_positive_button_error)
 
 
-
     fun getBoxDateAndTimeAndAddress(date: String, time: String, address: String): String =
-        context.getString(R.string.courier_loading_boxes_date_and_time_and_address, date, time, address)
+        context.getString(
+            R.string.courier_loading_boxes_date_and_time_and_address,
+            date,
+            time,
+            address
+        )
 
     fun getIndex(index: Int) = context.getString(R.string.courier_loading_boxes_index, index)
 
-    fun getIndexUnnamedBarcode(index: Int, barcode: String): String {
-        return context.getString(R.string.unnamed_barcode_format_number,
-            index,
-            barcode.take(4),
-            barcode.takeLast(4))
-    }
-
-    fun getEmptyQr(): String = context.getString(R.string.courier_order_scanner_empty_qr)
+    fun getUnknown(): String = context.getString(R.string.courier_order_scanner_unknown_qr)
 
     fun getEmptyAddress(): String = context.getString(R.string.courier_order_scanner_empty_address)
 
-    fun getAccepted(count: Int): String = context.getString(R.string.courier_order_scanner_accepted, count)
+    fun getAccepted(count: Int): String =
+        context.getString(R.string.courier_order_scanner_accepted, count)
 
-    fun getGenericServiceTitleError() = context.getString(R.string.unknown_service_title_error)
-    fun getGenericServiceMessageError() = context.getString(R.string.unknown_service_message_error)
-    fun getGenericServiceButtonError() = context.getString(R.string.unknown_service_button_error)
-
+    fun getScanDialogTimeIsOutTitle() = context.getString(R.string.courier_order_scanner_title)
+    fun getScanDialogTimeIsOutMessage() = context.getString(R.string.courier_order_scanner_message)
+    fun getScanDialogTimeIsOutButton() = context.getString(R.string.courier_order_scanner_dialog)
 
 }

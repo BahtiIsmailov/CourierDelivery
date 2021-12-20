@@ -194,7 +194,7 @@ class CourierBillingAccountSelectorFragment :
         }
 
         viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
-            showDialog(it.style, it.title, it.message, it.button)
+            showDialog(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -350,8 +350,13 @@ class CourierBillingAccountSelectorFragment :
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
+    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        )
             .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

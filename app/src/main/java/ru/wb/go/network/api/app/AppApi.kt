@@ -7,8 +7,12 @@ import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.VersionAppResponse
+import ru.wb.go.network.api.app.remote.accounts.AccountRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountsResponse
+import ru.wb.go.network.api.app.remote.bank.BankResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
+import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 
 interface AppApi {
 

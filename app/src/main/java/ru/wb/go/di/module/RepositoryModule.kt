@@ -17,6 +17,7 @@ import ru.wb.go.network.headers.RefreshTokenRepository
 import ru.wb.go.network.headers.RefreshTokenRepositoryImpl
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepositoryImpl
+import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
@@ -38,11 +39,12 @@ val deliveryRepositoryModule = module {
     }
 
     fun provideAppRemoteRepository(
+        rxSchedulerFactory: RxSchedulerFactory,
         api: AppApi,
         tokenManager: TokenManager,
         timeManager: TimeManager,
     ): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(api, tokenManager, timeManager)
+        return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager, timeManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -91,7 +93,7 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRemoteRepository(get(), get(), get()) }
-    single { provideAppRemoteRepository(get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get(), get()) }
     single { provideCourierMapRepository() }

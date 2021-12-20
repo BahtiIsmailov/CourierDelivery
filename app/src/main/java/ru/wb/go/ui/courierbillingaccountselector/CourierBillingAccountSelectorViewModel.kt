@@ -12,18 +12,20 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
-import ru.wb.go.ui.courierdata.Message
 import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import java.text.DecimalFormat
 import java.util.*
 
 class CourierBillingAccountSelectorViewModel(
     private val parameters: CourierBillingAccountSelectorAmountParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -33,8 +35,8 @@ class CourierBillingAccountSelectorViewModel(
     val balanceState: LiveData<String>
         get() = _balanceState
 
-    private val _navigateToMessageState = SingleLiveEvent<Message>()
-    val navigateToMessageState: LiveData<Message>
+    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToMessageState: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageState
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
@@ -94,12 +96,13 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun initAccounts() {
         addSubscription(interactor.accounts()
+            .map { sortedAccounts(it) }
             .doOnSuccess { copyCourierBillingAccountEntity = it.toMutableList() }
             .map {
                 val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
+
                 it.forEach {
-                    val text =
-                        resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
+                    val text = resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
                     val shortText = it.bank
                     list.add(CourierBillingAccountSelectorAdapterItem.Edit(text, shortText))
                 }
@@ -112,6 +115,10 @@ class CourierBillingAccountSelectorViewModel(
             }, {})
         )
     }
+
+    private fun sortedAccounts(accounts: List<CourierBillingAccountEntity>) =
+        accounts.toMutableList()
+            .sortedWith(compareBy({ it.bank }, { it.correspondentAccount.takeLast(4) }))
 
     private fun checkFocusSurnameWrapper(focusChange: CourierBillingAccountSelectorUIAction.FocusChange): CourierBillingAccountSelectorUIState {
         return checkSurname(focusChange.text, focusChange.type)
@@ -273,28 +280,32 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun paymentsError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> Message(
+            is NoInternetException -> NavigateToDialogInfo(
                 DialogStyle.INFO.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> Message(
+            is BadRequestException -> NavigateToDialogInfo(
                 DialogStyle.INFO.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> Message(
+            else -> NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Enable
         _navigateToMessageState.value = message
 
+    }
+
+    override fun getScreenTag(): String {
+        return ""
     }
 
 }

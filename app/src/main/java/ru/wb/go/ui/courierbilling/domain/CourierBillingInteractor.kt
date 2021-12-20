@@ -9,6 +9,8 @@ interface CourierBillingInteractor {
 
     fun billing(): Single<BillingCommonEntity>
 
+    fun updateAccountsIsExist(): Single<Boolean>
+
     fun observeNetworkConnected(): Observable<NetworkState>
 
 }

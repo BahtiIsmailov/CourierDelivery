@@ -79,8 +79,6 @@ val viewModelModule = module {
         CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get()) }
-
     viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
@@ -145,11 +143,12 @@ val viewModelModule = module {
 
     viewModel { ScannerViewModel(get(), get(), get()) }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get()) }
+    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
         CourierBillingAccountDataViewModel(
             parameters,
+            get(),
             get(),
             get(),
             get(),
@@ -159,6 +158,7 @@ val viewModelModule = module {
     viewModel { (parameters: CourierBillingAccountSelectorAmountParameters) ->
         CourierBillingAccountSelectorViewModel(
             parameters,
+            get(),
             get(),
             get(),
             get()

@@ -1,14 +1,10 @@
 package ru.wb.go.ui.courierorderconfirm
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -16,8 +12,8 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderConfirmFragmentBinding
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.utils.LogUtils
@@ -62,6 +58,20 @@ class CourierOrderConfirmFragment : Fragment() {
 
     private fun initObservable() {
 
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
+            }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
+        }
+
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderConfirmInfoUIState.InitOrderInfo -> {
@@ -75,8 +85,8 @@ class CourierOrderConfirmFragment : Fragment() {
             }
         }
 
-        viewModel.dialogErrorState.observe(viewLifecycleOwner) {
-            showDialogInfo(it.title, it.message, it.button)
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.progressState.observe(viewLifecycleOwner) {
@@ -101,11 +111,18 @@ class CourierOrderConfirmFragment : Fragment() {
             }
         }
 
+        viewModel.holdState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> binding.holdLayout.visibility = View.VISIBLE
+                false -> binding.holdLayout.visibility = View.GONE
+            }
+        }
+
     }
 
     private fun initListeners() {
-        binding.refuseOrder.setOnClickListener { viewModel.refuseOrderClick() }
-        binding.confirmOrder.setOnClickListener { viewModel.confirmOrderClick() }
+        binding.refuseOrder.setOnClickListener { viewModel.onRefuseOrderClick() }
+        binding.confirmOrder.setOnClickListener { viewModel.onConfirmOrderClick() }
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarClick() }
     }
 
@@ -121,78 +138,18 @@ class CourierOrderConfirmFragment : Fragment() {
         }
     }
 
-    private fun showDialogInfo(title: String, message: String, button: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-//            viewModel.returnToListOrderClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
-
-
-        alertDialog.setCanceledOnTouchOutside(false)
-        alertDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                alertDialog.dismiss()
-//                viewModel.returnToListOrderClick()
-            }
-            true
-        }
-
-
-        alertDialog.show()
-    }
-
-    private fun showRefuseOrderDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
-
-        val titleLayout: View = dialogView.findViewById(R.id.title_layout)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-
-        titleLayout.setBackgroundColor(
-            ContextCompat.getColor(requireActivity(), R.color.dialog_title_alarm)
-        )
-        titleText.text = title
-        messageText.text = message
-        negative.setOnClickListener { alertDialog.dismiss() }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_orders_timer_dialog_negative_button)
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.refuseOrderConfirmClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.deny))
-        positive.text = getString(R.string.courier_orders_timer_dialog_positive_button)
-        alertDialog.show()
-    }
-
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

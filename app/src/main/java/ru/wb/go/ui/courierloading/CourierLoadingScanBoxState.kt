@@ -2,17 +2,16 @@ package ru.wb.go.ui.courierloading
 
 sealed class CourierLoadingScanBoxState {
 
-    object Empty : CourierLoadingScanBoxState()
+    object InitScanner : CourierLoadingScanBoxState()
 
-    data class BoxInit(val qrCode: String, val address: String, val accepted: String) :
-        CourierLoadingScanBoxState()
+    object LoadInCar : CourierLoadingScanBoxState()
 
-    data class BoxAdded(val qrCode: String, val address: String, val accepted: String) :
-        CourierLoadingScanBoxState()
+    object NotRecognizedQrWithTimer : CourierLoadingScanBoxState()
 
-    object UnknownBoxTimer : CourierLoadingScanBoxState()
+    object NotRecognizedQr : CourierLoadingScanBoxState()
 
-    data class UnknownBox(val qrCode: String, val address: String, val accepted: String) :
-        CourierLoadingScanBoxState()
+    object ForbiddenTakeWithTimer : CourierLoadingScanBoxState()
+
+    object ForbiddenTakeBox : CourierLoadingScanBoxState()
 
 }

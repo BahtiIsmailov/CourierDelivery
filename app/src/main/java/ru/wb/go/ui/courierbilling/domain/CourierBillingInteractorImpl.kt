@@ -1,20 +1,23 @@
 package ru.wb.go.ui.courierbilling.domain
 
+import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.monitor.NetworkMonitorRepository
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 
 class CourierBillingInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val tokenManager: TokenManager
-
 ) : CourierBillingInteractor {
 
     override fun billing(): Single<BillingCommonEntity> {
@@ -22,12 +25,10 @@ class CourierBillingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-//    override fun accountsLocal(): Completable {
-//        return courierLocalRepository.readAllAccounts()
-//            .doOnSuccess { LogUtils { logDebugApp(it.toString()) } }
-//            .flatMapCompletable { if (it.isEmpty()) Completable.error(Throwable()) else Completable.complete() }
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
 
     private fun List<AccountEntity>.convertToBillingAccounts(
         userName: String,

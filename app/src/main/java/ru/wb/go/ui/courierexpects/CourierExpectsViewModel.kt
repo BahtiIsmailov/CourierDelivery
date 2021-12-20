@@ -8,17 +8,20 @@ import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
-import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CouriersCompleteRegistrationViewModel(
     parameters: CourierExpectsParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierExpectsResourceProvider,
     private val interactor: CourierExpectsInteractor,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
-    private val _navigateToMessageState = SingleLiveEvent<Message>()
-    val navigateToMessageState: LiveData<Message>
+    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToMessageState: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageState
 
     private val _infoState = MutableLiveData<String>()
@@ -33,55 +36,68 @@ class CouriersCompleteRegistrationViewModel(
     val progressState: LiveData<CourierExpectsProgressState>
         get() = _progressState
 
+    init {
+        onTechEventLog("init")
+    }
+
     fun onUpdateStatusClick() {
+        onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierExpectsProgressState.Progress
         addSubscription(
-            interactor.isRegisteredStatus()
-                .map {
-                    when (it) {
-                        true -> CourierExpectsNavAction.NavigateToCouriers
-                        false -> CourierExpectsNavAction.NavigateToCouriersDialog(
-                            DialogStyle.INFO.ordinal,
-                            resourceProvider.notConfirmDataTitle(),
-                            resourceProvider.notConfirmDataMessage(),
-                            resourceProvider.notConfirmDataPositive()
-                        )
-                    }
-                }.subscribe(
-                    {
-                        _progressState.value = CourierExpectsProgressState.Complete
-                        _navAction.value = it
-                    },
-                    { isRegisteredStatusError(it) })
+            interactor.isRegisteredStatus().subscribe(
+                { isRegisteredStatusComplete(it) },
+                { isRegisteredStatusError(it) })
         )
 
     }
 
+    private fun isRegisteredStatusComplete(it: Boolean?) {
+        onTechEventLog("isRegisteredStatusComplete")
+        _progressState.value = CourierExpectsProgressState.Complete
+        when (it) {
+            true -> _navAction.value = CourierExpectsNavAction.NavigateToCouriers
+            false -> _navigateToMessageState.value = NavigateToDialogInfo(
+                DialogInfoStyle.INFO.ordinal,
+                resourceProvider.notConfirmDataTitle(),
+                resourceProvider.notConfirmDataMessage(),
+                resourceProvider.notConfirmDataPositive()
+            )
+        }
+    }
+
     private fun isRegisteredStatusError(throwable: Throwable) {
+        onTechErrorLog("isRegisteredStatusError", throwable)
         _progressState.value = CourierExpectsProgressState.Complete
         when (throwable) {
-            is NoInternetException -> _navigateToMessageState.value = Message(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
+            is NoInternetException -> _navigateToMessageState.value = NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> {
-                _navigateToMessageState.value = Message(
-                    DialogStyle.WARNING.ordinal,
+                _navigateToMessageState.value = NavigateToDialogInfo(
+                    DialogInfoStyle.WARNING.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
                     throwable.error.message,
-                    resourceProvider.getGenericServiceMessageError(),
                     resourceProvider.getGenericServiceButtonError()
                 )
             }
-            else -> _navigateToMessageState.value = Message(
-                DialogStyle.ERROR.ordinal,
+            else -> _navigateToMessageState.value = NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
     }
-}
 
-data class Message(val style: Int, val title: String, val message: String, val button: String)
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CouriersCompleteRegistration"
+    }
+
+}

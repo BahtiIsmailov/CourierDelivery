@@ -1,9 +1,10 @@
 package ru.wb.go.di.module
 
-import ru.wb.go.network.rx.RxSchedulerFactory
-import ru.wb.go.network.rx.RxSchedulerFactoryImpl
 import io.reactivex.disposables.CompositeDisposable
 import org.koin.dsl.module
+import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.rx.RxSchedulerFactoryImpl
+import ru.wb.go.utils.analytics.YandexMetricManager
 
 val rxModule = module {
 
@@ -11,10 +12,11 @@ val rxModule = module {
         return CompositeDisposable()
     }
 
-    fun provideRxSchedulerFactory(): RxSchedulerFactory {
-        return RxSchedulerFactoryImpl()
+    fun provideRxSchedulerFactory(metric: YandexMetricManager): RxSchedulerFactory {
+        return RxSchedulerFactoryImpl(metric)
     }
 
     factory { provideCompositeDisposable() }
-    single { provideRxSchedulerFactory() }
+    single { provideRxSchedulerFactory(get()) }
+
 }

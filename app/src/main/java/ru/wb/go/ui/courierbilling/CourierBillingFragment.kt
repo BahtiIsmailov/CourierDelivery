@@ -20,11 +20,12 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingNegativeDelegate
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingPositiveDelegate
 import ru.wb.go.ui.courierbilling.delegates.OnCourierBillingCallback
+import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
+import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
-import ru.wb.go.views.ProgressButtonMode
 
 
 class CourierBillingFragment : Fragment() {

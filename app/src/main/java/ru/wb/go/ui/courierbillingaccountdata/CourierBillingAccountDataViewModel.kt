@@ -15,18 +15,20 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
 import ru.wb.go.ui.courierbillingaccountdata.domain.EditableResult
-import ru.wb.go.ui.courierdata.Message
 import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import java.util.*
 
 class CourierBillingAccountDataViewModel(
     private val parameters: CourierBillingAccountDataAmountParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierBillingAccountDataInteractor,
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
     private val tokenManager: TokenManager
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     companion object {
         private const val ACCOUNT_LENGTH = 20
@@ -44,8 +46,8 @@ class CourierBillingAccountDataViewModel(
     val initUIState: LiveData<CourierBillingAccountDataInitUIState>
         get() = _initUIState
 
-    private val _navigateToMessageState = SingleLiveEvent<Message>()
-    val navigateToMessageState: LiveData<Message>
+    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToMessageState: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageState
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
@@ -295,22 +297,22 @@ class CourierBillingAccountDataViewModel(
 
     private fun saveAccountError(throwable: Throwable) {
         val message = when (throwable) {
-            is NoInternetException -> Message(
+            is NoInternetException -> NavigateToDialogInfo(
                 DialogStyle.INFO.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> Message(
+            is BadRequestException -> NavigateToDialogInfo(
                 DialogStyle.INFO.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> Message(
+            else -> NavigateToDialogInfo(
                 DialogStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
@@ -352,6 +354,10 @@ class CourierBillingAccountDataViewModel(
     fun onSaveChangeAccountClick(courierDocumentsEntity: CourierBillingAccountEntity) {
         holdAndProgress()
         saveAccount(courierDocumentsEntity)
+    }
+
+    override fun getScreenTag(): String {
+        return ""
     }
 
 }

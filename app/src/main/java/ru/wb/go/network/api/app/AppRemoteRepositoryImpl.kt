@@ -9,10 +9,6 @@ import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.entity.*
-import ru.wb.go.network.api.app.remote.CarNumberRequest
-import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
-import ru.wb.go.network.api.app.remote.courier.*
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
@@ -22,6 +18,7 @@ import ru.wb.go.network.api.app.remote.accounts.AccountRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentRequest
+import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.TimeManager
@@ -334,7 +331,6 @@ class AppRemoteRepositoryImpl(
         val accountsEntity = mutableListOf<AccountRequest>()
         forEach { accountsEntity.add(AccountRequest(it.bic, it.name, it.correspondentAccount)) }
         return accountsEntity
-            .compose(rxSchedulerFactory.applySingleMetrics("billing"))
     }
 
     override fun appVersion(): Single<String> {
