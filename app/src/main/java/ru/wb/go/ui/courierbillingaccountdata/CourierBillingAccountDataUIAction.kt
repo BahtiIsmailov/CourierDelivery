@@ -9,8 +9,10 @@ sealed class CourierBillingAccountDataUIAction {
     ) :
         CourierBillingAccountDataUIAction()
 
-    data class TextChange(val text: String, val type: CourierBillingAccountDataQueryType) : CourierBillingAccountDataUIAction()
+    data class TextChange(val text: String, val type: CourierBillingAccountDataQueryType) :
+        CourierBillingAccountDataUIAction()
 
-    data class CompleteClick(var userData: MutableList<CourierAccountData>) : CourierBillingAccountDataUIAction()
+    data class SaveClick(var userData: MutableList<CourierAccountData>) :
+        CourierBillingAccountDataUIAction()
 
 }

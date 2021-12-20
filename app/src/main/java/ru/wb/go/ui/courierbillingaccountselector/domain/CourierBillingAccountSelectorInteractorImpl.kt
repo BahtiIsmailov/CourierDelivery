@@ -23,12 +23,6 @@ class CourierBillingAccountSelectorInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun courierDocuments(courierDocumentsEntity: CourierBillingAccountEntity): Completable {
-        return Completable.complete()
-//        return appRemoteRepository.courierDocuments(courierDocumentsEntity)
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
-
     override fun accounts(): Single<List<CourierBillingAccountEntity>> {
         return courierLocalRepository.readAllAccounts()
             .compose(rxSchedulerFactory.applySingleSchedulers())

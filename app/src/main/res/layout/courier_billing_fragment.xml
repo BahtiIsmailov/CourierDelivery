@@ -35,15 +35,17 @@
         tools:text="3200 \u20BD" />
 
     <ImageView
-        android:id="@+id/account"
+        android:id="@+id/to_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:visibility="invisible"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_billing_account"
         app:layout_constraintBottom_toBottomOf="@+id/coast"
         app:layout_constraintStart_toEndOf="@+id/coast"
-        app:layout_constraintTop_toTopOf="@+id/coast" />
+        app:layout_constraintTop_toTopOf="@+id/coast"
+        tools:ignore="ContentDescription" />
 
     <View
         android:id="@+id/view_divider1"

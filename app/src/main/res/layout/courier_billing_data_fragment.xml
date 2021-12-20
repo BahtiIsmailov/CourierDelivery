@@ -156,20 +156,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!--                <ProgressBar-->
-                <!--                    android:id="@+id/progress_bar"-->
-                <!--                    style="?android:attr/progressBarStyleSmallTitle"-->
-                <!--                    android:layout_width="@dimen/progress_bar_button"-->
-                <!--                    android:layout_height="@dimen/progress_bar_button"-->
-                <!--                    android:layout_alignTop="@id/bik"-->
-                <!--                    android:layout_alignEnd="@+id/bik"-->
-                <!--                    android:layout_alignBottom="@id/bik"-->
-                <!--                    android:layout_marginRight="12dp"-->
-                <!--                    android:theme="@style/AppProgressBarCircularDark"-->
-                <!--                    android:visibility="visible"-->
-                <!--                    tools:ignore="MissingConstraints" />-->
-
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/bank_layout"
                     style="@style/TextInputDisableLayoutStyle"
@@ -224,7 +210,8 @@
                         android:background="@drawable/progress_image_button_round_refuse"
                         android:src="@drawable/ic_billing_account_remove"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:ignore="ContentDescription" />
 
                     <ru.wb.go.views.ProgressButtonView
                         android:id="@+id/save_change_account"

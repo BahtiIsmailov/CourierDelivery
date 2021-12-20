@@ -82,7 +82,7 @@ class CourierBillingFragment : Fragment() {
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.update.setOnClickListener { viewModel.onUpdateClick() }
-        binding.account.setOnClickListener { viewModel.onAccountClick() }
+        binding.toAccount.setOnClickListener { viewModel.onAccountClick() }
     }
 
     private fun initStateObserve() {
@@ -93,6 +93,7 @@ class CourierBillingFragment : Fragment() {
 
         viewModel.balanceInfo.observe(viewLifecycleOwner) {
             binding.coast.text = it
+            binding.toAccount.visibility = VISIBLE
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -109,8 +110,7 @@ class CourierBillingFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierBillingNavigationState.NavigateToBack -> {
-                }
+                CourierBillingNavigationState.NavigateToBack -> {}
                 is CourierBillingNavigationState.NavigateToDialogInfo -> with(it) {
                     showDialogInfo(type, title, message, button)
                 }

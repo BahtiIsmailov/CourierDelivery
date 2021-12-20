@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.network.api.app.entity.CourierBillingAccountEditableEntity
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
+import ru.wb.go.network.api.app.entity.convertToCourierBillingAccountEditableEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -14,6 +14,7 @@ import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
+import ru.wb.go.ui.courierbillingaccountdata.domain.EditableResult
 import ru.wb.go.ui.courierdata.Message
 import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.utils.LogUtils
@@ -28,25 +29,16 @@ class CourierBillingAccountDataViewModel(
 ) : NetworkViewModel(compositeDisposable) {
 
     companion object {
-        //        private const val INN_LENGTH = 12
         private const val ACCOUNT_LENGTH = 20
-
-        //        private const val BIK_LENGTH = 9
         private const val KPP_LENGTH = 9
-
-        //        private const val COR_ACCOUNT_LENGTH = 20
-//        private const val INN_BANK_LENGTH = 10
         private val PREFIX_ACCOUNT = listOf("40702", "40802", "40817")
-
     }
+
+    private var bankEntity: BankEntity? = null
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
-
-//    private val _userDataState = MutableLiveData<UserData>()
-//    val userDataState: LiveData<UserData>
-//        get() = _userDataState
 
     private val _initUIState = MutableLiveData<CourierBillingAccountDataInitUIState>()
     val initUIState: LiveData<CourierBillingAccountDataInitUIState>
@@ -102,29 +94,34 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun initStateField() {
-        if (parameters.account.isEmpty())
-            _initUIState.value = CourierBillingAccountDataInitUIState.Create(
-                tokenManager.userName(),
-                tokenManager.userInn()
-            )
-        else {
-            addSubscription(
-                interactor.getAccount(parameters.account)
-                    .map {
-                        CourierBillingAccountEditableEntity(
-                            userName = it.userName,
-                            inn = it.inn,
-                            account = it.correspondentAccount,
-                            bik = it.bic,
-                            bank = it.bank
-                        )
-                    }
-                    .subscribe(
-                        { _initUIState.value = CourierBillingAccountDataInitUIState.Edit(it) },
-                        { LogUtils { logDebugApp(it.toString()) } }) //_initUIState.value =CourierBillingAccountDataInitUIState.Create
+        if (parameters.account.isEmpty()) createAccount()
+        else editAccount()
+    }
+
+    private fun createAccount() {
+        _initUIState.value = CourierBillingAccountDataInitUIState.Create(
+            tokenManager.userName(),
+            tokenManager.userInn()
+        )
+    }
+
+    private fun editAccount() {
+        addSubscription(
+            interactor.getEditableResult(parameters.account)
+                .map { convertToEditState(it) }
+                .subscribe(
+                    { _initUIState.value = it },
+                    { LogUtils { logDebugApp(it.toString()) } })
+        )
+    }
+
+    private fun convertToEditState(it: EditableResult) =
+        with(it) {
+            CourierBillingAccountDataInitUIState.Edit(
+                courierBillingAccountEntity.convertToCourierBillingAccountEditableEntity(),
+                isRemovable
             )
         }
-    }
 
     private fun predicateMessageChecker(
         predicate: (String) -> String,
@@ -137,16 +134,6 @@ class CourierBillingAccountDataViewModel(
         else CourierBillingAccountDataUIState.Error(message, type)
     }
 
-    private fun predicateChecker(
-        predicate: (String) -> Boolean,
-        text: String,
-        type: CourierBillingAccountDataQueryType
-    ): CourierBillingAccountDataUIState {
-        return if (predicate(text))
-            CourierBillingAccountDataUIState.Error(text, type)
-        else CourierBillingAccountDataUIState.Complete(text, type)
-    }
-
     private fun isCompleteChecker(
         predicate: (String) -> String,
         text: String,
@@ -156,23 +143,6 @@ class CourierBillingAccountDataViewModel(
         text,
         type
     )) is CourierBillingAccountDataUIState.Complete
-
-//    private val surnamePredicate = { text: String -> text.isEmpty() }
-//
-//    private fun checkFocusSurnameWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
-//        Observable.just(with(focusChange) { predicateChecker(surnamePredicate, text, type) })
-//
-//    private fun checkTextSurnameWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange) =
-//        Observable.just(with(focusChange) { predicateChecker(surnamePredicate, text, type) })
-
-
-//    private val innPredicate = { text: String -> text.length != INN_LENGTH }
-//
-//    private fun checkFocusInnWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
-//        Observable.just(with(focusChange) { predicateChecker(innPredicate, text, type) })
-//
-//    private fun checkTextInnWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange) =
-//        Observable.just(with(focusChange) { predicateChecker(innPredicate, text, type) })
 
     private val accountPredicate = { text: String ->
         var isPrefix = false
@@ -196,10 +166,6 @@ class CourierBillingAccountDataViewModel(
     private fun checkTextAccountWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange) =
         Observable.just(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
 
-
-    private var bankEntity: BankEntity? = null
-
-    //    private val bikPredicate = { text: String -> text.length != KPP_LENGTH }
     private val bikPredicate = { _: String ->
         if (bankEntity == null) {
             "Введите 9 цифр"
@@ -208,28 +174,8 @@ class CourierBillingAccountDataViewModel(
         }
     }
 
-//    private val bikForBankPredicate = { text: String ->
-//        _bicProgressState.value = true
-//        addSubscription(interactor.getBank(text).subscribe({
-//            bankEntity = it
-//
-//        }, {
-//
-//
-//        }))
-//        text.length != KPP_LENGTH
-//
-//    }
-
     private fun checkFocusBikWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
         Observable.just(with(focusChange) { predicateMessageChecker(bikPredicate, text, type) })
-
-//    CourierBillingAccountDataUIState {
-//        val message = predicate(text)
-//        return if (message.isEmpty())
-//            CourierBillingAccountDataUIState.Complete(text, type)
-//        else
-//    }
 
     private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): Observable<CourierBillingAccountDataUIState> {
         return Observable.just(focusChange.text)
@@ -257,20 +203,6 @@ class CourierBillingAccountDataViewModel(
             .defaultIfEmpty(defaultBank(focusChange.type))
     }
 
-
-//        return with(focusChange) { predicateChecker(bikPredicate, text, type) }
-//    }
-
-//    private val bankPredicate = { text: String -> text.isEmpty() }
-//
-//    private fun checkFocusBankWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange): CourierBillingAccountDataUIState {
-//        return with(focusChange) { predicateChecker(bankPredicate, text, type) }
-//    }
-//
-//    private fun checkTextBankWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-//        return with(focusChange) { predicateChecker(bankPredicate, text, type) }
-//    }
-
     private val defaultBank = { type: CourierBillingAccountDataQueryType ->
         _bankNameState.value = "Введите БИК банка"
         bankEntity = null
@@ -289,40 +221,30 @@ class CourierBillingAccountDataViewModel(
     private fun mapActionFormChanges(action: CourierBillingAccountDataUIAction) = when (action) {
         is CourierBillingAccountDataUIAction.FocusChange -> checkFieldFocusChange(action)
         is CourierBillingAccountDataUIAction.TextChange -> checkFieldTextChange(action)
-        is CourierBillingAccountDataUIAction.CompleteClick -> checkFieldAll(action)
+        is CourierBillingAccountDataUIAction.SaveClick -> checkFieldAll(action)
     }
 
     private fun checkFieldFocusChange(action: CourierBillingAccountDataUIAction.FocusChange) =
         when (action.type) {
-//            CourierBillingAccountDataQueryType.SURNAME -> checkFocusSurnameWrapper(action)
-//            CourierDataQueryType.INN -> checkFocusInnWrapper(action)
             CourierBillingAccountDataQueryType.ACCOUNT -> checkFocusAccountWrapper(action)
             CourierBillingAccountDataQueryType.BIK -> checkFocusBikWrapper(action)
-//            CourierBillingAccountDataQueryType.BANK -> checkFocusBankWrapper(action)
         }
 
     private fun checkFieldTextChange(action: CourierBillingAccountDataUIAction.TextChange) =
         when (action.type) {
-//            CourierBillingAccountDataQueryType.SURNAME -> checkTextSurnameWrapper(action)
-//            CourierDataQueryType.INN -> checkTextInnWrapper(action)
             CourierBillingAccountDataQueryType.ACCOUNT -> checkTextAccountWrapper(action)
             CourierBillingAccountDataQueryType.BIK -> checkTextBikWrapper(action)
-//            CourierBillingAccountDataQueryType.BANK -> checkTextBankWrapper(action)
         }
 
-    private fun checkFieldAll(action: CourierBillingAccountDataUIAction.CompleteClick): Observable<CourierBillingAccountDataUIState> {
-        _holderState.value = true
-        _loaderState.value = CourierBillingAccountDataUILoaderState.Progress
+    private fun checkFieldAll(action: CourierBillingAccountDataUIAction.SaveClick): Observable<CourierBillingAccountDataUIState> {
+        holdAndProgress()
         val iterator = action.userData.iterator()
         while (iterator.hasNext()) {
             val nextItem = iterator.next()
             with(nextItem) {
                 val predicate = when (type) {
-//                    CourierBillingAccountDataQueryType.SURNAME -> surnamePredicate
-//                    CourierDataQueryType.INN -> innPredicate
                     CourierBillingAccountDataQueryType.ACCOUNT -> accountPredicate
                     CourierBillingAccountDataQueryType.BIK -> bikPredicate
-//                    CourierBillingAccountDataQueryType.BANK -> bankPredicate
                 }
                 if (isCompleteChecker(predicate, text, type)) iterator.remove()
             }
@@ -337,8 +259,11 @@ class CourierBillingAccountDataViewModel(
                 CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
             }
         )
+    }
 
-
+    private fun holdAndProgress() {
+        _holderState.value = true
+        _loaderState.value = CourierBillingAccountDataUILoaderState.Progress
     }
 
     fun onSaveClick(accountEntity: CourierBillingAccountEntity) {
@@ -347,15 +272,23 @@ class CourierBillingAccountDataViewModel(
 
     private fun saveAccount(accountEntity: CourierBillingAccountEntity) {
         addSubscription(
-            interactor.saveAccountRemote(accountEntity).subscribe(
+            interactor.saveAccountRemote(accountEntity, parameters.account).subscribe(
                 { saveAccountComplete() },
                 { saveAccountError(it) })
         )
     }
 
     private fun saveAccountComplete() {
+        progressComplete()
+        navigateToAccountSelector()
+    }
+
+    private fun progressComplete() {
         _holderState.value = false
         _loaderState.value = CourierBillingAccountDataUILoaderState.Disable
+    }
+
+    private fun navigateToAccountSelector() {
         _navigationEvent.value =
             CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.amount)
     }
@@ -394,13 +327,31 @@ class CourierBillingAccountDataViewModel(
     }
 
     fun onRemoveAccountClick() {
+        holdAndProgress()
+        addSubscription(
+            interactor.removeAccount(parameters.account)
+                .subscribe(
+                    { removeAccountComplete() },
+                    { removeAccountError() }
+                )
+        )
+    }
 
+    private fun removeAccountComplete() {
+        progressComplete()
+        navigateToBack()
+    }
+
+    private fun navigateToBack() {
+        _navigationEvent.value = CourierBillingAccountDataNavAction.NavigateToBack
+    }
+
+    private fun removeAccountError() {
     }
 
     fun onSaveChangeAccountClick(courierDocumentsEntity: CourierBillingAccountEntity) {
+        holdAndProgress()
         saveAccount(courierDocumentsEntity)
     }
-
-//    data class UserData(val userName: String, val userInn: String)
 
 }

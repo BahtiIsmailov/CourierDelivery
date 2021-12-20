@@ -12,14 +12,12 @@ interface CourierBillingAccountDataInteractor {
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
-    //fun saveAccount(courierBillingAccountEntity: CourierBillingAccountEntity): Completable
+    fun saveAccountRemote(accountEntity: CourierBillingAccountEntity, oldAccount: String): Completable
 
-    fun saveAccountRemote(accountEntity: CourierBillingAccountEntity): Completable
-
-    fun getAccount(account: String): Single<CourierBillingAccountEntity>
-
-    //fun accountsRemote(): Single<AccountsEntity>
+    fun getEditableResult(account: String): Single<EditableResult>
 
     fun getBank(bic: String): Maybe<BankEntity>
+
+    fun removeAccount(account: String): Completable
 
 }

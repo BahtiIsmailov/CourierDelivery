@@ -256,10 +256,12 @@ class CourierBillingAccountSelectorFragment :
                 is CourierBillingAccountSelectorDropAction.SetItems -> {
                     val callback = object : OnCourierBillingAccountSelectorCallback {
                         override fun onEditClick(idView: Int) {
+                            binding.spinnerAccount.onDetachedFromWindow()
                             viewModel.onEditAccountClick(idView)
                         }
 
                         override fun onAddClick() {
+                            binding.spinnerAccount.onDetachedFromWindow()
                             viewModel.onAddAccountClick()
                         }
                     }

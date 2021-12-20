@@ -31,7 +31,6 @@ import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.TextChangesInterface
-import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavToolbarListener
@@ -45,6 +44,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     private val binding get() = _binding!!
 
     private lateinit var inputMethod: InputMethodManager
+    private val changeText = ArrayList<ViewChanges>()
 
     companion object {
         const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
@@ -87,37 +87,13 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         viewModel.onFormChanges(changeFieldObservables())
         binding.removeAccount.setOnClickListener { viewModel.onRemoveAccountClick() }
         binding.saveChangeAccount.setOnClickListener {
-            viewModel.onSaveChangeAccountClick(
-                getCourierBillingAccountEntity()
-            )
+            viewModel.onSaveChangeAccountClick(getCourierBillingAccountEntity())
         }
     }
-
-    private val changeText = ArrayList<ViewChanges>()
-
-    data class ViewChanges(
-        val textLayout: TextInputLayout,
-        val text: EditText,
-        val type: CourierBillingAccountDataQueryType
-    )
 
     private fun changeFieldObservables(): ArrayList<Observable<CourierBillingAccountDataUIAction>> {
         val changeTextObservables = ArrayList<Observable<CourierBillingAccountDataUIAction>>()
 
-//        changeTextObservables.add(
-//            createFieldChangesObserver().initListener(
-//                binding.surnameLayout,
-//                binding.surname,
-//                CourierBillingAccountDataQueryType.SURNAME
-//            )
-//        )
-//        changeTextObservables.add(
-//            createFieldChangesObserver().initListener(
-//                binding.innLayout,
-//                binding.inn,
-//                CourierDataQueryType.INN
-//            )
-//        )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.accountLayout,
@@ -125,13 +101,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 CourierBillingAccountDataQueryType.ACCOUNT
             )
         )
-//        changeTextObservables.add(
-//            createFieldChangesObserver().initListener(
-//                binding.bankLayout,
-//                binding.bank,
-//                CourierBillingAccountDataQueryType.BANK
-//            )
-//        )
+
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.bikLayout,
@@ -146,15 +116,9 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     }
 
     private fun getFormUserData() = mutableListOf(
-//        CourierAccountData(
-//            binding.surname.text.toString(),
-//            CourierBillingAccountDataQueryType.SURNAME
-//        ),
-//        CourierAccountData(binding.inn.text.toString(), CourierDataQueryType.INN),
         CourierAccountData(
             binding.account.text.toString(), CourierBillingAccountDataQueryType.ACCOUNT
         ),
-//        CourierAccountData(binding.bank.text.toString(), CourierBillingAccountDataQueryType.BANK),
         CourierAccountData(binding.bik.text.toString(), CourierBillingAccountDataQueryType.BIK)
     )
 
@@ -175,7 +139,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             view.clicks().map {
                 view.isEnabled = false
                 binding.overlay.visibility = VISIBLE
-                CourierBillingAccountDataUIAction.CompleteClick(getFormUserData())
+                CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
             }
         }
     }
@@ -232,6 +196,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 is CourierBillingAccountDataInitUIState.Edit -> {
                     binding.save.visibility = GONE
                     binding.editAccountLayout.visibility = VISIBLE
+                    binding.removeAccount.visibility = if (it.isRemovable) VISIBLE else GONE
                     with(it.field) {
                         binding.userName.setText(userName)
                         binding.inn.setText(inn)
@@ -304,13 +269,10 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         viewModel.navigationEvent.observe(viewLifecycleOwner,
             { state ->
                 when (state) {
-                    is CourierBillingAccountDataNavAction.NavigateToAccountSelector -> {
-                        findNavController().navigate(
-                            CourierBillingAccountDataFragmentDirections.actionCourierBillingAccountDataFragmentToCourierBillingAccountSelectorFragment(
-                                CourierBillingAccountSelectorAmountParameters(state.balance)
-                            )
-                        )
-                    }
+                    is CourierBillingAccountDataNavAction.NavigateToAccountSelector ->
+                        findNavController().popBackStack()
+                    CourierBillingAccountDataNavAction.NavigateToBack ->
+                        findNavController().popBackStack()
                 }
             })
 
@@ -376,6 +338,12 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 }
 
 data class CourierAccountData(val text: String, val type: CourierBillingAccountDataQueryType)
+
+data class ViewChanges(
+    val textLayout: TextInputLayout,
+    val text: EditText,
+    val type: CourierBillingAccountDataQueryType
+)
 
 @Parcelize
 data class CourierBillingAccountDataAmountParameters(

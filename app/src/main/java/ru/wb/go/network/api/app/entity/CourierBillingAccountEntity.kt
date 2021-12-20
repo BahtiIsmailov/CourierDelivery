@@ -13,3 +13,15 @@ data class CourierBillingAccountEntity(
     val bank: String,
 )
 
+fun CourierBillingAccountEntity.convertToCourierBillingAccountEditableEntity() =
+    CourierBillingAccountEditableEntity(
+        userName = userName,
+        inn = inn,
+        account = correspondentAccount,
+        bik = bic,
+        bank = bank
+    )
+
+
+
+

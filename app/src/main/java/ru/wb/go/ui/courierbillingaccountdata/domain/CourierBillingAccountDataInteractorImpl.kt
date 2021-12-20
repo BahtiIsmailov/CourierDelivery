@@ -25,28 +25,54 @@ class CourierBillingAccountDataInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-//    override fun saveAccount(courierBillingAccountEntity: CourierBillingAccountEntity): Completable {
-//        return courierLocalRepository.saveAccount(courierBillingAccountEntity)
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
-
-    override fun saveAccountRemote(accountEntity: CourierBillingAccountEntity): Completable {
+    override fun saveAccountRemote(
+        accountEntity: CourierBillingAccountEntity,
+        oldAccount: String
+    ): Completable {
         // TODO: 13.12.2021 удалить после тестирования
 //        return Completable.timer(4, TimeUnit.SECONDS).andThen(Completable.error(Throwable()))
-        return appRemoteRepository.setBankAccounts(
-            listOf(
-                AccountEntity(
-                    bic = accountEntity.bic,
-                    name = accountEntity.bank,
-                    correspondentAccount = accountEntity.correspondentAccount
-                )
-            )
-        )
+        return courierLocalRepository.readAllAccounts()
+            .map { it.toMutableList() }
+            .map { replaceAccountsEntity(it, accountEntity) }
+            .map { it.convertToAccountEntity() }
+            .flatMapCompletable { appRemoteRepository.setBankAccounts(it) }
+            .andThen(courierLocalRepository.deleteAccount(oldAccount))
+            .andThen(courierLocalRepository.saveAccount(accountEntity))
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun getAccount(account: String): Single<CourierBillingAccountEntity> {
-        return courierLocalRepository.readAccount(account)
+    private fun replaceAccountsEntity(
+        it: MutableList<CourierBillingAccountEntity>,
+        accountEntity: CourierBillingAccountEntity
+    ): MutableList<CourierBillingAccountEntity> {
+        val each = it.iterator()
+        while (each.hasNext()) {
+            if (each.next().correspondentAccount == accountEntity.correspondentAccount)
+                each.remove()
+        }
+        it.add(accountEntity)
+        return it
+    }
+
+    private fun List<CourierBillingAccountEntity>.convertToAccountEntity(): List<AccountEntity> {
+        val accountEntity = mutableListOf<AccountEntity>()
+        forEach {
+            accountEntity.add(
+                AccountEntity(
+                    bic = it.bic,
+                    name = it.bank,
+                    correspondentAccount = it.correspondentAccount
+                )
+            )
+        }
+        return accountEntity
+    }
+
+    override fun getEditableResult(account: String): Single<EditableResult> {
+        return Single.zip(
+            courierLocalRepository.readAccount(account),
+            courierLocalRepository.readAllAccounts().map { it.size > 1 },
+            { account, isRemovable -> EditableResult(account, isRemovable) })
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -55,4 +81,30 @@ class CourierBillingAccountDataInteractorImpl(
             .compose(rxSchedulerFactory.applyMaybeSchedulers())
     }
 
+    override fun removeAccount(account: String): Completable {
+        return courierLocalRepository.readAllAccounts()
+            .map { it.toMutableList() }
+            .map { removeAccount(it, account) }
+            .map { it.convertToAccountEntity() }
+            .flatMapCompletable { appRemoteRepository.setBankAccounts(it) }
+            .andThen(courierLocalRepository.deleteAccount(account))
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun removeAccount(
+        it: MutableList<CourierBillingAccountEntity>,
+        account: String
+    ): MutableList<CourierBillingAccountEntity> {
+        val each = it.iterator()
+        while (each.hasNext()) {
+            if (each.next().correspondentAccount == account) each.remove()
+        }
+        return it
+    }
+
 }
+
+data class EditableResult(
+    val courierBillingAccountEntity: CourierBillingAccountEntity,
+    val isRemovable: Boolean
+)

@@ -31,6 +31,4 @@ class CourierBillingAccountSelectorResourceProvider(private val context: Context
         return context.getString(R.string.courier_billing_account_selector_withdraw_balance_init)
     }
 
-
-
 }

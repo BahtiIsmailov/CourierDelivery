@@ -20,6 +20,8 @@ class CourierBillingViewModel(
     private val resourceProvider: CourierBillingResourceProvider,
 ) : NetworkViewModel(compositeDisposable) {
 
+    private var balance = 0
+
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
@@ -58,8 +60,6 @@ class CourierBillingViewModel(
         _billingItems.value = CourierBillingState.Init
     }
 
-    private var balance = 0
-
     private fun initBalanceAndTransactions() {
         addSubscription(
             interactor.billing().subscribe(
@@ -72,25 +72,6 @@ class CourierBillingViewModel(
                     it.transactions.forEachIndexed { index, billingTransactionEntity ->
                         items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
                     }
-
-//                    items.clear()
-//                    _balanceInfo.value = resourceProvider.getAmount("21 400")
-//                    for (i in 1..10) {
-//                        val billing = BillingTransactionEntity(
-//                            "5122hhskkjh9", if (i % 2 > 0) {
-//                                1000 * i * -1
-//                            } else {
-//                                5000 * i
-//                            },
-//                            if (i % 2 > 0) {
-//                                "2021-04-22T12:32:25+03:00"
-//                            } else {
-//                                "2021-04-25T16:32:25+03:00"
-//                            }
-//                        )
-//                        items.add(dataBuilder.buildOrderItem(i, billing))
-//                    }
-
                     if (items.isEmpty()) {
                         _billingItems.value =
                             CourierBillingState.Empty(resourceProvider.getEmptyList())

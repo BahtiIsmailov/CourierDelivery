@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
+import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -218,26 +219,26 @@ class CourierBillingAccountSelectorViewModel(
         state is CourierBillingAccountSelectorUIState.Complete
 
     fun onNextCompleteClick(accountId: Long, amount: String) {
-//        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
-//        val amountFromText = amountFromString(amount)
-//        val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
-//        val paymentEntity = with(courierBillingAccountEntity) {
-//            PaymentEntity(
-//                amount = amountFromText,
-//                recipientBankName = bank,
-//                recipientName = "$surName $surName $surName",
-//                recipientBankBik = bik,
-//                recipientCorrespondentAccount = corAccount,
-//                recipientAccount = account,
-//                recipientInn = innBank,
-//                recipientKpp = kpp
-//            )
-//        }
-//        addSubscription(
-//            interactor.payments(paymentEntity).subscribe(
-//                { paymentsComplete(amountFromText) },
-//                { paymentsError(it) })
-//        )
+        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
+        val amountFromText = amountFromString(amount)
+        val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
+        val paymentEntity = with(courierBillingAccountEntity) {
+            PaymentEntity(
+                amount = amountFromText,
+                recipientBankName = bank,
+                recipientName = userName,
+                recipientBankBik = bic,
+                recipientCorrespondentAccount = correspondentAccount,
+                recipientAccount = "",
+                recipientInn = inn,
+                recipientKpp = ""
+            )
+        }
+        addSubscription(
+            interactor.payments(paymentEntity).subscribe(
+                { paymentsComplete(amountFromText) },
+                { paymentsError(it) })
+        )
     }
 
     fun onEditAccountClick(idView: Int) {
@@ -255,7 +256,12 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     fun onAccountSelectClick(id: Int) {
-        val selected = if (id == copyCourierBillingAccountEntity.size) 0 else id
+        val selected = if (id == copyCourierBillingAccountEntity.size) {
+            onAddAccountClick()
+            0
+        } else {
+            id
+        }
         _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(selected)
     }
 
