@@ -27,8 +27,6 @@ interface CourierUnloadingInteractor {
 
     fun scanLoaderProgress(): Observable<CourierUnloadingProgressData>
 
-    fun switchScreen(): Completable
-
     fun scannerAction(scannerAction: ScannerState)
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>

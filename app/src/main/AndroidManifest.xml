@@ -34,7 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <nav-graph android:value="@navigation/app_graph" />
+            <nav-graph android:value="@navigation/courier_graph" />
         </activity>
 
         <activity

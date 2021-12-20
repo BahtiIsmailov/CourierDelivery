@@ -38,34 +38,10 @@ import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanViewModel
 import ru.wb.go.ui.courierunloading.CourierUnloadingUnknownBoxViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
-import ru.wb.go.ui.dcloading.*
-import ru.wb.go.ui.dcunloading.*
-import ru.wb.go.ui.dcunloadingcongratulation.DcUnloadingCongratulationViewModel
-import ru.wb.go.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsViewModel
-import ru.wb.go.ui.dcunloadingforcedtermination.DcForcedTerminationViewModel
-import ru.wb.go.ui.flightdeliveries.FlightDeliveriesViewModel
-import ru.wb.go.ui.flightdeliveriesdetails.FlightDeliveriesDetailsParameters
-import ru.wb.go.ui.flightdeliveriesdetails.FlightDeliveriesDetailsViewModel
-import ru.wb.go.ui.flightpickpoint.FlightPickPointViewModel
-import ru.wb.go.ui.flights.FlightsViewModel
-import ru.wb.go.ui.flightsloader.FlightLoaderViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
 import ru.wb.go.ui.scanner.ScannerViewModel
 import ru.wb.go.ui.splash.AppLoaderViewModel
 import ru.wb.go.ui.splash.AppViewModel
-import ru.wb.go.ui.unloadingboxes.UnloadingBoxesParameters
-import ru.wb.go.ui.unloadingboxes.UnloadingBoxesViewModel
-import ru.wb.go.ui.unloadingcongratulation.CongratulationViewModel
-import ru.wb.go.ui.unloadingforcedtermination.ForcedTerminationParameters
-import ru.wb.go.ui.unloadingforcedtermination.ForcedTerminationViewModel
-import ru.wb.go.ui.unloadinghandle.UnloadingHandleParameters
-import ru.wb.go.ui.unloadinghandle.UnloadingHandleViewModel
-import ru.wb.go.ui.unloadingreturnboxes.UnloadingReturnBoxesViewModel
-import ru.wb.go.ui.unloadingreturnboxes.UnloadingReturnParameters
-import ru.wb.go.ui.unloadingscan.UnloadingBoxNotBelongModel
-import ru.wb.go.ui.unloadingscan.UnloadingBoxNotBelongParameters
-import ru.wb.go.ui.unloadingscan.UnloadingScanParameters
-import ru.wb.go.ui.unloadingscan.UnloadingScanViewModel
 
 val viewModelModule = module {
 
@@ -78,7 +54,7 @@ val viewModelModule = module {
         CheckSmsViewModel(parameters, get(), get(), get())
     }
 
-    viewModel { CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierLoaderViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { ConfigViewModel(get(), get()) }
     viewModel { CourierAgreementViewModel(get()) }
 
@@ -177,60 +153,12 @@ val viewModelModule = module {
 
     viewModel { ScannerViewModel(get(), get()) }
 
-    viewModel { DcLoadingScanViewModel(get(), get(), get()) }
-    viewModel { DcLoadingHandleViewModel(get(), get()) }
-    viewModel { DcLoadingBoxesViewModel(get(), get(), get(), get()) }
-
     viewModel { CourierWarehousesViewModel(get(), get(), get()) }
-
-    viewModel { (parameters: DcLoadingBoxNotBelongParameters) ->
-        DcLoadingBoxNotBelongViewModel(parameters)
-    }
-
-    viewModel { FlightLoaderViewModel(get(), get()) }
-    viewModel { FlightsViewModel(get(), get(), get()) }
-    viewModel { FlightPickPointViewModel(get(), get(), get(), get()) }
-    viewModel { FlightDeliveriesViewModel(get(), get(), get(), get()) }
-    viewModel { (parameters: FlightDeliveriesDetailsParameters) ->
-        FlightDeliveriesDetailsViewModel(parameters, get(), get(), get())
-    }
 
     viewModel { (parameters: CourierOrderParameters) ->
         CourierOrdersViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { CourierBillingViewModel(get(), get(), get(), get()) }
-
-    viewModel { (parameters: UnloadingScanParameters) ->
-        UnloadingScanViewModel(parameters, get(), get(), get())
-    }
-    viewModel { (parameters: UnloadingBoxNotBelongParameters) ->
-        UnloadingBoxNotBelongModel(parameters)
-    }
-    viewModel { (parameters: UnloadingBoxesParameters) ->
-        UnloadingBoxesViewModel(parameters, get(), get(), get(), get())
-    }
-    viewModel { (parameters: UnloadingReturnParameters) ->
-        UnloadingReturnBoxesViewModel(parameters, get(), get(), get(), get())
-    }
-    viewModel { (parameters: UnloadingHandleParameters) ->
-        UnloadingHandleViewModel(parameters, get(), get(), get(), get())
-    }
-
-    viewModel { (parameters: ForcedTerminationParameters) ->
-        ForcedTerminationViewModel(parameters, get(), get(), get(), get())
-    }
-
-    viewModel { CongratulationViewModel(get(), get(), get()) }
-
-    viewModel { DcUnloadingScanViewModel(get(), get(), get()) }
-    viewModel { DcUnloadingHandleViewModel(get(), get(), get(), get()) }
-    viewModel { (parameters: DcUnloadingBoxNotBelongParameters) ->
-        DcUnloadingBoxNotBelongModel(parameters)
-    }
-    viewModel { DcUnloadingBoxesViewModel(get(), get(), get(), get()) }
-    viewModel { DcForcedTerminationViewModel(get(), get(), get()) }
-    viewModel { DcForcedTerminationDetailsViewModel(get(), get(), get()) }
-    viewModel { DcUnloadingCongratulationViewModel(get(), get(), get(), get()) }
 
 }

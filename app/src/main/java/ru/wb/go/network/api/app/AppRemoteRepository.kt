@@ -5,96 +5,12 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-import ru.wb.go.db.entity.flighboxes.FlightBoxEntity
-import ru.wb.go.db.entity.pvzmatchingboxes.PvzMatchingBoxEntity
-import ru.wb.go.db.entity.warehousematchingboxes.WarehouseMatchingBoxEntity
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
-import ru.wb.go.network.api.app.entity.boxinfo.BoxInfoDataEntity
-import ru.wb.go.network.api.app.entity.warehousescan.WarehouseScanEntity
-import ru.wb.go.network.api.app.remote.flightsstatus.StatusStateEntity
-import ru.wb.go.network.api.app.remote.flightstatuses.FlightStatusesResponse
-import ru.wb.go.network.api.app.remote.time.TimeResponse
 
 interface AppRemoteRepository {
-
-    fun flight(): Single<FlightDataEntity>
-
-    fun flightsLogs(flightId: Int, createdAt: String, data: String): Completable
-
-    fun warehouseMatchingBoxes(flightId: String): Single<List<WarehouseMatchingBoxEntity>>
-
-    fun pvzMatchingBoxes(flightId: String): Single<List<PvzMatchingBoxEntity>>
-
-    fun boxInfo(barcode: String): Single<BoxInfoDataEntity>
-
-    fun flightBoxes(flightId: String): Single<List<FlightBoxEntity>>
-
-    fun time(): Single<TimeResponse>
-
-    fun loadPvzScan(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOfficeId: Int,
-    ): Completable
-
-    fun removeBoxesFromFlight(
-        flightId: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOfficeId: Int,
-        barcodes: List<String>,
-    ): Completable
-
-    fun removeBoxFromWarehouseBalance(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOfficeId: Int,
-    ): Single<FlightBoxEntity>
-
-    fun unloadPvzScan(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOfficeId: Int,
-    ): Completable
-
-    fun flightStatuses(): Single<FlightStatusesResponse>
-
-    fun putFlightStatus(
-        flightId: String,
-        flightStatus: FlightStatus,
-        officeId: Int,
-        isGetFromGPS: Boolean,
-        updatedAt: String,
-    ): Completable
-
-    fun getFlightStatus(flightId: String): Single<StatusStateEntity>
-
-    fun warehouseScan(
-        flightId: String,
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOfficeId: Int,
-    ): Single<WarehouseScanEntity>
-
-    fun putBoxTracker(
-        barcode: String,
-        isManualInput: Boolean,
-        updatedAt: String,
-        currentOfficeId: Int,
-        flightId: Int,
-        event: String,
-    ): Completable
-
 
     fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
 

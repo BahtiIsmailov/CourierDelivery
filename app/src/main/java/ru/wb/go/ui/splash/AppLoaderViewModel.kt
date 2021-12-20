@@ -36,7 +36,7 @@ class AppLoaderViewModel(
                         if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
                             || tokenManager.resources().contains(COURIER_ROLE)
                         ) toCourier()
-                        else toDelivery()
+                        else toCourier()
                     } else toAuth()
                 },
                 {
@@ -53,10 +53,6 @@ class AppLoaderViewModel(
                     }
                 }
             ))
-    }
-
-    private fun toDelivery() {
-        _navState.value = AppLoaderNavigatioState.NavigateToDelivery
     }
 
     private fun toCourier() {

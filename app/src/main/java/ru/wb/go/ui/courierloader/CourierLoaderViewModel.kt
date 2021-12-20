@@ -8,7 +8,6 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
-import ru.wb.go.db.AppLocalRepository
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -19,7 +18,6 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierTaskBoxEntity
 import ru.wb.go.network.api.app.entity.CourierTaskMyDstOfficeEntity
 import ru.wb.go.network.api.app.entity.CourierTasksMyEntity
-import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
@@ -35,8 +33,6 @@ class CourierLoaderViewModel(
     private val tokenManager: TokenManager,
     private val courierLocalRepository: CourierLocalRepository,
     private val appRemoteRepository: AppRemoteRepository,
-    private val authRemoteRepository: AuthRemoteRepository,
-    private val appLocalRepository: AppLocalRepository,
     private val userManager: UserManager
 ) : NetworkViewModel(compositeDisposable) {
 

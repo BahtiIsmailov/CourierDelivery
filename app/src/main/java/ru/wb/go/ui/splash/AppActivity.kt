@@ -17,13 +17,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.navigation.NavController
 import androidx.navigation.NavController.OnDestinationChangedListener
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.SplashActivityBinding
@@ -68,27 +65,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     }
 
     private fun initNavController() {
-        binding.navView.itemIconTintList = null
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
-
-        navController = navHostFragment.navController
-        onDestinationChangedListener =
-            OnDestinationChangedListener { _: NavController, navDestination: NavDestination, _: Bundle? ->
-                when (navDestination.id) {
-                    R.id.unloadingScanFragment -> ignoreChangeToolbar()
-                    else -> {
-                        updateTitle(navDestination.label.toString())
-                    }
-                }
-            }
-        navController.addOnDestinationChangedListener(onDestinationChangedListener)
-
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.flightsFragment, R.id.courierWarehouseFragment),
-            binding.drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     private fun ignoreChangeToolbar() {
@@ -301,19 +277,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener, OnFlightsStatus,
     override fun onBackPressed() {
         when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
-            R.id.couriersCompleteRegistrationFragment, R.id.flightsFragment, R.id.courierWarehouseFragment,
-            R.id.flightDeliveriesFragment, R.id.congratulationFragment,
+            R.id.couriersCompleteRegistrationFragment, R.id.courierWarehouseFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment -> showExitDialog()
             R.id.courierScannerLoadingScanFragment -> {
                 if (isLoadingCourierBox) showExitDialog() else super.onBackPressed()
-            }
-            R.id.unloadingScanFragment -> {
-                val toolbar = findViewById<Toolbar>(R.id.toolbar)
-                if (toolbar.navigationIcon == null) {
-                    showExitDialog()
-                } else {
-                    super.onBackPressed()
-                }
             }
             else -> {
                 super.onBackPressed()

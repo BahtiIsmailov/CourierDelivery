@@ -20,20 +20,7 @@ import ru.wb.go.ui.courierordertimer.CourierOrderTimerResourceProvider
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryResourceProvider
 import ru.wb.go.ui.courierunloading.CourierUnloadingResourceProvider
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
-import ru.wb.go.ui.dcloading.DcLoadingResourceProvider
-import ru.wb.go.ui.dcunloading.DcUnloadingScanResourceProvider
-import ru.wb.go.ui.dcunloadingcongratulation.DcUnloadingCongratulationResourceProvider
-import ru.wb.go.ui.dcunloadingforcedtermination.DcForcedTerminationDetailsResourceProvider
-import ru.wb.go.ui.dcunloadingforcedtermination.DcForcedTerminationResourceProvider
-import ru.wb.go.ui.flightdeliveries.FlightDeliveriesResourceProvider
-import ru.wb.go.ui.flightdeliveriesdetails.FlightDeliveriesDetailsResourceProvider
-import ru.wb.go.ui.flightpickpoint.FlightPickPointResourceProvider
-import ru.wb.go.ui.flights.FlightsResourceProvider
-import ru.wb.go.ui.flightsloader.FlightLoaderProvider
 import ru.wb.go.ui.splash.AppResourceProvider
-import ru.wb.go.ui.unloadingcongratulation.CongratulationResourceProvider
-import ru.wb.go.ui.unloadingforcedtermination.ForcedTerminationResourceProvider
-import ru.wb.go.ui.unloadingscan.UnloadingScanResourceProvider
 
 val resourceModule = module {
 
@@ -110,60 +97,8 @@ val resourceModule = module {
         return CourierBillingAccountSelectorResourceProvider(application)
     }
 
-    fun provideFlightLoaderProvider(application: Application): FlightLoaderProvider {
-        return FlightLoaderProvider(application)
-    }
-
-    fun provideFlightResourceProvider(application: Application): FlightsResourceProvider {
-        return FlightsResourceProvider(application)
-    }
-
-    fun provideReceptionResourceProvider(application: Application): DcLoadingResourceProvider {
-        return DcLoadingResourceProvider(application)
-    }
-
-    fun provideFlightPickPointResourceProvider(application: Application): FlightPickPointResourceProvider {
-        return FlightPickPointResourceProvider(application)
-    }
-
-    fun provideFlightDeliveriesResourceProvider(application: Application): FlightDeliveriesResourceProvider {
-        return FlightDeliveriesResourceProvider(application)
-    }
-
-    fun provideFlightDeliveriesDetailsResourceProvider(application: Application): FlightDeliveriesDetailsResourceProvider {
-        return FlightDeliveriesDetailsResourceProvider(application)
-    }
-
     fun provideTemporaryPasswordResourceProvider(application: Application): AuthResourceProvider {
         return AuthResourceProvider(application)
-    }
-
-    fun provideUnloadingScanResourceProvider(application: Application): UnloadingScanResourceProvider {
-        return UnloadingScanResourceProvider(application)
-    }
-
-    fun provideForcedTerminationResourceProvider(application: Application): ForcedTerminationResourceProvider {
-        return ForcedTerminationResourceProvider(application)
-    }
-
-    fun provideCongratulationResourceProvider(application: Application): CongratulationResourceProvider {
-        return CongratulationResourceProvider(application)
-    }
-
-    fun provideDcUnloadingScanResourceProvider(application: Application): DcUnloadingScanResourceProvider {
-        return DcUnloadingScanResourceProvider(application)
-    }
-
-    fun provideDcForcedTerminationResourceProvider(application: Application): DcForcedTerminationResourceProvider {
-        return DcForcedTerminationResourceProvider(application)
-    }
-
-    fun provideDcUnloadingCongratulationResourceProvider(application: Application): DcUnloadingCongratulationResourceProvider {
-        return DcUnloadingCongratulationResourceProvider(application)
-    }
-
-    fun provideDcForcedTerminationDetailsResourceProvider(application: Application): DcForcedTerminationDetailsResourceProvider {
-        return DcForcedTerminationDetailsResourceProvider(application)
     }
 
     single { provideAppResourceProvider(get()) }
@@ -185,19 +120,6 @@ val resourceModule = module {
     single { provideCourierBillingAccountDataResourceProvider(get()) }
     single { provideCourierBillingAccountSelectorResourceProvider(get()) }
 
-    single { provideFlightLoaderProvider(get()) }
-    single { provideFlightResourceProvider(get()) }
-    single { provideReceptionResourceProvider(get()) }
-    single { provideFlightPickPointResourceProvider(get()) }
-    single { provideFlightDeliveriesResourceProvider(get()) }
-    single { provideFlightDeliveriesDetailsResourceProvider(get()) }
     single { provideTemporaryPasswordResourceProvider(get()) }
-    single { provideUnloadingScanResourceProvider(get()) }
-    single { provideForcedTerminationResourceProvider(get()) }
-    single { provideCongratulationResourceProvider(get()) }
-    single { provideDcUnloadingScanResourceProvider(get()) }
-    single { provideDcForcedTerminationResourceProvider(get()) }
-    single { provideDcForcedTerminationDetailsResourceProvider(get()) }
-    single { provideDcUnloadingCongratulationResourceProvider(get()) }
 
 }

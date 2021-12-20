@@ -11,7 +11,6 @@ import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
-import ru.wb.go.network.api.app.FlightStatus
 import ru.wb.go.network.api.app.entity.CourierTaskStatusesIntransitEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -19,7 +18,6 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.managers.ScreenManager
 import ru.wb.go.utils.managers.TimeManager
 import java.util.concurrent.TimeUnit
 
@@ -29,7 +27,6 @@ class CourierUnloadingInteractorImpl(
     private val appRemoteRepository: AppRemoteRepository,
     private val scannerRepository: ScannerRepository,
     private val timeManager: TimeManager,
-    private val screenManager: ScreenManager,
     private val courierLocalRepository: CourierLocalRepository,
 ) : CourierUnloadingInteractor {
 
@@ -193,10 +190,6 @@ class CourierUnloadingInteractorImpl(
         courierLocalRepository.readAllLoadingBoxesByOfficeId(officeId)
 
     private fun updatedAt() = Single.just(timeManager.getLocalTime())
-
-    override fun switchScreen(): Completable {
-        return screenManager.saveState(FlightStatus.DCLOADING)
-    }
 
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepository.scannerState(scannerAction)
