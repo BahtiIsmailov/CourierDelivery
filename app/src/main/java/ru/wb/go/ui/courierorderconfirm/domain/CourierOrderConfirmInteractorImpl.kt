@@ -1,12 +1,17 @@
 package ru.wb.go.ui.courierorderconfirm.domain
 
-import io.reactivex.*
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
+import ru.wb.go.network.monitor.NetworkMonitorRepository
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
@@ -16,6 +21,7 @@ import java.util.concurrent.TimeUnit
 
 class CourierOrderConfirmInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val userManager: UserManager
@@ -86,6 +92,11 @@ class CourierOrderConfirmInteractorImpl(
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
         return courierLocalRepository.observeOrderData()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
 }

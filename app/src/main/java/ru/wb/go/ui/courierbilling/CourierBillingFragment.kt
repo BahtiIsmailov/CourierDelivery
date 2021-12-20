@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierBillingFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
@@ -18,12 +20,11 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingNegativeDelegate
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingPositiveDelegate
 import ru.wb.go.ui.courierbilling.delegates.OnCourierBillingCallback
-import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
-import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.views.ProgressButtonMode
 
 
 class CourierBillingFragment : Fragment() {
@@ -97,15 +98,21 @@ class CourierBillingFragment : Fragment() {
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
-                }
-
-                is NetworkState.Complete -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
-                }
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
+        }
+
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
@@ -200,13 +207,17 @@ class CourierBillingFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        style: Int,
+        type: Int,
         title: String,
         message: String,
         positiveButtonName: String
     ) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

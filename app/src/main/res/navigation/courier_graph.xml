@@ -58,6 +58,9 @@
         <action
             android:id="@+id/action_courierLoaderFragment_to_courierAgreementFragment"
             app:destination="@id/courierAgreementFragment" />
+        <action
+            android:id="@+id/action_courierLoaderFragment_to_courierVersionControlFragment"
+            app:destination="@id/courierVersionControlFragment" />
     </fragment>
 
     <fragment
@@ -430,5 +433,11 @@
             app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/courierVersionControlFragment"
+        android:name="ru.wb.go.ui.courierversioncontrol.CourierVersionControlFragment"
+        android:label="CourierVersionControlFragment"
+        tools:layout="@layout/courier_version_control_fragment"/>
 
 </navigation>

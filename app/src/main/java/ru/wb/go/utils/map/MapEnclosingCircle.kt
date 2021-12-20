@@ -1,6 +1,7 @@
 package ru.wb.go.utils.map
 
 import org.osmdroid.util.BoundingBox
+import ru.wb.go.app.AppConsts
 import ru.wb.go.utils.LogUtils
 import kotlin.math.abs
 import kotlin.math.pow

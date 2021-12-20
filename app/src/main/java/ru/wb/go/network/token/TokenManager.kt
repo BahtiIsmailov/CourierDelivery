@@ -4,6 +4,7 @@ import ru.wb.go.network.api.auth.entity.TokenEntity
 
 interface TokenManager {
     fun apiVersion(): String
+    fun wbUserID(): String
     fun saveToken(token: TokenEntity)
     fun bearerToken(): String
     fun bearerRefreshToken(): String

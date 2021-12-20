@@ -9,4 +9,9 @@ interface RxSchedulerFactory {
     fun <T> applyFlowableSchedulers(): FlowableTransformer<T, T>
     fun <T> applyMaybeSchedulers(): MaybeTransformer<T, T>
     fun applyCompletableSchedulers(): CompletableTransformer
+
+    fun <T> applySingleMetrics(method: String): SingleTransformer<T, T>
+    fun <T> applyObservableMetrics(method: String): ObservableTransformer<T, T>
+    fun <T> applyFlowableMetrics(method: String): FlowableTransformer<T, T>
+    fun applyCompletableMetrics(method: String): CompletableTransformer
 }

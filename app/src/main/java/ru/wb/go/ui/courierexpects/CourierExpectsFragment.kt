@@ -57,17 +57,13 @@ class CourierExpectsFragment : Fragment() {
     private fun initObserver() {
 
         viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
-            showDialog(it.style, it.title, it.message, it.button)
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierExpectsNavAction.NavigateToCouriers ->
                     findNavController().navigate(CourierExpectsFragmentDirections.actionCouriersCompleteRegistrationFragmentToCourierWarehouseFragment())
-                is CourierExpectsNavAction.NavigateToCouriersDialog -> {
-                    showDialog(state.style, state.title, state.message, state.button)
-                    binding.updateStatus.setState(ProgressButtonMode.ENABLE)
-                }
             }
         }
 
@@ -81,9 +77,18 @@ class CourierExpectsFragment : Fragment() {
         }
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun initListener() {

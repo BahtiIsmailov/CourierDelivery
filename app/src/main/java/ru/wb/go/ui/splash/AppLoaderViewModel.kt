@@ -10,14 +10,16 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import java.net.UnknownHostException
 
 class AppLoaderViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val repository: RefreshTokenRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navState = MutableLiveData<AppLoaderNavigatioState>()
     val navState: LiveData<AppLoaderNavigatioState>
@@ -61,6 +63,14 @@ class AppLoaderViewModel(
 
     private fun toAuth() {
         _navState.value = AppLoaderNavigatioState.NavigateToAuth
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "AppLoader"
     }
 
 }

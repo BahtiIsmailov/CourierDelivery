@@ -11,6 +11,7 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import java.util.concurrent.TimeUnit
 
 class CourierOrderInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,

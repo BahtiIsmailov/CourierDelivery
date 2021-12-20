@@ -3,11 +3,10 @@ package ru.wb.go.ui.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -16,6 +15,7 @@ import ru.wb.go.app.AppExtras
 
 class DialogInfoFragment : DialogFragment() {
 
+    private lateinit var resultTag: String
     private var style: Int = 0
     private lateinit var title: String
     private lateinit var message: String
@@ -28,7 +28,8 @@ class DialogInfoFragment : DialogFragment() {
 
     private fun readArguments(arguments: Bundle?) {
         if (arguments != null) {
-            style = arguments.getInt(AppExtras.EXTRA_DIALOG_STYLE, 0)
+            resultTag = arguments.getString(AppExtras.EXTRA_DIALOG_RESULT_TAG, "")
+            style = arguments.getInt(AppExtras.EXTRA_DIALOG_TYPE, 0)
             title = arguments.getString(AppExtras.EXTRA_DIALOG_TITLE, "")
             message = arguments.getString(AppExtras.EXTRA_DIALOG_MESSAGE, "")
             positive = arguments.getString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, "")
@@ -38,54 +39,56 @@ class DialogInfoFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =
-            requireActivity().layoutInflater.inflate(R.layout.dialog_info_fragment, null)
-        val titleLayout: View = dialogView.findViewById(R.id.title_layout)
+            requireActivity().layoutInflater.inflate(R.layout.custom_dialog_info_fragment, null)
+        val titleLayout: ImageView = dialogView.findViewById(R.id.title_layout)
         val title: TextView = dialogView.findViewById(R.id.title)
         val message: TextView = dialogView.findViewById(R.id.message)
         val positive: Button = dialogView.findViewById(R.id.positive)
         builder.setView(dialogView)
-        val color = when (DialogStyle.values()[style]) {
-            DialogStyle.INFO -> R.color.dialog_title_info
-            DialogStyle.WARNING -> R.color.dialog_title_warning
-            DialogStyle.ERROR -> R.color.dialog_title_alarm
+        val imageTitle = when (DialogInfoStyle.values()[style]) {
+            DialogInfoStyle.INFO -> R.drawable.ic_dialog_title_info
+            DialogInfoStyle.WARNING -> R.drawable.ic_dialog_title_warning
+            DialogInfoStyle.ERROR -> R.drawable.ic_dialog_title_alarm
         }
-        titleLayout.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
+        titleLayout.setImageResource(imageTitle)
         title.text = this.title
         message.text = this.message
         positive.text = this.positive
         positive.setOnClickListener {
             dismiss()
-            sendResult()
+            sendResult(resultTag)
         }
 
-        val progressDialog = builder.create()
-        progressDialog.setCanceledOnTouchOutside(false)
-        progressDialog.setOnKeyListener { _, keyCode, event ->
+        val dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                progressDialog.dismiss()
-                sendResult()
+                dialog.dismiss()
+                sendResult(resultTag)
             }
             true
         }
-        return progressDialog
+        return dialog
     }
 
-    private fun sendResult() {
+    private fun sendResult(resultTag: String) {
         setFragmentResult(
-            DIALOG_INFO_RESULT,
+            resultTag,
             bundleOf(DIALOG_INFO_BACK_KEY to DIALOG_INFO_BACK_VALUE)
         )
     }
 
     companion object {
         fun newInstance(
-            style: Int,
+            resultTag: String = DIALOG_INFO_RESULT_TAG,
+            type: Int,
             title: String,
             message: String,
             positiveButtonName: String,
         ): DialogInfoFragment {
             val args = Bundle()
-            args.putInt(AppExtras.EXTRA_DIALOG_STYLE, style)
+            args.putString(AppExtras.EXTRA_DIALOG_RESULT_TAG, resultTag)
+            args.putInt(AppExtras.EXTRA_DIALOG_TYPE, type)
             args.putString(AppExtras.EXTRA_DIALOG_TITLE, title)
             args.putString(AppExtras.EXTRA_DIALOG_MESSAGE, message)
             args.putString(AppExtras.EXTRA_DIALOG_POSITIVE_BUTTON_TITLE, positiveButtonName)
@@ -94,7 +97,7 @@ class DialogInfoFragment : DialogFragment() {
             return fragment
         }
 
-        const val DIALOG_INFO_RESULT = "DIALOG_INFO_RESULT"
+        const val DIALOG_INFO_RESULT_TAG = "DIALOG_INFO_RESULT_TAG"
         const val DIALOG_INFO_BACK_KEY = "DIALOG_INFO_BACK_KEY"
         const val DIALOG_INFO_BACK_VALUE = 1000
         const val DIALOG_INFO_TAG = "DIALOG_INFO_TAG"
@@ -102,3 +105,7 @@ class DialogInfoFragment : DialogFragment() {
     }
 
 }
+
+data class NavigateToDialogInfo(
+    val type: Int, val title: String, val message: String, val button: String
+)

@@ -10,16 +10,22 @@ import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractor
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.time.TimeFormatType
 import ru.wb.go.utils.time.TimeFormatter
 
 class CourierLoadingBoxesViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierLoadingInteractor,
     private val resourceProvider: CourierLoadingResourceProvider,
     private val timeFormatter: TimeFormatter,
-) : NetworkViewModel(compositeDisposable) {
+    private val deviceManager: DeviceManager,
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _boxes = MutableLiveData<CourierLoadingBoxesUIState>()
     val boxes: LiveData<CourierLoadingBoxesUIState>
@@ -33,8 +39,12 @@ class CourierLoadingBoxesViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = MutableLiveData<NavigateToMessageInfo>()
-    val navigateToMessage: LiveData<NavigateToMessageInfo>
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
+    private val _navigateToMessageInfo = MutableLiveData<NavigateToDialogInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageInfo
 
     private val _enableRemove = MutableLiveData<Boolean>()
@@ -44,8 +54,13 @@ class CourierLoadingBoxesViewModel(
     private var copyReceptionBoxes = mutableListOf<CourierLoadingBoxesItem>()
 
     init {
+        fetchVersionApp()
         observeNetworkState()
         observeScannedBoxes()
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun observeScannedBoxes() {
@@ -112,7 +127,8 @@ class CourierLoadingBoxesViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getErrorRemovedBoxesDialogMessage()
         }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        _navigateToMessageInfo.value = NavigateToDialogInfo(
+            DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getBoxDialogTitle(),
             message,
             resourceProvider.getBoxPositiveButton()
@@ -158,8 +174,14 @@ class CourierLoadingBoxesViewModel(
         )
     }
 
-    object NavigateToBack
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
 
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
+    companion object {
+        const val SCREEN_TAG = "CourierLoadingBoxes"
+    }
+
+    object NavigateToBack
 
 }

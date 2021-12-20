@@ -4,17 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
-import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -23,13 +24,23 @@ import java.text.DecimalFormat
 class CourierOrderDetailsViewModel(
     private val parameters: CourierOrderDetailsParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierOrderDetailsInteractor,
     private val resourceProvider: CourierOrderDetailsResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
+    private val deviceManager: DeviceManager,
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _orderInfo = MutableLiveData<CourierOrderDetailsInfoUIState>()
     val orderInfo: LiveData<CourierOrderDetailsInfoUIState>
@@ -60,10 +71,24 @@ class CourierOrderDetailsViewModel(
     }
 
     init {
+        onTechEventLog("init")
+        observeNetworkState()
+        fetchVersionApp()
         initToolbar()
     }
 
-    fun update() {
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+        )
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+    }
+
+    fun onUpdate() {
+        onTechEventLog("onUpdate")
         initOrder()
     }
 
@@ -74,15 +99,24 @@ class CourierOrderDetailsViewModel(
     private fun initOrder() {
         addSubscription(
             interactor.observeOrderData()
-                .subscribe({
-                    initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size)
-                    initOrderItems(it.dstOffices)
-                }, {})
+                .subscribe(
+                    { observeOrderDataComplete(it) },
+                    { observeOrderDataError(it) })
         )
+    }
+
+    private fun observeOrderDataComplete(it: CourierOrderLocalDataEntity) {
+        initOrderInfo(it.courierOrderLocalEntity, it.dstOffices.size)
+        initOrderItems(it.dstOffices)
+    }
+
+    private fun observeOrderDataError(throwable: Throwable) {
+        onTechErrorLog("onUpdate", throwable)
     }
 
     private fun initOrderInfo(courierOrderLocalEntity: CourierOrderLocalEntity, pvz: Int) {
         with(courierOrderLocalEntity) {
+            onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
@@ -124,7 +158,8 @@ class CourierOrderDetailsViewModel(
         _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
     }
 
-    fun takeOrderClick() {
+    fun onTakeOrderClick() {
+        onTechEventLog("onTakeOrderClick")
         _navigationState.value = if (interactor.carNumberIsConfirm()) {
             CourierOrderDetailsNavigationState.NavigateToOrderConfirm
         } else {
@@ -133,71 +168,19 @@ class CourierOrderDetailsViewModel(
                 parameters.order
             )
         }
-//        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogConfirm(
-//            resourceProvider.getConfirmDialogTitle(),
-//            resourceProvider.getConfirmDialogMessage(ARRIVE_FOR_COURIER_MIN, parameters.order.minVolume)
-//        )
     }
-
-    // TODO: 31.08.2021 реализовать далее по flow
-//    fun confirmTakeOrderClick()
-//   {
-//        _progressState.value = CourierOrderDetailsProgressState.Progress
-//        addSubscription(
-//            interactor.anchorTask(parameters.order.id.toString())
-//                .subscribe({
-//                    _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-//                }, {
-//                    _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-//
-//                    // TODO: 25.08.2021 выключено до полной реализации экранов номера автомобиля
-////                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToDialogInfo(
-////                        DialogStyle.WARNING.ordinal,
-////                        "Заказ забрали",
-////                        "Этот заказ уже взят в работу",
-////                        "Вернуться к списку заказов"
-////                    )
-//                    _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber(
-//                        parameters.title,
-//                        parameters.order
-//                    )
-//                })
-//        )
-//    }
 
     fun confirmTakeOrderClick() {
 
     }
 
-    private fun courierWarehouseError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToMessageInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
-                throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        progressComplete()
-    }
-
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
     }
 
     fun onItemClick(index: Int) {
+        onTechEventLog("onItemClick")
         changeItemSelected(index)
     }
 
@@ -233,12 +216,13 @@ class CourierOrderDetailsViewModel(
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 
-    data class NavigateToMessageInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierOrderDetails"
+    }
 
     data class Label(val label: String)
 

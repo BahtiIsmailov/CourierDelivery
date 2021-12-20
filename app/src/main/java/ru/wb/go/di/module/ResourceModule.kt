@@ -11,6 +11,7 @@ import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvid
 import ru.wb.go.ui.courierdata.CourierDataResourceProvider
 import ru.wb.go.ui.courierexpects.CourierExpectsResourceProvider
 import ru.wb.go.ui.courierintransit.CourierIntransitResourceProvider
+import ru.wb.go.ui.courierloader.CourierLoaderResourceProvider
 import ru.wb.go.ui.courierloading.CourierLoadingResourceProvider
 import ru.wb.go.ui.couriermap.CourierMapResourceProvider
 import ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmResourceProvider
@@ -19,6 +20,7 @@ import ru.wb.go.ui.courierorders.CourierOrdersResourceProvider
 import ru.wb.go.ui.courierordertimer.CourierOrderTimerResourceProvider
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryResourceProvider
 import ru.wb.go.ui.courierunloading.CourierUnloadingResourceProvider
+import ru.wb.go.ui.courierversioncontrol.CourierVersionControlResourceProvider
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
 import ru.wb.go.ui.splash.AppResourceProvider
 
@@ -34,6 +36,10 @@ val resourceModule = module {
 
     fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CourierExpectsResourceProvider {
         return CourierExpectsResourceProvider(application)
+    }
+
+    fun provideCourierVersionControlResourceProvider(application: Application): CourierVersionControlResourceProvider {
+        return CourierVersionControlResourceProvider(application)
     }
 
     fun provideCourierOrderDetailsResourceProvider(application: Application): CourierOrderDetailsResourceProvider {
@@ -54,6 +60,10 @@ val resourceModule = module {
 
     fun provideCourierOrderConfirmResourceProvider(application: Application): CourierOrderConfirmResourceProvider {
         return CourierOrderConfirmResourceProvider(application)
+    }
+
+    fun provideCourierLoaderResourceProvider(application: Application): CourierLoaderResourceProvider {
+        return CourierLoaderResourceProvider(application)
     }
 
     fun provideCourierOrderTimerResourceProvider(application: Application): CourierOrderTimerResourceProvider {
@@ -104,11 +114,13 @@ val resourceModule = module {
     single { provideAppResourceProvider(get()) }
     single { provideUserDataResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
+    single { provideCourierVersionControlResourceProvider(get()) }
     single { provideCourierOrderDetailsResourceProvider(get()) }
     single { provideCourierWarehouseResourceProvider(get()) }
     single { provideCourierOrderResourceProvider(get()) }
     single { provideCourierCarNumberResourceProvider(get()) }
     single { provideCourierOrderConfirmResourceProvider(get()) }
+    single { provideCourierLoaderResourceProvider(get()) }
     single { provideCourierOrderTimerResourceProvider(get()) }
     single { provideCourierScannerLoadingResourceProvider(get()) }
     single { provideCourierIntransitResourceProvider(get()) }

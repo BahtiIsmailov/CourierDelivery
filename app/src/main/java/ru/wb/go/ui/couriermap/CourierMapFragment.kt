@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -20,10 +21,19 @@ import com.google.android.gms.location.LocationServices
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
+import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import ru.wb.go.BuildConfig
+import ru.wb.go.R
+import ru.wb.go.databinding.MapFragmentBinding
+import ru.wb.go.ui.scanner.hasPermissions
+import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.map.CoordinatePoint
+import ru.wb.go.utils.map.MapPoint
+import java.io.File
 import ru.wb.go.BuildConfig
 import ru.wb.go.R
 import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
@@ -45,8 +55,11 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     companion object {
         private const val REQUEST_ERROR = 0
         private const val MY_LOCATION_ID = "my_location_id"
-        private const val MIN_ZOOM = 8.0
+        private const val OSMD_BASE_PATH = "osmdroid"
+        private const val OSMD_BASE_TILES = "tiles"
+        private const val MIN_ZOOM = 9.0
         private const val MAX_ZOOM = 20.0
+        private const val DEFAULT_POINT_ZOOM = 13.0
         private const val SIZE_IN_PIXELS = 100
     }
 
@@ -104,7 +117,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         if (hasPermissions(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         ) {
             initMapView()
@@ -113,7 +125,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
 
@@ -121,11 +132,15 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun initMapView() {
-        Configuration.getInstance().load(
+        val config: IConfigurationProvider = Configuration.getInstance()
+        config.osmdroidBasePath = createOsmdroidBasePath()
+        config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
+        config.userAgentValue = BuildConfig.APPLICATION_ID
+        config.load(
             requireActivity(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
-        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
+
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapController = binding.map.controller
@@ -134,7 +149,21 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.setMultiTouchControls(true)
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
+        binding.map.setUseDataConnection(true)
         viewModel.onInitPermission()
+    }
+
+    private fun createOsmdroidTilePath(osmdroidBasePath: File): File {
+        val osmdroidTilePath = File(osmdroidBasePath, OSMD_BASE_TILES)
+        osmdroidTilePath.mkdirs()
+        return osmdroidTilePath
+    }
+
+    private fun createOsmdroidBasePath(): File {
+        val path: File = requireActivity().filesDir
+        val osmdroidBasePath = File(path, OSMD_BASE_PATH)
+        osmdroidBasePath.mkdirs()
+        return osmdroidBasePath
     }
 
     private fun drawMapMarker(id: String, lat: Double, long: Double, icon: Int) {
@@ -157,13 +186,13 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             mapController.setCenter((this as Marker).position)
         }
         mapController.setZoom(16.0)
+        binding.map.invalidate()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
         viewModel.mapState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierMapState.NavigateToPointByZoomRadius -> navigateToPointByZoomRadius(it.startNavigation)
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
@@ -179,8 +208,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private fun navigateToPoint(it: MapPoint) {
         val point = GeoPoint(it.lat, it.long)
-        mapController.setZoom(14.0)
+        mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
+        binding.map.invalidate()
     }
 
     private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
@@ -199,40 +229,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
-    private fun navigateToPointByZoomRadius(it: MapCircle) {
-
-        val point = it.point
-        val radius = it.radius
-
-        val maxLat = point.latitude + MAP_WAREHOUSE_LAT_DISTANCE
-        val maxLong = point.longitude + MAP_WAREHOUSE_LON_DISTANCE
-        val minLat = point.latitude - MAP_WAREHOUSE_LAT_DISTANCE
-        val minLong = point.longitude - MAP_WAREHOUSE_LON_DISTANCE
-        val boundingBox = BoundingBox(maxLat, maxLong, minLat, minLong)
-
-        //mapController.zoomToSpan(boundingBox.latitudeSpan, boundingBox.longitudeSpanWithDateLine)
-        //val geoPoint = with(it.point) { GeoPoint(latitude, longitude) }
-        val geoPoint =
-            with(it.point) { GeoPoint(boundingBox.centerLatitude, boundingBox.centerLongitude) }
-
-
-        mapController.setCenter(geoPoint)
-        binding.map.zoomToBoundingBox(boundingBox, false)
-
-
-//        val point = with(it.point) { GeoPoint(x, y) }
-//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
-//        mapController.setZoom(it.radius)
-//        mapController.setCenter(point)
-    }
-
-//    private fun navigateToPointByZoomRadius(it: MapCircle) {
-//        val point = with(it.point) { GeoPoint(x, y) }
-//        LogUtils { logDebugApp("zoomAllPoint approx " + it.radius) }
-//        mapController.setZoom(it.radius)
-//        mapController.setCenter(point)
-//    }
-
     private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
         binding.map.overlays.clear()
         initMapMarkers(mapPoints)
@@ -247,6 +243,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 item.icon
             )
         }
+        //binding.map.postInvalidate()
     }
 
     private fun initListeners() {
@@ -296,7 +293,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun forcedLocationUpdate() {
-        if (!serviceOnConnected) return //вернуть по дефолту
+        if (!serviceOnConnected) {
+            viewModel.onForcedLocationUpdateDefault()
+            return
+        }
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION

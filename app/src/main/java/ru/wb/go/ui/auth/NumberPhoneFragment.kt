@@ -10,6 +10,7 @@ import android.view.View.GONE
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,7 +19,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.AuthPhoneFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.views.ProgressButtonMode
@@ -99,15 +100,17 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         })
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
-                }
-
-                is NetworkState.Complete -> {
-                    binding.toolbarLayout.noInternetImage.visibility = INVISIBLE
-                }
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.stateBackspaceUI.observe(viewLifecycleOwner) {
@@ -136,7 +139,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
                 is NumberPhoneUIState.NumberNotFound -> {
                     showDialog(
-                        DialogStyle.WARNING.ordinal,
+                        DialogInfoStyle.WARNING.ordinal,
                         state.title,
                         state.message,
                         state.button
@@ -147,7 +150,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
                 is NumberPhoneUIState.Error -> {
                     showDialog(
-                        DialogStyle.WARNING.ordinal, state.title,
+                        DialogInfoStyle.WARNING.ordinal, state.title,
                         state.message,
                         state.button
                     )
@@ -171,9 +174,13 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
 }

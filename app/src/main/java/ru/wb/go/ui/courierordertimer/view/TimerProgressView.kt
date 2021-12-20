@@ -113,9 +113,8 @@ class TimerProgressView : View {
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        var h = h
-        h = w / 2
-        super.onSizeChanged(w, h, oldw, oldh)
+        val hHalf = w / 2
+        super.onSizeChanged(w, hHalf, oldw, oldh)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

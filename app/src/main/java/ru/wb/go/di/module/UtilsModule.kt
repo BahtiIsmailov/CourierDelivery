@@ -5,6 +5,9 @@ import com.google.gson.Gson
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.app.AppConfig
+import ru.wb.go.network.token.TokenManager
+import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.analytics.YandexMetricManagerImpl
 import ru.wb.go.utils.managers.*
 import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.prefs.SharedWorkerImpl
@@ -48,6 +51,14 @@ val utilsModule = module {
         return TimeManagerImpl(worker, timeFormatter)
     }
 
+    fun provideYandexMetricManager(
+        deviceManager: DeviceManager,
+        tokenManager: TokenManager,
+        timeManager: TimeManager
+    ): YandexMetricManager {
+        return YandexMetricManagerImpl(deviceManager, tokenManager, timeManager)
+    }
+
     single { provideSharedWorker(get(), get()) }
     single { provideDeviceManager(get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
@@ -55,5 +66,6 @@ val utilsModule = module {
     single { provideConfigManager(get(), get()) }
     single { provideTimeFormatter() }
     single { provideTimeManager(get(), get()) }
+    single { provideYandexMetricManager(get(), get(), get()) }
 
 }

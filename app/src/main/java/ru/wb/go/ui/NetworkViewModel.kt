@@ -6,10 +6,17 @@ import io.reactivex.disposables.Disposable
 import ru.wb.go.mvvm.BaseMessageResourceProvider
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
-import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.analytics.YandexMetricManager
 
-abstract class NetworkViewModel(private val compositeDisposable: CompositeDisposable) :
+abstract class NetworkViewModel(
+    private val compositeDisposable: CompositeDisposable,
+    private val metric: YandexMetricManager,
+) :
     ViewModel() {
+
+    abstract fun getScreenTag(): String
 
     protected fun addSubscription(disposable: Disposable) {
         compositeDisposable.add(disposable)
@@ -29,33 +36,38 @@ abstract class NetworkViewModel(private val compositeDisposable: CompositeDispos
     ): NavigateToDialogInfo {
         return when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
+                DialogInfoStyle.WARNING.ordinal,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+                DialogInfoStyle.ERROR.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
 
     }
 
-    data class NavigateToDialogInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
+    fun onTechEventLog(method: String, message: String = EMPTY_MESSAGE) {
+        metric.onTechEventLog(getScreenTag(), method, message)
+    }
+
+    fun onTechErrorLog(method: String, error: Throwable) {
+        metric.onTechErrorLog(getScreenTag(), method, error.toString())
+    }
+
+    companion object {
+        const val EMPTY_MESSAGE = ""
+    }
 
 }
 

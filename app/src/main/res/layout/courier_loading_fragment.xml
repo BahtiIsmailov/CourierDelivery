@@ -29,7 +29,7 @@
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/disable_scan_status"
+        android:background="@color/init_scan_status"
         android:gravity="center"
         android:letterSpacing="0.2"
         android:text="Начните сканирование"
@@ -45,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status">
 
@@ -67,9 +67,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="0000000000"
-            app:layout_constraintBottom_toBottomOf="@+id/list_layout"
+            app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
             app:layout_constraintStart_toEndOf="@+id/prefix_qr_code"
-            app:layout_constraintTop_toTopOf="@+id/list_layout" />
+            app:layout_constraintTop_toTopOf="@+id/counter_layout" />
 
         <View
             android:id="@+id/divider2"
@@ -78,45 +78,12 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="#EDEEF0"
-            app:layout_constraintBottom_toBottomOf="@+id/list_layout"
-            app:layout_constraintEnd_toStartOf="@+id/list_layout"
-            app:layout_constraintTop_toTopOf="@+id/list_layout" />
+            app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
+            app:layout_constraintEnd_toStartOf="@+id/counter_layout"
+            app:layout_constraintTop_toTopOf="@+id/counter_layout" />
 
         <LinearLayout
-            android:id="@+id/address_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/list_layout">
-
-            <TextView
-                android:id="@+id/address_title"
-                style="@style/LargeLightRegularText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:text="Адрес доставки" />
-
-            <TextView
-                android:id="@+id/address"
-                style="@style/LargeBlackRegularText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:lineSpacingExtra="4sp"
-                tools:text="-" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/list_layout"
+            android:id="@+id/counter_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
@@ -145,6 +112,39 @@
                 android:layout_marginTop="4dp"
                 android:text="0 шт." />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/address_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/complete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/counter_layout">
+
+            <TextView
+                android:id="@+id/address_title"
+                style="@style/LargeLightRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Адрес доставки" />
+
+            <TextView
+                android:id="@+id/address"
+                style="@style/LargeBlackRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:lineSpacingExtra="4sp"
+                android:maxLines="3"
+                tools:text="-" />
 
         </LinearLayout>
 
@@ -172,16 +172,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        android:paddingTop="30dp"
-        android:paddingBottom="50dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status">
 
         <ru.wb.go.ui.courierordertimer.view.TimerProgressView
             android:id="@+id/timer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
             app:ap_is_divider="true"
             app:ap_progress="0"
             app:ap_progress_background_color="@color/color_arc_foreground"

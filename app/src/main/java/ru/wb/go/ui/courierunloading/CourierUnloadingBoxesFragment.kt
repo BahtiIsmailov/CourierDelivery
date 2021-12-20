@@ -6,6 +6,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingBoxesFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.dialogs.InformationDialogFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.views.ProgressButtonMode
 
@@ -51,23 +52,39 @@ class CourierUnloadingBoxesFragment : Fragment() {
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.dc_loading_boxes_label)
     }
 
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        )
+            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    }
+
     private fun initObservable() {
 
-        viewModel.navigateToMessage.observe(viewLifecycleOwner) {
-            InformationDialogFragment.newInstance(it.title, it.message, it.button)
-                .show(parentFragmentManager, "INFO_MESSAGE_TAG")
+        viewModel.navigateToInformation.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
-                }
-
-                is NetworkState.Complete -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
-                }
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.boxes.observe(viewLifecycleOwner) {

@@ -1,6 +1,7 @@
 package ru.wb.go.ui.auth.keyboard
 
 import android.content.Context
+import ru.wb.go.ui.auth.keyboard.KeyboardInputResourceProvider
 import ru.wb.go.R
 
 class KeyboardInputResourceProviderImpl(private val context: Context) :

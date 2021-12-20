@@ -7,9 +7,16 @@ import ru.wb.go.mvvm.BaseMessageResourceProvider
 class CourierIntransitResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
+    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
+
+    fun getLabelId(id : String): String {
+        return context.getString(R.string.courier_intransit_label_id, id)
+    }
+
     fun getLabel(): String {
         return context.getString(R.string.courier_intransit_label)
     }
+
 
     fun getBoxCountAndTotal(unload: Int, total: Int): String {
         return context.getString(R.string.courier_intransit_count, unload, total)
@@ -26,5 +33,9 @@ class CourierIntransitResourceProvider(private val context: Context) :
     fun getFailedMapIcon() = R.drawable.ic_unload_office_map_failed
 
     fun getFailedMapSelectedIcon() = R.drawable.ic_unload_office_map_failed_select
+
+    fun getWaitMapIcon() = R.drawable.ic_unload_wait_office_map
+
+    fun getWaitMapSelectedIcon() = R.drawable.ic_unload_wait_office_map_selected
 
 }

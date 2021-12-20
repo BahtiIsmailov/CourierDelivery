@@ -9,21 +9,23 @@ import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProcessData
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProgressData
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingScanBoxData
+import ru.wb.go.ui.courierunloading.domain.*
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
-
-    ) : NetworkViewModel(compositeDisposable) {
+    private val deviceManager: DeviceManager,
+) : NetworkViewModel(compositeDisposable, metric) {
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
@@ -37,12 +39,23 @@ class CourierUnloadingScanViewModel(
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToMessageInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToMessageInfo>
-        get() = _navigateToMessageInfo
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
-    private val _beepEvent =
-        SingleLiveEvent<CourierUnloadingScanBeepState>()
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
+
+    private val _navigateToDialogScoreError = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogScoreError: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogScoreError
+
+    private val _navigateToDialogConfirmScoreInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogConfirmScoreInfo
+
+    private val _beepEvent = SingleLiveEvent<CourierUnloadingScanBeepState>()
     val beepEvent: LiveData<CourierUnloadingScanBeepState>
         get() = _beepEvent
 
@@ -56,44 +69,55 @@ class CourierUnloadingScanViewModel(
     val boxStateUI: LiveData<CourierUnloadingScanBoxState>
         get() = _boxStateUI
 
-    private val _bottomEvent =
-        MutableLiveData<CourierUnloadingScanBottomState>()
-    val bottomProgressEvent: LiveData<CourierUnloadingScanBottomState>
-        get() = _bottomEvent
+    private val _isEnableStateEvent = SingleLiveEvent<Boolean>()
+    val isEnableStateEvent: LiveData<Boolean>
+        get() = _isEnableStateEvent
 
     init {
+        onTechEventLog("init")
         initToolbar()
+        fetchVersionApp()
         observeNetworkState()
         observeInitScanProcess()
         observeScanProcess()
         observeScanProgress()
     }
 
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+    }
+
     private fun observeInitScanProcess() {
         addSubscription(interactor.readUnloadingLastBox(parameters.officeId)
-            .map { initResult ->
-                val readyStatus = resourceProvider.getReadyStatus()
-                val accepted = resourceProvider.getAccepted(
-                    initResult.deliveredCount,
-                    initResult.fromCount
-                )
-                if (initResult.id.isEmpty()) {
-                    CourierUnloadingScanBoxState.Empty(
-                        readyStatus,
-                        resourceProvider.getEmptyQr(),
-                        resourceProvider.getEmptyAddress(),
-                        accepted
-                    )
-                } else {
-                    CourierUnloadingScanBoxState.BoxInit(
-                        readyStatus, initResult.id, initResult.address, accepted
-                    )
-                }
-            }.subscribe(
-                { _boxStateUI.value = it },
-                { LogUtils { logDebugApp(it.toString()) } }
+            .map { mapInitScanProcess(it) }
+            .subscribe(
+                {
+                    onTechEventLog("observeInitScanProcessComplete")
+                    _boxStateUI.value = it
+                },
+                { onTechErrorLog("observeInitScanProcessError", it) }
             )
         )
+    }
+
+    private fun mapInitScanProcess(initResult: CourierUnloadingLastBoxResult): CourierUnloadingScanBoxState {
+        val readyStatus = resourceProvider.getReadyStatus()
+        val accepted = resourceProvider.getAccepted(
+            initResult.deliveredCount,
+            initResult.fromCount
+        )
+        return if (initResult.id.isEmpty()) {
+            CourierUnloadingScanBoxState.Empty(
+                readyStatus,
+                resourceProvider.getEmptyQr(),
+                resourceProvider.getEmptyAddress(),
+                accepted
+            )
+        } else {
+            CourierUnloadingScanBoxState.BoxInit(
+                readyStatus, initResult.id, initResult.address, accepted
+            )
+        }
     }
 
     private fun initToolbar() {
@@ -111,28 +135,38 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    fun cancelUnloadingClick() {
+    fun onCancelScoreUnloadingClick() {
+        onTechEventLog("onCancelScoreUnloadingClick")
+        _isEnableStateEvent.value = true
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         onStartScanner()
     }
 
-    fun confirmUnloadingClick() {
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
+    fun onConfirmScoreUnloadingClick() {
+        onTechEventLog("onConfirmScoreUnloadingClick")
+        confirmUnloading()
+    }
+
+    private fun confirmUnloading() { //fromCount: Int, unloadedCount: Int
         addSubscription(
             interactor.confirmUnloading(parameters.officeId)
-                .subscribe({ confirmUnloadingComplete() }, { confirmUnloadingError() })
+                .subscribe({ confirmUnloadingComplete(it) }, { confirmUnloadingError(it) })
         )
     }
 
-    private fun confirmUnloadingComplete() {
-        LogUtils { logDebugApp("confirmUnloadingComplete") }
+    private fun confirmUnloadingComplete(courierBoxScoreResult: CourierBoxScoreResult) {
+        onTechEventLog(
+            "confirmUnloadingComplete",
+            "fromCount " + courierBoxScoreResult.fromCount + " unloadedCount " + courierBoxScoreResult.unloadedCount + " loadedCount " + courierBoxScoreResult.loadedCount
+        )
+        interactor.confirmUnloadingComplete(parameters.officeId)
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
-
     }
 
-    private fun confirmUnloadingError() {
-        LogUtils { logDebugApp("confirmUnloadingError") }
+    private fun confirmUnloadingError(throwable: Throwable) {
+        onTechErrorLog("confirmUnloadingError", throwable)
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
@@ -149,28 +183,22 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    private fun observeScanProgress() {
-        addSubscription(
-            interactor.scanLoaderProgress()
-                .subscribe({
-                    _progressEvent.value = when (it) {
-                        CourierUnloadingProgressData.Complete -> {
-                            CourierUnloadingScanProgress.LoaderComplete
-                        }
-                        CourierUnloadingProgressData.Progress -> {
-                            CourierUnloadingScanProgress.LoaderProgress
-                        }
-                    }
-                }, {})
-        )
-    }
-
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
-        LogUtils { logDebugApp("Unloading Observe Scan Process Complete " + scanProcess) }
+        onTechEventLog("observeScanProcessComplete", "scanProcess $scanProcess")
         val scanBoxData = scanProcess.scanBoxData
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
         when (scanBoxData) {
+            is CourierUnloadingScanBoxData.ScannerReady -> {
+                _boxStateUI.value = with(scanBoxData) {
+                    CourierUnloadingScanBoxState.ScannerReady(
+                        resourceProvider.getReadyStatus(),
+                        qrCode,
+                        address,
+                        accepted
+                    )
+                }
+            }
             is CourierUnloadingScanBoxData.BoxAdded -> {
                 _boxStateUI.value = with(scanBoxData) {
                     CourierUnloadingScanBoxState.BoxAdded(
@@ -181,7 +209,7 @@ class CourierUnloadingScanViewModel(
                     )
                 }
                 _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
-                _bottomEvent.value = CourierUnloadingScanBottomState.Enable
+                _isEnableStateEvent.value = true
             }
             is CourierUnloadingScanBoxData.UnknownBox -> {
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToUnknownBox
@@ -192,8 +220,6 @@ class CourierUnloadingScanViewModel(
                     accepted
                 )
                 _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
-//                _bottomEvent.value =
-//                    if (scanProcess.unloadingCounter > 0) CourierUnloadingScanBottomState.Enable else CourierUnloadingScanBottomState.Disable
             }
             CourierUnloadingScanBoxData.Empty -> _boxStateUI.value =
                 CourierUnloadingScanBoxState.Empty(
@@ -202,17 +228,6 @@ class CourierUnloadingScanViewModel(
                     resourceProvider.getEmptyAddress(),
                     accepted
                 )
-            is CourierUnloadingScanBoxData.ScannerReady -> {
-                _boxStateUI.value = with(scanBoxData) {
-                    CourierUnloadingScanBoxState.ScannerReady(
-                        resourceProvider.getReadyStatus(),
-                        qrCode,
-                        address,
-                        accepted
-                    )
-                }
-
-            }
             is CourierUnloadingScanBoxData.UnloadingCompleted -> {
                 _boxStateUI.value = with(scanBoxData) {
                     CourierUnloadingScanBoxState.BoxAdded(
@@ -222,42 +237,69 @@ class CourierUnloadingScanViewModel(
                         accepted
                     )
                 }
-                _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
-                _bottomEvent.value = CourierUnloadingScanBottomState.Enable
+                _isEnableStateEvent.value = true
             }
         }
+    }
+
+    private fun observeScanProgress() {
+        addSubscription(
+            interactor.scanLoaderProgress()
+                .subscribe({
+                    _isEnableStateEvent.value = when (it) {
+                        CourierUnloadingProgressData.Complete -> true
+                        CourierUnloadingProgressData.Progress -> false
+                    }
+                },
+                    { onTechErrorLog("observeScanProcessError", it) })
+        )
     }
 
     fun onListClicked() {
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToBoxes
     }
 
-    fun onCompleteUnloadClicked() {
+    fun onCompleteUnloadClick() {
+        _isEnableStateEvent.value = false
         onStopScanner()
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
             interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
-                _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToConfirmDialog(
-                    resourceProvider.getUnloadingDialogTitle(),
-                    resourceProvider.getUnloadingDialogMessage(it.unloadedCount, it.fromCount)
+                onTechEventLog(
+                    "readUnloadingBoxCounterComplete",
+                    "fromCount " + it.fromCount + " unloadedCount " + it.unloadedCount
                 )
+                if (it.fromCount == it.unloadedCount) confirmUnloading()
+                else showUnloadingScoreDialog(it)
             },
-                { onStartScanner() })
+                {
+                    onTechErrorLog("readUnloadingBoxCounterError", it)
+                    _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+                    _navigateToDialogScoreError.value = NavigateToDialogInfo(
+                        DialogInfoStyle.ERROR.ordinal,
+                        resourceProvider.getGenericServiceTitleError(),
+                        it.toString(),
+                        resourceProvider.getGenericServiceButtonError()
+                    )
+                })
         )
     }
 
-    private fun switchScreenError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getSwitchDialogButton()
-        }
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
+    private fun showUnloadingScoreDialog(it: CourierUnloadingBoxScoreResult) {
+        _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
+            DialogInfoStyle.ERROR.ordinal,
+            resourceProvider.getUnloadingDialogTitle(),
+            resourceProvider.getUnloadingDialogMessage(
+                it.unloadedCount,
+                it.fromCount
+            ),
+            resourceProvider.getUnloadingDialogPositive(),
+            resourceProvider.getUnloadingDialogNegative()
         )
     }
 
     private fun observeScanProcessError(throwable: Throwable) {
-        LogUtils { logDebugApp("observeScanProcessError " + throwable) }
+        onTechErrorLog("observeScanProcessError", throwable)
         val error = if (throwable is CompositeException) {
             throwable.exceptions[0]
         } else throwable
@@ -270,8 +312,10 @@ class CourierUnloadingScanViewModel(
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
-        interactor.scannerAction(ScannerState.Stop)
-        _navigateToMessageInfo.value = NavigateToMessageInfo(
+        onStopScanner()
+        _beepEvent.value = CourierUnloadingScanBeepState.UnknownQR
+        _navigateToDialogInfo.value = NavigateToDialogInfo(
+            DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }
@@ -284,8 +328,23 @@ class CourierUnloadingScanViewModel(
         interactor.scannerAction(ScannerState.Start)
     }
 
+    fun onScoreDialogInfoClick() {
+        onStartScanner()
+    }
+
+    fun onScoreDialogConfirmClick() {
+        _isEnableStateEvent.value = true
+        onStartScanner()
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierUnloadingScan"
+    }
+
     data class Label(val label: String)
-
-    data class NavigateToMessageInfo(val title: String, val message: String, val button: String)
-
 }

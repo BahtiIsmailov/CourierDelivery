@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoaderFragmentBinding
+import ru.wb.go.ui.courieragreement.CourierAgreementNavigationState
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.ui.splash.OnUserInfo
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.views.ProgressImageButtonMode
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
@@ -90,6 +93,11 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 CourierLoaderNavigationState.NavigateToAgreement -> {
                     findNavController().navigate(
                         CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierAgreementFragment()
+                    )
+                }
+                CourierLoaderNavigationState.NavigateToAppUpdate -> {
+                    findNavController().navigate(
+                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierVersionControlFragment()
                     )
                 }
             }

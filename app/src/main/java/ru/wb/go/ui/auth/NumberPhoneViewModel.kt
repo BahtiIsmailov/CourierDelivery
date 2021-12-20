@@ -12,14 +12,15 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.NumberPhoneUIState.*
 import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.PhoneUtils
 
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val resourceProvider: AuthResourceProvider,
     private val interactor: NumberPhoneInteractor,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigationEvent =
         SingleLiveEvent<NumberPhoneNavAction>()
@@ -29,6 +30,10 @@ class NumberPhoneViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _stateUI = SingleLiveEvent<NumberPhoneUIState>()
     val stateUI: LiveData<NumberPhoneUIState>
@@ -42,12 +47,20 @@ class NumberPhoneViewModel(
         observeNetworkState()
     }
 
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+        )
+    }
+
     fun onCheckPhone(number: String) {
+        onTechEventLog("onCheckPhone")
         fetchPhoneNumber(number)
     }
 
     fun onLongClick() {
-        navigateToConfig()
+        // TODO: 26.11.2021 turn off config
+        //navigateToConfig()
     }
 
     fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
@@ -60,7 +73,7 @@ class NumberPhoneViewModel(
                 .map { numberToPhoneSpanFormat(it) }
                 .subscribe(
                     { _stateUI.value = it },
-                    { LogUtils { logDebugApp("onNumberObservableClicked err " + it.toString()) } })
+                    { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }
 
@@ -102,14 +115,16 @@ class NumberPhoneViewModel(
     }
 
     private fun fetchPhoneNumberComplete(phone: String) {
+        onTechEventLog("fetchPhoneNumberComplete", "NavigateToCheckPassword")
         _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)
         _stateUI.value = NumberFormatComplete
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
+        onTechErrorLog("fetchPhoneNumberError", throwable)
         when (throwable) {
             is NoInternetException -> _stateUI.value = Error(
-                throwable.message,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
@@ -121,24 +136,22 @@ class NumberPhoneViewModel(
                     _stateUI.value = NumberFormatComplete
                 } else {
                     _stateUI.value = NumberNotFound(
+                        resourceProvider.getGenericServiceTitleError(),
                         throwable.error.message,
-                        resourceProvider.getGenericServiceMessageError(),
                         resourceProvider.getGenericServiceButtonError()
                     )
                 }
             }
             else -> _stateUI.value = Error(
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
     }
 
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
     }
 
     companion object {
@@ -146,6 +159,7 @@ class NumberPhoneViewModel(
         const val NUMBER_LENGTH_MAX = 10
         const val NUMBER_DROP_COUNT_LAST = 1
         const val DEFAULT_TTL = 0
+        const val SCREEN_TAG = "NumberPhone"
     }
 
 }

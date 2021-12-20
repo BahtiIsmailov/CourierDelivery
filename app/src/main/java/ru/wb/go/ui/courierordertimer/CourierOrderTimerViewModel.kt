@@ -4,23 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
-import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable) {
+) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
     val orderTimer: LiveData<CourierOrderTimerState>
@@ -30,6 +32,15 @@ class CourierOrderTimerViewModel(
     val orderInfo: LiveData<CourierOrderTimerInfoUIState>
         get() = _orderInfo
 
+    private val _navigateToDialogTimeIsOut = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogTimeIsOut: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogTimeIsOut
+
+
+    private val _navigateToDialogRefuseOrder = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogRefuseOrder
+
     private val _navigationState = SingleLiveEvent<CourierOrderTimerNavigationState>()
     val navigationState: LiveData<CourierOrderTimerNavigationState>
         get() = _navigationState
@@ -38,8 +49,12 @@ class CourierOrderTimerViewModel(
     val progressState: LiveData<CourierOrderTimerProgressState>
         get() = _progressState
 
+    private val _holdState = MutableLiveData<Boolean>()
+    val holdState: LiveData<Boolean>
+        get() = _holdState
 
     init {
+        onTechEventLog("init")
         initOrder()
     }
 
@@ -50,19 +65,29 @@ class CourierOrderTimerViewModel(
                     {
                         initOrderInfo(it)
                         initTimer(it.reservedDuration, it.reservedAt)
-                    }, {
-                        LogUtils {logDebugApp("initOrder() error " + it)}
+                    },
+                    {
+                        onTechErrorLog("initOrder", it)
                     }
                 )
         )
     }
 
+    private fun lockState() {
+        _holdState.value = true
+    }
+
+    private fun unlockState() {
+        _holdState.value = false
+    }
+
     private fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
+        LogUtils{logDebugApp("initTimer reservedDuration " + reservedDuration + " reservedAt " + reservedAt)}
         interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer
-                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError() })
+                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
         )
     }
 
@@ -70,14 +95,16 @@ class CourierOrderTimerViewModel(
         timerState.handle(this)
     }
 
-    private fun onHandleSignUpError() {}
+    private fun onHandleSignUpError(throwable: Throwable) {
+        onTechErrorLog("onHandleSignUpError", throwable)
+    }
 
     private fun timeIsOut() {
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToDialogInfo(
-            DialogStyle.WARNING.ordinal,
-            "Время вышло",
-            "К сожалению, вы не успели приехать вовремя. Заказ был отменён",
-            "Вернуться к списку заказов"
+        _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
+            DialogInfoStyle.WARNING.ordinal,
+            resourceProvider.getDialogTimerTitle(),
+            resourceProvider.getDialogTimerMessage(),
+            resourceProvider.getDialogTimerButton()
         )
     }
 
@@ -100,71 +127,64 @@ class CourierOrderTimerViewModel(
         _progressState.value = CourierOrderTimerProgressState.ProgressComplete
     }
 
-    fun refuseOrderClick() {
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToRefuseOrderDialog(
-            "Отказаться от заказа",
-            "Вы уверены, что хотите отказаться от заказа?"
+    fun onRefuseOrderClick() {
+        lockState()
+        _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
+            DialogInfoStyle.WARNING.ordinal,
+            resourceProvider.getDialogTimerSkipTitle(),
+            resourceProvider.getDialogTimerSkipMessage(),
+            resourceProvider.getDialogTimerPositiveButton(),
+            resourceProvider.getDialogTimerNegativeButton()
         )
     }
 
     fun iArrivedClick() {
+        onTechEventLog("iArrivedClick")
+        lockState()
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
+        unlockState()
     }
 
-    fun returnToListOrderClick() {
+    fun onReturnToListOrderClick() {
+        onTechEventLog("onReturnToListOrderClick")
+        lockState()
         deleteTask()
     }
 
-    fun refuseOrderConfirmClick() {
+    fun onRefuseOrderConfirmClick() {
+        onTechEventLog("onRefuseOrderConfirmClick")
+        lockState()
         deleteTask()
+    }
+
+    fun onRefuseOrderCancelClick() {
+        unlockState()
     }
 
     private fun deleteTask() {
-        addSubscription(interactor.deleteTask().subscribe(
-            { toWarehouse() }, {})
+        addSubscription(interactor.deleteTask()
+            .subscribe(
+                {
+                    unlockState()
+                    toWarehouse()
+                },
+                {
+                    unlockState()
+                    onTechErrorLog("onHandleSignUpError", it)
+                }
+            )
         )
     }
 
     private fun toWarehouse() {
+        onTechEventLog("toWarehouse")
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }
 
-    private fun courierWarehouseError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToMessageInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
-                throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToMessageInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        progressComplete()
-    }
-
     fun onCancelLoadClick() {
+        onTechEventLog("onCancelLoadClick")
         clearSubscription()
     }
-
-    data class NavigateToMessageInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    )
-
-    data class Label(val label: String)
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
         updateTimer(duration, downTickSec)
@@ -178,7 +198,16 @@ class CourierOrderTimerViewModel(
     }
 
     override fun onTimeIsOverState() {
+        onTechEventLog("onTimeIsOverState")
         timeIsOut()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierOrderTimer"
     }
 
 }

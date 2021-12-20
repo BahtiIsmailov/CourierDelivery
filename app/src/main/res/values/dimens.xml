@@ -61,6 +61,9 @@
     <dimen name="box_corner_radius">8dp</dimen>
 
 
+
+    <dimen name="keyboard_height">380dp</dimen>
+
     <dimen name="scanner_zoom_button">30dp</dimen>
 
     <dimen name="shadow_list">12dp</dimen>

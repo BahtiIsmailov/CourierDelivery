@@ -17,7 +17,7 @@ interface CourierUnloadingInteractor {
 
     fun readUnloadingLastBox(officeId: Int): Single<CourierUnloadingLastBoxResult>
 
-    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxCounterResult>
+    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult>
 
     fun scannedBoxes(officeId: Int): Single<List<CourierBoxEntity>>
 
@@ -31,6 +31,8 @@ interface CourierUnloadingInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
-    fun confirmUnloading(officeId: Int): Completable
+    fun confirmUnloading(officeId: Int): Single<CourierBoxScoreResult>
+
+    fun confirmUnloadingComplete(officeId: Int)
 
 }

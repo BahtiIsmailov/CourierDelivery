@@ -11,6 +11,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -21,7 +22,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.AuthCheckSmsFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
 
@@ -87,52 +88,48 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed ->
-                    binding.toolbarLayout.noInternetImage.visibility = VISIBLE
-                is NetworkState.Complete ->
-                    binding.toolbarLayout.noInternetImage.visibility = INVISIBLE
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.checkSmsUIState.observe(viewLifecycleOwner, { state ->
             when (state) {
                 CheckSmsUIState.Progress -> {
                     binding.smsCodeProgress.visibility = VISIBLE
+                    binding.viewPinCode.visibility = INVISIBLE
                     binding.viewKeyboard.lock()
                     binding.viewKeyboard.inactive()
-                    binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = false
                 }
                 CheckSmsUIState.Complete -> {
                     binding.smsCodeProgress.visibility = INVISIBLE
+                    binding.viewPinCode.visibility = VISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
-                    binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = false
-                }
-                is CheckSmsUIState.Error -> {
-                    binding.viewPinCode.text?.clear()
-                    binding.smsCodeProgress.visibility = INVISIBLE
-                    binding.viewKeyboard.unlock()
-                    binding.viewKeyboard.active()
-                    binding.viewKeyboard.clear()
-                    binding.bottomInfo.visibility = VISIBLE
-                    binding.bottomInfo.text = state.title
-                    binding.repeatSms.isEnabled = true
                 }
                 is CheckSmsUIState.MessageError -> {
                     binding.viewPinCode.text?.clear()
                     showDialog(
-                        DialogStyle.WARNING.ordinal, state.title,
+                        DialogInfoStyle.WARNING.ordinal,
+                        state.title,
                         state.message,
                         state.button
                     )
                     binding.smsCodeProgress.visibility = INVISIBLE
+                    binding.viewPinCode.visibility = VISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                     binding.viewKeyboard.clear()
-                    binding.bottomInfo.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = true
                 }
                 is CheckSmsUIState.CodeFormat -> {
@@ -144,11 +141,10 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         viewModel.repeatStateUI.observe(viewLifecycleOwner, { state ->
             when (state) {
                 CheckSmsUIRepeatState.RepeatPasswordComplete -> {
-                    binding.repeatSmsTimer.visibility = View.GONE
+                    binding.repeatSmsTimer.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = true
                     binding.repeatSms.visibility = VISIBLE
-                    binding.bottomInfo.visibility = INVISIBLE
-                    binding.repeatPasswordProgress.visibility = View.GONE
+                    binding.repeatPasswordProgress.visibility = INVISIBLE
                 }
                 is CheckSmsUIRepeatState.RepeatPasswordTimer -> {
                     binding.repeatSmsTimer.visibility = VISIBLE
@@ -157,22 +153,22 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                         TextView.BufferType.SPANNABLE
                     )
                     binding.repeatSms.isEnabled = true
-                    binding.repeatSms.visibility = View.GONE
-                    binding.repeatPasswordProgress.visibility = View.GONE
+                    binding.repeatSms.visibility = INVISIBLE
+                    binding.repeatPasswordProgress.visibility = INVISIBLE
                 }
                 CheckSmsUIRepeatState.RepeatPasswordProgress -> {
-                    binding.repeatSmsTimer.visibility = View.GONE
+                    binding.repeatSmsTimer.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = false
                     binding.repeatSms.visibility = VISIBLE
                     binding.repeatPasswordProgress.visibility = VISIBLE
                 }
                 is CheckSmsUIRepeatState.ErrorPassword -> {
-                    binding.repeatSmsTimer.visibility = View.GONE
+                    binding.repeatSmsTimer.visibility = INVISIBLE
                     binding.repeatSms.isEnabled = true
                     binding.repeatSms.visibility = VISIBLE
-                    binding.repeatPasswordProgress.visibility = View.GONE
+                    binding.repeatPasswordProgress.visibility = INVISIBLE
                     showDialog(
-                        DialogStyle.WARNING.ordinal,
+                        DialogInfoStyle.WARNING.ordinal,
                         state.title,
                         state.message,
                         state.button
@@ -227,9 +223,13 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 
     companion object {

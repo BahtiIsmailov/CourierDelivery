@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextPaint
+import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import android.widget.EditText
 import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
@@ -32,8 +34,11 @@ import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.courieragreement.CourierAgreementFragment
+import ru.wb.go.ui.courieragreement.CourierAgreementFragment.Companion.VALUE_RESULT_KEY
 import ru.wb.go.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
+import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
@@ -42,11 +47,6 @@ import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.time.DateTimeFormatter
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
-import android.text.TextUtils
-import androidx.fragment.app.setFragmentResultListener
-import ru.wb.go.ui.courieragreement.CourierAgreementFragment
-import ru.wb.go.ui.courieragreement.CourierAgreementFragment.Companion.VALUE_RESULT_KEY
-import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 
 
 class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
@@ -220,15 +220,15 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     )
 
     private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
-        surName = binding.surname.text.toString(),
-        firstName = binding.firstName.text.toString(),
-        middleName = binding.middleName.text.toString(),
-        inn = binding.inn.text.toString(),
-        passportSeries = binding.passportSeries.text.toString(),
-        passportNumber = binding.passportNumber.text.toString(),
-        passportDateOfIssue = binding.passportDateOfIssue.text.toString(),
-        passportIssuedBy = binding.passportIssuedBy.text.toString(),
-        passportDepartmentCode = binding.passportDepartmentCode.text.toString(),
+        surName = binding.surname.text.toString().trim(),
+        firstName = binding.firstName.text.toString().trim(),
+        middleName = binding.middleName.text.toString().trim(),
+        inn = binding.inn.text.toString().trim(),
+        passportSeries = binding.passportSeries.text.toString().trim(),
+        passportNumber = binding.passportNumber.text.toString().trim(),
+        passportDateOfIssue = binding.passportDateOfIssue.text.toString().trim(),
+        passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
+        passportDepartmentCode = binding.passportDepartmentCode.text.toString().trim(),
     )
 
     private fun dateSelect(view: View, dateText: EditText) {
@@ -307,20 +307,22 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     private fun initObservers() {
 
-        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
-            showDialog(it.style, it.title, it.message, it.button)
+        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
-                }
-
-                is NetworkState.Complete -> {
-                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
-                }
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.formUIState.observe(viewLifecycleOwner) { state ->
@@ -390,9 +392,18 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         _binding = null
     }
 
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+    private fun showDialogInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     companion object {

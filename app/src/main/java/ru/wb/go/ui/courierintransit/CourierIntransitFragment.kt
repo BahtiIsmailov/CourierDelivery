@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_UP
@@ -12,25 +11,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Completable
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.courierintransit.delegates.*
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.splash.OnSoundPlayer
 import ru.wb.go.views.ProgressButtonMode
 import ru.wb.go.views.ProgressImageButtonMode
 
@@ -47,12 +48,17 @@ class CourierIntransitFragment : Fragment() {
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
     private val itemCallback = object : OnCourierIntransitCallback {
         override fun onPickToPointClick(idItem: Int) {
-            viewModel.onItemClick(idItem)
+            viewModel.onItemOfficeClick(idItem)
         }
     }
 
     private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
+    private var isDialogActive: Boolean = false
+
+    companion object {
+        const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,8 +76,24 @@ class CourierIntransitFragment : Fragment() {
         initAdapter()
         initObservable()
         initListeners()
+        initReturnDialogResult()
         initProgressDialog()
         shortAnimationDuration = resources.getInteger(android.R.integer.config_longAnimTime)
+    }
+
+    private fun initReturnDialogResult() {
+        setFragmentResultListener(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.confirmTakeOrderClick()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onErrorDialogConfirmClick()
+            }
+        }
     }
 
     private fun initView() {
@@ -85,6 +107,25 @@ class CourierIntransitFragment : Fragment() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
+            }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
+        }
+
+        viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
+            isDialogActive = true
+            showDialogError(it.type, it.title, it.message, it.button)
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -101,6 +142,22 @@ class CourierIntransitFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                true -> {
+                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
+                }
+                false -> {
+                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
+                }
+            }
+        }
+
+        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
 
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
@@ -133,12 +190,12 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
+        viewModel.navigateToDialogConfirmInfo.observe(viewLifecycleOwner) {
+            showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
+        }
+
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierIntransitNavigationState.NavigateToDialogConfirm ->
-                    showConfirmDialog(it.title, it.message)
-                is CourierIntransitNavigationState.NavigateToDialogInfo ->
-                    showEmptyOrderDialog(it.title, it.message, it.button)
                 CourierIntransitNavigationState.NavigateToMap -> {
                     crossFade(binding.mapLayout, binding.scannerLayout)
                     binding.scanQrPvz.setState(ProgressButtonMode.ENABLE)
@@ -174,6 +231,22 @@ class CourierIntransitFragment : Fragment() {
 
     }
 
+    private fun showDialogError(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            DIALOG_ERROR_INFO_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
+        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+    }
+
+
     private fun displayItems(items: List<BaseItem>) {
         adapter.clear()
         adapter.addItems(items)
@@ -200,11 +273,12 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.closeScannerLayout.setOnClickListener { viewModel.closeScannerClick() }
-        binding.scanQrPvz.setOnClickListener { viewModel.scanQrPvzClick() }
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.scanQrPvzClick() }
-        binding.completeDelivery.setOnClickListener { viewModel.completeDeliveryClick() }
+        binding.toolbarLayout.back.setOnClickListener { }
+        binding.scanQrPvz.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
+        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
+//        binding.forcedComplete.setOnClickListener { viewModel.onForcedCompleteClick() }
     }
 
     // TODO: 20.08.2021 переработать
@@ -233,57 +307,20 @@ class CourierIntransitFragment : Fragment() {
         progressDialog.show()
     }
 
-    // TODO: 27.08.2021 переработать
-    private fun showEmptyOrderDialog(title: String, message: String, button: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
-        alertDialog.show()
-    }
-
-    // TODO: 27.08.2021 переработать
-    private fun showConfirmDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        negative.setOnClickListener { alertDialog.dismiss() }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_orders_details_dialog_negative_button)
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.confirmTakeOrderClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = getString(R.string.courier_orders_details_dialog_positive_button)
-        alertDialog.show()
+    private fun showDialogConfirmInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            type = style,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initRecyclerView() {
@@ -306,7 +343,12 @@ class CourierIntransitFragment : Fragment() {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitFailedUnloadingAllDelegate(requireContext(), itemCallback))
-            addDelegate(CourierIntransitFailedUnloadingExpectsDelegate(requireContext(), itemCallback))
+            addDelegate(
+                CourierIntransitFailedUnloadingExpectsDelegate(
+                    requireContext(),
+                    itemCallback
+                )
+            )
             addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
         binding.routes.adapter = adapter
@@ -317,14 +359,9 @@ class CourierIntransitFragment : Fragment() {
         _binding = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        //MediaPlayer.create(context, resId)
-    }
-
     override fun onStart() {
         super.onStart()
-        viewModel.onStartScanner()
+        if (!isDialogActive) viewModel.onStartScanner()
     }
 
     override fun onStop() {
@@ -341,7 +378,7 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun play(resId: Int) {
-        Completable.create { MediaPlayer.create(context, resId).start() }.subscribe()
+        (activity as OnSoundPlayer).play(resId)
     }
 
 }

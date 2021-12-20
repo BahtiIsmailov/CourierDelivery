@@ -6,29 +6,16 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 
 class CourierMapViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierMapInteractor,
     private val resourceProvider: CourierMapResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
-
-    class Point(val x: Double, val y: Double)
-
-    private val points = listOf(
-        Point(0.01, 14.6),
-        Point(0.05, 12.5),
-        Point(0.1, 12.0),
-        Point(0.5, 9.0),
-        Point(1.0, 8.0),
-        Point(1.5, 7.0),
-        Point(2.0, 6.8),
-        Point(3.0, 6.3),
-        Point(6.0, 5.4),
-        Point(80.0, 1.8)
-    )
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _mapState = MutableLiveData<CourierMapState>()
     val mapState: LiveData<CourierMapState>
@@ -42,9 +29,9 @@ class CourierMapViewModel(
                         is CourierMapState.NavigateToMarker -> _mapState.value = it
                         is CourierMapState.NavigateToPoint -> _mapState.value = it
                         is CourierMapState.UpdateMarkers -> _mapState.value = it
-                        is CourierMapState.NavigateToPointByZoomRadius -> _mapState.value = it
                         CourierMapState.NavigateToMyLocation -> _mapState.value = it
-                        is CourierMapState.UpdateAndNavigateToMyLocationPoint -> _mapState.value = it
+                        is CourierMapState.UpdateAndNavigateToMyLocationPoint -> _mapState.value =
+                            it
                         CourierMapState.UpdateMyLocation -> _mapState.value = it
                         is CourierMapState.ZoomToCenterBoundingBox -> _mapState.value = it
                     }
@@ -53,35 +40,6 @@ class CourierMapViewModel(
                     LogUtils { logDebugApp("subscribeMapState() error " + it) }
                 })
         )
-    }
-
-    private fun calculateZoom(fx: Double): Double {
-        var p1: Point = points.first()
-        var p2: Point = points.last()
-        var lastPoint = Point(0.0, 16.0)
-        points.sortedBy { it.x }.forEach { point ->
-            if (fx >= lastPoint.x && fx <= point.x) {
-                LogUtils { logDebugApp("points find forEach fx " + fx + " / " + lastPoint.x.toString() + " / " + point.x.toString()) }
-                p1 = lastPoint
-                p2 = point
-                return zoom(p1, p2, fx)
-            }
-            lastPoint = point
-        }
-        return zoom(p1, p2, fx)
-    }
-
-    private fun zoom(
-        p1: Point,
-        p2: Point,
-        fx: Double
-    ): Double {
-        LogUtils { logDebugApp("points find " + p1.x.toString() + " " + p1.y.toString() + " " + p2.x.toString() + " " + p2.y.toString()) }
-        val x1 = p1.x
-        val y1 = p1.y
-        val x2 = p2.x
-        val y2 = p2.y
-        return y1 + (y2 - y1) * (fx - x1) / (x2 - x1)
     }
 
     fun onInitPermission() {
@@ -98,9 +56,23 @@ class CourierMapViewModel(
         interactor.onForcedLocationUpdate(point)
     }
 
+    fun onForcedLocationUpdateDefault() {
+        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierMap"
+    }
+
 }
 
 fun moscowMapPoint() = MapPoint("0", 55.751244, 37.618423)
+
+fun moscowCoordinatePoint() = CoordinatePoint(55.751244, 37.618423)
 //fun moscowMapPoint() = MapPoint("0", 0.01, 37.618423)
 
 //myLocation CoordinatePoint(latitude=55.7618109, longitude=37.7777639)

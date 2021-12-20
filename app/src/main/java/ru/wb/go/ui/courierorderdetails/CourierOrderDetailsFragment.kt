@@ -24,8 +24,7 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.go.db.entity.courier.CourierOrderEntity
-import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.views.ProgressButtonMode
 
@@ -67,7 +66,7 @@ class CourierOrderDetailsFragment : Fragment() {
         initObservable()
         initListeners()
         initProgressDialog()
-        viewModel.update()
+        viewModel.onUpdate()
     }
 
     private fun initView() {
@@ -78,6 +77,20 @@ class CourierOrderDetailsFragment : Fragment() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
+        }
+
+        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
+            }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.orderInfo.observe(viewLifecycleOwner) {
@@ -130,8 +143,6 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 is CourierOrderDetailsNavigationState.NavigateToDialogConfirm ->
                     showConfirmDialog(it.title, it.message)
-                is CourierOrderDetailsNavigationState.NavigateToDialogInfo ->
-                    showEmptyOrderDialog(it.title, it.message, it.button)
                 is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment()
@@ -146,7 +157,7 @@ class CourierOrderDetailsFragment : Fragment() {
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.backOrder.setOnClickListener { findNavController().popBackStack() }
-        binding.takeOrder.setOnClickListener { viewModel.takeOrderClick() }
+        binding.takeOrder.setOnClickListener { viewModel.onTakeOrderClick() }
     }
 
     // TODO: 20.08.2021 переработать
@@ -243,11 +254,6 @@ class CourierOrderDetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

@@ -6,12 +6,9 @@ import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
-import ru.wb.go.network.api.app.remote.accounts.AccountRequest
-import ru.wb.go.network.api.app.remote.accounts.AccountsResponse
-import ru.wb.go.network.api.app.remote.bank.BankResponse
+import ru.wb.go.network.api.app.remote.VersionAppResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
-import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 
 interface AppApi {
 
@@ -130,5 +127,9 @@ interface AppApi {
         @Body accountRequest: List<AccountRequest>
     ): Completable
 
+    @GET("{version}/settings/mobile-version")
+    fun version(
+        @Path(value = "version", encoded = true) version: String
+    ): Single<VersionAppResponse>
 
 }

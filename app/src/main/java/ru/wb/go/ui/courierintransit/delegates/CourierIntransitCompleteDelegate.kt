@@ -8,6 +8,7 @@ import ru.wb.go.adapters.BaseAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitEmptyLayoutBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
+import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitEmptyItem
 
 class CourierIntransitCompleteDelegate(
     context: Context,

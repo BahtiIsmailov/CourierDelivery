@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierexpects.domain
 
 import io.reactivex.Single
+import ru.wb.go.app.COURIER_ROLE
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.headers.RefreshTokenRepository

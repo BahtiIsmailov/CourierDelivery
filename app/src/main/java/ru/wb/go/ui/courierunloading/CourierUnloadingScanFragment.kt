@@ -1,17 +1,13 @@
 package ru.wb.go.ui.courierunloading
 
-import android.app.AlertDialog
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
@@ -20,11 +16,17 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierUnloadingFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_POSITIVE_KEY
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.splash.OnSoundPlayer
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierUnloadingScanFragment : Fragment() {
@@ -32,6 +34,10 @@ class CourierUnloadingScanFragment : Fragment() {
 
     companion object {
         const val COURIER_UNLOADING_ID_KEY = "courier_unloading_id_key"
+        const val DIALOG_ERROR_RESULT_TAG = "DIALOG_ERROR_RESULT_TAG"
+        const val DIALOG_SCORE_ERROR_RESULT_TAG = "DIALOG_SCORE_ERROR_RESULT_TAG"
+        const val DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG =
+            "DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG"
     }
 
     private val viewModel by viewModel<CourierUnloadingScanViewModel> {
@@ -44,6 +50,8 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private var _binding: CourierUnloadingFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private var isDialogActive: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +66,35 @@ class CourierUnloadingScanFragment : Fragment() {
         initView()
         initListener()
         initObserver()
+        initReturnDialogResult()
+    }
+
+    private fun initReturnDialogResult() {
+
+        setFragmentResultListener(DIALOG_ERROR_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onScoreDialogInfoClick()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_SCORE_ERROR_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                isDialogActive = false
+                viewModel.onScoreDialogConfirmClick()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                isDialogActive = false
+                viewModel.onConfirmScoreUnloadingClick()
+            }
+            if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
+                isDialogActive = false
+                viewModel.onCancelScoreUnloadingClick()
+            }
+        }
     }
 
     private fun initView() {
@@ -66,8 +103,6 @@ class CourierUnloadingScanFragment : Fragment() {
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.visibility = View.INVISIBLE
     }
-
-    private var isDialogActive: Boolean = false
 
     override fun onStart() {
         super.onStart()
@@ -80,22 +115,38 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun initObserver() {
+
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it.label
         }
 
-        viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             isDialogActive = true
-            showSimpleDialog(it)
+            showDialogError(it.type, it.title, it.message, it.button)
+        }
+
+        viewModel.navigateToDialogScoreError.observe(viewLifecycleOwner) {
+            isDialogActive = true
+            showDialogScoreError(it.type, it.title, it.message, it.button)
+        }
+
+        viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
+            isDialogActive = true
+            showDialogConfirmScoreInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            when (it) {
-                is NetworkState.Failed ->
-                    binding.toolbarLayout.noInternetImage.visibility = View.VISIBLE
-                is NetworkState.Complete ->
-                    binding.toolbarLayout.noInternetImage.visibility = View.INVISIBLE
+            val ic = when (it) {
+                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                else -> R.drawable.ic_inet_failed
             }
+            binding.toolbarLayout.noInternetImage.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), ic)
+            )
+        }
+
+        viewModel.versionApp.observe(viewLifecycleOwner) {
+            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
@@ -105,20 +156,14 @@ class CourierUnloadingScanFragment : Fragment() {
             }
         }
 
-
         val navigationObserver = Observer<CourierUnloadingScanNavAction> { state ->
             when (state) {
                 is CourierUnloadingScanNavAction.NavigateToUnknownBox -> {
                     findNavController().navigate(CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierUnloadingUnknownBoxFragment())
                 }
-                is CourierUnloadingScanNavAction.NavigateToConfirmDialog -> {
-                    showConfirmDialog(state.title, state.message)
-                }
                 CourierUnloadingScanNavAction.NavigateToIntransit ->
                     findNavController().navigate(CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment())
                 CourierUnloadingScanNavAction.NavigateToBoxes -> {
-                }
-                is CourierUnloadingScanNavAction.NavigateToDialogInfo -> {
                 }
             }
         }
@@ -128,34 +173,15 @@ class CourierUnloadingScanFragment : Fragment() {
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
-                is CourierUnloadingScanBeepState.UnknownBox -> beepError()
+                is CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
+                CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
             }
         }
 
-        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is CourierUnloadingScanProgress.LoaderProgress -> {
-                    binding.receiveLayout.isEnabled = false
-                    binding.complete.setState(ProgressButtonMode.DISABLE)
-                }
-                is CourierUnloadingScanProgress.LoaderComplete -> {
-                    binding.receiveLayout.isEnabled = true
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
-                }
-            }
-        }
-
-        viewModel.bottomProgressEvent.observe(viewLifecycleOwner) { progress ->
+        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { progress ->
             when (progress) {
-                CourierUnloadingScanBottomState.Disable -> binding.complete.setState(
-                    ProgressButtonMode.DISABLE
-                )
-                CourierUnloadingScanBottomState.Enable -> binding.complete.setState(
-                    ProgressButtonMode.ENABLE
-                )
-                CourierUnloadingScanBottomState.Progress -> binding.complete.setState(
-                    ProgressButtonMode.PROGRESS
-                )
+                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
+                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
             }
         }
 
@@ -170,7 +196,7 @@ class CourierUnloadingScanFragment : Fragment() {
                         ContextCompat.getColor(requireContext(), R.color.light_text)
                     )
                     binding.receive.text = state.accepted
-                    binding.receiveLayout.isEnabled = false
+                    binding.counterLayout.isEnabled = false
                     binding.address.text = state.address
                     binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
@@ -181,7 +207,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.qrCode.text = state.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.receive.text = state.accepted
-                    binding.receiveLayout.isEnabled = false
+                    binding.counterLayout.isEnabled = false
                     binding.address.text = state.address
                     binding.complete.setState(ProgressButtonMode.ENABLE)
                 }
@@ -221,19 +247,14 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.disable_scan_status)
+    private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.init_scan_status)
 
-    private fun colorRed() = ContextCompat.getColor(requireContext(), R.color.unknown_scan_status)
+    private fun colorRed() = ContextCompat.getColor(requireContext(), R.color.forbidden_scan_status)
 
     private fun colorGreen() =
         ContextCompat.getColor(requireContext(), R.color.complete_scan_status)
 
     private fun colorBlack() = ContextCompat.getColor(requireContext(), R.color.black_text)
-
-    private fun showDialog(style: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(style, title, message, positiveButtonName)
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
 
     private fun showProgressDialog() {
         val progressDialog = ProgressDialogFragment.newInstance()
@@ -246,80 +267,56 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showSimpleDialog(it: CourierUnloadingScanViewModel.NavigateToMessageInfo) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_, viewGroup, false)
-        val title: TextView = dialogView.findViewById(R.id.title)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        builder.setView(dialogView)
-
-        val alertDialog: AlertDialog = builder.create()
-
-        title.text = it.title
-        message.text = it.message
-        negative.setOnClickListener {
-            isDialogActive = false
-            alertDialog.dismiss()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = it.button
-        alertDialog.setOnDismissListener {
-            isDialogActive = false
-            viewModel.onStartScanner()
-        }
-        alertDialog.show()
+    private fun showDialogError(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            DIALOG_ERROR_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
-    // TODO: 27.08.2021 переработать
-    private fun showConfirmDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.main
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val negative: Button = dialogView.findViewById(R.id.negative)
-        val positive: Button = dialogView.findViewById(R.id.positive)
+    private fun showDialogScoreError(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String
+    ) {
+        DialogInfoFragment.newInstance(
+            DIALOG_SCORE_ERROR_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
+    }
 
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-
-        alertDialog.setCanceledOnTouchOutside(false)
-        alertDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                alertDialog.dismiss()
-                viewModel.cancelUnloadingClick()
-            }
-            true
-        }
-
-        titleText.text = title
-        messageText.text = message
-        negative.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.cancelUnloadingClick()
-        }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        negative.text = getString(R.string.courier_order_scanner_dialog_negative_button)
-        positive.setOnClickListener {
-            alertDialog.dismiss()
-            viewModel.confirmUnloadingClick()
-        }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = getString(R.string.courier_order_scanner_dialog_positive_button)
-        alertDialog.show()
+    private fun showDialogConfirmScoreInfo(
+        type: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName,
+            negativeButtonName
+        ).show(parentFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener { viewModel.onCompleteUnloadClicked() }
-        binding.receiveLayout.setOnClickListener { viewModel.onListClicked() }
+        binding.counterLayout.setOnClickListener { viewModel.onListClicked() }
+        binding.complete.setOnClickListener { viewModel.onCompleteUnloadClick() }
     }
 
     override fun onDestroyView() {
@@ -329,15 +326,19 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun beepSuccess() {
         // TODO: 11.10.2021 unused
-        //play(R.raw.sound_scan_success)
+        play(R.raw.qr_box_first_accepted)
     }
 
-    private fun beepError() {
-        play(R.raw.qr_box_scan_failed)
+    private fun beepUnknownQR() {
+        play(R.raw.unloading_scan_unknown_qr)
+    }
+
+    private fun beepUnknownBox() {
+        play(R.raw.unloading_unknown_box)
     }
 
     private fun play(resId: Int) {
-        MediaPlayer.create(context, resId).start()
+        (activity as OnSoundPlayer).play(resId)
     }
 
 }

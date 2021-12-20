@@ -25,16 +25,23 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.ConfigManager
+import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
 class CourierLoaderViewModel(
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
     private val courierLocalRepository: CourierLocalRepository,
     private val appRemoteRepository: AppRemoteRepository,
-    private val userManager: UserManager
-) : NetworkViewModel(compositeDisposable) {
+    private val userManager: UserManager,
+    private val deviceManager: DeviceManager,
+    private val configManager: ConfigManager,
+    private val resourceProvider: CourierLoaderResourceProvider,
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
     val drawerHeader: LiveData<UserInfoEntity>
@@ -50,7 +57,44 @@ class CourierLoaderViewModel(
 
 
     init {
+        onTechEventLog("init")
         initDrawer()
+        initVersion()
+    }
+
+    private fun initDrawer() {
+        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+    }
+
+    private fun initVersion() {
+        addSubscription(
+            appRemoteRepository.appVersion().compose(rxSchedulerFactory.applySingleSchedulers())
+                .subscribe(
+                    { appVersionUpdateComplete(it) },
+                    { appVersionUpdateError(it) })
+        )
+    }
+
+    private fun appVersionUpdateComplete(version: String) {
+        onTechEventLog("appVersionUpdateComplete", "appStart")
+        val remotes = versionCodeToInt(version)
+        configManager.saveAppVersion(remotes)
+        appStart(remotes)
+    }
+
+    private fun appVersionUpdateError(throwable: Throwable) {
+        onTechErrorLog("appVersionUpdateError", throwable)
+        appStart(configManager.readAppVersion())
+    }
+
+    private fun appStart(appVersion: Int) {
+        if (isVersionActual(appVersion)) loadApp()
+        else toAppUpdate()
+    }
+
+    private fun loadApp() {
+        onTechEventLog("loadApp", "checkUserState")
+
         // TODO: 24.09.2021 выключить для тестирования
         //toCourierWarehouse()
         //toLoadingScanner()
@@ -58,8 +102,9 @@ class CourierLoaderViewModel(
 
         checkUserState()
 
-        //toUserForm("123456789")
         //toCouriersCompleteRegistration("89104020582")
+
+        //toUserForm("123456789")
 
         //_navigationDrawerState.value = toAgreement()
         //toUserForm("123456789")
@@ -68,8 +113,12 @@ class CourierLoaderViewModel(
         //_navigationDrawerState.value = toPhone()
     }
 
-    private fun initDrawer() {
-        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), "")
+    private fun isVersionActual(remotes: Int): Boolean {
+        return versionCodeToInt(deviceManager.appVersion) >= remotes
+    }
+
+    private fun versionCodeToInt(code: String): Int {
+        return code.replace("\\D+".toRegex(), "").toInt()
     }
 
     private fun checkUserState() {
@@ -83,7 +132,7 @@ class CourierLoaderViewModel(
                 val timer = Completable.timer(1000, TimeUnit.MILLISECONDS)
                 val taskMy = appRemoteRepository.tasksMy().map { it }
                 val localTaskId =
-                    courierLocalRepository.orderData().map { it.courierOrderLocalEntity.id }
+                    courierLocalRepository.orderDataSync().map { it.courierOrderLocalEntity.id }
                         .onErrorReturn { -1 }
                 val zipData = Single.zip(taskMy, localTaskId,
                     { remoteTask, localTaskId -> tasksMyComplete(remoteTask, localTaskId) })
@@ -91,13 +140,14 @@ class CourierLoaderViewModel(
                 addSubscription(
                     timer.andThen(zipData)
                         .compose(rxSchedulerFactory.applySingleSchedulers())
-                        .subscribe({ navigateTo(it) }, { taskMyError(it) })
+                        .subscribe({ taskMyComplete(it) }, { taskMyError(it) })
                 )
             }
         }
     }
 
-    private fun navigateTo(navigationState: CourierLoaderNavigationState) {
+    private fun taskMyComplete(navigationState: CourierLoaderNavigationState) {
+        onTechEventLog("taskMyComplete", "navigationState $navigationState")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value = navigationState
     }
@@ -107,22 +157,35 @@ class CourierLoaderViewModel(
         localTaskId: Int
     ): Single<CourierLoaderNavigationState> {
         val remoteTaskId = courierTasksMyEntity.id
+        onTechEventLog("tasksMyComplete", "remoteTaskId: $remoteTaskId localTaskId: $localTaskId")
         return if (remoteTaskId == localTaskId) {
+            onTechEventLog("tasksMyComplete", "remoteTaskId == localTaskId")
             saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
         } else {
-            clearData()
-            saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
-                .andThen(
-                    if (courierTasksMyEntity.status != TaskStatus.TIMER.status)
-                        syncBoxesAndVisitedOffice(
-                            remoteTaskId.toString(),
-                            courierTasksMyEntity.dstOffices
-                        )
-                    else Completable.complete()
-                )
+            onTechEventLog("tasksMyComplete", "remoteTaskId != localTaskId")
+            syncWarehouseAndBoxes(courierTasksMyEntity, remoteTaskId)
         }
             .doOnComplete { userManager.saveStatusTask(courierTasksMyEntity.status) }
             .andThen(Single.just(getNavigationState(courierTasksMyEntity.status)))
+    }
+
+    private fun syncWarehouseAndBoxes(
+        courierTasksMyEntity: CourierTasksMyEntity,
+        remoteTaskId: Int
+    ): Completable {
+        onTechEventLog("syncWarehouseAndBoxes", "clearData and saveWarehouseAndOrderAndOfficesAndCost")
+        clearData()
+        return saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
+            .andThen(
+                if (courierTasksMyEntity.status != TaskStatus.TIMER.status) {
+                    onTechEventLog("syncWarehouseAndBoxes", "courierTasksMyEntity.status != TaskStatus.TIMER.status")
+                    syncBoxesAndVisitedOffice(
+                        remoteTaskId.toString(),
+                        courierTasksMyEntity.dstOffices
+                    )
+                }
+                else Completable.complete()
+            )
     }
 
     fun syncBoxesAndVisitedOffice(taskId: String, dstOffices: List<CourierTaskMyDstOfficeEntity>) =
@@ -227,6 +290,7 @@ class CourierLoaderViewModel(
     }
 
     private fun taskMyError(throwable: Throwable) {
+        onTechErrorLog("taskMyError", throwable)
         when (throwable) {
             is NullPointerException -> {
                 clearData()
@@ -239,31 +303,31 @@ class CourierLoaderViewModel(
                     _state.value = CourierLoaderUIState.Complete
                     _navigationDrawerState.value = getNavigationState(localStatus)
                 } else {
-                    errorState("Интернет-соединение отсутствует")
+                    errorState(resourceProvider.getGenericInternetTitleError())
                 }
             }
             is BadRequestException -> {
                 errorState(throwable.message.toString())
             }
             else -> {
-                errorState("Сервис временно недоступен")
+                errorState(throwable.toString())
             }
         }
     }
 
     private fun clearData() {
-        courierLocalRepository.deleteAllWarehouse()
-        courierLocalRepository.deleteAllOrder()
-        courierLocalRepository.deleteAllOrderOffices()
+//        appLocalRepository.clearAll()
         userManager.clearStatus()
     }
 
     private fun toUserForm(phone: String) {
+        onTechEventLog("toUserForm")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToCourierUserForm(phone)
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
+        onTechEventLog("toCouriersCompleteRegistration")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
@@ -279,15 +343,30 @@ class CourierLoaderViewModel(
 
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
 
+    private fun toAppUpdate() {
+        onTechEventLog("toAppUpdate", "NavigateToAppUpdate")
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToAppUpdate
+    }
+
     private fun toAgreement() = CourierLoaderNavigationState.NavigateToAgreement
 
     private fun errorState(message: String) {
+        onTechEventLog("errorState", "message")
         _state.value = CourierLoaderUIState.Error(message)
     }
 
     fun update() {
+        onTechEventLog("update")
         _state.value = CourierLoaderUIState.Progress
         checkUserState()
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "CourierLoader"
     }
 
 }

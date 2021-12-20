@@ -1,6 +1,7 @@
 package ru.wb.go.ui.couriermap.domain
 
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 

@@ -54,4 +54,6 @@ interface AppRemoteRepository {
 
     fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
 
+    fun appVersion(): Single<String>
+
 }

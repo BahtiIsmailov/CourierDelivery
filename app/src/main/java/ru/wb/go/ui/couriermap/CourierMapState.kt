@@ -2,14 +2,13 @@ package ru.wb.go.ui.couriermap
 
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.utils.map.CoordinatePoint
-import ru.wb.go.utils.map.MapCircle
 import ru.wb.go.utils.map.MapPoint
 
 sealed class CourierMapState {
 
     data class UpdateMarkers(val points: List<CourierMapMarker>) : CourierMapState()
 
-    data class NavigateToPointByZoomRadius(val startNavigation: MapCircle) : CourierMapState()
+//    data class NavigateToPointByZoomRadius(val startNavigation: MapCircle) : CourierMapState()
 
     data class ZoomToCenterBoundingBox(val boundingBox: BoundingBox) : CourierMapState()
 

@@ -9,6 +9,10 @@ import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.entity.*
+import ru.wb.go.network.api.app.remote.CarNumberRequest
+import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
+import ru.wb.go.network.api.app.remote.courier.*
+import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
@@ -23,14 +27,14 @@ import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.TimeManager
 
 class AppRemoteRepositoryImpl(
+    private val rxSchedulerFactory: RxSchedulerFactory,
     private val remote: AppApi,
     private val tokenManager: TokenManager,
-    private val timeManager: TimeManager,
+    private val timeManager: TimeManager
 ) : AppRemoteRepository {
 
     companion object {
         private const val COST_DIVIDER = 100
-
     }
 
     override fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
@@ -48,6 +52,7 @@ class AppRemoteRepositoryImpl(
             )
         }
         return remote.courierDocuments(tokenManager.apiVersion(), courierDocuments)
+            .compose(rxSchedulerFactory.applyCompletableMetrics("courierDocuments"))
     }
 
     override fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
@@ -58,6 +63,7 @@ class AppRemoteRepositoryImpl(
                     .map { office -> convertCourierWarehouseEntity(office) }
                     .toList()
             }
+            .compose(rxSchedulerFactory.applySingleMetrics("courierWarehouses"))
     }
 
     private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
@@ -80,56 +86,56 @@ class AppRemoteRepositoryImpl(
                     .map { order -> convertCourierOrderEntity(order) }
                     .toList()
             }
+            .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
     }
 
     override fun tasksMy(): Single<CourierTasksMyEntity> {
-        return remote.tasksMy(apiVersion())
-            .doOnError { LogUtils { logDebugApp(it.toString()) } }
-            .map { task ->
-                LogUtils { logDebugApp(task.toString()) }
-                timeManager.saveStartedTaskTime(task.startedAt ?: "")
-                val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
-                task.dstOffices.forEach {
-                    if (it.id != -1) {
-                        val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
-                            id = it.id,
-                            name = it.name ?: "",
-                            fullAddress = it.fullAddress ?: "",
-                            long = it.long,
-                            lat = it.lat
-                        )
-                        courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
-                    }
-                }
-
-                val srcOffice = with(task.srcOffice) {
-                    CourierTasksMySrcOfficeEntity(
-                        id = id,
-                        name = name,
-                        fullAddress = fullAddress,
-                        long = long,
-                        lat = lat,
+        return remote.tasksMy(apiVersion()).map { task ->
+            LogUtils { logDebugApp(task.toString()) }
+            timeManager.saveStartedTaskTime(task.startedAt ?: "") //"2021-09-21T17:00:01.992+03:00"
+            val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
+            task.dstOffices.forEach {
+                if (it.id != -1) {
+                    val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
+                        id = it.id,
+                        name = it.name ?: "",
+                        fullAddress = it.fullAddress ?: "",
+                        long = it.long,
+                        lat = it.lat
                     )
+                    courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
                 }
+            }
 
-                CourierTasksMyEntity(
-                    id = task.id,
-                    routeID = task.routeID ?: 0,
-                    gate = task.gate ?: "",
-                    srcOffice = srcOffice,
-                    minPrice = task.minPrice,
-                    minVolume = task.minVolume,
-                    minBoxesCount = task.minBoxesCount,
-                    dstOffices = courierTaskMyDstOfficesEntity,
-                    wbUserID = task.wbUserID,
-                    carNumber = task.carNumber,
-                    reservedAt = task.reservedAt,
-                    startedAt = task.startedAt ?: "",
-                    reservedDuration = task.reservedDuration,
-                    status = task.status ?: TaskStatus.TIMER.status,
-                    cost = (task.cost ?: 0) / COST_DIVIDER
+            val srcOffice = with(task.srcOffice) {
+                CourierTasksMySrcOfficeEntity(
+                    id = id,
+                    name = name,
+                    fullAddress = fullAddress,
+                    long = long,
+                    lat = lat
                 )
             }
+
+            CourierTasksMyEntity(
+                id = task.id,
+                routeID = task.routeID ?: 0,
+                gate = task.gate ?: "",
+                srcOffice = srcOffice,
+                minPrice = task.minPrice,
+                minVolume = task.minVolume,
+                minBoxesCount = task.minBoxesCount,
+                dstOffices = courierTaskMyDstOfficesEntity,
+                wbUserID = task.wbUserID,
+                carNumber = task.carNumber,
+                reservedAt = task.reservedAt,
+                startedAt = task.startedAt ?: "",
+                reservedDuration = task.reservedDuration,
+                status = task.status ?: TaskStatus.TIMER.status,
+                cost = (task.cost ?: 0) / COST_DIVIDER
+            )
+        }
+            .compose(rxSchedulerFactory.applySingleMetrics("tasksMy"))
     }
 
     override fun anchorTask(
@@ -140,11 +146,12 @@ class AppRemoteRepositoryImpl(
             apiVersion(),
             taskID,
             CourierAnchorResponse(carNumber)
-        )
+        ).compose(rxSchedulerFactory.applyCompletableMetrics("anchorTask"))
     }
 
     override fun deleteTask(taskID: String): Completable {
         return remote.deleteTask(apiVersion(), taskID)
+            .compose(rxSchedulerFactory.applyCompletableMetrics("deleteTask"))
     }
 
     override fun taskStatuses(taskID: String): Single<CourierTaskStatusesEntity> {
@@ -161,6 +168,7 @@ class AppRemoteRepositoryImpl(
                 }
                 CourierTaskStatusesEntity(courierTaskStatusesEntity)
             }
+            .compose(rxSchedulerFactory.applySingleMetrics("taskStatuses"))
     }
 
     override fun taskBoxes(taskID: String): Single<CourierTaskBoxesEntity> {
@@ -179,7 +187,7 @@ class AppRemoteRepositoryImpl(
                 }
             }
             CourierTaskBoxesEntity(courierTaskBoxEntity, response.count)
-        }
+        }.compose(rxSchedulerFactory.applySingleMetrics("taskBoxes"))
     }
 
     override fun taskStart(
@@ -193,7 +201,11 @@ class AppRemoteRepositoryImpl(
                 loadingAt = courierTaskStartEntity.loadingAt,
                 deliveredAt = null
             )
-        return remote.taskStart(apiVersion(), taskID, listOf(courierTaskStartRequest))
+        val boxes = listOf(courierTaskStartRequest)
+//        LogUtils{logDebugApp("taskStart")}
+//        return Completable.error(Throwable())
+        return remote.taskStart(apiVersion(), taskID, boxes)
+            .compose(rxSchedulerFactory.applyCompletableMetrics("taskStart"))
     }
 
     override fun taskStatusesReady(
@@ -217,6 +229,7 @@ class AppRemoteRepositoryImpl(
             taskID,
             courierTaskStatusesIntransitRequest
         ).map { CourierTaskStatusesIntransitCostEntity(it.cost / COST_DIVIDER) }
+            .compose(rxSchedulerFactory.applySingleMetrics("taskStatusesReady"))
     }
 
     override fun taskStatusesIntransit(
@@ -235,21 +248,28 @@ class AppRemoteRepositoryImpl(
                 )
             courierTaskStatusesIntransitRequest.add(courierTaskStatusIntransitRequest)
         }
+
+        val fromBoxCount = courierTaskStatusesIntransitRequest.size
+        val unloadingBoxCount = courierTaskStatusesIntransitRequest.filter { it.deliveredAt.isNullOrEmpty() }.size
+        val loadingBoxCount = courierTaskStatusesIntransitRequest.filter { it.deliveredAt != null }.size
+
         return remote.taskStatusesIntransit(
             apiVersion(),
             taskID,
             courierTaskStatusesIntransitRequest
-        )
+        ).compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesIntransit " + "fromBoxCount " + fromBoxCount + " unloadingBoxCount " + unloadingBoxCount + " loadingBoxCount " + loadingBoxCount))
     }
 
     override fun taskStatusesEnd(taskID: String): Completable {
         return remote.taskStatusesEnd(apiVersion(), taskID)
+            .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesEnd"))
     }
 
     override fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable {
         val carNumberRequest = mutableListOf<CarNumberRequest>()
         carNumbersEntity.forEach { carNumberRequest.add(CarNumberRequest(it.number, it.isDefault)) }
         return remote.putCarNumbers(apiVersion(), carNumberRequest)
+            .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesEnd"))
     }
 
     override fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity> {
@@ -314,6 +334,12 @@ class AppRemoteRepositoryImpl(
         val accountsEntity = mutableListOf<AccountRequest>()
         forEach { accountsEntity.add(AccountRequest(it.bic, it.name, it.correspondentAccount)) }
         return accountsEntity
+            .compose(rxSchedulerFactory.applySingleMetrics("billing"))
+    }
+
+    override fun appVersion(): Single<String> {
+        return remote.version(tokenManager.apiVersion()).map { it.version }
+            .compose(rxSchedulerFactory.applySingleMetrics("appVersion"))
     }
 
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {

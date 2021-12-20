@@ -11,24 +11,31 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
-import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import java.util.*
 
 class UserFormViewModel(
     private val parameters: CourierDataParameters,
     compositeDisposable: CompositeDisposable,
+    metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
     private val resourceProvider: CourierDataResourceProvider,
-) : NetworkViewModel(compositeDisposable) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
-    private val _navigateToMessageState = SingleLiveEvent<Message>()
-    val navigateToMessageState: LiveData<Message>
-        get() = _navigateToMessageState
+    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToMessageInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToMessageInfo
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigationEvent =
         SingleLiveEvent<CourierDataNavAction>()
@@ -224,7 +231,7 @@ class UserFormViewModel(
 
     private fun mapAction(action: CourierDataUIAction) = when (action) {
         is CourierDataUIAction.FocusChange -> checkFieldFocus(action)
-        is CourierDataUIAction.TextChange ->  checkFieldText(action)
+        is CourierDataUIAction.TextChange -> checkFieldText(action)
         is CourierDataUIAction.CompleteClick -> checkFieldAll(action)
     }
 
@@ -365,35 +372,36 @@ class UserFormViewModel(
     }
 
     private fun couriersFormComplete() {
+        onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
         _loaderState.value = CourierDataUILoaderState.Disable
         _navigationEvent.value =
             CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
     }
 
     private fun couriersFormError(throwable: Throwable) {
+        onTechErrorLog("couriersFormError", throwable)
         val message = when (throwable) {
-
-            is NoInternetException -> Message(
-                DialogStyle.INFO.ordinal,
-                throwable.message,
+            is NoInternetException -> NavigateToDialogInfo(
+                DialogInfoStyle.INFO.ordinal,
+                resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> Message(
-                DialogStyle.INFO.ordinal,
+            is BadRequestException -> NavigateToDialogInfo(
+                DialogInfoStyle.INFO.ordinal,
+                resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
-                resourceProvider.getGenericServiceMessageError(),
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> Message(
-                DialogStyle.ERROR.ordinal,
+            else -> NavigateToDialogInfo(
+                DialogInfoStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
-                resourceProvider.getGenericServiceMessageError(),
+                throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
         }
         _loaderState.value = CourierDataUILoaderState.Enable
-        _navigateToMessageState.value = message
+        _navigateToMessageInfo.value = message
 
     }
 
@@ -405,9 +413,16 @@ class UserFormViewModel(
     }
 
     fun onShowAgreementClick() {
+        onTechEventLog("onShowAgreementClick")
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 
-}
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
 
-data class Message(val style: Int, val title: String, val message: String, val button: String)
+    companion object {
+        const val SCREEN_TAG = "UserForm"
+    }
+
+}

@@ -4,10 +4,13 @@ import com.jakewharton.rxbinding3.InitialValueObservable
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
+import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
+import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
