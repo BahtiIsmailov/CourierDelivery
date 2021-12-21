@@ -1,10 +1,12 @@
 package ru.wb.go.ui.courierbillingaccountselector
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.NOT_FOCUSABLE
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
@@ -80,8 +82,12 @@ class CourierBillingAccountSelectorFragment :
 
     private fun initListener() {
         binding.toolbarLayout.back.setOnClickListener {
-            findNavController().popBackStack()
+            binding.amount.isEnabled = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                binding.amount.focusable = NOT_FOCUSABLE
+            }
             hideKeyboard()
+            findNavController().popBackStack()
         }
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()

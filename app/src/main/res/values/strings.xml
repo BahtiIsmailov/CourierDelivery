@@ -16,12 +16,13 @@
     <string name="app_duration_time_span">через</string>
 
     <!--network error-->
+    <string name="auth_session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
+    <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
-    <string name="timeout_service_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
-    <string name="wrong_identity_error">Ошибка идентификации пользователя</string>
-    <string name="session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
-    <string name="unknown_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
-    <string name="unknown_http_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+    <string name="http_timeout_service_error" />
+    <string name="http_error" />
+    <string name="http_unknown_error" />
+
     <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
     <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
@@ -507,6 +508,7 @@
     <string name="courier_billing_account_selector_title">Вывод средсв</string>
     <string name="courier_billing_account_selector_balance">%1$s ₽</string>
     <string name="courier_billing_account_selector_format">%1$s ****%2$s</string>
+    <string name="courier_billing_account_selector_short_format">%1$s… ****%2$s</string>
     <string name="courier_billing_account_selector_amount_button_init">Вывести</string>
     <string name="courier_billing_account_selector_amount_button">Вывести %1$s ₽</string>
     <string name="courier_billing_account_selector_withdraw_balance">Вывести %1$s ₽</string>

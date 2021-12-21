@@ -172,12 +172,13 @@ class CourierBillingViewModel(
     }
 
     private fun accountsError(throwable: Throwable) {
-        _navigationState.value = CourierBillingNavigationState.NavigateToDialogInfo(
-            DialogInfoStyle.ERROR.ordinal,
-            resourceProvider.getGenericServiceTitleError(),
-            throwable.toString(),
-            resourceProvider.getGenericServiceButtonError()
-        )
+//        _navigationState.value = CourierBillingNavigationState.NavigateToDialogInfo(
+//            DialogInfoStyle.ERROR.ordinal,
+//            resourceProvider.getGenericServiceTitleError(),
+//            throwable.toString(),
+//            resourceProvider.getGenericServiceButtonError()
+//        )
+        _navigateToDialogInfo.value = messageError(throwable, resourceProvider)
         progressComplete()
     }
 

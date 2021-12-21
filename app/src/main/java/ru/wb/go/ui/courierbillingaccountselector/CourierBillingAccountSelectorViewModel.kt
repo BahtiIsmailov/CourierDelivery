@@ -114,7 +114,17 @@ class CourierBillingAccountSelectorViewModel(
 
                 it.forEach {
                     val text = resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
-                    val shortText = it.bank
+                    val bankName = it.bank
+                    val shortText = if (bankName.length > MAX_BANK_NAME_LENGTH) {
+                        resourceProvider.getShortFormatAccount(
+                            MAX_BANK_NAME_LENGTH,
+                            bankName,
+                            it.correspondentAccount
+                        )
+                    } else {
+                        resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
+                    }
+
                     list.add(CourierBillingAccountSelectorAdapterItem.Edit(text, shortText))
                 }
                 list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
@@ -317,6 +327,10 @@ class CourierBillingAccountSelectorViewModel(
 
     override fun getScreenTag(): String {
         return ""
+    }
+
+    companion object {
+        const val MAX_BANK_NAME_LENGTH = 23
     }
 
 }

@@ -33,11 +33,12 @@ open class CourierBillingAccountSelectorAdapter(
             is CourierBillingAccountSelectorAdapterItem.Edit -> {
                 holder.layoutAdd.visibility = View.GONE
                 holder.layoutEdit.visibility = View.VISIBLE
+                holder.imageEdit.visibility = View.INVISIBLE
                 holder.textEdit.maxLines = 1
                 holder.textEdit.text = item.shortText
             }
             is CourierBillingAccountSelectorAdapterItem.Add -> {
-                holder.layoutAdd.visibility = View.VISIBLE
+                holder.layoutAdd.visibility = View.GONE
                 holder.layoutEdit.visibility = View.GONE
                 holder.textAdd.text = item.text
             }

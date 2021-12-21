@@ -303,6 +303,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
     private fun hideProgressBic() {
         binding.bikLayout.endIconMode = TextInputLayout.END_ICON_NONE
+        binding.account.isEnabled = true
+        binding.bik.isEnabled = true
+        binding.save.setState(ProgressButtonMode.ENABLE)
+        binding.removeAccount.isEnabled = true
+        binding.saveChangeAccount.setState(ProgressButtonMode.ENABLE)
     }
 
     private fun showProgressBic() {
@@ -310,6 +315,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         val endIcon = requireContext().getProgressBarDrawable()
         (endIcon as? Animatable)?.start()
         binding.bikLayout.endIconDrawable = endIcon
+        binding.account.isEnabled = false
+        binding.bik.isEnabled = false
+        binding.save.setState(ProgressButtonMode.DISABLE)
+        binding.removeAccount.isEnabled = false
+        binding.saveChangeAccount.setState(ProgressButtonMode.DISABLE)
     }
 
     private fun Context.getProgressBarDrawable(): Drawable {

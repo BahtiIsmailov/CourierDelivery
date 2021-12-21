@@ -165,7 +165,7 @@ class CourierBillingAccountDataViewModel(
         if (isPrefix) {
             if (text.length == ACCOUNT_LENGTH) "" else "Введите 20 цифр"
         } else {
-            "Первые 5 цифр это 40702 либо 40802 либо 40817"
+            "Счет должен начинаться с 40702 или 40802 или 40817"
         }
     }
 

@@ -47,12 +47,16 @@ abstract class NetworkViewModel(
                 throwable.error.message,
                 resourceProvider.getGenericServiceButtonError()
             )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
+            else -> {
+                val msg = throwable.message
+                val message = if (msg.isNullOrEmpty()) throwable.toString() else msg
+                NavigateToDialogInfo(
+                    DialogInfoStyle.ERROR.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    message,
+                    resourceProvider.getGenericServiceButtonError()
+                )
+            }
         }
 
     }
