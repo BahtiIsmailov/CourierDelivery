@@ -330,7 +330,7 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     companion object {
-        const val MAX_BANK_NAME_LENGTH = 23
+        const val MAX_BANK_NAME_LENGTH = 18
     }
 
 }
