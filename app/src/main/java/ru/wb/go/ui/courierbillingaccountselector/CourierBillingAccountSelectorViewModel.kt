@@ -16,6 +16,7 @@ import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.DeviceManager
 import java.text.DecimalFormat
 import java.util.*
 
@@ -25,6 +26,7 @@ class CourierBillingAccountSelectorViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
@@ -42,6 +44,10 @@ class CourierBillingAccountSelectorViewModel(
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
         get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
 
     private val _navigationEvent =
         SingleLiveEvent<CourierBillingAccountSelectorNavAction>()
@@ -72,9 +78,10 @@ class CourierBillingAccountSelectorViewModel(
     fun init() {
         localBalance = parameters.balance
         initToolbarLabel()
+        observeNetworkState()
+        fetchVersionApp()
         initBalance()
         initAccounts()
-        observeNetworkState()
     }
 
     private fun initToolbarLabel() {
@@ -92,6 +99,10 @@ class CourierBillingAccountSelectorViewModel(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
         )
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     private fun initAccounts() {
@@ -281,13 +292,13 @@ class CourierBillingAccountSelectorViewModel(
     private fun paymentsError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.INFO.ordinal,
+                DialogStyle.WARNING.ordinal,
                 throwable.message,
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.INFO.ordinal,
+                DialogStyle.ERROR.ordinal,
                 resourceProvider.getGenericServiceTitleError(),
                 throwable.error.message,
                 resourceProvider.getGenericServiceButtonError()

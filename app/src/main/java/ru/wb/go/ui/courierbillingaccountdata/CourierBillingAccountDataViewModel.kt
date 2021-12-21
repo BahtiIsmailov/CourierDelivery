@@ -19,6 +19,7 @@ import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.DeviceManager
 import java.util.*
 
 class CourierBillingAccountDataViewModel(
@@ -27,7 +28,8 @@ class CourierBillingAccountDataViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierBillingAccountDataInteractor,
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     companion object {
@@ -42,6 +44,14 @@ class CourierBillingAccountDataViewModel(
     val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
 
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
+    private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
     private val _initUIState = MutableLiveData<CourierBillingAccountDataInitUIState>()
     val initUIState: LiveData<CourierBillingAccountDataInitUIState>
         get() = _initUIState
@@ -49,10 +59,6 @@ class CourierBillingAccountDataViewModel(
     private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToMessageState: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageState
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
 
     private val _navigationEvent =
         SingleLiveEvent<CourierBillingAccountDataNavAction>()
@@ -86,6 +92,7 @@ class CourierBillingAccountDataViewModel(
     init {
         initToolbarLabel()
         observeNetworkState()
+        fetchVersionApp()
         initStateField()
     }
 
@@ -326,6 +333,10 @@ class CourierBillingAccountDataViewModel(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
         )
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
     fun onRemoveAccountClick() {

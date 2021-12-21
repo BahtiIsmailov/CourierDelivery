@@ -8,8 +8,6 @@ import kotlin.math.abs
 class CourierOrderDetailsResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
-
     fun getBoxPositiveButton() =
         context.getString(R.string.courier_warehouse_dialog_positive_button_error)
 

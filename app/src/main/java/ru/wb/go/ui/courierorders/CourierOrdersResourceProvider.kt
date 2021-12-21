@@ -8,8 +8,6 @@ import kotlin.math.abs
 class CourierOrdersResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
-
     fun getArrive(arrive: String): String {
         return context.getString(R.string.courier_orders_confirm_arrive, arrive)
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.network.api.app.entity.BillingCommonEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -89,28 +90,28 @@ class CourierBillingViewModel(
     private fun initBalanceAndTransactions() {
         addSubscription(
             interactor.billing().subscribe(
-                {
-                    balance = it.balance
-                    val decimalFormat = DecimalFormat("#,###.##")
-                    val balance = decimalFormat.format(balance)
-                    _balanceInfo.value = resourceProvider.getAmount(balance)
-                    val items = mutableListOf<BaseItem>()
-                    it.transactions.forEachIndexed { index, billingTransactionEntity ->
-                        items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
-                    }
-                    if (items.isEmpty()) {
-                        _billingItems.value =
-                            CourierBillingState.Empty(resourceProvider.getEmptyList())
-                    } else {
-                        _billingItems.value = CourierBillingState.ShowBilling(items)
-                    }
-                    progressComplete()
-                },
-
-                {
-                    billingError(it)
-                })
+                { billingComplete(it) },
+                { billingError(it) })
         )
+    }
+
+    private fun billingComplete(it: BillingCommonEntity) {
+        balance = it.balance
+        val decimalFormat = DecimalFormat("#,###.##")
+        val balance = decimalFormat.format(balance)
+        _balanceInfo.value = resourceProvider.getAmount(balance)
+        val items = mutableListOf<BaseItem>()
+        it.transactions.sortedByDescending { it.createdAt }
+            .forEachIndexed { index, billingTransactionEntity ->
+                items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
+            }
+        if (items.isEmpty()) {
+            _billingItems.value =
+                CourierBillingState.Empty(resourceProvider.getEmptyList())
+        } else {
+            _billingItems.value = CourierBillingState.ShowBilling(items)
+        }
+        progressComplete()
     }
 
     private fun billingError(throwable: Throwable) {
