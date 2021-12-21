@@ -206,7 +206,10 @@ class CourierLoadingScanViewModel(
 
     private fun observeScanProcessComplete(scanProcess: CourierLoadingProcessData) {
         LogUtils { logDebugApp("observeScanProcessComplete " + scanProcess.toString()) }
-        onTechEventLog("observeScanProcessComplete", scanProcess.toString())
+        onTechEventLog(
+            "observeScanProcessComplete",
+            scanProcess.scanBoxData.toString() + " " + scanProcess.count
+        )
         val scanBoxData = scanProcess.scanBoxData
         val accepted = resourceProvider.getAccepted(scanProcess.count)
         _isEnableBottomState.value = false

@@ -13,8 +13,6 @@ import kotlin.system.exitProcess
 
 class DeviceManagerImpl(private val context: Context) : DeviceManager {
 
-    override val deviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID) ?: ""
-
     override val deviceName = String.format("%s %s", Build.MANUFACTURER, Build.DEVICE)
 
     override val appVersion: String

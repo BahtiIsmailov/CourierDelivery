@@ -1,7 +1,6 @@
 package ru.wb.go.utils.managers
 
 interface DeviceManager {
-    val deviceId: String
     val deviceName: String
     val appVersion: String
     val appPackageName: String

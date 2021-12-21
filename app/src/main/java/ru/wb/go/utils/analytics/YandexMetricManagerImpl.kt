@@ -28,7 +28,7 @@ class YandexMetricManagerImpl(
     }
 
     private fun split(method: String, message: String): String {
-        return deviceManager.deviceId + SPACE_DIVIDER + tokenManager.wbUserID() + SPACE_DIVIDER + method + SPACE_DIVIDER + message + SPACE_DIVIDER + timeManager.getLocalTime()
+        return deviceManager.appVersion + SPACE_DIVIDER + tokenManager.wbUserID() + SPACE_DIVIDER + method + SPACE_DIVIDER + message + SPACE_DIVIDER + timeManager.getLocalTime()
     }
 
     private fun sendTechReportEvent(eventBody: String) {
