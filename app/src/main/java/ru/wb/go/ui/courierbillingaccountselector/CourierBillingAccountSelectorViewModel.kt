@@ -109,32 +109,26 @@ class CourierBillingAccountSelectorViewModel(
         addSubscription(interactor.accounts()
             .map { sortedAccounts(it) }
             .doOnSuccess { copyCourierBillingAccountEntity = it.toMutableList() }
-            .map {
-                val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
-
-                it.forEach {
-                    val text = resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
-                    val bankName = it.bank
-                    val shortText = if (bankName.length > MAX_BANK_NAME_LENGTH) {
-                        resourceProvider.getShortFormatAccount(
-                            MAX_BANK_NAME_LENGTH,
-                            bankName,
-                            it.correspondentAccount
-                        )
-                    } else {
-                        resourceProvider.getFormatAccount(it.bank, it.correspondentAccount)
-                    }
-
-                    list.add(CourierBillingAccountSelectorAdapterItem.Edit(text, shortText))
-                }
-                list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
-                list
-            }
+            .map { convertToItems(it) }
             .doOnSuccess { copyCourierBillingAccountSelectorAdapterItems = it.toMutableList() }
             .subscribe({
                 _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
             }, {})
         )
+    }
+
+    private fun convertToItems(it: List<CourierBillingAccountEntity>): MutableList<CourierBillingAccountSelectorAdapterItem> {
+        val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
+        it.forEach {
+            list.add(
+                CourierBillingAccountSelectorAdapterItem.Edit(
+                    it.bank,
+                    it.correspondentAccount.takeLast(4)
+                )
+            )
+        }
+        list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
+        return list
     }
 
     private fun sortedAccounts(accounts: List<CourierBillingAccountEntity>) =

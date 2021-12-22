@@ -17,6 +17,11 @@ open class CourierBillingAccountSelectorAdapter(
 
     companion object {
         private const val ID_LAYOUT = R.layout.billing_accounts_adapter_layout
+        const val MAX_END_DOT = 3
+        const val START_SHORT_BANK_NAME = 0
+        const val SELECTED_MAX_LINES = 1
+        const val ELLIPSIS_COUNT = 0
+        const val EDIT_MAX_LINES = 4
     }
 
     override fun getView(position: Int, view: View?, parent: ViewGroup): View {
@@ -34,8 +39,31 @@ open class CourierBillingAccountSelectorAdapter(
                 holder.layoutAdd.visibility = View.GONE
                 holder.layoutEdit.visibility = View.VISIBLE
                 holder.imageEdit.visibility = View.INVISIBLE
-                holder.textEdit.maxLines = 1
-                holder.textEdit.text = item.shortText
+                holder.textEdit.maxLines = SELECTED_MAX_LINES
+                val observer = holder.textEdit.viewTreeObserver
+                observer.addOnGlobalLayoutListener {
+                    with(item) {
+                        val longText = context.getString(
+                            R.string.courier_billing_account_selector_long_format,
+                            bankName,
+                            lastFourAccount
+                        )
+                        holder.textEdit.text = longText
+                        val textLayout = holder.textEdit.layout
+                        val ellipsisCount = textLayout.getEllipsisCount(SELECTED_MAX_LINES - 1)
+                        if (ellipsisCount > ELLIPSIS_COUNT) {
+                            val endShortBankName = bankName.length - ellipsisCount - MAX_END_DOT
+                            val shortBankName =
+                                bankName.substring(START_SHORT_BANK_NAME, endShortBankName).trim()
+                            holder.textEdit.text = context.getString(
+                                R.string.courier_billing_account_selector_short_format,
+                                shortBankName,
+                                lastFourAccount
+                            )
+
+                        }
+                    }
+                }
             }
             is CourierBillingAccountSelectorAdapterItem.Add -> {
                 holder.layoutAdd.visibility = View.GONE
@@ -60,8 +88,13 @@ open class CourierBillingAccountSelectorAdapter(
             is CourierBillingAccountSelectorAdapterItem.Edit -> {
                 holder.layoutAdd.visibility = View.GONE
                 holder.layoutEdit.visibility = View.VISIBLE
-                holder.textEdit.maxLines = 2
-                holder.textEdit.text = item.text
+                holder.textEdit.maxLines = EDIT_MAX_LINES
+                val measureText = context.getString(
+                    R.string.courier_billing_account_selector_long_format,
+                    item.bankName,
+                    item.lastFourAccount
+                )
+                holder.textEdit.text = measureText
                 holder.imageEdit.setOnClickListener { callback.onEditClick(position) }
             }
             is CourierBillingAccountSelectorAdapterItem.Add -> {
