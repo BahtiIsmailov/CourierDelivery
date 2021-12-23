@@ -23,6 +23,7 @@
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
     <color name="text_clickable">#642CA3</color>
+    <color name="text_clickable_dark">#6F6779</color>
     <color name="border_normal">#642CA3</color>
     <color name="border_lite">#DBD7E0</color>
     <color name="border_error">#B00020</color>

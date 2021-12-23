@@ -42,6 +42,7 @@
         <ru.wb.go.views.ProgressButtonView
             android:id="@+id/cancel"
             android:layout_width="0dp"
+            android:visibility="gone"
             android:layout_height="@dimen/auth_button_height"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="8dp"
@@ -67,7 +68,7 @@
             android:layout_weight="1"
             android:visibility="visible"
             app:progress_button_background="@drawable/progress_image_button_round_default"
-            app:progress_button_name="Подтвердить"
+            app:progress_button_name="OK"
             app:progress_button_state="enable"
             app:progress_button_text_color_disable="@color/button_default_text_disable"
             app:progress_button_text_color_enable="@color/button_default_text_enable"

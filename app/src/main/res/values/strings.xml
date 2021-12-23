@@ -483,8 +483,8 @@
     <string name="keyboard_symbolX">X</string>
 
     <string name="user_form_complete">Я подтверждаю правильность и полноту предоставленных мною данных</string>
-    <string name="user_form_agreement">Подтверждаю согласие с ^1</string>
-    <string name="user_form_agreement_link">договором оферты</string>
+    <string name="user_form_agreement">^1</string>
+    <string name="user_form_agreement_link">Подтверждаю согласие с договором оферты</string>
     <string name="user_form_personal">Даю своё согласие на обработку персональных данных</string>
 
     <string name="start_delivery_title">Погрузка завершена</string>

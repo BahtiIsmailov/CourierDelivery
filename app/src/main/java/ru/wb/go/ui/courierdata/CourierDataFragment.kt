@@ -80,8 +80,8 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     private fun initAgreementResult() {
         setFragmentResultListener(CourierAgreementFragment.BUNDLE_RESULT_KEY) { _, bundle ->
             if (bundle.containsKey(VALUE_RESULT_KEY)) {
-                val isConfirm = bundle.get(VALUE_RESULT_KEY) as Boolean
-                binding.checkedAgreement.isChecked = isConfirm
+                //val isConfirm = bundle.get(VALUE_RESULT_KEY) as Boolean
+                //binding.checkedAgreement.isChecked = isConfirm
                 updateChecked()
             }
         }
@@ -416,11 +416,12 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
         override fun onClick(widget: View) {
             viewModel.onShowAgreementClick()
+            binding.checkedAgreement.isChecked = true
         }
 
         override fun updateDrawState(ds: TextPaint) {
             super.updateDrawState(ds)
-            ds.color = ContextCompat.getColor(requireContext(), R.color.text_clickable)
+            ds.color = ContextCompat.getColor(requireContext(), R.color.text_clickable_dark)
         }
 
     }
