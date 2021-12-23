@@ -100,7 +100,11 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun initListener() {
-        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+        binding.toolbarLayout.back.setOnClickListener {
+            findNavController().navigate(
+                CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
+            )
+        }
         binding.toolbarLayout.noInternetImage.setOnClickListener {
             (activity as NavToolbarListener).showNetworkDialog()
         }

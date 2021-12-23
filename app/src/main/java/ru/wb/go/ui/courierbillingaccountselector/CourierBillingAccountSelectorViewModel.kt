@@ -122,7 +122,7 @@ class CourierBillingAccountSelectorViewModel(
         it.forEach {
             list.add(
                 CourierBillingAccountSelectorAdapterItem.Edit(
-                    it.bank + " 1234 5 " + it.bank,
+                    it.bank,
                     it.correspondentAccount.takeLast(4)
                 )
             )

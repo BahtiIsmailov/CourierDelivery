@@ -34,6 +34,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.SplashActivityBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.auth.AppVersionState
+import ru.wb.go.ui.courierdata.CourierDataFragmentDirections
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -104,7 +105,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private fun initNavController() {
         binding.navView.itemIconTintList = null
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_auth_host_fragment) as NavHostFragment
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
         navController = navHostFragment.navController
         onDestinationChangedListener =
@@ -318,7 +319,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
                 viewModel.onExitClick()
                 panMode()
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-                Navigation.findNavController(this@AppActivity, R.id.nav_auth_host_fragment)
+                Navigation.findNavController(this@AppActivity, R.id.nav_host_fragment)
                     .navigate(R.id.load_navigation)
             }
         }
@@ -395,7 +396,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_auth_host_fragment)
+        val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -448,8 +449,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private var isLoadingCourierBox = false
 
     override fun onBackPressed() {
-        when (findNavController(R.id.nav_auth_host_fragment).currentDestination?.id) {
+        when (findNavController(R.id.nav_host_fragment).currentDestination?.id) {
             R.id.authNumberPhoneFragment -> finish()
+            R.id.userFormFragment -> findNavController(R.id.nav_host_fragment).navigate(
+                CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
+            )
             R.id.couriersCompleteRegistrationFragment, R.id.courierWarehouseFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment,
             R.id.courierOrderTimerFragment, R.id.courierStartDeliveryFragment -> showExitDialog()

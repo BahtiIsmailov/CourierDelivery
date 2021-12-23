@@ -96,6 +96,9 @@
         <action
             android:id="@+id/action_userFormFragment_to_courierAgreementFragment"
             app:destination="@id/courierAgreementFragment" />
+        <action
+            android:id="@+id/action_userFormFragment_to_auth_navigation"
+            app:destination="@id/auth_navigation" />
     </fragment>
 
     <fragment
