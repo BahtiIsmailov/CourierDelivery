@@ -34,37 +34,28 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
         tools:text="3200 \u20BD" />
 
-    <TextView
-        android:id="@+id/details"
-        style="@style/MediumBlackRegularText"
+    <ImageView
+        android:id="@+id/to_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:text="Детализация"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coast" />
+        android:layout_marginStart="8dp"
+        android:visibility="invisible"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_billing_account"
+        app:layout_constraintBottom_toBottomOf="@+id/coast"
+        app:layout_constraintStart_toEndOf="@+id/coast"
+        app:layout_constraintTop_toTopOf="@+id/coast"
+        tools:ignore="ContentDescription" />
 
     <View
         android:id="@+id/view_divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="22dp"
         android:background="#EDEEF0"
-        app:layout_constraintEnd_toEndOf="@+id/details"
-        app:layout_constraintStart_toStartOf="@+id/details"
-        app:layout_constraintTop_toBottomOf="@+id/details" />
-
-    <View
-        android:id="@+id/view_divider"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginTop="11dp"
-        android:background="#642CA3"
-        app:layout_constraintEnd_toEndOf="@+id/details"
-        app:layout_constraintStart_toStartOf="@+id/details"
-        app:layout_constraintTop_toBottomOf="@+id/details" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coast" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/operations"
@@ -77,7 +68,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view_divider"
+        app:layout_constraintTop_toBottomOf="@+id/view_divider1"
         tools:listitem="@layout/courier_billing_positive_delegate" />
 
     <View

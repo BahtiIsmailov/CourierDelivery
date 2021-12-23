@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import ru.wb.go.db.dao.CourierAccountDao
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
 import ru.wb.go.db.dao.CourierWarehouseDao
@@ -11,6 +12,7 @@ import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.db.entity.courierlocal.*
+import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
@@ -19,6 +21,7 @@ class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
     private val courierOrderDao: CourierOrderDao,
     private val courierLoadingBoxDao: CourierBoxDao,
+    private val courierAccountDao: CourierAccountDao,
 ) : CourierLocalRepository {
 
     override fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
@@ -193,6 +196,34 @@ class CourierLocalRepositoryImpl(
 
     override fun completeDeliveryResult(): Single<CompleteDeliveryResult> {
         return courierLoadingBoxDao.completeDeliveryResult()
+    }
+
+    //==============================================================================================
+    //billing
+    //==============================================================================================
+
+    override fun saveAccount(courierBillingAccountEntity: CourierBillingAccountEntity): Completable {
+        return courierAccountDao.insertAccount(courierBillingAccountEntity)
+    }
+
+    override fun saveAccounts(courierBillingAccountEntities: List<CourierBillingAccountEntity>): Completable {
+        return courierAccountDao.insertAccounts(courierBillingAccountEntities)
+    }
+
+    override fun readAllAccounts(): Single<List<CourierBillingAccountEntity>> {
+        return courierAccountDao.readAllAccount()
+    }
+
+    override fun readAccount(account: String): Single<CourierBillingAccountEntity> {
+        return courierAccountDao.readAccount(account)
+    }
+
+    override fun deleteAccount(account: String): Completable {
+        return courierAccountDao.deleteAccountByAccount(account)
+    }
+
+    override fun deleteAllAccount(): Completable {
+        return courierAccountDao.deleteAllAccount()
     }
 
 }

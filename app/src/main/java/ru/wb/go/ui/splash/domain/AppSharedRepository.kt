@@ -1,7 +1,6 @@
 package ru.wb.go.ui.splash.domain
 
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 
 interface AppSharedRepository {
 

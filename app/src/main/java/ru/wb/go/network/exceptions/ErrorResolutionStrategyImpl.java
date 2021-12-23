@@ -129,7 +129,7 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
             case AppConsts.SERVICE_CODE_LOCKED:
                 return new LockedException(error.getMessage());
             default:
-                return new UnknownHttpException(resourceProvider.getUnknownHttpError(), exception.message(), code);
+                return new UnknownHttpException(exception.toString()); //resourceProvider.getUnknownHttpError(), exception.toString(), code
         }
     }
 

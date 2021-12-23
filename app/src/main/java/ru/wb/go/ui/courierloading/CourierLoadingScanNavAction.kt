@@ -10,6 +10,7 @@ sealed class CourierLoadingScanNavAction {
 
     object NavigateToWarehouse : CourierLoadingScanNavAction()
 
-    data class NavigateToStartDelivery(val amount: Int, val count: Int) : CourierLoadingScanNavAction()
+    data class NavigateToStartDelivery(val amount: Int, val count: Int) :
+        CourierLoadingScanNavAction()
 
 }

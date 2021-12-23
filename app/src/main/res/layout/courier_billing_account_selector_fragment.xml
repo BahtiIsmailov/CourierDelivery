@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_auth_content">
+
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/prefix_balance"
+                        style="@style/VeryLargeDarkRegularText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Баланс" />
+
+                    <TextView
+                        android:id="@+id/balance"
+                        style="@style/VeryLargeBlackRegularText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textStyle="bold"
+                        tools:text="17 000 \u20BD" />
+
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/amount_layout"
+                    style="@style/TextInputLayoutStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                    android:layout_marginTop="24dp"
+                    app:errorEnabled="true"
+                    app:errorIconDrawable="@null"
+                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
+                    tools:ignore="MissingConstraints">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Сумма списания \u20BD"
+                        android:inputType="number"
+                        android:letterSpacing="0.04"
+                        android:maxLength="7"
+                        android:paddingTop="@dimen/auth_padding_top"
+                        android:paddingBottom="@dimen/auth_padding_bottom" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    style="@style/VeryLargeBlackRegularText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Счет зачисления"
+                    android:textStyle="bold" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_billing_transperent_layout"
+                    android:orientation="horizontal">
+
+                    <ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorSpinnerView
+                        android:id="@+id/spinner_account"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:overlapAnchor="false"
+                        android:popupBackground="@drawable/spinner_account_rounded_corner"
+                        android:spinnerMode="dropdown" />
+
+                    <ImageView
+                        android:id="@+id/spinner_account_drop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="10dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:src="@drawable/ic_arrow_down"
+                        tools:ignore="ContentDescription" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <!--                    android:background="@drawable/spinner_background"-->
+
+            <!--            android:background="@drawable/rounded_billing_transperent_layout"-->
+
+        </FrameLayout>
+
+    </ScrollView>
+
+    <ru.wb.go.views.ProgressButtonView
+        android:id="@+id/next"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/scroll_view"
+        app:progress_button_background="@drawable/progress_image_button_round_default"
+        app:progress_button_name="@string/courier_billing_account_selector_amount_button_init"
+        app:progress_button_state="disable"
+        app:progress_button_text_color_disable="@color/button_default_text_disable"
+        app:progress_button_text_color_enable="@color/button_default_text_enable"
+        app:progress_button_text_color_progress="@color/button_default_text_progress"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <View
+        android:id="@+id/overlay_boxes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

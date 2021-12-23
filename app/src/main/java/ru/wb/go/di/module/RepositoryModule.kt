@@ -2,6 +2,7 @@ package ru.wb.go.di.module
 
 import org.koin.dsl.module
 import ru.wb.go.db.*
+import ru.wb.go.db.dao.CourierAccountDao
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
 import ru.wb.go.db.dao.CourierWarehouseDao
@@ -41,7 +42,7 @@ val deliveryRepositoryModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         api: AppApi,
         tokenManager: TokenManager,
-        timeManager: TimeManager
+        timeManager: TimeManager,
     ): AppRemoteRepository {
         return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager, timeManager)
     }
@@ -57,11 +58,13 @@ val deliveryRepositoryModule = module {
         courierWarehouseDao: CourierWarehouseDao,
         courierOrderDao: CourierOrderDao,
         courierBoxDao: CourierBoxDao,
+        courierAccountDao: CourierAccountDao
     ): CourierLocalRepository {
         return CourierLocalRepositoryImpl(
             courierWarehouseDao,
             courierOrderDao,
-            courierBoxDao
+            courierBoxDao,
+            courierAccountDao
         )
     }
 
@@ -92,7 +95,7 @@ val deliveryRepositoryModule = module {
     single { provideAuthRemoteRepository(get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
-    single { provideCourierLocalRepository(get(), get(), get()) }
+    single { provideCourierLocalRepository(get(), get(), get(), get()) }
     single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }
     single { provideIntransitTimeRepository() }

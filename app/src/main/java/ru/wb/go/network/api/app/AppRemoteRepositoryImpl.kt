@@ -1,6 +1,7 @@
 package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.entity.TaskStatus
@@ -8,9 +9,15 @@ import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.entity.*
+import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
+import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.courier.*
+import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.utils.LogUtils
@@ -282,7 +289,48 @@ class AppRemoteRepositoryImpl(
                     transactions = billingTransactions
                 )
             }
-            .compose(rxSchedulerFactory.applySingleMetrics("billing"))
+    }
+
+    override fun payments(paymentEntity: PaymentEntity): Completable {
+        val paymentRequest = with(paymentEntity) {
+            PaymentRequest(
+                amount = amount,
+                recipientBankName = recipientBankName,
+                recipientName = recipientName,
+                recipientBankBik = recipientBankBik,
+                recipientCorrespondentAccount = recipientCorrespondentAccount,
+                recipientAccount = recipientAccount,
+                recipientInn = recipientInn,
+                recipientKpp = recipientKpp
+            )
+        }
+        return remote.payments(apiVersion(), paymentRequest)
+    }
+
+    override fun getBank(bic: String): Maybe<BankEntity> {
+        return remote.getBank(apiVersion(), bic)
+            .map { with(it) { BankEntity(id, it.bic, name, correspondentAccount, isDeleted) } }
+    }
+
+    override fun getBankAccounts(): Single<AccountsEntity> {
+        return remote.getBankAccounts(apiVersion())
+            .map { AccountsEntity(it.inn, it.data.convertToEntity()) }
+    }
+
+    private fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
+        val accountsEntity = mutableListOf<AccountEntity>()
+        forEach { accountsEntity.add(with(it) { AccountEntity(bic, name, correspondentAccount) }) }
+        return accountsEntity
+    }
+
+    override fun setBankAccounts(accountEntities: List<AccountEntity>): Completable {
+        return remote.setBankAccounts(apiVersion(), accountEntities.convertToRequest())
+    }
+
+    private fun List<AccountEntity>.convertToRequest(): List<AccountRequest> {
+        val accountsEntity = mutableListOf<AccountRequest>()
+        forEach { accountsEntity.add(AccountRequest(it.bic, it.name, it.correspondentAccount)) }
+        return accountsEntity
     }
 
     override fun appVersion(): Single<String> {

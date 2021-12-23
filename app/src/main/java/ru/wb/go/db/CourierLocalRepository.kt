@@ -8,6 +8,7 @@ import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
 import ru.wb.go.db.entity.courierlocal.*
+import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
@@ -111,6 +112,24 @@ interface CourierLocalRepository {
     fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
 
     fun completeDeliveryResult(): Single<CompleteDeliveryResult>
+
+    //==============================================================================================
+    //Billing
+    //==============================================================================================
+
+    fun saveAccount(courierBillingAccountEntity: CourierBillingAccountEntity): Completable
+
+    fun saveAccounts(courierBillingAccountEntities: List<CourierBillingAccountEntity>): Completable
+
+    fun readAllAccounts(): Single<List<CourierBillingAccountEntity>>
+
+    fun readAccount(account: String): Single<CourierBillingAccountEntity>
+
+    fun deleteAccount(account: String): Completable
+
+    fun deleteAllAccount(): Completable
+
+    //==============================================================================================
 
 
 }

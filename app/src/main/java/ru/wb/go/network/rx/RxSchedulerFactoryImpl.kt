@@ -46,6 +46,15 @@ class RxSchedulerFactoryImpl(private val metric: YandexMetricManager) : RxSchedu
         }
     }
 
+    override fun <T> applyMaybeSchedulers(): MaybeTransformer<T, T> {
+        return MaybeTransformer { upstream: Maybe<T> ->
+            upstream
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+        }
+    }
+
     override fun <T> applySingleMetrics(method: String): SingleTransformer<T, T> {
         return SingleTransformer { upstream: Single<T> ->
             upstream

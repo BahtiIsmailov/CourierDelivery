@@ -7,8 +7,6 @@ import ru.wb.go.mvvm.BaseMessageResourceProvider
 class CourierBillingResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
-
     fun getTitle(): String {
         return context.getString(R.string.courier_billing_title)
     }

@@ -26,8 +26,10 @@ class CourierBillingViewModel(
     private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
-    private val _toolbarLabelState = MutableLiveData<Label>()
-    val toolbarLabelState: LiveData<Label>
+    private var balance = 0
+
+    private val _toolbarLabelState = MutableLiveData<String>()
+    val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
 
     private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
@@ -82,7 +84,7 @@ class CourierBillingViewModel(
     }
 
     private fun initToolbarLabel() {
-        _toolbarLabelState.value = Label(resourceProvider.getTitle())
+        _toolbarLabelState.value = resourceProvider.getTitle()
     }
 
     private fun initBalanceAndTransactions() {
@@ -94,35 +96,15 @@ class CourierBillingViewModel(
     }
 
     private fun billingComplete(it: BillingCommonEntity) {
-        onTechEventLog("billingComplete", "transactions size ${it.transactions.size}")
+        balance = it.balance
         val decimalFormat = DecimalFormat("#,###.##")
-        val balance = decimalFormat.format(it.balance)
+        val balance = decimalFormat.format(balance)
         _balanceInfo.value = resourceProvider.getAmount(balance)
         val items = mutableListOf<BaseItem>()
         it.transactions.sortedByDescending { it.createdAt }
             .forEachIndexed { index, billingTransactionEntity ->
                 items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
             }
-
-        // TODO: 26.11.2021 для отладки
-        //                    items.clear()
-        //                    _balanceInfo.value = resourceProvider.getAmount("21 400")
-        //                    for (i in 1..10) {
-        //                        val billing = BillingTransactionEntity(
-        //                            "5122hhskkjh9", if (i % 2 > 0) {
-        //                                1000 * i * -1
-        //                            } else {
-        //                                5000 * i
-        //                            },
-        //                            if (i % 2 > 0) {
-        //                                "2021-04-22T12:32:25+03:00"
-        //                            } else {
-        //                                "2021-04-25T16:32:25+03:00"
-        //                            }
-        //                        )
-        //                        items.add(dataBuilder.buildOrderItem(i, billing))
-        //                    }
-
         if (items.isEmpty()) {
             _billingItems.value =
                 CourierBillingState.Empty(resourceProvider.getEmptyList())
@@ -173,6 +155,33 @@ class CourierBillingViewModel(
         initBalanceAndTransactions()
     }
 
+    fun onAccountClick() {
+        showProgress()
+        addSubscription(
+            interactor.updateAccountsIsExist().subscribe(
+                { accountsComplete(it) },
+                { accountsError(it) })
+        )
+    }
+
+    private fun accountsComplete(isAccountsExist: Boolean) {
+        _navigationState.value = if (isAccountsExist)
+            CourierBillingNavigationState.NavigateToAccountSelector(balance)
+        else CourierBillingNavigationState.NavigateToAccountCreate("", balance)
+        progressComplete()
+    }
+
+    private fun accountsError(throwable: Throwable) {
+//        _navigationState.value = CourierBillingNavigationState.NavigateToDialogInfo(
+//            DialogInfoStyle.ERROR.ordinal,
+//            resourceProvider.getGenericServiceTitleError(),
+//            throwable.toString(),
+//            resourceProvider.getGenericServiceButtonError()
+//        )
+        _navigateToDialogInfo.value = messageError(throwable, resourceProvider)
+        progressComplete()
+    }
+
     fun onItemClick(id: Int) {
 
     }
@@ -188,7 +197,5 @@ class CourierBillingViewModel(
     companion object {
         const val SCREEN_TAG = "CourierBilling"
     }
-
-    data class Label(val label: String)
 
 }

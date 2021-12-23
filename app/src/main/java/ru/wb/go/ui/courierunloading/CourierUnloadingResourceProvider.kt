@@ -7,8 +7,6 @@ import ru.wb.go.mvvm.BaseMessageResourceProvider
 class CourierUnloadingResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
-
     fun getScanDialogTitle() = context.getString(R.string.courier_unloading_dialog_title_error)
     fun getScanDialogMessage() = context.getString(R.string.courier_unloading_dialog_message_error)
     fun getScanDialogButton() = context.getString(R.string.courier_unloading_dialog_button_error)

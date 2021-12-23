@@ -1,13 +1,18 @@
 package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.VersionAppResponse
+import ru.wb.go.network.api.app.remote.accounts.AccountRequest
+import ru.wb.go.network.api.app.remote.accounts.AccountsResponse
+import ru.wb.go.network.api.app.remote.bank.BankResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
+import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 
 interface AppApi {
 
@@ -93,11 +98,38 @@ interface AppApi {
         @Body carNumbersRequest: List<CarNumberRequest>
     ): Completable
 
+    //==============================================================================================
+    //billing
+    //==============================================================================================
+
     @GET("{version}/billing/account")
     fun billing(
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
     ): Single<BillingCommonResponse>
+
+    @POST("{version}/payments")
+    fun payments(
+        @Path(value = "version", encoded = true) version: String,
+        @Body paymentRequest: PaymentRequest
+    ): Completable
+
+    @GET("{version}/banks")
+    fun getBank(
+        @Path(value = "version", encoded = true) version: String,
+        @Query("bic") bic: String
+    ): Maybe<BankResponse>
+
+    @GET("{version}/me/bank-accounts")
+    fun getBankAccounts(
+        @Path(value = "version", encoded = true) version: String
+    ): Single<AccountsResponse>
+
+    @PUT("{version}/me/bank-accounts")
+    fun setBankAccounts(
+        @Path(value = "version", encoded = true) version: String,
+        @Body accountRequest: List<AccountRequest>
+    ): Completable
 
     @GET("{version}/settings/mobile-version")
     fun version(

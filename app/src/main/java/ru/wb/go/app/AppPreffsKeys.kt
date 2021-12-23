@@ -5,6 +5,7 @@ object AppPreffsKeys {
     const val APP_SERVER_KEY = "APP_SERVER_KEY"
     const val APP_VERSION_KEY = "APP_VERSION_KEY"
     const val TOKEN_KEY = "TOKEN_KEY"
+    const val USER_INN_KEY = "USER_INN"
     const val PHONE_KEY = "PHONE_KEY"
     const val CAR_NUMBER_KEY = "CAR_NUMBER_KEY"
     const val COST_KEY = "COST_KEY"

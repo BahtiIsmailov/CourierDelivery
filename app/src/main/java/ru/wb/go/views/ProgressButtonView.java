@@ -25,6 +25,7 @@ public class ProgressButtonView extends FrameLayout {
     private View layout;
     private TextView textView;
     private ProgressBar progressBar;
+    private View overlay;
 
     private int enableColor;
     private int progressColor;
@@ -60,6 +61,7 @@ public class ProgressButtonView extends FrameLayout {
         layout = layoutView.findViewById(R.id.background_layout);
         textView = layoutView.findViewById(R.id.text);
         progressBar = layoutView.findViewById(R.id.progress_bar);
+        overlay = layoutView.findViewById(R.id.overlay);
         addView(layoutView);
     }
 
@@ -106,6 +108,7 @@ public class ProgressButtonView extends FrameLayout {
         textView.setText(text);
         textView.setTextColor(disableColor);
         progressBar.setVisibility(GONE);
+        overlay.setVisibility(VISIBLE);
     }
 
     private void enableState() {
@@ -113,6 +116,7 @@ public class ProgressButtonView extends FrameLayout {
         textView.setText(text);
         textView.setTextColor(enableColor);
         progressBar.setVisibility(GONE);
+        overlay.setVisibility(INVISIBLE);
     }
 
     private void progressState() {
@@ -120,6 +124,7 @@ public class ProgressButtonView extends FrameLayout {
         textView.setText(text);
         textView.setTextColor(progressColor);
         progressBar.setVisibility(VISIBLE);
+        overlay.setVisibility(VISIBLE);
     }
 
     public void setText(String text) {

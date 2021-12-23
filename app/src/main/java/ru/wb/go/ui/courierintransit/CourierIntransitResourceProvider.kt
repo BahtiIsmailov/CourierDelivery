@@ -7,8 +7,6 @@ import ru.wb.go.mvvm.BaseMessageResourceProvider
 class CourierIntransitResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
-
     fun getLabelId(id : String): String {
         return context.getString(R.string.courier_intransit_label_id, id)
     }

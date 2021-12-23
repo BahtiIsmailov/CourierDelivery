@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderDetailsLayoutBinding
-import ru.wb.go.ui.courierwarehouses.CourierWarehouseItem
 
 class CourierOrderDetailsAdapter(
     context: Context,

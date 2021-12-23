@@ -20,11 +20,12 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingNegativeDelegate
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingPositiveDelegate
 import ru.wb.go.ui.courierbilling.delegates.OnCourierBillingCallback
+import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
+import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
-import ru.wb.go.views.ProgressButtonMode
 
 
 class CourierBillingFragment : Fragment() {
@@ -83,16 +84,18 @@ class CourierBillingFragment : Fragment() {
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.update.setOnClickListener { viewModel.onUpdateClick() }
+        binding.toAccount.setOnClickListener { viewModel.onAccountClick() }
     }
 
     private fun initStateObserve() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarTitle.text = it.label
+            binding.toolbarLayout.toolbarTitle.text = it
         }
 
         viewModel.balanceInfo.observe(viewLifecycleOwner) {
             binding.coast.text = it
+            binding.toAccount.visibility = VISIBLE
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -115,8 +118,20 @@ class CourierBillingFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierBillingNavigationState.NavigateToBack -> {
+                CourierBillingNavigationState.NavigateToBack -> {}
+                is CourierBillingNavigationState.NavigateToDialogInfo -> with(it) {
+                    showDialogInfo(type, title, message, button)
                 }
+                is CourierBillingNavigationState.NavigateToAccountCreate -> findNavController().navigate(
+                    CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountDataFragment(
+                        CourierBillingAccountDataAmountParameters(it.account, it.balance)
+                    )
+                )
+                is CourierBillingNavigationState.NavigateToAccountSelector -> findNavController().navigate(
+                    CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountSelectorFragment(
+                        CourierBillingAccountSelectorAmountParameters(it.balance)
+                    )
+                )
             }
         }
 

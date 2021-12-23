@@ -9,6 +9,10 @@ import ru.wb.go.ui.auth.NumberPhoneViewModel
 import ru.wb.go.ui.config.ConfigViewModel
 import ru.wb.go.ui.courieragreement.CourierAgreementViewModel
 import ru.wb.go.ui.courierbilling.CourierBillingViewModel
+import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
+import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataViewModel
+import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
+import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorViewModel
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
@@ -75,8 +79,6 @@ val viewModelModule = module {
         CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get()) }
-
     viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
@@ -140,5 +142,29 @@ val viewModelModule = module {
     viewModel { CourierMapViewModel(get(), get(), get(), get()) }
 
     viewModel { ScannerViewModel(get(), get(), get()) }
+
+    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get()) }
+
+    viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
+        CourierBillingAccountDataViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+    viewModel { (parameters: CourierBillingAccountSelectorAmountParameters) ->
+        CourierBillingAccountSelectorViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
 }

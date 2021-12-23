@@ -17,6 +17,10 @@ import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.go.ui.auth.domain.NumberPhoneInteractorImpl
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractorImpl
+import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
+import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractorImpl
+import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
+import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractorImpl
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
 import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
@@ -81,6 +85,34 @@ val interactorModule = module {
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository
+        )
+    }
+
+    fun provideCourierBillingAccountDataInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+    ): CourierBillingAccountDataInteractor {
+        return CourierBillingAccountDataInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            courierLocalRepository
+        )
+    }
+
+    fun provideCourierBillingAccountSelectorInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+    ): CourierBillingAccountSelectorInteractor {
+        return CourierBillingAccountSelectorInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            courierLocalRepository
         )
     }
 
@@ -297,11 +329,15 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        tokenManager: TokenManager
     ): CourierBillingInteractor {
         return CourierBillingInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
-            appRemoteRepository
+            appRemoteRepository,
+            courierLocalRepository,
+            tokenManager
         )
     }
 
@@ -341,6 +377,9 @@ val interactorModule = module {
     single { provideCheckSmsInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
+
+    single { provideCourierBillingAccountDataInteractor(get(), get(), get(), get()) }
+    single { provideCourierBillingAccountSelectorInteractor(get(), get(), get(), get()) }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
@@ -388,6 +427,6 @@ val interactorModule = module {
     factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
-    factory { provideCourierBillingInteractor(get(), get(), get()) }
+    factory { provideCourierBillingInteractor(get(), get(), get(), get(), get()) }
 
 }

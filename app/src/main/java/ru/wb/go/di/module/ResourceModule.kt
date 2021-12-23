@@ -4,6 +4,8 @@ import android.app.Application
 import org.koin.dsl.module
 import ru.wb.go.ui.auth.AuthResourceProvider
 import ru.wb.go.ui.courierbilling.CourierBillingResourceProvider
+import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataResourceProvider
+import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorResourceProvider
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
 import ru.wb.go.ui.courierdata.CourierDataResourceProvider
@@ -97,6 +99,14 @@ val resourceModule = module {
         return CourierMapResourceProvider(application)
     }
 
+    fun provideCourierBillingAccountDataResourceProvider(application: Application): CourierBillingAccountDataResourceProvider {
+        return CourierBillingAccountDataResourceProvider(application)
+    }
+
+    fun provideCourierBillingAccountSelectorResourceProvider(application: Application): CourierBillingAccountSelectorResourceProvider {
+        return CourierBillingAccountSelectorResourceProvider(application)
+    }
+
     fun provideTemporaryPasswordResourceProvider(application: Application): AuthResourceProvider {
         return AuthResourceProvider(application)
     }
@@ -119,6 +129,8 @@ val resourceModule = module {
     single { provideCourierStartDeliveryResourceProvider(get()) }
     single { provideCourierMapResourceProvider(get()) }
     single { provideCourierBillingResourceProvider(get()) }
+    single { provideCourierBillingAccountDataResourceProvider(get()) }
+    single { provideCourierBillingAccountSelectorResourceProvider(get()) }
 
     single { provideTemporaryPasswordResourceProvider(get()) }
 

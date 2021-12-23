@@ -58,6 +58,8 @@
     <dimen name="counter_margin_vertical">4dp</dimen>
     <dimen name="counter_margin_horizontal">10dp</dimen>
     <dimen name="reception_stroke_width">1dp</dimen>
+    <dimen name="box_corner_radius">8dp</dimen>
+
 
 
     <dimen name="keyboard_height">380dp</dimen>

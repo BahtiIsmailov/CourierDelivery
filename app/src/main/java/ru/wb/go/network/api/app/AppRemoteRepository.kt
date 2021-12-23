@@ -1,10 +1,14 @@
 package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.entity.*
+import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
+import ru.wb.go.network.api.app.entity.bank.BankEntity
 
 interface AppRemoteRepository {
 
@@ -41,6 +45,14 @@ interface AppRemoteRepository {
     fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable
 
     fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
+
+    fun payments(paymentEntity: PaymentEntity): Completable
+
+    fun getBank(bic: String): Maybe<BankEntity>
+
+    fun getBankAccounts(): Single<AccountsEntity>
+
+    fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
 
     fun appVersion(): Single<String>
 
