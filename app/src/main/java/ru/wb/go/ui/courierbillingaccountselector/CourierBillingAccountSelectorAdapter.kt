@@ -17,7 +17,6 @@ open class CourierBillingAccountSelectorAdapter(
 
     companion object {
         private const val ID_LAYOUT = R.layout.billing_accounts_adapter_layout
-        const val MAX_END_DOT = 3
         const val START_SHORT_BANK_NAME = 0
         const val SELECTED_MAX_LINES = 1
         const val ELLIPSIS_COUNT = 0
@@ -52,7 +51,7 @@ open class CourierBillingAccountSelectorAdapter(
                         val textLayout = holder.textEdit.layout
                         val ellipsisCount = textLayout.getEllipsisCount(SELECTED_MAX_LINES - 1)
                         if (ellipsisCount > ELLIPSIS_COUNT) {
-                            val endShortBankName = bankName.length - ellipsisCount - MAX_END_DOT
+                            val endShortBankName = bankName.length - ellipsisCount
                             val shortBankName =
                                 bankName.substring(START_SHORT_BANK_NAME, endShortBankName).trim()
                             holder.textEdit.text = context.getString(
