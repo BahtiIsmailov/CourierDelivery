@@ -89,9 +89,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     private fun updateChecked() {
         viewModel.onCheckedClick(
-            binding.checkedComplete.isChecked,
-            binding.checkedAgreement.isChecked,
-            binding.checkedPersonal.isChecked
+            binding.checkedAgreement.isChecked
         )
     }
 
@@ -115,8 +113,8 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
         viewModel.onFormChanges(changeFieldObservables())
 
-        binding.checkedComplete.setOnCheckedChangeListener { _, _ -> updateChecked() }
-        binding.checkedPersonal.setOnCheckedChangeListener { _, _ -> updateChecked() }
+//        binding.checkedComplete.setOnCheckedChangeListener { _, _ -> updateChecked() }
+//        binding.checkedPersonal.setOnCheckedChangeListener { _, _ -> updateChecked() }
 //        binding.checkedAgreement.setOnClickListener { viewModel.onShowAgreementClick() }
 
     }

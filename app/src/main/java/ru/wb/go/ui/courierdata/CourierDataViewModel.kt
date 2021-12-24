@@ -363,8 +363,8 @@ class UserFormViewModel(
         )
     }
 
-    fun onCheckedClick(isComplete: Boolean, isAgreement: Boolean, isPersonal: Boolean) {
-        _loaderState.value = if (isComplete && isAgreement && isPersonal) {
+    fun onCheckedClick( isAgreement: Boolean) {
+        _loaderState.value = if (isAgreement) {
             CourierDataUILoaderState.Enable
         } else {
             CourierDataUILoaderState.Disable
