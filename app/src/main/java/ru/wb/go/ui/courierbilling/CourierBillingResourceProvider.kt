@@ -1,18 +1,17 @@
 package ru.wb.go.ui.courierbilling
 
 import android.content.Context
+
 import ru.wb.go.R
 import ru.wb.go.mvvm.BaseMessageResourceProvider
+import java.text.NumberFormat
+import java.util.*
 
 class CourierBillingResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
     fun getTitle(): String {
         return context.getString(R.string.courier_billing_title)
-    }
-
-    fun getAmount(amount: String): String {
-        return context.getString(R.string.courier_orders_details_coast, amount)
     }
 
     fun getBillingTime(time: String) =
@@ -22,12 +21,20 @@ class CourierBillingResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_billing_empty_list)
     }
 
-    fun getPositiveAmount(amount: String): String {
-        return context.getString(R.string.courier_billing_positive_amount, amount)
-    }
+    fun formatMoney(amount:Int, needSign: Boolean):String{
+        val format = NumberFormat.getCurrencyInstance()
+        format.maximumFractionDigits = 2
+        var sign = ""
+        if(needSign) {
 
-    fun getNegativeAmount(amount: String): String {
-        return context.getString(R.string.courier_billing_negative_amount, amount)
+            if (amount < 0) {
+                sign = "-"
+            }else{
+                sign="+"
+            }
+        }
+       return  sign+format.format(amount)
+
     }
 
 }
