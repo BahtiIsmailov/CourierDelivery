@@ -321,9 +321,11 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                 is CourierDataUIState.ErrorFocus -> {
                     val textLayout = changeText.find { it.type == state.type }?.textLayout
                     textLayout?.error = errorFieldHint(CourierData(state.message, state.type))
-                    changeText.find { it.type == state.type }?.text?.let {
-                        it.setSelection(it.length())
-                        it.requestFocus()
+                    if(state.type!=CourierDataQueryType.PASSPORT_DATE) {
+                        changeText.find { it.type == state.type }?.text?.let {
+                            it.setSelection(it.length())
+                            it.requestFocus()
+                        }
                     }
                 }
                 CourierDataUIState.Next -> {
