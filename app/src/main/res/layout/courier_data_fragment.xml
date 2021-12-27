@@ -22,391 +22,363 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/reg_title"
+                style="@style/VeryLargeBlackRegularText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="@dimen/pad16"
+                android:text="@string/auth_user_data_label" />
 
-                <TextView
-                    android:id="@+id/reg_title"
-                    style="@style/VeryLargeBlackRegularText"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/surname_layout"
+                style="@style/TextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="@dimen/pad24"
+                app:errorEnabled="true"
+                app:errorIconDrawable="@null"
+                app:layout_constraintTop_toBottomOf="@+id/reg_title"
+                tools:ignore="MissingConstraints">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/surname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="@dimen/pad16"
-                    android:text="@string/auth_user_data_label" />
+                    android:hint="@string/auth_user_fio"
+                    android:inputType="textCapSentences"
+                    android:paddingTop="@dimen/pad16"
+                    android:paddingBottom="@dimen/auth_padding_bottom" />
 
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/first_name_layout"
+                style="@style/TextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="0dp"
+                app:errorEnabled="true"
+                app:errorIconDrawable="@null"
+                app:layout_constraintTop_toBottomOf="@+id/surname_layout"
+                tools:ignore="MissingConstraints">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/first_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/auth_user_name"
+                    android:inputType="textCapSentences"
+                    android:paddingTop="@dimen/pad16"
+                    android:paddingBottom="@dimen/pad16"
+                    android:scrollbars="vertical" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/middle_name_layout"
+                style="@style/TextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="0dp"
+                app:errorEnabled="true"
+                app:errorIconDrawable="@null"
+                app:layout_constraintTop_toBottomOf="@+id/first_name_layout"
+                tools:ignore="MissingConstraints">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/middle_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/auth_user_middle_name"
+                    android:inputType="textCapSentences"
+                    android:paddingTop="@dimen/pad16"
+                    android:paddingBottom="@dimen/pad16" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inn_layout"
+                style="@style/TextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="@dimen/pad16"
+                app:errorEnabled="true"
+                app:errorIconDrawable="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/middle_name_layout"
+                tools:ignore="MissingConstraints">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/auth_user_inn"
+                    android:inputType="number"
+                    android:letterSpacing="0.04"
+                    android:maxLength="12"
+                    android:paddingTop="@dimen/pad16"
+                    android:paddingBottom="@dimen/pad16" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/reg_passport"
+                style="@style/LargeBlackRegularText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="@dimen/pad16"
+                android:text="@string/auth_user_passport_label" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background_auth_content">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/surname_layout"
+                    android:id="@+id/passport_series_layout"
                     style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="@dimen/pad24"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/surname"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="@string/auth_user_fio"
-                        android:paddingTop="@dimen/pad16"
-                        android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/first_name_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="@dimen/pad16"
+                    android:layout_marginEnd="8dp"
                     app:errorEnabled="true"
                     app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/first_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="@string/auth_user_name"
-                        android:paddingTop="@dimen/pad16"
-                        android:paddingBottom="@dimen/pad16"
-                        android:scrollbars="vertical" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/middle_name_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="@dimen/pad16"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/middle_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:digits="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
-                        android:hint="@string/auth_user_middle_name"
-                        android:paddingTop="@dimen/pad16"
-                        android:paddingBottom="@dimen/pad16" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/inn_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="@dimen/pad16"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_center"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/middle_name_layout"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="MissingConstraints">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/inn"
+                        android:id="@+id/passport_series"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/auth_user_inn"
-                        android:inputType="number"
+                        android:hint="@string/auth_user_passport_series"
+                        android:inputType="numberDecimal"
                         android:letterSpacing="0.04"
-                        android:maxLength="12"
-                        android:paddingTop="@dimen/pad16"
-                        android:paddingBottom="@dimen/pad16" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-                <TextView
-                    android:id="@+id/reg_passport"
-                    style="@style/MediumDarkRegularText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="@dimen/pad16"
-                    android:text="@string/auth_user_passport_label" />
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/background_auth_content">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/passport_series_layout"
-                        style="@style/TextInputLayoutStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="@dimen/pad16"
-                        android:layout_marginEnd="8dp"
-                        app:errorEnabled="true"
-                        app:errorIconDrawable="@null"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_center"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="MissingConstraints">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/passport_series"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/auth_user_passport_series"
-                            android:inputType="numberDecimal"
-                            android:letterSpacing="0.04"
-                            android:maxLength="4"
-                            android:paddingTop="@dimen/auth_padding_top"
-                            android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/passport_date_of_Issue_layout"
-                        style="@style/TextInputLayoutStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="8dp"
-                        android:visibility="visible"
-                        app:errorEnabled="true"
-                        app:errorIconDrawable="@null"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_center"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/passport_series_layout"
-                        tools:ignore="MissingConstraints">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/passport_date_of_Issue"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/auth_user_passport_date"
-                            android:inputType="numberDecimal"
-                            android:letterSpacing="0.04"
-                            android:maxLength="10"
-                            android:paddingTop="@dimen/auth_padding_top"
-                            android:paddingBottom="@dimen/pad16" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <View
-                        android:id="@+id/overlay_date"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="19dp"
-                        android:background="?selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="@+id/passport_date_of_Issue_layout"
-                        app:layout_constraintEnd_toEndOf="@+id/passport_date_of_Issue_layout"
-                        app:layout_constraintStart_toStartOf="@+id/passport_date_of_Issue_layout"
-                        app:layout_constraintTop_toTopOf="@+id/passport_date_of_Issue_layout" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/passport_number_layout"
-                        style="@style/TextInputLayoutStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="@dimen/pad16"
-                        android:layout_marginEnd="16dp"
-                        app:errorEnabled="true"
-                        app:errorIconDrawable="@null"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline_vertical_center"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="MissingConstraints">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/passport_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/auth_user_passport_number"
-                            android:inputType="numberDecimal"
-                            android:letterSpacing="0.04"
-                            android:maxLength="6"
-                            android:paddingTop="@dimen/auth_padding_top"
-                            android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/passport_code_layout"
-                        style="@style/TextInputLayoutStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="16dp"
-                        android:visibility="gone"
-                        app:errorEnabled="true"
-                        app:errorIconDrawable="@null"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline_vertical_center"
-                        app:layout_constraintTop_toBottomOf="@+id/passport_number_layout"
-                        tools:ignore="MissingConstraints">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/passport_code"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/auth_user_passport_code"
-                            android:inputType="numberDecimal"
-                            android:letterSpacing="0.04"
-                            android:maxLength="6"
-                            android:paddingTop="@dimen/auth_padding_top"
-                            android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guideline_vertical_center"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:orientation="vertical"
-                        app:layout_constraintGuide_percent="0.5" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/passport_department_code_layout"
-                        style="@style/TextInputLayoutStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="@dimen/pad16"
-                        app:errorEnabled="true"
-                        app:errorIconDrawable="@null"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline_vertical_center"
-                        app:layout_constraintTop_toBottomOf="@+id/passport_code_layout"
-                        tools:ignore="MissingConstraints">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/passport_department_code"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/auth_user_passport_code_dep"
-                            android:inputType="numberDecimal"
-                            android:letterSpacing="0.04"
-                            android:maxLength="6"
-                            android:paddingTop="@dimen/auth_padding_top"
-                            android:paddingBottom="@dimen/auth_padding_bottom" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passport_issued_by_layout"
-                    style="@style/TextInputLayoutStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                    android:layout_marginTop="0dp"
-                    app:errorEnabled="true"
-                    app:errorIconDrawable="@null"
-                    app:layout_constraintTop_toBottomOf="@+id/passport_code_layout"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/passport_issued_by"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:hint="@string/auth_user_passport_dep"
+                        android:maxLength="4"
                         android:paddingTop="@dimen/auth_padding_top"
                         android:paddingBottom="@dimen/auth_padding_bottom" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/passport_date_of_Issue_layout"
+                    style="@style/TextInputLayoutStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="visible"
+                    app:errorEnabled="true"
+                    app:errorIconDrawable="@null"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/passport_series_layout"
+                    tools:ignore="MissingConstraints">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/passport_date_of_Issue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/auth_user_passport_date"
+                        android:inputType="numberDecimal"
+                        android:letterSpacing="0.04"
+                        android:maxLength="10"
+                        android:paddingTop="@dimen/auth_padding_top"
+                        android:paddingBottom="@dimen/pad16" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <View
+                    android:id="@+id/overlay_date"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="19dp"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/passport_date_of_Issue_layout"
+                    app:layout_constraintEnd_toEndOf="@+id/passport_date_of_Issue_layout"
+                    app:layout_constraintStart_toStartOf="@+id/passport_date_of_Issue_layout"
+                    app:layout_constraintTop_toTopOf="@+id/passport_date_of_Issue_layout"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_vertical_center"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/passport_number_layout"
+                    style="@style/TextInputLayoutStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="@dimen/pad16"
+                    android:layout_marginEnd="16dp"
+                    app:errorEnabled="true"
+                    app:errorIconDrawable="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline_vertical_center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="MissingConstraints">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/passport_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/auth_user_passport_number"
+                        android:inputType="numberDecimal"
+                        android:letterSpacing="0.04"
+                        android:maxLength="6"
+                        android:paddingTop="@dimen/auth_padding_top"
+                        android:paddingBottom="@dimen/auth_padding_bottom" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/passport_department_code_layout"
+                    style="@style/TextInputLayoutStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="@dimen/pad16"
+                    app:errorEnabled="true"
+                    app:errorIconDrawable="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline_vertical_center"
+                    app:layout_constraintTop_toBottomOf="@+id/passport_number_layout"
+                    tools:ignore="MissingConstraints">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/passport_department_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/auth_user_passport_code_dep"
+                        android:inputType="numberDecimal"
+                        android:letterSpacing="0.04"
+                        android:maxLength="6"
+                        android:paddingTop="@dimen/auth_padding_top"
+                        android:paddingBottom="@dimen/auth_padding_bottom" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passport_issued_by_layout"
+                style="@style/TextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
+                android:layout_marginTop="0dp"
+                app:errorEnabled="true"
+                app:errorIconDrawable="@null"
+                app:layout_constraintTop_toBottomOf="@+id/passport_code_layout"
+                tools:ignore="MissingConstraints">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passport_issued_by"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp">
+                    android:hint="@string/auth_user_passport_dep"
+                    android:inputType="textCapSentences"
+                    android:paddingTop="@dimen/auth_padding_top"
+                    android:paddingBottom="@dimen/auth_padding_bottom" />
 
-                    <CheckBox
-                        android:id="@+id/checked_agreement"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="16dp"
-                        android:background="@android:color/transparent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-
-                    <TextView
-                        android:id="@+id/text_agreement"
-                        style="@style/LargeDarkRegularText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:lineSpacingExtra="4sp"
-                        android:maxLines="2"
-                        android:text="@string/user_form_agreement"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/checked_agreement"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-                <ru.wb.go.views.ProgressButtonView
-                    android:id="@+id/next"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/auth_button_height"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="44dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="20dp"
-                    app:progress_button_background="@drawable/progress_image_button_round_default"
-                    app:progress_button_name="@string/auth_number_phone_phone_next"
-                    app:progress_button_state="disable"
-                    app:progress_button_text_color_disable="@color/button_default_text_disable"
-                    app:progress_button_text_color_enable="@color/button_default_text_enable"
-                    app:progress_button_text_color_progress="@color/button_default_text_progress" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/overlay_boxes"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="true"
-                android:focusable="true"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/remove"
-                app:layout_constraintTop_toTopOf="@+id/empty_list" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp">
 
-        </FrameLayout>
+                <CheckBox
+                    android:id="@+id/checked_agreement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <!--                    <TextView-->
+                <!--                        android:id="@+id/text_agreements_"-->
+                <!--                        style="@style/LargeDarkRegularText"-->
+                <!--                        android:layout_width="0dp"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="32dp"-->
+                <!--                        android:lineSpacingExtra="4sp"-->
+                <!--                        android:maxLines="2"-->
+                <!--                        android:text="@string/user_form_agreement"-->
+                <!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--                        app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                        app:layout_constraintStart_toStartOf="@+id/checked_agreement"-->
+                <!--                        app:layout_constraintTop_toTopOf="parent" />-->
+
+                <TextView
+                    android:id="@+id/text_agree"
+                    style="@style/LargeDarkRegularText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:lineSpacingExtra="4sp"
+
+                    android:maxLines="2"
+                    android:text="@string/user_form_agreement_link"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/checked_agreement"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <ru.wb.go.views.ProgressButtonView
+                android:id="@+id/next"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/auth_button_height"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="44dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="20dp"
+                app:progress_button_background="@drawable/progress_image_button_round_default"
+                app:progress_button_name="@string/auth_number_phone_phone_next"
+                app:progress_button_state="disable"
+                app:progress_button_text_color_disable="@color/button_default_text_disable"
+                app:progress_button_text_color_enable="@color/button_default_text_enable"
+                app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+        </LinearLayout>
+
 
     </ScrollView>
 
