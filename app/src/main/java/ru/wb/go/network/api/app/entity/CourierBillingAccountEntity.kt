@@ -5,22 +5,24 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class CourierBillingAccountEntity(
-    val userName: String,
-    val inn: String,
-    @PrimaryKey
-    val correspondentAccount: String,
-    val bic: String,
-    val bank: String,
+        val userName: String,
+        val inn: String,
+        @PrimaryKey
+        val account: String,
+        val correspondentAccount: String,
+        val bic: String,
+        val bank: String,
 )
 
 fun CourierBillingAccountEntity.convertToCourierBillingAccountEditableEntity() =
-    CourierBillingAccountEditableEntity(
-        userName = userName,
-        inn = inn,
-        account = correspondentAccount,
-        bik = bic,
-        bank = bank
-    )
+        CourierBillingAccountEditableEntity(
+                userName = userName,
+                inn = inn,
+                correspondentAccount = correspondentAccount,
+                bik = bic,
+                bank = bank,
+                account = account
+        )
 
 
 

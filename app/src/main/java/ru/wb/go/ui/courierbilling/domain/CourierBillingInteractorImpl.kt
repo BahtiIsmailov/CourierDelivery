@@ -42,6 +42,7 @@ class CourierBillingInteractorImpl(
                 correspondentAccount = it.correspondentAccount,
                 bic = it.bic,
                 bank = it.name,
+                account = it.account,
             )
             accountsEntity.add(item)
         }

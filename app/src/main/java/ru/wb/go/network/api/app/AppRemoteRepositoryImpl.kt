@@ -322,7 +322,7 @@ class AppRemoteRepositoryImpl(
 
     private fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
         val accountsEntity = mutableListOf<AccountEntity>()
-        forEach { accountsEntity.add(with(it) { AccountEntity(bic, name, correspondentAccount) }) }
+        forEach { accountsEntity.add(with(it) { AccountEntity(bic, name, correspondentAccount, account) }) }
         return accountsEntity
     }
 
@@ -332,7 +332,7 @@ class AppRemoteRepositoryImpl(
 
     private fun List<AccountEntity>.convertToRequest(): List<AccountRequest> {
         val accountsEntity = mutableListOf<AccountRequest>()
-        forEach { accountsEntity.add(AccountRequest(it.bic, it.name, it.correspondentAccount)) }
+        forEach { accountsEntity.add(AccountRequest(it.bic, it.name, it.correspondentAccount, it.account)) }
         return accountsEntity
     }
 

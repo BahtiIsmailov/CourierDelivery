@@ -23,13 +23,13 @@ import ru.wb.go.utils.managers.DeviceManager
 import java.util.*
 
 class CourierBillingAccountDataViewModel(
-    private val parameters: CourierBillingAccountDataAmountParameters,
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
-    private val interactor: CourierBillingAccountDataInteractor,
-    private val resourceProvider: CourierBillingAccountDataResourceProvider,
-    private val tokenManager: TokenManager,
-    private val deviceManager: DeviceManager,
+        private val parameters: CourierBillingAccountDataAmountParameters,
+        compositeDisposable: CompositeDisposable,
+        metric: YandexMetricManager,
+        private val interactor: CourierBillingAccountDataInteractor,
+        private val resourceProvider: CourierBillingAccountDataResourceProvider,
+        private val tokenManager: TokenManager,
+        private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     companion object {
@@ -61,7 +61,7 @@ class CourierBillingAccountDataViewModel(
         get() = _navigateToMessageState
 
     private val _navigationEvent =
-        SingleLiveEvent<CourierBillingAccountDataNavAction>()
+            SingleLiveEvent<CourierBillingAccountDataNavAction>()
     val navigationEvent: LiveData<CourierBillingAccountDataNavAction>
         get() = _navigationEvent
 
@@ -77,9 +77,9 @@ class CourierBillingAccountDataViewModel(
     val keyboardState: LiveData<Boolean>
         get() = _keyboardState
 
-    private val _bankNameState = MutableLiveData<String>()
-    val bankNameState: LiveData<String>
-        get() = _bankNameState
+    private val _bankFindState = MutableLiveData<BankFind>()
+    val bankFindState: LiveData<BankFind>
+        get() = _bankFindState
 
     private val _loaderState = MutableLiveData<CourierBillingAccountDataUILoaderState>()
     val loaderState: LiveData<CourierBillingAccountDataUILoaderState>
@@ -98,8 +98,8 @@ class CourierBillingAccountDataViewModel(
 
     private fun initToolbarLabel() {
         _toolbarLabelState.value =
-            if (parameters.account.isEmpty()) resourceProvider.getTitleCreate()
-            else resourceProvider.getTitleEdit()
+                if (parameters.account.isEmpty()) resourceProvider.getTitleCreate()
+                else resourceProvider.getTitleEdit()
     }
 
     private fun initStateField() {
@@ -109,33 +109,33 @@ class CourierBillingAccountDataViewModel(
 
     private fun createAccount() {
         _initUIState.value = CourierBillingAccountDataInitUIState.Create(
-            tokenManager.userName(),
-            tokenManager.userInn()
+                tokenManager.userName(),
+                tokenManager.userInn()
         )
     }
 
     private fun editAccount() {
         addSubscription(
-            interactor.getEditableResult(parameters.account)
-                .map { convertToEditState(it) }
-                .subscribe(
-                    { _initUIState.value = it },
-                    { LogUtils { logDebugApp(it.toString()) } })
+                interactor.getEditableResult(parameters.account)
+                        .map { convertToEditState(it) }
+                        .subscribe(
+                                { _initUIState.value = it },
+                                { LogUtils { logDebugApp(it.toString()) } })
         )
     }
 
     private fun convertToEditState(it: EditableResult) =
-        with(it) {
-            CourierBillingAccountDataInitUIState.Edit(
-                courierBillingAccountEntity.convertToCourierBillingAccountEditableEntity(),
-                isRemovable
-            )
-        }
+            with(it) {
+                CourierBillingAccountDataInitUIState.Edit(
+                        courierBillingAccountEntity.convertToCourierBillingAccountEditableEntity(),
+                        isRemovable
+                )
+            }
 
     private fun predicateMessageChecker(
-        predicate: (String) -> String,
-        text: String,
-        type: CourierBillingAccountDataQueryType
+            predicate: (String) -> String,
+            text: String,
+            type: CourierBillingAccountDataQueryType
     ): CourierBillingAccountDataUIState {
         val message = predicate(text)
         return if (message.isEmpty())
@@ -144,13 +144,13 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun isCompleteChecker(
-        predicate: (String) -> String,
-        text: String,
-        type: CourierBillingAccountDataQueryType
+            predicate: (String) -> String,
+            text: String,
+            type: CourierBillingAccountDataQueryType
     ) = (predicateMessageChecker(
-        predicate,
-        text,
-        type
+            predicate,
+            text,
+            type
     )) is CourierBillingAccountDataUIState.Complete
 
     private val accountPredicate = { text: String ->
@@ -170,10 +170,10 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun checkFocusAccountWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
-        Observable.just(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
+            Observable.just(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
 
     private fun checkTextAccountWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange) =
-        Observable.just(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
+            Observable.just(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
 
     private val bikPredicate = { _: String ->
         if (bankEntity == null) {
@@ -184,46 +184,46 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun checkFocusBikWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
-        Observable.just(with(focusChange) { predicateMessageChecker(bikPredicate, text, type) })
+            Observable.just(with(focusChange) { predicateMessageChecker(bikPredicate, text, type) })
 
     private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): Observable<CourierBillingAccountDataUIState> {
         return Observable.just(focusChange.text)
-            .filter { it.length == KPP_LENGTH }
-            .flatMapMaybe {
-                _bicProgressState.value = true
-                bankEntity = null
-                interactor.getBank(it)
-            }
-            .doOnNext { bankEntity = it }
-            .map<CourierBillingAccountDataUIState> {
-                _bankNameState.value = it.name
-                _bicProgressState.value = false
-                _keyboardState.value = false
-                CourierBillingAccountDataUIState.Complete(it.name, focusChange.type)
-            }
-            .onErrorReturn {
-                _bicProgressState.value = false
-                _bankNameState.value = "Введите БИК"
-                bankEntity = null
-                CourierBillingAccountDataUIState.Error(
-                    "БИК банка не найден", focusChange.type
-                )
-            }
-            .defaultIfEmpty(defaultBank(focusChange.type))
+                .filter { it.length == KPP_LENGTH }
+                .flatMapMaybe {
+                    _bicProgressState.value = true
+                    bankEntity = null
+                    interactor.getBank(it)
+                }
+                .doOnNext { bankEntity = it }
+                .map<CourierBillingAccountDataUIState> {
+                    _bankFindState.value = BankFind(it.name, it.correspondentAccount)
+                    _bicProgressState.value = false
+                    _keyboardState.value = false
+                    CourierBillingAccountDataUIState.Complete(it.name, focusChange.type)
+                }
+                .onErrorReturn {
+                    _bicProgressState.value = false
+                    _bankFindState.value = BankFind("Введите БИК", "")
+                    bankEntity = null
+                    CourierBillingAccountDataUIState.Error(
+                            "БИК банка не найден", focusChange.type
+                    )
+                }
+                .defaultIfEmpty(defaultBank(focusChange.type))
     }
 
     private val defaultBank = { type: CourierBillingAccountDataQueryType ->
-        _bankNameState.value = "Введите БИК банка"
+        _bankFindState.value = BankFind("Введите БИК банка", "")
         bankEntity = null
         CourierBillingAccountDataUIState.Error("Введите 9 цифр", type)
     }
 
     fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountDataUIAction>>) {
         addSubscription(Observable.merge(changeObservables)
-            .switchMap { mapActionFormChanges(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
+                .switchMap { mapActionFormChanges(it) }
+                .subscribe(
+                        { _formUIState.value = it },
+                        { LogUtils { logDebugApp(it.toString()) } })
         )
     }
 
@@ -234,16 +234,16 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun checkFieldFocusChange(action: CourierBillingAccountDataUIAction.FocusChange) =
-        when (action.type) {
-            CourierBillingAccountDataQueryType.ACCOUNT -> checkFocusAccountWrapper(action)
-            CourierBillingAccountDataQueryType.BIK -> checkFocusBikWrapper(action)
-        }
+            when (action.type) {
+                CourierBillingAccountDataQueryType.ACCOUNT -> checkFocusAccountWrapper(action)
+                CourierBillingAccountDataQueryType.BIK -> checkFocusBikWrapper(action)
+            }
 
     private fun checkFieldTextChange(action: CourierBillingAccountDataUIAction.TextChange) =
-        when (action.type) {
-            CourierBillingAccountDataQueryType.ACCOUNT -> checkTextAccountWrapper(action)
-            CourierBillingAccountDataQueryType.BIK -> checkTextBikWrapper(action)
-        }
+            when (action.type) {
+                CourierBillingAccountDataQueryType.ACCOUNT -> checkTextAccountWrapper(action)
+                CourierBillingAccountDataQueryType.BIK -> checkTextBikWrapper(action)
+            }
 
     private fun checkFieldAll(action: CourierBillingAccountDataUIAction.SaveClick): Observable<CourierBillingAccountDataUIState> {
         holdAndProgress()
@@ -259,14 +259,14 @@ class CourierBillingAccountDataViewModel(
             }
         }
         return Observable.just(
-            if (action.userData.isEmpty()) {
-                // TODO: 20.08.2021 выполнить загрузку данных пользователя
-                CourierBillingAccountDataUIState.Next
-            } else {
-                _holderState.value = false
-                _loaderState.value = CourierBillingAccountDataUILoaderState.Enable
-                CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
-            }
+                if (action.userData.isEmpty()) {
+                    // TODO: 20.08.2021 выполнить загрузку данных пользователя
+                    CourierBillingAccountDataUIState.Next
+                } else {
+                    _holderState.value = false
+                    _loaderState.value = CourierBillingAccountDataUILoaderState.Enable
+                    CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
+                }
         )
     }
 
@@ -281,9 +281,9 @@ class CourierBillingAccountDataViewModel(
 
     private fun saveAccount(accountEntity: CourierBillingAccountEntity) {
         addSubscription(
-            interactor.saveAccountRemote(accountEntity, parameters.account).subscribe(
-                { saveAccountComplete() },
-                { saveAccountError(it) })
+                interactor.saveAccountRemote(accountEntity, parameters.account).subscribe(
+                        { saveAccountComplete() },
+                        { saveAccountError(it) })
         )
     }
 
@@ -299,28 +299,28 @@ class CourierBillingAccountDataViewModel(
 
     private fun navigateToAccountSelector() {
         _navigationEvent.value =
-            CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.amount)
+                CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.amount)
     }
 
     private fun saveAccountError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.INFO.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
+                    DialogStyle.INFO.ordinal,
+                    throwable.message,
+                    resourceProvider.getGenericInternetMessageError(),
+                    resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.INFO.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
+                    DialogStyle.INFO.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.error.message,
+                    resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
+                    DialogStyle.ERROR.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.toString(),
+                    resourceProvider.getGenericServiceButtonError()
             )
         }
         _holderState.value = false
@@ -330,8 +330,8 @@ class CourierBillingAccountDataViewModel(
 
     private fun observeNetworkState() {
         addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
+                interactor.observeNetworkConnected()
+                        .subscribe({ _toolbarNetworkState.value = it }, {})
         )
     }
 
@@ -342,11 +342,11 @@ class CourierBillingAccountDataViewModel(
     fun onRemoveAccountClick() {
         holdAndProgress()
         addSubscription(
-            interactor.removeAccount(parameters.account)
-                .subscribe(
-                    { removeAccountComplete() },
-                    { removeAccountError() }
-                )
+                interactor.removeAccount(parameters.account)
+                        .subscribe(
+                                { removeAccountComplete() },
+                                { removeAccountError() }
+                        )
         )
     }
 
@@ -370,5 +370,7 @@ class CourierBillingAccountDataViewModel(
     override fun getScreenTag(): String {
         return ""
     }
+
+    data class BankFind(val name: String, val corAccount: String)
 
 }

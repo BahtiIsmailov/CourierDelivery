@@ -4,4 +4,5 @@ data class AccountResponse(
     val bic: String,
     val name: String,
     val correspondentAccount: String,
+    val account: String,
 )

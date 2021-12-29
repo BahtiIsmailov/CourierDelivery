@@ -179,6 +179,14 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:id="@+id/cor_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/auth_padding_top"
+                    android:paddingBottom="@dimen/auth_padding_bottom"
+                    android:visibility="gone" />
+
                 <ru.wb.go.views.ProgressButtonView
                     android:id="@+id/save"
                     android:layout_width="match_parent"
