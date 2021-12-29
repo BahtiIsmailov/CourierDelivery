@@ -10,27 +10,44 @@ import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.UserManager
+import ru.wb.go.utils.managers.DeviceManager
 
 class CourierBillingAccountSelectorInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
-    private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository,
+        private val rxSchedulerFactory: RxSchedulerFactory,
+        private val networkMonitorRepository: NetworkMonitorRepository,
+        private val appRemoteRepository: AppRemoteRepository,
+        private val courierLocalRepository: CourierLocalRepository,
+        private val deviceManager: DeviceManager,
+        private val userManager: UserManager
 ) : CourierBillingAccountSelectorInteractor {
 
     override fun observeNetworkConnected(): Observable<NetworkState> {
         return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+                .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun accounts(): Single<List<CourierBillingAccountEntity>> {
         return courierLocalRepository.readAllAccounts()
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+                .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun payments(paymentEntity: PaymentEntity): Completable {
-        return appRemoteRepository.payments(paymentEntity)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override fun payments(amount: Int, paymentEntity: PaymentEntity): Completable {
+        return initGuid()
+                .flatMapCompletable { guid -> appRemoteRepository.payments(guid, amount, paymentEntity) }
+                .doOnComplete { updateGuid() }
+                .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun initGuid(): Single<String> {
+        return Single.fromCallable {
+            if (userManager.guid().isEmpty()) updateGuid()
+            userManager.guid()
+        }
+    }
+
+    private fun updateGuid() {
+        userManager.saveGuid(deviceManager.guid)
     }
 
 }

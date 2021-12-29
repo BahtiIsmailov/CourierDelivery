@@ -9,6 +9,7 @@ object AppPreffsKeys {
     const val PHONE_KEY = "PHONE_KEY"
     const val CAR_NUMBER_KEY = "CAR_NUMBER_KEY"
     const val COST_KEY = "COST_KEY"
+    const val GUID_KEY = "GUID_KEY"
     const val STATUS_TASK_KEY = "STATUS_TASK_KEY"
 
     const val SCREEN_KEY = "SCREEN_KEY"

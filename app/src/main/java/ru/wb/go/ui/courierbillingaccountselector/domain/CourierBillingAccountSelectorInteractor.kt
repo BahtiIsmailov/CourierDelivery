@@ -11,8 +11,8 @@ interface CourierBillingAccountSelectorInteractor {
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
-    fun accounts(): Single <List<CourierBillingAccountEntity>>
+    fun accounts(): Single<List<CourierBillingAccountEntity>>
 
-    fun payments(paymentEntity: PaymentEntity): Completable
+    fun payments(amount: Int, paymentEntity: PaymentEntity): Completable
 
 }

@@ -31,13 +31,13 @@ interface AppRemoteRepository {
     fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable
 
     fun taskStatusesReady(
-        taskID: String,
-        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+            taskID: String,
+            courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
     ): Single<CourierTaskStatusesIntransitCostEntity>
 
     fun taskStatusesIntransit(
-        taskID: String,
-        courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+            taskID: String,
+            courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
     ): Completable
 
     fun taskStatusesEnd(taskID: String): Completable
@@ -46,7 +46,7 @@ interface AppRemoteRepository {
 
     fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
 
-    fun payments(paymentEntity: PaymentEntity): Completable
+    fun payments(id: String, amount: Int, paymentEntity: PaymentEntity): Completable
 
     fun getBank(bic: String): Maybe<BankEntity>
 

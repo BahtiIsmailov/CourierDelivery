@@ -246,18 +246,16 @@ class CourierBillingAccountSelectorViewModel(
         val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
         val paymentEntity = with(courierBillingAccountEntity) {
             PaymentEntity(
-                amount = amountFromText,
                 recipientBankName = bank,
                 recipientName = userName,
                 recipientBankBik = bic,
                 recipientCorrespondentAccount = correspondentAccount,
                 recipientAccount = "",
-                recipientInn = inn,
-                recipientKpp = ""
+                recipientInn = inn
             )
         }
         addSubscription(
-            interactor.payments(paymentEntity).subscribe(
+            interactor.payments(amountFromText, paymentEntity).subscribe(
                 { paymentsComplete(amountFromText) },
                 { paymentsError(it) })
         )

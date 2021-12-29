@@ -12,7 +12,7 @@ import ru.wb.go.network.api.app.remote.accounts.AccountsResponse
 import ru.wb.go.network.api.app.remote.bank.BankResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
-import ru.wb.go.network.api.app.remote.payments.PaymentRequest
+import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 
 interface AppApi {
 
@@ -111,7 +111,7 @@ interface AppApi {
     @POST("{version}/payments")
     fun payments(
         @Path(value = "version", encoded = true) version: String,
-        @Body paymentRequest: PaymentRequest
+        @Body paymentsRequest: PaymentsRequest
     ): Completable
 
     @GET("{version}/banks")

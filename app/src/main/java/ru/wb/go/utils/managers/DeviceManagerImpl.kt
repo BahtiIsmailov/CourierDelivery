@@ -9,9 +9,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings.Secure
 import ru.wb.go.utils.LogUtils
+import java.util.*
 import kotlin.system.exitProcess
 
 class DeviceManagerImpl(private val context: Context) : DeviceManager {
+
+    override val guid = UUID.randomUUID().toString()
 
     override val deviceName = String.format("%s %s", Build.MANUFACTURER, Build.DEVICE)
 
