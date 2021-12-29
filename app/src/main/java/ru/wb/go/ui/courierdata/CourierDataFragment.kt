@@ -3,25 +3,16 @@ package ru.wb.go.ui.courierdata
 import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.TextPaint
-import android.text.TextUtils
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
@@ -34,8 +25,6 @@ import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.courieragreement.CourierAgreementFragment
-import ru.wb.go.ui.courieragreement.CourierAgreementFragment.Companion.VALUE_RESULT_KEY
 import ru.wb.go.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
@@ -44,6 +33,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.time.DateTimeFormatter
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
@@ -73,25 +63,13 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         initListener()
         initInputMethod()
         initObservers()
-        setLinkAgreement()
-        initAgreementResult()
-    }
 
-    private fun initAgreementResult() {
-        setFragmentResultListener(CourierAgreementFragment.BUNDLE_RESULT_KEY) { _, bundle ->
-            if (bundle.containsKey(VALUE_RESULT_KEY)) {
-                //val isConfirm = bundle.get(VALUE_RESULT_KEY) as Boolean
-                //binding.checkedAgreement.isChecked = isConfirm
-                updateChecked()
-            }
-        }
+        SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
     }
 
     private fun updateChecked() {
         viewModel.onCheckedClick(
-            binding.checkedComplete.isChecked,
-            binding.checkedAgreement.isChecked,
-            binding.checkedPersonal.isChecked
+            binding.checkedAgreement.isChecked
         )
     }
 
@@ -105,19 +83,20 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                 CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
             )
         }
-        binding.toolbarLayout.noInternetImage.setOnClickListener {
-            (activity as NavToolbarListener).showNetworkDialog()
-        }
+        viewModel.onFormChanges(changeFieldObservables())
 
         binding.overlayDate.setOnClickListener {
             dateSelect(it, binding.passportDateOfIssue)
         }
 
-        viewModel.onFormChanges(changeFieldObservables())
 
-        binding.checkedComplete.setOnCheckedChangeListener { _, _ -> updateChecked() }
-        binding.checkedPersonal.setOnCheckedChangeListener { _, _ -> updateChecked() }
-//        binding.checkedAgreement.setOnClickListener { viewModel.onShowAgreementClick() }
+        binding.checkedAgreement.setOnClickListener {
+            updateChecked()
+        }
+
+        binding.textAgree.setOnClickListener {
+            viewModel.onShowAgreementClick()
+        }
 
     }
 
@@ -148,6 +127,13 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         )
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
+                binding.middleNameLayout,
+                binding.middleName,
+                CourierDataQueryType.MIDDLE_NAME
+            )
+        )
+        changeTextObservables.add(
+            createFieldChangesObserver().initListener(
                 binding.innLayout,
                 binding.inn,
                 CourierDataQueryType.INN
@@ -174,11 +160,12 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                 CourierDataQueryType.PASSPORT_DATE
             )
         )
+
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
-                binding.passportCodeLayout,
-                binding.passportCode,
-                CourierDataQueryType.PASSPORT_CODE
+                binding.passportDepartmentCodeLayout,
+                binding.passportDepartmentCode,
+                CourierDataQueryType.PASSPORT_DEPARTMENT_CODE
             )
         )
 
@@ -190,13 +177,6 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             )
         )
 
-        changeTextObservables.add(
-            createFieldChangesObserver().initListener(
-                binding.passportDepartmentCodeLayout,
-                binding.passportDepartmentCode,
-                CourierDataQueryType.PASSPORT_DEPARTMENT_CODE
-            )
-        )
 
         changeTextObservables.add(createClickObserver().initListener(binding.next))
 
@@ -214,13 +194,13 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             CourierDataQueryType.PASSPORT_DATE
         ),
         CourierData(
+            binding.passportDepartmentCode.text.toString(),
+            CourierDataQueryType.PASSPORT_DEPARTMENT_CODE
+        ),
+        CourierData(
             binding.passportIssuedBy.text.toString(),
             CourierDataQueryType.PASSPORT_ISSUED_BY
         ),
-        CourierData(
-            binding.passportDepartmentCode.text.toString(),
-            CourierDataQueryType.PASSPORT_DEPARTMENT_CODE
-        )
     )
 
     private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
@@ -231,8 +211,8 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         passportSeries = binding.passportSeries.text.toString().trim(),
         passportNumber = binding.passportNumber.text.toString().trim(),
         passportDateOfIssue = binding.passportDateOfIssue.text.toString().trim(),
-        passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
         passportDepartmentCode = binding.passportDepartmentCode.text.toString().trim(),
+        passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
     )
 
     private fun dateSelect(view: View, dateText: EditText) {
@@ -295,12 +275,11 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     private fun createFieldChangesObserver(): TextChangesInterface {
         return TextChangesInterface { textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
-            val textChanges = editText.textChanges()
+
+            editText.textChanges()
+                .skip(1)
                 .map { it.toString() }
                 .map { CourierDataUIAction.TextChange(it, queryType) }
-            val focusChanges = editText.focusChanges()
-                .map { CourierDataUIAction.FocusChange(editText.text.toString(), queryType, it) }
-            Observable.merge(textChanges, focusChanges).skip(2)
         }
     }
 
@@ -337,13 +316,16 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                 }
                 is CourierDataUIState.Error -> {
                     val textLayout = changeText.find { it.type == state.type }?.textLayout
-                    textLayout?.error = getText(R.string.error)
+                    textLayout?.error = errorFieldHint(CourierData(state.message, state.type))
                 }
                 is CourierDataUIState.ErrorFocus -> {
-                    changeText.find { it.type == state.type }?.text?.let {
-                        it.setSelection(it.length())
-                        it.requestFocus()
-                        scrollToViewTop(binding.scrollView, it)
+                    val textLayout = changeText.find { it.type == state.type }?.textLayout
+                    textLayout?.error = errorFieldHint(CourierData(state.message, state.type))
+                    if(state.type!=CourierDataQueryType.PASSPORT_DATE) {
+                        changeText.find { it.type == state.type }?.text?.let {
+                            it.setSelection(it.length())
+                            it.requestFocus()
+                        }
                     }
                 }
                 CourierDataUIState.Next -> {
@@ -376,20 +358,33 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                     CourierDataUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
                     CourierDataUILoaderState.Enable -> {
                         binding.next.setState(ProgressButtonMode.ENABLE)
-                        binding.overlayBoxes.visibility = View.GONE
+
                     }
                     CourierDataUILoaderState.Progress -> {
                         binding.next.setState(ProgressButtonMode.PROGRESS)
-                        binding.overlayBoxes.visibility = View.VISIBLE
+
                     }
                 }
             })
     }
 
-    private fun scrollToViewTop(scrollView: ScrollView, childView: View) {
-        val delay: Long = 100
-        scrollView.postDelayed({ scrollView.smoothScrollTo(0, childView.top) }, delay)
+    private fun errorFieldHint(field:CourierData):CharSequence{
+        if(field.text.isEmpty()){
+            return getText(R.string.error)
+        }
+        return when(field.type){
+            CourierDataQueryType.SURNAME->getText(R.string.error_register_letter)
+            CourierDataQueryType.MIDDLE_NAME->getText(R.string.error_register_letter)
+            CourierDataQueryType.NAME->getText(R.string.error_register_letter)
+            CourierDataQueryType.INN->getText(R.string.error_register_size_12)
+            CourierDataQueryType.PASSPORT_SERIES->getText(R.string.error_register_size_4)
+            CourierDataQueryType.PASSPORT_NUMBER->getText(R.string.error_register_size_6)
+            CourierDataQueryType.PASSPORT_DATE->getText(R.string.error)
+            CourierDataQueryType.PASSPORT_DEPARTMENT_CODE->getText(R.string.error_register_size_6)
+            CourierDataQueryType.PASSPORT_ISSUED_BY->getText(R.string.error)
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -416,28 +411,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         const val DATE_PICKER_PATTERN = "dd.MM.yyyy"
     }
 
-    private val clickableSpan: ClickableSpan = object : ClickableSpan() {
 
-        override fun onClick(widget: View) {
-            viewModel.onShowAgreementClick()
-            binding.checkedAgreement.isChecked = true
-        }
-
-        override fun updateDrawState(ds: TextPaint) {
-            super.updateDrawState(ds)
-            ds.color = ContextCompat.getColor(requireContext(), R.color.text_clickable_dark)
-        }
-
-    }
-
-    private fun setLinkAgreement() {
-        val link = getString(R.string.user_form_agreement_link)
-        val spannable = SpannableString(link)
-        spannable.setSpan(clickableSpan, 0, link.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        val cs = TextUtils.expandTemplate(getString(R.string.user_form_agreement), spannable)
-        binding.textAgreement.text = cs
-        binding.textAgreement.movementMethod = LinkMovementMethod.getInstance()
-    }
 
 }
 

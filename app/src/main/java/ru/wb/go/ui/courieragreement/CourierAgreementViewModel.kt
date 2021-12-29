@@ -13,11 +13,6 @@ class CourierAgreementViewModel(compositeDisposable: CompositeDisposable, metric
     val navigationState: LiveData<CourierAgreementNavigationState>
         get() = _navigationState
 
-    fun onCancelClick() {
-        onTechEventLog("onCancelClick")
-        _navigationState.value = CourierAgreementNavigationState.Cancel
-    }
-
     fun onCompleteClick() {
         onTechEventLog("onCompleteClick")
         _navigationState.value = CourierAgreementNavigationState.Complete

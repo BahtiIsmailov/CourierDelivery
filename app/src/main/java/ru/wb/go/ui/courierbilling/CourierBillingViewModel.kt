@@ -97,9 +97,8 @@ class CourierBillingViewModel(
 
     private fun billingComplete(it: BillingCommonEntity) {
         balance = it.balance
-        val decimalFormat = DecimalFormat("#,###.##")
-        val balance = decimalFormat.format(balance)
-        _balanceInfo.value = resourceProvider.getAmount(balance)
+
+        _balanceInfo.value = resourceProvider.formatMoney(balance, false)
         val items = mutableListOf<BaseItem>()
         it.transactions.sortedByDescending { it.createdAt }
             .forEachIndexed { index, billingTransactionEntity ->

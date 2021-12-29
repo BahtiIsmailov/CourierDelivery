@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
@@ -39,7 +37,7 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
     }
 
     private fun initListeners() {
-        binding.cancel.setOnClickListener { viewModel.onCancelClick() }
+//        binding.cancel.setOnClickListener { viewModel.onCancelClick() }
         binding.confirm.setOnClickListener { viewModel.onCompleteClick() }
     }
 
@@ -58,12 +56,7 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierAgreementNavigationState.Cancel -> {
-                    setFragmentResult(BUNDLE_RESULT_KEY, bundleOf(VALUE_RESULT_KEY to false))
-                    findNavController().navigateUp()
-                }
                 CourierAgreementNavigationState.Complete -> {
-                    setFragmentResult(BUNDLE_RESULT_KEY, bundleOf(VALUE_RESULT_KEY to true))
                     findNavController().navigateUp()
                 }
             }
@@ -73,11 +66,6 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        const val BUNDLE_RESULT_KEY = "BUNDLE_RESULT_KEY"
-        const val VALUE_RESULT_KEY = "VALUE_RESULT_KEY"
     }
 
 }
