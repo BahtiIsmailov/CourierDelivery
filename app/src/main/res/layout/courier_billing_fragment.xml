@@ -5,8 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content_light"
-    tools:context=".ui.flights.FlightsFragment">
+    android:background="@color/background_content_light">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/content_center"

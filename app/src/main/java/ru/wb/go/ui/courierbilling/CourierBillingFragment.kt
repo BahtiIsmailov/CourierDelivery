@@ -95,7 +95,8 @@ class CourierBillingFragment : Fragment() {
 
         viewModel.balanceInfo.observe(viewLifecycleOwner) {
             binding.coast.text = it
-            binding.toAccount.visibility = VISIBLE
+            // TODO: 29.12.2021 выключено до деплоя функцонала на сервер
+//            binding.toAccount.visibility = VISIBLE
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
