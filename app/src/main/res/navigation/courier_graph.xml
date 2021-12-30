@@ -434,6 +434,13 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierBillingAccountSelectorFragment_to_courierBillingCompleteFragment"
+            app:destination="@id/courierBillingCompleteFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
@@ -442,5 +449,18 @@
         android:name="ru.wb.go.ui.courierversioncontrol.CourierVersionControlFragment"
         android:label="CourierVersionControlFragment"
         tools:layout="@layout/courier_version_control_fragment"/>
+
+    <fragment
+        android:id="@+id/courierBillingCompleteFragment"
+        android:name="ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteFragment"
+        android:label="CourierBillingCompleteFragment"
+        tools:layout="@layout/courier_billing_complete_fragment">
+
+        <argument
+            android:name="courier_billing_complete_key"
+            app:argType="ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters"
+            app:nullable="false" />
+
+    </fragment>
 
 </navigation>

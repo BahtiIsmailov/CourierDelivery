@@ -6,6 +6,7 @@ import ru.wb.go.ui.auth.AuthResourceProvider
 import ru.wb.go.ui.courierbilling.CourierBillingResourceProvider
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataResourceProvider
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorResourceProvider
+import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteResourceProvider
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
 import ru.wb.go.ui.courierdata.CourierDataResourceProvider
@@ -111,6 +112,10 @@ val resourceModule = module {
         return AuthResourceProvider(application)
     }
 
+    fun provideCourierBillingCompleteResourceProvider(application: Application): CourierBillingCompleteResourceProvider {
+        return CourierBillingCompleteResourceProvider(application)
+    }
+
     single { provideAppResourceProvider(get()) }
     single { provideUserDataResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
@@ -131,6 +136,7 @@ val resourceModule = module {
     single { provideCourierBillingResourceProvider(get()) }
     single { provideCourierBillingAccountDataResourceProvider(get()) }
     single { provideCourierBillingAccountSelectorResourceProvider(get()) }
+    single { provideCourierBillingCompleteResourceProvider(get()) }
 
     single { provideTemporaryPasswordResourceProvider(get()) }
 

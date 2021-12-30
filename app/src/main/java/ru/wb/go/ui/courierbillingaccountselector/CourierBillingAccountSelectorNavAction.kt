@@ -7,4 +7,7 @@ sealed class CourierBillingAccountSelectorNavAction {
 
     data class NavigateToAccountCreate(val account: String, val balance: Int) :
         CourierBillingAccountSelectorNavAction()
+
+    data class NavigateToBillingComplete(val amount: Int) :
+            CourierBillingAccountSelectorNavAction()
 }

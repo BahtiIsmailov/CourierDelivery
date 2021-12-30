@@ -13,6 +13,8 @@ import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountPara
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataViewModel
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorViewModel
+import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters
+import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteViewModel
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
@@ -164,6 +166,16 @@ val viewModelModule = module {
             get(),
             get(),
             get()
+        )
+    }
+
+    viewModel { (parameters: CourierBillingCompleteParameters) ->
+        CourierBillingCompleteViewModel(
+                parameters,
+                get(),
+                get(),
+                get(),
+                get()
         )
     }
 

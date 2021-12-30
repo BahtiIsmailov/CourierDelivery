@@ -21,6 +21,8 @@ import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInt
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractorImpl
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractorImpl
+import ru.wb.go.ui.courierbilllingcomplete.domain.CourierBillingCompleteInteractor
+import ru.wb.go.ui.courierbilllingcomplete.domain.CourierBillingCompleteInteractorImpl
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
 import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
@@ -375,6 +377,17 @@ val interactorModule = module {
         )
     }
 
+
+    fun provideCourierBillingCompleteInteractor(
+            rxSchedulerFactory: RxSchedulerFactory,
+            courierLocalRepository: CourierLocalRepository
+    ): CourierBillingCompleteInteractor {
+        return CourierBillingCompleteInteractorImpl(
+                rxSchedulerFactory,
+                courierLocalRepository,
+        )
+    }
+
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
@@ -432,5 +445,6 @@ val interactorModule = module {
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
     factory { provideCourierBillingInteractor(get(), get(), get(), get(), get()) }
+    factory { provideCourierBillingCompleteInteractor(get(), get()) }
 
 }

@@ -534,4 +534,7 @@
     <string name="auth_user_passport_code_dep">Код подразделения</string>
     <string name="auth_user_passport_label">Паспорт</string>
 
+    <string name="billing_complete_title">Заявка на вывод %1$d ₽\nсоздана</string>
+    <string name="billing_complete_description">Обработка заявки зависит от вашего банка и может занимать до 3-х дней</string>
+
 </resources>

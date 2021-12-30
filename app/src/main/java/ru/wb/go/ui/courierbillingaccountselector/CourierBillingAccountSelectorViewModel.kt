@@ -21,12 +21,12 @@ import java.text.DecimalFormat
 import java.util.*
 
 class CourierBillingAccountSelectorViewModel(
-    private val parameters: CourierBillingAccountSelectorAmountParameters,
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
-    private val interactor: CourierBillingAccountSelectorInteractor,
-    private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
-    private val deviceManager: DeviceManager,
+        private val parameters: CourierBillingAccountSelectorAmountParameters,
+        compositeDisposable: CompositeDisposable,
+        metric: YandexMetricManager,
+        private val interactor: CourierBillingAccountSelectorInteractor,
+        private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
+        private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
@@ -50,7 +50,7 @@ class CourierBillingAccountSelectorViewModel(
         get() = _versionApp
 
     private val _navigationEvent =
-        SingleLiveEvent<CourierBillingAccountSelectorNavAction>()
+            SingleLiveEvent<CourierBillingAccountSelectorNavAction>()
     val navigationEvent: LiveData<CourierBillingAccountSelectorNavAction>
         get() = _navigationEvent
 
@@ -73,7 +73,7 @@ class CourierBillingAccountSelectorViewModel(
     private var localBalance: Int = 0
     private var copyCourierBillingAccountEntity = mutableListOf<CourierBillingAccountEntity>()
     private var copyCourierBillingAccountSelectorAdapterItems =
-        mutableListOf<CourierBillingAccountSelectorAdapterItem>()
+            mutableListOf<CourierBillingAccountSelectorAdapterItem>()
 
     fun init() {
         localBalance = parameters.balance
@@ -96,8 +96,8 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun observeNetworkState() {
         addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
+                interactor.observeNetworkConnected()
+                        .subscribe({ _toolbarNetworkState.value = it }, {})
         )
     }
 
@@ -107,13 +107,13 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun initAccounts() {
         addSubscription(interactor.accounts()
-            .map { sortedAccounts(it) }
-            .doOnSuccess { copyCourierBillingAccountEntity = it.toMutableList() }
-            .map { convertToItems(it) }
-            .doOnSuccess { copyCourierBillingAccountSelectorAdapterItems = it.toMutableList() }
-            .subscribe({
-                _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
-            }, {})
+                .map { sortedAccounts(it) }
+                .doOnSuccess { copyCourierBillingAccountEntity = it.toMutableList() }
+                .map { convertToItems(it) }
+                .doOnSuccess { copyCourierBillingAccountSelectorAdapterItems = it.toMutableList() }
+                .subscribe({
+                    _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
+                }, {})
         )
     }
 
@@ -121,10 +121,10 @@ class CourierBillingAccountSelectorViewModel(
         val list = mutableListOf<CourierBillingAccountSelectorAdapterItem>()
         it.forEach {
             list.add(
-                CourierBillingAccountSelectorAdapterItem.Edit(
-                    it.bank,
-                    it.correspondentAccount.takeLast(4)
-                )
+                    CourierBillingAccountSelectorAdapterItem.Edit(
+                            it.bank,
+                            it.correspondentAccount.takeLast(4)
+                    )
             )
         }
         list.add(CourierBillingAccountSelectorAdapterItem.Add("Добавить счет"))
@@ -132,8 +132,8 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun sortedAccounts(accounts: List<CourierBillingAccountEntity>) =
-        accounts.toMutableList()
-            .sortedWith(compareBy({ it.bank }, { it.correspondentAccount.takeLast(4) }))
+            accounts.toMutableList()
+                    .sortedWith(compareBy({ it.bank }, { it.correspondentAccount.takeLast(4) }))
 
     private fun checkFocusSurnameWrapper(focusChange: CourierBillingAccountSelectorUIAction.FocusChange): CourierBillingAccountSelectorUIState {
         return checkSurname(focusChange.text, focusChange.type)
@@ -144,13 +144,13 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun checkSurname(
-        text: String,
-        type: CourierBillingAccountSelectorQueryType
+            text: String,
+            type: CourierBillingAccountSelectorQueryType
     ): CourierBillingAccountSelectorUIState {
         return if (text.isEmpty()) {
             val balance = decimalFormat(localBalance)
             CourierBillingAccountSelectorUIState.Empty(
-                "Введите сумму от 0.01 до $balance ₽", type
+                    "Введите сумму от 0.01 до $balance ₽", type
             )
         } else {
             val balanceFromText = amountFromString(text)
@@ -169,12 +169,12 @@ class CourierBillingAccountSelectorViewModel(
 
     fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
         addSubscription(Observable.merge(changeObservables)
-            .doOnNext { LogUtils { logDebugApp(it.toString()) } }
-            .distinctUntilChanged()
-            .map { mapAction(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
+                .doOnNext { LogUtils { logDebugApp(it.toString()) } }
+                .distinctUntilChanged()
+                .map { mapAction(it) }
+                .subscribe(
+                        { _formUIState.value = it },
+                        { LogUtils { logDebugApp(it.toString()) } })
         )
     }
 
@@ -190,11 +190,11 @@ class CourierBillingAccountSelectorViewModel(
             val item = iterator.next()
             when (item.type) {
                 CourierBillingAccountSelectorQueryType.SURNAME -> if (isNotCheck(
-                        checkSurname(
-                            item.text,
-                            item.type
+                                checkSurname(
+                                        item.text,
+                                        item.type
+                                )
                         )
-                    )
                 ) iterator.remove()
             }
         }
@@ -207,30 +207,30 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun checkFieldFocus(action: CourierBillingAccountSelectorUIAction.FocusChange) =
-        when (action.type) {
-            CourierBillingAccountSelectorQueryType.SURNAME -> checkFocusSurnameWrapper(action)
-        }
+            when (action.type) {
+                CourierBillingAccountSelectorQueryType.SURNAME -> checkFocusSurnameWrapper(action)
+            }
 
     private fun checkFieldText(action: CourierBillingAccountSelectorUIAction.TextChange) =
-        when (action.type) {
-            CourierBillingAccountSelectorQueryType.SURNAME -> {
-                _balanceChangeState.value = if (action.text.isEmpty()) {
-                    CourierBillingAccountSelectorBalanceAction.Init(resourceProvider.getWithdrawBalanceInit())
-                } else {
-                    val balanceFromText = amountFromString(action.text)
-                    val balance = decimalFormat(balanceFromText)
-                    val drawBalance = resourceProvider.getWithdrawBalance(balance)
-                    if (balanceFromText == 0)
-                        CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
-                    else if (localBalance >= balanceFromText)
-                        CourierBillingAccountSelectorBalanceAction.Complete(drawBalance)
-                    else
-                        CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
-                }
+            when (action.type) {
+                CourierBillingAccountSelectorQueryType.SURNAME -> {
+                    _balanceChangeState.value = if (action.text.isEmpty()) {
+                        CourierBillingAccountSelectorBalanceAction.Init(resourceProvider.getWithdrawBalanceInit())
+                    } else {
+                        val balanceFromText = amountFromString(action.text)
+                        val balance = decimalFormat(balanceFromText)
+                        val drawBalance = resourceProvider.getWithdrawBalance(balance)
+                        if (balanceFromText == 0)
+                            CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
+                        else if (localBalance >= balanceFromText)
+                            CourierBillingAccountSelectorBalanceAction.Complete(drawBalance)
+                        else
+                            CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
+                    }
 
-                checkTextSurnameWrapper(action)
+                    checkTextSurnameWrapper(action)
+                }
             }
-        }
 
     private fun decimalFormat(balanceFromText: Int): String {
         val decimalFormat = DecimalFormat("#,###.##")
@@ -238,7 +238,7 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun isNotCheck(state: CourierBillingAccountSelectorUIState) =
-        state is CourierBillingAccountSelectorUIState.Complete
+            state is CourierBillingAccountSelectorUIState.Complete
 
     fun onNextCompleteClick(accountId: Long, amount: String) {
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
@@ -246,32 +246,32 @@ class CourierBillingAccountSelectorViewModel(
         val courierBillingAccountEntity = copyCourierBillingAccountEntity[accountId.toInt()]
         val paymentEntity = with(courierBillingAccountEntity) {
             PaymentEntity(
-                recipientBankName = bank,
-                recipientName = userName,
-                recipientBankBik = bic,
-                recipientCorrespondentAccount = correspondentAccount,
-                recipientAccount = account,
-                recipientInn = inn
+                    recipientBankName = bank,
+                    recipientName = userName,
+                    recipientBankBik = bic,
+                    recipientCorrespondentAccount = correspondentAccount,
+                    recipientAccount = account,
+                    recipientInn = inn
             )
         }
         addSubscription(
-            interactor.payments(amountFromText, paymentEntity).subscribe(
-                { paymentsComplete(amountFromText) },
-                { paymentsError(it) })
+                interactor.payments(amountFromText, paymentEntity).subscribe(
+                        { paymentsComplete(amountFromText) },
+                        { paymentsError(it) })
         )
     }
 
     fun onEditAccountClick(idView: Int) {
         val account = copyCourierBillingAccountEntity[idView].correspondentAccount
         _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
-            account,
-            localBalance
+                account,
+                localBalance
         )
     }
 
     fun onAddAccountClick() {
         _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
-            "", localBalance
+                "", localBalance
         )
     }
 
@@ -289,27 +289,28 @@ class CourierBillingAccountSelectorViewModel(
         localBalance -= amount
         initBalance()
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
+        _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount)
     }
 
     private fun paymentsError(throwable: Throwable) {
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
+                    DialogStyle.WARNING.ordinal,
+                    throwable.message,
+                    resourceProvider.getGenericInternetMessageError(),
+                    resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
+                    DialogStyle.ERROR.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.error.message,
+                    resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
+                    DialogStyle.ERROR.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.toString(),
+                    resourceProvider.getGenericServiceButtonError()
             )
         }
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Enable
