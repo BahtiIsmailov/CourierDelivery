@@ -123,6 +123,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Расчётный счет"
                         android:inputType="number"
+                        android:digits="0123456789"
                         android:letterSpacing="0.04"
                         android:maxLength="@integer/account"
                         android:paddingTop="@dimen/auth_padding_top"

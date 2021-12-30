@@ -220,7 +220,7 @@ class CourierBillingAccountDataViewModel(
 
     fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountDataUIAction>>) {
         addSubscription(Observable.merge(changeObservables)
-                .switchMap { mapActionFormChanges(it) }
+                .flatMap { mapActionFormChanges(it) }
                 .subscribe(
                         { _formUIState.value = it },
                         { LogUtils { logDebugApp(it.toString()) } })
