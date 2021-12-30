@@ -275,13 +275,20 @@ class AppRemoteRepositoryImpl(
                 .map {
                     val billingTransactions = mutableListOf<BillingTransactionEntity>()
                     it.transactions.forEach {
-                        billingTransactions.add(
-                                BillingTransactionEntity(
-                                        uuid = it.uuid,
-                                        value = it.value / COST_DIVIDER,
-                                        createdAt = it.createdAt
-                                )
+                        val statusOK = when (it.statusOK) {
+                            null -> StatusOK.IsProcessing
+                            true -> StatusOK.IsComplete
+                            else -> StatusOK.IsRejected
+                        }
+                        val billing = BillingTransactionEntity(
+                                statusDescription = it.statusDescription,
+                                status = it.status,
+                                statusOK = statusOK,
+                                uuid = it.uuid,
+                                value = it.value / COST_DIVIDER,
+                                createdAt = it.createdAt
                         )
+                        billingTransactions.add(billing)
                     }
                     BillingCommonEntity(
                             id = it.id,
@@ -381,4 +388,10 @@ class AppRemoteRepositoryImpl(
 
     private fun apiVersion() = tokenManager.apiVersion()
 
+}
+
+sealed class StatusOK {
+    object IsRejected : StatusOK()
+    object IsProcessing : StatusOK()
+    object IsComplete : StatusOK()
 }

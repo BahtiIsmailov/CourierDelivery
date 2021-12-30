@@ -37,4 +37,16 @@ class CourierBillingResourceProvider(private val context: Context) :
 
     }
 
+    fun iconIsComplete(): Int {
+        return R.drawable.ic_billing_is_complete
+    }
+
+    fun iconIsRejected(): Int {
+        return R.drawable.ic_billing_is_rejected
+    }
+
+    fun iconIsProcessing(): Int {
+        return R.drawable.ic_billing_is_processing
+    }
+
 }

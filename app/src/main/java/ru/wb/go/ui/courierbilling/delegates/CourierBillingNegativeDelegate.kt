@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierbilling.delegates
 
 import android.content.Context
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.adapters.BaseAdapterDelegate
@@ -11,12 +12,12 @@ import ru.wb.go.ui.courierbilling.delegates.items.CourierBillingNegativeItem
 import ru.wb.go.ui.courierbilling.delegates.items.CourierBillingPositiveItem
 
 class CourierBillingNegativeDelegate(
-    context: Context,
-    val onCourierOrderCallback: OnCourierBillingCallback
+        context: Context,
+        val onCourierOrderCallback: OnCourierBillingCallback
 ) :
-    BaseAdapterDelegate<CourierBillingNegativeItem, CourierBillingNegativeDelegate.RouterViewHolder>(
-        context
-    ) {
+        BaseAdapterDelegate<CourierBillingNegativeItem, CourierBillingNegativeDelegate.RouterViewHolder>(
+                context
+        ) {
 
 
     override fun isForViewType(item: BaseItem): Boolean {
@@ -37,6 +38,7 @@ class CourierBillingNegativeDelegate(
         binding.date.text = item.date
         binding.time.text = item.time
         binding.amount.text = item.amount
+        binding.icStatus.setImageDrawable(ContextCompat.getDrawable(context, item.statusIcon))
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

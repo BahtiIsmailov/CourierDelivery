@@ -17,27 +17,28 @@
         android:src="@drawable/ic_billing_negative"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/date"
-        android:layout_marginTop="16dp"
         style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toEndOf="@+id/ic_billing"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="12.03.2021 • 08:14" />
 
     <TextView
         android:id="@+id/time"
-        android:layout_marginTop="16dp"
         style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toEndOf="@+id/date"
         app:layout_constraintTop_toTopOf="parent"
         tools:text=" • 08:14" />
@@ -46,8 +47,8 @@
         android:id="@+id/amount"
         style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,13 +61,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="4dp"
         android:layout_marginStart="16dp"
-        android:text="Вывод средств"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
+        android:text="Вывод средств"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ic_billing"
         app:layout_constraintTop_toBottomOf="@+id/date" />
+
+    <ImageView
+        android:id="@+id/ic_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_billing_is_processing"
+        app:layout_constraintBottom_toBottomOf="@+id/type"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/type"
+        tools:ignore="ContentDescription" />
 
     <View
         android:id="@+id/view_divider"

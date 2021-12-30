@@ -17,12 +17,12 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierBillingViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
-    private val interactor: CourierBillingInteractor,
-    private val dataBuilder: CourierBillingDataBuilder,
-    private val resourceProvider: CourierBillingResourceProvider,
-    private val deviceManager: DeviceManager,
+        compositeDisposable: CompositeDisposable,
+        metric: YandexMetricManager,
+        private val interactor: CourierBillingInteractor,
+        private val dataBuilder: CourierBillingDataBuilder,
+        private val resourceProvider: CourierBillingResourceProvider,
+        private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private var balance = 0
@@ -69,8 +69,8 @@ class CourierBillingViewModel(
 
     private fun observeNetworkState() {
         addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
+                interactor.observeNetworkConnected()
+                        .subscribe({ _toolbarNetworkState.value = it }, {})
         )
     }
 
@@ -88,9 +88,9 @@ class CourierBillingViewModel(
 
     private fun initBalanceAndTransactions() {
         addSubscription(
-            interactor.billing().subscribe(
-                { billingComplete(it) },
-                { billingError(it) })
+                interactor.billing().subscribe(
+                        { billingComplete(it) },
+                        { billingError(it) })
         )
     }
 
@@ -100,12 +100,12 @@ class CourierBillingViewModel(
         _balanceInfo.value = resourceProvider.formatMoney(balance, false)
         val items = mutableListOf<BaseItem>()
         it.transactions.sortedByDescending { it.createdAt }
-            .forEachIndexed { index, billingTransactionEntity ->
-                items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
-            }
+                .forEachIndexed { index, billingTransactionEntity ->
+                    items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
+                }
         if (items.isEmpty()) {
             _billingItems.value =
-                CourierBillingState.Empty(resourceProvider.getEmptyList())
+                    CourierBillingState.Empty(resourceProvider.getEmptyList())
         } else {
             _billingItems.value = CourierBillingState.ShowBilling(items)
         }
@@ -116,22 +116,22 @@ class CourierBillingViewModel(
         onTechErrorLog("billingError", throwable)
         val message = when (throwable) {
             is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
+                    DialogInfoStyle.WARNING.ordinal,
+                    resourceProvider.getGenericInternetTitleError(),
+                    resourceProvider.getGenericInternetMessageError(),
+                    resourceProvider.getGenericInternetButtonError()
             )
             is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
+                    DialogInfoStyle.ERROR.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.error.message,
+                    resourceProvider.getGenericServiceButtonError()
             )
             else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
+                    DialogInfoStyle.ERROR.ordinal,
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.toString(),
+                    resourceProvider.getGenericServiceButtonError()
             )
         }
         _navigateToDialogInfo.value = message
@@ -156,9 +156,9 @@ class CourierBillingViewModel(
     fun onAccountClick() {
         showProgress()
         addSubscription(
-            interactor.updateAccountsIsExist().subscribe(
-                { accountsComplete(it) },
-                { accountsError(it) })
+                interactor.updateAccountsIsExist().subscribe(
+                        { accountsComplete(it) },
+                        { accountsError(it) })
         )
     }
 
