@@ -16,6 +16,7 @@ import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,6 +31,7 @@ import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
 import ru.wb.go.ui.splash.NavToolbarListener
@@ -46,7 +48,12 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     private lateinit var inputMethod: InputMethodManager
     private val viewModel by viewModel<UserFormViewModel> {
-        parametersOf(requireArguments().getParcelable<CourierDataParameters>(PHONE_KEY))
+        parametersOf(
+            requireArguments().getParcelable<CourierDataParameters>(PHONE_KEY),
+            requireArguments().getParcelable<CourierDataParameters>(
+                DOCS_KEY
+            )
+        )
     }
 
     override fun onCreateView(
@@ -54,6 +61,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         savedInstanceState: Bundle?,
     ): View {
         _binding = CourierDataFragmentBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -63,8 +71,40 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         initListener()
         initInputMethod()
         initObservers()
+        initializeFields()
 
-        SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
+    }
+
+    private fun initializeFields() {
+
+        val docs = viewModel.getDocsParam()
+        if (docs.errorAnnotate.isNullOrEmpty()) {
+            SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
+            return
+        }else{
+
+                DialogInfoFragment.newInstance(
+                    type = DialogInfoStyle.ERROR.ordinal,
+                    title = "Ошибка",
+                    message = docs.errorAnnotate,
+                    positiveButtonName = getText(R.string.ok_button_title).toString()
+                ).show(parentFragmentManager, DIALOG_INFO_TAG)
+
+        }
+        with(binding) {
+            surname.setText(docs.surName)
+            firstName.setText(docs.firstName)
+            middleName.setText(docs.middleName)
+            inn.setText(docs.inn)
+            passportSeries.setText(docs.passportSeries)
+            passportNumber.setText(docs.passportNumber)
+            passportDateOfIssue.setText(docs.passportDateOfIssue)
+            passportDepartmentCode.setText(docs.passportDepartmentCode)
+            passportIssuedBy.setText(docs.passportIssuedBy)
+            checkedAgreement.isChecked = true
+        }
+        updateChecked()
+
     }
 
     private fun updateChecked() {
@@ -213,6 +253,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         passportDateOfIssue = binding.passportDateOfIssue.text.toString().trim(),
         passportDepartmentCode = binding.passportDepartmentCode.text.toString().trim(),
         passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
+        errorAnnotate = null,
     )
 
     private fun dateSelect(view: View, dateText: EditText) {
@@ -321,7 +362,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
                 is CourierDataUIState.ErrorFocus -> {
                     val textLayout = changeText.find { it.type == state.type }?.textLayout
                     textLayout?.error = errorFieldHint(CourierData(state.message, state.type))
-                    if(state.type!=CourierDataQueryType.PASSPORT_DATE) {
+                    if (state.type != CourierDataQueryType.PASSPORT_DATE) {
                         changeText.find { it.type == state.type }?.text?.let {
                             it.setSelection(it.length())
                             it.requestFocus()
@@ -368,20 +409,20 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             })
     }
 
-    private fun errorFieldHint(field:CourierData):CharSequence{
-        if(field.text.isEmpty()){
+    private fun errorFieldHint(field: CourierData): CharSequence {
+        if (field.text.isEmpty()) {
             return getText(R.string.error)
         }
-        return when(field.type){
-            CourierDataQueryType.SURNAME->getText(R.string.error_register_letter)
-            CourierDataQueryType.MIDDLE_NAME->getText(R.string.error_register_letter)
-            CourierDataQueryType.NAME->getText(R.string.error_register_letter)
-            CourierDataQueryType.INN->getText(R.string.error_register_size_12)
-            CourierDataQueryType.PASSPORT_SERIES->getText(R.string.error_register_size_4)
-            CourierDataQueryType.PASSPORT_NUMBER->getText(R.string.error_register_size_6)
-            CourierDataQueryType.PASSPORT_DATE->getText(R.string.error)
-            CourierDataQueryType.PASSPORT_DEPARTMENT_CODE->getText(R.string.error_register_size_6)
-            CourierDataQueryType.PASSPORT_ISSUED_BY->getText(R.string.error)
+        return when (field.type) {
+            CourierDataQueryType.SURNAME -> getText(R.string.error_register_letter)
+            CourierDataQueryType.MIDDLE_NAME -> getText(R.string.error_register_letter)
+            CourierDataQueryType.NAME -> getText(R.string.error_register_letter)
+            CourierDataQueryType.INN -> getText(R.string.error_register_size_12)
+            CourierDataQueryType.PASSPORT_SERIES -> getText(R.string.error_register_size_4)
+            CourierDataQueryType.PASSPORT_NUMBER -> getText(R.string.error_register_size_6)
+            CourierDataQueryType.PASSPORT_DATE -> getText(R.string.error)
+            CourierDataQueryType.PASSPORT_DEPARTMENT_CODE -> getText(R.string.error_register_size_6)
+            CourierDataQueryType.PASSPORT_ISSUED_BY -> getText(R.string.error)
         }
     }
 
@@ -407,16 +448,17 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     companion object {
         const val PHONE_KEY = "phone_key"
+        const val DOCS_KEY = "docs_key"
         const val DATE_TIME_PICKER_FRAGMENT = "date_time_picker_fragment"
         const val DATE_PICKER_PATTERN = "dd.MM.yyyy"
     }
 
 
-
 }
 
 @Parcelize
-data class CourierDataParameters(val phone: String) : Parcelable
+data class CourierDataParameters(val phone: String, val docs: @RawValue CourierDocumentsEntity) :
+    Parcelable
 
 data class CourierData(val text: String, val type: CourierDataQueryType)
 

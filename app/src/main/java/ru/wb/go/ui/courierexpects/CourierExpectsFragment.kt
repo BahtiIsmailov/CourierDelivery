@@ -11,6 +11,7 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.databinding.AuthCourierExpectsFragmentBinding
+import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavToolbarListener
@@ -63,7 +64,17 @@ class CourierExpectsFragment : Fragment() {
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierExpectsNavAction.NavigateToCouriers ->
-                    findNavController().navigate(CourierExpectsFragmentDirections.actionCouriersCompleteRegistrationFragmentToCourierWarehouseFragment())
+                    findNavController().navigate(
+                        CourierExpectsFragmentDirections
+                            .actionCouriersCompleteRegistrationFragmentToCourierWarehouseFragment()
+                    )
+               is CourierExpectsNavAction.NavigateToRegistrationCouriers->
+                    findNavController().navigate(
+                        CourierExpectsFragmentDirections
+                            .actionCouriersCompleteRegistrationFragmentToUserFormFragment(
+                                CourierDataParameters(state.phone, state.docs)
+                            )
+                    )
             }
         }
 

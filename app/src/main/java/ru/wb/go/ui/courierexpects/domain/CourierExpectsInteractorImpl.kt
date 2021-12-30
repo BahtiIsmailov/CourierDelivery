@@ -1,8 +1,8 @@
 package ru.wb.go.ui.courierexpects.domain
 
 import io.reactivex.Single
-import ru.wb.go.app.COURIER_ROLE
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
+import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.headers.RefreshTokenRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -14,15 +14,25 @@ class CourierExpectsInteractorImpl(
     private val tokenManager: TokenManager
 ) : CourierExpectsInteractor {
 
-    override fun isRegisteredStatus(): Single<Boolean> {
+    override fun isRegisteredStatus(): Single<String> {
         val refreshToken = refreshTokenRepository.refreshAccessTokensSync()
-        val isEmptyTokenResources =
+        val registrationToken =
             Single.fromCallable {
-                !tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) &&
-                        !tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS)
+                val resource = tokenManager.resources()
+                //TODO WHEN not work
+                if (resource.contains(NEED_SEND_COURIER_DOCUMENTS)) {
+                    NEED_SEND_COURIER_DOCUMENTS
+                } else if (resource.contains(NEED_CORRECT_COURIER_DOCUMENTS)) {
+                    NEED_CORRECT_COURIER_DOCUMENTS
+                } else if (resource.contains(NEED_APPROVE_COURIER_DOCUMENTS)) {
+                    NEED_APPROVE_COURIER_DOCUMENTS
+                } else{""}
+
+
             }
-        return refreshToken.andThen(isEmptyTokenResources)
+        return refreshToken.andThen(registrationToken)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
+
 
 }

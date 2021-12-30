@@ -4,6 +4,6 @@ import io.reactivex.Single
 
 interface CourierExpectsInteractor {
 
-    fun isRegisteredStatus(): Single<Boolean>
+    fun isRegisteredStatus(): Single<String>
 
 }

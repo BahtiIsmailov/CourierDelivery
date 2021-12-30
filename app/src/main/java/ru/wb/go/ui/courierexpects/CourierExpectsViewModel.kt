@@ -3,8 +3,14 @@ package ru.wb.go.ui.courierexpects
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
+import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
+import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
+import ru.wb.go.network.api.app.AppRemoteRepository
+import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
@@ -13,12 +19,17 @@ import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CouriersCompleteRegistrationViewModel(
-    parameters: CourierExpectsParameters,
+    private val parameters: CourierExpectsParameters,
+
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
+
     private val resourceProvider: CourierExpectsResourceProvider,
     private val interactor: CourierExpectsInteractor,
-) : NetworkViewModel(compositeDisposable, metric) {
+    private val appRemoteRepository: AppRemoteRepository,
+    private val rxSchedulerFactory: RxSchedulerFactory,
+
+    ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToMessageState: LiveData<NavigateToDialogInfo>
@@ -51,17 +62,44 @@ class CouriersCompleteRegistrationViewModel(
 
     }
 
-    private fun isRegisteredStatusComplete(it: Boolean?) {
+    private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
-        _progressState.value = CourierExpectsProgressState.Complete
-        when (it) {
-            true -> _navAction.value = CourierExpectsNavAction.NavigateToCouriers
-            false -> _navigateToMessageState.value = NavigateToDialogInfo(
-                DialogInfoStyle.INFO.ordinal,
-                resourceProvider.notConfirmDataTitle(),
-                resourceProvider.notConfirmDataMessage(),
-                resourceProvider.notConfirmDataPositive()
-            )
+        when (registerStatus) {
+            NEED_SEND_COURIER_DOCUMENTS -> {
+                _navAction.value =
+                    CourierExpectsNavAction.NavigateToRegistrationCouriers(
+                        parameters.phone,
+                        CourierDocumentsEntity()
+                    )
+            }
+            NEED_CORRECT_COURIER_DOCUMENTS -> {
+                addSubscription(
+                    appRemoteRepository.getCourierDocuments()
+                        .compose(rxSchedulerFactory.applySingleSchedulers())
+                        .subscribe({
+                            _navAction.value =
+                                CourierExpectsNavAction.NavigateToRegistrationCouriers(
+                                    parameters.phone, it
+                                )
+
+                        }, { isRegisteredStatusError(it) })
+                )
+
+            }
+            NEED_APPROVE_COURIER_DOCUMENTS -> {
+                _navigateToMessageState.value = NavigateToDialogInfo(
+                    DialogInfoStyle.INFO.ordinal,
+                    resourceProvider.notConfirmDataTitle(),
+                    resourceProvider.notConfirmDataMessage(),
+                    resourceProvider.notConfirmDataPositive()
+                )
+                _progressState.value = CourierExpectsProgressState.Complete
+            }
+            else -> {
+                //TODO не отображается ФИО при этом переходе
+                _navAction.value =
+                    CourierExpectsNavAction.NavigateToCouriers
+            }
         }
     }
 

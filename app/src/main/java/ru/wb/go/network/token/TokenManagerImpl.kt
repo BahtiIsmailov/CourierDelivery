@@ -44,7 +44,8 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
     }
 
     override fun userCompany(): String {
-        return tokenResource().extra?.company ?: ""
+        //TODO нет компании у курьеров!
+        return ""
     }
 
     override fun userCompanyId(): String {
