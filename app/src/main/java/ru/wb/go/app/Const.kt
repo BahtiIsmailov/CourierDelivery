@@ -9,10 +9,11 @@ const val VERSION_API = "/api/v1"
 const val VERSION_DATABASE = 28
 const val EXPORT_SCHEMA_DATABASE = false
 
-const val DRIVER = "DRIVER"
 const val NEED_SEND_COURIER_DOCUMENTS = "NEED_SEND_COURIER_DOCUMENTS" //не заполнил данные
 const val NEED_APPROVE_COURIER_DOCUMENTS =
-    "NEED_APPROVE_COURIER_DOCUMENTS" //не прошел валидацию на ПВЗ
+    "NEED_APPROVE_COURIER_DOCUMENTS" //ожидание проверки
+const val NEED_CORRECT_COURIER_DOCUMENTS =
+    "NEED_CORRECT_COURIER_DOCUMENTS" // требуется исправить данные
 
 const val DELAY_NETWORK_REQUEST_MS = 400L
 

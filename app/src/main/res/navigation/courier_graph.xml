@@ -99,6 +99,11 @@
         <action
             android:id="@+id/action_userFormFragment_to_auth_navigation"
             app:destination="@id/auth_navigation" />
+        <argument
+            android:name="docs_key"
+            app:argType="ru.wb.go.ui.courierdata.CourierDataParameters"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
     <fragment
@@ -113,6 +118,9 @@
         <action
             android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierWarehouseFragment"
             app:destination="@id/courierWarehouseFragment" />
+        <action
+            android:id="@+id/action_couriersCompleteRegistrationFragment_to_userFormFragment"
+            app:destination="@id/userFormFragment" />
     </fragment>
 
     <fragment

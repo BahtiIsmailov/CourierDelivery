@@ -12,7 +12,8 @@ import ru.wb.go.network.api.app.entity.bank.BankEntity
 
 interface AppRemoteRepository {
 
-    fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
+    fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
+    fun getCourierDocuments():Single<CourierDocumentsEntity>
 
     fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 

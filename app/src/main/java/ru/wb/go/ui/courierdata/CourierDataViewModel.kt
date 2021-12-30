@@ -24,7 +24,8 @@ class UserFormViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
     private val resourceProvider: CourierDataResourceProvider,
-) : NetworkViewModel(compositeDisposable, metric) {
+
+    ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigateToMessageInfo = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToMessageInfo: LiveData<NavigateToDialogInfo>
@@ -66,8 +67,9 @@ class UserFormViewModel(
             CourierDataQueryType.INN -> """^\d{12}$"""
             CourierDataQueryType.PASSPORT_SERIES -> """^\d{4}$"""
             CourierDataQueryType.PASSPORT_NUMBER -> """^\d{6}$"""
-            CourierDataQueryType.PASSPORT_DATE->"""^.+$"""
+            CourierDataQueryType.PASSPORT_DATE -> """^.+$"""
             CourierDataQueryType.PASSPORT_DEPARTMENT_CODE -> """^\d{6}$"""
+            CourierDataQueryType.PASSPORT_ISSUED_BY -> """^.+$"""
             else -> """^[а-яА-ЯёЁ -.`']+$"""
         }
         val regex = Regex(pattern)
@@ -153,7 +155,7 @@ class UserFormViewModel(
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
         addSubscription(
-            interactor.courierDocuments(courierDocumentsEntity).subscribe(
+            interactor.saveCourierDocuments(courierDocumentsEntity).subscribe(
                 { couriersFormComplete() },
                 { couriersFormError(it) })
         )
@@ -211,6 +213,10 @@ class UserFormViewModel(
     fun onShowAgreementClick() {
         onTechEventLog("onShowAgreementClick")
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
+    }
+
+    fun getDocsParam():CourierDocumentsEntity{
+        return parameters.docs
     }
 
     override fun getScreenTag(): String {

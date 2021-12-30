@@ -83,7 +83,7 @@ val viewModelModule = module {
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: CourierExpectsParameters) ->
-        CouriersCompleteRegistrationViewModel(parameters, get(), get(), get(), get())
+        CouriersCompleteRegistrationViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
     viewModel { (parameters: CourierOrderDetailsParameters) ->

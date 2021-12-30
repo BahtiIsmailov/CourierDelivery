@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
+import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
@@ -15,6 +16,7 @@ import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
+import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.api.app.entity.CourierTaskBoxEntity
 import ru.wb.go.network.api.app.entity.CourierTaskMyDstOfficeEntity
 import ru.wb.go.network.api.app.entity.CourierTasksMyEntity
@@ -95,22 +97,8 @@ class CourierLoaderViewModel(
     private fun loadApp() {
         onTechEventLog("loadApp", "checkUserState")
 
-        // TODO: 24.09.2021 выключить для тестирования
-        //toCourierWarehouse()
-        //toLoadingScanner()
-        //toIntransit()
-
         checkUserState()
 
-        //toCouriersCompleteRegistration("89104020582")
-
-        //toUserForm("123456789")
-
-        //_navigationDrawerState.value = toAgreement()
-        //toUserForm("123456789")
-
-        //clearData()
-        //_navigationDrawerState.value = toPhone()
     }
 
     private fun isVersionActual(remotes: Int): Boolean {
@@ -124,7 +112,12 @@ class CourierLoaderViewModel(
     private fun checkUserState() {
         val phone = tokenManager.userPhone()
         when {
-            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toUserForm(phone)
+            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toNewRegistration(
+                phone
+            )
+            tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
+                toUserForm(phone)
+            }
             tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
                 toCouriersCompleteRegistration(phone)
             else -> {
@@ -135,7 +128,7 @@ class CourierLoaderViewModel(
                     courierLocalRepository.orderDataSync().map { it.courierOrderLocalEntity.id }
                         .onErrorReturn { -1 }
                 val zipData = Single.zip(taskMy, localTaskId,
-                    { remoteTask, localTaskId -> tasksMyComplete(remoteTask, localTaskId) })
+                    { remoteTask, taskId -> tasksMyComplete(remoteTask, taskId) })
                     .flatMap { it }
                 addSubscription(
                     timer.andThen(zipData)
@@ -173,22 +166,30 @@ class CourierLoaderViewModel(
         courierTasksMyEntity: CourierTasksMyEntity,
         remoteTaskId: Int
     ): Completable {
-        onTechEventLog("syncWarehouseAndBoxes", "clearData and saveWarehouseAndOrderAndOfficesAndCost")
+        onTechEventLog(
+            "syncWarehouseAndBoxes",
+            "clearData and saveWarehouseAndOrderAndOfficesAndCost"
+        )
         clearData()
         return saveWarehouseAndOrderAndOfficesAndCost(courierTasksMyEntity)
             .andThen(
                 if (courierTasksMyEntity.status != TaskStatus.TIMER.status) {
-                    onTechEventLog("syncWarehouseAndBoxes", "courierTasksMyEntity.status != TaskStatus.TIMER.status")
+                    onTechEventLog(
+                        "syncWarehouseAndBoxes",
+                        "courierTasksMyEntity.status != TaskStatus.TIMER.status"
+                    )
                     syncBoxesAndVisitedOffice(
                         remoteTaskId.toString(),
                         courierTasksMyEntity.dstOffices
                     )
-                }
-                else Completable.complete()
+                } else Completable.complete()
             )
     }
 
-    fun syncBoxesAndVisitedOffice(taskId: String, dstOffices: List<CourierTaskMyDstOfficeEntity>) =
+    private fun syncBoxesAndVisitedOffice(
+        taskId: String,
+        dstOffices: List<CourierTaskMyDstOfficeEntity>
+    ) =
         appRemoteRepository.taskBoxes(taskId)
             .map { it.data }
             .flatMap { taskBoxes -> convertTaskBoxes(taskBoxes, dstOffices) }
@@ -322,8 +323,24 @@ class CourierLoaderViewModel(
 
     private fun toUserForm(phone: String) {
         onTechEventLog("toUserForm")
+        addSubscription(
+            appRemoteRepository.getCourierDocuments()
+                .compose(rxSchedulerFactory.applySingleSchedulers())
+                .subscribe({
+                    _state.value = CourierLoaderUIState.Complete
+                    _navigationDrawerState.value =
+                        CourierLoaderNavigationState.NavigateToCourierUserForm(phone, it)
+
+                }, { taskMyError(it) })
+        )
+    }
+
+    private fun toNewRegistration(phone: String) {
+        onTechEventLog("toNewRegistration")
+        val docs = CourierDocumentsEntity()
         _state.value = CourierLoaderUIState.Complete
-        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToCourierUserForm(phone)
+        _navigationDrawerState.value =
+            CourierLoaderNavigationState.NavigateToCourierUserForm(phone, docs)
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
@@ -335,8 +352,6 @@ class CourierLoaderViewModel(
 
     private fun toCourierWarehouse() = CourierLoaderNavigationState.NavigateToCourierWarehouse
 
-    private fun toPhone() = CourierLoaderNavigationState.NavigateToPhone
-
     private fun toTimer() = CourierLoaderNavigationState.NavigateToTimer
 
     private fun toLoadingScanner() = CourierLoaderNavigationState.NavigateToScanner
@@ -347,8 +362,6 @@ class CourierLoaderViewModel(
         onTechEventLog("toAppUpdate", "NavigateToAppUpdate")
         _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToAppUpdate
     }
-
-    private fun toAgreement() = CourierLoaderNavigationState.NavigateToAgreement
 
     private fun errorState(message: String) {
         onTechEventLog("errorState", "message")

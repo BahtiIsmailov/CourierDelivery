@@ -34,7 +34,7 @@ class AppRemoteRepositoryImpl(
         private const val COST_DIVIDER = 100
     }
 
-    override fun courierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
+    override fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
         val courierDocuments = with(courierDocumentsEntity) {
             CourierDocumentsRequest(
                 firstName = firstName,
@@ -48,8 +48,28 @@ class AppRemoteRepositoryImpl(
                 passportDepartmentCode = passportDepartmentCode
             )
         }
-        return remote.courierDocuments(tokenManager.apiVersion(), courierDocuments)
+        return remote.saveCourierDocuments(tokenManager.apiVersion(), courierDocuments)
             .compose(rxSchedulerFactory.applyCompletableMetrics("courierDocuments"))
+    }
+
+    override fun getCourierDocuments(): Single<CourierDocumentsEntity> {
+        return remote.getCourierDocuments(apiVersion())
+            .map { response ->
+                with(response) {
+                    CourierDocumentsEntity(
+                        errorAnnotate = errorAnnotate,
+                        firstName = firstName,
+                        inn = inn,
+                        middleName = middleName,
+                        passportDateOfIssue = passportDateOfIssue,
+                        passportDepartmentCode = passportDepartmentCode,
+                        passportIssuedBy = passportIssuedBy,
+                        passportNumber = passportNumber,
+                        passportSeries = passportSeries,
+                        surName = surName,
+                    )
+                }
+            }
     }
 
     override fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
@@ -247,14 +267,17 @@ class AppRemoteRepositoryImpl(
         }
 
         val fromBoxCount = courierTaskStatusesIntransitRequest.size
-        val unloadingBoxCount = courierTaskStatusesIntransitRequest.filter { it.deliveredAt.isNullOrEmpty() }.size
-        val loadingBoxCount = courierTaskStatusesIntransitRequest.filter { it.deliveredAt != null }.size
+        val unloadingBoxCount =
+            courierTaskStatusesIntransitRequest.filter { it.deliveredAt.isNullOrEmpty() }.size
+        val loadingBoxCount =
+            courierTaskStatusesIntransitRequest.filter { it.deliveredAt != null }.size
 
         return remote.taskStatusesIntransit(
             apiVersion(),
             taskID,
             courierTaskStatusesIntransitRequest
-        ).compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesIntransit " + "fromBoxCount " + fromBoxCount + " unloadingBoxCount " + unloadingBoxCount + " loadingBoxCount " + loadingBoxCount))
+        )
+            .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesIntransit " + "fromBoxCount " + fromBoxCount + " unloadingBoxCount " + unloadingBoxCount + " loadingBoxCount " + loadingBoxCount))
     }
 
     override fun taskStatusesEnd(taskID: String): Completable {

@@ -32,9 +32,12 @@
     <string name="unknown_service_title_error">Ошибка</string>
     <string name="unknown_service_button_error">OK</string>
 
-    <string name="courier_expects_title">Ваши данные еще не подтверждены</string>
-    <string name="courier_expects_message" />
+    <string name="courier_expects_title">Внимание</string>
+    <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
     <string name="courier_expects_positive">OK</string>
+
+    <string name="courier_registration_correct_title">Ошибка</string>
+    <string name="ok_button_title">OK</string>
 
     <string name="splash_uri_play_market">market://details?id=%s</string>
     <string name="splash_uri_google">https://play.google.com/store/apps/details?id=%s</string>
