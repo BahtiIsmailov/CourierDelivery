@@ -45,9 +45,9 @@ class CourierBillingNegativeDelegate(
         var binding = CourierBillingNegativeDelegateBinding.bind(itemView)
 
         init {
-            binding.background.setOnClickListener {
-                onCourierOrderCallback.onOrderClick(getTag(itemView).idView)
-            }
+//            binding.background.setOnClickListener {
+//                onCourierOrderCallback.onOrderClick(getTag(itemView).idView)
+//            }
         }
 
         private fun getTag(itemView: View): CourierBillingPositiveItem {
