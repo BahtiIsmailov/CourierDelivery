@@ -44,12 +44,12 @@ class ConfigManagerImpl(private val reader: ConfigReader, private val worker: Sh
         return serverUrl(readDaoAppServerUrl())
     }
 
-    override fun saveAppVersion(version: Int) {
+    override fun saveAppVersion(version: String) {
         worker.save(APP_VERSION_KEY, version)
     }
 
-    override fun readAppVersion(): Int {
-        return worker.load(APP_VERSION_KEY, 0)
+    override fun readAppVersion(): String {
+        return worker.load(APP_VERSION_KEY, "")
     }
 
     private fun serverUrl(keyValueDao: KeyValueDao?): String {

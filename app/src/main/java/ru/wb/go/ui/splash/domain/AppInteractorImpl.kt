@@ -107,10 +107,10 @@ class AppInteractorImpl(
     }
 
     companion object {
-        private const val FTP_HOST_NAME = "95.217.162.185"
+        private const val FTP_HOST_NAME = ""
         private const val FTP_PORT = 21
-        private const val FTP_USER_NAME = "eugene"
-        private const val FTP_USER_PASSWORD = "brigada_ftp"
+        private const val FTP_USER_NAME = ""
+        private const val FTP_USER_PASSWORD = ""
         private const val FTP_BASE_PATH = "/ftp/files/"
         private const val APP_EXTENSION = ".apk"
         private const val EMPTY_APP_NAME = ""

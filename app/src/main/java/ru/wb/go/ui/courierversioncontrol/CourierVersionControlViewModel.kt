@@ -6,14 +6,16 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierVersionControlViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
-    private val resourceProvider: CourierVersionControlResourceProvider,
-    private val interactor: CourierVersionControlInteractor,
-    private val deviceManager: DeviceManager
+        compositeDisposable: CompositeDisposable,
+        metric: YandexMetricManager,
+        private val resourceProvider: CourierVersionControlResourceProvider,
+        private val interactor: CourierVersionControlInteractor,
+        private val deviceManager: DeviceManager,
+        configManager: ConfigManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _versionTitleState = MutableLiveData<String>()
@@ -33,15 +35,15 @@ class CourierVersionControlViewModel(
         get() = _updateFromFtp
 
     init {
-        _versionTitleState.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+        _versionTitleState.value = resourceProvider.getAvailableVersion(configManager.readAppVersion())
     }
 
     fun onUpdateClick() {
         onTechEventLog("onUpdateClick")
         val packageName: String = deviceManager.appPackageName
         _updateFromGooglePlay.value = UpdateFromGooglePlay(
-            resourceProvider.getUriPlayMarket(packageName),
-            resourceProvider.getUriGoogle(packageName)
+                resourceProvider.getUriPlayMarket(packageName),
+                resourceProvider.getUriGoogle(packageName)
         )
     }
 

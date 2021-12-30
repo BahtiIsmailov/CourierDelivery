@@ -70,7 +70,7 @@ val viewModelModule = module {
             get()
         )
     }
-    viewModel { CourierVersionControlViewModel(get(), get(), get(), get(), get()) }
+    viewModel { CourierVersionControlViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
 
     viewModel { CourierWarehousesViewModel(get(), get(), get(), get()) }
