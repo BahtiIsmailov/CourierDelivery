@@ -250,7 +250,7 @@ class CourierBillingAccountSelectorViewModel(
                 recipientName = userName,
                 recipientBankBik = bic,
                 recipientCorrespondentAccount = correspondentAccount,
-                recipientAccount = "",
+                recipientAccount = account,
                 recipientInn = inn
             )
         }

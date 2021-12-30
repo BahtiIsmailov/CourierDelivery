@@ -15,7 +15,6 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
-import java.text.DecimalFormat
 
 class CourierBillingViewModel(
     compositeDisposable: CompositeDisposable,

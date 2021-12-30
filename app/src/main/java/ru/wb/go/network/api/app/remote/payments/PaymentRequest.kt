@@ -5,6 +5,6 @@ data class PaymentRequest(
         val recipientBankBik: String,
         val recipientCorrespondentAccount: String,
         val recipientName: String,
-        val recipientAccount: String?,
+        val recipientAccount: String,
         val recipientInn: String
 )

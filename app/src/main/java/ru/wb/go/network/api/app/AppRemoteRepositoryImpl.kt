@@ -296,13 +296,13 @@ class AppRemoteRepositoryImpl(
         val paymentRequest = with(paymentEntity) {
             PaymentsRequest(
                     id = id,
-                    amount = amount * COST_DIVIDER,
+                    value = amount * COST_DIVIDER,
                     PaymentRequest(
                             recipientBankName = recipientBankName,
                             recipientBankBik = recipientBankBik,
                             recipientCorrespondentAccount = recipientCorrespondentAccount,
                             recipientName = recipientName,
-                            recipientAccount = if (recipientAccount.isEmpty()) null else recipientAccount,
+                            recipientAccount = recipientAccount,
                             recipientInn = recipientInn,
                     )
             )
