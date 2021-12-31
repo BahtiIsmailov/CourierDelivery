@@ -387,7 +387,7 @@ class CourierBillingAccountSelectorFragment :
 data class CourierData(val text: String, val type: CourierBillingAccountSelectorQueryType)
 
 @Parcelize
-data class CourierBillingAccountSelectorAmountParameters(val balance: Int) :
+data class CourierBillingAccountSelectorAmountParameters(var balance: Int) :
         Parcelable
 
 

@@ -59,7 +59,15 @@ class CourierBillingViewModel(
     val navigationState: LiveData<CourierBillingNavigationState>
         get() = _navigationState
 
-    init {
+//    init {
+//        observeNetworkState()
+//        fetchVersionApp()
+//        initToolbarLabel()
+//        initBalanceAndTransactions()
+//        initProgress()
+//    }
+
+    fun init() {
         observeNetworkState()
         fetchVersionApp()
         initToolbarLabel()

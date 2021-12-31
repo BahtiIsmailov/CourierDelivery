@@ -47,7 +47,7 @@ class CourierBillingAccountSelectorInteractorImpl(
     }
 
     private fun updateGuid() {
-        userManager.saveGuid(deviceManager.guid)
+        userManager.saveGuid(deviceManager.guid())
     }
 
 }

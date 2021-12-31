@@ -287,6 +287,7 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun paymentsComplete(amount: Int) {
         localBalance -= amount
+        parameters.balance = localBalance
         initBalance()
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
         _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount)

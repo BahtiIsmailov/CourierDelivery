@@ -55,6 +55,7 @@ class CourierBillingFragment : Fragment() {
         initListeners()
         initStateObserve()
         initReturnResult()
+        viewModel.init()
     }
 
     private fun initView() {

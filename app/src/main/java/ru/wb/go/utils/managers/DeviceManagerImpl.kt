@@ -14,7 +14,7 @@ import kotlin.system.exitProcess
 
 class DeviceManagerImpl(private val context: Context) : DeviceManager {
 
-    override val guid = UUID.randomUUID().toString()
+    override fun guid() = UUID.randomUUID().toString()
 
     override val deviceName = String.format("%s %s", Build.MANUFACTURER, Build.DEVICE)
 
@@ -51,10 +51,10 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
     override fun doRestart() {
         try {
             val mStartActivity =
-                context.packageManager?.getLaunchIntentForPackage(context.packageName)
+                    context.packageManager?.getLaunchIntentForPackage(context.packageName)
             mStartActivity?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             val mPendingIntent = PendingIntent.getActivity(
-                context, PENDING_INTENT_ID, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT
+                    context, PENDING_INTENT_ID, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT
             )
             val mgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             Thread.sleep(RESTART_DELAY_TIME)
