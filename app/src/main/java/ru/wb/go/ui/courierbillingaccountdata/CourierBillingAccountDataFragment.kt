@@ -6,6 +6,7 @@ import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.InputType
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -76,6 +77,8 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     }
 
     private fun initView() {
+        binding.account.inputType = InputType.TYPE_CLASS_NUMBER
+        binding.bik.inputType = InputType.TYPE_CLASS_NUMBER
         (activity as NavToolbarListener).hideToolbar()
     }
 
