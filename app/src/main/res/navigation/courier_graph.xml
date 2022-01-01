@@ -468,6 +468,12 @@
             android:name="courier_billing_complete_key"
             app:argType="ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_courierBillingCompleteFragment_to_courierBalanceFragment"
+            app:destination="@id/courierBalanceFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/courierBalanceFragment"
+            />
 
     </fragment>
 

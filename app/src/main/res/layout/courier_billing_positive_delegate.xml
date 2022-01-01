@@ -13,11 +13,12 @@
         android:id="@+id/ic_billing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="26dp"
+        android:layout_marginStart="@dimen/pad16"
         android:src="@drawable/ic_billing_positive"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/date"
@@ -43,15 +44,15 @@
         tools:text=" • 08:14" />
 
     <TextView
-        android:id="@+id/type"
-        style="@style/MediumDarkRegularText"
+        android:id="@+id/status_description"
+        style="@style/SmallDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        android:text="Оплата заказа"
+        tools:text="Оплата заказа"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ic_billing"
         app:layout_constraintTop_toBottomOf="@+id/date" />

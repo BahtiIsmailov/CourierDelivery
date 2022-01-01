@@ -114,7 +114,7 @@ interface AppApi {
     ): Single<BillingCommonResponse>
 
     @POST("{version}/payments")
-    fun payments(
+    fun doTransaction(
         @Path(value = "version", encoded = true) version: String,
         @Body paymentsRequest: PaymentsRequest
     ): Completable

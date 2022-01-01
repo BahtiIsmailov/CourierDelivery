@@ -13,7 +13,7 @@
         android:id="@+id/ic_billing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="26dp"
+        android:layout_marginStart="@dimen/pad16"
         android:src="@drawable/ic_billing_negative"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,28 +56,30 @@
         tools:text="- 3 200 \u20BD" />
 
     <TextView
-        android:id="@+id/type"
-        style="@style/MediumDarkRegularText"
+        android:id="@+id/status_description"
+        style="@style/SmallDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        android:text="Вывод средств"
+        tools:text="Вывод средств"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ic_billing"
-        app:layout_constraintTop_toBottomOf="@+id/date" />
+        app:layout_constraintTop_toBottomOf="@+id/date"
+
+        />
 
     <ImageView
         android:id="@+id/ic_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_billing_is_processing"
-        app:layout_constraintBottom_toBottomOf="@+id/type"
+        tools:src ="@drawable/ic_billing_is_processing"
+        app:layout_constraintBottom_toBottomOf="@+id/status_description"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/type"
+        app:layout_constraintTop_toTopOf="@+id/status_description"
         tools:ignore="ContentDescription" />
 
     <View

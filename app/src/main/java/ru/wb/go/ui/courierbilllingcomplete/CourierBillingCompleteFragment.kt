@@ -22,17 +22,17 @@ class CourierBillingCompleteFragment : Fragment() {
 
     private val viewModel by viewModel<CourierBillingCompleteViewModel> {
         parametersOf(
-                requireArguments().getParcelable<CourierBillingCompleteParameters>(
-                        COURIER_BILLING_COMPLETE_KEY
-                )
+            requireArguments().getParcelable<CourierBillingCompleteParameters>(
+                COURIER_BILLING_COMPLETE_KEY
+            )
         )
     }
     private var _binding: CourierBillingCompleteFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = CourierBillingCompleteFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -58,7 +58,9 @@ class CourierBillingCompleteFragment : Fragment() {
             }
         }
 
-        viewModel.navigateToBack.observe(viewLifecycleOwner) { findNavController().popBackStack() }
+        viewModel.navigateToBack.observe(viewLifecycleOwner) {
+            findNavController().navigate(CourierBillingCompleteFragmentDirections.actionCourierBillingCompleteFragmentToCourierBalanceFragment())
+        }
 
     }
 

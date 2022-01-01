@@ -145,7 +145,7 @@ val viewModelModule = module {
 
     viewModel { ScannerViewModel(get(), get(), get()) }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
         CourierBillingAccountDataViewModel(

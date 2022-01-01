@@ -7,6 +7,6 @@ data class CourierBillingNegativeItem(
     val time: String,
     val amount: String,
     val statusDescription: String,
-    val statusIcon: Int,
+    val statusIcon: Int?,
     override var idView: Int,
 ) : BaseItem

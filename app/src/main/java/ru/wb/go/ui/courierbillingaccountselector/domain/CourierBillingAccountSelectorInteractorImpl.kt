@@ -35,19 +35,16 @@ class CourierBillingAccountSelectorInteractorImpl(
     override fun payments(amount: Int, paymentEntity: PaymentEntity): Completable {
         return initGuid()
                 .flatMapCompletable { guid -> appRemoteRepository.payments(guid, amount, paymentEntity) }
-                .doOnComplete { updateGuid() }
+                .doOnComplete { userManager.clearPaymentGuid() }
                 .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
     private fun initGuid(): Single<String> {
         return Single.fromCallable {
-            if (userManager.guid().isEmpty()) updateGuid()
-            userManager.guid()
+            if (userManager.getPaymentGuid().isEmpty()) {userManager.savePaymentGuid(deviceManager.guid())}
+            userManager.getPaymentGuid()
         }
     }
 
-    private fun updateGuid() {
-        userManager.saveGuid(deviceManager.guid())
-    }
 
 }

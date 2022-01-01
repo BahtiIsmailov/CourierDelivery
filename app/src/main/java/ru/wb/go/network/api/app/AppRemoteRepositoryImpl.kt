@@ -337,7 +337,7 @@ class AppRemoteRepositoryImpl(
                     )
             )
         }
-        return remote.payments(apiVersion(), paymentRequest)
+        return remote.doTransaction(apiVersion(), paymentRequest)
     }
 
     override fun getBank(bic: String): Maybe<BankEntity> {

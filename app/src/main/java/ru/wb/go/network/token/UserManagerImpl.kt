@@ -25,11 +25,14 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
         return worker.load(AppPreffsKeys.CAR_NUMBER_KEY, "")
     }
 
-    override fun saveGuid(number: String) {
+    override fun savePaymentGuid(number: String) {
         worker.save(AppPreffsKeys.GUID_KEY, number)
     }
+    override fun clearPaymentGuid() {
+        savePaymentGuid("")
+    }
 
-    override fun guid(): String {
+    override fun getPaymentGuid(): String {
         return worker.load(AppPreffsKeys.GUID_KEY, "")
     }
 

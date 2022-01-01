@@ -19,7 +19,6 @@ import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingNegativeDelegate
 import ru.wb.go.ui.courierbilling.delegates.CourierBillingPositiveDelegate
-import ru.wb.go.ui.courierbilling.delegates.OnCourierBillingCallback
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -95,9 +94,14 @@ class CourierBillingFragment : Fragment() {
         }
 
         viewModel.balanceInfo.observe(viewLifecycleOwner) {
-            binding.coast.text = it
-            // TODO: 29.12.2021 выключено до деплоя функцонала на сервер
-            binding.toAccount.visibility = VISIBLE
+            with(binding) {
+                coast.text = it
+                if (viewModel.canCheckout()) {
+                    toAccount.visibility = VISIBLE
+                }else {
+                    toAccount.visibility = GONE
+                }
+            }
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -174,9 +178,11 @@ class CourierBillingFragment : Fragment() {
     }
 
     private fun displayItems(items: List<BaseItem>) {
-        adapter.clear()
-        adapter.addItems(items)
-        adapter.notifyDataSetChanged()
+        with(adapter) {
+            clear()
+            addItems(items)
+            notifyDataSetChanged()
+        }
     }
 
     private fun initRecyclerView() {
@@ -196,15 +202,9 @@ class CourierBillingFragment : Fragment() {
 
     private fun initAdapter() {
 
-        val callback = object : OnCourierBillingCallback {
-            override fun onOrderClick(idView: Int) {
-                viewModel.onItemClick(idView)
-            }
-        }
-
         adapter = with(DefaultAdapterDelegate()) {
-            addDelegate(CourierBillingPositiveDelegate(requireContext(), callback))
-            addDelegate(CourierBillingNegativeDelegate(requireContext(), callback))
+            addDelegate(CourierBillingPositiveDelegate(requireContext()))
+            addDelegate(CourierBillingNegativeDelegate(requireContext()))
         }
         binding.operations.adapter = adapter
     }

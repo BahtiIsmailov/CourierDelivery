@@ -29,7 +29,7 @@ class CourierBillingDataBuilderImpl(
             )
         } else {
             val statusIcon = when (entity.statusOK) {
-                StatusOK.IsComplete -> resourceProvider.iconIsComplete()
+                StatusOK.IsComplete -> null //resourceProvider.iconIsComplete()
                 StatusOK.IsProcessing -> resourceProvider.iconIsProcessing()
                 StatusOK.IsRejected -> resourceProvider.iconIsRejected()
             }

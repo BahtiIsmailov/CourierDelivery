@@ -9,15 +9,13 @@ import ru.wb.go.adapters.BaseAdapterDelegate
 import ru.wb.go.databinding.CourierBillingNegativeDelegateBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.courierbilling.delegates.items.CourierBillingNegativeItem
-import ru.wb.go.ui.courierbilling.delegates.items.CourierBillingPositiveItem
 
 class CourierBillingNegativeDelegate(
-        context: Context,
-        val onCourierOrderCallback: OnCourierBillingCallback
+    context: Context
 ) :
-        BaseAdapterDelegate<CourierBillingNegativeItem, CourierBillingNegativeDelegate.RouterViewHolder>(
-                context
-        ) {
+    BaseAdapterDelegate<CourierBillingNegativeItem, CourierBillingNegativeDelegate.RouterViewHolder>(
+        context
+    ) {
 
 
     override fun isForViewType(item: BaseItem): Boolean {
@@ -34,25 +32,20 @@ class CourierBillingNegativeDelegate(
 
     override fun onBind(item: CourierBillingNegativeItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
-        val binding = holder.binding
-        binding.date.text = item.date
-        binding.time.text = item.time
-        binding.amount.text = item.amount
-        binding.icStatus.setImageDrawable(ContextCompat.getDrawable(context, item.statusIcon))
+        with(holder.binding) {
+            date.text = item.date
+            time.text = item.time
+            amount.text = item.amount
+            if(item.statusIcon!=null) {
+                icStatus.setImageDrawable(ContextCompat.getDrawable(context, item.statusIcon))
+            }
+            statusDescription.text = item.statusDescription
+        }
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var binding = CourierBillingNegativeDelegateBinding.bind(itemView)
+        val binding = CourierBillingNegativeDelegateBinding.bind(itemView)
 
-        init {
-//            binding.background.setOnClickListener {
-//                onCourierOrderCallback.onOrderClick(getTag(itemView).idView)
-//            }
-        }
-
-        private fun getTag(itemView: View): CourierBillingPositiveItem {
-            return itemView.tag as CourierBillingPositiveItem
-        }
     }
 
 }

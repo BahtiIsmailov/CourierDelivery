@@ -150,7 +150,7 @@ class CourierBillingAccountSelectorViewModel(
         return if (text.isEmpty()) {
             val balance = decimalFormat(localBalance)
             CourierBillingAccountSelectorUIState.Empty(
-                    "Введите сумму от 0.01 до $balance ₽", type
+                    "Введите сумму от 1 до $balance ₽", type
             )
         } else {
             val balanceFromText = amountFromString(text)
