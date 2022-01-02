@@ -93,9 +93,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                             CheckSmsParameters(state.number, state.ttl)
                         )
                     )
-                }
-                NumberPhoneNavAction.NavigateToConfig ->
-                    findNavController().navigate(R.id.authConfigActivity)
+                }else->{}
             }
         })
 

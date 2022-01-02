@@ -110,10 +110,6 @@ class NumberPhoneViewModel(
         addSubscription(disposable)
     }
 
-    private fun navigateToConfig() {
-        _navigationEvent.value = NumberPhoneNavAction.NavigateToConfig
-    }
-
     private fun fetchPhoneNumberComplete(phone: String) {
         onTechEventLog("fetchPhoneNumberComplete", "NavigateToCheckPassword")
         _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)

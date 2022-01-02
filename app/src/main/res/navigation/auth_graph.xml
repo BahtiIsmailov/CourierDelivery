@@ -21,9 +21,6 @@
         android:label="@string/auth_number_phone_toolbar_label"
         tools:layout="@layout/auth_phone_fragment">
         <action
-            android:id="@+id/action_loginFragment_to_configActivity"
-            app:destination="@id/authConfigActivity" />
-        <action
             android:id="@+id/action_authNumberPhoneFragment_to_checkSmsFragment"
             app:destination="@id/checkSmsFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -34,11 +31,6 @@
             app:popUpToInclusive="true" />
 
     </fragment>
-
-    <activity
-        android:id="@+id/authConfigActivity"
-        android:name="ru.wb.go.ui.config.ConfigActivity"
-        tools:layout="@layout/config_activity" />
 
     <fragment
         android:id="@+id/checkSmsFragment"
