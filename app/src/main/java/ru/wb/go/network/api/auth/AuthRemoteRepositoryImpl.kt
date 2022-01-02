@@ -5,11 +5,7 @@ import io.reactivex.Single
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.api.auth.query.AuthBySmsOrPasswordQuery
-import ru.wb.go.network.api.auth.query.ChangePasswordBySmsCodeQuery
-import ru.wb.go.network.api.auth.query.PasswordCheckQuery
 import ru.wb.go.network.api.auth.query.RefreshTokenQuery
-import ru.wb.go.network.api.auth.response.CheckExistPhoneResponse
-import ru.wb.go.network.api.auth.response.RemainingAttemptsResponse
 import ru.wb.go.network.api.auth.response.StatisticsResponse
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
@@ -33,7 +29,7 @@ class AuthRemoteRepositoryImpl(
     override fun couriersExistAndSavePhone(phone: String): Completable {
         return authApi.couriersAuth(tokenManager.apiVersion(), phone)
             .doOnSuccess { userManager.savePhone(phone) }
-            .toCompletable()
+            .ignoreElement()
     }
 
     override fun refreshToken(): Completable {
@@ -48,35 +44,6 @@ class AuthRemoteRepositoryImpl(
 
     private fun saveToken(tokenEntity: TokenEntity) {
         tokenManager.saveToken(tokenEntity)
-    }
-
-    override fun checkExistAndSavePhone(phone: String): Single<CheckExistPhoneResponse> {
-        return authApi.checkExistPhone(tokenManager.apiVersion(), phone)
-            .doOnSuccess { userManager.savePhone(phone) }
-    }
-
-    override fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse> {
-        return authApi.sendTmpPassword(tokenManager.apiVersion(), phone)
-    }
-
-    override fun changePasswordBySmsCode(
-        phone: String,
-        password: String,
-        tmpPassword: String,
-    ): Completable {
-        val requestBody = ChangePasswordBySmsCodeQuery(password, tmpPassword)
-        return authApi.changePasswordBySmsCode(tokenManager.apiVersion(), phone, requestBody)
-    }
-
-    override fun passwordCheck(
-        phone: String,
-        tmpPassword: String,
-    ): Completable {
-        return authApi.passwordCheck(
-            tokenManager.apiVersion(),
-            phone,
-            PasswordCheckQuery(tmpPassword)
-        )
     }
 
     override fun statistics(): Single<StatisticsResponse> {

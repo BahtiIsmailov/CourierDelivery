@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierwarehouses
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -81,6 +82,7 @@ class CourierWarehousesFragment : Fragment() {
         (activity as KeyboardListener).panMode()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {

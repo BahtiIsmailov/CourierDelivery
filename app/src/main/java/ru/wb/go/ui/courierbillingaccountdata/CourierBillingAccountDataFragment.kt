@@ -84,9 +84,6 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
     private fun initListener() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.toolbarLayout.noInternetImage.setOnClickListener {
-            (activity as NavToolbarListener).showNetworkDialog()
-        }
 
         viewModel.onFormChanges(changeFieldObservables())
         binding.removeAccount.setOnClickListener { viewModel.onRemoveAccountClick() }

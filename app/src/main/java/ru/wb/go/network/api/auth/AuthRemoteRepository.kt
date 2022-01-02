@@ -3,8 +3,6 @@ package ru.wb.go.network.api.auth
 import io.reactivex.Completable
 import io.reactivex.Single
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
-import ru.wb.go.network.api.auth.response.CheckExistPhoneResponse
-import ru.wb.go.network.api.auth.response.RemainingAttemptsResponse
 import ru.wb.go.network.api.auth.response.StatisticsResponse
 
 interface AuthRemoteRepository {
@@ -14,18 +12,6 @@ interface AuthRemoteRepository {
     fun couriersExistAndSavePhone(phone: String): Completable
 
     fun refreshToken(): Completable
-
-    @Deprecated("")
-    fun checkExistAndSavePhone(phone: String): Single<CheckExistPhoneResponse>
-
-    @Deprecated("")
-    fun sendTmpPassword(phone: String): Single<RemainingAttemptsResponse>
-
-    @Deprecated("")
-    fun passwordCheck(phone: String, tmpPassword: String): Completable
-
-    @Deprecated("")
-    fun changePasswordBySmsCode(phone: String, password: String, tmpPassword: String): Completable
 
     fun statistics(): Single<StatisticsResponse>
 

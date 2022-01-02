@@ -24,7 +24,6 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -59,9 +58,6 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             findNavController().popBackStack()
         }
 
-        binding.toolbarLayout.noInternetImage.setOnClickListener {
-            (activity as NavToolbarListener).showNetworkDialog()
-        }
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
         binding.repeatSms.setOnClickListener { viewModel.onRepeatPassword() }
     }

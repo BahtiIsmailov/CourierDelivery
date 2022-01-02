@@ -8,10 +8,7 @@ class CourierWarehousesResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
     fun getEmptyList() =
-        context.getString(R.string.courier_warehouse_dialog_empty_list)
-
-    fun getSearchEmpty() =
-        context.getString(R.string.courier_warehouse_search_empty)
+        context.getString(R.string.courier_warehouse_empty_list)
 
     fun getDialogEmptyTitle() =
         context.getString(R.string.courier_warehouse_dialog_empty_title)

@@ -90,9 +90,7 @@ class CourierBillingAccountSelectorFragment :
             hideKeyboard()
             findNavController().popBackStack()
         }
-        binding.toolbarLayout.noInternetImage.setOnClickListener {
-            (activity as NavToolbarListener).showNetworkDialog()
-        }
+
         viewModel.onFormChanges(changeFieldObservables())
         binding.spinnerAccountDrop.setOnClickListener {
             binding.spinnerAccount.performClick()

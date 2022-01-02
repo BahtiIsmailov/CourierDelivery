@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.mvvm.BaseMessageResourceProvider
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
@@ -23,7 +24,7 @@ class UserFormViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
-    private val resourceProvider: CourierDataResourceProvider,
+    private val resourceProvider: BaseMessageResourceProvider,
 
     ) : NetworkViewModel(compositeDisposable, metric) {
 

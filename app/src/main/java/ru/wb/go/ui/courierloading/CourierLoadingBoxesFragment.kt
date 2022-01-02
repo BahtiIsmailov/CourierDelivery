@@ -134,9 +134,6 @@ class CourierLoadingBoxesFragment : Fragment() {
         binding.toolbarLayout.back.setOnClickListener {
             findNavController().popBackStack()
         }
-        binding.toolbarLayout.noInternetImage.setOnClickListener {
-            (activity as NavToolbarListener).showNetworkDialog()
-        }
         binding.remove.setOnClickListener { viewModel.onRemoveClick() }
     }
 

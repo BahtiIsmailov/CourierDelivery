@@ -6,10 +6,6 @@ sealed class CourierUnloadingScanNavAction {
 
     object NavigateToBoxes : CourierUnloadingScanNavAction()
 
-    data class  NavigateToConfirmDialog(
-        val title: String,
-        val message: String,
-    ) : CourierUnloadingScanNavAction()
 
     object NavigateToIntransit : CourierUnloadingScanNavAction()
 

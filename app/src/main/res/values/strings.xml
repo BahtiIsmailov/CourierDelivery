@@ -4,14 +4,14 @@
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_billing">Баланс</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
-    <string name="app_nav_update_app">Проверить обновления</string>
+    <string name="app_nav_update_app">Проверить обновление</string>
     <string name="app_version">%s</string>
     <string name="app_update_version">Новая версия %s</string>
-    <string name="app_update_version_available">Доступна версия %s</string>
+    <string name="app_update_version_available">Доступна новая версия %s</string>
     <string name="app_update_version_status">Обновить</string>
     <string name="app_update_version_load_status">Загрузка…</string>
     <string name="app_update_version_error">Обновление не установлено. Повторите операцию позднее</string>
-    <string name="app_update_version_up_to_date">Версия актуальна</string>
+    <string name="app_update_version_up_to_date">Обновлений нет</string>
 
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
@@ -43,11 +43,6 @@
     <string name="splash_uri_play_market">market://details?id=%s</string>
     <string name="splash_uri_google">https://play.google.com/store/apps/details?id=%s</string>
 
-    <!--pin-->
-    <string name="input_sms_repeat_status_timer">Повторная отправка кода %s</string>
-    <string name="input_sms_repeat_no_timer">Отправить код повторно</string>
-    <string name="keyboard_view_forgot">Забыл\nкод</string>
-
     <!--debug panel-->
     <string name="debug_panel_caption">App Debug Console</string>
     <string name="debug_auto_substitution">Auto substitution</string>
@@ -64,7 +59,7 @@
     <string name="count_boxes">%d кор.</string>
     <string name="delivery">Рейс №%s</string>
 
-    <string name="inet_text">Наличие интернета: </string>
+    <string name="inet_text">Состояние интернета: </string>
     <string name="inet_ok">Есть</string>
     <string name="inet_no">Нет</string>
 
@@ -99,25 +94,6 @@
     <string name="auth_number_phone_phone_attempt">Осталось попыток: %1$s</string>
     <string name="auth_number_phone_phone_next">Далее</string>
     <string name="auth_number_phone_phone_default">+7</string>
-
-    <string name="auth_input_password_toolbar_label">Вход</string>
-    <string name="auth_input_password_hint_password">Введите пароль</string>
-    <string name="auth_input_password_remember_password"><u>Забыли пароль?</u></string>
-    <string name="auth_input_password_input">Войти</string>
-    <string name="auth_input_password_not_found">Неверный пароль</string>
-
-    <string name="auth_temporary_toolbar_label">Временный пароль</string>
-    <string name="auth_temporary_password_title">На номер %1$s выслан временный пароль</string>
-    <string name="auth_temporary_hint_password">Временный пароль</string>
-    <string name="auth_temporary_code_attempt">Осталось попыток: %1$s</string>
-    <string name="auth_temporary_send_password_again">Выслать пароль повторно: %1$s сек.</string>
-    <string name="auth_temporary_repeat_code"><u>Выслать пароль повторно</u></string>
-    <string name="auth_temporary_password_incorrect">Неверный пароль</string>
-
-    <string name="auth_create_password_toolbar_label">Придумайте пароль</string>
-    <string name="auth_create_password_hint">Мой пароль</string>
-    <string name="auth_create_password_title">Этот пароль будет использоваться при последующих авторизациях</string>
-    <string name="auth_create_password_input">Сохранить и войти</string>
 
     <string name="auth_check_sms_toolbar_label">Вход</string>
     <string name="auth_check_sms_title">На номер %1$s выслано СМС с кодом</string>
@@ -218,7 +194,6 @@
     <string name="courier_warehouse_dialog_title_error">Склады</string>
     <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
     <string name="courier_warehouse_dialog_positive_button_error">OK</string>
-    <string name="courier_warehouse_dialog_empty_list">Список заданий будет отображён в 09:00</string>
     <string name="courier_warehouse_search_empty">Ничего не найдено</string>
 
     <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>
@@ -501,7 +476,6 @@
     <string name="courier_start_delivery_count">%1$d шт.</string>
 
     <string name="courier_billing_title">Ваш баланс</string>
-    <string name="support_empty_ticket_list">Список заявок пуст\nобновите экран или\nсоздайте новую заявку</string>
     <string name="courier_billing_date_and_time">&#160;• %1$s</string>
     <string name="courier_billing_empty_list">Транзакций нет</string>
     <string name="courier_billing_positive_amount">+ %1$s ₽</string>

@@ -8,13 +8,6 @@ import kotlin.math.abs
 class CourierOrderDetailsResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getBoxPositiveButton() =
-        context.getString(R.string.courier_warehouse_dialog_positive_button_error)
-
-    fun getEmptyList() =
-        context.getString(R.string.courier_warehouse_dialog_empty_list)
-
-
     fun getOrder(id: Int): String {
         return context.getString(R.string.courier_orders_details_order, id)
     }
@@ -36,12 +29,6 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
         val v = context.resources.getQuantityString(R.plurals.volume, abs(volume), volume)
         return context.getString(R.string.courier_orders_count, boxCount, v)
     }
-
-    fun getConfirmDialogTitle() =
-        context.getString(R.string.courier_orders_details_dialog_title)
-
-    fun getConfirmDialogMessage(arriveFor: Int, volume: Int) =
-        context.getString(R.string.courier_orders_details_dialog_message, arriveFor, volume)
 
     fun getOfficeMapIcon() = R.drawable.ic_unload_office_map_empty
 

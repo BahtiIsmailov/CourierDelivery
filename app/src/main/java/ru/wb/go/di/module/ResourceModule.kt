@@ -9,7 +9,6 @@ import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorRe
 import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteResourceProvider
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
-import ru.wb.go.ui.courierdata.CourierDataResourceProvider
 import ru.wb.go.ui.courierexpects.CourierExpectsResourceProvider
 import ru.wb.go.ui.courierintransit.CourierIntransitResourceProvider
 import ru.wb.go.ui.courierloader.CourierLoaderResourceProvider
@@ -29,10 +28,6 @@ val resourceModule = module {
 
     fun provideAppResourceProvider(application: Application): AppResourceProvider {
         return AppResourceProvider(application)
-    }
-
-    fun provideUserDataResourceProvider(application: Application): CourierDataResourceProvider {
-        return CourierDataResourceProvider(application)
     }
 
     fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CourierExpectsResourceProvider {
@@ -117,7 +112,6 @@ val resourceModule = module {
     }
 
     single { provideAppResourceProvider(get()) }
-    single { provideUserDataResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
     single { provideCourierVersionControlResourceProvider(get()) }
     single { provideCourierOrderDetailsResourceProvider(get()) }

@@ -390,8 +390,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     private fun initView() {
-//        val toolbar: Toolbar = findViewById(R.id.toolbar)
-//        networkIcon = toolbar.findViewById(R.id.no_internet_image)
+        //TODO Зачем это здесь?
         binding.layoutHost.toolbarLayout.noInternetImage.setOnClickListener { showNetworkDialog() }
     }
 
@@ -415,11 +414,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         val toolbarLayout = findViewById<RelativeLayout>(R.id.toolbar_layout)
         toolbarLayout.visibility = VISIBLE
     }
-
-//    override fun showToolbarSearch() {
-//        val toolbar: Toolbar = findViewById(R.id.toolbar)
-//        toolbar.visibility = VISIBLE
-//    }
 
     override fun showNetworkDialog() {
         DialogInfoFragment.newInstance(

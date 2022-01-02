@@ -140,7 +140,6 @@ class KeyboardNumericView : RelativeLayout {
         leftButtonMode = newMode
         when (newMode) {
             LeftButtonMode.NONE -> invalidateLeftNoneMode()
-            LeftButtonMode.FORGET -> invalidateLeftForgetMode()
         }
     }
 
@@ -155,11 +154,6 @@ class KeyboardNumericView : RelativeLayout {
 
     private fun invalidateLeftNoneMode() {
         binding.buttonBottomLeft.visibility = GONE
-    }
-
-    private fun invalidateLeftForgetMode() {
-        binding.buttonBottomLeft.setText(R.string.keyboard_view_forgot)
-        binding.buttonBottomLeft.visibility = VISIBLE
     }
 
     private fun invalidateRightNoneMode() {
@@ -197,7 +191,7 @@ class KeyboardNumericView : RelativeLayout {
     }
 
     enum class LeftButtonMode {
-        NONE, FORGET
+        NONE,
     }
 
     enum class RightButtonMode {

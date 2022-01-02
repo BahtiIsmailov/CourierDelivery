@@ -29,32 +29,6 @@ interface AuthApi {
         @Body refreshTokenQuery: RefreshTokenQuery
     ): Single<AuthResponse>
 
-    @GET("{version}/auth/{phone}")
-    fun checkExistPhone(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("phone") phone: String,
-    ): Single<CheckExistPhoneResponse>
-
-    @GET("{version}/auth/{phone}/password")
-    fun sendTmpPassword(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("phone") phone: String,
-    ): Single<RemainingAttemptsResponse>
-
-    @PUT("{version}/auth/{phone}/password")
-    fun changePasswordBySmsCode(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("phone") phone: String,
-        @Body changePasswordBySmsCodeQuery: ChangePasswordBySmsCodeQuery,
-    ): Completable
-
-    @POST("{version}/auth/{phone}/password/check")
-    fun passwordCheck(
-        @Path(value = "version", encoded = true) version: String,
-        @Path("phone") phone: String,
-        @Body passwordCheckQuery: PasswordCheckQuery,
-    ): Completable
-
     @GET("{version}/statistics")
     fun statistics(
         @Path(value = "version", encoded = true) version: String,

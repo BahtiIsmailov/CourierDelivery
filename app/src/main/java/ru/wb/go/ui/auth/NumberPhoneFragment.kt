@@ -67,10 +67,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
     private fun initListeners() {
 
-        binding.toolbarLayout.noInternetImage.setOnClickListener {
-            (activity as NavToolbarListener).showNetworkDialog()
-        }
-
         binding.loginLayout.setOnLongClickListener {
             viewModel.onLongClick()
             true
