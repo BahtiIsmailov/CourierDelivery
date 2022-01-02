@@ -18,8 +18,7 @@ class KeyboardNumericView : RelativeLayout {
     private var _binding: KeyboardNumericLayoutBinding? = null
     private val binding get() = _binding!!
 
-    protected var numberButtons: List<KeyboardButtonView>? = null
-    private var callbackListener: OnKeyboardCallbackListener? = null
+    private var numberButtons: List<KeyboardButtonView>? = null
     private var leftButtonMode = LeftButtonMode.NONE
     private var rightButtonMode = RightButtonMode.DELETE
 
@@ -137,7 +136,7 @@ class KeyboardNumericView : RelativeLayout {
         }
     }
 
-    fun setLeftButtonMode(newMode: LeftButtonMode) {
+    private fun setLeftButtonMode(newMode: LeftButtonMode) {
         leftButtonMode = newMode
         when (newMode) {
             LeftButtonMode.NONE -> invalidateLeftNoneMode()
@@ -145,7 +144,7 @@ class KeyboardNumericView : RelativeLayout {
         }
     }
 
-    fun setRightButtonMode(newMode: RightButtonMode) {
+    private fun setRightButtonMode(newMode: RightButtonMode) {
         rightButtonMode = newMode
         when (newMode) {
             RightButtonMode.NONE -> invalidateRightNoneMode()
@@ -175,10 +174,6 @@ class KeyboardNumericView : RelativeLayout {
     private fun invalidateRightDeleteMode() {
         binding.buttonBottomRight.setImageResource(R.drawable.ic_keyboard_backspace_inactive)
         binding.buttonBottomRight.visibility = VISIBLE
-    }
-
-    fun setCallbackListener(callbackListener: OnKeyboardCallbackListener?) {
-        this.callbackListener = callbackListener
     }
 
     fun lock() {
