@@ -67,7 +67,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         initToolbar()
         initNavController()
         initObserver()
-        initView()
         initListener()
     }
 
@@ -358,20 +357,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             requestPermissionExtStorage()
         }
 
-//        binding.layoutHost.toolbarLayout.search.setOnQueryTextListener(object :
-//            SearchView.OnQueryTextListener {
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                viewModel.onSearchChange(newText)
-//                return false
-//            }
-//
-//            override fun onQueryTextSubmit(query: String): Boolean {
-//                viewModel.onSearchChange(query)
-//                return false
-//            }
-//        })
-//        binding.layoutHost.toolbarLayout.search.setBackgroundResource(R.drawable.rounded_search_layout)
-
         binding.drawerLayout.addDrawerListener(object : DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
             }
@@ -387,11 +372,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             }
         })
 
-    }
-
-    private fun initView() {
-        //TODO Зачем это здесь?
-        binding.layoutHost.toolbarLayout.noInternetImage.setOnClickListener { showNetworkDialog() }
     }
 
     override fun onSupportNavigateUp(): Boolean {
