@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
@@ -23,6 +24,9 @@ import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.VIBRATE_SCAN
+import ru.wb.go.utils.hasPermission
+import ru.wb.go.utils.vibrateOnAction
 
 
 open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
@@ -151,27 +155,10 @@ open class CourierScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         }
     }
 
-    private fun vibrate() {
-        val vibrator = getSystemService(requireContext(), Vibrator::class.java) as Vibrator
-        vibrator.let {
-            if (Build.VERSION.SDK_INT >= 26) {
-                it.vibrate(
-                    VibrationEffect.createOneShot(
-                        VIBRATE_MS,
-                        VibrationEffect.DEFAULT_AMPLITUDE
-                    )
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                it.vibrate(VIBRATE_MS)
-            }
-        }
-    }
-
     override fun handleResult(rawResult: Result?) {
         val barcode = rawResult?.text ?: return
         scanResult(barcode)
-        vibrate()
+        vibrateOnAction(requireContext(), VIBRATE_SCAN)
         holdScanner()
     }
 

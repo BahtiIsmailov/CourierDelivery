@@ -539,5 +539,6 @@
 
     <string name="billing_complete_title">Заявка на вывод %1$d ₽\nсоздана</string>
     <string name="billing_complete_description">Обработка заявки зависит от вашего банка и может занимать до 3-х дней</string>
+    <string name="enter_phone_title">Введите номер телефона</string>
 
 </resources>

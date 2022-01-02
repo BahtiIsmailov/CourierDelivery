@@ -29,8 +29,8 @@ import org.osmdroid.views.overlay.Marker
 import ru.wb.go.BuildConfig
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
-import ru.wb.go.ui.scanner.hasPermissions
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
