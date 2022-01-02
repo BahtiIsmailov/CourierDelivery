@@ -9,6 +9,8 @@ import android.widget.RelativeLayout
 import io.reactivex.subjects.PublishSubject
 import ru.wb.go.R
 import ru.wb.go.databinding.KeyboardNumericLayoutBinding
+import ru.wb.go.utils.VIBRATE_CLICK
+import ru.wb.go.utils.vibrateOnAction
 import java.util.*
 
 class KeyboardNumericView : RelativeLayout {
@@ -46,12 +48,6 @@ class KeyboardNumericView : RelativeLayout {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-//        val width = measuredWidth
-//        val height = measuredWidth
-//        setMeasuredDimension(width, height)
-
-//        val desiredWidth = 100
-//        val desiredHeight = 100
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
@@ -85,6 +81,7 @@ class KeyboardNumericView : RelativeLayout {
                 val keyboardButtonView = v as KeyboardButtonView
                 val action =
                     ButtonAction.valueOf(keyboardButtonView.customValue)
+                vibrateOnAction(context, VIBRATE_CLICK)
                 observableListener.onNext(action)
                 keyboardButtonView.startAnimation()
             }
@@ -94,6 +91,7 @@ class KeyboardNumericView : RelativeLayout {
             true
         }
         binding.buttonBottomRight.setOnClickListener {
+            vibrateOnAction(context, VIBRATE_CLICK)
             observableListener.onNext(
                 ButtonAction.BUTTON_DELETE
             )
@@ -132,14 +130,6 @@ class KeyboardNumericView : RelativeLayout {
         setLeftButtonMode(leftButtonMode)
         setRightButtonMode(rightButtonMode)
     }
-
-//    private fun onNumberClicked(view: View) {
-//        val keyboardButtonView = view as KeyboardButtonView
-//        if (callbackListener != null) {
-//            callbackListener!!.onNumberClicked(keyboardButtonView.customValue)
-//            keyboardButtonView.startAnimation()
-//        }
-//    }
 
     private fun setColor(color: Int) {
         for (button in numberButtons!!) {

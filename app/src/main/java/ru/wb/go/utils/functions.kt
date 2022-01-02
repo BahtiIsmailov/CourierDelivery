@@ -34,7 +34,7 @@ fun Fragment.hasPermissions(vararg permissions: String): Boolean =
     permissions.all(::hasPermission)
 
 const val VIBRATE_SCAN = 100L
-const val VIBRATE_CLICK = 200L
+const val VIBRATE_CLICK = 100L
 
 fun Fragment.hasPermission(permission: String): Boolean {
     return ActivityCompat.checkSelfPermission(
