@@ -39,10 +39,6 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return worker.load(AppPreffsKeys.USER_INN_KEY, "")
     }
 
-    override fun userInn(inn: String) {
-        worker.save(AppPreffsKeys.USER_INN_KEY, inn)
-    }
-
     override fun userCompany(): String {
         //TODO нет компании у курьеров!
         return ""

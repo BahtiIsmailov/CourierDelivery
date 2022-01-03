@@ -12,7 +12,7 @@ import ru.wb.go.R
 open class CourierBillingAccountSelectorAdapter(
     context: Context,
     val items: List<CourierBillingAccountSelectorAdapterItem>,
-    val callback: OnCourierBillingAccountSelectorCallback
+    private val callback: OnCourierBillingAccountSelectorCallback
 ) : ArrayAdapter<CourierBillingAccountSelectorAdapterItem>(context, ID_LAYOUT, items) {
 
     companion object {
@@ -74,14 +74,14 @@ open class CourierBillingAccountSelectorAdapter(
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
+        var newConvertView = convertView
         val holder: ViewHolder
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(ID_LAYOUT, null, false)
-            holder = ViewHolder(convertView)
-            convertView.tag = holder
+        if (newConvertView == null) {
+            newConvertView = LayoutInflater.from(context).inflate(ID_LAYOUT, null, false)
+            holder = ViewHolder(newConvertView)
+            newConvertView.tag = holder
         } else {
-            holder = convertView.tag as ViewHolder
+            holder = newConvertView.tag as ViewHolder
         }
         when (val item = items[position]) {
             is CourierBillingAccountSelectorAdapterItem.Edit -> {
@@ -103,7 +103,7 @@ open class CourierBillingAccountSelectorAdapter(
                 holder.imageAdd.setOnClickListener { callback.onAddClick() }
             }
         }
-        return convertView!!
+        return newConvertView!!
     }
 
     override fun getItem(position: Int): CourierBillingAccountSelectorAdapterItem {

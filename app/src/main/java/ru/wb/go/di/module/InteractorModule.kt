@@ -67,324 +67,318 @@ import ru.wb.go.utils.time.TimeFormatter
 val interactorModule = module {
 
     fun provideNumberPhoneInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            repository: AuthRemoteRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        repository: AuthRemoteRepository,
     ): NumberPhoneInteractor {
         return NumberPhoneInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                repository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            repository
         )
     }
 
     fun provideUserFormInteractorImpl(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
     ): CourierDataInteractor {
         return CourierDataInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository
         )
     }
 
     fun provideCourierBillingAccountDataInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
     ): CourierBillingAccountDataInteractor {
         return CourierBillingAccountDataInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                courierLocalRepository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository
         )
     }
 
     fun provideCourierBillingAccountSelectorInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository,
-            deviceManager: DeviceManager,
-            userManager: UserManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        deviceManager: DeviceManager,
+        userManager: UserManager,
+        tokenManager: TokenManager
     ): CourierBillingAccountSelectorInteractor {
         return CourierBillingAccountSelectorInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                courierLocalRepository,
-                deviceManager,
-                userManager
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            deviceManager,
+            userManager,
+            tokenManager
         )
     }
 
     fun provideCouriersCompleteRegistrationInteractorImpl(
-            rxSchedulerFactory: RxSchedulerFactory,
-            refreshTokenRepository: RefreshTokenRepository,
-            tokenManager: TokenManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        refreshTokenRepository: RefreshTokenRepository,
+        tokenManager: TokenManager
     ): CourierExpectsInteractor {
         return CourierExpectsInteractorImpl(
-                rxSchedulerFactory,
-                refreshTokenRepository,
-                tokenManager
+            rxSchedulerFactory,
+            refreshTokenRepository,
+            tokenManager
         )
     }
 
     fun provideCheckSmsInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            repository: AuthRemoteRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        repository: AuthRemoteRepository,
     ): CheckSmsInteractor {
         return CheckSmsInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                repository,
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            repository,
         )
     }
 
     fun provideNavigationInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            authRemoteRepository: AuthRemoteRepository,
-            appSharedRepository: AppSharedRepository,
-            deviceManager: DeviceManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        authRemoteRepository: AuthRemoteRepository,
+        appSharedRepository: AppSharedRepository,
+        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                authRemoteRepository,
-                appSharedRepository,
-                deviceManager
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            authRemoteRepository,
+            appSharedRepository,
+            deviceManager
         )
     }
 
     fun provideScannerInteractor(
-            rxSchedulerFactory: RxSchedulerFactory, scannerRepository: ScannerRepository,
+        rxSchedulerFactory: RxSchedulerFactory, scannerRepository: ScannerRepository,
     ): ScannerInteractor {
         return ScannerInteractorImpl(rxSchedulerFactory, scannerRepository)
     }
 
     fun provideCourierWarehouseInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            appRemoteRepository: AppRemoteRepository,
-            appSharedRepository: AppSharedRepository,
-            courierLocalRepository: CourierLocalRepository,
-            courierMapRepository: CourierMapRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        appSharedRepository: AppSharedRepository,
+        courierLocalRepository: CourierLocalRepository,
+        courierMapRepository: CourierMapRepository
     ): CourierWarehouseInteractor {
         return CourierWarehouseInteractorImpl(
-                rxSchedulerFactory,
-                appRemoteRepository,
-                appSharedRepository,
-                courierLocalRepository,
-                courierMapRepository
+            rxSchedulerFactory,
+            appRemoteRepository,
+            appSharedRepository,
+            courierLocalRepository,
+            courierMapRepository
         )
     }
 
     fun provideCourierOrderInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository
     ): CourierOrderInteractor {
         return CourierOrderInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                courierLocalRepository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            courierLocalRepository
         )
     }
 
     fun provideCourierOrderDetailsInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            courierLocalRepository: CourierLocalRepository,
-            userManager: UserManager,
-            courierMapRepository: CourierMapRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        courierLocalRepository: CourierLocalRepository,
+        userManager: UserManager,
+        courierMapRepository: CourierMapRepository
     ): CourierOrderDetailsInteractor {
         return CourierOrderDetailsInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                courierLocalRepository,
-                userManager,
-                courierMapRepository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            courierLocalRepository,
+            userManager,
+            courierMapRepository
         )
     }
 
     fun provideCourierCarNumberInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            appRemoteRepository: AppRemoteRepository,
-            userManager: UserManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        userManager: UserManager
     ): CourierCarNumberInteractor {
         return CourierCarNumberInteractorImpl(
-                rxSchedulerFactory,
-                appRemoteRepository,
-                userManager
+            rxSchedulerFactory,
+            appRemoteRepository,
+            userManager
         )
     }
 
     fun provideCourierOrderTimerInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository,
-            taskTimerRepository: TaskTimerRepository,
-            timeFormatter: TimeFormatter,
-            userManager: UserManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        taskTimerRepository: TaskTimerRepository,
+        timeFormatter: TimeFormatter,
+        userManager: UserManager
     ): CourierOrderTimerInteractor {
         return CourierOrderTimerInteractorImpl(
-                rxSchedulerFactory,
-                appRemoteRepository,
-                courierLocalRepository,
-                taskTimerRepository,
-                timeFormatter,
-                userManager
+            rxSchedulerFactory,
+            appRemoteRepository,
+            courierLocalRepository,
+            taskTimerRepository,
+            timeFormatter,
+            userManager
         )
     }
 
     fun provideCourierOrderConfirmInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository,
-            userManager: UserManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        userManager: UserManager
     ): CourierOrderConfirmInteractor {
         return CourierOrderConfirmInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                courierLocalRepository,
-                userManager
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            courierLocalRepository,
+            userManager
         )
     }
 
     fun provideCourierScannerLoadingInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            scannerRepository: ScannerRepository,
-            timeManager: TimeManager,
-            courierLocalRepository: CourierLocalRepository,
-            taskTimerRepository: TaskTimerRepository,
-            userManager: UserManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        scannerRepository: ScannerRepository,
+        timeManager: TimeManager,
+        courierLocalRepository: CourierLocalRepository,
+        taskTimerRepository: TaskTimerRepository,
+        userManager: UserManager
     ): CourierLoadingInteractor {
         return CourierLoadingInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                scannerRepository,
-                timeManager,
-                courierLocalRepository,
-                taskTimerRepository,
-                userManager
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            scannerRepository,
+            timeManager,
+            courierLocalRepository,
+            taskTimerRepository,
+            userManager
         )
     }
 
     fun provideCourierUnloadingInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            scannerRepository: ScannerRepository,
-            timeManager: TimeManager,
-            courierLocalRepository: CourierLocalRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        scannerRepository: ScannerRepository,
+        timeManager: TimeManager,
+        courierLocalRepository: CourierLocalRepository,
     ): CourierUnloadingInteractor {
         return CourierUnloadingInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                scannerRepository,
-                timeManager,
-                courierLocalRepository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            scannerRepository,
+            timeManager,
+            courierLocalRepository
         )
     }
 
     fun provideCourierIntransitInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository,
-            scannerRepository: ScannerRepository,
-            intransitTimeRepository: IntransitTimeRepository,
-            timeManager: TimeManager,
-            timeFormatter: TimeFormatter,
-            courierMapRepository: CourierMapRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
+        courierLocalRepository: CourierLocalRepository,
+        scannerRepository: ScannerRepository,
+        intransitTimeRepository: IntransitTimeRepository,
+        timeManager: TimeManager,
+        timeFormatter: TimeFormatter,
+        courierMapRepository: CourierMapRepository
     ): CourierIntransitInteractor {
         return CourierIntransitInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                courierLocalRepository,
-                scannerRepository,
-                intransitTimeRepository,
-                timeManager,
-                timeFormatter,
-                courierMapRepository
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository,
+            courierLocalRepository,
+            scannerRepository,
+            intransitTimeRepository,
+            timeManager,
+            timeFormatter,
+            courierMapRepository
         )
     }
 
     fun provideCourierMapInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            courierMapRepository: CourierMapRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierMapRepository: CourierMapRepository,
     ): CourierMapInteractor {
         return CourierMapInteractorImpl(rxSchedulerFactory, courierMapRepository)
     }
 
     fun provideCourierBillingInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            networkMonitorRepository: NetworkMonitorRepository,
-            appRemoteRepository: AppRemoteRepository,
-            courierLocalRepository: CourierLocalRepository,
-            tokenManager: TokenManager
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository
     ): CourierBillingInteractor {
         return CourierBillingInteractorImpl(
-                rxSchedulerFactory,
-                networkMonitorRepository,
-                appRemoteRepository,
-                courierLocalRepository,
-                tokenManager
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            appRemoteRepository
         )
     }
 
     fun provideCourierCompleteDeliveryInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            courierLocalRepository: CourierLocalRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
     ): CourierCompleteDeliveryInteractor {
         return CourierCompleteDeliveryInteractorImpl(
-                rxSchedulerFactory,
-                courierLocalRepository,
+            rxSchedulerFactory,
+            courierLocalRepository,
         )
     }
 
     fun provideCourierVersionControlInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            courierLocalRepository: CourierLocalRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
     ): CourierVersionControlInteractor {
         return CourierVersionControlInteractorImpl(
-                rxSchedulerFactory,
-                courierLocalRepository,
+            rxSchedulerFactory,
+            courierLocalRepository,
         )
     }
 
     fun provideCourierStartDeliveryInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            courierLocalRepository: CourierLocalRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
     ): CourierStartDeliveryInteractor {
         return CourierStartDeliveryInteractorImpl(
-                rxSchedulerFactory,
-                courierLocalRepository,
+            rxSchedulerFactory,
+            courierLocalRepository,
         )
     }
 
 
     fun provideCourierBillingCompleteInteractor(
-            rxSchedulerFactory: RxSchedulerFactory,
-            courierLocalRepository: CourierLocalRepository
+        rxSchedulerFactory: RxSchedulerFactory,
+        courierLocalRepository: CourierLocalRepository
     ): CourierBillingCompleteInteractor {
         return CourierBillingCompleteInteractorImpl(
-                rxSchedulerFactory,
-                courierLocalRepository,
+            rxSchedulerFactory,
+            courierLocalRepository,
         )
     }
 
@@ -395,7 +389,7 @@ val interactorModule = module {
     single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
 
-    single { provideCourierBillingAccountDataInteractor(get(), get(), get(), get()) }
+    single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
     single { provideCourierBillingAccountSelectorInteractor(get(), get(), get(), get(), get(), get()) }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
@@ -407,44 +401,44 @@ val interactorModule = module {
     single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
         )
     }
     factory {
         provideCourierUnloadingInteractor(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
         )
     }
     factory {
         provideCourierIntransitInteractor(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
         )
     }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
     factory { provideCourierMapInteractor(get(), get()) }
-    factory { provideCourierBillingInteractor(get(), get(), get(), get(), get()) }
+    factory { provideCourierBillingInteractor(get(), get(), get()) }
     factory { provideCourierBillingCompleteInteractor(get(), get()) }
 
 }

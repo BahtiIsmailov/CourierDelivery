@@ -8,6 +8,6 @@ sealed class CourierBillingAccountDataInitUIState {
         val userInn: String
     ) : CourierBillingAccountDataInitUIState()
 
-    data class Edit(val field: CourierBillingAccountEditableEntity, val isRemovable: Boolean) :
+    data class Edit(val field: CourierBillingAccountEditableEntity) :
         CourierBillingAccountDataInitUIState()
 }

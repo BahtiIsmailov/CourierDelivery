@@ -414,6 +414,11 @@
             android:name="courier_billing_data_amount_key"
             app:argType="ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_courierBillingAccountDataFragment_to_courierBillingAccountSelectorFragment"
+            app:destination="@id/courierBillingAccountSelectorFragment"
+            app:popUpTo="@id/courierBalanceFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
@@ -433,7 +438,8 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+             />
 
         <action
             android:id="@+id/action_courierBillingAccountSelectorFragment_to_courierBalanceFragment"

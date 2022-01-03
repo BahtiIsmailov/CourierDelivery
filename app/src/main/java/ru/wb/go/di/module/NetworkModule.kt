@@ -175,14 +175,12 @@ val networkModule = module {
         certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        appMockResponseInterceptor: AppMockResponseInterceptor
     ): OkHttpClient {
         LogUtils { logDebugApp("create app http client") }
         return OkHttpFactory.createAppOkHttpClient(
             certificateStore,
             refreshResponseInterceptor,
             httpLoggingInterceptor,
-            appMockResponseInterceptor
         )
     }
 
@@ -279,7 +277,7 @@ val networkModule = module {
         createTokenRefreshOkHttpClient()
     }
 
-    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get(), get()) }
+    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get() ) }
 
     single { provideGsonConverterFactory() }
     single { provideGson() }

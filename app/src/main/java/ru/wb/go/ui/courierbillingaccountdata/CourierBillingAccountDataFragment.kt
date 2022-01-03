@@ -25,14 +25,15 @@ import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierBillingDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.TextChangesInterface
+import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavToolbarListener
@@ -54,15 +55,15 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
     private val viewModel by viewModel<CourierBillingAccountDataViewModel> {
         parametersOf(
-                requireArguments().getParcelable<CourierBillingAccountDataAmountParameters>(
-                        COURIER_BILLING_DATA_AMOUNT_KEY
-                )
+            requireArguments().getParcelable<CourierBillingAccountDataAmountParameters>(
+                COURIER_BILLING_DATA_AMOUNT_KEY
+            )
         )
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = CourierBillingDataFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -71,6 +72,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        initFields()
         initListener()
         initInputMethod()
         initObservers()
@@ -82,55 +84,74 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         (activity as NavToolbarListener).hideToolbar()
     }
 
+    private fun initFields() {
+        val params = viewModel.getParams()
+        if (params.account == null) {
+            return
+        }
+        with(params.account) {
+            binding.userName.setText(userName)
+            binding.inn.setText(inn)
+            binding.account.setText(account)
+            binding.bik.setText(bic)
+            binding.bank.setText(bank)
+        }
+        if (params.billingAccounts.size > 1)
+            binding.removeAccountButton.visibility = VISIBLE
+        else
+            binding.removeAccountButton.visibility = GONE
+    }
+
     private fun initListener() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
 
         viewModel.onFormChanges(changeFieldObservables())
-        binding.removeAccount.setOnClickListener { viewModel.onRemoveAccountClick() }
-        binding.saveChangeAccount.setOnClickListener {
-            viewModel.onSaveChangeAccountClick(getCourierBillingAccountEntity())
-        }
+        binding.removeAccountButton.setOnClickListener { viewModel.onRemoveAccountClick() }
+
     }
 
     private fun changeFieldObservables(): ArrayList<Observable<CourierBillingAccountDataUIAction>> {
         val changeTextObservables = ArrayList<Observable<CourierBillingAccountDataUIAction>>()
 
         changeTextObservables.add(
-                createFieldChangesObserver().initListener(
-                        binding.accountLayout,
-                        binding.account,
-                        CourierBillingAccountDataQueryType.ACCOUNT
-                )
+            createFieldChangesObserver().initListener(
+                binding.accountLayout,
+                binding.account,
+                CourierBillingAccountDataQueryType.ACCOUNT
+            )
         )
 
         changeTextObservables.add(
-                createFieldChangesObserver().initListener(
-                        binding.bikLayout,
-                        binding.bik,
-                        CourierBillingAccountDataQueryType.BIK
-                )
+            createFieldChangesObserver().initListener(
+                binding.bikLayout,
+                binding.bik,
+                CourierBillingAccountDataQueryType.BIK
+            )
         )
 
-        changeTextObservables.add(createClickObserver().initListener(binding.save))
+        changeTextObservables.add(createClickObserver().initListener(binding.saveAccountButton))
 
         return changeTextObservables
     }
 
     private fun getFormUserData() = mutableListOf(
-            CourierAccountData(
-                    binding.account.text.toString(), CourierBillingAccountDataQueryType.ACCOUNT
-            ),
-            CourierAccountData(binding.bik.text.toString(), CourierBillingAccountDataQueryType.BIK)
+        CourierAccountData(
+            binding.account.text.toString(), CourierBillingAccountDataQueryType.ACCOUNT
+        ),
+        CourierAccountData(binding.bik.text.toString(), CourierBillingAccountDataQueryType.BIK)
     )
 
-    private fun getCourierBillingAccountEntity() = CourierBillingAccountEntity(
+    private fun getCourierBillingAccountEntity(): CourierBillingAccountEntity {
+        val bankEntity = viewModel.getBankEntity()!!
+        return CourierBillingAccountEntity(
             userName = binding.userName.text.toString(),
             inn = binding.inn.text.toString(),
             account = binding.account.text.toString(),
-            correspondentAccount = binding.corAccount.text.toString(),
-            bic = binding.bik.text.toString(),
-            bank = binding.bank.text.toString(),
-    )
+            correspondentAccount = bankEntity.correspondentAccount,
+            bic = bankEntity.bic,
+            bank = bankEntity.name,
+        )
+    }
 
     fun interface ClickEventInterface {
         fun initListener(view: View): Observable<CourierBillingAccountDataUIAction>
@@ -148,9 +169,9 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
     fun interface TextChangesInterface {
         fun initListener(
-                textInputLayout: TextInputLayout,
-                editText: EditText,
-                queryType: CourierBillingAccountDataQueryType
+            textInputLayout: TextInputLayout,
+            editText: EditText,
+            queryType: CourierBillingAccountDataQueryType
         ): Observable<CourierBillingAccountDataUIAction>
     }
 
@@ -158,23 +179,23 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         return TextChangesInterface { textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
-                    .map { it.toString() }
-                    .map { CourierBillingAccountDataUIAction.TextChange(it, queryType) }
+                .map { it.toString() }
+                .map { CourierBillingAccountDataUIAction.TextChange(it, queryType) }
             val focusChanges = editText.focusChanges()
-                    .map {
-                        CourierBillingAccountDataUIAction.FocusChange(
-                                editText.text.toString(),
-                                queryType,
-                                it
-                        )
-                    }
+                .map {
+                    CourierBillingAccountDataUIAction.FocusChange(
+                        editText.text.toString(),
+                        queryType,
+                        it
+                    )
+                }
             Observable.merge(textChanges, focusChanges).skip(2)
         }
     }
 
     private fun initInputMethod() {
         inputMethod =
-                requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
     private fun hideKeyboard() {
@@ -192,13 +213,10 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 is CourierBillingAccountDataInitUIState.Create -> {
                     binding.userName.setText(it.userName)
                     binding.inn.setText(it.userInn)
-                    binding.save.visibility = VISIBLE
-                    binding.editAccountLayout.visibility = GONE
+                    binding.removeAccountButton.visibility = GONE
                 }
                 is CourierBillingAccountDataInitUIState.Edit -> {
-                    binding.save.visibility = GONE
-                    binding.editAccountLayout.visibility = VISIBLE
-                    binding.removeAccount.visibility = if (it.isRemovable) VISIBLE else GONE
+                    binding.removeAccountButton.visibility = VISIBLE
                     with(it.field) {
                         binding.userName.setText(userName)
                         binding.inn.setText(inn)
@@ -220,7 +238,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 else -> R.drawable.ic_inet_failed
             }
             binding.toolbarLayout.noInternetImage.setImageDrawable(
-                    ContextCompat.getDrawable(requireContext(), ic)
+                ContextCompat.getDrawable(requireContext(), ic)
             )
         }
 
@@ -232,12 +250,12 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             when (state) {
                 is CourierBillingAccountDataUIState.Complete -> {
                     val textLayout =
-                            changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = getText(R.string.error_empty)
                 }
                 is CourierBillingAccountDataUIState.Error -> {
                     val textLayout =
-                            changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message//getText(R.string.error)
                 }
                 is CourierBillingAccountDataUIState.ErrorFocus -> {
@@ -248,7 +266,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                     }
                 }
                 CourierBillingAccountDataUIState.Next -> {
-                    viewModel.onSaveClick(getCourierBillingAccountEntity())
+                    viewModel.onSaveAccountClick(getCourierBillingAccountEntity())
                 }
             }
         }
@@ -261,45 +279,49 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         }
 
         viewModel.keyboardState.observe(viewLifecycleOwner) {
-            when (it) {
-                false -> hideKeyboard()
-            }
+            if (!it) hideKeyboard()
         }
 
         viewModel.bankFindState.observe(viewLifecycleOwner) {
             binding.bank.setText(it.name)
-            binding.corAccount.setText(it.corAccount)
         }
 
         viewModel.navigationEvent.observe(viewLifecycleOwner,
-                { state ->
-                    when (state) {
-                        is CourierBillingAccountDataNavAction.NavigateToAccountSelector ->
-                            findNavController().popBackStack()
-                        CourierBillingAccountDataNavAction.NavigateToBack ->
-                            findNavController().popBackStack()
-                    }
-                })
+            { state ->
+                when (state) {
+                    is CourierBillingAccountDataNavAction.NavigateToAccountSelector ->
+                        findNavController().navigate(
+                            CourierBillingAccountDataFragmentDirections
+                                .actionCourierBillingAccountDataFragmentToCourierBillingAccountSelectorFragment(
+                                    CourierBillingAccountSelectorAmountParameters(
+                                        state.balance
+                                    )
+                                )
+                        )
+                    CourierBillingAccountDataNavAction.NavigateToBack ->
+                        findNavController().popBackStack()
+                }
+            })
 
         viewModel.loaderState.observe(viewLifecycleOwner,
-                { state ->
-                    when (state) {
-                        CourierBillingAccountDataUILoaderState.Disable ->
-                            binding.save.setState(ProgressButtonMode.DISABLE)
-                        CourierBillingAccountDataUILoaderState.Enable ->
-                            binding.save.setState(ProgressButtonMode.ENABLE)
-                        CourierBillingAccountDataUILoaderState.Progress ->
-                            binding.save.setState(ProgressButtonMode.PROGRESS)
-                    }
-                })
+            { state ->
+                when (state) {
+                    CourierBillingAccountDataUILoaderState.Disable ->
+                        binding.saveAccountButton.setState(ProgressButtonMode.DISABLE)
+                    CourierBillingAccountDataUILoaderState.Enable ->
+                        binding.saveAccountButton.setState(ProgressButtonMode.ENABLE)
+                    CourierBillingAccountDataUILoaderState.Progress ->
+                        binding.saveAccountButton.setState(ProgressButtonMode.PROGRESS)
+                }
+            })
 
         viewModel.holderState.observe(viewLifecycleOwner,
-                { state ->
-                    when (state) {
-                        true -> binding.overlay.visibility = VISIBLE
-                        false -> binding.overlay.visibility = INVISIBLE
-                    }
-                })
+            { state ->
+                when (state) {
+                    true -> binding.overlay.visibility = VISIBLE
+                    false -> binding.overlay.visibility = INVISIBLE
+                }
+            })
 
     }
 
@@ -307,9 +329,8 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         binding.bikLayout.endIconMode = TextInputLayout.END_ICON_NONE
         binding.account.isEnabled = true
         binding.bik.isEnabled = true
-        binding.save.setState(ProgressButtonMode.ENABLE)
-        binding.removeAccount.isEnabled = true
-        binding.saveChangeAccount.setState(ProgressButtonMode.ENABLE)
+        binding.saveAccountButton.setState(ProgressButtonMode.ENABLE)
+        binding.removeAccountButton.isEnabled = true
     }
 
     private fun showProgressBic() {
@@ -319,9 +340,8 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         binding.bikLayout.endIconDrawable = endIcon
         binding.account.isEnabled = false
         binding.bik.isEnabled = false
-        binding.save.setState(ProgressButtonMode.DISABLE)
-        binding.removeAccount.isEnabled = false
-        binding.saveChangeAccount.setState(ProgressButtonMode.DISABLE)
+        binding.saveAccountButton.setState(ProgressButtonMode.DISABLE)
+        binding.removeAccountButton.isEnabled = false
     }
 
     private fun Context.getProgressBarDrawable(): Drawable {
@@ -347,10 +367,10 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 
     private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
         DialogInfoFragment.newInstance(
-                type = type,
-                title = title,
-                message = message,
-                positiveButtonName = positiveButtonName
+            type = type,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
@@ -359,13 +379,14 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
 data class CourierAccountData(val text: String, val type: CourierBillingAccountDataQueryType)
 
 data class ViewChanges(
-        val textLayout: TextInputLayout,
-        val text: EditText,
-        val type: CourierBillingAccountDataQueryType
+    val textLayout: TextInputLayout,
+    val text: EditText,
+    val type: CourierBillingAccountDataQueryType
 )
 
 @Parcelize
 data class CourierBillingAccountDataAmountParameters(
-        val account: String,
-        val amount: Int
+    val account: @RawValue CourierBillingAccountEntity?,
+    val billingAccounts: @RawValue List<CourierBillingAccountEntity>,
+    val balance: Int,
 ) : Parcelable

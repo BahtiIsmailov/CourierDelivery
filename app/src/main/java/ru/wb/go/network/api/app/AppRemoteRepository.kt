@@ -7,7 +7,7 @@ import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
-import ru.wb.go.network.api.app.entity.accounts.AccountsEntity
+import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
 
 interface AppRemoteRepository {
@@ -51,8 +51,7 @@ interface AppRemoteRepository {
 
     fun getBank(bic: String): Maybe<BankEntity>
 
-    fun getBankAccounts(): Single<AccountsEntity>
-
+    fun getBankAccounts(): Single<BankAccountsEntity>
     fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
 
     fun appVersion(): Single<String>

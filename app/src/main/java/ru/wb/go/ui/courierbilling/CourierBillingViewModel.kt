@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
+import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -12,6 +13,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
+import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -25,6 +27,7 @@ class CourierBillingViewModel(
     private val resourceProvider: CourierBillingResourceProvider,
     private val deviceManager: DeviceManager,
     private val userManager: UserManager,
+    private val interactorSelector: CourierBillingAccountSelectorInteractor
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private var balance = 0
@@ -162,29 +165,31 @@ class CourierBillingViewModel(
         initBalanceAndTransactions()
     }
 
-    fun onAccountClick() {
+    fun gotoBillingAccountsClick() {
         showProgress()
         addSubscription(
-            interactor.updateAccountsIsExist().subscribe(
-                { accountsComplete(it) },
-                { accountsError(it) })
+            interactorSelector
+                .getBillingAccounts()
+                .subscribe(
+                    { accountsComplete(it) },
+                    { accountsError(it) })
         )
     }
 
-    private fun accountsComplete(isAccountsExist: Boolean) {
-        _navigationState.value = if (isAccountsExist)
-            CourierBillingNavigationState.NavigateToAccountSelector(balance)
-        else CourierBillingNavigationState.NavigateToAccountCreate("", balance)
+    private fun accountsComplete(accounts:List<CourierBillingAccountEntity>) {
+        _navigationState.value = if (accounts.isNotEmpty())
+            CourierBillingNavigationState.NavigateToAccountSelector(balance, accounts)
+        else CourierBillingNavigationState.NavigateToAccountCreate(null, listOf(), balance)
         progressComplete()
     }
 
     private fun accountsError(throwable: Throwable) {
-//        _navigationState.value = CourierBillingNavigationState.NavigateToDialogInfo(
-//            DialogInfoStyle.ERROR.ordinal,
-//            resourceProvider.getGenericServiceTitleError(),
-//            throwable.toString(),
-//            resourceProvider.getGenericServiceButtonError()
-//        )
+        _navigationState.value = CourierBillingNavigationState.NavigateToDialogInfo(
+            DialogInfoStyle.ERROR.ordinal,
+            resourceProvider.getGenericServiceTitleError(),
+            throwable.toString(),
+            resourceProvider.getGenericServiceButtonError()
+        )
         _navigateToDialogInfo.value = messageError(throwable, resourceProvider)
         progressComplete()
     }

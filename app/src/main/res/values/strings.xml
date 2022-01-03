@@ -59,9 +59,9 @@
     <string name="count_boxes">%d кор.</string>
     <string name="delivery">Рейс №%s</string>
 
-    <string name="inet_text">Состояние интернета: </string>
+    <string name="inet_text">Интернет: </string>
     <string name="inet_ok">Есть</string>
-    <string name="inet_no">Нет</string>
+    <string name="inet_no">Отсутствует</string>
 
     <string name="accepted">Принял</string>
     <string name="return_box">Возврат</string>
@@ -485,7 +485,7 @@
     <string name="courier_billing_account_edit_title">Редактировать счет</string>
     <string name="courier_billing_account_save">Сохранить</string>
 
-    <string name="courier_billing_account_selector_title">Вывод средсв</string>
+    <string name="courier_billing_account_selector_title">Перевод</string>
     <string name="courier_billing_account_selector_balance">%1$s ₽</string>
     <string name="courier_billing_account_selector_format">%1$s ****%2$s</string>
     <string name="courier_billing_account_selector_short_format">%1$s… ••••%2$s</string>
@@ -514,5 +514,14 @@
     <string name="billing_complete_title">Заявка на вывод %1$d ₽\nсоздана</string>
     <string name="billing_complete_description">Обработка заявки зависит от вашего банка и может занимать до 3-х дней</string>
     <string name="enter_phone_title">Введите номер телефона</string>
+    <string name="balance_title">Баланс</string>
+    <string name="courier_account_number_title">Счет зачисления</string>
+    <string name="write_off_amount_hint">Сумма списания ₽</string>
+    <string name="payment_account_hint">Расчётный счет</string>
+    <string name="bank_bik_hint">БИК</string>
+    <string name="pay_bank_hint">Банк получателя</string>
+    <string name="bank_details_title">Банковские реквизиты</string>
+    <string name="recipient_data_title">Данные получателя</string>
+    <string name="save_title">Сохранить</string>
 
 </resources>

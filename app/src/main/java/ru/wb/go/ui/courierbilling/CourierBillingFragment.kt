@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierbilling
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -84,7 +85,7 @@ class CourierBillingFragment : Fragment() {
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.update.setOnClickListener { viewModel.onUpdateClick() }
-        binding.toAccount.setOnClickListener { viewModel.onAccountClick() }
+        binding.toAccount.setOnClickListener { viewModel.gotoBillingAccountsClick() }
     }
 
     private fun initStateObserve() {
@@ -130,7 +131,7 @@ class CourierBillingFragment : Fragment() {
                 }
                 is CourierBillingNavigationState.NavigateToAccountCreate -> findNavController().navigate(
                     CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountDataFragment(
-                        CourierBillingAccountDataAmountParameters(it.account, it.balance)
+                        CourierBillingAccountDataAmountParameters(null, it.billingAccount, it.balance)
                     )
                 )
                 is CourierBillingNavigationState.NavigateToAccountSelector -> findNavController().navigate(
@@ -177,6 +178,7 @@ class CourierBillingFragment : Fragment() {
         _binding = null
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
         with(adapter) {
             clear()

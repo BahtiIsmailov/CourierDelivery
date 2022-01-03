@@ -4,7 +4,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.BuildConfig
 import ru.wb.go.network.certificate.CertificateStore
-import ru.wb.go.network.headers.AppMockResponseInterceptor
 import ru.wb.go.network.headers.AuthMockResponseInterceptor
 import ru.wb.go.network.headers.RefreshTokenInterceptor
 
@@ -40,15 +39,13 @@ object OkHttpFactory {
     fun createAppOkHttpClient(
         certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
-        httpLogginInterceptor: HttpLoggingInterceptor,
-        appMockResponseInterceptor: AppMockResponseInterceptor
+        httpLogginInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
             OkHttpClientUnsafe.create(
                 certificateStore,
                 refreshResponseInterceptor,
                 httpLogginInterceptor,
-                appMockResponseInterceptor
             )
         } else {
             OkHttpClientSafe.create(

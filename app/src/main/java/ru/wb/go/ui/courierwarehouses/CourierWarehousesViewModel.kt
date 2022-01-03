@@ -159,6 +159,12 @@ class CourierWarehousesViewModel(
         saveCoordinatePoints(coordinatePoints)
         saveMapMarkers(mapMarkers)
         interactor.mapState(CourierMapState.UpdateMyLocation)
+        requestFinishUnlockState()
+    }
+
+    private fun requestFinishUnlockState(){
+        progressComplete()
+        unlockState()
     }
 
     private fun initMapByLocation(myLocation: CoordinatePoint) {
@@ -170,8 +176,7 @@ class CourierWarehousesViewModel(
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
         interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
-        progressComplete()
-        unlockState()
+        requestFinishUnlockState()
     }
 
     private fun courierWarehouseError(throwable: Throwable) {
@@ -200,8 +205,7 @@ class CourierWarehousesViewModel(
         if (warehouseItems.isEmpty()) {
             _warehouses.value = CourierWarehouseItemState.Empty(message.title)
         }
-        progressComplete()
-        unlockState()
+        requestFinishUnlockState()
     }
 
     private fun progressComplete() {
@@ -275,8 +279,7 @@ class CourierWarehousesViewModel(
                 )
             clearSubscription()
         }
-        hideProgress()
-        unlockState()
+        requestFinishUnlockState()
     }
 
     fun onDetailClick(index: Int) {
@@ -291,10 +294,6 @@ class CourierWarehousesViewModel(
                     { checkAndNavigate(it, oldEntity) },
                     { courierWarehouseError(it) })
         )
-    }
-
-    private fun hideProgress() {
-        _progressState.value = CourierWarehousesProgressState.ProgressComplete
     }
 
     private fun showProgress() {
