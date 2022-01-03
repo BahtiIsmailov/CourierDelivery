@@ -33,7 +33,7 @@
     <string name="unknown_service_title_error">Ошибка</string>
     <string name="unknown_service_button_error">OK</string>
 
-    <string name="courier_expects_title">Внимание</string>
+    <string name="attention_title">Внимание</string>
     <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
     <string name="courier_expects_positive">OK</string>
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.R
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.exceptions.BadRequestException
@@ -13,7 +14,9 @@ import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.DialogStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -57,6 +60,10 @@ class CourierBillingAccountDataViewModel(
     private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToMessageState: LiveData<NavigateToDialogInfo>
         get() = _navigateToMessageState
+
+    private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogConfirmInfo
 
     private val _navigationEvent =
         SingleLiveEvent<CourierBillingAccountDataNavAction>()
@@ -151,10 +158,16 @@ class CourierBillingAccountDataViewModel(
             }
         }
         if (isPrefix) {
-            if (text.length == ACCOUNT_LENGTH) "" else "Введите 20 цифр"
+            if (text.length == ACCOUNT_LENGTH) {
+                if (parameters.billingAccounts.find { it.account == text } != null) {
+                    "Такой счет уже заведен"
+                } else
+                    ""
+            } else "Введите 20 цифр"
         } else {
             "Счет должен начинаться с 40702 или 40802 или 40817"
         }
+
     }
 
     private fun checkFocusAccountWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
@@ -333,17 +346,9 @@ class CourierBillingAccountDataViewModel(
 
     fun onRemoveAccountClick() {
         holdAndProgress()
-        val newList = parameters.billingAccounts.filter {
-            it != parameters.account
-        }
-        assert(newList.isNotEmpty())
-        addSubscription(
-            interactor.saveBillingAccounts(newList)
-                .subscribe(
-                    { removeAccountComplete() },
-                    { removeAccountError() }
-                )
-        )
+        _navigationEvent.value =
+            CourierBillingAccountDataNavAction.NavigateToConfirmDialog(parameters.account!!.account)
+
     }
 
     private fun removeAccountComplete() {
@@ -362,6 +367,20 @@ class CourierBillingAccountDataViewModel(
 
     override fun getScreenTag(): String {
         return ""
+    }
+
+    fun removeConfirmed() {
+        val newList = parameters.billingAccounts.filter {
+            it != parameters.account
+        }
+        assert(newList.isNotEmpty())
+        addSubscription(
+            interactor.saveBillingAccounts(newList)
+                .subscribe(
+                    { removeAccountComplete() },
+                    { removeAccountError() }
+                )
+        )
     }
 
     data class BankFind(val name: String, val corAccount: String)

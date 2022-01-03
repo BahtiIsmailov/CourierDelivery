@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.InputType
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.getDrawableOrThrow
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
@@ -34,24 +36,24 @@ import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
+import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
 
-class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data_fragment) {
+class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data_fragment),
+    DialogConfirmInfoFragment.SimpleDialogListener {
 
     private var _binding: CourierBillingDataFragmentBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var inputMethod: InputMethodManager
     private val changeText = ArrayList<ViewChanges>()
-
-    companion object {
-        const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
-    }
 
     private val viewModel by viewModel<CourierBillingAccountDataViewModel> {
         parametersOf(
@@ -76,6 +78,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         initListener()
         initInputMethod()
         initObservers()
+
     }
 
     private fun initView() {
@@ -228,8 +231,8 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             }
         }
 
-        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
-            showDialog(it.type, it.title, it.message, it.button)
+        viewModel.navigateToDialogConfirmInfo.observe(viewLifecycleOwner) {
+            showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -300,6 +303,18 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                         )
                     CourierBillingAccountDataNavAction.NavigateToBack ->
                         findNavController().popBackStack()
+                    is CourierBillingAccountDataNavAction.NavigateToConfirmDialog -> {
+                        val msg = "Удалить счет\n${state.account}?"
+//TODO Диалог не работает. Невозможно получить результат
+//                        showDialogConfirmInfo(
+//                            DialogInfoStyle.INFO.ordinal,
+//                            getString(R.string.attention_title),
+//                            msg,
+//                            getString(R.string.ok_button_title),
+//                            getString(R.string.exit_app_cancel)
+//                        )
+                        viewModel.removeConfirmed()
+                    }
                 }
             })
 
@@ -365,13 +380,34 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         _binding = null
     }
 
-    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
-        DialogInfoFragment.newInstance(
-            type = type,
+    private fun showDialogConfirmInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            resultTag = DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_RESULT_TAG,
+            type = style,
             title = title,
             message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DIALOG_INFO_TAG)
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
+        ).show(parentFragmentManager, CONFIRM_DLG)
+    }
+
+    override fun onPositiveDialogClick(resultTag: String) {
+        Log.e("TAG", resultTag)
+    }
+
+    override fun onNegativeDialogClick(resultTag: String) {
+        Log.e("TAG", resultTag)
+    }
+
+    companion object {
+        const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
+        const val CONFIRM_DLG="CONFIRM_DLG"
     }
 
 }
@@ -390,3 +426,4 @@ data class CourierBillingAccountDataAmountParameters(
     val billingAccounts: @RawValue List<CourierBillingAccountEntity>,
     val balance: Int,
 ) : Parcelable
+
