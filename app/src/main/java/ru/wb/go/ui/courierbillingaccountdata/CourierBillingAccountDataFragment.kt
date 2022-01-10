@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.InputType
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -34,20 +33,17 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierBillingDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
 
-class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data_fragment),
-    DialogConfirmInfoFragment.SimpleDialogListener {
+class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data_fragment) {
 
     private var _binding: CourierBillingDataFragmentBinding? = null
     private val binding get() = _binding!!
@@ -78,7 +74,15 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         initListener()
         initInputMethod()
         initObservers()
+        initReturnDialogResult()
+    }
 
+    private fun initReturnDialogResult() {
+        setFragmentResultListener(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.removeConfirmed()
+            }
+        }
     }
 
     private fun initView() {
@@ -306,14 +310,14 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                     is CourierBillingAccountDataNavAction.NavigateToConfirmDialog -> {
                         val msg = "Удалить счет\n${state.account}?"
 //TODO Диалог не работает. Невозможно получить результат
-//                        showDialogConfirmInfo(
-//                            DialogInfoStyle.INFO.ordinal,
-//                            getString(R.string.attention_title),
-//                            msg,
-//                            getString(R.string.ok_button_title),
-//                            getString(R.string.exit_app_cancel)
-//                        )
-                        viewModel.removeConfirmed()
+                        showDialogConfirmInfo(
+                            DialogInfoStyle.INFO.ordinal,
+                            getString(R.string.attention_title),
+                            msg,
+                            getString(R.string.ok_button_title),
+                            getString(R.string.exit_app_cancel)
+                        )
+                        ////viewModel.removeConfirmed()
                     }
                 }
             })
@@ -394,20 +398,11 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             message = message,
             positiveButtonName = positiveButtonName,
             negativeButtonName = negativeButtonName
-        ).show(parentFragmentManager, CONFIRM_DLG)
-    }
-
-    override fun onPositiveDialogClick(resultTag: String) {
-        Log.e("TAG", resultTag)
-    }
-
-    override fun onNegativeDialogClick(resultTag: String) {
-        Log.e("TAG", resultTag)
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 
     companion object {
         const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
-        const val CONFIRM_DLG="CONFIRM_DLG"
     }
 
 }
