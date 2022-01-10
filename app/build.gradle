@@ -41,18 +41,24 @@ android {
         def versionMinor = versionProps['VERSION_MINOR'].toInteger()
         def versionBuild = versionProps['VERSION_BUILD'].toInteger()
 
+        def isNew =false
+
+        print(runTasks)
         if (':app:sassembleRelease' in runTasks) {
             versionMinor++
+            isNew = true
         }
-        print(runTasks)
-        print("QA plugin debug...")
         if (':app:assembleDebugQA' in runTasks) {
+            print("QA plugin debug...")
             versionBuild++
+            isNew = true
         }
 
         versionProps['VERSION_MINOR'] = versionMinor.toString()
         versionProps['VERSION_BUILD'] = versionBuild.toString()
-        versionProps.store(versionPropsFile.newWriter(), null)
+        if(isNew) {
+            versionProps.store(versionPropsFile.newWriter(), null)
+        }
 
         defaultConfig {
             multiDexEnabled true
