@@ -98,16 +98,23 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             permissions.entries.forEach {
                 if (!it.value) grand = false
             }
-            if (grand) initMapView()
+            if (grand) {
+                initMapView()
+                viewModel.onInitPermission()
+            } else {
+                viewModel.onDeniedPermission()
+            }
         }
 
     private fun initPermission() {
+
         if (hasPermissions(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
             )
         ) {
             initMapView()
+            viewModel.onInitPermission()
         } else {
             requestMultiplePermissions.launch(
                 arrayOf(
@@ -138,7 +145,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
         binding.map.setUseDataConnection(true)
-        viewModel.onInitPermission()
     }
 
     private fun createOsmdroidTilePath(osmdroidBasePath: File): File {
@@ -185,10 +191,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
-                CourierMapState.UpdateMyLocation -> forcedLocationUpdate()
-                is CourierMapState.UpdateAndNavigateToMyLocationPoint -> updateAndNavigateToMyLocationPoint(
-                    it.point
-                )
+                CourierMapState.UpdateMyLocation -> updateMyLocation()
+                is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
                 is CourierMapState.ZoomToCenterBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
             }
         }
@@ -239,7 +243,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun navigateToMyLocation() {
-        if (!serviceOnConnected) return //навигироваться по дефолту
+        if (!serviceOnConnected) {
+            navigateToDefault()
+            return
+        }
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -256,31 +263,44 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 googleApiClient,
                 locationRequest
             ) { location ->
-                LogUtils { logDebugApp("Location : " + location.latitude + " / " + location.longitude) }
                 navigateToPoint(MapPoint(MY_LOCATION_ID, location.latitude, location.longitude))
-                drawMapMarker(
-                    MY_LOCATION_ID,
-                    location.latitude,
-                    location.longitude,
-                    R.drawable.ic_my_location
-                )
+                drawMyLocationMarker(location.latitude, location.longitude)
             }
+        } else {
+            navigateToDefault()
         }
     }
 
-    private fun updateAndNavigateToMyLocationPoint(point: CoordinatePoint) {
+    private fun navigateToDefault() {
+        initMapView()
+        val coordinateMoscow = moscowCoordinatePoint()
+        navigateToPoint(
+            MapPoint(
+                MY_LOCATION_ID,
+                coordinateMoscow.latitude,
+                coordinateMoscow.longitude
+            )
+        )
+        drawMyLocationMarker(coordinateMoscow.latitude, coordinateMoscow.longitude)
+    }
+
+    private fun updateMyLocationPoint(point: CoordinatePoint) {
         binding.map.overlays.find { (it as Marker).id == MY_LOCATION_ID }?.apply {
             binding.map.overlays.remove(this)
         }
+        drawMyLocationMarker(point.latitude, point.longitude)
+    }
+
+    private fun drawMyLocationMarker(latitude: Double, longitude: Double) {
         drawMapMarker(
             MY_LOCATION_ID,
-            point.latitude,
-            point.longitude,
+            latitude,
+            longitude,
             R.drawable.ic_my_location
         )
     }
 
-    private fun forcedLocationUpdate() {
+    private fun updateMyLocation() {
         if (!serviceOnConnected) {
             viewModel.onForcedLocationUpdateDefault()
             return
@@ -309,6 +329,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                     )
                 )
             }
+        } else {
+            viewModel.onForcedLocationUpdateDefault()
+//            viewModel.onDeniedPermission()
         }
     }
 

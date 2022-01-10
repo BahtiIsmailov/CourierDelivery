@@ -21,6 +21,16 @@ class CourierMapViewModel(
     val mapState: LiveData<CourierMapState>
         get() = _mapState
 
+    fun onInitPermission() {
+        subscribeMapState()
+        interactor.onInitPermission()
+    }
+
+    fun onDeniedPermission() {
+        subscribeMapState()
+        interactor.onDeniedPermission(moscowCoordinatePoint())
+    }
+
     private fun subscribeMapState() {
         addSubscription(
             interactor.subscribeMapState().subscribe(
@@ -30,8 +40,7 @@ class CourierMapViewModel(
                         is CourierMapState.NavigateToPoint -> _mapState.value = it
                         is CourierMapState.UpdateMarkers -> _mapState.value = it
                         CourierMapState.NavigateToMyLocation -> _mapState.value = it
-                        is CourierMapState.UpdateAndNavigateToMyLocationPoint -> _mapState.value =
-                            it
+                        is CourierMapState.UpdateMyLocationPoint -> _mapState.value = it
                         CourierMapState.UpdateMyLocation -> _mapState.value = it
                         is CourierMapState.ZoomToCenterBoundingBox -> _mapState.value = it
                     }
@@ -42,23 +51,23 @@ class CourierMapViewModel(
         )
     }
 
-    fun onInitPermission() {
-        LogUtils { logDebugApp("CourierMapViewModel onInitPermission()") }
-        subscribeMapState()
-        interactor.onInitPermission()
-    }
-
     fun onItemClick(index: String) {
         interactor.onItemClick(index)
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
+        //subscribeMapState()
         interactor.onForcedLocationUpdate(point)
     }
 
     fun onForcedLocationUpdateDefault() {
+        //subscribeMapState()
         interactor.onForcedLocationUpdate(moscowCoordinatePoint())
     }
+
+//    fun myLocationFailed() {
+//        interactor.onMyLocationFailed(moscowCoordinatePoint())
+//    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

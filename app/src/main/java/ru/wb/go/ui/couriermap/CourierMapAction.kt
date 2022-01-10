@@ -8,6 +8,8 @@ sealed class CourierMapAction {
 
     object PermissionComplete : CourierMapAction()
 
+    data class PermissionDenied(val point: CoordinatePoint) : CourierMapAction()
+
     data class AutomatedLocationUpdate(val point: CoordinatePoint) : CourierMapAction()
 
     data class ForcedLocationUpdate(val point: CoordinatePoint) : CourierMapAction()

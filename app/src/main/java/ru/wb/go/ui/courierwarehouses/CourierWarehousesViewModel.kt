@@ -90,6 +90,7 @@ class CourierWarehousesViewModel(
             is CourierMapAction.AutomatedLocationUpdate -> {
             }
             is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
+            is CourierMapAction.PermissionDenied -> initMapByLocation(it.point)
         }
     }
 
@@ -103,6 +104,7 @@ class CourierWarehousesViewModel(
     }
 
     fun onUpdateClick() {
+        observeMapAction()
         lockState()
         showProgress()
         getWarehouse()
@@ -162,7 +164,7 @@ class CourierWarehousesViewModel(
         requestFinishUnlockState()
     }
 
-    private fun requestFinishUnlockState(){
+    private fun requestFinishUnlockState() {
         progressComplete()
         unlockState()
     }
@@ -170,12 +172,16 @@ class CourierWarehousesViewModel(
     private fun initMapByLocation(myLocation: CoordinatePoint) {
         onTechEventLog("initMapByLocation")
         this.myLocation = myLocation
-        val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
-            coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
-        )
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
-        interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
+        if (coordinatePoints.isEmpty()) {
+            interactor.mapState(CourierMapState.NavigateToMyLocation)
+        } else {
+            val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
+                coordinatePoints, myLocation, MAP_WAREHOUSE_LAT_DISTANCE, MAP_WAREHOUSE_LON_DISTANCE
+            )
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+            interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+            interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
+        }
         requestFinishUnlockState()
     }
 
@@ -254,7 +260,7 @@ class CourierWarehousesViewModel(
         }
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
-        interactor.mapState(CourierMapState.UpdateAndNavigateToMyLocationPoint(myLocation))
+        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
     }
 
     private fun checkAndNavigate(

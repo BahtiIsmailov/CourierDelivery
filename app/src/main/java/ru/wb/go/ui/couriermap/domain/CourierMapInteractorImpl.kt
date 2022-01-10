@@ -23,6 +23,10 @@ class CourierMapInteractorImpl(
         courierMapRepository.mapAction(CourierMapAction.PermissionComplete)
     }
 
+    override fun onDeniedPermission(point: CoordinatePoint) {
+        courierMapRepository.mapAction(CourierMapAction.PermissionDenied(point))
+    }
+
     override fun onForcedLocationUpdate(point: CoordinatePoint) {
         courierMapRepository.mapAction(CourierMapAction.ForcedLocationUpdate(point))
     }

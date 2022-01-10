@@ -12,6 +12,8 @@ interface CourierMapInteractor {
 
     fun onInitPermission()
 
+    fun onDeniedPermission(point: CoordinatePoint)
+
     fun onForcedLocationUpdate(point: CoordinatePoint)
 
 }
