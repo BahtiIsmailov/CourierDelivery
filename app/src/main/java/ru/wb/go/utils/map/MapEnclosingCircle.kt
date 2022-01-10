@@ -1,7 +1,6 @@
 package ru.wb.go.utils.map
 
 import org.osmdroid.util.BoundingBox
-import ru.wb.go.app.AppConsts
 import ru.wb.go.utils.LogUtils
 import kotlin.math.abs
 import kotlin.math.pow
@@ -11,54 +10,38 @@ class MapEnclosingCircle {
     fun minimumBoundingBoxRelativelyMyLocation(
         points: List<CoordinatePoint>,
         myLocation: CoordinatePoint,
-        latOffset: Double,
-        longOffset: Double
     ): BoundingBox {
 
         LogUtils { logDebugApp("myLocation " + myLocation) }
 
-        var maxLat = myLocation.latitude + latOffset
-        var maxLong = myLocation.longitude + longOffset
-        var minLat = myLocation.latitude - latOffset
-        var minLong = myLocation.longitude - longOffset
-
-        val searchLocation = CoordinatePoint(
-            myLocation.latitude + latOffset,
-            myLocation.longitude + longOffset
-        )
-
-        var nearPoint = myLocation
-
-        val searchDistance = distance(myLocation, searchLocation)
-        var minDistance = searchDistance
-        var distance: Double
+        var maxLatPoint = Double.MAX_VALUE
+        var maxLongPoint = Double.MAX_VALUE
+        var minLatPoint = Double.MIN_VALUE
+        var minLongPoint = Double.MIN_VALUE
         for (i in points.indices) {
-            distance = distance(myLocation, points[i])
-            if (distance < searchDistance) {
-                return BoundingBox(maxLat, maxLong, minLat, minLong)
-            }
-            LogUtils { logDebugApp("nearPoint 1 " + nearPoint) }
-            if (i == 0 || distance < minDistance) {
-                LogUtils { logDebugApp("minDistance " + minDistance + " distance " + distance) }
-                minDistance = distance
-                LogUtils { logDebugApp("i == 0 || minDistance if (distance < minDistance) " + minDistance + " distance " + distance) }
-                nearPoint = points[i]
+            val point = points[i]
+            val lat: Double = point.latitude
+            val lon: Double = point.longitude
+            if (i == 0) {
+                maxLatPoint = myLocation.latitude
+                maxLongPoint = myLocation.longitude
+                minLatPoint = myLocation.latitude
+                minLongPoint = myLocation.longitude
             }
 
+            if (lat > maxLatPoint) maxLatPoint = lat
+            if (lon > maxLongPoint) maxLongPoint = lon
+            if (lat < minLatPoint) minLatPoint = lat
+            if (lon < minLongPoint) minLongPoint = lon
         }
 
-        LogUtils { logDebugApp("nearPoint 2 " + nearPoint) }
-
-        val offsetLatitude = abs(nearPoint.latitude - myLocation.latitude)
-        val offsetLongitude = abs(nearPoint.longitude - myLocation.longitude)
-
-        LogUtils { logDebugApp("offsetLatitude " + offsetLatitude + " offsetLongitude " + offsetLongitude) }
-
-        maxLat = myLocation.latitude + offsetLatitude
-        maxLong = myLocation.longitude + offsetLongitude
-        minLat = myLocation.latitude - offsetLatitude
-        minLong = myLocation.longitude - offsetLongitude
-        return BoundingBox(maxLat, maxLong, minLat, minLong)
+        with(myLocation) {
+            val maxLat = latitude + abs(latitude - maxLatPoint)
+            val maxLong = longitude + abs(longitude - maxLongPoint)
+            val minLat = latitude - abs(latitude - minLatPoint)
+            val minLong = longitude - abs(longitude - minLongPoint)
+            return BoundingBox(maxLat, maxLong, minLat, minLong)
+        }
     }
 
     fun minimumBoundingBox(points: List<CoordinatePoint>): BoundingBox {
