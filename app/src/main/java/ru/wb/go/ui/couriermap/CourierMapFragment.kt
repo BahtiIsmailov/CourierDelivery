@@ -352,7 +352,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 requireActivity(),
                 errorCode,
                 REQUEST_ERROR
-            ) { requireActivity().finish() }.show()
+            ) { requireActivity().finish() }?.show()
         }
     }
 
