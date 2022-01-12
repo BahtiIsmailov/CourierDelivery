@@ -261,10 +261,6 @@ class CourierLoadingScanViewModel(
         }
     }
 
-    fun onListClicked() {
-        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToBoxes
-    }
-
     fun onErrorDialogConfirmClick() {
         onStartScanner()
         _isEnableBottomState.value = true

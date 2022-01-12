@@ -39,7 +39,6 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        //(activity as NavToolbarListener).hideBackButton()
     }
 
     private fun initListeners() {
@@ -87,11 +86,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 CourierLoaderNavigationState.NavigateToPhone -> findNavController().navigate(
                     CourierLoaderFragmentDirections.actionCourierLoaderFragmentToAuthNavigation()
                 )
-                CourierLoaderNavigationState.NavigateToAgreement -> {
-                    findNavController().navigate(
-                        CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierAgreementFragment()
-                    )
-                }
+
                 CourierLoaderNavigationState.NavigateToAppUpdate -> {
                     findNavController().navigate(
                         CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierVersionControlFragment()

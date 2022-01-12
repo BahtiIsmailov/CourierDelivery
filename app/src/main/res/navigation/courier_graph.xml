@@ -218,20 +218,6 @@
         android:label=""
         tools:layout="@layout/courier_loading_fragment">
         <action
-            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierScannerLoadingBoxNotBelongFragment"
-            app:destination="@id/courierScannerLoadingBoxNotBelongFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierLoadingBoxesFragment"
-            app:destination="@id/courierLoadingBoxesFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierWarehouseFragment"
             app:destination="@id/courierWarehouseFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -242,18 +228,6 @@
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierStartDeliveryFragment"
             app:destination="@id/courierStartDeliveryFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/courierScannerLoadingBoxNotBelongFragment"
-        android:name="ru.wb.go.ui.courierloading.CourierLoadingUnknownBoxFragment"
-        android:label="CourierScannerLoadingBoxNotBelongFragment"
-        tools:layout="@layout/courier_loading_unknown_box_fragment" />
-
-    <fragment
-        android:id="@+id/courierLoadingBoxesFragment"
-        android:name="ru.wb.go.ui.courierloading.CourierLoadingBoxesFragment"
-        android:label=""
-        tools:layout="@layout/courier_loading_boxes_fragment" />
 
     <fragment
         android:id="@+id/courierOrderConfirmFragment"

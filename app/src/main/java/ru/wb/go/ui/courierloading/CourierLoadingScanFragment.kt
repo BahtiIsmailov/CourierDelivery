@@ -148,12 +148,6 @@ class CourierLoadingScanFragment : Fragment() {
 
         val navigationObserver = Observer<CourierLoadingScanNavAction> { state ->
             when (state) {
-                is CourierLoadingScanNavAction.NavigateToUnknownBox -> {
-                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierScannerLoadingBoxNotBelongFragment())
-                }
-                CourierLoadingScanNavAction.NavigateToBoxes -> {
-                    findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierLoadingBoxesFragment())
-                }
                 CourierLoadingScanNavAction.NavigateToConfirmDialog -> {
                     showDialogConfirmInfo(
                         DialogInfoStyle.INFO.ordinal,

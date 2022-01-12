@@ -24,9 +24,7 @@ import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.courierexpects.CouriersCompleteRegistrationViewModel
 import ru.wb.go.ui.courierintransit.CourierIntransitViewModel
 import ru.wb.go.ui.courierloader.CourierLoaderViewModel
-import ru.wb.go.ui.courierloading.CourierLoadingBoxesViewModel
 import ru.wb.go.ui.courierloading.CourierLoadingScanViewModel
-import ru.wb.go.ui.courierloading.CourierLoadingUnknownBoxViewModel
 import ru.wb.go.ui.couriermap.CourierMapViewModel
 import ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmViewModel
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
@@ -97,19 +95,6 @@ val viewModelModule = module {
     viewModel { CourierOrderConfirmViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { CourierOrderTimerViewModel(get(), get(), get(), get()) }
-
-    viewModel { CourierLoadingUnknownBoxViewModel() }
-
-    viewModel {
-        CourierLoadingBoxesViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
-        )
-    }
 
     viewModel {
         CourierLoadingScanViewModel(
