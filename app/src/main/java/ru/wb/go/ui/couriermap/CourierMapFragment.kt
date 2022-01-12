@@ -235,7 +235,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 item.icon
             )
         }
-        //binding.map.postInvalidate()
+        binding.map.invalidate()
     }
 
     private fun initListeners() {
