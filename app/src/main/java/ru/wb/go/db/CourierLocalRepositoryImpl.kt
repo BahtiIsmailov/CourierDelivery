@@ -63,7 +63,7 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.orderDataSync()
     }
 
-    override fun orderData(): CourierOrderLocalDataEntity {
+    override fun orderData(): CourierOrderLocalDataEntity? {
         return courierOrderDao.orderData()
     }
 
@@ -105,6 +105,13 @@ class CourierLocalRepositoryImpl(
 
     override fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity> {
         return courierOrderDao.findOfficeById(officeId)
+    }
+
+    override fun clearOrder() {
+        courierLoadingBoxDao.deleteAllBoxes()
+        courierOrderDao.deleteAllOffices()
+        courierOrderDao.deleteAllOrder()
+        courierWarehouseDao.deleteAll()
     }
 
     override fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable {

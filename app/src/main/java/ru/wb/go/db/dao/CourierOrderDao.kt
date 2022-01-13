@@ -27,7 +27,7 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun orderData(): CourierOrderLocalDataEntity
+    fun orderData(): CourierOrderLocalDataEntity?
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")

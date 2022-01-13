@@ -523,5 +523,8 @@
     <string name="bank_details_title">Банковские реквизиты</string>
     <string name="recipient_data_title">Данные получателя</string>
     <string name="save_title">Сохранить</string>
+    <string name="check_order_data_hint">Внимательно проверьте данные</string>
+    <string name="car_hint">Машина</string>
+    <string name="arrive_hint">Прибыть</string>
 
 </resources>

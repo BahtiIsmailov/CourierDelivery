@@ -209,7 +209,7 @@ class CourierUnloadingInteractorImpl(
         return convertItems
     }
 
-    private fun taskId() = courierLocalRepository.orderData().courierOrderLocalEntity.id.toString()
+    private fun taskId() = courierLocalRepository.orderData()!!.courierOrderLocalEntity.id.toString()
 
     private fun taskStatusesIntransit(
         statusesIntransit: List<CourierTaskStatusesIntransitEntity>,

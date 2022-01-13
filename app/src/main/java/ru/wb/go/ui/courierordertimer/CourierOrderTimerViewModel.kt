@@ -83,7 +83,7 @@ class CourierOrderTimerViewModel(
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
-        LogUtils{logDebugApp("initTimer reservedDuration " + reservedDuration + " reservedAt " + reservedAt)}
+        LogUtils{logDebugApp("initTimer reservedDuration $reservedDuration reservedAt $reservedAt")}
         interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer

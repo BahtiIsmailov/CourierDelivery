@@ -44,7 +44,7 @@ interface CourierLocalRepository {
 
     fun orderDataSync(): Single<CourierOrderLocalDataEntity>
 
-    fun orderData(): CourierOrderLocalDataEntity
+    fun orderData(): CourierOrderLocalDataEntity?
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
@@ -124,4 +124,5 @@ interface CourierLocalRepository {
     //==============================================================================================
 
 
+    fun clearOrder()
 }

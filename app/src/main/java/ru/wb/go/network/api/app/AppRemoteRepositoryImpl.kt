@@ -108,52 +108,81 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun tasksMy(): Single<CourierTasksMyEntity> {
-        return remote.tasksMy(apiVersion()).map { task ->
-            LogUtils { logDebugApp(task.toString()) }
-            timeManager.saveStartedTaskTime(task.startedAt ?: "") //"2021-09-21T17:00:01.992+03:00"
-            val courierTaskMyDstOfficesEntity = mutableListOf<CourierTaskMyDstOfficeEntity>()
-            task.dstOffices.forEach {
-                if (it.id != -1) {
-                    val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
-                        id = it.id,
-                        name = it.name ?: "",
-                        fullAddress = it.fullAddress ?: "",
-                        long = it.long,
-                        lat = it.lat
+        return remote.tasksMy(apiVersion())
+            .map { task ->
+                LogUtils { logDebugApp(task.toString()) }
+                timeManager.saveStartedTaskTime(task.startedAt ?: "")
+                if (task.id > 0) {
+                    val courierTaskMyDstOfficesEntity =
+                        mutableListOf<CourierTaskMyDstOfficeEntity>()
+                    task.dstOffices.forEach {
+                        if (it.id != -1) {
+                            val courierTaskMyDstOfficeEntity = CourierTaskMyDstOfficeEntity(
+                                id = it.id,
+                                name = it.name ?: "",
+                                fullAddress = it.fullAddress ?: "",
+                                long = it.long,
+                                lat = it.lat
+                            )
+                            courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+                        }
+                    }
+
+                    val srcOffice = with(task.srcOffice) {
+                        CourierTasksMySrcOfficeEntity(
+                            id = id,
+                            name = name,
+                            fullAddress = fullAddress,
+                            long = long,
+                            lat = lat
+                        )
+                    }
+
+                    CourierTasksMyEntity(
+                        id = task.id,
+                        routeID = task.routeID ?: 0,
+                        gate = task.gate ?: "",
+                        srcOffice = srcOffice,
+                        minPrice = task.minPrice,
+                        minVolume = task.minVolume,
+                        minBoxesCount = task.minBoxesCount,
+                        dstOffices = courierTaskMyDstOfficesEntity,
+                        wbUserID = task.wbUserID,
+                        carNumber = task.carNumber,
+                        reservedAt = task.reservedAt,
+                        startedAt = task.startedAt ?: "",
+                        reservedDuration = task.reservedDuration,
+                        status = task.status ?: TaskStatus.TIMER.status,
+                        cost = (task.cost ?: 0) / COST_DIVIDER
                     )
-                    courierTaskMyDstOfficesEntity.add(courierTaskMyDstOfficeEntity)
+                } else {
+                    CourierTasksMyEntity(
+                        id = 0,
+                        routeID = 0,
+                        gate = "",
+                        srcOffice = CourierTasksMySrcOfficeEntity(
+                            id = 0,
+                            name = "",
+                            fullAddress = "",
+                            long = 0.0,
+                            lat = 0.0
+                        ),
+                        minPrice = 0,
+                        minVolume = 0,
+                        minBoxesCount = 0,
+                        dstOffices = listOf(),
+                        wbUserID = 0,
+                        carNumber = "",
+                        reservedAt = "",
+                        startedAt = "",
+                        reservedDuration = "",
+                        status = TaskStatus.EMPTY.status,
+                        cost = 0
+                    )
                 }
             }
+            .compose(rxSchedulerFactory.applySingleMetrics("getMyTask"))
 
-            val srcOffice = with(task.srcOffice) {
-                CourierTasksMySrcOfficeEntity(
-                    id = id,
-                    name = name,
-                    fullAddress = fullAddress,
-                    long = long,
-                    lat = lat
-                )
-            }
-
-            CourierTasksMyEntity(
-                id = task.id,
-                routeID = task.routeID ?: 0,
-                gate = task.gate ?: "",
-                srcOffice = srcOffice,
-                minPrice = task.minPrice,
-                minVolume = task.minVolume,
-                minBoxesCount = task.minBoxesCount,
-                dstOffices = courierTaskMyDstOfficesEntity,
-                wbUserID = task.wbUserID,
-                carNumber = task.carNumber,
-                reservedAt = task.reservedAt,
-                startedAt = task.startedAt ?: "",
-                reservedDuration = task.reservedDuration,
-                status = task.status ?: TaskStatus.TIMER.status,
-                cost = (task.cost ?: 0) / COST_DIVIDER
-            )
-        }
-            .compose(rxSchedulerFactory.applySingleMetrics("tasksMy"))
     }
 
     override fun anchorTask(
