@@ -8,6 +8,7 @@ import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
@@ -107,7 +108,30 @@ class AppRemoteRepositoryImpl(
             .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
     }
 
-    override fun tasksMy(): Single<CourierTasksMyEntity> {
+    override fun tasksMy(localTask: CourierOrderLocalDataEntity?): Single<CourierTasksMyEntity> {
+        val badResult = CourierTasksMyEntity(
+            id = 0,
+            routeID = 0,
+            gate = "",
+            srcOffice = CourierTasksMySrcOfficeEntity(
+                id = 0,
+                name = "",
+                fullAddress = "",
+                long = 0.0,
+                lat = 0.0
+            ),
+            minPrice = 0,
+            minVolume = 0,
+            minBoxesCount = 0,
+            dstOffices = listOf(),
+            wbUserID = 0,
+            carNumber = "",
+            reservedAt = "",
+            startedAt = "",
+            reservedDuration = "",
+            status = TaskStatus.EMPTY.status,
+            cost = 0
+        )
         return remote.tasksMy(apiVersion())
             .map { task ->
                 LogUtils { logDebugApp(task.toString()) }
@@ -156,30 +180,15 @@ class AppRemoteRepositoryImpl(
                         cost = (task.cost ?: 0) / COST_DIVIDER
                     )
                 } else {
-                    CourierTasksMyEntity(
-                        id = 0,
-                        routeID = 0,
-                        gate = "",
-                        srcOffice = CourierTasksMySrcOfficeEntity(
-                            id = 0,
-                            name = "",
-                            fullAddress = "",
-                            long = 0.0,
-                            lat = 0.0
-                        ),
-                        minPrice = 0,
-                        minVolume = 0,
-                        minBoxesCount = 0,
-                        dstOffices = listOf(),
-                        wbUserID = 0,
-                        carNumber = "",
-                        reservedAt = "",
-                        startedAt = "",
-                        reservedDuration = "",
-                        status = TaskStatus.EMPTY.status,
-                        cost = 0
-                    )
+                    badResult
                 }
+            }
+            .onErrorResumeNext{
+                //FIXME localTaskNotDeleted duplicate temp
+                if(localTask==null){
+                    Single.error(it)
+                }else
+                Single.just(badResult.copy(id = -1))
             }
             .compose(rxSchedulerFactory.applySingleMetrics("getMyTask"))
 

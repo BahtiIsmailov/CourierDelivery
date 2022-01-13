@@ -5,6 +5,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
@@ -19,7 +20,7 @@ interface AppRemoteRepository {
 
     fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
-    fun tasksMy(): Single<CourierTasksMyEntity>
+    fun tasksMy(localTask:CourierOrderLocalDataEntity?): Single<CourierTasksMyEntity>
 
     fun anchorTask(taskID: String, carNumber: String): Completable
 

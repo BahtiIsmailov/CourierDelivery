@@ -34,12 +34,7 @@ class CourierOrderConfirmInteractorImpl(
     private var durationTime = 0
 
     override fun anchorTask(): Completable {
-        //return Completable.error(BadRequestException(Error("Error", "500", null)))
-//        return Completable.error(ExceptionInInitializerError())
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//        return Completable.timer(1000, TimeUnit.MILLISECONDS)
-//            .andThen(Completable.error(BadRequestException(Error("Error", "500", null))))
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+
         val reservedTime = timeManager.getLocalTime()
         return courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id }

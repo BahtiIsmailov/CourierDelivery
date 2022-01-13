@@ -126,34 +126,9 @@ class CourierLoaderViewModel(
             tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
                 toCouriersCompleteRegistration(phone)
             else -> {
-                val taskMy = appRemoteRepository.tasksMy()
                 val localTask = courierLocalRepository.orderData()
-//                        .onErrorReturn {
-//                            CourierOrderLocalDataEntity(
-//                                courierOrderLocalEntity = CourierOrderLocalEntity(
-//                                    id = -1,
-//                                    routeID = 0,
-//                                    gate = "",
-//                                    minPrice = 0,
-//                                    minVolume = 0,
-//                                    minBoxesCount = 0,
-//                                    reservedDuration = "",
-//                                    reservedAt = ""
-//                                ), dstOffices = listOf()
-//                            )
-//                        }
-//                        .map { it.courierOrderLocalEntity }
-//                val zipData = Single.zip(taskMy, localTask,
-//                    { remoteTask, lT ->
-//                        solveJobInitialState(remoteTask, lT)
-//                    })
-//                    .map { it }
+                val taskMy = appRemoteRepository.tasksMy(localTask)
 
-//                addSubscription(
-//                    zipData
-//                        .compose(rxSchedulerFactory.applySingleSchedulers())
-//                        .subscribe({ taskMyComplete(it) }, { taskMyError(it) })
-//                )
                 addSubscription(
                     taskMy
                         .flatMap {
@@ -178,25 +153,25 @@ class CourierLoaderViewModel(
     }
 
     private fun solveJobInitialState(
-        courierTasksMyEntity: CourierTasksMyEntity,
+        serverTask: CourierTasksMyEntity,
         localTask: CourierOrderLocalEntity?
     ): Single<CourierLoaderNavigationState> {
-        val remoteTaskId = courierTasksMyEntity.id
+        val remoteTaskId = serverTask.id
         onTechEventLog(
             "tasksMyComplete",
             "remoteTaskId: $remoteTaskId localTaskId: ${localTask?.id ?: -1}"
         )
-        // if remote fail do it local(if local exist) else fail
-        // sync remote
-        // if remote!=local - sync
-        // if remote==local -not sync? but take reserve
-
         return when {
-            localTask == null || remoteTaskId != localTask.id ->
-                syncFromServer(courierTasksMyEntity, remoteTaskId)
-            else -> Completable.complete()
+            (localTask == null || remoteTaskId != localTask.id) && remoteTaskId != -1 ->
+                syncFromServer(serverTask, remoteTaskId)
+                    .andThen(Single.just(getNavigationState(serverTask.status)))
+            else -> {
+                val localStatus = userManager.statusTask()
+                Completable.complete()
+                    .andThen(Single.just(getNavigationState(localStatus)))
+            }
         }
-            .andThen(Single.just(getNavigationState(courierTasksMyEntity.status)))
+
     }
 
     private fun syncFromServer(
@@ -299,21 +274,13 @@ class CourierLoaderViewModel(
     }
 
     private fun courierOrderLocalEntity(courierTasksMyEntity: CourierTasksMyEntity): CourierOrderLocalEntity {
-        //        val courierOrderSrcOfficesLocalEntity = with(courierTasksMyEntity.srcOffice) {
-//            CourierOrderSrcOfficeLocalEntity(
-//                id = id,
-//                name = name,
-//                fullAddress = fullAddress,
-//                longitude = long,
-//                latitude = lat
-//            )
-//        }
+
         val courierOrderLocalEntity = with(courierTasksMyEntity) {
             CourierOrderLocalEntity(
                 id = id,
                 routeID = routeID,
                 gate = gate,
-                //                srcOffice = courierOrderSrcOfficesLocalEntity,
+
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,
