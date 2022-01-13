@@ -46,6 +46,8 @@ interface CourierLocalRepository {
 
     fun orderData(): CourierOrderLocalDataEntity?
 
+    fun setReservedTime(time:String)
+
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
     fun deleteAllOrder()

@@ -67,6 +67,10 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.orderData()
     }
 
+    override fun setReservedTime(time: String) {
+        return courierOrderDao.setReserveTime(time)
+    }
+
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
         return courierOrderDao.observeOrderData()
     }

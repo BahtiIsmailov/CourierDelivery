@@ -18,6 +18,9 @@ interface CourierOrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrder(orderEntity: CourierOrderLocalEntity): Completable
 
+    @Query("UPDATE CourierOrderLocalEntity SET reservedAt=:time")
+    fun setReserveTime(time:String)
+
     @Query("SELECT * FROM CourierOrderLocalEntity")
     fun readOrder(): Single<CourierOrderLocalEntity>
 

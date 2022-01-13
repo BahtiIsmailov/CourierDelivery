@@ -17,6 +17,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
+import ru.wb.go.utils.managers.TimeManager
 import java.util.concurrent.TimeUnit
 
 class CourierOrderConfirmInteractorImpl(
@@ -24,7 +25,8 @@ class CourierOrderConfirmInteractorImpl(
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
-    private val userManager: UserManager
+    private val userManager: UserManager,
+    private val timeManager: TimeManager,
 ) : CourierOrderConfirmInteractor {
 
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
@@ -38,13 +40,16 @@ class CourierOrderConfirmInteractorImpl(
 //        return Completable.timer(1000, TimeUnit.MILLISECONDS)
 //            .andThen(Completable.error(BadRequestException(Error("Error", "500", null))))
 //            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-
+        val reservedTime = timeManager.getLocalTime()
         return courierLocalRepository.observeOrderData()
             .map { it.courierOrderLocalEntity.id }
             .map { it.toString() }
             .firstOrError()
             .flatMapCompletable { appRemoteRepository.anchorTask(it, userManager.carNumber()) }
-            .doOnComplete { userManager.saveStatusTask(TaskStatus.TIMER.status) }
+            .doOnComplete {
+                courierLocalRepository.setReservedTime(reservedTime)
+                userManager.saveStatusTask(TaskStatus.TIMER.status)
+            }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

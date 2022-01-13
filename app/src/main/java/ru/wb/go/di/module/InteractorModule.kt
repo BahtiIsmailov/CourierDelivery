@@ -247,14 +247,16 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager
+        userManager: UserManager,
+        timeManager: TimeManager,
     ): CourierOrderConfirmInteractor {
         return CourierOrderConfirmInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             courierLocalRepository,
-            userManager
+            userManager,
+            timeManager,
         )
     }
 
@@ -390,7 +392,16 @@ val interactorModule = module {
     factory { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
-    single { provideCourierBillingAccountSelectorInteractor(get(), get(), get(), get(), get(), get()) }
+    single {
+        provideCourierBillingAccountSelectorInteractor(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
@@ -398,7 +409,7 @@ val interactorModule = module {
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get()) }
+    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
             get(),
