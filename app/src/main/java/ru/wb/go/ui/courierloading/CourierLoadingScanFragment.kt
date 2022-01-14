@@ -29,6 +29,7 @@ import ru.wb.go.ui.splash.OnCourierScanner
 import ru.wb.go.ui.splash.OnSoundPlayer
 import ru.wb.go.views.ProgressButtonMode
 
+
 class CourierLoadingScanFragment : Fragment() {
 
     private val viewModel by viewModel<CourierLoadingScanViewModel>()
@@ -41,6 +42,7 @@ class CourierLoadingScanFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = CourierLoadingFragmentBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -51,6 +53,7 @@ class CourierLoadingScanFragment : Fragment() {
         initObserver()
         initReturnResult()
     }
+
 
     private fun initReturnResult() {
 
@@ -92,16 +95,6 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private var isDialogActive: Boolean = false
-
-    override fun onStart() {
-        super.onStart()
-        if (!isDialogActive) viewModel.onStartScanner()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStopScanner()
-    }
 
     private fun initObserver() {
 
@@ -173,7 +166,7 @@ class CourierLoadingScanFragment : Fragment() {
             when (state) {
                 CourierLoadingScanBeepState.BoxFirstAdded -> beepFirstSuccess()
                 CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
-                CourierLoadingScanBeepState.UnknownBox -> beepUnknownBox()
+                CourierLoadingScanBeepState.UnknownBox -> beepWrongBox()
                 CourierLoadingScanBeepState.UnknownQR -> beepUnknownQr()
             }
         }
@@ -186,61 +179,61 @@ class CourierLoadingScanFragment : Fragment() {
         }
 
         viewModel.boxDataStateUI.observe(viewLifecycleOwner) { state ->
-            binding.qrCode.text = state.qrCode
-            binding.address.text = state.address
-            binding.receive.text = state.accepted
+            binding.qrCode.text = state.boxId
+            binding.boxAddress.text = state.address
+            binding.totalBoxes.text = state.totalBoxes
         }
 
-        viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
+        viewModel.completeButtonState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
-                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
+                true -> binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                false -> binding.completeButton.setState(ProgressButtonMode.DISABLE)
             }
         }
 
-        viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
+        viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierLoadingScanBoxState.InitScanner -> {
                     binding.timerLayout.visibility = View.VISIBLE
-                    binding.scannerInfoLayout.visibility = View.GONE
-                    binding.status.setText(R.string.courier_loading_init_scanner)
-                    binding.status.setBackgroundColor(getColor(R.color.init_scan_status))
+                    binding.boxInfoLayout.visibility = View.GONE
+                    binding.ribbonStatus.setText(R.string.courier_loading_init_scanner)
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.init_scan_status))
                 }
                 is CourierLoadingScanBoxState.LoadInCar -> {
                     holdBackButtonOnScanBox()
-                    binding.status.setText(R.string.courier_loading_load_in_car)
-                    binding.status.setBackgroundColor(getColor(R.color.complete_scan_status))
+                    binding.ribbonStatus.setText(R.string.courier_loading_load_in_car)
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.complete_scan_status))
                     binding.qrCode.setTextColor(getColor(R.color.black_text))
                     binding.timerLayout.visibility = View.GONE
-                    binding.scannerInfoLayout.visibility = View.VISIBLE
+                    binding.boxInfoLayout.visibility = View.VISIBLE
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
                     binding.timerLayout.visibility = View.VISIBLE
-                    binding.scannerInfoLayout.visibility = View.GONE
-                    binding.status.setText(R.string.courier_loading_forbidden_take)
-                    binding.status.setBackgroundColor(getColor(R.color.forbidden_scan_status))
+                    binding.boxInfoLayout.visibility = View.GONE
+                    binding.ribbonStatus.setText(R.string.courier_loading_forbidden_take)
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.forbidden_scan_status))
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeBox -> {
                     holdBackButtonOnScanBox()
                     binding.timerLayout.visibility = View.GONE
-                    binding.scannerInfoLayout.visibility = View.VISIBLE
-                    binding.status.setText(R.string.courier_loading_forbidden_take)
-                    binding.status.setBackgroundColor(getColor(R.color.forbidden_scan_status))
+                    binding.boxInfoLayout.visibility = View.VISIBLE
+                    binding.ribbonStatus.setText(R.string.courier_loading_forbidden_take)
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.forbidden_scan_status))
                     binding.qrCode.setTextColor(getColor(R.color.black_text))
-                    binding.address.setTextColor(getColor(R.color.black_text))
+                    binding.boxAddress.setTextColor(getColor(R.color.black_text))
                 }
                 CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
                     binding.timerLayout.visibility = View.VISIBLE
-                    binding.scannerInfoLayout.visibility = View.GONE
-                    binding.status.setText(R.string.courier_loading_not_recognized_qr)
-                    binding.status.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
+                    binding.boxInfoLayout.visibility = View.GONE
+                    binding.ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
                 }
-                CourierLoadingScanBoxState.NotRecognizedQr -> {
+                is CourierLoadingScanBoxState.NotRecognizedQr -> {
                     holdBackButtonOnScanBox()
                     binding.timerLayout.visibility = View.GONE
-                    binding.scannerInfoLayout.visibility = View.VISIBLE
-                    binding.status.setText(R.string.courier_loading_not_recognized_qr)
-                    binding.status.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
+                    binding.boxInfoLayout.visibility = View.VISIBLE
+                    binding.ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
                 }
             }
         }
@@ -327,9 +320,7 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.complete.setOnClickListener { viewModel.onCompleteLoaderClicked() }
-        // TODO: 28.09.2021 включить для отладки
-        //binding.listLayout.setOnClickListener { viewModel.onListClicked() }
+        binding.completeButton.setOnClickListener { viewModel.onCompleteLoaderClicked() }
     }
 
     companion object {
@@ -353,7 +344,7 @@ class CourierLoadingScanFragment : Fragment() {
 //        play(R.raw.sound_scan_success)
     }
 
-    private fun beepUnknownBox() {
+    private fun beepWrongBox() {
         play(R.raw.unloading_unknown_box)
     }
 

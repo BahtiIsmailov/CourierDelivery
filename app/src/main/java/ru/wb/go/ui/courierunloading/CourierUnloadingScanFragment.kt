@@ -158,13 +158,13 @@ class CourierUnloadingScanFragment : Fragment() {
 
         val navigationObserver = Observer<CourierUnloadingScanNavAction> { state ->
             when (state) {
-                is CourierUnloadingScanNavAction.NavigateToUnknownBox -> {
-                    findNavController().navigate(CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierUnloadingUnknownBoxFragment())
-                }
                 CourierUnloadingScanNavAction.NavigateToIntransit ->
-                    findNavController().navigate(CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment())
+                    findNavController().navigate(
+                        CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment()
+                    )
                 CourierUnloadingScanNavAction.NavigateToBoxes -> {
                 }
+                is CourierUnloadingScanNavAction.NavigateToDialogInfo -> TODO()
             }
         }
 
@@ -178,74 +178,96 @@ class CourierUnloadingScanFragment : Fragment() {
             }
         }
 
-        viewModel.isEnableStateEvent.observe(viewLifecycleOwner) { progress ->
+        viewModel.completeButtonEnable.observe(viewLifecycleOwner) { progress ->
             when (progress) {
-                true -> binding.complete.setState(ProgressButtonMode.ENABLE)
-                false -> binding.complete.setState(ProgressButtonMode.DISABLE)
+                true -> binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                false -> binding.completeButton.setState(ProgressButtonMode.DISABLE)
             }
         }
 
-        viewModel.boxStateUI.observe(viewLifecycleOwner) { state ->
+        viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CourierUnloadingScanBoxState.Empty -> {
-                    binding.status.text = state.status
+                is UnloadingFragmentState.Empty -> {
+                    binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(grayColor())
                     binding.statusIcon.visibility = View.VISIBLE
-                    binding.qrCode.text = state.qrCode
+                    binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.light_text)
                     )
-                    binding.receive.text = state.accepted
+                    binding.totalBoxes.text = state.data.accepted
                     binding.counterLayout.isEnabled = false
-                    binding.address.text = state.address
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
+                    binding.boxAddress.text = state.data.address
+                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
                 }
-                is CourierUnloadingScanBoxState.BoxInit -> {
-                    binding.status.text = state.status
+                is UnloadingFragmentState.BoxInit -> {
+                    binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(grayColor())
                     binding.statusIcon.visibility = View.VISIBLE
-                    binding.qrCode.text = state.qrCode
+                    binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
-                    binding.receive.text = state.accepted
+                    binding.totalBoxes.text = state.data.accepted
                     binding.counterLayout.isEnabled = false
-                    binding.address.text = state.address
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
+                    binding.boxAddress.text = state.data.address
+                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
                 }
-                is CourierUnloadingScanBoxState.BoxAdded -> {
-                    binding.status.text = state.status
+                is UnloadingFragmentState.BoxAdded -> {
+                    binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(colorGreen())
                     binding.statusIcon.visibility = View.GONE
-                    binding.qrCode.text = state.qrCode
+                    binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
-                    binding.receive.text = state.accepted
-                    binding.address.text = state.address
-                    binding.address.setTextColor(colorBlack())
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
+                    binding.totalBoxes.text = state.data.accepted
+                    binding.boxAddress.text = state.data.address
+                    binding.boxAddress.setTextColor(colorBlack())
+                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
                 }
-                is CourierUnloadingScanBoxState.UnknownBox -> {
-                    binding.status.text = state.status
-                    binding.statusLayout.setBackgroundColor(colorRed())
+                is UnloadingFragmentState.UnknownQr -> {
+                    binding.ribbonStatus.text = state.data.status
+                    binding.statusLayout.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
                     binding.statusIcon.visibility = View.GONE
-                    binding.qrCode.text = state.qrCode
+                    binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
-                    binding.address.text = state.address
-                    binding.address.setTextColor(colorBlack())
-                    binding.receive.text = state.accepted
+                    binding.boxAddress.text = state.data.address
+                    binding.boxAddress.setTextColor(colorBlack())
+                    binding.totalBoxes.text = state.data.accepted
                 }
-                is CourierUnloadingScanBoxState.ScannerReady -> {
-                    binding.status.text = state.status
+                is UnloadingFragmentState.ScannerReady -> {
+                    binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(grayColor())
                     binding.statusIcon.visibility = View.VISIBLE
-                    binding.qrCode.text = state.qrCode
+                    binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
-                    binding.receive.text = state.accepted
-                    binding.address.text = state.address
-                    binding.address.setTextColor(colorBlack())
-                    binding.complete.setState(ProgressButtonMode.ENABLE)
+                    binding.totalBoxes.text = state.data.accepted
+                    binding.boxAddress.text = state.data.address
+                    binding.boxAddress.setTextColor(colorBlack())
+                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                }
+                is UnloadingFragmentState.ForbiddenBox -> {
+                    binding.ribbonStatus.text = state.data.status
+                    binding.statusLayout.setBackgroundColor(colorRed())
+                    binding.statusIcon.visibility = View.GONE
+                    binding.qrCode.text = state.data.qrCode
+                    binding.qrCode.setTextColor(colorBlack())
+                    binding.boxAddress.text = state.data.address
+                    binding.boxAddress.setTextColor(colorBlack())
+                    binding.totalBoxes.text = state.data.accepted
+                }
+                is UnloadingFragmentState.WrongBox -> {
+                    binding.ribbonStatus.text = state.data.status
+                    binding.statusLayout.setBackgroundColor(colorRed())
+                    binding.statusIcon.visibility = View.GONE
+                    binding.qrCode.text = state.data.qrCode
+                    binding.qrCode.setTextColor(colorBlack())
+                    binding.boxAddress.text = state.data.address
+                    binding.boxAddress.setTextColor(colorBlack())
+                    binding.totalBoxes.text = state.data.accepted
                 }
             }
         }
     }
+
+    private fun getColor(colorId: Int) = ContextCompat.getColor(requireContext(), colorId)
 
     private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.init_scan_status)
 
@@ -316,7 +338,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun initListener() {
         binding.counterLayout.setOnClickListener { viewModel.onListClicked() }
-        binding.complete.setOnClickListener { viewModel.onCompleteUnloadClick() }
+        binding.completeButton.setOnClickListener { viewModel.onCompleteUnloadClick() }
     }
 
     override fun onDestroyView() {

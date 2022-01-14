@@ -129,8 +129,10 @@ class CourierOrderConfirmViewModel(
             actionProgress()
                 .andThen(interactor.anchorTask())
                 .subscribe(
-                    { anchorTaskComplete() },
-                    { anchorTaskError(it) })
+                    {
+                        anchorTaskComplete() },
+                    {
+                        anchorTaskError(it) })
         )
     }
 
@@ -150,10 +152,6 @@ class CourierOrderConfirmViewModel(
         onTechErrorLog("anchorTaskError", throwable)
         courierWarehouseError(throwable)
         unlockState()
-    }
-
-    fun refuseOrderConfirmClick() {
-        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
     private fun courierWarehouseError(throwable: Throwable) {

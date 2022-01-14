@@ -64,7 +64,7 @@ class TimerProgressView : View {
                     R.styleable.TimerProgressView_ap_progress,
                     DEFAULT_PROGRESS_VALUE
                 )
-                progress = Math.min(styleProgress, MAX_ANGLE_SCALE.toFloat())
+                progress = styleProgress.coerceAtMost(MAX_ANGLE_SCALE.toFloat())
                 progressWidth = array.getInteger(
                     R.styleable.TimerProgressView_ap_progress_width,
                     DEFAULT_STROKE_WIDTH_SCALE
@@ -191,7 +191,7 @@ class TimerProgressView : View {
     }
 
     private val radiusBox: Float
-        private get() = Math.min(rectBox.height(), rectBox.width()) / 2
+        get() = rectBox.height().coerceAtMost(rectBox.width()) / 2
 
     @FloatRange(from = MIN_PROGRESS_SCALE.toDouble(), to = MAX_PROGRESS_SCALE.toDouble())
     fun getProgress(): Float {

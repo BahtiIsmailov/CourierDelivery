@@ -36,11 +36,10 @@ import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryParameters
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryViewModel
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanViewModel
-import ru.wb.go.ui.courierunloading.CourierUnloadingUnknownBoxViewModel
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
-import ru.wb.go.ui.scanner.ScannerViewModel
+
 import ru.wb.go.ui.splash.AppLoaderViewModel
 import ru.wb.go.ui.splash.AppViewModel
 
@@ -119,7 +118,7 @@ val viewModelModule = module {
             get()
         )
     }
-    viewModel { CourierUnloadingUnknownBoxViewModel() }
+
     viewModel { (parameters: CourierStartDeliveryParameters) ->
         CourierStartDeliveryViewModel(parameters, get(), get(), get(), get())
     }
@@ -127,8 +126,6 @@ val viewModelModule = module {
         CourierCompleteDeliveryViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { CourierMapViewModel(get(), get(), get(), get()) }
-
-    viewModel { ScannerViewModel(get(), get(), get()) }
 
     viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
@@ -156,11 +153,11 @@ val viewModelModule = module {
 
     viewModel { (parameters: CourierBillingCompleteParameters) ->
         CourierBillingCompleteViewModel(
-                parameters,
-                get(),
-                get(),
-                get(),
-                get()
+            parameters,
+            get(),
+            get(),
+            get(),
+            get()
         )
     }
 

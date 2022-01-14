@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <fragment
-        android:id="@+id/scanner"
+        android:id="@+id/scanner_frame"
         class="ru.wb.go.ui.scanner.CourierScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -26,13 +26,13 @@
         tools:layout="@layout/courier_scanner_fragment" />
 
     <TextView
-        android:id="@+id/status"
+        android:id="@+id/ribbon_status"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/init_scan_status"
         android:gravity="center"
         android:letterSpacing="0.2"
-        android:text="Начните сканирование"
+        tools:text="Начните сканирование"
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textStyle="bold"
@@ -41,13 +41,13 @@
         app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/scanner_info_layout"
+        android:id="@+id/box_info_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status">
+        app:layout_constraintTop_toBottomOf="@+id/ribbon_status">
 
         <TextView
             android:id="@+id/prefix_qr_code"
@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="0000000000"
+            tools:text="0000000000"
             app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
             app:layout_constraintStart_toEndOf="@+id/prefix_qr_code"
             app:layout_constraintTop_toTopOf="@+id/counter_layout" />
@@ -105,12 +105,12 @@
                 android:text="Принято" />
 
             <TextView
-                android:id="@+id/receive"
+                android:id="@+id/total_boxes"
                 style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="0 шт." />
+                tools:text="0 шт." />
 
         </LinearLayout>
 
@@ -119,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/complete"
+            app:layout_constraintBottom_toTopOf="@+id/complete_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/counter_layout">
@@ -134,7 +134,7 @@
                 android:text="Адрес доставки" />
 
             <TextView
-                android:id="@+id/address"
+                android:id="@+id/box_address"
                 style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -144,12 +144,12 @@
                 android:ellipsize="end"
                 android:lineSpacingExtra="4sp"
                 android:maxLines="3"
-                tools:text="-" />
+                tools:text="МОСКВА ул.Строителей WBgo" />
 
         </LinearLayout>
 
         <ru.wb.go.views.ProgressButtonView
-            android:id="@+id/complete"
+            android:id="@+id/complete_button"
             android:layout_width="match_parent"
             android:layout_height="@dimen/auth_button_height"
             android:layout_marginLeft="16dp"
@@ -174,7 +174,7 @@
         android:background="@color/white"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status">
+        app:layout_constraintTop_toBottomOf="@+id/ribbon_status">
 
         <ru.wb.go.ui.courierordertimer.view.TimerProgressView
             android:id="@+id/timer"

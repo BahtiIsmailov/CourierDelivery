@@ -526,5 +526,6 @@
     <string name="check_order_data_hint">Внимательно проверьте данные</string>
     <string name="car_hint">Машина</string>
     <string name="arrive_hint">Прибыть</string>
+    <string name="receive_wrong_box">Вы не принимали эту коробку на складе</string>
 
 </resources>

@@ -61,7 +61,6 @@ class CourierOrdersViewModel(
     private var copyCourierOrdersEntity = mutableListOf<CourierOrderEntity>()
 
     init {
-        onTechEventLog("init")
         observeNetworkState()
         fetchVersionApp()
         initToolbarLabel()

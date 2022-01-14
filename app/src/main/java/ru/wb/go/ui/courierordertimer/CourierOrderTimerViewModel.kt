@@ -41,6 +41,10 @@ class CourierOrderTimerViewModel(
     val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogRefuseOrder
 
+    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
+    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+        get() = _navigateToDialogInfo
+
     private val _navigationState = SingleLiveEvent<CourierOrderTimerNavigationState>()
     val navigationState: LiveData<CourierOrderTimerNavigationState>
         get() = _navigationState
@@ -54,7 +58,6 @@ class CourierOrderTimerViewModel(
         get() = _holdState
 
     init {
-        onTechEventLog("init")
         initOrder()
     }
 
@@ -74,6 +77,7 @@ class CourierOrderTimerViewModel(
     }
 
     private fun lockState() {
+        // FIXME: 21.01.2022 Что это за стейт?
         _holdState.value = true
     }
 
@@ -83,7 +87,7 @@ class CourierOrderTimerViewModel(
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
-        LogUtils{logDebugApp("initTimer reservedDuration $reservedDuration reservedAt $reservedAt")}
+        LogUtils { logDebugApp("initTimer reservedDuration $reservedDuration reservedAt $reservedAt") }
         interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer
@@ -123,8 +127,8 @@ class CourierOrderTimerViewModel(
         }
     }
 
-    private fun progressComplete() {
-        _progressState.value = CourierOrderTimerProgressState.ProgressComplete
+    private fun setLoader(state:CourierOrderTimerProgressState) {
+        _progressState.postValue(state)
     }
 
     fun onRefuseOrderClick() {
@@ -145,7 +149,7 @@ class CourierOrderTimerViewModel(
         unlockState()
     }
 
-    fun onReturnToListOrderClick() {
+    fun timeOutReturnToList() {
         onTechEventLog("onReturnToListOrderClick")
         lockState()
         deleteTask()
@@ -162,21 +166,25 @@ class CourierOrderTimerViewModel(
     }
 
     private fun deleteTask() {
-        addSubscription(interactor.deleteTask()
-            .subscribe(
-                {
-                    unlockState()
-                    toWarehouse()
-                },
-                {
-                    unlockState()
-                    onTechErrorLog("onHandleSignUpError", it)
-                }
-            )
+        setLoader(CourierOrderTimerProgressState.Progress)
+        addSubscription(
+            interactor.deleteTask()
+                .doFinally{setLoader(CourierOrderTimerProgressState.ProgressComplete)}
+                .subscribe(
+                    {
+                        unlockState()
+                        toLoaderFragment()
+                    },
+                    {
+                        unlockState()
+                        _navigateToDialogInfo.value = messageError(it, resourceProvider)
+
+                    }
+                )
         )
     }
 
-    private fun toWarehouse() {
+    private fun toLoaderFragment() {
         onTechEventLog("toWarehouse")
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }

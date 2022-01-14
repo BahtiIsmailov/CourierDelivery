@@ -7,27 +7,31 @@
     android:layout_height="match_parent"
     android:background="@color/delivery_flight_background">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/background_scanner_gradient"
-        tools:ignore="ContentDescription" />
-
-    <FrameLayout
-        android:id="@+id/scanner_layout"
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/zxing_barcode_scanner"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:zxing_use_texture_view="true"
+        />
+
+    <com.journeyapps.barcodescanner.ViewfinderView
+        android:id="@+id/zxing_viewfinder_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="150dp"
+        android:layout_marginHorizontal="50dp"
+        app:zxing_possible_result_points="@color/zxing_custom_possible_result_points"
+        tools:zxing_viewfinder_laser_visibility="true"
+        app:zxing_preview_scaling_strategy="fitXY"
+        app:zxing_result_view="@color/zxing_custom_result_view"
+        app:zxing_viewfinder_laser="@color/zxing_custom_viewfinder_laser"
+        app:zxing_viewfinder_laser_visibility="true"
+        app:zxing_viewfinder_mask="@color/zxing_custom_viewfinder_mask"
+        />
 
     <ImageView
         android:id="@+id/scan_status"
@@ -41,10 +45,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_scan_complete"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:visibility="visible"
+        />
 
     <ImageView
-        android:id="@+id/sun"
+        android:id="@+id/flash"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
@@ -95,31 +101,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/permission_info" />
-
-    <ProgressBar
-        android:id="@+id/loader_progress"
-        style="?android:attr/progressBarStyleSmallTitle"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:theme="@style/AppProgressBarCircularDark"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/scanner_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scanner_top"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/loader"
-        style="@style/LargeDarkRegularText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/dc_loading_scan_loader"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loader_progress" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/scanner_top"

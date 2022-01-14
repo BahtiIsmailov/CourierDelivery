@@ -6,7 +6,6 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CourierScannerViewModel(
@@ -20,12 +19,12 @@ class CourierScannerViewModel(
         get() = _scannerAction
 
     init {
-        addSubscription(interactor.observeScannerState().subscribe { _scannerAction.value = it })
+        addSubscription(interactor.observeScannerState()
+            .subscribe { _scannerAction.value = it }
+        )
     }
 
     fun onBarcodeScanned(barcode: String) {
-        LogUtils { logDebugApp("onBarcodeScanned(barcode: String) " + barcode) }
-        _scannerAction.value = ScannerState.BeepScan
         interactor.barcodeScanned(barcode)
     }
 
@@ -34,7 +33,7 @@ class CourierScannerViewModel(
     }
 
     companion object {
-        const val SCREEN_TAG = "CourierScanner"
+        const val SCREEN_TAG = "Scanner"
     }
 
 }

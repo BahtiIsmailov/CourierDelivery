@@ -230,7 +230,7 @@ val interactorModule = module {
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
         timeFormatter: TimeFormatter,
-        userManager: UserManager
+        timeManager: TimeManager,
     ): CourierOrderTimerInteractor {
         return CourierOrderTimerInteractorImpl(
             rxSchedulerFactory,
@@ -238,7 +238,7 @@ val interactorModule = module {
             courierLocalRepository,
             taskTimerRepository,
             timeFormatter,
-            userManager
+            timeManager
         )
     }
 
@@ -268,7 +268,7 @@ val interactorModule = module {
         timeManager: TimeManager,
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
-        userManager: UserManager
+
     ): CourierLoadingInteractor {
         return CourierLoadingInteractorImpl(
             rxSchedulerFactory,
@@ -278,7 +278,6 @@ val interactorModule = module {
             timeManager,
             courierLocalRepository,
             taskTimerRepository,
-            userManager
         )
     }
 
@@ -412,7 +411,6 @@ val interactorModule = module {
     single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
-            get(),
             get(),
             get(),
             get(),

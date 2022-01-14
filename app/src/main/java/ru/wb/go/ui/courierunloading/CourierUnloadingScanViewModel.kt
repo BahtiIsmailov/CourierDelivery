@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.exceptions.CompositeException
+import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -16,7 +17,7 @@ import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
-import java.util.concurrent.TimeUnit
+
 
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
@@ -64,21 +65,20 @@ class CourierUnloadingScanViewModel(
     val progressEvent: LiveData<CourierUnloadingScanProgress>
         get() = _progressEvent
 
-    private val _boxStateUI =
-        MutableLiveData<CourierUnloadingScanBoxState>()
-    val boxStateUI: LiveData<CourierUnloadingScanBoxState>
-        get() = _boxStateUI
+    private val _fragmentStateUI =
+        MutableLiveData<UnloadingFragmentState>()
+    val fragmentStateUI: LiveData<UnloadingFragmentState>
+        get() = _fragmentStateUI
 
-    private val _isEnableStateEvent = SingleLiveEvent<Boolean>()
-    val isEnableStateEvent: LiveData<Boolean>
-        get() = _isEnableStateEvent
+    private val _completeButtonEnable = SingleLiveEvent<Boolean>()
+    val completeButtonEnable: LiveData<Boolean>
+        get() = _completeButtonEnable
 
     init {
-        onTechEventLog("init")
         initToolbar()
         fetchVersionApp()
         observeNetworkState()
-        observeInitScanProcess()
+        observeBoxInfoProcessInitState()
         observeScanProcess()
         observeScanProgress()
     }
@@ -87,43 +87,39 @@ class CourierUnloadingScanViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
-    private fun observeInitScanProcess() {
-        addSubscription(interactor.readUnloadingLastBox(parameters.officeId)
-            .map { mapInitScanProcess(it) }
-            .subscribe(
-                {
-                    onTechEventLog("observeInitScanProcessComplete")
-                    _boxStateUI.value = it
-                },
-                { onTechErrorLog("observeInitScanProcessError", it) }
-            )
+    private fun observeBoxInfoProcessInitState() {
+        addSubscription(
+            interactor.getCurrentOffice(parameters.officeId)
+                .map { mapInitScanProcess(it) }
+                .subscribe(
+                    {
+                        _fragmentStateUI.value = it
+                    },
+                    { onTechErrorLog("observeInitScanProcessError", it) }
+                )
         )
     }
 
-    private fun mapInitScanProcess(initResult: CourierUnloadingLastBoxResult): CourierUnloadingScanBoxState {
+    private fun mapInitScanProcess(office: LocalOfficeEntity): UnloadingFragmentState {
         val readyStatus = resourceProvider.getReadyStatus()
         val accepted = resourceProvider.getAccepted(
-            initResult.deliveredCount,
-            initResult.fromCount
+            office.deliveredBoxes,
+            office.countBoxes
         )
-        return if (initResult.id.isEmpty()) {
-            CourierUnloadingScanBoxState.Empty(
+        return UnloadingFragmentState.Empty(
+            UnloadingFragmentData(
                 readyStatus,
                 resourceProvider.getEmptyQr(),
                 resourceProvider.getEmptyAddress(),
                 accepted
             )
-        } else {
-            CourierUnloadingScanBoxState.BoxInit(
-                readyStatus, initResult.id, initResult.address, accepted
-            )
-        }
+        )
     }
 
     private fun initToolbar() {
         addSubscription(
-            interactor.nameOffice(parameters.officeId)
-                .subscribe({ _toolbarLabelState.value = Label(it) },
+            interactor.getCurrentOffice(parameters.officeId)
+                .subscribe({ _toolbarLabelState.value = Label(it.officeName) },
                     {})
         )
     }
@@ -137,7 +133,7 @@ class CourierUnloadingScanViewModel(
 
     fun onCancelScoreUnloadingClick() {
         onTechEventLog("onCancelScoreUnloadingClick")
-        _isEnableStateEvent.value = true
+        _completeButtonEnable.value = true
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         onStartScanner()
     }
@@ -147,19 +143,17 @@ class CourierUnloadingScanViewModel(
         confirmUnloading()
     }
 
-    private fun confirmUnloading() { //fromCount: Int, unloadedCount: Int
+    private fun confirmUnloading() {
+        _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
-            interactor.confirmUnloading(parameters.officeId)
-                .subscribe({ confirmUnloadingComplete(it) }, { confirmUnloadingError(it) })
+            interactor.completeOfficeUnload()
+                .subscribe(
+                    { confirmUnloadingComplete() },
+                    { confirmUnloadingError(it) })
         )
     }
 
-    private fun confirmUnloadingComplete(courierBoxScoreResult: CourierBoxScoreResult) {
-        onTechEventLog(
-            "confirmUnloadingComplete",
-            "fromCount " + courierBoxScoreResult.fromCount + " unloadedCount " + courierBoxScoreResult.unloadedCount + " loadedCount " + courierBoxScoreResult.loadedCount
-        )
-        interactor.confirmUnloadingComplete(parameters.officeId)
+    private fun confirmUnloadingComplete() {
         clearSubscription()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
         _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
@@ -173,13 +167,12 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        addSubscription(interactor.observeScanProcess(parameters.officeId)
-            .doOnError { observeScanProcessError(it) }
-            .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
-            .subscribe(
-                { observeScanProcessComplete(it) },
-                { observeScanProcessError(it) }
-            )
+        addSubscription(
+            interactor.observeScanProcess(parameters.officeId)
+                .subscribe(
+                    { observeScanProcessComplete(it) },
+                    { observeScanProcessError(it) }
+                )
         )
     }
 
@@ -190,63 +183,96 @@ class CourierUnloadingScanViewModel(
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
         when (scanBoxData) {
             is CourierUnloadingScanBoxData.ScannerReady -> {
-                _boxStateUI.value = with(scanBoxData) {
-                    CourierUnloadingScanBoxState.ScannerReady(
-                        resourceProvider.getReadyStatus(),
-                        qrCode,
-                        address,
-                        accepted
+                _fragmentStateUI.value = with(scanBoxData) {
+                    UnloadingFragmentState.ScannerReady(
+                        UnloadingFragmentData(
+                            resourceProvider.getReadyStatus(),
+                            qrCode,
+                            address,
+                            accepted
+                        )
                     )
                 }
             }
             is CourierUnloadingScanBoxData.BoxAdded -> {
-                _boxStateUI.value = with(scanBoxData) {
-                    CourierUnloadingScanBoxState.BoxAdded(
-                        resourceProvider.getReadyAddedBox(),
-                        qrCode,
-                        address,
-                        accepted
+                _fragmentStateUI.value = with(scanBoxData) {
+                    UnloadingFragmentState.BoxAdded(
+                        UnloadingFragmentData(
+                            resourceProvider.getReadyAddedBox(),
+                            qrCode,
+                            address,
+                            accepted
+                        )
                     )
                 }
                 _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
-                _isEnableStateEvent.value = true
+                _completeButtonEnable.value = true
             }
-            is CourierUnloadingScanBoxData.UnknownBox -> {
-                _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToUnknownBox
-                _boxStateUI.value = CourierUnloadingScanBoxState.UnknownBox(
-                    resourceProvider.getReadyUnknownBox(),
-                    if (scanBoxData.qrCode.isEmpty()) resourceProvider.getEmptyQr() else scanBoxData.qrCode,
-                    if (scanBoxData.address.isEmpty()) resourceProvider.getEmptyAddress() else scanBoxData.address,
-                    accepted
+            CourierUnloadingScanBoxData.UnknownQr -> {
+
+                _fragmentStateUI.value = UnloadingFragmentState.UnknownQr(
+                    UnloadingFragmentData(
+                        resourceProvider.getScanDialogTitle(),
+                        resourceProvider.getUnknownQr(),
+                        resourceProvider.getEmptyAddress(),
+                        accepted
+                    )
+                )
+                _beepEvent.value = CourierUnloadingScanBeepState.UnknownQR
+            }
+            CourierUnloadingScanBoxData.Empty -> _fragmentStateUI.value =
+                UnloadingFragmentState.Empty(
+                    UnloadingFragmentData(
+                        resourceProvider.getReadyStatus(),
+                        resourceProvider.getEmptyQr(),
+                        resourceProvider.getEmptyAddress(),
+                        accepted
+                    )
+                )
+            is CourierUnloadingScanBoxData.UnloadingCompleted -> {
+                _fragmentStateUI.value = with(scanBoxData) {
+                    UnloadingFragmentState.BoxAdded(
+                        UnloadingFragmentData(
+                            resourceProvider.getReadyAddedBox(),
+                            qrCode,
+                            address,
+                            accepted
+                        )
+                    )
+                }
+                _completeButtonEnable.value = true
+            }
+            is CourierUnloadingScanBoxData.ForbiddenBox -> {
+                _fragmentStateUI.value = UnloadingFragmentState.ForbiddenBox(
+                    UnloadingFragmentData(
+                        resourceProvider.getReadyForbiddenBox(),
+                        scanBoxData.qrCode,
+                        scanBoxData.address,
+                        accepted
+                    )
                 )
                 _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
             }
-            CourierUnloadingScanBoxData.Empty -> _boxStateUI.value =
-                CourierUnloadingScanBoxState.Empty(
-                    resourceProvider.getReadyStatus(),
-                    resourceProvider.getEmptyQr(),
-                    resourceProvider.getEmptyAddress(),
-                    accepted
-                )
-            is CourierUnloadingScanBoxData.UnloadingCompleted -> {
-                _boxStateUI.value = with(scanBoxData) {
-                    CourierUnloadingScanBoxState.BoxAdded(
-                        resourceProvider.getReadyAddedBox(),
-                        qrCode,
-                        address,
+            is CourierUnloadingScanBoxData.WrongBox -> {
+                _fragmentStateUI.value = UnloadingFragmentState.WrongBox(
+                    UnloadingFragmentData(
+                        resourceProvider.getReadyWrongBox(),
+                        scanBoxData.qrCode,
+                        resourceProvider.getEmptyAddress(),
                         accepted
                     )
-                }
-                _isEnableStateEvent.value = true
+                )
+                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
             }
         }
+//        onStartScanner()
     }
 
     private fun observeScanProgress() {
         addSubscription(
             interactor.scanLoaderProgress()
                 .subscribe({
-                    _isEnableStateEvent.value = when (it) {
+                    _completeButtonEnable.value = when (it) {
                         CourierUnloadingProgressData.Complete -> true
                         CourierUnloadingProgressData.Progress -> false
                     }
@@ -260,38 +286,36 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onCompleteUnloadClick() {
-        _isEnableStateEvent.value = false
+        _completeButtonEnable.value = false
         onStopScanner()
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
-            interactor.readUnloadingBoxCounter(parameters.officeId).subscribe({
-                onTechEventLog(
-                    "readUnloadingBoxCounterComplete",
-                    "fromCount " + it.fromCount + " unloadedCount " + it.unloadedCount
-                )
-                if (it.fromCount == it.unloadedCount) confirmUnloading()
-                else showUnloadingScoreDialog(it)
-            },
-                {
-                    onTechErrorLog("readUnloadingBoxCounterError", it)
-                    _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
-                    _navigateToDialogScoreError.value = NavigateToDialogInfo(
-                        DialogInfoStyle.ERROR.ordinal,
-                        resourceProvider.getGenericServiceTitleError(),
-                        it.toString(),
-                        resourceProvider.getGenericServiceButtonError()
-                    )
-                })
+            interactor.getCurrentOffice(parameters.officeId)
+                .subscribe({
+                    if (it.countBoxes == it.deliveredBoxes ) confirmUnloading()
+                    else {
+                        showUnloadingScoreDialog(it)
+                    }
+                },
+                    {
+                        onTechErrorLog("readUnloadingBoxCounterError", it)
+                        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+                        _navigateToDialogScoreError.value = NavigateToDialogInfo(
+                            DialogInfoStyle.ERROR.ordinal,
+                            resourceProvider.getGenericServiceTitleError(),
+                            it.toString(),
+                            resourceProvider.getGenericServiceButtonError()
+                        )
+                    })
         )
     }
 
-    private fun showUnloadingScoreDialog(it: CourierUnloadingBoxScoreResult) {
+    private fun showUnloadingScoreDialog(office: LocalOfficeEntity) {
         _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getUnloadingDialogTitle(),
             resourceProvider.getUnloadingDialogMessage(
-                it.unloadedCount,
-                it.fromCount
+                office.deliveredBoxes,
+                office.countBoxes
             ),
             resourceProvider.getUnloadingDialogPositive(),
             resourceProvider.getUnloadingDialogNegative()
@@ -307,12 +331,12 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun scanProcessError(throwable: Throwable) {
+        onStopScanner()
         val message = when (throwable) {
             is NoInternetException -> throwable.message
             is BadRequestException -> throwable.error.message
             else -> resourceProvider.getScanDialogMessage()
         }
-        onStopScanner()
         _beepEvent.value = CourierUnloadingScanBeepState.UnknownQR
         _navigateToDialogInfo.value = NavigateToDialogInfo(
             DialogInfoStyle.ERROR.ordinal,
@@ -321,7 +345,7 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onStopScanner() {
-        interactor.scannerAction(ScannerState.Stop)
+        interactor.scannerAction(ScannerState.StopScan)
     }
 
     fun onStartScanner() {
@@ -333,7 +357,7 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onScoreDialogConfirmClick() {
-        _isEnableStateEvent.value = true
+        _completeButtonEnable.value = true
         onStartScanner()
         _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
     }

@@ -6,7 +6,7 @@ const val APP_JSON = "application/json"
 
 const val VERSION_API = "/api/v1"
 
-const val VERSION_DATABASE = 29
+const val VERSION_DATABASE = 31
 const val EXPORT_SCHEMA_DATABASE = false
 
 const val NEED_SEND_COURIER_DOCUMENTS = "NEED_SEND_COURIER_DOCUMENTS" //не заполнил данные
@@ -21,11 +21,11 @@ const val COURIER_COMPANY_ID = "318"
 
 const val COURIER_ROLE = "COURIER"
 
-const val PREFIX_QR_CODE = "\$1:1:"
-const val PREFIX_QR_CODE_SPLITTER = ":"
+const val PREFIX_BOX_QR_CODE_V1 = "\$1:1:"
+const val PREFIX_BOX_QR_CODE_SPLITTER_V1 = ":"
 
-const val PREFIX_QR_OFFICE_CODE = "PHX"
-const val PREFIX_QR_OFFICE_DYNAMIC_CODE = "o"
+const val PREFIX_QR_OFFICE_CODE_OLD = "PHX"
+const val PREFIX_QR_OFFICE_CODE_V1 = "o:"
 
 const val DEFAULT_ARRIVAL_TIME_COURIER_MIN = 20
 

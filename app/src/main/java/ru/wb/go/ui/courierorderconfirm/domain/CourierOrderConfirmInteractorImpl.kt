@@ -1,14 +1,14 @@
 package ru.wb.go.ui.courierorderconfirm.domain
 
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import android.annotation.SuppressLint
+import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -24,7 +24,7 @@ class CourierOrderConfirmInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository,
+    private val locRepo: CourierLocalRepository,
     private val userManager: UserManager,
     private val timeManager: TimeManager,
 ) : CourierOrderConfirmInteractor {
@@ -33,17 +33,46 @@ class CourierOrderConfirmInteractorImpl(
     private var timerDisposable: Disposable? = null
     private var durationTime = 0
 
+
+    @SuppressLint("SimpleDateFormat")
     override fun anchorTask(): Completable {
 
         val reservedTime = timeManager.getLocalTime()
-        return courierLocalRepository.observeOrderData()
-            .map { it.courierOrderLocalEntity.id }
-            .map { it.toString() }
-            .firstOrError()
-            .flatMapCompletable { appRemoteRepository.anchorTask(it, userManager.carNumber()) }
+
+        val order = locRepo.orderData()!!
+
+        return appRemoteRepository.anchorTask(
+            order.courierOrderLocalEntity.id.toString(),
+            userManager.carNumber()
+        )
             .doOnComplete {
-                courierLocalRepository.setReservedTime(reservedTime)
-                userManager.saveStatusTask(TaskStatus.TIMER.status)
+                val wh = locRepo.readCurrentWarehouse().blockingGet()
+                val ro =
+                    with(order.courierOrderLocalEntity) {
+                        LocalOrderEntity(
+                            orderId = id,
+                            routeID = routeID,
+                            gate = gate,
+                            minPrice = minPrice,
+                            minVolume = minVolume,
+                            minBoxes = minBoxesCount,
+                            countOffices = order.dstOffices.size,
+                            wbUserID = -1,
+                            carNumber = userManager.carNumber(),
+                            reservedAt = reservedTime,
+                            startedAt = "",
+                            reservedDuration = reservedDuration,
+                            status = TaskStatus.TIMER.status,
+                            cost = 0,
+                            srcId = wh.id,
+                            srcName = wh.name,
+                            srcAddress = wh.fullAddress,
+                            srcLongitude = wh.longitude,
+                            srcLatitude = wh.latitude,
+                        )
+                    }
+                locRepo.setOrderInReserve(ro)
+
             }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
@@ -90,7 +119,7 @@ class CourierOrderConfirmInteractorImpl(
     }
 
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
-        return courierLocalRepository.observeOrderData()
+        return locRepo.observeOrderData()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 

@@ -29,7 +29,7 @@ class CourierIntransitUnloadingExpectsDelegate(
 
     override fun onBind(item: CourierIntransitUnloadingExpectsItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
-        holder.binding.address.text = item.fullAddress
+        holder.binding.boxAddress.text = item.fullAddress
         holder.binding.deliveryCount.text = item.deliveryCount
         holder.binding.fromCount.text = item.fromCount
         holder.binding.selectedBackground.visibility =
@@ -44,7 +44,7 @@ class CourierIntransitUnloadingExpectsDelegate(
         }
 
         init {
-            binding.main.setOnClickListener { view: View ->
+            binding.main.setOnClickListener {
                 val (_, _, _, _, _, idView) = getTag(itemView)
                 onCourierIntransitCallback.onPickToPointClick(idView)
             }

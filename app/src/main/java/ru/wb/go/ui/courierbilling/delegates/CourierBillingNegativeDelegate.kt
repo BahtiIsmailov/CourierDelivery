@@ -34,7 +34,7 @@ class CourierBillingNegativeDelegate(
         holder.itemView.tag = item
         with(holder.binding) {
             date.text = item.date
-            time.text = item.time
+            mapTimer.text = item.time
             amount.text = item.amount
             if(item.statusIcon!=null) {
                 icStatus.setImageDrawable(ContextCompat.getDrawable(context, item.statusIcon))

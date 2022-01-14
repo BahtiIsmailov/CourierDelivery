@@ -1,80 +1,100 @@
 package ru.wb.go.db.dao
 
-import androidx.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Single
-import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
-import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
-import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
+import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 
 @Dao
 interface CourierBoxDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBox(courierBox: CourierBoxEntity): Completable
+    @Query("SELECT * FROM boxes")
+    fun readAllBoxesSync(): Single<List<LocalBoxEntity>>
 
-    @Query("SELECT * FROM CourierBoxEntity WHERE id = :boxId")
-    fun findLoadingBoxById(boxId: String): Maybe<CourierBoxEntity>
+    @Insert
+    fun addBox(box: LocalBoxEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBoxes(courierBoxes: List<CourierBoxEntity>): Completable
+    @Query(
+        """
+        UPDATE offices 
+        SET count_boxes=(
+            SELECT count(*)
+            FROM boxes as b
+            WHERE b.office_id = offices.office_id
+            )
+        WHERE office_id =:officeId
+        """
+    )
+    fun updateOfficeCountersAfterLoadingBox(officeId: Int)
 
-    @Query("SELECT * FROM CourierBoxEntity")
-    fun readAllBoxesSync(): Single<List<CourierBoxEntity>>
+    @Query(
+        """
+        UPDATE offices 
+        SET delivered_boxes=(
+            SELECT count(*)
+            FROM boxes as b
+            WHERE b.office_id = offices.office_id
+            AND b.delivered_at<>''
+            ),
+            is_online = 0            
+        WHERE office_id =:officeId
+        """
+    )
+    fun updateOfficeDeliveredBoxAfterUnload(officeId: Int)
 
-    @Query("SELECT * FROM CourierBoxEntity")
-    fun readAllBoxes(): List<CourierBoxEntity>
+    @Transaction
+    fun addNewBox(box: LocalBoxEntity) {
+        addBox(box)
+        updateOfficeCountersAfterLoadingBox(box.officeId)
+    }
 
-    @Query("SELECT * FROM CourierBoxEntity")
-    fun observeBoxes(): Flowable<List<CourierBoxEntity>>
+    @Query("UPDATE boxes SET loading_at=:loadingAt WHERE box_id=:boxId")
+    fun updateBoxLoadingAt(boxId: String, loadingAt: String)
 
-    @Delete
-    fun deleteBox(courierBoxEntity: CourierBoxEntity): Completable
+    @Insert
+    fun addBoxes(boxes: List<LocalBoxEntity>)
 
-    @Delete
-    fun deleteBoxes(courierBoxEntity: List<CourierBoxEntity>): Completable
+    @Query("DELETE FROM boxes")
+    fun deleteBoxes()
 
-    @Query("DELETE FROM CourierBoxEntity WHERE id IN (:qrCodes)")
-    fun deleteBoxesByQrCode(qrCodes: List<String>): Completable
+    @Query("SELECT * FROM boxes")
+    fun getBoxes(): List<LocalBoxEntity>
 
-    @Query("DELETE FROM CourierBoxEntity")
-    fun deleteAllBoxes()
+    @Query("SELECT * FROM boxes")
+    fun getBoxesLive(): Flowable<List<LocalBoxEntity>>
 
-    @Query("SELECT Office.address AS address, Office.longitude AS longitude, Office.latitude AS latitude, COALESCE(Visited.visitedAt, '') AS visitedAt, COALESCE(Visited.isUnloaded, 0) AS isUnloaded, COALESCE(BoxCounter.deliveredCount , 0) AS deliveredCount, COALESCE(BoxCounter.fromCount , 0) AS fromCount FROM (SELECT dst_office_full_address AS address, dst_office_longitude AS longitude, dst_office_latitude AS latitude, dst_office_id AS officeId, dst_office_visited_at AS visitedAt FROM CourierOrderDstOfficeLocalEntity) AS Office LEFT JOIN (SELECT COUNT(CASE WHEN deliveredAt != '' THEN 1 END) AS deliveredCount, COUNT(*) AS fromCount, dstOfficeId FROM CourierBoxEntity GROUP BY dstOfficeId) AS BoxCounter ON Office.officeId = BoxCounter.dstOfficeId LEFT JOIN(SELECT visited_office_dst_office_id AS visitedOfficeId, COALESCE(visited_office_visited_at, '') AS visitedAt , COALESCE(visited_office_is_unload, 0) AS isUnloaded FROM CourierOrderVisitedOfficeLocalEntity) AS Visited ON Office.officeId = Visited.visitedOfficeId")
-    fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
+    @Query(
+        """
+       SELECT * 
+    FROM boxes 
+    where office_id IN(
+        SELECT office_id 
+        FROM offices as o 
+        WHERE o.is_online=0 AND o.is_visited=1 )
+    """
+    )
+    fun getOfflineBoxes(): List<LocalBoxEntity>
 
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
-    fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+    @Query("UPDATE boxes SET delivered_at=:time WHERE box_id=:boxId")
+    fun setBoxDelivery(boxId: String, time: String)
 
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId AND id = :boxId")
-    fun readLoadingBoxByOfficeIdAndId(officeId: Int, boxId: String): Maybe<CourierBoxEntity>
+    @Transaction
+    fun unloadBoxInOffice(box: LocalBoxEntity) {
+        setBoxDelivery(box.boxId, box.deliveredAt)
+        updateOfficeDeliveredBoxAfterUnload(box.officeId)
+    }
 
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId = :officeId")
-    fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+    @Query("UPDATE boxes SET delivered_at='' WHERE box_id=:boxId ")
+    fun clearDelivery(boxId:String)
 
-    @Query("SELECT COALESCE(id, '') AS id, COALESCE(address, '') AS address FROM CourierBoxEntity WHERE dstOfficeId = :officeId AND deliveredAt != '' ORDER BY deliveredAt DESC LIMIT 1")
-    fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult>
-
-    @Query("SELECT deliveredCount AS unloadedCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
-    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult>
-
-    @Query("SELECT deliveredCount AS unloadedCount, fromCount AS fromCount FROM (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity WHERE dstOfficeId = :officeId) AS Counter")
-    fun observeCounterBox(officeId: Int): Flowable<CourierUnloadingBoxScoreResult>
-
-    @Query("SELECT Counter.deliveredCount AS unloadedCount, Counter.fromCount AS fromCount FROM (SELECT minPrice FROM CourierOrderLocalEntity) AS CourierOrder, (SELECT SUM(CASE WHEN deliveredAt != '' THEN 1 ELSE 0 END) AS deliveredCount, COUNT(*) AS fromCount FROM CourierBoxEntity) AS Counter")
-    fun completeDeliveryResult(): Single<CompleteDeliveryResult>
-
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId IN (SELECT visited_office_dst_office_id FROM CourierOrderVisitedOfficeLocalEntity WHERE visited_office_is_unload = 0)")
-    fun readNotUnloadingBoxesSync(): Single<List<CourierBoxEntity>>
-
-    @Query("SELECT * FROM CourierBoxEntity WHERE dstOfficeId IN (SELECT visited_office_dst_office_id FROM CourierOrderVisitedOfficeLocalEntity WHERE visited_office_is_unload = 0)")
-    fun readNotUnloadingBoxes(): List<CourierBoxEntity>
-
-    @Query("DELETE FROM CourierOrderVisitedOfficeLocalEntity")
-    fun deleteAllVisitedOffices()
-
+    @Transaction
+    fun takeBoxBack(box: LocalBoxEntity) {
+        clearDelivery(box.boxId)
+        updateOfficeDeliveredBoxAfterUnload(box.officeId)
+    }
 }

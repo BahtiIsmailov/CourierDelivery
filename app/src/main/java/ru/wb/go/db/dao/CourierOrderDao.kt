@@ -4,10 +4,7 @@ import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
-import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
-import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.go.db.entity.courierlocal.CourierOrderVisitedOfficeLocalEntity
+import ru.wb.go.db.entity.courierlocal.*
 
 @Dao
 interface CourierOrderDao {
@@ -17,16 +14,6 @@ interface CourierOrderDao {
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrder(orderEntity: CourierOrderLocalEntity): Completable
-
-    @Query("UPDATE CourierOrderLocalEntity SET reservedAt=:time")
-    fun setReserveTime(time:String)
-
-    @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun readOrder(): Single<CourierOrderLocalEntity>
-
-    @Transaction
-    @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
@@ -46,34 +33,66 @@ interface CourierOrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrderOffices(courierOrderDstOfficeLocalEntity: List<CourierOrderDstOfficeLocalEntity>): Completable
 
-    @Query("SELECT * FROM CourierOrderDstOfficeLocalEntity WHERE dst_office_id = :id")
-    fun findOfficeById(id: Int): Single<CourierOrderDstOfficeLocalEntity>
-
     @Query("DELETE FROM CourierOrderDstOfficeLocalEntity")
     fun deleteAllOffices()
 
-    @Query("UPDATE CourierOrderDstOfficeLocalEntity SET dst_office_visited_at = :visitedAt WHERE dst_office_id = :officeId")
-    fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable
+    // ====================================
+    // True Local Order
+    @Insert
+    fun addOrder(localOrder: LocalOrderEntity)
 
-    @Query("INSERT INTO CourierOrderVisitedOfficeLocalEntity SELECT dstOfficeId, MAX(deliveredAt) as visitedAt, COUNT(CASE WHEN deliveredAt != '' THEN 1 END) == COUNT(*) AS isUnload FROM CourierBoxEntity GROUP BY dstOfficeId")
-    fun updateVisitedOfficeByBoxes(): Completable
+    @Query("""
+        INSERT INTO offices(office_id, office_name, address, latitude, longitude, delivered_boxes, count_boxes, is_visited, is_online)
+        SELECT dst_office_id, dst_office_name, dst_office_full_address, dst_office_latitude, dst_office_longitude,0,0,0,1
+        FROM CourierOrderDstOfficeLocalEntity
+    """)
+    fun addOfficesFromReserve()
 
-    // TODO: 15.09.2021 вынести в отдельный DAO
-    //==============================================================================================
-    //order visited office
-    //==============================================================================================
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
+    @Transaction
+    fun addOrderFromReserve(order:LocalOrderEntity){
+        addOrder(order)
+        addOfficesFromReserve()
+    }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity)
+    @Query("DELETE FROM courier_order")
+    fun deleteOrder()
 
-    @Query("UPDATE CourierOrderVisitedOfficeLocalEntity SET visited_office_is_unload = 1")
-    fun insertAllVisitedOfficeSync(): Completable
+    @Query("SELECT * FROM courier_order")
+    fun getOrder(): LocalOrderEntity?
 
-    @Query("UPDATE CourierOrderVisitedOfficeLocalEntity SET visited_office_is_unload = 1")
-    fun insertAllVisitedOffice()
+    @Insert
+    fun addOffices(offices: List<LocalOfficeEntity>)
 
+    @Query("DELETE FROM offices")
+    fun deleteOffices()
 
+    @Query("SELECT * FROM offices")
+    fun getOffices(): List<LocalOfficeEntity>
 
+    @Query("SELECT * FROM offices WHERE office_id=:officeId")
+    fun getOfficeById(officeId: Int): Single<LocalOfficeEntity>
+
+    @Query("SELECT * FROM offices")
+    fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
+
+    @Query("UPDATE courier_order SET status=:status")
+    fun setOrderStatus(status: String)
+
+    @Query("DELETE FROM offices WHERE count_boxes=0")
+    fun deleteNotUsedOffices()
+
+    @Query("UPDATE courier_order SET status=:status, cost=:cost")
+    fun setCost(status: String, cost: Int)
+
+    @Transaction
+    fun setOrderAfterLoadStatus(status: String, cost: Int) {
+        deleteNotUsedOffices()
+        setCost(status, cost)
+    }
+
+    @Query("UPDATE offices SET is_visited = 1, is_online=0 WHERE office_id=:officeId")
+    fun setVisitOffice(officeId: Int)
+
+    @Query("UPDATE offices SET is_online=1 ")
+    fun setOnlineOffice()
 }

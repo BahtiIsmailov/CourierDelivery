@@ -1,6 +1,6 @@
 package ru.wb.go.network.api.app.remote.courier
 
-data class CourierTaskMySrcOfficeResponse(
+data class MySrcOfficeResponse(
     val id: Int,
     val name: String,
     val fullAddress: String,

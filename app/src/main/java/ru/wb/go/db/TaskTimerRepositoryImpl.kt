@@ -5,11 +5,9 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
-import ru.wb.go.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
-import ru.wb.go.utils.time.TimeFormatter
 import java.util.concurrent.TimeUnit
 
 class TaskTimerRepositoryImpl : TaskTimerRepository {
@@ -37,7 +35,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
     }
 
     private fun onTimeConfirmCode(tick: Long) {
-        if (tick > arrivalTime) {
+        if (tick >= arrivalTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
         } else {

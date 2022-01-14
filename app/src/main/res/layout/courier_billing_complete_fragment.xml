@@ -48,7 +48,7 @@
     </LinearLayout>
 
     <ru.wb.go.views.ProgressButtonView
-        android:id="@+id/complete_delivery"
+        android:id="@+id/complete_delivery_button"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"

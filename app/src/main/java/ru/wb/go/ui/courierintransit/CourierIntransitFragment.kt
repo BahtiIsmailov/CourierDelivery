@@ -131,14 +131,15 @@ class CourierIntransitFragment : Fragment() {
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierIntransitScanOfficeBeepState.Office -> scanOfficeAccepted()
-                CourierIntransitScanOfficeBeepState.UnknownOffice -> scanOfficeFailed()
+                CourierIntransitScanOfficeBeepState.UnknownQrOffice -> scanOfficeFailed()
+                CourierIntransitScanOfficeBeepState.WrongOffice -> scanWrongOffice()
             }
         }
 
         viewModel.intransitTime.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierIntransitTimeState.Time -> {
-                    binding.time.text = it.time
+                    binding.mapTimer.text = it.time
                 }
             }
         }
@@ -146,18 +147,18 @@ class CourierIntransitFragment : Fragment() {
         viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 true -> {
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
                 }
                 false -> {
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
                 }
             }
         }
 
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
+        binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
 
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
@@ -176,9 +177,9 @@ class CourierIntransitFragment : Fragment() {
                     binding.routes.scrollToPosition(it.position)
                 }
                 CourierIntransitItemState.CompleteDelivery -> {
-                    binding.scanQrPvz.visibility = INVISIBLE
-                    binding.scanQrPvzComplete.visibility = VISIBLE
-                    binding.completeDelivery.visibility = VISIBLE
+                    binding.scanQrPvzButton.visibility = INVISIBLE
+                    binding.scanQrPvzCompleteButton.visibility = VISIBLE
+                    binding.completeDeliveryButton.visibility = VISIBLE
                 }
             }
         }
@@ -197,16 +198,16 @@ class CourierIntransitFragment : Fragment() {
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierIntransitNavigationState.NavigateToMap -> {
-                    crossFade(binding.mapLayout, binding.scannerLayout)
-                    binding.scanQrPvz.setState(ProgressButtonMode.ENABLE)
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
+                    crossFade(binding.mapLayout, binding.zxingBarcodeScanner)
+                    binding.scanQrPvzButton.setState(ProgressButtonMode.ENABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
                 }
                 CourierIntransitNavigationState.NavigateToScanner -> {
-                    crossFade(binding.scannerLayout, binding.mapLayout)
-                    binding.scanQrPvz.setState(ProgressButtonMode.DISABLE)
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
+                    crossFade(binding.zxingBarcodeScanner, binding.mapLayout)
+                    binding.scanQrPvzButton.setState(ProgressButtonMode.DISABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierIntransitNavigationState.NavigateToUnloadingScanner -> {
                     findNavController().navigate(
@@ -247,6 +248,7 @@ class CourierIntransitFragment : Fragment() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
         adapter.clear()
         adapter.addItems(items)
@@ -274,11 +276,11 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { }
-        binding.scanQrPvz.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
-//        binding.forcedComplete.setOnClickListener { viewModel.onForcedCompleteClick() }
+        binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
+
     }
 
     // TODO: 20.08.2021 переработать
@@ -375,6 +377,9 @@ class CourierIntransitFragment : Fragment() {
 
     private fun scanOfficeFailed() {
         play(R.raw.qr_office_failed)
+    }
+    private fun scanWrongOffice() {
+        play(R.raw.wrongoffice)
     }
 
     private fun play(resId: Int) {

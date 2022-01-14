@@ -1,14 +1,14 @@
 package ru.wb.go.network.api.app.remote.courier
 
-data class CourierTasksMyResponse(
+data class MyTaskResponse(
     val id: Int,
     val routeID: Int?,
     val gate: String?,
-    val srcOffice: CourierTaskMySrcOfficeResponse,
+    val srcOffice: MySrcOfficeResponse,
     val minPrice: Int,
     val minVolume: Int,
     val minBoxesCount: Int,
-    val dstOffices: List<CourierTaskMyDstOfficeResponse>,
+    val dstOffices: List<MyDstOfficeResponse>,
     val wbUserID: Int,
     val carNumber: String,
     val reservedAt: String,

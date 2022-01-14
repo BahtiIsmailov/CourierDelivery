@@ -11,7 +11,6 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
-import java.util.concurrent.TimeUnit
 
 class CourierOrderInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -28,21 +27,12 @@ class CourierOrderInteractorImpl(
     override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
-//        val courierOrderSrcOfficesLocalEntity = with(courierOrderEntity.srcOffice) {
-//            CourierOrderSrcOfficeLocalEntity(
-//                id = id,
-//                name = name,
-//                fullAddress = fullAddress,
-//                longitude = long,
-//                latitude = lat
-//            )
-//        }
+
         val courierOrderLocalEntity = with(courierOrderEntity) {
             CourierOrderLocalEntity(
                 id = id,
                 routeID = routeID,
                 gate = gate,
-//                srcOffice = courierOrderSrcOfficesLocalEntity,
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,

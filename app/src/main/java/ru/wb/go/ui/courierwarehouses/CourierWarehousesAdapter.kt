@@ -27,7 +27,7 @@ class CourierWarehousesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (id, name, address, isSelected) = items[position]
+        val (_, name, address, isSelected) = items[position]
         holder.binding.nameWarehouse.text = name
         holder.binding.fullAddressWarehouse.text = address
         holder.binding.selectedBackground.visibility =
