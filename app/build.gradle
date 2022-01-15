@@ -12,10 +12,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias 'wbgo'
-            keyPassword 'W9jUStPGd53U1Jks_store'
-            storeFile file('../private/release.jks')
+            storeFile file('../private/keystore.jks')
             storePassword 'W9jUStPGd53U1Jks_store'
+            keyAlias 'wbgo'
+            keyPassword 'DhtMrW9OU1Jks_alias'
         }
     }
 
@@ -65,7 +65,7 @@ android {
             applicationId "ru.wb.go"
             minSdkVersion 21
             targetSdkVersion 31
-            versionCode 4
+            versionCode 6
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
