@@ -186,7 +186,7 @@ class CourierWarehousesViewModel(
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
         val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
-            coordinatePoints, myLocation
+            coordinatePoints, myLocation, RADIUS_KM
         )
         interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
     }
@@ -335,6 +335,7 @@ class CourierWarehousesViewModel(
 
     companion object {
         const val SCREEN_TAG = "CourierWarehouses"
+        const val RADIUS_KM = 30
     }
 
 }

@@ -61,7 +61,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private val player = MediaPlayer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //setTheme(R.style.AppTheme_NoActionBar)
+        setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)

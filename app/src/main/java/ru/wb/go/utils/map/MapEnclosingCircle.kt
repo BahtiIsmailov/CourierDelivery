@@ -2,46 +2,45 @@ package ru.wb.go.utils.map
 
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.utils.LogUtils
-import kotlin.math.abs
-import kotlin.math.pow
+import kotlin.math.*
 
 class MapEnclosingCircle {
 
     fun minimumBoundingBoxRelativelyMyLocation(
         points: List<CoordinatePoint>,
         myLocation: CoordinatePoint,
+        radiusKm: Int
     ): BoundingBox {
 
         LogUtils { logDebugApp("myLocation " + myLocation) }
 
-        var maxLatPoint = Double.MAX_VALUE
-        var maxLongPoint = Double.MAX_VALUE
-        var minLatPoint = Double.MIN_VALUE
-        var minLongPoint = Double.MIN_VALUE
-        for (i in points.indices) {
-            val point = points[i]
-            val lat: Double = point.latitude
-            val lon: Double = point.longitude
-            if (i == 0) {
-                maxLatPoint = myLocation.latitude
-                maxLongPoint = myLocation.longitude
-                minLatPoint = myLocation.latitude
-                minLongPoint = myLocation.longitude
-            }
+        val firstPoint = points[0]
+        var maxLatPoint = max(myLocation.latitude, firstPoint.latitude)
+        var maxLongPoint = max(myLocation.longitude, firstPoint.longitude)
+        var minLatPoint = min(myLocation.latitude, firstPoint.latitude)
+        var minLongPoint = min(myLocation.longitude, firstPoint.longitude)
 
-            if (lat > maxLatPoint) maxLatPoint = lat
-            if (lon > maxLongPoint) maxLongPoint = lon
-            if (lat < minLatPoint) minLatPoint = lat
-            if (lon < minLongPoint) minLongPoint = lon
+        if (points.size > 1) {
+            val pointDistances = mutableListOf<Pair<CoordinatePoint, Double>>()
+            points.forEach { pointDistances.add(Pair(it, distanceKm(it, myLocation))) }
+            pointDistances.filter { it.second <= radiusKm }
+                .ifEmpty {
+                    listOf(
+                        pointDistances.filter { it.second > radiusKm }.minByOrNull { it.second }!!
+                    )
+                }
+                .forEach {
+                    with(it.first) {
+                        val lat: Double = latitude
+                        val lon: Double = longitude
+                        maxLatPoint = max(maxLatPoint, lat)
+                        maxLongPoint = max(maxLongPoint, lon)
+                        minLatPoint = min(minLatPoint, lat)
+                        minLongPoint = min(minLongPoint, lon)
+                    }
+                }
         }
-
-        with(myLocation) {
-            val maxLat = latitude + abs(latitude - maxLatPoint)
-            val maxLong = longitude + abs(longitude - maxLongPoint)
-            val minLat = latitude - abs(latitude - minLatPoint)
-            val minLong = longitude - abs(longitude - minLongPoint)
-            return BoundingBox(maxLat, maxLong, minLat, minLong)
-        }
+        return BoundingBox(maxLatPoint, maxLongPoint, minLatPoint, minLongPoint)
     }
 
     fun minimumBoundingBox(points: List<CoordinatePoint>): BoundingBox {
@@ -108,14 +107,6 @@ class MapEnclosingCircle {
         )
     }
 
-    private fun distance(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
-        return kotlin.math.sqrt(
-            (pointA.latitude - pointB.latitude).pow(2.0) + (pointA.longitude - pointB.longitude).pow(
-                2.0
-            )
-        )
-    }
-
     private fun isValidCircle(mapCircle: MapCircle, points: List<CoordinatePoint>): Boolean {
         points.forEach {
             if (!isInside(mapCircle, it)) return false
@@ -123,8 +114,29 @@ class MapEnclosingCircle {
         return true
     }
 
+    fun distance(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
+        return kotlin.math.sqrt(
+            (pointA.latitude - pointB.latitude).pow(2.0) + (pointA.longitude - pointB.longitude).pow(
+                2.0
+            )
+        )
+    }
+
     private fun isInside(mapCircle: MapCircle, point: CoordinatePoint): Boolean {
         return distance(mapCircle.point, point) >= mapCircle.radius
+    }
+
+    fun distanceKm(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
+        val latARad = Math.toRadians(pointA.latitude)
+        val latBRad = Math.toRadians(pointB.latitude)
+        val deltaLonRad = Math.toRadians(pointB.longitude - pointA.longitude)
+        return acos(
+            sin(latARad) * sin(latBRad) + cos(latARad) * cos(latBRad) * cos(deltaLonRad)
+        ) * EARTH_RADIUS_KM
+    }
+
+    companion object {
+        const val EARTH_RADIUS_KM = 6371
     }
 
 }
