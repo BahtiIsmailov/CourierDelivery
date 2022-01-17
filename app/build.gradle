@@ -19,7 +19,7 @@ android {
         }
     }
 
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
     def versionPropsFile = file('version.properties')
@@ -64,8 +64,8 @@ android {
             multiDexEnabled true
             applicationId "ru.wb.go"
             minSdkVersion 21
-            targetSdkVersion 31
-            versionCode 6
+            targetSdkVersion 32
+            versionCode 7
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
