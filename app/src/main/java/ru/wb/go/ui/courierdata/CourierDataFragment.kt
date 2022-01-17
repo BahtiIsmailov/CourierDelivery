@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierdata
 import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -114,6 +115,10 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun initView() {
+        binding.inn.inputType = InputType.TYPE_CLASS_NUMBER
+        binding.passportSeries.inputType = InputType.TYPE_CLASS_NUMBER
+        binding.passportNumber.inputType = InputType.TYPE_CLASS_NUMBER
+        binding.passportDepartmentCode.inputType = InputType.TYPE_CLASS_NUMBER
         (activity as NavToolbarListener).hideToolbar()
     }
 
