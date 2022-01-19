@@ -65,7 +65,7 @@ android {
             applicationId "ru.wb.go"
             minSdkVersion 21
             targetSdkVersion 32
-            versionCode 7
+            versionCode 8
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -62,6 +62,7 @@ class CourierLoaderViewModel(
         onTechEventLog("init")
         initDrawer()
         initVersion()
+        checkRootState()
     }
 
     private fun initDrawer() {
@@ -70,12 +71,12 @@ class CourierLoaderViewModel(
 
     private fun initVersion() {
         addSubscription(
-                appRemoteRepository.appVersion()
-                        .doOnSuccess { saveAppVersion(it) }
-                        .compose(rxSchedulerFactory.applySingleSchedulers())
-                        .subscribe(
-                                { appVersionUpdateComplete(it) },
-                                { appVersionUpdateError(it) })
+            appRemoteRepository.appVersion()
+                .doOnSuccess { saveAppVersion(it) }
+                .compose(rxSchedulerFactory.applySingleSchedulers())
+                .subscribe(
+                    { appVersionUpdateComplete(it) },
+                    { appVersionUpdateError(it) })
         )
     }
 
@@ -113,6 +114,12 @@ class CourierLoaderViewModel(
 
     private fun versionCodeToInt(code: String): Int {
         return code.replace("\\D+".toRegex(), "").toInt()
+    }
+
+    private fun checkRootState() {
+        if (resourceProvider.isRooted()) {
+            onTechEventLog("checkRootState", "isRooted")
+        }
     }
 
     private fun checkUserState() {
@@ -353,7 +360,7 @@ class CourierLoaderViewModel(
         onTechEventLog("toCouriersCompleteRegistration")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
-                CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
+            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }
 
     private fun toCourierWarehouse() = CourierLoaderNavigationState.NavigateToCourierWarehouse

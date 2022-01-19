@@ -28,7 +28,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.network.token.UserManagerImpl
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.reader.MockResponseImpl
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.prefs.SharedWorker
 import java.net.URI
@@ -140,6 +140,10 @@ val networkModule = module {
         )
     }
 
+    fun provideAppMetricResponseInterceptor(metric: YandexMetricManager): AppMetricResponseInterceptor {
+        return InterceptorFactory.createAppMetricResponseInterceptor(metric)
+    }
+
     fun provideRefreshTokenInterceptor(
         refreshTokenRepository: RefreshTokenRepository,
         headerManager: HeaderManager,
@@ -175,12 +179,13 @@ val networkModule = module {
         certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor,
+        appMetricResponseInterceptor: AppMetricResponseInterceptor,
     ): OkHttpClient {
-        LogUtils { logDebugApp("create app http client") }
         return OkHttpFactory.createAppOkHttpClient(
             certificateStore,
             refreshResponseInterceptor,
             httpLoggingInterceptor,
+            appMetricResponseInterceptor
         )
     }
 
@@ -268,6 +273,7 @@ val networkModule = module {
 
     single { provideAuthMockResponseInterceptor() }
     single { provideAppMockResponseInterceptor(get()) }
+    single { provideAppMetricResponseInterceptor(get()) }
 
     single { provideRefreshTokenInterceptor(get(), get(named(APP_NAMED_HEADER_MANAGER)), get()) }
 
@@ -277,7 +283,7 @@ val networkModule = module {
         createTokenRefreshOkHttpClient()
     }
 
-    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get() ) }
+    single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get(), get()) }
 
     single { provideGsonConverterFactory() }
     single { provideGson() }

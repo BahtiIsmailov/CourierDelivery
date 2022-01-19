@@ -1,9 +1,10 @@
 package ru.wb.go.network.headers
 
+import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.BuildConfig
 import ru.wb.go.network.token.TokenManager
-import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.reader.MockResponse
+import ru.wb.go.utils.analytics.YandexMetricManager
 
 object InterceptorFactory {
 
@@ -18,6 +19,10 @@ object InterceptorFactory {
 
     fun createAppMockResponseInterceptor(apiServer: String, mockResponse : MockResponse): AppMockResponseInterceptor {
         return AppMockResponseInterceptor(apiServer, mockResponse)
+    }
+
+    fun createAppMetricResponseInterceptor(metric: YandexMetricManager): AppMetricResponseInterceptor {
+        return AppMetricResponseInterceptor(metric)
     }
 
     fun createRefreshTokenInterceptor(
