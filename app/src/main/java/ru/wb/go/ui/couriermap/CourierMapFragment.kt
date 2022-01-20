@@ -208,25 +208,29 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             when (it) {
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
-                is CourierMapState.NavigateToPointZoom -> navigateToPointZoom(it.mapPoint)
+                is CourierMapState.NavigateToPointZoom -> navigateToPointZoom(it.point)
+                is CourierMapState.NavigateToPoint -> navigateToPoint(it.point)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
                 CourierMapState.UpdateMyLocation -> updateMyLocation()
                 is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
                 is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
-                is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
             }
         }
     }
 
-    private fun navigateToPointZoom(it: MapPoint) {
-        val point = GeoPoint(it.lat, it.long)
+    private fun navigateToPointZoom(it: CoordinatePoint) {
+        val point = GeoPoint(it.latitude, it.longitude)
         mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
         binding.map.invalidate()
     }
 
-    private fun navigateToPoint(it: MapPoint) {
-        val point = GeoPoint(it.lat, it.long)
+    private fun navigateToPoint(it: CoordinatePoint) {
+        navigateToGeoPoint(it.latitude, it.longitude)
+    }
+
+    private fun navigateToGeoPoint(latitude: Double, longitude: Double) {
+        val point = GeoPoint(latitude, longitude)
         mapController.animateTo(point, null, DEFAULT_ANIMATION_MS)
         binding.map.invalidate()
     }
@@ -279,24 +283,19 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         if (lastLocation == null) {
             navigateToDefault()
         } else {
-            navigateToPoint(
-                MapPoint(MY_LOCATION_ID, lastLocation!!.latitude, lastLocation!!.longitude)
-            )
-            addMyLocationPoint(lastLocation!!.latitude, lastLocation!!.longitude)
+            with(lastLocation!!) {
+                navigateToGeoPoint(latitude, longitude)
+                addMyLocationPoint(latitude, longitude)
+            }
         }
     }
 
     private fun navigateToDefault() {
         initMapView()
-        val coordinateMoscow = moscowCoordinatePoint()
-        navigateToPoint(
-            MapPoint(
-                MY_LOCATION_ID,
-                coordinateMoscow.latitude,
-                coordinateMoscow.longitude
-            )
-        )
-        addMyLocationPoint(coordinateMoscow.latitude, coordinateMoscow.longitude)
+        with(moscowCoordinatePoint()) {
+            navigateToGeoPoint(latitude, longitude)
+            addMyLocationPoint(latitude, longitude)
+        }
     }
 
     private fun updateMyLocationPoint(point: CoordinatePoint) {

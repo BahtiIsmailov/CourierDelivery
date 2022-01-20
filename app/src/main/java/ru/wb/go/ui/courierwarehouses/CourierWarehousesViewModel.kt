@@ -342,7 +342,10 @@ class CourierWarehousesViewModel(
         }
         updateMarkersWithMyLocation(myLocation)
         if (isSelected) {
-            interactor.mapState(CourierMapState.NavigateToPoint(mapMarkers[clickItemIndex].point))
+            with(mapMarkers[clickItemIndex].point) {
+                val coordinatePoint = CoordinatePoint(lat, long)
+                interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package ru.wb.go.ui.couriermap
 
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.utils.map.CoordinatePoint
-import ru.wb.go.utils.map.MapPoint
 
 sealed class CourierMapState {
 
@@ -12,9 +11,9 @@ sealed class CourierMapState {
 
     data class NavigateToMarker(val id: String) : CourierMapState()
 
-    data class NavigateToPointZoom(val mapPoint: MapPoint) : CourierMapState()
+    data class NavigateToPointZoom(val point: CoordinatePoint) : CourierMapState()
 
-    data class NavigateToPoint(val mapPoint: MapPoint) : CourierMapState()
+    data class NavigateToPoint(val point: CoordinatePoint) : CourierMapState()
 
     object NavigateToMyLocation : CourierMapState()
 
