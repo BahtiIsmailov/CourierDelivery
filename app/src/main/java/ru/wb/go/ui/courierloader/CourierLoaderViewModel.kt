@@ -124,6 +124,12 @@ class CourierLoaderViewModel(
 
     private fun checkUserState() {
         val phone = tokenManager.userPhone()
+//        toNewRegistration(phone)
+//        toUserForm(phone)
+        checkNavigation(phone)
+    }
+
+    private fun checkNavigation(phone: String) {
         when {
             tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toNewRegistration(
                 phone
@@ -134,7 +140,7 @@ class CourierLoaderViewModel(
             tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
                 toCouriersCompleteRegistration(phone)
             else -> {
-//                val error = Completable.error(NoInternetException("No Internet"))
+    //                val error = Completable.error(NoInternetException("No Internet"))
                 val timer = Completable.timer(1000, TimeUnit.MILLISECONDS)
                 val taskMy = appRemoteRepository.tasksMy().map { it }
                 val localTaskId =

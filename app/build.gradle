@@ -65,7 +65,7 @@ android {
             applicationId "ru.wb.go"
             minSdkVersion 21
             targetSdkVersion 32
-            versionCode 8
+            versionCode 9
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -83,14 +83,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+//            debuggable true
+//            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
             signingConfig signingConfigs.release
             matchingFallbacks = ['release']
         }
         debug {
+//            minifyEnabled true
             applicationIdSuffix ".debug"
             manifestPlaceholders = [appName: "WB Go debug"]
             signingConfig signingConfigs.debug

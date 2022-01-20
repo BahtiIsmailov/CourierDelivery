@@ -82,14 +82,14 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         if (docs.errorAnnotate.isNullOrEmpty()) {
             SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
             return
-        }else{
+        } else {
 
-                DialogInfoFragment.newInstance(
-                    type = DialogInfoStyle.ERROR.ordinal,
-                    title = "Ошибка",
-                    message = docs.errorAnnotate,
-                    positiveButtonName = getText(R.string.ok_button_title).toString()
-                ).show(parentFragmentManager, DIALOG_INFO_TAG)
+            DialogInfoFragment.newInstance(
+                type = DialogInfoStyle.ERROR.ordinal,
+                title = "Ошибка",
+                message = docs.errorAnnotate,
+                positiveButtonName = getText(R.string.ok_button_title).toString()
+            ).show(parentFragmentManager, DIALOG_INFO_TAG)
 
         }
         with(binding) {
@@ -457,7 +457,6 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         const val DATE_TIME_PICKER_FRAGMENT = "date_time_picker_fragment"
         const val DATE_PICKER_PATTERN = "dd.MM.yyyy"
     }
-
 
 }
 
