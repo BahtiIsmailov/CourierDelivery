@@ -314,7 +314,7 @@ class CourierIntransitViewModel(
         } else {
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
             val boundingBox = MapEnclosingCircle().minimumBoundingBox(coordinatePoints)
-            interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
+            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
         }
     }
 

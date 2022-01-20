@@ -31,12 +31,10 @@ class MapEnclosingCircle {
                 }
                 .forEach {
                     with(it.first) {
-                        val lat: Double = latitude
-                        val lon: Double = longitude
-                        maxLatPoint = max(maxLatPoint, lat)
-                        maxLongPoint = max(maxLongPoint, lon)
-                        minLatPoint = min(minLatPoint, lat)
-                        minLongPoint = min(minLongPoint, lon)
+                        maxLatPoint = max(maxLatPoint, latitude)
+                        maxLongPoint = max(maxLongPoint, longitude)
+                        minLatPoint = min(minLatPoint, latitude)
+                        minLongPoint = min(minLongPoint, longitude)
                     }
                 }
         }

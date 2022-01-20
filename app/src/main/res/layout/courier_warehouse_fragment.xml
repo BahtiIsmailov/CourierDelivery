@@ -25,13 +25,35 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/map_fragment" />
 
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/courier_warehouse_title"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/content_center" />
+
+    <View
+        android:id="@+id/title_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/title"
+        android:layout_gravity="center"
+        android:background="@color/tint"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
     <RelativeLayout
         android:id="@+id/empty_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/update"
-        app:layout_constraintTop_toBottomOf="@+id/content_center">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_divider">
 
         <TextView
             android:id="@+id/empty_title"
@@ -51,11 +73,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="20dp"
         android:clipToPadding="false"
-        android:paddingTop="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/update"
-        app:layout_constraintTop_toBottomOf="@+id/content_center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_divider"
         tools:listitem="@layout/courier_warehouse_item_layout" />
 
     <ImageView
@@ -64,21 +84,20 @@
         android:src="@drawable/gradient_light_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/content_center"
+        app:layout_constraintTop_toBottomOf="@+id/title_divider"
         tools:ignore="ContentDescription" />
 
     <ImageView
         android:layout_width="0dp"
         android:layout_height="@dimen/shadow_list"
-        android:layout_marginBottom="10dp"
         android:src="@drawable/gradient_light_bottom"
-        app:layout_constraintBottom_toTopOf="@+id/update"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="ContentDescription" />
 
     <ProgressBar
-        android:id="@+id/progress"
+        android:id="@+id/warehouses_progress"
         style="?android:attr/progressBarStyle"
         android:layout_width="36dp"
         android:layout_height="36dp"
@@ -90,22 +109,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/content_center" />
 
-    <ru.wb.go.views.ProgressButtonView
-        android:id="@+id/update"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="20dp"
+    <ImageView
+        android:id="@+id/nav_drawer_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="36dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_navigation_drawer_menu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/show_orders_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:src="@drawable/ic_next"
+        app:backgroundTint="@color/fab_disable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="@string/courier_orders_update"
-        app:progress_button_state="disable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:tint="@color/white"
+        tools:ignore="ContentDescription" />
 
     <View
         android:id="@+id/hold_layout"

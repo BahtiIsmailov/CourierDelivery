@@ -8,9 +8,11 @@ sealed class CourierMapState {
 
     data class UpdateMarkers(val points: List<CourierMapMarker>) : CourierMapState()
 
-    data class ZoomToCenterBoundingBox(val boundingBox: BoundingBox) : CourierMapState()
+    data class ZoomToBoundingBox(val boundingBox: BoundingBox, val animate: Boolean) : CourierMapState()
 
     data class NavigateToMarker(val id: String) : CourierMapState()
+
+    data class NavigateToPointZoom(val mapPoint: MapPoint) : CourierMapState()
 
     data class NavigateToPoint(val mapPoint: MapPoint) : CourierMapState()
 

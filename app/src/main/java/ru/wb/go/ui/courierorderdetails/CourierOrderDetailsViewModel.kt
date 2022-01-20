@@ -146,7 +146,7 @@ class CourierOrderDetailsViewModel(
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
         LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
         val boundingBox = MapEnclosingCircle().minimumBoundingBox(coordinatePoints)
-        interactor.mapState(CourierMapState.ZoomToCenterBoundingBox(boundingBox))
+        interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, false))
     }
 
     private fun initItems(items: MutableList<CourierOrderDetailsItem>) {

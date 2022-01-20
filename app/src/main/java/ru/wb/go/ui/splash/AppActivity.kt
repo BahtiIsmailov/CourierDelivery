@@ -1,14 +1,18 @@
 package ru.wb.go.ui.splash
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.Gravity.LEFT
 import android.view.View.*
 import android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN
 import android.widget.*
@@ -69,6 +73,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         initNavController()
         initObserver()
         initListener()
+        makeStatusBarTransparent()
     }
 
     private fun showInstallOption(destination: String) {
@@ -473,6 +478,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     }
 
+    @SuppressLint("RtlHardcoded")
+    override fun show() {
+        binding.drawerLayout.openDrawer(LEFT)
+    }
+
     override fun adjustMode() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     }
@@ -540,6 +550,7 @@ interface NavToolbarListener {
 interface NavDrawerListener {
     fun lock()
     fun unlock()
+    fun show()
 }
 
 interface KeyboardListener {
@@ -571,4 +582,18 @@ fun AppActivity.hasPermission(permission: String): Boolean {
         this,
         permission
     ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Activity.makeStatusBarTransparent() {
+    window.apply {
+        clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            decorView.systemUiVisibility =
+                SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+        statusBarColor = Color.TRANSPARENT
+    }
 }

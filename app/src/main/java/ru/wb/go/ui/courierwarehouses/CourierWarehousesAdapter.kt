@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseItemLayoutBinding
-import ru.wb.go.mvvm.model.base.BaseItem
 
 class CourierWarehousesAdapter(
     context: Context,
@@ -18,7 +17,6 @@ class CourierWarehousesAdapter(
 
     interface OnItemClickCallBack {
         fun onItemClick(index: Int)
-        fun onDetailClick(index: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,11 +46,8 @@ class CourierWarehousesAdapter(
         var binding = CourierWarehouseItemLayoutBinding.bind(rootView)
 
         init {
-            binding.itemLayout.setOnClickListener {
+            binding.warehouseLayout.setOnClickListener {
                 onItemClickCallBack.onItemClick(adapterPosition)
-            }
-            binding.imageDetails.setOnClickListener {
-                onItemClickCallBack.onDetailClick(adapterPosition)
             }
         }
     }

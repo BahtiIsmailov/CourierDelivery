@@ -24,7 +24,8 @@
         android:src="@drawable/gradient_dark_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/imageView5"
@@ -33,7 +34,8 @@
         android:src="@drawable/gradient_dark_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/zoom_in"
@@ -44,7 +46,8 @@
         android:src="@drawable/ic_zoom_in"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/zoom_out"
@@ -55,7 +58,8 @@
         android:src="@drawable/ic_zoom_out"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/my_location"
@@ -68,7 +72,8 @@
         android:src="@drawable/ic_pvz_gps"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/imageView5"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
 
     <View
         android:id="@+id/view"

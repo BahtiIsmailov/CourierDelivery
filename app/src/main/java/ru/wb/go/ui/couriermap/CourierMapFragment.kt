@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -24,7 +25,9 @@ import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.BuildConfig
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
@@ -39,13 +42,15 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private val viewModel by viewModel<CourierMapViewModel>()
 
     companion object {
-        private const val MY_LOCATION_ID = "my_location_id"
+        const val MY_LOCATION_ID = "my_location_id"
+        private const val REQUEST_ERROR = 0
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
         private const val MIN_ZOOM = 4.0
         private const val MAX_ZOOM = 20.0
         private const val DEFAULT_POINT_ZOOM = 13.0
         private const val SIZE_IN_PIXELS = 100
+        private const val DEFAULT_ANIMATION_MS = 300L
     }
 
     private var _binding: MapFragmentBinding? = null
@@ -173,17 +178,18 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         return osmdroidBasePath
     }
 
-    private fun drawMapMarker(id: String, lat: Double, long: Double, icon: Int) {
-        val marker = Marker(binding.map)
-        marker.setOnMarkerClickListener { marker, _ ->
-            viewModel.onItemClick(marker.id)
-            true
-        }
-        marker.id = id
-        marker.icon = getIcon(icon)
-        val point = GeoPoint(lat, long)
-        marker.position = point
-        binding.map.overlays.add(marker)
+    private val onMarkerClickListener = { marker: Marker, _: MapView ->
+        viewModel.onItemClick(with(marker) { MapPoint(id, position.latitude, position.longitude) })
+        true
+    }
+
+    private fun addMapMarker(id: String, lat: Double, long: Double, icon: Int) {
+        val markerMap = Marker(binding.map)
+        markerMap.setOnMarkerClickListener(onMarkerClickListener)
+        markerMap.id = id
+        markerMap.icon = getIcon(icon)
+        markerMap.position = GeoPoint(lat, long)
+        binding.map.overlays.add(markerMap)
     }
 
     private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
@@ -202,19 +208,26 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             when (it) {
                 is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
-                is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
+                is CourierMapState.NavigateToPointZoom -> navigateToPointZoom(it.mapPoint)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
                 CourierMapState.UpdateMyLocation -> updateMyLocation()
                 is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
-                is CourierMapState.ZoomToCenterBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
+                is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
+                is CourierMapState.NavigateToPoint -> navigateToPoint(it.mapPoint)
             }
         }
     }
 
-    private fun navigateToPoint(it: MapPoint) {
+    private fun navigateToPointZoom(it: MapPoint) {
         val point = GeoPoint(it.lat, it.long)
         mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
+        binding.map.invalidate()
+    }
+
+    private fun navigateToPoint(it: MapPoint) {
+        val point = GeoPoint(it.lat, it.long)
+        mapController.animateTo(point, null, DEFAULT_ANIMATION_MS)
         binding.map.invalidate()
     }
 
@@ -239,15 +252,23 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun initMapMarkers(mapPoints: List<CourierMapMarker>) {
-        mapPoints.forEach { item ->
-            drawMapMarker(
-                item.point.id,
-                item.point.lat,
-                item.point.long,
-                item.icon
-            )
-        }
+        addOverlayBackground()
+        mapPoints.forEach(addMapMarker)
         binding.map.invalidate()
+    }
+
+    private fun addOverlayBackground() {
+        val overlayBackground = OverlayBackground(
+            object : OverlayBackground.OnBackgroundClickListener {
+                override fun onBackgroundClick() {
+                    viewModel.onMapClick()
+                }
+            })
+        binding.map.overlays.add(overlayBackground)
+    }
+
+    private val addMapMarker = { item: CourierMapMarker ->
+        with(item) { addMapMarker(point.id, point.lat, point.long, icon) }
     }
 
     private fun initListeners() {
@@ -261,7 +282,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             navigateToPoint(
                 MapPoint(MY_LOCATION_ID, lastLocation!!.latitude, lastLocation!!.longitude)
             )
-            drawMyLocationMarker(lastLocation!!.latitude, lastLocation!!.longitude)
+            addMyLocationPoint(lastLocation!!.latitude, lastLocation!!.longitude)
         }
     }
 
@@ -275,23 +296,24 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 coordinateMoscow.longitude
             )
         )
-        drawMyLocationMarker(coordinateMoscow.latitude, coordinateMoscow.longitude)
+        addMyLocationPoint(coordinateMoscow.latitude, coordinateMoscow.longitude)
     }
 
     private fun updateMyLocationPoint(point: CoordinatePoint) {
-        binding.map.overlays.find { (it as Marker).id == MY_LOCATION_ID }?.apply {
-            binding.map.overlays.remove(this)
-        }
-        drawMyLocationMarker(point.latitude, point.longitude)
+        removeMyLocationPoint()
+        addMyLocationPoint(point.latitude, point.longitude)
     }
 
-    private fun drawMyLocationMarker(latitude: Double, longitude: Double) {
-        drawMapMarker(
-            MY_LOCATION_ID,
-            latitude,
-            longitude,
-            R.drawable.ic_my_location
-        )
+    private fun removeMyLocationPoint() {
+        binding.map.overlays
+            .filterIsInstance<Marker>()
+            .find { it.id == MY_LOCATION_ID }
+            ?.apply { binding.map.overlays.remove(this) }
+    }
+
+    private fun addMyLocationPoint(latitude: Double, longitude: Double) {
+        addMapMarker(MY_LOCATION_ID, latitude, longitude, R.drawable.ic_warehouse_my_location)
+        binding.map.invalidate()
     }
 
     private fun updateMyLocation() {
@@ -354,5 +376,18 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }
 
     override fun onConnectionSuspended(p0: Int) {}
+
+    class OverlayBackground(private val listener: OnBackgroundClickListener) : Overlay() {
+
+        interface OnBackgroundClickListener {
+            fun onBackgroundClick()
+        }
+
+        override fun onSingleTapConfirmed(event: MotionEvent, mapView: MapView): Boolean {
+            listener.onBackgroundClick()
+            return false
+        }
+
+    }
 
 }

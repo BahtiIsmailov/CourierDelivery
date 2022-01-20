@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/load_navigation"
-    app:startDestination="@id/authLoaderFragment">
+    app:startDestination="@id/appLoaderFragment">
 
     <fragment
-        android:id="@+id/authLoaderFragment"
+        android:id="@+id/appLoaderFragment"
         android:name="ru.wb.go.ui.splash.AppLoaderFragment"
         android:label="@string/auth_load"
         tools:layout="@layout/app_loader_fragment">
