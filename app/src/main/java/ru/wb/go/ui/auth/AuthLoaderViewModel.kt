@@ -24,7 +24,6 @@ class AuthLoaderViewModel(
     }
 
     private fun toNumberPhone() {
-        onTechEventLog("toNumberPhone")
         _navigationState.value = AuthLoaderNavigationState.NavigateToNumberPhone
     }
 

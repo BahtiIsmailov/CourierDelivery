@@ -53,6 +53,8 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
         viewModel.navigationDrawerState.observe(viewLifecycleOwner) { state ->
 
+            (activity as NavToolbarListener).showStatusBar()
+
             when (state) {
 
                 is CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration -> findNavController().navigate(

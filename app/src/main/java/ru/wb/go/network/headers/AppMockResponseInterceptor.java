@@ -32,12 +32,11 @@ public class AppMockResponseInterceptor implements Interceptor {
     private final MockResponse mockResponse;
 
     public AppMockResponseInterceptor(@NonNull String apiServer, @NonNull MockResponse mockResponse) {
-
-
         this.apiServer = apiServer;
         this.mockResponse = mockResponse;
     }
 
+    @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request request = getRequestBuilder(chain.request()).build();

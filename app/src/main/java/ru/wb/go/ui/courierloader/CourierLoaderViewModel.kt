@@ -54,6 +54,7 @@ class CourierLoaderViewModel(
         onTechEventLog("init")
         initDrawer()
         initVersion()
+        checkRootState()
     }
 
     private fun initDrawer() {
@@ -105,6 +106,12 @@ class CourierLoaderViewModel(
 
     private fun versionCodeToInt(code: String): Int {
         return code.replace("\\D+".toRegex(), "").toInt()
+    }
+
+    private fun checkRootState() {
+        if (resourceProvider.isRooted()) {
+            onTechEventLog("checkRootState", "isRooted")
+        }
     }
 
     private fun checkUserState() {
@@ -183,12 +190,11 @@ class CourierLoaderViewModel(
 
     private fun getNavigationState(status: String) =
         when (status) {
-            TaskStatus.TIMER.status ->  toTimer()
+            TaskStatus.TIMER.status -> toTimer()
             TaskStatus.STARTED.status -> toLoadingScanner()
             TaskStatus.INTRANSIT.status -> toIntransit()
             else -> toCourierWarehouse()
         }
-
 
     private fun taskMyError(throwable: Throwable) {
         onTechErrorLog("taskMyError", throwable)
@@ -240,7 +246,7 @@ class CourierLoaderViewModel(
         onTechEventLog("toCouriersCompleteRegistration")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
-            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
+                CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }
 
     private fun toCourierWarehouse() = CourierLoaderNavigationState.NavigateToCourierWarehouse

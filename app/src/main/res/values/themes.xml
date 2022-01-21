@@ -34,6 +34,7 @@
 
     <style name="Splash" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="Toolbar" parent="AppTheme">

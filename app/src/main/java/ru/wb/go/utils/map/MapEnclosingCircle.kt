@@ -1,64 +1,46 @@
 package ru.wb.go.utils.map
 
 import org.osmdroid.util.BoundingBox
-import ru.wb.go.app.AppConsts
 import ru.wb.go.utils.LogUtils
-import kotlin.math.abs
-import kotlin.math.pow
+import kotlin.math.*
 
 class MapEnclosingCircle {
 
     fun minimumBoundingBoxRelativelyMyLocation(
         points: List<CoordinatePoint>,
         myLocation: CoordinatePoint,
-        latOffset: Double,
-        longOffset: Double
+        radiusKm: Int
     ): BoundingBox {
 
         LogUtils { logDebugApp("myLocation " + myLocation) }
 
-        var maxLat = myLocation.latitude + latOffset
-        var maxLong = myLocation.longitude + longOffset
-        var minLat = myLocation.latitude - latOffset
-        var minLong = myLocation.longitude - longOffset
+        val firstPoint = points[0]
+        var maxLatPoint = max(myLocation.latitude, firstPoint.latitude)
+        var maxLongPoint = max(myLocation.longitude, firstPoint.longitude)
+        var minLatPoint = min(myLocation.latitude, firstPoint.latitude)
+        var minLongPoint = min(myLocation.longitude, firstPoint.longitude)
 
-        val searchLocation = CoordinatePoint(
-            myLocation.latitude + latOffset,
-            myLocation.longitude + longOffset
-        )
-
-        var nearPoint = myLocation
-
-        val searchDistance = distance(myLocation, searchLocation)
-        var minDistance = searchDistance
-        var distance: Double
-        for (i in points.indices) {
-            distance = distance(myLocation, points[i])
-            if (distance < searchDistance) {
-                return BoundingBox(maxLat, maxLong, minLat, minLong)
-            }
-            LogUtils { logDebugApp("nearPoint 1 " + nearPoint) }
-            if (i == 0 || distance < minDistance) {
-                LogUtils { logDebugApp("minDistance " + minDistance + " distance " + distance) }
-                minDistance = distance
-                LogUtils { logDebugApp("i == 0 || minDistance if (distance < minDistance) " + minDistance + " distance " + distance) }
-                nearPoint = points[i]
-            }
-
+        if (points.size > 1) {
+            val pointDistances = mutableListOf<Pair<CoordinatePoint, Double>>()
+            points.forEach { pointDistances.add(Pair(it, distanceKm(it, myLocation))) }
+            pointDistances.filter { it.second <= radiusKm }
+                .ifEmpty {
+                    listOf(
+                        pointDistances.filter { it.second > radiusKm }.minByOrNull { it.second }!!
+                    )
+                }
+                .forEach {
+                    with(it.first) {
+                        val lat: Double = latitude
+                        val lon: Double = longitude
+                        maxLatPoint = max(maxLatPoint, lat)
+                        maxLongPoint = max(maxLongPoint, lon)
+                        minLatPoint = min(minLatPoint, lat)
+                        minLongPoint = min(minLongPoint, lon)
+                    }
+                }
         }
-
-        LogUtils { logDebugApp("nearPoint 2 " + nearPoint) }
-
-        val offsetLatitude = abs(nearPoint.latitude - myLocation.latitude)
-        val offsetLongitude = abs(nearPoint.longitude - myLocation.longitude)
-
-        LogUtils { logDebugApp("offsetLatitude " + offsetLatitude + " offsetLongitude " + offsetLongitude) }
-
-        maxLat = myLocation.latitude + offsetLatitude
-        maxLong = myLocation.longitude + offsetLongitude
-        minLat = myLocation.latitude - offsetLatitude
-        minLong = myLocation.longitude - offsetLongitude
-        return BoundingBox(maxLat, maxLong, minLat, minLong)
+        return BoundingBox(maxLatPoint, maxLongPoint, minLatPoint, minLongPoint)
     }
 
     fun minimumBoundingBox(points: List<CoordinatePoint>): BoundingBox {
@@ -125,14 +107,6 @@ class MapEnclosingCircle {
         )
     }
 
-    private fun distance(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
-        return kotlin.math.sqrt(
-            (pointA.latitude - pointB.latitude).pow(2.0) + (pointA.longitude - pointB.longitude).pow(
-                2.0
-            )
-        )
-    }
-
     private fun isValidCircle(mapCircle: MapCircle, points: List<CoordinatePoint>): Boolean {
         points.forEach {
             if (!isInside(mapCircle, it)) return false
@@ -140,8 +114,29 @@ class MapEnclosingCircle {
         return true
     }
 
+    fun distance(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
+        return kotlin.math.sqrt(
+            (pointA.latitude - pointB.latitude).pow(2.0) + (pointA.longitude - pointB.longitude).pow(
+                2.0
+            )
+        )
+    }
+
     private fun isInside(mapCircle: MapCircle, point: CoordinatePoint): Boolean {
         return distance(mapCircle.point, point) >= mapCircle.radius
+    }
+
+    fun distanceKm(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
+        val latARad = Math.toRadians(pointA.latitude)
+        val latBRad = Math.toRadians(pointB.latitude)
+        val deltaLonRad = Math.toRadians(pointB.longitude - pointA.longitude)
+        return acos(
+            sin(latARad) * sin(latBRad) + cos(latARad) * cos(latBRad) * cos(deltaLonRad)
+        ) * EARTH_RADIUS_KM
+    }
+
+    companion object {
+        const val EARTH_RADIUS_KM = 6371
     }
 
 }

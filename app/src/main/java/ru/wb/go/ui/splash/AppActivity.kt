@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.view.View.*
+import android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -395,6 +396,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         toolbarLayout.visibility = VISIBLE
     }
 
+    override fun showStatusBar() {
+        setTheme(R.style.AppTheme_NoActionBar)
+        window.clearFlags(FLAG_FULLSCREEN)
+    }
+
     override fun showNetworkDialog() {
         DialogInfoFragment.newInstance(
             type = DialogInfoStyle.WARNING.ordinal,
@@ -527,6 +533,7 @@ interface NavToolbarListener {
     fun updateTitle(title: String)
     fun hideToolbar()
     fun showToolbar()
+    fun showStatusBar()
     fun showNetworkDialog()
 }
 

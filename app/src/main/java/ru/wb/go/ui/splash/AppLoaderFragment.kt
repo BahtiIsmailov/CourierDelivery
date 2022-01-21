@@ -8,11 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
-import ru.wb.go.databinding.AuthLoaderFragmentBinding
+import ru.wb.go.databinding.AppLoaderFragmentBinding
 
-class AppLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
+class AppLoaderFragment : Fragment(R.layout.app_loader_fragment) {
 
-    private var _binding: AuthLoaderFragmentBinding? = null
+    private var _binding: AppLoaderFragmentBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<AppLoaderViewModel>()
@@ -21,7 +21,7 @@ class AppLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = AuthLoaderFragmentBinding.inflate(inflater, container, false)
+        _binding = AppLoaderFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -38,12 +38,17 @@ class AppLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
     private fun initObserver() {
         viewModel.navState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                AppLoaderNavigatioState.NavigateToAuth -> findNavController().navigate(
-                    AppLoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
-                )
-                AppLoaderNavigatioState.NavigateToCourier -> findNavController().navigate(
-                    AppLoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()
-                )
+                AppLoaderNavigatioState.NavigateToAuth -> {
+                    (activity as NavToolbarListener).showStatusBar()
+                    findNavController().navigate(
+                        AppLoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
+                    )
+                }
+                AppLoaderNavigatioState.NavigateToCourier ->
+                    findNavController().navigate(
+                        AppLoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()
+                    )
+
             }
         }
     }
