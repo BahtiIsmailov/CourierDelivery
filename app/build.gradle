@@ -41,7 +41,7 @@ android {
         def versionMinor = versionProps['VERSION_MINOR'].toInteger()
         def versionBuild = versionProps['VERSION_BUILD'].toInteger()
 
-        def isNew =false
+        def isNew = false
 
         print(runTasks)
         if (':app:sassembleRelease' in runTasks) {
@@ -56,7 +56,7 @@ android {
 
         versionProps['VERSION_MINOR'] = versionMinor.toString()
         versionProps['VERSION_BUILD'] = versionBuild.toString()
-        if(isNew) {
+        if (isNew) {
             versionProps.store(versionPropsFile.newWriter(), null)
         }
 
