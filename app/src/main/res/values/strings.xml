@@ -28,14 +28,11 @@
 
     <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
     <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>
-    <string name="unknown_internet_button_error">OK</string>
 
     <string name="unknown_service_title_error">Ошибка</string>
-    <string name="unknown_service_button_error">OK</string>
 
     <string name="attention_title">Внимание</string>
     <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
-    <string name="courier_expects_positive">OK</string>
 
     <string name="courier_registration_correct_title">Ошибка</string>
     <string name="ok_button_title">OK</string>
@@ -83,7 +80,6 @@
     <string name="app_ver">ver. </string>
 
     <string name="exit_app">Выйти из приложения?</string>
-    <string name="exit_app_ok">OK</string>
     <string name="exit_app_cancel">Отмена</string>
 
     <string name="empty_list">Список пуст</string>
@@ -154,7 +150,6 @@
     <string name="dc_loading_scan_dialog_title_error">Прием коробок</string>
     <string name="dc_loading_scan_dialog_message_error">Коробка не добавлена, повторите операцию</string>
     <string name="dc_loading_scan_switch_dialog_message_error">Не удается завершить приемку на РЦ, повторите операцию</string>
-    <string name="dc_loading_scan_dialog_positive_button_error">OK</string>
 
     <string name="dc_loading_return_dialog_title">Вернуть на баланс?</string>
     <string name="dc_loading_return_dialog_description">Все отсканированные коробки вернуться на баланс перевозчика</string>
@@ -193,7 +188,6 @@
     <string name="courier_warehouse_empty_list">Список заданий будет отображен в 09:00</string>
     <string name="courier_warehouse_dialog_title_error">Склады</string>
     <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
-    <string name="courier_warehouse_dialog_positive_button_error">OK</string>
     <string name="courier_warehouse_search_empty">Ничего не найдено</string>
 
     <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>
@@ -205,7 +199,6 @@
     <string name="courier_orders_empty_list">Заказы не найдены</string>
     <string name="courier_order_dialog_title_error">Заказы</string>
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
-    <string name="courier_order_dialog_positive_button_error">OK</string>
 
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
@@ -218,9 +211,7 @@
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
     <string name="courier_orders_confirm_dialog_title">Заказ забрали</string>
-    <string name="courier_orders_confirm_dialog_message">Этот заказ уже взят в работу</string>
-    <string name="courier_orders_confirm_dialog_button">OK</string>
-    <string name="courier_orders_confirm_dialog_empty">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_confirm_dialog_empty">Свободных заказов нет</string>
 
     <string name="courier_orders_details_dialog_title">Подтвердить взятие заказа?</string>
     <string name="courier_orders_details_dialog_message">Прибыть • за %1$d мин\nТранспорт • от %2$d кубов</string>
@@ -256,7 +247,6 @@
 
     <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
     <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
-    <string name="courier_uloading_scan_dialog_positive_button_error">OK</string>
 
     <string name="courier_intransit_label_id">Доставка %1$s</string>
     <string name="courier_intransit_label">Доставка</string>
@@ -309,7 +299,6 @@
 
     <string name="flight_deliveries_dialog_title_error">Завершение доставки</string>
     <string name="flight_deliveries_dialog_message_error">Доставка не завершена, повторите операцию позднее</string>
-    <string name="flight_deliveries_dialog_positive_button_error">OK</string>
 
     <string name="flight_deliveries_details_delivery_title">Доставка</string>
     <string name="flight_deliveries_details_return_title">Возврат</string>
@@ -330,7 +319,6 @@
     <string name="unloading_boxes_info_box_return_on_car">Верните в машину</string>
     <string name="unloading_boxes_info_box_drop">Оставте коробку на том же месте</string>
     <string name="unloading_boxes_numeric_barcode">%1$d. %2$s</string>
-    <string name="unloading_boxes_complete">OK</string>
     <string name="unloading_boxes_office_empty">ПВЗ %1$d</string>
 
     <string name="unnamed_barcode_format_number">%1$d. %2$s.....%3$s</string>
@@ -339,7 +327,6 @@
 
     <string name="unloading_boxes_dialog_complete_title">Выгрузка на ПВЗ</string>
     <string name="unloading_boxes_dialog_complete_error">Выгрузка не завершена, повторите операцию позднее</string>
-    <string name="unloading_boxes_dialog_complete_ok">OK</string>
 
     <string name="unloading_box_already_returned">%1$s уже принята</string>
     <string name="unloading_box_already_delivery">%1$s уже доставлена</string>
@@ -349,7 +336,6 @@
     <string name="unloading_scan_dialog_title_error">Выгрузка на ПВЗ</string>
     <string name="unloading_scan_dialog_message_error">Коробка не добавлена, повторите операцию</string>
     <string name="unloading_scan_switch_dialog_message_error">Не удается завершить приемку на ПВЗ, повторите операцию</string>
-    <string name="unloading_scan_dialog_positive_button_error">OK</string>
 
     <string name="unloading_handle_label" />
 
@@ -413,7 +399,6 @@
     <string name="dc_congratulation_complete">Понятно</string>
     <string name="dc_congratulation_dialog_title_error">Завершение рейса</string>
     <string name="dc_congratulation_dialog_message_error">Рейс не завершен, повторите операцию</string>
-    <string name="dc_congratulation_dialog_positive_button_error">OK</string>
 
     <string name="dc_unloading_boxes_label">Возврат</string>
     <string name="dc_unloading_boxes_title_list">Список коробок для выгрузки</string>
@@ -432,14 +417,12 @@
 
     <string name="dc_unloading_forced_termination_dialog_title_error">Завершение рейса</string>
     <string name="dc_unloading_forced_termination_dialog_message_error">Рейс не завершен, повторите операцию позднее</string>
-    <string name="dc_unloading_forced_termination_dialog_positive_button_error">OK</string>
 
     <string name="permdesc_flashlight">permdesc_flashlight</string>
 
     <string name="dc_loading_scan_dialog_title_return_error">Возврат коробок</string>
     <string name="dc_loading_scan_dialog_message_return_error">Коробка не возвращена, повторите операцию</string>
     <string name="dc_loading_scan_switch_dialog_message_return_error">Не удается завершить возврат на РЦ, повторите операцию</string>
-    <string name="dc_loading_scan_dialog_positive_button_return_error">OK</string>
 
     <string name="keyboard_button0">0</string>
     <string name="keyboard_button1">1</string>

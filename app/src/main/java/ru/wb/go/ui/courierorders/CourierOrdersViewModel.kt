@@ -106,12 +106,6 @@ class CourierOrdersViewModel(
             }
             .map {
                 if (it.isEmpty()) {
-                    _navigateToDialogInfo.value = NavigateToDialogInfo(
-                        DialogInfoStyle.WARNING.ordinal,
-                        resourceProvider.getDialogTitle(),
-                        resourceProvider.getDialogMessage(),
-                        resourceProvider.getDialogButton()
-                    )
                     CourierOrdersState.Empty(resourceProvider.getDialogEmpty())
                 } else CourierOrdersState.ShowOrders(it)
 
