@@ -41,15 +41,17 @@ interface CourierOrderDao {
     @Insert
     fun addOrder(localOrder: LocalOrderEntity)
 
-    @Query("""
+    @Query(
+        """
         INSERT INTO offices(office_id, office_name, address, latitude, longitude, delivered_boxes, count_boxes, is_visited, is_online)
         SELECT dst_office_id, dst_office_name, dst_office_full_address, dst_office_latitude, dst_office_longitude,0,0,0,1
         FROM CourierOrderDstOfficeLocalEntity
-    """)
+    """
+    )
     fun addOfficesFromReserve()
 
     @Transaction
-    fun addOrderFromReserve(order:LocalOrderEntity){
+    fun addOrderFromReserve(order: LocalOrderEntity) {
         addOrder(order)
         addOfficesFromReserve()
     }
@@ -75,8 +77,8 @@ interface CourierOrderDao {
     @Query("SELECT * FROM offices")
     fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
 
-    @Query("UPDATE courier_order SET status=:status")
-    fun setOrderStatus(status: String)
+    @Query("UPDATE courier_order SET status=:status, started_at=:startedAt")
+    fun setOrderStart(status: String, startedAt: String)
 
     @Query("DELETE FROM offices WHERE count_boxes=0")
     fun deleteNotUsedOffices()

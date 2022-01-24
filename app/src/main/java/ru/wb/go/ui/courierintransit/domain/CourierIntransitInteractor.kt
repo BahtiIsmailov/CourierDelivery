@@ -29,8 +29,7 @@ interface CourierIntransitInteractor {
 
     fun mapState(state: CourierMapState)
 
-    fun taskId(): Single<String>
-
     fun getOrder():LocalOrderEntity
+    fun getOrderId():Single<String>
 
 }

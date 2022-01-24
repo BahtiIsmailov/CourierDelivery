@@ -1,12 +1,10 @@
 package ru.wb.go.ui.courierunloading.domain
 
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -121,5 +119,9 @@ class CourierUnloadingInteractorImpl(
                 localRepo.setOnlineOffices()
             }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
+        return localRepo.getRemainBoxes(officeId)
     }
 }

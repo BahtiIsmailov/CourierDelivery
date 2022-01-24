@@ -81,7 +81,7 @@ class CourierIntransitInteractorImpl(
     override fun initOrderTimer(): Observable<Long> {
         val order = locRepo.getOrder()!!
         // TODO: 25.11.2021 переработать с учетом часового пояса
-        var offsetSec = timeManager.getPassedTime(order.startedAt)
+        val offsetSec = timeManager.getPassedTime(order.startedAt)
 
         return intransitTimeRepository.startTimer()
             .toObservable()
@@ -96,7 +96,7 @@ class CourierIntransitInteractorImpl(
         return Single.just(locRepo.getOrder())
             .flatMap {
                 remoteRepo.setIntransitTask(it.orderId.toString(), boxes)
-                    .andThen(taskToEnd())
+                    .andThen(taskStatusesEnd(it.orderId.toString()))
                     .andThen(
                         Single.just(CompleteDeliveryResult(boxes.size, boxes.size, it.cost))
                     )
@@ -109,15 +109,16 @@ class CourierIntransitInteractorImpl(
         locRepo.clearOrder()
 
     }
-    private fun taskToEnd() = taskId().flatMapCompletable {
-        taskStatusesEnd(it)
-    }
 
     private fun taskStatusesEnd(taskId: String) = remoteRepo.taskStatusesEnd(taskId)
         .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    override fun taskId(): Single<String> = locRepo.getOrderId()
+
     override fun getOrder(): LocalOrderEntity {
         return locRepo.getOrder()!!
+    }
+
+    override fun getOrderId(): Single<String> {
+        return locRepo.getOrderId()
     }
 
     override fun observeMapAction(): Observable<CourierMapAction> {

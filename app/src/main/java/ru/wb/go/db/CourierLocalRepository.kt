@@ -2,6 +2,7 @@ package ru.wb.go.db
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 
@@ -48,7 +49,7 @@ interface CourierLocalRepository {
 
     fun saveRemoteOrder(order: LocalComplexOrderEntity, boxes: List<LocalBoxEntity>): Completable
 
-    fun setOrderOrderStart()
+    fun setOrderOrderStart(scanTime: String)
 
     fun setOrderInReserve(order: LocalOrderEntity)
 
@@ -77,5 +78,6 @@ interface CourierLocalRepository {
 
     fun clearOrder()
 
+    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
 
 }

@@ -162,7 +162,14 @@ class CourierUnloadingScanFragment : Fragment() {
                     findNavController().navigate(
                         CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment()
                     )
-                CourierUnloadingScanNavAction.NavigateToBoxes -> {
+                is CourierUnloadingScanNavAction.NavigateToBoxes -> {
+                    findNavController().navigate(
+                        CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToRemainBoxFragment(
+                            RemainBoxParameters(
+                                officeId = state.officeId
+                            )
+                        )
+                    )
                 }
                 is CourierUnloadingScanNavAction.NavigateToDialogInfo -> TODO()
             }
@@ -338,6 +345,7 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun initListener() {
         binding.counterLayout.setOnClickListener { viewModel.onListClicked() }
+        binding.totalBoxes.setOnClickListener { viewModel.onListClicked() }
         binding.completeButton.setOnClickListener { viewModel.onCompleteUnloadClick() }
     }
 

@@ -147,23 +147,18 @@ class CourierUnloadingScanViewModel(
         _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
         addSubscription(
             interactor.completeOfficeUnload()
+                .doFinally {
+                    _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+                    clearSubscription()
+                    _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
+                }
+                // FIXME: 24.01.2022 add exception dialogs 
                 .subscribe(
-                    { confirmUnloadingComplete() },
-                    { confirmUnloadingError(it) })
+                    { },
+                    {
+                        onTechErrorLog("confirmUnload", it)
+                    })
         )
-    }
-
-    private fun confirmUnloadingComplete() {
-        clearSubscription()
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
-        _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
-    }
-
-    private fun confirmUnloadingError(throwable: Throwable) {
-        onTechErrorLog("confirmUnloadingError", throwable)
-        clearSubscription()
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
-        _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
     }
 
     private fun observeScanProcess() {
@@ -282,7 +277,9 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onListClicked() {
-        _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToBoxes
+        onStopScanner()
+        _navigationEvent.value =
+            CourierUnloadingScanNavAction.NavigateToBoxes(officeId = parameters.officeId)
     }
 
     fun onCompleteUnloadClick() {
@@ -291,7 +288,7 @@ class CourierUnloadingScanViewModel(
         addSubscription(
             interactor.getCurrentOffice(parameters.officeId)
                 .subscribe({
-                    if (it.countBoxes == it.deliveredBoxes ) confirmUnloading()
+                    if (it.countBoxes == it.deliveredBoxes) confirmUnloading()
                     else {
                         showUnloadingScoreDialog(it)
                     }

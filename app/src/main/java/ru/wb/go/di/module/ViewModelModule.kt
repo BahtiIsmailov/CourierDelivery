@@ -36,6 +36,8 @@ import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryParameters
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryViewModel
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanViewModel
+import ru.wb.go.ui.courierunloading.RemainBoxParameters
+import ru.wb.go.ui.courierunloading.RemainBoxViewModel
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
@@ -159,6 +161,10 @@ val viewModelModule = module {
             get(),
             get()
         )
+    }
+
+    viewModel { (parameters: RemainBoxParameters) ->
+        RemainBoxViewModel(parameters, get(), get(), get(), get(), get())
     }
 
 }

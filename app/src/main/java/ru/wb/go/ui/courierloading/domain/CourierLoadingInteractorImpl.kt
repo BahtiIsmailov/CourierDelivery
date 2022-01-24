@@ -101,7 +101,7 @@ class CourierLoadingInteractorImpl(
                             box = box.copy(loadingAt = scanTime)
                         }
 
-                        qrComplete(box, boxes.size, isNewBox)
+                        qrComplete(box, boxes.size, isNewBox, scanTime)
 
                     }
                 }
@@ -112,7 +112,8 @@ class CourierLoadingInteractorImpl(
     private fun qrComplete(
         box: LocalBoxEntity,
         countBox: Int,
-        isNewBox: Boolean
+        isNewBox: Boolean,
+        scanTime:String
     ): Observable<CourierLoadingProcessData> {
         return when (countBox) {
             0 ->
@@ -126,7 +127,7 @@ class CourierLoadingInteractorImpl(
                                         localRepo.loadBoxOnboard(box, true)
                                             .doOnComplete {
                                                 taskTimerRepository.stopTimer()
-                                                localRepo.setOrderOrderStart()
+                                                localRepo.setOrderOrderStart(scanTime)
                                             }
                                             .andThen(
                                                 scanResult(

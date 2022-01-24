@@ -1,12 +1,11 @@
 package ru.wb.go.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 
@@ -97,4 +96,7 @@ interface CourierBoxDao {
         clearDelivery(box.boxId)
         updateOfficeDeliveredBoxAfterUnload(box.officeId)
     }
+
+    @Query("SELECT * FROM boxes WHERE office_id=:officeId AND delivered_at=''")
+    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
 }

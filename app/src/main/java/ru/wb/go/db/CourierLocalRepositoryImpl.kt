@@ -2,6 +2,7 @@ package ru.wb.go.db
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
@@ -93,8 +94,8 @@ class CourierLocalRepositoryImpl(
         return Completable.complete()
     }
 
-    override fun setOrderOrderStart() {
-        courierOrderDao.setOrderStatus(TaskStatus.STARTED.status)
+    override fun setOrderOrderStart(scanTime: String) {
+        courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
     override fun getOrderId(): Single<String> {
@@ -163,6 +164,10 @@ class CourierLocalRepositoryImpl(
 
     override fun getBoxes(): List<LocalBoxEntity> {
         return courierLoadingBoxDao.getBoxes()
+    }
+
+    override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
+        return courierLoadingBoxDao.getRemainBoxes(officeId)
     }
 
 }
