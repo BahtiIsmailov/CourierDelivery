@@ -53,10 +53,6 @@ class CourierOrderTimerViewModel(
     val progressState: LiveData<CourierOrderTimerProgressState>
         get() = _progressState
 
-    private val _holdState = MutableLiveData<Boolean>()
-    val holdState: LiveData<Boolean>
-        get() = _holdState
-
     init {
         initOrder()
     }
@@ -74,15 +70,6 @@ class CourierOrderTimerViewModel(
                     }
                 )
         )
-    }
-
-    private fun lockState() {
-        // FIXME: 21.01.2022 Что это за стейт?
-        _holdState.value = true
-    }
-
-    private fun unlockState() {
-        _holdState.value = false
     }
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
@@ -127,12 +114,12 @@ class CourierOrderTimerViewModel(
         }
     }
 
-    private fun setLoader(state:CourierOrderTimerProgressState) {
+    private fun setLoader(state: CourierOrderTimerProgressState) {
         _progressState.postValue(state)
     }
 
     fun onRefuseOrderClick() {
-        lockState()
+
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
@@ -143,40 +130,29 @@ class CourierOrderTimerViewModel(
     }
 
     fun iArrivedClick() {
-        onTechEventLog("iArrivedClick")
-        lockState()
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
-        unlockState()
     }
 
     fun timeOutReturnToList() {
         onTechEventLog("onReturnToListOrderClick")
-        lockState()
         deleteTask()
     }
 
     fun onRefuseOrderConfirmClick() {
         onTechEventLog("onRefuseOrderConfirmClick")
-        lockState()
         deleteTask()
-    }
-
-    fun onRefuseOrderCancelClick() {
-        unlockState()
     }
 
     private fun deleteTask() {
         setLoader(CourierOrderTimerProgressState.Progress)
         addSubscription(
             interactor.deleteTask()
-                .doFinally{setLoader(CourierOrderTimerProgressState.ProgressComplete)}
                 .subscribe(
                     {
-                        unlockState()
                         toLoaderFragment()
                     },
                     {
-                        unlockState()
+                        setLoader(CourierOrderTimerProgressState.ProgressComplete)
                         _navigateToDialogInfo.value = messageError(it, resourceProvider)
 
                     }

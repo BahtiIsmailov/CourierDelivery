@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierordertimer
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -50,12 +49,6 @@ class CourierOrderTimerFragment : Fragment() {
     }
 
     private fun initReturnDialogResult() {
-        // FIXME: 21.01.2022 Автосрабатывание на закрытие диалога
-//        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
-//            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-//                viewModel.timeOutReturnToList()
-//            }
-//        }
 
         setFragmentResultListener(DIALOG_TIME_OUT_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
@@ -66,9 +59,6 @@ class CourierOrderTimerFragment : Fragment() {
         setFragmentResultListener(DIALOG_REFUSE_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onRefuseOrderConfirmClick()
-            }
-            if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                viewModel.onRefuseOrderCancelClick()
             }
         }
     }
@@ -128,13 +118,6 @@ class CourierOrderTimerFragment : Fragment() {
                 CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
                     CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierScannerLoadingScanFragment()
                 )
-            }
-        }
-
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = View.VISIBLE
-                false -> binding.holdLayout.visibility = View.GONE
             }
         }
 

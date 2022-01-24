@@ -213,7 +213,8 @@
         android:background="@drawable/progress_image_button_round_refuse"
         android:src="@drawable/ic_stop_timer"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <ru.wb.go.views.ProgressButtonView
         android:id="@+id/i_arrived"
@@ -231,15 +232,5 @@
         app:progress_button_text_color_disable="@color/button_default_text_disable"
         app:progress_button_text_color_enable="@color/button_default_text_enable"
         app:progress_button_text_color_progress="@color/button_default_text_progress" />
-
-    <View
-        android:id="@+id/hold_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
