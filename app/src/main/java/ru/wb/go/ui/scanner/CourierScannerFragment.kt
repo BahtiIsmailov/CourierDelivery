@@ -126,6 +126,11 @@ open class CourierScannerFragment : Fragment() {
         barcodeView.resume()
     }
 
+    override fun onStop() {
+        barcodeView.pauseAndWait()
+        super.onStop()
+    }
+
     private fun startScanning() {
         changeLaserVisibility(true)
         onResume()
