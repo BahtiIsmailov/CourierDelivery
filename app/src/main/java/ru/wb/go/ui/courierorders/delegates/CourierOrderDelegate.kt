@@ -28,11 +28,17 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
     override fun onBind(item: CourierOrderItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
         val binding = holder.binding
+        binding.orderNumber.text = item.orderNumber
         binding.order.text = item.order
-        binding.arrive.text = item.arrive
-        binding.volume.text = item.volume
-        binding.pvz.text = item.pvzCount
         binding.coast.text = item.coast
+
+        binding.countBox.text = item.countBox
+        binding.volume.text = item.volume
+        binding.countPvz.text = item.countPvz
+        binding.arrive.text = item.arrive
+
+        binding.selectedBackground.visibility =
+            if (item.isSelected) View.VISIBLE else View.INVISIBLE
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

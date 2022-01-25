@@ -23,10 +23,10 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
-import ru.wb.go.ui.splash.OnCourierScanner
-import ru.wb.go.ui.splash.OnSoundPlayer
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.app.OnCourierScanner
+import ru.wb.go.ui.app.OnSoundPlayer
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierLoadingScanFragment : Fragment() {
@@ -86,7 +86,7 @@ class CourierLoadingScanFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
     }

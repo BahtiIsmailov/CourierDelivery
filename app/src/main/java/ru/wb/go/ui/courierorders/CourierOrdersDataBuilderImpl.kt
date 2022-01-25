@@ -9,18 +9,18 @@ class CourierOrdersDataBuilderImpl(
     private val resourceProvider: CourierOrdersResourceProvider,
 ) : CourierOrdersDataBuilder {
 
-    override fun buildOrderItem(index: Int, courierOrderEntity: CourierOrderEntity): BaseItem {
+    override fun buildOrderItem(index: Int, courierOrderEntity: CourierOrderEntity, isSelected: Boolean): BaseItem {
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
-            order = "Заказ " + courierOrderEntity.id.toString(),
+            orderNumber = index.toString(),
+            order = resourceProvider.getOrder(courierOrderEntity.id),
+            coast = resourceProvider.getCoast(coast),
+            countBox = resourceProvider.getBoxCountBox(courierOrderEntity.minBoxesCount),
+            volume = resourceProvider.getVolume(courierOrderEntity.minVolume),
+            countPvz = resourceProvider.getCountPvz(courierOrderEntity.dstOffices.size),
             arrive = resourceProvider.getArrive(courierOrderEntity.reservedDuration),
-            volume = resourceProvider.getBoxCountAndVolume(
-                courierOrderEntity.minBoxesCount,
-                courierOrderEntity.minVolume
-            ),
-            pvzCount = "" + courierOrderEntity.dstOffices.size + " ПВЗ",
-            coast = "от " + coast + " ₽",
+            isSelected = isSelected,
             idView = index
         )
     }

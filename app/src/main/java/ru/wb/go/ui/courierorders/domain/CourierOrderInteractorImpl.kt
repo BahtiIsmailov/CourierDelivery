@@ -11,13 +11,16 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
-import java.util.concurrent.TimeUnit
+import ru.wb.go.ui.couriermap.CourierMapAction
+import ru.wb.go.ui.couriermap.CourierMapState
+import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 
 class CourierOrderInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository
+    private val courierLocalRepository: CourierLocalRepository,
+    private val courierMapRepository: CourierMapRepository,
 ) : CourierOrderInteractor {
 
     override fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
@@ -75,6 +78,15 @@ class CourierOrderInteractorImpl(
 
     override fun observeNetworkConnected(): Observable<NetworkState> {
         return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun mapState(state: CourierMapState) {
+        courierMapRepository.mapState(state)
+    }
+
+    override fun observeMapAction(): Observable<CourierMapAction> {
+        return courierMapRepository.observeMapAction()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 

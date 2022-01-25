@@ -21,9 +21,9 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.AuthCheckSmsFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.splash.NavDrawerListener
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -50,7 +50,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
     }
 
     private fun initViews() {
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
     }
 
     private fun initListener() {

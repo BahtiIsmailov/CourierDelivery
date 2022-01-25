@@ -29,9 +29,9 @@ import ru.wb.go.ui.courierintransit.delegates.*
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
-import ru.wb.go.ui.splash.OnSoundPlayer
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.app.OnSoundPlayer
 import ru.wb.go.views.ProgressButtonMode
 import ru.wb.go.views.ProgressImageButtonMode
 
@@ -98,7 +98,7 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 

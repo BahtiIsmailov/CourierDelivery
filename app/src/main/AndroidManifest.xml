@@ -27,7 +27,7 @@
         tools:targetApi="n">
 
         <activity
-            android:name="ru.wb.go.ui.splash.AppActivity"
+            android:name="ru.wb.go.ui.app.AppActivity"
             android:exported="true"
             android:screenOrientation="locked"
             android:theme="@style/Splash"
@@ -55,7 +55,7 @@
             tools:replace="android:value" />
 
         <receiver
-            android:name=".ui.splash.MyDevicePolicyReceiver"
+            android:name=".ui.app.MyDevicePolicyReceiver"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data

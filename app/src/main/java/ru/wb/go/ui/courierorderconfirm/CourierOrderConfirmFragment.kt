@@ -15,7 +15,7 @@ import ru.wb.go.databinding.CourierOrderConfirmFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.splash.NavDrawerListener
+import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.utils.LogUtils
 
 
@@ -43,7 +43,7 @@ class CourierOrderConfirmFragment : Fragment() {
     }
 
     private fun initView() {
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = "Подтверждение заказа"
         binding.toolbarLayout.back.visibility = INVISIBLE
     }

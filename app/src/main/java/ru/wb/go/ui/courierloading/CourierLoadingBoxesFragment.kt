@@ -18,7 +18,6 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingBoxesFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierLoadingBoxesFragment : Fragment() {

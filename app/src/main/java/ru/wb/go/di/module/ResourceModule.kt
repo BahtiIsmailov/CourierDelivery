@@ -23,7 +23,7 @@ import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryResourceProvider
 import ru.wb.go.ui.courierunloading.CourierUnloadingResourceProvider
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlResourceProvider
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
-import ru.wb.go.ui.splash.AppResourceProvider
+import ru.wb.go.ui.app.AppResourceProvider
 
 val resourceModule = module {
 

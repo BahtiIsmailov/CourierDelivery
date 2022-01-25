@@ -43,8 +43,8 @@ import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
 import ru.wb.go.ui.scanner.ScannerViewModel
-import ru.wb.go.ui.splash.AppLoaderViewModel
-import ru.wb.go.ui.splash.AppViewModel
+import ru.wb.go.ui.app.AppLoaderViewModel
+import ru.wb.go.ui.app.AppViewModel
 
 val viewModelModule = module {
     viewModel { ConfigViewModel(get(), get()) }

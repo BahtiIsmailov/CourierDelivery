@@ -25,7 +25,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.splash.NavDrawerListener
+import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.views.ProgressButtonMode
 
 
@@ -70,7 +70,7 @@ class CourierOrderDetailsFragment : Fragment() {
     }
 
     private fun initView() {
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
     }
 
     private fun initObservable() {

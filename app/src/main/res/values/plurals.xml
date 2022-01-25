@@ -30,11 +30,20 @@
 
     <plurals name="volume">
         <item quantity="zero">%d кубов</item>
-        <item quantity="one">%d куб</item>
-        <item quantity="two">%d куба</item>
+        <item quantity="one">%d куба</item>
+        <item quantity="two">%d кубов</item>
         <item quantity="few">%d кубов</item>
         <item quantity="many">%d кубов</item>
         <item quantity="other">%d кубов</item>
+    </plurals>
+
+    <plurals name="address">
+        <item quantity="zero">%d адресов</item>
+        <item quantity="one">%d адрес</item>
+        <item quantity="two">%d адреса</item>
+        <item quantity="few">%d адреса</item>
+        <item quantity="many">%d адресов</item>
+        <item quantity="other">%d адресов</item>
     </plurals>
 
 </resources>

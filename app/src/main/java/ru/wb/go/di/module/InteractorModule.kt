@@ -11,6 +11,9 @@ import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
+import ru.wb.go.ui.app.domain.AppInteractor
+import ru.wb.go.ui.app.domain.AppInteractorImpl
+import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.auth.domain.CheckSmsInteractor
 import ru.wb.go.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
@@ -57,9 +60,6 @@ import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
-import ru.wb.go.ui.splash.domain.AppInteractor
-import ru.wb.go.ui.splash.domain.AppInteractorImpl
-import ru.wb.go.ui.splash.domain.AppSharedRepository
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
@@ -186,13 +186,15 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository
+        courierLocalRepository: CourierLocalRepository,
+        courierMapRepository: CourierMapRepository,
     ): CourierOrderInteractor {
         return CourierOrderInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
-            courierLocalRepository
+            courierLocalRepository,
+            courierMapRepository
         )
     }
 
@@ -390,11 +392,20 @@ val interactorModule = module {
     factory { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
-    single { provideCourierBillingAccountSelectorInteractor(get(), get(), get(), get(), get(), get()) }
+    single {
+        provideCourierBillingAccountSelectorInteractor(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
-    single { provideCourierOrderInteractor(get(), get(), get(), get()) }
+    single { provideCourierOrderInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }

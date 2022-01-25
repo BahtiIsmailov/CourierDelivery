@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
+import ru.wb.go.ui.app.KeyboardListener
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorders.CourierOrderParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.splash.KeyboardListener
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
 
 
 class CourierWarehousesFragment : Fragment() {
@@ -45,6 +45,7 @@ class CourierWarehousesFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
@@ -52,11 +53,33 @@ class CourierWarehousesFragment : Fragment() {
         initObservable()
         initListeners()
         viewModel.update()
+
+
+//        binding.navDrawerMenu.setImageBitmap(
+//            getBitmapIndexMarker(
+//                "8",
+//                R.drawable.ic_courier_map_order
+//            )
+//        )
+//
+//        binding.navDrawerMenu1.setImageBitmap(
+//            getBitmapIndexMarker(
+//                "200",
+//                R.drawable.ic_courier_map_order
+//            )
+//        )
+//        binding.navDrawerMenu2.setImageBitmap(
+//            getBitmapIndexMarker(
+//                "50",
+//                R.drawable.ic_courier_map_order_selected
+//            )
+//        )
+
     }
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).unlock()
+        (activity as NavDrawerListener).unlockNavDrawer()
         (activity as KeyboardListener).panMode()
     }
 
@@ -118,7 +141,7 @@ class CourierWarehousesFragment : Fragment() {
             }
         }
 
-        viewModel.ordersState.observe(viewLifecycleOwner) {
+        viewModel.showOrdersState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierWarehousesShowOrdersState.Disable -> showOrdersDisable()
                 CourierWarehousesShowOrdersState.Enable -> {
@@ -140,7 +163,12 @@ class CourierWarehousesFragment : Fragment() {
                 is CourierWarehousesNavigationState.NavigateToCourierOrder ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehouseFragmentToCourierOrderFragment(
-                            CourierOrderParameters(it.officeId, it.address)
+                            CourierOrderParameters(
+                                it.officeId,
+                                it.warehouseLatitude,
+                                it.warehouseLongitude,
+                                it.address
+                            )
                         )
                     )
             }
@@ -159,7 +187,7 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).show() }
+        binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
     }
 
     private fun initRecyclerView() {

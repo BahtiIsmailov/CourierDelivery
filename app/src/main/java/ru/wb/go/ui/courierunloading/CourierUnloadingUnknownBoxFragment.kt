@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.wb.go.databinding.CourierLoadingUnknownBoxFragmentBinding
 import ru.wb.go.databinding.CourierUnloadingUnknownBoxFragmentBinding
-import ru.wb.go.ui.splash.NavToolbarListener
 
 class CourierUnloadingUnknownBoxFragment : Fragment() {
 

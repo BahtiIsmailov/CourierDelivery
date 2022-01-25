@@ -313,7 +313,7 @@ class CourierIntransitViewModel(
             interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
         } else {
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-            val boundingBox = MapEnclosingCircle().minimumBoundingBox(coordinatePoints)
+            val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
             interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
         }
     }

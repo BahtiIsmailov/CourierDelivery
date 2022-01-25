@@ -17,6 +17,8 @@
     <color name="fab_progress">#642CA3</color>
 
 
+    <color name="order_number">#2196F3</color>
+    <color name="order_amount">#2CA364</color>
 
     <color name="transparent">#0000</color>
     <color name="keyboard_dot_select">#642CA3</color>

@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,7 +14,7 @@ import android.os.Bundle
 import android.view.*
 import android.view.Gravity.LEFT
 import android.view.View.*
-import android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN
+import android.view.WindowManager.LayoutParams.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -51,7 +51,7 @@ import java.util.*
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
-    OnFlightsStatus, OnUserInfo, OnCourierScanner, OnSoundPlayer,
+    OnFlightsStatus, OnUserInfo, OnCourierScanner, OnSoundPlayer, StatusBarListener,
     NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -73,7 +73,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         initNavController()
         initObserver()
         initListener()
-        makeStatusBarTransparent()
+        hideStatusBar()
     }
 
     private fun showInstallOption(destination: String) {
@@ -402,8 +402,15 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     override fun showStatusBar() {
-        setTheme(R.style.AppTheme_NoActionBar)
-        window.clearFlags(FLAG_FULLSCREEN)
+        //setTheme(R.style.AppTheme_NoActionBar)
+//        window.apply {
+////            window.clearFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+//            setFlags(FLAG_LAYOUT_NO_LIMITS, FLAG_LAYOUT_NO_LIMITS)
+//        }
+    }
+
+    override fun hideStatusBar() {
+        makeStatusBarTransparent()
     }
 
     override fun showNetworkDialog() {
@@ -469,26 +476,25 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         }
     }
 
-    override fun lock() {
+    override fun lockNavDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
-    override fun unlock() {
+    override fun unlockNavDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-
     }
 
     @SuppressLint("RtlHardcoded")
-    override fun show() {
+    override fun showNavDrawer() {
         binding.drawerLayout.openDrawer(LEFT)
     }
 
     override fun adjustMode() {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        window.setSoftInputMode(SOFT_INPUT_ADJUST_NOTHING)
     }
 
     override fun panMode() {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        window.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
     }
 
     override fun flightNotAssigned(delivery: String) {
@@ -548,9 +554,14 @@ interface NavToolbarListener {
 }
 
 interface NavDrawerListener {
-    fun lock()
-    fun unlock()
-    fun show()
+    fun lockNavDrawer()
+    fun unlockNavDrawer()
+    fun showNavDrawer()
+}
+
+interface StatusBarListener {
+    fun showStatusBar()
+    fun hideStatusBar()
 }
 
 interface KeyboardListener {
@@ -586,13 +597,13 @@ fun AppActivity.hasPermission(permission: String): Boolean {
 
 fun Activity.makeStatusBarTransparent() {
     window.apply {
-        clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        clearFlags(FLAG_TRANSLUCENT_STATUS)
+        addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             decorView.systemUiVisibility =
                 SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         } else {
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
         statusBarColor = Color.TRANSPARENT
     }

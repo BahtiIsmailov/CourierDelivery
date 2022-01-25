@@ -34,7 +34,7 @@
     <string name="unknown_service_button_error">OK</string>
 
     <string name="attention_title">Внимание</string>
-    <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
+    <string name="courier_expects_message">Ваши данные находятся на рассмотрении</string>
     <string name="courier_expects_positive">OK</string>
 
     <string name="courier_registration_correct_title">Ошибка</string>
@@ -199,14 +199,21 @@
     <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>
     <string name="courier_warehouse_dialog_empty_message">Все заказы взяты в работу</string>
     <string name="courier_warehouse_dialog_empty_button">Понятно</string>
-
     <string name="courier_orders_update">Обновить</string>
+    <string name="courier_orders_order">\u0020- %1$d</string>
+    <string name="courier_orders_coast">от %1$s ₽</string>
+    <string name="courier_orders_count_box">от %1$d шт.</string>
+    <string name="courier_orders_volume">от %1$s</string>
+    <string name="courier_orders_count_pvz">%1$s</string>
+    <string name="courier_orders_arrive">\u0020%1$s мин</string>
     <string name="courier_orders_count">от %1$d шт. / %2$s</string>
     <string name="courier_orders_empty_list">Заказы не найдены</string>
     <string name="courier_order_dialog_title_error">Заказы</string>
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
     <string name="courier_order_dialog_positive_button_error">OK</string>
 
+
+    <string name="courier_orders_details_arrive">резерв </string>
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
@@ -465,7 +472,7 @@
     <string name="keyboard_symbolY">Y</string>
     <string name="keyboard_symbolX">X</string>
 
-<!--    <string name="user_form_agreement">^1</string>-->
+    <!--    <string name="user_form_agreement">^1</string>-->
     <string name="user_form_agreement_link">Подтверждаю согласие с договором оферты</string>
 
     <string name="start_delivery_title">Погрузка завершена</string>

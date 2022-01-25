@@ -8,10 +8,10 @@ import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.ui.splash.domain.AppSharedRepository
 import java.util.concurrent.TimeUnit
 
 class CourierWarehouseInteractorImpl(

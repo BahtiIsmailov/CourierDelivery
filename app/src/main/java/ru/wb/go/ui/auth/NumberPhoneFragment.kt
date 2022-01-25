@@ -18,10 +18,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.AuthPhoneFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.app.StatusBarListener
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.views.ProgressButtonMode
 
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
@@ -61,7 +62,8 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     private fun initViews() {
         binding.next.setState(ProgressButtonMode.DISABLE)
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
+        (activity as StatusBarListener).showStatusBar()
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 

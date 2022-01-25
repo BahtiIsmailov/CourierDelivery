@@ -1,11 +1,12 @@
 package ru.wb.go.ui.courierorders
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -13,23 +14,25 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
-import kotlinx.coroutines.selects.whileSelect
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierOrderFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
-import ru.wb.go.views.ProgressButtonMode
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
+
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import ru.wb.go.R
+import ru.wb.go.ui.courierwarehouses.CourierWarehousesShowOrdersState
 
 
 class CourierOrderFragment : Fragment() {
@@ -69,11 +72,40 @@ class CourierOrderFragment : Fragment() {
         initListeners()
         initStateObserve()
         initReturnResult()
+
+        //val rLayout = RelativeLayout(requireContext())
+
+//        val frameLayout = FrameLayout(requireContext())
+//        val index = TextView(requireContext())
+//        val image = ImageView(requireContext())
+//        image.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_courier_map_order))
+//
+//        index.text = 10.toString()
+//        frameLayout.addView(index)
+//
+//        frameLayout.isDrawingCacheEnabled = true
+//        frameLayout.buildDrawingCache()
+//        val bm = view.drawingCache
+//        binding.backFull.setImageBitmap(bm)
+
+
+//        val viewBgrnd = BitmapFactory.decodeResource(requireContext().resources, R.drawable.ic_courier_map_order)
+//        val returnedBitmap =
+//            Bitmap.createBitmap(frameLayout.width, frameLayout.height, Bitmap.Config.ARGB_8888)
+//        val canvas = Canvas(returnedBitmap)
+//
+//        val paint = Paint()
+//        canvas.drawBitmap(ViewBgrnd, 0, 0, paint);
+//        frameLayout.dispaD
+
+        //rLayout.disdra
+
+
     }
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
     }
 
     private fun initReturnResult() {
@@ -96,33 +128,34 @@ class CourierOrderFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.update.setOnClickListener { viewModel.onUpdateClick() }
+        binding.backFull.setOnClickListener { findNavController().popBackStack() }
+//        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+//        binding.update.setOnClickListener { viewModel.onUpdateClick() }
     }
 
     private fun initStateObserve() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarTitle.text = it.label
+            binding.title.text = it.label
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
-        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
-                else -> R.drawable.ic_inet_failed
-            }
-            binding.toolbarLayout.noInternetImage.setImageDrawable(
-                ContextCompat.getDrawable(requireContext(), ic)
-            )
-        }
+//        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+//            val ic = when (it) {
+//                is NetworkState.Complete -> R.drawable.ic_inet_complete
+//                else -> R.drawable.ic_inet_failed
+//            }
+//            binding.toolbarLayout.noInternetImage.setImageDrawable(
+//                ContextCompat.getDrawable(requireContext(), ic)
+//            )
+//        }
 
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
-        }
+//        viewModel.versionApp.observe(viewLifecycleOwner) {
+//            binding.toolbarLayout.toolbarVersion.text = it
+//        }
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
@@ -138,19 +171,19 @@ class CourierOrderFragment : Fragment() {
 
         viewModel.orders.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CourierOrdersState.ShowOrders -> {
+                is CourierOrderItemState.ShowOrders -> {
                     binding.emptyList.visibility = GONE
-                    binding.progress.visibility = GONE
+                    binding.orderProgress.visibility = GONE
                     binding.orders.visibility = VISIBLE
-                    binding.update.setState(ProgressButtonMode.ENABLE)
+//                    binding.update.setState(ProgressButtonMode.ENABLE)
                     displayItems(state.items)
                 }
-                is CourierOrdersState.Empty -> {
+                is CourierOrderItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
-                    binding.progress.visibility = GONE
+                    binding.orderProgress.visibility = GONE
                     binding.orders.visibility = GONE
                     binding.emptyTitle.text = state.info
-                    binding.update.setState(ProgressButtonMode.ENABLE)
+//                    binding.update.setState(ProgressButtonMode.ENABLE)
                 }
             }
         }
@@ -169,6 +202,32 @@ class CourierOrderFragment : Fragment() {
             }
         }
 
+        viewModel.showOrdersState.observe(viewLifecycleOwner) {
+            when (it) {
+                CourierWarehousesShowOrdersState.Disable -> showOrdersDisable()
+                CourierWarehousesShowOrdersState.Enable -> {
+                    binding.showOrdersFab.isEnabled = true
+                    binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.fab_enable
+                        )
+                    )
+                }
+                CourierWarehousesShowOrdersState.Progress -> {}
+            }
+        }
+
+    }
+
+    private fun showOrdersDisable() {
+        binding.showOrdersFab.isEnabled = false
+        binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.fab_disable
+            )
+        )
     }
 
     private fun showDialogInfo(
@@ -231,4 +290,9 @@ class CourierOrderFragment : Fragment() {
 }
 
 @Parcelize
-data class CourierOrderParameters(val currentWarehouseId: Int, val address: String) : Parcelable
+data class CourierOrderParameters(
+    val warehouseId: Int,
+    val warehouseLatitude: Double,
+    val warehouseLongitude: Double,
+    val address: String
+) : Parcelable

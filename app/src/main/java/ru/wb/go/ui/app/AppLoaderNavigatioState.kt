@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
 sealed class AppLoaderNavigatioState {
     object NavigateToCourier : AppLoaderNavigatioState()

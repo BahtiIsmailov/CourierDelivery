@@ -3,6 +3,8 @@ package ru.wb.go.ui.couriermap
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,8 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.GoogleApiClient
@@ -43,6 +47,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     companion object {
         const val MY_LOCATION_ID = "my_location_id"
+        const val WAREHOUSE_ID = "warehouse"
         private const val REQUEST_ERROR = 0
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
@@ -192,6 +197,21 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.overlays.add(markerMap)
     }
 
+    private fun addMapMarkerWithIndex(
+        index: String,
+        id: String,
+        lat: Double,
+        long: Double,
+        icon: Int
+    ) {
+        val markerMap = Marker(binding.map)
+        markerMap.setOnMarkerClickListener(onMarkerClickListener)
+        markerMap.id = id
+        markerMap.icon = BitmapDrawable(resources, getBitmapIndexMarker(index, icon))
+        markerMap.position = GeoPoint(lat, long)
+        binding.map.overlays.add(markerMap)
+    }
+
     private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
 
     private fun navigateToMarker(id: String) {
@@ -206,8 +226,11 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun initObservable() {
         viewModel.mapState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
+                is CourierMapState.UpdateMarkersWithIndex -> {
+                    updateMarkersWithIndex(it.points)
+                }
+                is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
                 is CourierMapState.NavigateToPointZoom -> navigateToPointZoom(it.point)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.point)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
@@ -255,6 +278,17 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         initMapMarkers(mapPoints)
     }
 
+    private fun updateMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
+        binding.map.overlays.clear()
+        initMapMarkersWithIndex(mapPoints)
+    }
+
+    private fun initMapMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
+        addOverlayBackground()
+        mapPoints.forEachIndexed(addMapMarkerWithIndex)
+        binding.map.invalidate()
+    }
+
     private fun initMapMarkers(mapPoints: List<CourierMapMarker>) {
         addOverlayBackground()
         mapPoints.forEach(addMapMarker)
@@ -273,6 +307,18 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private val addMapMarker = { item: CourierMapMarker ->
         with(item) { addMapMarker(point.id, point.lat, point.long, icon) }
+    }
+
+    private val addMapMarkerWithIndex = { index: Int, item: CourierMapMarker ->
+        with(item) {
+            addMapMarkerWithIndex(
+                (index + 1).toString(),
+                point.id,
+                point.lat,
+                point.long,
+                icon
+            )
+        }
     }
 
     private fun initListeners() {
@@ -375,6 +421,40 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }
 
     override fun onConnectionSuspended(p0: Int) {}
+
+    private fun getBitmapIndexMarker(index: String, @DrawableRes res: Int): Bitmap? {
+        val bitmap = convertDrawableToBitmap(res)
+        bitmap?.let {
+            val canvas = Canvas(bitmap)
+            val paint = Paint()
+            paint.color = Color.WHITE
+            paint.style = Paint.Style.FILL
+
+            paint.textAlign = Paint.Align.CENTER
+            paint.color = Color.WHITE
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            paint.textSize = 40f
+
+            val xPos = (canvas.width / 2).toFloat()
+            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2)
+            canvas.drawText(index, xPos, yPos, paint)
+            return bitmap
+        }
+        return null
+    }
+
+    private fun convertDrawableToBitmap(@DrawableRes res: Int): Bitmap? {
+        val d = ContextCompat.getDrawable(requireContext(), res)
+        d?.let {
+            val bitmap =
+                Bitmap.createBitmap(d.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            d.setBounds(0, 0, canvas.width, canvas.height)
+            d.draw(canvas)
+            return bitmap
+        }
+        return null
+    }
 
     class OverlayBackground(private val listener: OnBackgroundClickListener) : Overlay() {
 

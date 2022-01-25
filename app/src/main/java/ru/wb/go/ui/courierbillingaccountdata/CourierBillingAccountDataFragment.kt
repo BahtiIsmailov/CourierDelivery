@@ -38,7 +38,7 @@ import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.T
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
