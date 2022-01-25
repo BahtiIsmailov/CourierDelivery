@@ -20,6 +20,7 @@
     <string name="auth_session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
     <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
+    <string name="http_timeout_error">"TimeOut. Возможно отсутствует интернет или низкая скорость соединения"</string>
     <string name="http_timeout_service_error" />
     <string name="http_error" />
     <string name="http_unknown_error" />
@@ -29,12 +30,11 @@
     <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
     <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>
 
-    <string name="unknown_service_title_error">Ошибка</string>
+    <string name="error_title">Ошибка</string>
 
     <string name="attention_title">Внимание</string>
     <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
 
-    <string name="courier_registration_correct_title">Ошибка</string>
     <string name="ok_button_title">OK</string>
 
     <string name="splash_uri_play_market">market://details?id=%s</string>

@@ -1,16 +1,21 @@
 package ru.wb.go.network.exceptions;
 
+import static ru.wb.go.app.AppConsts.HTTP_OBJECT_NOT_FOUND;
+
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 import javax.net.ssl.SSLException;
 
@@ -20,7 +25,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Unit;
-import okhttp3.ResponseBody;
+import kotlin.io.TextStreamsKt;
 import retrofit2.HttpException;
 import retrofit2.Response;
 import ru.wb.go.app.AppConsts;
@@ -117,7 +122,7 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
 
     @NonNull
     private Throwable getHttpException(@NonNull HttpException exception) {
-        Error error = convertMessageException(exception.response());
+        Error error = convertMessageException(Objects.requireNonNull(exception.response()));
         int code = exception.code();
         switch (code) {
             case AppConsts.SERVICE_CODE_BAD_REQUEST:
@@ -128,22 +133,43 @@ public class ErrorResolutionStrategyImpl implements ErrorResolutionStrategy {
                 return new ForbiddenException(error.getMessage());
             case AppConsts.SERVICE_CODE_LOCKED:
                 return new LockedException(error.getMessage());
+            case AppConsts.HTTP_PAGE_NOT_FOUND:
+                if (error.getCode().equals(HTTP_OBJECT_NOT_FOUND)) {
+                    return new HttpPageNotFound(error.getMessage());
+                } else
+                    return new HttpObjectNotFoundException(error.getMessage(), error.getCode());
             default:
-                return new UnknownHttpException(exception.toString()); //resourceProvider.getUnknownHttpError(), exception.toString(), code
+                return new UnknownHttpException(exception.toString());
         }
     }
 
     private Error convertMessageException(Response<?> response) {
-        ApiErrorModel apiErrorModel = new ApiErrorModel(new Error("Unknown error", "", new Data(0)));
-        try {
-            ResponseBody responseBody = response.errorBody();
-            if (responseBody != null) {
-                apiErrorModel = new Gson().fromJson(responseBody.string(), ApiErrorModel.class);
+        ApiErrorModel apiErrorModel;
+        String body = TextStreamsKt.readText(Objects.requireNonNull(response.errorBody()).charStream());
+
+        if (isJSONValid(body)) {
+            apiErrorModel = new Gson().fromJson(body, ApiErrorModel.class);
+        } else {
+            if (response.code() == 404) {
+                body = body + "\n" + response.raw().request().url();
             }
-        } catch (IOException e) {
-            return apiErrorModel.getError();
+            apiErrorModel = new ApiErrorModel(new Error(body, "E" + response.code(), new Data(0)));
         }
+
         return apiErrorModel.getError();
+    }
+
+    public boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

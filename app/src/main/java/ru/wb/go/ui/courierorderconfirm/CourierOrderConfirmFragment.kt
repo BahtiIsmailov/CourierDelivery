@@ -17,6 +17,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.managers.ErrorDialogData
 
 
 class CourierOrderConfirmFragment : Fragment() {
@@ -39,7 +40,7 @@ class CourierOrderConfirmFragment : Fragment() {
         initView()
         initObservable()
         initListeners()
-        initReturnResult()
+        initDialogs()
     }
 
     private fun initView() {
@@ -48,10 +49,10 @@ class CourierOrderConfirmFragment : Fragment() {
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
-    private fun initReturnResult() {
-        setFragmentResultListener(ProgressDialogFragment.PROGRESS_DIALOG_RESULT) { _, bundle ->
-            if (bundle.containsKey(ProgressDialogFragment.PROGRESS_DIALOG_BACK_KEY)) {
-                viewModel.onCancelLoadClick()
+    private fun initDialogs() {
+        setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                viewModel.goToWarehouse()
             }
         }
     }
@@ -86,7 +87,7 @@ class CourierOrderConfirmFragment : Fragment() {
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.progressState.observe(viewLifecycleOwner) {
@@ -108,13 +109,8 @@ class CourierOrderConfirmFragment : Fragment() {
                 }
                 CourierOrderConfirmNavigationState.NavigateToChangeCar ->
                     findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierCarNumberFragment())
-            }
-        }
-
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = View.VISIBLE
-                false -> binding.holdLayout.visibility = View.GONE
+                CourierOrderConfirmNavigationState.NavigateToWarehouse->
+                    findNavController().navigate(CourierOrderConfirmFragmentDirections.actionCourierOrderConfirmFragmentToCourierWarehouseFragment())
             }
         }
 
@@ -139,16 +135,14 @@ class CourierOrderConfirmFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = context!!.getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 

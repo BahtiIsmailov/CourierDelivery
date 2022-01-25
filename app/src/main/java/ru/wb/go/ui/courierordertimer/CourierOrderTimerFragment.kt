@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderTimerFragmentBinding
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
@@ -18,6 +19,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.managers.ErrorDialogData
 
 
 class CourierOrderTimerFragment : Fragment() {
@@ -108,7 +110,7 @@ class CourierOrderTimerFragment : Fragment() {
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
@@ -172,17 +174,14 @@ class CourierOrderTimerFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String,
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            DIALOG_INFO_TAG,
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName,
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = context!!.getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

@@ -17,6 +17,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.TimeManager
 import java.util.concurrent.TimeUnit
 
@@ -27,6 +28,7 @@ class CourierOrderConfirmInteractorImpl(
     private val locRepo: CourierLocalRepository,
     private val userManager: UserManager,
     private val timeManager: TimeManager,
+    private val errorManager: ErrorDialogManager,
 ) : CourierOrderConfirmInteractor {
 
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()

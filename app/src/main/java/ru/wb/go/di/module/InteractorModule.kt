@@ -61,6 +61,8 @@ import ru.wb.go.ui.splash.domain.AppInteractor
 import ru.wb.go.ui.splash.domain.AppInteractorImpl
 import ru.wb.go.ui.splash.domain.AppSharedRepository
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -249,6 +251,7 @@ val interactorModule = module {
         courierLocalRepository: CourierLocalRepository,
         userManager: UserManager,
         timeManager: TimeManager,
+        errorDialogManager: ErrorDialogManager
     ): CourierOrderConfirmInteractor {
         return CourierOrderConfirmInteractorImpl(
             rxSchedulerFactory,
@@ -257,6 +260,7 @@ val interactorModule = module {
             courierLocalRepository,
             userManager,
             timeManager,
+            errorDialogManager
         )
     }
 
@@ -408,7 +412,7 @@ val interactorModule = module {
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
             get(),

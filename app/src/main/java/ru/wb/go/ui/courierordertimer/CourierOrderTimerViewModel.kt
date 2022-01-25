@@ -14,6 +14,8 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
@@ -22,6 +24,7 @@ class CourierOrderTimerViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
+    private val errorDialogManager: ErrorDialogManager
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
@@ -41,8 +44,8 @@ class CourierOrderTimerViewModel(
     val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogRefuseOrder
 
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
     private val _navigationState = SingleLiveEvent<CourierOrderTimerNavigationState>()
@@ -153,7 +156,7 @@ class CourierOrderTimerViewModel(
                     },
                     {
                         setLoader(CourierOrderTimerProgressState.ProgressComplete)
-                        _navigateToDialogInfo.value = messageError(it, resourceProvider)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
 
                     }
                 )

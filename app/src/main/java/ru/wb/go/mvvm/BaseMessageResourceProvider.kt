@@ -11,7 +11,7 @@ abstract class BaseMessageResourceProvider(private val context: Context) {
     fun getGenericInternetMessageError() = context.getString(R.string.unknown_internet_message_error)
     fun getGenericInternetButtonError() = context.getString(R.string.ok_button_title)
 
-    fun getGenericServiceTitleError() = context.getString(R.string.unknown_service_title_error)
+    fun getGenericServiceTitleError() = context.getString(R.string.error_title)
     fun getGenericServiceButtonError() = context.getString(R.string.ok_button_title)
 
 }

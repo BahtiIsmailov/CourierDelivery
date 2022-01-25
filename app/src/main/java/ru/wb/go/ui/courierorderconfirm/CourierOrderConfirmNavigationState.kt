@@ -12,5 +12,7 @@ sealed class CourierOrderConfirmNavigationState {
 
     object NavigateToChangeCar: CourierOrderConfirmNavigationState()
 
+    object NavigateToWarehouse: CourierOrderConfirmNavigationState()
+
 
 }

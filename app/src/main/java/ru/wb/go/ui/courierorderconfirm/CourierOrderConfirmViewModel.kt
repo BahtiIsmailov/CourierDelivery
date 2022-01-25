@@ -2,16 +2,19 @@ package ru.wb.go.ui.courierorderconfirm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.go.network.exceptions.CustomException
+import ru.wb.go.network.exceptions.HttpObjectNotFoundException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import java.text.DecimalFormat
 
 class CourierOrderConfirmViewModel(
@@ -20,6 +23,7 @@ class CourierOrderConfirmViewModel(
     private val interactor: CourierOrderConfirmInteractor,
     private val resourceProvider: CourierOrderConfirmResourceProvider,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderInfo = MutableLiveData<CourierOrderConfirmInfoUIState>()
@@ -38,17 +42,13 @@ class CourierOrderConfirmViewModel(
     val navigationState: LiveData<CourierOrderConfirmNavigationState>
         get() = _navigationState
 
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
     private val _progressState = MutableLiveData<CourierOrderConfirmProgressState>()
     val progressState: LiveData<CourierOrderConfirmProgressState>
         get() = _progressState
-
-    private val _holdState = MutableLiveData<Boolean>()
-    val holdState: LiveData<Boolean>
-        get() = _holdState
 
     init {
         onTechEventLog("init")
@@ -67,21 +67,12 @@ class CourierOrderConfirmViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
-    private fun lockState() {
-        _holdState.value = true
-    }
-
-    private fun unlockState() {
-        _holdState.value = false
-    }
-
     private fun initOrder() {
-        lockState()
         addSubscription(
             interactor.observeOrderData()
-                .subscribe(
-                    { initOrderInfoComplete(it.courierOrderLocalEntity, it.dstOffices.size) },
-                    { initOrderInfoError(it) })
+                .subscribe {
+                    initOrderInfoComplete(it.courierOrderLocalEntity, it.dstOffices.size)
+                }
         )
     }
 
@@ -101,16 +92,11 @@ class CourierOrderConfirmViewModel(
                 coast = resourceProvider.getCoast(coast)
             )
         }
-        unlockState()
     }
 
-    private fun initOrderInfoError(throwable: Throwable) {
-        onTechErrorLog("initOrderInfoError", throwable)
-        unlockState()
-    }
 
-    private fun progressComplete() {
-        _progressState.value = CourierOrderConfirmProgressState.ProgressComplete
+    private fun setLoader(state: CourierOrderConfirmProgressState) {
+        _progressState.value = state
     }
 
     fun onRefuseOrderClick() {
@@ -118,21 +104,29 @@ class CourierOrderConfirmViewModel(
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToBack
     }
 
-    private fun actionProgress() = Completable.fromAction {
-        _progressState.value = CourierOrderConfirmProgressState.Progress
+    fun goToWarehouse() {
+        _navigationState.value = CourierOrderConfirmNavigationState.NavigateToWarehouse
     }
 
     fun onConfirmOrderClick() {
         onTechEventLog("onConfirmOrderClick")
-        lockState()
+        setLoader(CourierOrderConfirmProgressState.Progress)
         addSubscription(
-            actionProgress()
-                .andThen(interactor.anchorTask())
+            interactor.anchorTask()
                 .subscribe(
                     {
-                        anchorTaskComplete() },
+                        anchorTaskComplete()
+                    },
                     {
-                        anchorTaskError(it) })
+                        onTechErrorLog("anchorTaskError", it)
+                        setLoader(CourierOrderConfirmProgressState.ProgressComplete)
+                        if(it is HttpObjectNotFoundException){
+                            val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
+                            errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
+                        }else {
+                            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo, DialogInfoFragment.DIALOG_INFO2_TAG)
+                        }
+                    })
         )
     }
 
@@ -142,26 +136,10 @@ class CourierOrderConfirmViewModel(
     }
 
     private fun anchorTaskComplete() {
+
         onTechEventLog("anchorTaskComplete", "NavigateToTimer")
         _progressState.value = CourierOrderConfirmProgressState.ProgressComplete
         _navigationState.value = CourierOrderConfirmNavigationState.NavigateToTimer
-        unlockState()
-    }
-
-    private fun anchorTaskError(throwable: Throwable) {
-        onTechErrorLog("anchorTaskError", throwable)
-        courierWarehouseError(throwable)
-        unlockState()
-    }
-
-    private fun courierWarehouseError(throwable: Throwable) {
-        progressComplete()
-        _navigateToDialogInfo.value = messageError(throwable, resourceProvider)
-    }
-
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
     }
 
     override fun getScreenTag(): String {
