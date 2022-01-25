@@ -27,6 +27,7 @@ import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.ui.splash.OnCourierScanner
 import ru.wb.go.ui.splash.OnSoundPlayer
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
 
@@ -59,12 +60,11 @@ class CourierLoadingScanFragment : Fragment() {
 
         setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                isDialogActive = false
                 viewModel.onStartScanner()
             }
         }
 
-        setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 viewModel.onErrorDialogConfirmClick()
             }
@@ -94,17 +94,10 @@ class CourierLoadingScanFragment : Fragment() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
     }
 
-    private var isDialogActive: Boolean = false
-
     private fun initObserver() {
 
-        viewModel.navigateToErrorMessage.observe(viewLifecycleOwner) {
-            showErrorOrderDialog(it.type, it.title, it.message, it.button)
-        }
-
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            isDialogActive = true
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -257,21 +250,6 @@ class CourierLoadingScanFragment : Fragment() {
         }
     }
 
-    private fun showErrorOrderDialog(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
-    ) {
-        DialogInfoFragment.newInstance(
-            DIALOG_ERROR_INFO_TAG,
-            type,
-            title,
-            message,
-            positiveButtonName
-        ).show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
-
     private fun showTimeIsOutDialog(
         type: Int,
         title: String,
@@ -306,16 +284,14 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = context!!.getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
@@ -325,7 +301,6 @@ class CourierLoadingScanFragment : Fragment() {
 
     companion object {
         const val DIALOG_LOADING_CONFIRM_TAG = "DIALOG_LOADING_CONFIRM_TAG"
-        const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
         const val DIALOG_TIME_IS_OUT_INFO_TAG = "DIALOG_TIME_IS_OUT_INFO_TAG"
     }
 

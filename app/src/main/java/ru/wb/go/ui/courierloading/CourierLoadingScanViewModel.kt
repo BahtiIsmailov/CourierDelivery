@@ -2,11 +2,9 @@ package ru.wb.go.ui.courierloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.exceptions.CompositeException
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -20,6 +18,8 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -30,6 +30,7 @@ class CourierLoadingScanViewModel(
     private val interactor: CourierLoadingInteractor,
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
@@ -49,12 +50,8 @@ class CourierLoadingScanViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToErrorMessage = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToErrorMessage: LiveData<NavigateToDialogInfo>
-        get() = _navigateToErrorMessage
-
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
     private val _beepEvent =
@@ -128,30 +125,6 @@ class CourierLoadingScanViewModel(
         )
     }
 
-    private fun confirmLoadingError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                "Интернет-соединение отсутствует",
-                throwable.message,
-                "Понятно"
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigateToErrorMessage.value = message
-    }
-
     private fun observeInitScanProcess() {
         addSubscription(interactor.scannedBoxes()
             .subscribe(
@@ -186,13 +159,18 @@ class CourierLoadingScanViewModel(
 
         addSubscription(
             interactor.observeScanProcess()
-                .doOnError { observeScanProcessError(it) }
+                .doOnError { scanProccessError(it) }
                 .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
                 .subscribe(
                     { observeScanProcessComplete(it) },
-                    { observeScanProcessError(it) }
+                    { scanProccessError(it) }
                 )
         )
+    }
+
+    private fun scanProccessError(throwable: Throwable) {
+        onTechErrorLog("observeScanProcessError", throwable)
+        errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }
 
     private fun observeFragmentLoader() {
@@ -278,13 +256,14 @@ class CourierLoadingScanViewModel(
         setLoader(CourierLoadingScanProgress.LoaderProgress)
         addSubscription(
             interactor.confirmLoadingBoxes()
-                .doOnError { onStartScanner() }
+//                .doOnError { onStartScanner() }
                 .subscribe({
                     setLoader(CourierLoadingScanProgress.LoaderComplete)
                     confirmLoadingBoxesComplete(it)
                 }, {
                     setLoader(CourierLoadingScanProgress.LoaderComplete)
-                    confirmLoadingBoxesError(it)
+                    onTechErrorLog("confirmLoadingBoxesError", it)
+                    errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
                 })
         )
     }
@@ -297,74 +276,26 @@ class CourierLoadingScanViewModel(
         )
     }
 
-    private fun confirmLoadingBoxesError(it: Throwable) {
-        onTechErrorLog("confirmLoadingBoxesError", it)
-        confirmLoadingError(it)
-    }
-
     fun onCancelLoadingClick() {
         onStartScanner()
         _completeButtonState.value = true
     }
 
     fun onCompleteLoaderClicked() {
-        stopScanner()
-        _completeButtonState.value = false
-        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
-    }
+        val stop = Single.just(stopScanner())
+        _completeButtonState.postValue(false)
+        _navigationEvent.postValue(CourierLoadingScanNavAction.NavigateToConfirmDialog)
+        addSubscription(
+            stop.subscribe()
+        )
 
-    private fun observeScanProcessError(throwable: Throwable) {
-
-        onTechErrorLog("observeScanProcessError", throwable)
-        val error = if (throwable is CompositeException) {
-            throwable.exceptions[0]
-        } else {
-            throwable
-        }
-        scanProcessError(error)
-    }
-
-    private fun scanProcessError(throwable: Throwable) {
-        val message = when (throwable) {
-            is ru.wb.go.network.exceptions.TimeoutException ->{
-                NavigateToDialogInfo(
-                    DialogInfoStyle.WARNING.ordinal,
-                    "Ошибка",
-                    "TimeOut. Возможно отсутствует интернет или низкая скорость соединения",
-                    resourceProvider.getGenericInternetButtonError()
-                )
-            }
-            is NoInternetException -> {
-                NavigateToDialogInfo(
-                    DialogInfoStyle.WARNING.ordinal,
-                    resourceProvider.getGenericInternetTitleError(),
-                    resourceProvider.getGenericInternetMessageError(),
-                    resourceProvider.getGenericInternetButtonError()
-                )
-            }
-            is BadRequestException ->
-                NavigateToDialogInfo(
-                    DialogInfoStyle.ERROR.ordinal,
-                    resourceProvider.getGenericServiceTitleError(),
-                    throwable.error.message,
-                    resourceProvider.getGenericServiceButtonError()
-                )
-
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigateToErrorMessage.value = message
     }
 
     fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
     }
 
-    private fun stopScanner(){
+    private fun stopScanner() {
         interactor.scannerAction(ScannerState.StopScan)
     }
 
@@ -399,7 +330,7 @@ class CourierLoadingScanViewModel(
         addSubscription(
             interactor.deleteTask()
                 .subscribe(
-            { toWarehouse() }, {})
+                    { toWarehouse() }, {})
         )
     }
 
