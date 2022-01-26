@@ -29,9 +29,11 @@ import ru.wb.go.ui.courierintransit.delegates.*
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.ui.splash.OnSoundPlayer
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 import ru.wb.go.views.ProgressImageButtonMode
 
@@ -54,11 +56,6 @@ class CourierIntransitFragment : Fragment() {
 
     private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
-    private var isDialogActive: Boolean = false
-
-    companion object {
-        const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,9 +85,8 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
-        setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                isDialogActive = false
                 viewModel.onErrorDialogConfirmClick()
             }
         }
@@ -124,8 +120,7 @@ class CourierIntransitFragment : Fragment() {
         }
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
-            isDialogActive = true
-            showDialogError(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -232,19 +227,16 @@ class CourierIntransitFragment : Fragment() {
 
     }
 
-    private fun showDialogError(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            DIALOG_ERROR_INFO_TAG,
-            type,
-            title,
-            message,
-            positiveButtonName
-        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = context!!.getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 
@@ -359,16 +351,6 @@ class CourierIntransitFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (!isDialogActive) viewModel.onStartScanner()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStopScanner()
     }
 
     private fun scanOfficeAccepted() {

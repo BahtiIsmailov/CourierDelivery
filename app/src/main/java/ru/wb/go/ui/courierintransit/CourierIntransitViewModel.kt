@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransit.delegates.items.*
@@ -15,12 +13,12 @@ import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitScanOfficeData
 import ru.wb.go.ui.couriermap.*
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -31,8 +29,8 @@ class CourierIntransitViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
-    private val userManager: UserManager,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -47,8 +45,8 @@ class CourierIntransitViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToErrorDialog = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToErrorDialog: LiveData<NavigateToDialogInfo>
+    private val _navigateToErrorDialog = SingleLiveEvent<ErrorDialogData>()
+    val navigateToErrorDialog: LiveData<ErrorDialogData>
         get() = _navigateToErrorDialog
 
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
@@ -106,8 +104,8 @@ class CourierIntransitViewModel(
         addSubscription(
             interactor.getOrderId()
                 .subscribe(
-                { _toolbarLabelState.value = Label(resourceProvider.getLabelId(it)) },
-                { _toolbarLabelState.value = Label(resourceProvider.getLabel()) })
+                    { _toolbarLabelState.value = Label(resourceProvider.getLabelId(it)) },
+                    { _toolbarLabelState.value = Label(resourceProvider.getLabel()) })
         )
     }
 
@@ -141,35 +139,31 @@ class CourierIntransitViewModel(
     }
 
     private fun initScanner() {
-        addSubscription(interactor.observeOfficeIdScanProcess()
-            .subscribe({
-                when (it) {
-                    is CourierIntransitScanOfficeData.NecessaryOffice -> {
-                        _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
-                        _navigationState.value =
-                            CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
-                        onCleared()
+        addSubscription(
+            interactor.observeOfficeIdScanProcess()
+                .subscribe({
+                    when (it) {
+                        is CourierIntransitScanOfficeData.NecessaryOffice -> {
+                            _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
+                            _navigationState.value =
+                                CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
+                            onCleared()
+                        }
+                        CourierIntransitScanOfficeData.UnknownQrOffice -> {
+                            val ex = CustomException("QR код офиса не распознан")
+                            _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownQrOffice
+                            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
+                        }
+                        CourierIntransitScanOfficeData.WrongOffice -> {
+                            val ex = CustomException("Офис не принадлежит маршруту")
+                            _beepEvent.value = CourierIntransitScanOfficeBeepState.WrongOffice
+                            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
+                        }
                     }
-                    CourierIntransitScanOfficeData.UnknownQrOffice -> {
-                        _navigateToErrorDialog.value = NavigateToDialogInfo(
-                            DialogInfoStyle.ERROR.ordinal,
-                            resourceProvider.getGenericServiceTitleError(),
-                            "QR код офиса не распознан",
-                            resourceProvider.getGenericServiceButtonError()
-                        )
-                        _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownQrOffice
-                    }
-                    CourierIntransitScanOfficeData.WrongOffice -> {
-                        _navigateToErrorDialog.value = NavigateToDialogInfo(
-                            DialogInfoStyle.ERROR.ordinal,
-                            resourceProvider.getGenericServiceTitleError(),
-                            "Офис не принадлежит маршруту",
-                            resourceProvider.getGenericServiceButtonError()
-                        )
-                        _beepEvent.value = CourierIntransitScanOfficeBeepState.WrongOffice
-                    }
-                }
-            }, { onTechErrorLog("observeOfficeIdScanProcess", it) })
+                }, {
+                    onTechErrorLog("observeOfficeIdScanProcess", it)
+                    errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+                })
         )
     }
 
@@ -338,7 +332,11 @@ class CourierIntransitViewModel(
                         val order = interactor.getOrder()
                         completeDeliveryComplete(it, order.cost)
                     },
-                    { completeDeliveryError(it) })
+                    {
+                        onTechErrorLog("completeDeliveryError", it)
+                        _progressState.value = CourierIntransitProgressState.ProgressComplete
+                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+                    })
         )
     }
 
@@ -354,33 +352,6 @@ class CourierIntransitViewModel(
             cdr.deliveredBoxes,
             cdr.countBoxes
         )
-    }
-
-    private fun completeDeliveryError(throwable: Throwable) {
-        onTechErrorLog("completeDeliveryError", throwable)
-        _progressState.value = CourierIntransitProgressState.ProgressComplete
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigateToErrorDialog.value = message
     }
 
     fun onCloseScannerClick() {

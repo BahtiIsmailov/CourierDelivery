@@ -27,6 +27,7 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.ui.splash.OnSoundPlayer
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierUnloadingScanFragment : Fragment() {
@@ -51,8 +52,6 @@ class CourierUnloadingScanFragment : Fragment() {
     private var _binding: CourierUnloadingFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private var isDialogActive: Boolean = false
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -73,25 +72,21 @@ class CourierUnloadingScanFragment : Fragment() {
 
         setFragmentResultListener(DIALOG_ERROR_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                isDialogActive = false
                 viewModel.onScoreDialogInfoClick()
             }
         }
 
         setFragmentResultListener(DIALOG_SCORE_ERROR_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                isDialogActive = false
                 viewModel.onScoreDialogConfirmClick()
             }
         }
 
         setFragmentResultListener(DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
-                isDialogActive = false
                 viewModel.onConfirmScoreUnloadingClick()
             }
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                isDialogActive = false
                 viewModel.onCancelScoreUnloadingClick()
             }
         }
@@ -104,16 +99,6 @@ class CourierUnloadingScanFragment : Fragment() {
         binding.toolbarLayout.back.visibility = View.INVISIBLE
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (!isDialogActive) viewModel.onStartScanner()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStopScanner()
-    }
-
     private fun initObserver() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
@@ -121,17 +106,14 @@ class CourierUnloadingScanFragment : Fragment() {
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            isDialogActive = true
-            showDialogError(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.navigateToDialogScoreError.observe(viewLifecycleOwner) {
-            isDialogActive = true
             showDialogScoreError(it.type, it.title, it.message, it.button)
         }
 
         viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
-            isDialogActive = true
             showDialogConfirmScoreInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
@@ -296,18 +278,15 @@ class CourierUnloadingScanFragment : Fragment() {
         }
     }
 
-    private fun showDialogError(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            DIALOG_ERROR_RESULT_TAG,
-            type,
-            title,
-            message,
-            positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = context!!.getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

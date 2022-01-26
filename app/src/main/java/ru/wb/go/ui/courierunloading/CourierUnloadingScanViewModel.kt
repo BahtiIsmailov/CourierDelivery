@@ -3,10 +3,7 @@ package ru.wb.go.ui.courierunloading
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.exceptions.CompositeException
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -17,7 +14,8 @@ import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
-
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
@@ -26,6 +24,7 @@ class CourierUnloadingScanViewModel(
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager
 ) : NetworkViewModel(compositeDisposable, metric) {
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -44,8 +43,8 @@ class CourierUnloadingScanViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
     private val _navigateToDialogScoreError = SingleLiveEvent<NavigateToDialogInfo>()
@@ -148,11 +147,10 @@ class CourierUnloadingScanViewModel(
         addSubscription(
             interactor.completeOfficeUnload()
                 .doFinally {
-                    _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+                    _progressEvent.postValue(CourierUnloadingScanProgress.LoaderComplete)
                     clearSubscription()
-                    _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
+                    _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
                 }
-                // FIXME: 24.01.2022 add exception dialogs 
                 .subscribe(
                     { },
                     {
@@ -166,7 +164,10 @@ class CourierUnloadingScanViewModel(
             interactor.observeScanProcess(parameters.officeId)
                 .subscribe(
                     { observeScanProcessComplete(it) },
-                    { observeScanProcessError(it) }
+                    {
+                        onTechErrorLog("observeScanProcessError", it)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+                    }
                 )
         )
     }
@@ -260,7 +261,6 @@ class CourierUnloadingScanViewModel(
                 _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
             }
         }
-//        onStartScanner()
     }
 
     private fun observeScanProgress() {
@@ -288,20 +288,17 @@ class CourierUnloadingScanViewModel(
         addSubscription(
             interactor.getCurrentOffice(parameters.officeId)
                 .subscribe({
-                    if (it.countBoxes == it.deliveredBoxes) confirmUnloading()
+                    if (it.countBoxes == it.deliveredBoxes) {
+                        confirmUnloading()
+                    }
                     else {
                         showUnloadingScoreDialog(it)
                     }
                 },
                     {
                         onTechErrorLog("readUnloadingBoxCounterError", it)
-                        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
-                        _navigateToDialogScoreError.value = NavigateToDialogInfo(
-                            DialogInfoStyle.ERROR.ordinal,
-                            resourceProvider.getGenericServiceTitleError(),
-                            it.toString(),
-                            resourceProvider.getGenericServiceButtonError()
-                        )
+                        _progressEvent.postValue( CourierUnloadingScanProgress.LoaderComplete)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
                     })
         )
     }
@@ -316,28 +313,6 @@ class CourierUnloadingScanViewModel(
             ),
             resourceProvider.getUnloadingDialogPositive(),
             resourceProvider.getUnloadingDialogNegative()
-        )
-    }
-
-    private fun observeScanProcessError(throwable: Throwable) {
-        onTechErrorLog("observeScanProcessError", throwable)
-        val error = if (throwable is CompositeException) {
-            throwable.exceptions[0]
-        } else throwable
-        scanProcessError(error)
-    }
-
-    private fun scanProcessError(throwable: Throwable) {
-        onStopScanner()
-        val message = when (throwable) {
-            is NoInternetException -> throwable.message
-            is BadRequestException -> throwable.error.message
-            else -> resourceProvider.getScanDialogMessage()
-        }
-        _beepEvent.value = CourierUnloadingScanBeepState.UnknownQR
-        _navigateToDialogInfo.value = NavigateToDialogInfo(
-            DialogInfoStyle.ERROR.ordinal,
-            resourceProvider.getScanDialogTitle(), message, resourceProvider.getScanDialogButton()
         )
     }
 

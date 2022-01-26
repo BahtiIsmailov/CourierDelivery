@@ -59,16 +59,7 @@ val viewModelModule = module {
 
     viewModel {
         CourierLoaderViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get(), get(), get()) }
@@ -99,12 +90,7 @@ val viewModelModule = module {
 
     viewModel {
         CourierLoadingScanViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(), get()
+            get(), get(), get(), get(), get(), get(), get()
         )
     }
 
@@ -112,12 +98,7 @@ val viewModelModule = module {
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
-            parameters,
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
+            parameters, get(), get(), get(), get(), get(), get()
         )
     }
 
@@ -134,32 +115,20 @@ val viewModelModule = module {
     viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
         CourierBillingAccountDataViewModel(
             parameters,
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
+            get(), get(), get(), get(), get(), get()
         )
     }
     viewModel { (parameters: CourierBillingAccountSelectorAmountParameters) ->
         CourierBillingAccountSelectorViewModel(
             parameters,
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
+            get(), get(), get(), get(), get()
         )
     }
 
     viewModel { (parameters: CourierBillingCompleteParameters) ->
         CourierBillingCompleteViewModel(
             parameters,
-            get(),
-            get(),
-            get(),
-            get()
+            get(), get(), get(), get()
         )
     }
 
