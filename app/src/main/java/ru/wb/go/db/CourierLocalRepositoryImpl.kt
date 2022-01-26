@@ -67,9 +67,9 @@ class CourierLocalRepositoryImpl(
     }
 
     override fun deleteOrder() {
-        courierOrderDao.deleteOrder()
-        courierOrderDao.deleteOffices()
         courierLoadingBoxDao.deleteBoxes()
+        courierOrderDao.deleteOffices()
+        courierOrderDao.deleteOrder()
     }
 
     override fun saveRemoteOrder(
