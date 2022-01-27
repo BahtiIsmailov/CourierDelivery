@@ -30,6 +30,7 @@ android {
         versionProps['VERSION_MAJOR'] = "0"
         versionProps['VERSION_MINOR'] = "0"
         versionProps['VERSION_BUILD'] = "0"
+        versionProps['VERSION_CODE'] = "0"
         versionProps.store(versionPropsFile.newWriter(), null)
     }
 
@@ -40,6 +41,7 @@ android {
         def runTasks = gradle.startParameter.taskNames
         def versionMinor = versionProps['VERSION_MINOR'].toInteger()
         def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+        def versionCod = versionProps['VERSION_CODE'].toInteger()
 
         def isNew = false
 
@@ -65,7 +67,7 @@ android {
             applicationId "ru.wb.go"
             minSdkVersion 21
             targetSdkVersion 32
-            versionCode 10
+            versionCode versionCod
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -195,7 +197,7 @@ dependencies {
     implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha1'
 
     //pref
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
 
     //date tame
     implementation 'joda-time:joda-time:2.9.9'
