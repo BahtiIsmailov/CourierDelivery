@@ -2,7 +2,8 @@ package ru.wb.go.ui.courierintransit.domain
 
 import io.reactivex.Observable
 import io.reactivex.Single
-import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
+import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
+import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -12,24 +13,23 @@ interface CourierIntransitInteractor {
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
-    fun observeBoxesGroupByOffice(): Observable<List<CourierIntransitGroupByOfficeEntity>>
+    fun getOffices(): Observable<List<LocalOfficeEntity>>
 
     fun observeOfficeIdScanProcess(): Observable<CourierIntransitScanOfficeData>
 
     fun scannerAction(scannerAction: ScannerState)
 
-    fun startTime(): Observable<Long>
+    fun initOrderTimer(): Observable<Long>
 
     fun completeDelivery(): Single<CompleteDeliveryResult>
 
-    fun confirmDeliveryComplete()
+    fun clearLocalTaskData()
 
     fun observeMapAction(): Observable<CourierMapAction>
 
     fun mapState(state: CourierMapState)
 
-    fun taskId(): Single<String>
-
-//    fun forcedCompleteDelivery(): Single<CompleteDeliveryResult>
+    fun getOrder():LocalOrderEntity
+    fun getOrderId():Single<String>
 
 }

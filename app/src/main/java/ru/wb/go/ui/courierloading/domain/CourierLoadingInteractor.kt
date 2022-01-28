@@ -4,9 +4,8 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
-import ru.wb.go.db.entity.courierlocal.CourierLoadingInfoEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.scanner.domain.ScannerState
 
@@ -14,11 +13,9 @@ interface CourierLoadingInteractor {
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
-    fun scannedBoxes(): Single<List<CourierBoxEntity>>
+    fun scannedBoxes(): Single<List<LocalBoxEntity>>
 
     fun observeScanProcess(): Observable<CourierLoadingProcessData>
-
-    fun removeScannedBoxes(checkedBoxes: List<String>): Completable
 
     fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
 
@@ -30,6 +27,6 @@ interface CourierLoadingInteractor {
 
     fun confirmLoadingBoxes(): Single<CourierCompleteData>
 
-    fun info(): Single<CourierLoadingInfoEntity>
+    fun getGate(): Single<String>
 
 }

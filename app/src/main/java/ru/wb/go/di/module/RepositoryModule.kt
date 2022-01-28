@@ -26,6 +26,9 @@ import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.app.domain.AppSharedRepositoryImpl
 import ru.wb.go.utils.managers.TimeManager
+import ru.wb.go.ui.splash.domain.AppSharedRepository
+import ru.wb.go.ui.splash.domain.AppSharedRepositoryImpl
+import ru.wb.go.utils.time.TimeFormatter
 
 val deliveryRepositoryModule = module {
 
@@ -41,9 +44,8 @@ val deliveryRepositoryModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         api: AppApi,
         tokenManager: TokenManager,
-        timeManager: TimeManager,
-    ): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager, timeManager)
+        ): AppRemoteRepository {
+        return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -73,8 +75,8 @@ val deliveryRepositoryModule = module {
         return IntransitTimeRepositoryImpl()
     }
 
-    fun provideScannerRepository(): ScannerRepository {
-        return ScannerRepositoryImpl()
+    fun provideScannerRepository(timeFormatter: TimeFormatter): ScannerRepository {
+        return ScannerRepositoryImpl(timeFormatter)
     }
 
     fun provideCourierMapRepository(): CourierMapRepository {
@@ -90,13 +92,13 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRemoteRepository(get(), get(), get()) }
-    single { provideAppRemoteRepository(get(), get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }
     single { provideIntransitTimeRepository() }
-    single { provideScannerRepository() }
+    single { provideScannerRepository(get()) }
     single { provideNetworkMonitorRepository() }
     single { provideAppSharedRepository() }
 

@@ -110,12 +110,12 @@
                 android:src="@drawable/ic_time" />
 
             <TextView
-                android:id="@+id/time"
+                android:id="@+id/map_timer"
                 style="@style/LargeBlackRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="00:00:00" />
+                tools:text="00:00:00" />
 
         </LinearLayout>
 
@@ -139,7 +139,7 @@
                 android:text="Доставлено"
                 app:layout_constraintBottom_toBottomOf="@+id/selected_background"
                 app:layout_constraintStart_toStartOf="@+id/selected_background"
-                app:layout_constraintTop_toBottomOf="@+id/address" />
+                app:layout_constraintTop_toBottomOf="@+id/box_address" />
 
             <TextView
                 android:id="@+id/delivery_total_count"
@@ -147,14 +147,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="0 / 0" />
+                tools:text="0 / 0" />
 
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/scanner_layout"
+        android:id="@+id/zxing_barcode_scanner"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
@@ -162,11 +162,11 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
 
         <fragment
-            android:id="@+id/scanner"
+            android:id="@+id/scanner_frame"
             class="ru.wb.go.ui.scanner.CourierScannerFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/status"
+            app:layout_constraintBottom_toTopOf="@+id/ribbon_status"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -203,7 +203,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/status"
+            android:id="@+id/ribbon_status"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@color/init_scan_status"
@@ -229,7 +229,7 @@
         android:layout_marginBottom="10dp"
         android:divider="@null"
         android:dividerHeight="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz"
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
@@ -249,7 +249,7 @@
         android:layout_height="@dimen/shadow_list"
         android:layout_marginBottom="10dp"
         android:src="@drawable/gradient_light_bottom"
-        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz"
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -258,7 +258,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Список пуст"
-        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz"
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal" />
@@ -271,7 +271,7 @@
         app:layout_constraintGuide_percent="0.5" />
 
     <ru.wb.go.views.ProgressButtonView
-        android:id="@+id/scan_qr_pvz"
+        android:id="@+id/scan_qr_pvz_button"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
@@ -289,7 +289,7 @@
         app:progress_button_text_color_progress="@color/button_default_text_progress" />
 
     <ru.wb.go.views.ProgressImageButtonView
-        android:id="@+id/scan_qr_pvz_complete"
+        android:id="@+id/scan_qr_pvz_complete_button"
         android:layout_width="90dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
@@ -306,7 +306,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ru.wb.go.views.ProgressButtonView
-        android:id="@+id/complete_delivery"
+        android:id="@+id/complete_delivery_button"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
@@ -315,7 +315,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete"
+        app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete_button"
         app:progress_button_background="@drawable/progress_image_button_round_complete"
         app:progress_button_name="Завершить доставку"
         app:progress_button_state="enable"
@@ -324,7 +324,7 @@
         app:progress_button_text_color_progress="@color/button_default_text_progress" />
 
     <ru.wb.go.views.ProgressButtonView
-        android:id="@+id/forced_complete"
+        android:id="@+id/forced_complete_button"
         android:layout_width="70dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"

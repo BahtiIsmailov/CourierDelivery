@@ -36,7 +36,7 @@
             android:text="Коробка из другого заказа" />
 
         <TextView
-            android:id="@+id/detail"
+            android:id="@+id/unload_box_error_message"
             style="@style/LargeDarkRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

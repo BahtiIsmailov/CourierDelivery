@@ -29,7 +29,7 @@ class CourierIntransitFailedUnloadingAllDelegate(
 
     override fun onBind(unloadingAllItem: CourierIntransitFailedUnloadingAllItem, holder: RouterViewHolder) {
         holder.itemView.tag = unloadingAllItem
-        holder.binding.address.text = unloadingAllItem.fullAddress
+        holder.binding.boxAddress.text = unloadingAllItem.fullAddress
         holder.binding.deliveryCount.text = unloadingAllItem.deliveryCount
         holder.binding.fromCount.text = unloadingAllItem.fromCount
         holder.binding.selectedBackground.visibility =
@@ -44,7 +44,7 @@ class CourierIntransitFailedUnloadingAllDelegate(
         }
 
         init {
-            binding.main.setOnClickListener { view: View ->
+            binding.main.setOnClickListener {
                 val (_, _, _, _, _, idView) = getTag(itemView)
                 onCourierIntransitCallback.onPickToPointClick(idView)
             }

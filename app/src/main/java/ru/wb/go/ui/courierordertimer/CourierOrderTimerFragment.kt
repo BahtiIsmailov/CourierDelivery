@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierordertimer
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderTimerFragmentBinding
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
@@ -17,8 +17,11 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_IN
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_POSITIVE_KEY
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_RESULT_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.ProgressDialogFragment
+import ru.wb.go.ui.splash.NavDrawerListener
+import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.managers.ErrorDialogData
 
 
 class CourierOrderTimerFragment : Fragment() {
@@ -27,10 +30,10 @@ class CourierOrderTimerFragment : Fragment() {
 
     private lateinit var _binding: CourierOrderTimerFragmentBinding
     private val binding get() = _binding
-    private lateinit var progressDialog: AlertDialog
 
     companion object {
         const val DIALOG_REFUSE_INFO_TAG = "DIALOG_REFUSE_INFO_TAG"
+        const val DIALOG_TIME_OUT_INFO_TAG = "DIALOG_TIME_OUT_INFO_TAG"
     }
 
     override fun onCreateView(
@@ -50,18 +53,15 @@ class CourierOrderTimerFragment : Fragment() {
     }
 
     private fun initReturnDialogResult() {
-        setFragmentResultListener(DIALOG_INFO_RESULT_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_TIME_OUT_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                viewModel.onReturnToListOrderClick()
+                viewModel.timeOutReturnToList()
             }
         }
 
         setFragmentResultListener(DIALOG_REFUSE_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onRefuseOrderConfirmClick()
-            }
-            if (bundle.containsKey(DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                viewModel.onRefuseOrderCancelClick()
             }
         }
     }
@@ -110,6 +110,9 @@ class CourierOrderTimerFragment : Fragment() {
             showRefuseOrderDialog(it.type, it.title, it.message, it.positive, it.negative)
         }
 
+        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it)
+        }
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierOrderTimerNavigationState.NavigateToWarehouse -> {
@@ -118,13 +121,6 @@ class CourierOrderTimerFragment : Fragment() {
                 CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
                     CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierScannerLoadingScanFragment()
                 )
-            }
-        }
-
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = View.VISIBLE
-                false -> binding.holdLayout.visibility = View.GONE
             }
         }
 
@@ -137,6 +133,7 @@ class CourierOrderTimerFragment : Fragment() {
         positiveButtonName: String
     ) {
         DialogInfoFragment.newInstance(
+            DIALOG_TIME_OUT_INFO_TAG,
             type = style,
             title = title,
             message = message,
@@ -166,12 +163,27 @@ class CourierOrderTimerFragment : Fragment() {
         binding.iArrived.setOnClickListener { viewModel.iArrivedClick() }
     }
 
-    private fun closeProgressDialog() {
-        if (progressDialog.isShowing) progressDialog.dismiss()
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
     }
 
-    private fun showProgressDialog() {
-        progressDialog.show()
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
+    }
+
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
+    ) {
+        DialogInfoFragment.newInstance(
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = context!!.getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 }

@@ -9,10 +9,5 @@ interface UserManager {
     fun savePaymentGuid(number: String)
     fun clearPaymentGuid()
     fun getPaymentGuid(): String
-    fun saveCostTask(cost: Int)
-    fun costTask(): Int
-    fun saveStatusTask(status: String)
-    fun statusTask(): String
     fun clearAll()
-    fun clearStatus()
 }

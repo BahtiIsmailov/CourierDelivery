@@ -464,7 +464,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             type = DialogInfoStyle.INFO.ordinal,
             title = getText(R.string.exit_app).toString(),
             message = "",
-            positiveButtonName = getText(R.string.exit_app_ok).toString(),
+            positiveButtonName = getText(R.string.ok_button_title).toString(),
             negativeButtonName = getText(R.string.exit_app_cancel).toString()
         ).show(supportFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }

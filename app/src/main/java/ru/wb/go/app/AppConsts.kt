@@ -9,6 +9,9 @@ object AppConsts {
     const val SERVICE_CODE_UNAUTHORIZED = 401
     const val SERVICE_CODE_FORBIDDEN = 403
     const val SERVICE_CODE_LOCKED = 423
+    const val HTTP_OBJECT_NOT_FOUND = "E404"
+    const val HTTP_PAGE_NOT_FOUND = 404
+
 
     const val APP_PACKAGE = "package"
 

@@ -29,9 +29,11 @@ import ru.wb.go.ui.courierintransit.delegates.*
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.app.NavDrawerListener
-import ru.wb.go.ui.app.NavToolbarListener
-import ru.wb.go.ui.app.OnSoundPlayer
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.splash.NavDrawerListener
+import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.splash.OnSoundPlayer
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 import ru.wb.go.views.ProgressImageButtonMode
 
@@ -54,11 +56,6 @@ class CourierIntransitFragment : Fragment() {
 
     private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
-    private var isDialogActive: Boolean = false
-
-    companion object {
-        const val DIALOG_ERROR_INFO_TAG = "DIALOG_EMPTY_INFO_TAG"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,9 +85,8 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
-        setFragmentResultListener(DIALOG_ERROR_INFO_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                isDialogActive = false
                 viewModel.onErrorDialogConfirmClick()
             }
         }
@@ -98,7 +94,7 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lockNavDrawer()
+        (activity as NavDrawerListener).lock()
         binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
@@ -124,21 +120,21 @@ class CourierIntransitFragment : Fragment() {
         }
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
-            isDialogActive = true
-            showDialogError(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierIntransitScanOfficeBeepState.Office -> scanOfficeAccepted()
-                CourierIntransitScanOfficeBeepState.UnknownOffice -> scanOfficeFailed()
+                CourierIntransitScanOfficeBeepState.UnknownQrOffice -> scanOfficeFailed()
+                CourierIntransitScanOfficeBeepState.WrongOffice -> scanWrongOffice()
             }
         }
 
         viewModel.intransitTime.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierIntransitTimeState.Time -> {
-                    binding.time.text = it.time
+                    binding.mapTimer.text = it.time
                 }
             }
         }
@@ -146,18 +142,18 @@ class CourierIntransitFragment : Fragment() {
         viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 true -> {
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
                 }
                 false -> {
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
                 }
             }
         }
 
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
+        binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
 
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
@@ -176,9 +172,9 @@ class CourierIntransitFragment : Fragment() {
                     binding.routes.scrollToPosition(it.position)
                 }
                 CourierIntransitItemState.CompleteDelivery -> {
-                    binding.scanQrPvz.visibility = INVISIBLE
-                    binding.scanQrPvzComplete.visibility = VISIBLE
-                    binding.completeDelivery.visibility = VISIBLE
+                    binding.scanQrPvzButton.visibility = INVISIBLE
+                    binding.scanQrPvzCompleteButton.visibility = VISIBLE
+                    binding.completeDeliveryButton.visibility = VISIBLE
                 }
             }
         }
@@ -197,16 +193,16 @@ class CourierIntransitFragment : Fragment() {
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierIntransitNavigationState.NavigateToMap -> {
-                    crossFade(binding.mapLayout, binding.scannerLayout)
-                    binding.scanQrPvz.setState(ProgressButtonMode.ENABLE)
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.ENABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.ENABLE)
+                    crossFade(binding.mapLayout, binding.zxingBarcodeScanner)
+                    binding.scanQrPvzButton.setState(ProgressButtonMode.ENABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
                 }
                 CourierIntransitNavigationState.NavigateToScanner -> {
-                    crossFade(binding.scannerLayout, binding.mapLayout)
-                    binding.scanQrPvz.setState(ProgressButtonMode.DISABLE)
-                    binding.scanQrPvzComplete.setState(ProgressImageButtonMode.DISABLED)
-                    binding.completeDelivery.setState(ProgressButtonMode.DISABLE)
+                    crossFade(binding.zxingBarcodeScanner, binding.mapLayout)
+                    binding.scanQrPvzButton.setState(ProgressButtonMode.DISABLE)
+                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
+                    binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
                 }
                 is CourierIntransitNavigationState.NavigateToUnloadingScanner -> {
                     findNavController().navigate(
@@ -231,22 +227,20 @@ class CourierIntransitFragment : Fragment() {
 
     }
 
-    private fun showDialogError(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            DIALOG_ERROR_INFO_TAG,
-            type,
-            title,
-            message,
-            positiveButtonName
-        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
         adapter.clear()
         adapter.addItems(items)
@@ -274,11 +268,10 @@ class CourierIntransitFragment : Fragment() {
 
     private fun initListeners() {
         binding.toolbarLayout.back.setOnClickListener { }
-        binding.scanQrPvz.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
-        binding.scanQrPvzComplete.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.completeDelivery.setOnClickListener { viewModel.onCompleteDeliveryClick() }
-//        binding.forcedComplete.setOnClickListener { viewModel.onForcedCompleteClick() }
+        binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
+        binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
     }
 
     // TODO: 20.08.2021 переработать
@@ -359,22 +352,15 @@ class CourierIntransitFragment : Fragment() {
         _binding = null
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (!isDialogActive) viewModel.onStartScanner()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStopScanner()
-    }
-
     private fun scanOfficeAccepted() {
         play(R.raw.qr_office_accepted)
     }
 
     private fun scanOfficeFailed() {
         play(R.raw.qr_office_failed)
+    }
+    private fun scanWrongOffice() {
+        play(R.raw.wrongoffice)
     }
 
     private fun play(resId: Int) {

@@ -1,6 +1,7 @@
 package ru.wb.go.di.module
 
 import android.app.Application
+import android.content.Context
 import com.google.gson.Gson
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -59,6 +60,10 @@ val utilsModule = module {
         return YandexMetricManagerImpl(deviceManager, tokenManager, timeManager)
     }
 
+    fun provideErrorManager(context: Context): ErrorDialogManager {
+        return ErrorDialogManagerImpl(context)
+    }
+
     single { provideSharedWorker(get(), get()) }
     single { provideDeviceManager(get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
@@ -67,5 +72,6 @@ val utilsModule = module {
     single { provideTimeFormatter() }
     single { provideTimeManager(get(), get()) }
     single { provideYandexMetricManager(get(), get(), get()) }
+    single { provideErrorManager(get()) }
 
 }

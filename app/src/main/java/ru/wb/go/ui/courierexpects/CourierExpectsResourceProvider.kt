@@ -9,6 +9,6 @@ class CourierExpectsResourceProvider(private val context: Context) :
 
     fun notConfirmDataTitle() = context.getString(R.string.attention_title)
     fun notConfirmDataMessage() = context.getString(R.string.courier_expects_message)
-    fun notConfirmDataPositive() = context.getString(R.string.courier_expects_positive)
+    fun notConfirmDataPositive() = context.getString(R.string.ok_button_title)
 
 }

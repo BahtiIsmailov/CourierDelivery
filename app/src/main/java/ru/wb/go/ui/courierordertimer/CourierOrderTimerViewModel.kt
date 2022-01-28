@@ -14,6 +14,8 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
@@ -22,6 +24,7 @@ class CourierOrderTimerViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
     private val resourceProvider: CourierOrderTimerResourceProvider,
+    private val errorDialogManager: ErrorDialogManager
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
@@ -41,6 +44,10 @@ class CourierOrderTimerViewModel(
     val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogRefuseOrder
 
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
+        get() = _navigateToDialogInfo
+
     private val _navigationState = SingleLiveEvent<CourierOrderTimerNavigationState>()
     val navigationState: LiveData<CourierOrderTimerNavigationState>
         get() = _navigationState
@@ -49,12 +56,7 @@ class CourierOrderTimerViewModel(
     val progressState: LiveData<CourierOrderTimerProgressState>
         get() = _progressState
 
-    private val _holdState = MutableLiveData<Boolean>()
-    val holdState: LiveData<Boolean>
-        get() = _holdState
-
     init {
-        onTechEventLog("init")
         initOrder()
     }
 
@@ -73,17 +75,9 @@ class CourierOrderTimerViewModel(
         )
     }
 
-    private fun lockState() {
-        _holdState.value = true
-    }
-
-    private fun unlockState() {
-        _holdState.value = false
-    }
-
     private fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
-        LogUtils{logDebugApp("initTimer reservedDuration " + reservedDuration + " reservedAt " + reservedAt)}
+        LogUtils { logDebugApp("initTimer reservedDuration $reservedDuration reservedAt $reservedAt") }
         interactor.startTimer(reservedDuration, reservedAt)
         addSubscription(
             interactor.timer
@@ -123,12 +117,12 @@ class CourierOrderTimerViewModel(
         }
     }
 
-    private fun progressComplete() {
-        _progressState.value = CourierOrderTimerProgressState.ProgressComplete
+    private fun setLoader(state: CourierOrderTimerProgressState) {
+        _progressState.postValue(state)
     }
 
     fun onRefuseOrderClick() {
-        lockState()
+
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
@@ -139,44 +133,37 @@ class CourierOrderTimerViewModel(
     }
 
     fun iArrivedClick() {
-        onTechEventLog("iArrivedClick")
-        lockState()
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
-        unlockState()
     }
 
-    fun onReturnToListOrderClick() {
+    fun timeOutReturnToList() {
         onTechEventLog("onReturnToListOrderClick")
-        lockState()
         deleteTask()
     }
 
     fun onRefuseOrderConfirmClick() {
         onTechEventLog("onRefuseOrderConfirmClick")
-        lockState()
         deleteTask()
     }
 
-    fun onRefuseOrderCancelClick() {
-        unlockState()
-    }
-
     private fun deleteTask() {
-        addSubscription(interactor.deleteTask()
-            .subscribe(
-                {
-                    unlockState()
-                    toWarehouse()
-                },
-                {
-                    unlockState()
-                    onTechErrorLog("onHandleSignUpError", it)
-                }
-            )
+        setLoader(CourierOrderTimerProgressState.Progress)
+        addSubscription(
+            interactor.deleteTask()
+                .subscribe(
+                    {
+                        toLoaderFragment()
+                    },
+                    {
+                        setLoader(CourierOrderTimerProgressState.ProgressComplete)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+
+                    }
+                )
         )
     }
 
-    private fun toWarehouse() {
+    private fun toLoaderFragment() {
         onTechEventLog("toWarehouse")
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }

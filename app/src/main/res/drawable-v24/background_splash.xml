@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/splash_background_gradient" />
+
+    <item
+        android:drawable="@drawable/splash_logo"
+        android:gravity="center" />
+
+    <item
+        android:width="54dp"
+        android:height="54dp"
+        android:drawable="@drawable/splash_boll"
+        android:left="225dp"
+        android:top="90dp" />
+
+    <item
+        android:width="260dp"
+        android:height="260dp"
+        android:drawable="@drawable/splash_boll"
+        android:left="-130dp"
+        android:top="-130dp" />
+
+    <item
+        android:width="40dp"
+        android:height="40dp"
+        android:drawable="@drawable/splash_boll"
+        android:left="70dp"
+        android:top="150dp" />
+
+    <item
+        android:width="100dp"
+        android:height="100dp"
+        android:drawable="@drawable/splash_boll"
+        android:gravity="right"
+        android:right="-50dp"
+        android:top="280dp" />
+
+    <item
+        android:width="120dp"
+        android:height="120dp"
+        android:drawable="@drawable/splash_boll"
+        android:left="-60dp"
+        android:top="340dp" />
+
+    <item
+        android:width="40dp"
+        android:height="40dp"
+        android:bottom="160dp"
+        android:drawable="@drawable/splash_boll"
+        android:gravity="bottom"
+        android:left="180dp" />
+
+    <item
+        android:width="140dp"
+        android:height="140dp"
+        android:bottom="-70dp"
+        android:drawable="@drawable/splash_boll"
+        android:gravity="bottom"
+        android:left="70dp" />
+
+</layer-list>

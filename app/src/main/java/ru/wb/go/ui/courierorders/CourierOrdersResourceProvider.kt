@@ -34,9 +34,6 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_arrive, arrive)
     }
 
-    fun getDialogTitle() = context.getString(R.string.courier_orders_confirm_dialog_title)
-    fun getDialogMessage() = context.getString(R.string.courier_orders_confirm_dialog_message)
-    fun getDialogButton() = context.getString(R.string.courier_orders_confirm_dialog_button)
     fun getDialogEmpty() = context.getString(R.string.courier_orders_confirm_dialog_empty)
 
     fun getWarehouseMapSelectedIcon() = R.drawable.ic_courier_map_warehouse_select

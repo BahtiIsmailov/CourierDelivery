@@ -6,29 +6,29 @@ import io.reactivex.Single
 import ru.wb.go.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
-import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
-import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.auth.signup.TimerState
+import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
 class CourierOrderTimerInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
-    private val courierLocalRepository: CourierLocalRepository,
+    private val locRepo: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
     private val timeFormatter: TimeFormatter,
-    private val userManager: UserManager
+    private val timeManager: TimeManager,
 ) : CourierOrderTimerInteractor {
 
     override fun deleteTask(): Completable {
-        return taskId().flatMapCompletable { appRemoteRepository.deleteTask(it) }
+        return locRepo.getOrderId()
+            .flatMapCompletable { appRemoteRepository.deleteTask(it) }
             .doOnComplete {
                 taskTimerRepository.stopTimer()
-                userManager.saveStatusTask(TaskStatus.EMPTY.status)
+                locRepo.deleteOrder()
             }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
@@ -39,13 +39,10 @@ class CourierOrderTimerInteractorImpl(
         arrivalSec = if (reservedAt.isEmpty()) {
             durationSec
         } else {
-            val reservedAtDataTime =
-                timeFormatter.dateTimeWithoutTimezoneFromString(reservedAt).millis
-            val currentDateTime = timeFormatter.currentDateTime().millis
-            val offsetSec = (currentDateTime - reservedAtDataTime) / 1000
-            durationSec - offsetSec
+            durationSec - timeManager.getPassedTime(reservedAt)
         }
-        if (arrivalSec < 0) arrivalSec = 0L
+
+        if (arrivalSec < 0 || arrivalSec > durationSec) arrivalSec = 0L
 
         return taskTimerRepository.startTimer(durationSec.toInt(), arrivalSec.toInt())
     }
@@ -57,19 +54,20 @@ class CourierOrderTimerInteractorImpl(
         taskTimerRepository.stopTimer()
     }
 
-    private fun taskId() =
-        courierLocalRepository.observeOrderData()
-            .map { it.courierOrderLocalEntity.id.toString() }
-            .first("")
-
-
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
-        return courierLocalRepository.observeOrderData()
+        return locRepo.observeOrderData()
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
     override fun timerEntity(): Single<CourierTimerEntity> {
-        return courierLocalRepository.courierTimerEntity()
+
+        return Single.just(locRepo.getOrder())
+            .map {
+                CourierTimerEntity(
+                    it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
+                    it.countOffices, it.gate, it.reservedDuration, it.reservedAt
+                )
+            }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

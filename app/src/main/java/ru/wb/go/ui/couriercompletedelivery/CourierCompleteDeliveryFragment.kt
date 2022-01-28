@@ -70,7 +70,7 @@ class CourierCompleteDeliveryFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.completeDelivery.setOnClickListener {
+        binding.completeDeliveryButton.setOnClickListener {
             viewModel.onCompleteDeliveryClick()
         }
     }

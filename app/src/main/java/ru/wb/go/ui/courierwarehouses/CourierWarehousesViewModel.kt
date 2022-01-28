@@ -3,8 +3,6 @@ package ru.wb.go.ui.courierwarehouses
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-//import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LAT_DISTANCE
-//import ru.wb.go.app.AppConsts.MAP_WAREHOUSE_LON_DISTANCE
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException

@@ -3,11 +3,9 @@ package ru.wb.go.ui.courierintransit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
+import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransit.delegates.items.*
@@ -15,25 +13,24 @@ import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitScanOfficeData
 import ru.wb.go.ui.couriermap.*
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import ru.wb.go.utils.time.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 
 class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
-    private val userManager: UserManager,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -48,8 +45,8 @@ class CourierIntransitViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToErrorDialog = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToErrorDialog: LiveData<NavigateToDialogInfo>
+    private val _navigateToErrorDialog = SingleLiveEvent<ErrorDialogData>()
+    val navigateToErrorDialog: LiveData<ErrorDialogData>
         get() = _navigateToErrorDialog
 
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
@@ -97,7 +94,7 @@ class CourierIntransitViewModel(
         initToolbar()
         observeNetworkState()
         fetchVersionApp()
-        observeBoxesGroupByOffice()
+        observeOffices()
         initTime()
         initScanner()
         observeMapAction()
@@ -105,9 +102,10 @@ class CourierIntransitViewModel(
 
     private fun initToolbar() {
         addSubscription(
-            interactor.taskId().subscribe(
-                { _toolbarLabelState.value = Label(resourceProvider.getLabelId(it)) },
-                { _toolbarLabelState.value = Label(resourceProvider.getLabel()) })
+            interactor.getOrderId()
+                .subscribe(
+                    { _toolbarLabelState.value = Label(resourceProvider.getLabelId(it)) },
+                    { _toolbarLabelState.value = Label(resourceProvider.getLabel()) })
         )
     }
 
@@ -122,52 +120,50 @@ class CourierIntransitViewModel(
         )
     }
 
-    private fun observeBoxesGroupByOffice() {
+    private fun observeOffices() {
         addSubscription(
-            interactor.observeBoxesGroupByOffice()
-                .map { sortedOffices(it) }
+            interactor.getOffices()
                 .subscribe({ initOfficesComplete(it) }, { initOfficesError(it) })
         )
     }
 
-    private fun sortedOffices(offices: List<CourierIntransitGroupByOfficeEntity>) =
-        offices.toMutableList().sortedWith(
-            compareBy({ it.isUnloaded }, { it.deliveredCount == it.fromCount })
-        )
-
     private fun initTime() {
-        addSubscription(interactor.startTime().subscribe({
-            _intransitTime.value = CourierIntransitTimeState.Time(
-                DateTimeFormatter.getDigitFullTime(it.toInt())
-            )
-        }, {}))
+        addSubscription(
+            interactor.initOrderTimer()
+                .subscribe({
+                    _intransitTime.value = CourierIntransitTimeState.Time(
+                        DateTimeFormatter.getDigitFullTime(it.toInt())
+                    )
+                }, {})
+        )
     }
 
     private fun initScanner() {
-        addSubscription(interactor.observeOfficeIdScanProcess()
-            .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
-            .subscribe({
-                when (it) {
-                    is CourierIntransitScanOfficeData.NecessaryOffice -> {
-                        onTechEventLog("observeOfficeIdScanProcess", "NecessaryOffice " + it.id)
-                        _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
-                        _navigationState.value =
-                            CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
-                        onCleared()
+        addSubscription(
+            interactor.observeOfficeIdScanProcess()
+                .subscribe({
+                    when (it) {
+                        is CourierIntransitScanOfficeData.NecessaryOffice -> {
+                            _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
+                            _navigationState.value =
+                                CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
+                            onCleared()
+                        }
+                        CourierIntransitScanOfficeData.UnknownQrOffice -> {
+                            val ex = CustomException("QR код офиса не распознан")
+                            _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownQrOffice
+                            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
+                        }
+                        CourierIntransitScanOfficeData.WrongOffice -> {
+                            val ex = CustomException("Офис не принадлежит маршруту")
+                            _beepEvent.value = CourierIntransitScanOfficeBeepState.WrongOffice
+                            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
+                        }
                     }
-                    CourierIntransitScanOfficeData.UnknownOffice -> {
-                        onTechEventLog("observeOfficeIdScanProcess", "UnknownOffice")
-                        onStopScanner()
-                        _navigateToErrorDialog.value = NavigateToDialogInfo(
-                            DialogInfoStyle.ERROR.ordinal,
-                            resourceProvider.getGenericServiceTitleError(),
-                            "QR код офиса не распознан",
-                            resourceProvider.getGenericServiceButtonError()
-                        )
-                        _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownOffice
-                    }
-                }
-            }, { onTechErrorLog("observeOfficeIdScanProcess", it) })
+                }, {
+                    onTechErrorLog("observeOfficeIdScanProcess", it)
+                    errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+                })
         )
     }
 
@@ -179,7 +175,7 @@ class CourierIntransitViewModel(
                     }
                     CourierMapAction.PermissionComplete -> {
                         onTechEventLog("observeMapAction", "PermissionComplete")
-                        observeBoxesGroupByOffice()
+                        observeOffices()
                     }
                     is CourierMapAction.AutomatedLocationUpdate -> {
                     }
@@ -195,7 +191,7 @@ class CourierIntransitViewModel(
         onTechErrorLog("initOfficesError", it)
     }
 
-    private fun initOfficesComplete(dstOffices: List<CourierIntransitGroupByOfficeEntity>) {
+    private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
         onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
         val items = mutableListOf<BaseIntransitItem>()
         val coordinatePoints = mutableListOf<CoordinatePoint>()
@@ -203,79 +199,80 @@ class CourierIntransitViewModel(
 
         var deliveredCountTotal = 0
         var fromCountTotal = 0
-        dstOffices.forEachIndexed { index, item ->
-            with(item) {
-                deliveredCountTotal += deliveredCount
-                fromCountTotal += fromCount
-                val intransitItem: BaseIntransitItem
+        dstOffices.forEachIndexed { index, office ->
+            with(office) {
+                deliveredCountTotal += deliveredBoxes
+                fromCountTotal += countBoxes
+                val item: BaseIntransitItem
                 val mapMarker: CourierMapMarker
-                if (deliveredCount == 0 && visitedAt.isEmpty()) {
-                    intransitItem = CourierIntransitEmptyItem(
-                        id = index,
-                        fullAddress = address,
-                        deliveryCount = deliveredCount.toString(),
-                        fromCount = fromCount.toString(),
-                        isSelected = DEFAULT_SELECT_ITEM,
-                        idView = index
-                    )
-                    mapMarker = Empty(
-                        MapPoint(index.toString(), latitude, longitude),
-                        resourceProvider.getEmptyMapIcon()
-                    )
-                } else {
-                    if (deliveredCount == fromCount) {
-                        if (isUnloaded) {
-                            intransitItem = CourierIntransitCompleteItem(
-                                id = index,
-                                fullAddress = address,
-                                deliveryCount = deliveredCount.toString(),
-                                fromCount = fromCount.toString(),
-                                isSelected = DEFAULT_SELECT_ITEM,
-                                idView = index
-                            )
+                when {
+                    deliveredBoxes == 0 && !isVisited -> {
+                        item = CourierIntransitEmptyItem(
+                            id = index,
+                            fullAddress = address,
+                            deliveryCount = deliveredBoxes.toString(),
+                            fromCount = countBoxes.toString(),
+                            isSelected = DEFAULT_SELECT_ITEM,
+                            idView = index,
+                        )
+                        mapMarker = Empty(
+                            MapPoint(index.toString(), latitude, longitude),
+                            resourceProvider.getEmptyMapIcon()
+                        )
+                    }
+                    deliveredBoxes == countBoxes && isOnline -> {
+                        item = CourierIntransitCompleteItem(
+                            id = index,
+                            fullAddress = address,
+                            deliveryCount = deliveredBoxes.toString(),
+                            fromCount = countBoxes.toString(),
+                            isSelected = DEFAULT_SELECT_ITEM,
+                            idView = index
+                        )
 
-                            mapMarker = Complete(
-                                MapPoint(index.toString(), latitude, longitude),
-                                resourceProvider.getCompleteMapIcon()
-                            )
+                        mapMarker = Complete(
+                            MapPoint(index.toString(), latitude, longitude),
+                            resourceProvider.getCompleteMapIcon()
+                        )
+                    }
+                    deliveredBoxes == countBoxes && !isOnline -> {
+                        item = CourierIntransitUnloadingExpectsItem(
+                            id = index,
+                            fullAddress = address,
+                            deliveryCount = deliveredBoxes.toString(),
+                            fromCount = countBoxes.toString(),
+                            isSelected = DEFAULT_SELECT_ITEM,
+                            idView = index
+                        )
 
-                        } else {
-                            intransitItem = CourierIntransitUnloadingExpectsItem(
-                                id = index,
-                                fullAddress = address,
-                                deliveryCount = deliveredCount.toString(),
-                                fromCount = fromCount.toString(),
-                                isSelected = DEFAULT_SELECT_ITEM,
-                                idView = index
-                            )
-
-                            mapMarker = Wait(
-                                MapPoint(index.toString(), latitude, longitude),
-                                resourceProvider.getWaitMapIcon()
-                            )
-                        }
-
-                    } else {
-                        intransitItem = if (isUnloaded) {
-                            CourierIntransitFailedUnloadingAllItem(
-                                id = index,
-                                fullAddress = address,
-                                deliveryCount = deliveredCount.toString(),
-                                fromCount = fromCount.toString(),
-                                isSelected = DEFAULT_SELECT_ITEM,
-                                idView = index
-                            )
-                        } else {
-                            CourierIntransitFaledUnloadingExpectsItem(
-                                id = index,
-                                fullAddress = address,
-                                deliveryCount = deliveredCount.toString(),
-                                fromCount = fromCount.toString(),
-                                isSelected = DEFAULT_SELECT_ITEM,
-                                idView = index
-                            )
-                        }
-
+                        mapMarker = Wait(
+                            MapPoint(index.toString(), latitude, longitude),
+                            resourceProvider.getWaitMapIcon()
+                        )
+                    }
+                    isOnline -> {
+                        item = CourierIntransitFailedUnloadingAllItem(
+                            id = index,
+                            fullAddress = address,
+                            deliveryCount = deliveredBoxes.toString(),
+                            fromCount = countBoxes.toString(),
+                            isSelected = DEFAULT_SELECT_ITEM,
+                            idView = index
+                        )
+                        mapMarker = Failed(
+                            MapPoint(index.toString(), latitude, longitude),
+                            resourceProvider.getFailedMapIcon()
+                        )
+                    }
+                    else -> {
+                        item = CourierIntransitFaledUnloadingExpectsItem(
+                            id = index,
+                            fullAddress = address,
+                            deliveryCount = deliveredBoxes.toString(),
+                            fromCount = countBoxes.toString(),
+                            isSelected = DEFAULT_SELECT_ITEM,
+                            idView = index
+                        )
                         mapMarker = Failed(
                             MapPoint(index.toString(), latitude, longitude),
                             resourceProvider.getFailedMapIcon()
@@ -283,7 +280,7 @@ class CourierIntransitViewModel(
                     }
                 }
 
-                items.add(intransitItem)
+                items.add(item)
                 coordinatePoints.add(CoordinatePoint(latitude, longitude))
                 markers.add(mapMarker)
             }
@@ -330,57 +327,31 @@ class CourierIntransitViewModel(
         _progressState.value = CourierIntransitProgressState.Progress
         addSubscription(
             interactor.completeDelivery()
-                .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
+                .subscribe(
+                    {
+                        val order = interactor.getOrder()
+                        completeDeliveryComplete(it, order.cost)
+                    },
+                    {
+                        onTechErrorLog("completeDeliveryError", it)
+                        _progressState.value = CourierIntransitProgressState.ProgressComplete
+                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+                    })
         )
     }
 
-//    fun onForcedCompleteClick() {
-//        _progressState.value = CourierIntransitProgressState.Progress
-//        addSubscription(
-//            interactor.forcedCompleteDelivery()
-//                .subscribe({ completeDeliveryComplete(it) }, { completeDeliveryError(it) })
-//        )
-//    }
-
-    private fun completeDeliveryComplete(completeDeliveryResult: CompleteDeliveryResult) {
+    private fun completeDeliveryComplete(cdr: CompleteDeliveryResult, cost: Int) {
         onTechEventLog(
             "completeDeliveryComplete",
-            "unloadedCount " + completeDeliveryResult.unloadedCount + "/ fromCount " + completeDeliveryResult.fromCount
+            "boxes: ${cdr.deliveredBoxes}. Cost: $cost"
         )
-        interactor.confirmDeliveryComplete()
+        interactor.clearLocalTaskData()
         _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
-            userManager.costTask(),
-            completeDeliveryResult.unloadedCount,
-            completeDeliveryResult.fromCount
+            cost,
+            cdr.deliveredBoxes,
+            cdr.countBoxes
         )
-    }
-
-    private fun completeDeliveryError(throwable: Throwable) {
-        onTechErrorLog("completeDeliveryError", throwable)
-        _progressState.value = CourierIntransitProgressState.ProgressComplete
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigateToErrorDialog.value = message
     }
 
     fun onCloseScannerClick() {
@@ -456,7 +427,7 @@ class CourierIntransitViewModel(
         }
 
     fun onStopScanner() {
-        interactor.scannerAction(ScannerState.Stop)
+        interactor.scannerAction(ScannerState.StopScan)
     }
 
     fun onStartScanner() {

@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierorders
 
 import android.content.res.ColorStateList
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -231,6 +232,7 @@ class CourierOrderFragment : Fragment() {
         _binding = null
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
         adapter.clear()
         adapter.addItems(items)

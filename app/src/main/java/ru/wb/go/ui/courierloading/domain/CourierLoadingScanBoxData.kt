@@ -8,7 +8,7 @@ sealed class CourierLoadingScanBoxData {
 
     data class ForbiddenTakeBox(val qrCode: String) : CourierLoadingScanBoxData()
 
-    data class NotRecognizedQr(val qrCode: String) : CourierLoadingScanBoxData()
+    object NotRecognizedQr : CourierLoadingScanBoxData()
 
     object ScannerReady : CourierLoadingScanBoxData()
 

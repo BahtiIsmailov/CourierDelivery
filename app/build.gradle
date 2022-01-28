@@ -30,6 +30,7 @@ android {
         versionProps['VERSION_MAJOR'] = "0"
         versionProps['VERSION_MINOR'] = "0"
         versionProps['VERSION_BUILD'] = "0"
+        versionProps['VERSION_CODE'] = "0"
         versionProps.store(versionPropsFile.newWriter(), null)
     }
 
@@ -40,8 +41,9 @@ android {
         def runTasks = gradle.startParameter.taskNames
         def versionMinor = versionProps['VERSION_MINOR'].toInteger()
         def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+        def versionCod = versionProps['VERSION_CODE'].toInteger()
 
-        def isNew =false
+        def isNew = false
 
         print(runTasks)
         if (':app:sassembleRelease' in runTasks) {
@@ -56,7 +58,7 @@ android {
 
         versionProps['VERSION_MINOR'] = versionMinor.toString()
         versionProps['VERSION_BUILD'] = versionBuild.toString()
-        if(isNew) {
+        if (isNew) {
             versionProps.store(versionPropsFile.newWriter(), null)
         }
 
@@ -65,7 +67,7 @@ android {
             applicationId "ru.wb.go"
             minSdkVersion 21
             targetSdkVersion 32
-            versionCode 8
+            versionCode versionCod
             versionName "0." + versionMinor + "." + versionBuild
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -83,14 +85,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+//            debuggable true
+//            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
             signingConfig signingConfigs.release
             matchingFallbacks = ['release']
         }
         debug {
+//            minifyEnabled true
             applicationIdSuffix ".debug"
             manifestPlaceholders = [appName: "WB Go debug"]
             signingConfig signingConfigs.debug
@@ -114,6 +117,8 @@ android {
     }
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
+
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -155,7 +160,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.7.2"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.0"
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
@@ -173,7 +178,6 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
 
     //room
-    implementation "androidx.room:room-runtime:$version_room"
     implementation "androidx.room:room-rxjava2:$version_room"
     kapt "androidx.room:room-compiler:$version_room"
     kapt "android.arch.persistence.room:compiler:1.1.1"
@@ -193,14 +197,14 @@ dependencies {
     implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha1'
 
     //pref
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
 
     //date tame
     implementation 'joda-time:joda-time:2.9.9'
 
     //scanner
-    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
-    implementation 'com.orhanobut:hawk:2.0.1'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     //pdf
     implementation 'com.github.mhiew:android-pdf-viewer:3.2.0-beta.1'

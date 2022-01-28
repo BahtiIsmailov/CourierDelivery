@@ -30,6 +30,7 @@ abstract class NetworkViewModel(
         compositeDisposable.apply { if (!isDisposed) clear() }
     }
 
+    // FIXME: 25.01.2022 Delete after full refactor Dialogs
     fun messageError(
         throwable: Throwable,
         resourceProvider: BaseMessageResourceProvider

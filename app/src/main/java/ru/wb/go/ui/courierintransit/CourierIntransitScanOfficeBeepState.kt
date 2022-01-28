@@ -4,6 +4,7 @@ sealed class CourierIntransitScanOfficeBeepState {
 
     object Office : CourierIntransitScanOfficeBeepState()
 
-    object UnknownOffice : CourierIntransitScanOfficeBeepState()
+    object UnknownQrOffice : CourierIntransitScanOfficeBeepState()
+    object WrongOffice : CourierIntransitScanOfficeBeepState()
 
 }

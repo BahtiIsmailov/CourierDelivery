@@ -101,7 +101,7 @@ class DialogInfoFragment : DialogFragment() {
         const val DIALOG_INFO_BACK_KEY = "DIALOG_INFO_BACK_KEY"
         const val DIALOG_INFO_BACK_VALUE = 1000
         const val DIALOG_INFO_TAG = "DIALOG_INFO_TAG"
-
+        const val DIALOG_INFO2_TAG = "DIALOG_INFO2_TAG"
     }
 
 }

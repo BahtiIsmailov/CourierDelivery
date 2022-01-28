@@ -44,57 +44,52 @@ interface AppApi {
     @GET("{version}/tasks/my")
     fun tasksMy(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<CourierTasksMyResponse>
+    ): Single<MyTaskResponse>
 
     @POST("{version}/tasks/{taskID}/courier")
     fun anchorTask(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
+        @Path("taskID") orderId: String,
         @Body courierAnchorResponse: CourierAnchorResponse
     ): Completable
 
     @HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
     fun deleteTask(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
+        @Path("taskID") orderId: String,
     ): Completable
-
-    @GET("{version}/task-statuses")
-    fun taskStatuses(
-        @Path(value = "version", encoded = true) version: String,
-    ): Single<CourierTaskStatusesResponse>
 
     @GET("{version}/tasks/{taskID}/boxes")
     fun taskBoxes(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
+        @Path("taskID") orderId: String,
     ): Single<CourierTaskBoxesResponse>
 
     @POST("{version}/tasks/{taskID}/statuses/start")
-    fun taskStart(
+    fun setStartTask(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
-        @Body courierTaskStartRequest: List<CourierTaskStartRequest>
-    ): Completable
+        @Path("taskID") orderId: String,
+        @Body boxes: List<ApiBoxRequest>
+    ): Single<StartTaskResponse>
 
     @POST("{version}/tasks/{taskID}/statuses/ready")
     fun taskStatusesReady(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
-        @Body courierTaskStatusesIntransitRequest: List<CourierTaskStatusesIntransitRequest>
-    ): Single<CourierTaskStatusesIntransitResponse>
+        @Path("taskID") orderId: String,
+        @Body boxes: List<ApiBoxRequest>
+    ): Single<TaskCostResponse>
 
     @POST("{version}/tasks/{taskID}/statuses/intransit")
     fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
-        @Body courierTaskStatusesIntransitRequest: List<CourierTaskStatusesIntransitRequest>
+        @Path("taskID") orderId: String,
+        @Body boxes: List<ApiBoxRequest>
     ): Completable
 
     @POST("{version}/tasks/{taskID}/statuses/end")
     fun taskStatusesEnd(
         @Path(value = "version", encoded = true) version: String,
-        @Path("taskID") flightID: String,
+        @Path("taskID") orderId: String,
     ): Completable
 
     @PUT("{version}/couriers/me/cars")
@@ -108,7 +103,7 @@ interface AppApi {
     //==============================================================================================
 
     @GET("{version}/billing/account")
-    fun billing(
+    fun getBilling(
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
     ): Single<BillingCommonResponse>

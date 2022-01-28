@@ -203,7 +203,7 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_courierOrderTimerFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment"
+            app:destination="@id/courierLoaderFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -219,22 +219,8 @@
         android:label=""
         tools:layout="@layout/courier_loading_fragment">
         <action
-            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierScannerLoadingBoxNotBelongFragment"
-            app:destination="@id/courierScannerLoadingBoxNotBelongFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierScannerLoadingScanFragment_to_courierLoadingBoxesFragment"
-            app:destination="@id/courierLoadingBoxesFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_courierScannerLoadingScanFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment"
+            app:destination="@id/courierLoaderFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -245,16 +231,32 @@
     </fragment>
 
     <fragment
-        android:id="@+id/courierScannerLoadingBoxNotBelongFragment"
-        android:name="ru.wb.go.ui.courierloading.CourierLoadingUnknownBoxFragment"
-        android:label="CourierScannerLoadingBoxNotBelongFragment"
-        tools:layout="@layout/courier_loading_unknown_box_fragment" />
-
-    <fragment
-        android:id="@+id/courierLoadingBoxesFragment"
-        android:name="ru.wb.go.ui.courierloading.CourierLoadingBoxesFragment"
+        android:id="@+id/courierOrderConfirmFragment"
+        android:name="ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmFragment"
         android:label=""
-        tools:layout="@layout/courier_loading_boxes_fragment" />
+        tools:layout="@layout/courier_order_confirm_fragment">
+        <action
+            android:id="@+id/action_courierOrderConfirmFragment_to_courierOrderTimerFragment"
+            app:destination="@id/courierOrderTimerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierOrderConfirmFragment_to_courierWarehouseFragment"
+            app:destination="@id/courierWarehouseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_courierOrderConfirmFragment_to_courierCarNumberFragment"
+            app:destination="@id/courierCarNumberFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/courierIntransitFragment"
@@ -268,8 +270,7 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/courierLoaderFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_courierIntransitFragment_to_courierCompleteDeliveryFragment"
             app:destination="@id/courierCompleteDeliveryFragment"
@@ -288,29 +289,22 @@
             app:argType="ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters"
             app:nullable="false" />
         <action
-            android:id="@+id/action_courierUnloadingScanFragment_to_courierUnloadingUnknownBoxFragment"
-            app:destination="@id/courierUnloadingUnknownBoxFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/courierLoaderFragment" />
-        <action
             android:id="@+id/action_courierUnloadingScanFragment_to_courierIntransitFragment"
             app:destination="@id/courierIntransitFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/courierLoaderFragment"
+            app:popUpTo="@id/courierIntransitFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_courierUnloadingScanFragment_to_remainBoxFragment"
+            app:destination="@id/remainBoxFragment"
+            app:enterAnim="@anim/slide_in_top"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/slide_out_bottom"
+            app:popExitAnim="@anim/fade_out" />
     </fragment>
-
-    <fragment
-        android:id="@+id/courierUnloadingUnknownBoxFragment"
-        android:name="ru.wb.go.ui.courierunloading.CourierUnloadingUnknownBoxFragment"
-        android:label=""
-        tools:layout="@layout/courier_unloading_unknown_box_fragment" />
 
     <fragment
         android:id="@+id/courierCompleteDeliveryFragment"
@@ -452,6 +446,16 @@
             app:popUpTo="@id/courierBalanceFragment"
             app:popUpToInclusive="true" />
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/remainBoxFragment"
+        android:name="ru.wb.go.ui.courierunloading.RemainBoxFragment"
+        android:label="RemainBoxFragment"
+        tools:layout="@layout/remain_box_fragment"
+        >
+        <argument android:name="box_remain_id_key"
+            app:argType="ru.wb.go.ui.courierunloading.RemainBoxParameters" />
     </fragment>
 
 </navigation>
