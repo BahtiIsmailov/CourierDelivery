@@ -25,9 +25,6 @@ import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.app.domain.AppSharedRepositoryImpl
-import ru.wb.go.utils.managers.TimeManager
-import ru.wb.go.ui.splash.domain.AppSharedRepository
-import ru.wb.go.ui.splash.domain.AppSharedRepositoryImpl
 import ru.wb.go.utils.time.TimeFormatter
 
 val deliveryRepositoryModule = module {

@@ -43,9 +43,6 @@ import ru.wb.go.ui.courierunloading.RemainBoxViewModel
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
-import ru.wb.go.ui.scanner.ScannerViewModel
-import ru.wb.go.ui.splash.AppLoaderViewModel
-import ru.wb.go.ui.splash.AppViewModel
 
 val viewModelModule = module {
     viewModel { ConfigViewModel(get(), get()) }
@@ -87,8 +84,6 @@ val viewModelModule = module {
     viewModel { (parameters: CourierCarNumberParameters) ->
         CourierCarNumberViewModel(parameters, get(), get(), get(), get())
     }
-
-    viewModel { CourierOrderTimerViewModel(get(), get(), get(), get()) }
 
     viewModel { CourierOrderTimerViewModel(get(), get(), get(), get(), get()) }
 

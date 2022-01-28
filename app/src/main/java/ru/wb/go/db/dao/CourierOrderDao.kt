@@ -21,6 +21,10 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
+    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+
+    @Transaction
+    @Query("SELECT * FROM CourierOrderLocalEntity")
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
     @Query("DELETE FROM CourierOrderLocalEntity")

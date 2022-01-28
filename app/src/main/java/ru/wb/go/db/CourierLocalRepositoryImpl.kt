@@ -42,6 +42,10 @@ class CourierLocalRepositoryImpl(
             .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
     }
 
+    override fun orderDataSync(): Single<CourierOrderLocalDataEntity> {
+        return courierOrderDao.orderDataSync()
+    }
+
     override fun orderData(): CourierOrderLocalDataEntity? {
         return courierOrderDao.orderData()
     }

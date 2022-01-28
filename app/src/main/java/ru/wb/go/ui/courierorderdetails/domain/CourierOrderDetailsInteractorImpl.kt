@@ -4,7 +4,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
-import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -67,7 +66,6 @@ class CourierOrderDetailsInteractorImpl(
                     }
                 }
             }
-            .doOnSuccess { userManager.saveStatusTask(TaskStatus.TIMER.status) }
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

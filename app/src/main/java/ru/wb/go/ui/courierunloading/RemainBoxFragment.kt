@@ -18,8 +18,8 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.RemainBoxFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
 
 class RemainBoxFragment: Fragment() {
     companion object {
@@ -59,7 +59,7 @@ class RemainBoxFragment: Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.remain_box_title)
         binding.toolbarLayout.back.visibility = View.VISIBLE
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }

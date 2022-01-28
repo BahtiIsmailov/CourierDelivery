@@ -40,4 +40,8 @@ class CourierOrdersResourceProvider(private val context: Context) :
     fun getOrderMapIcon() = R.drawable.ic_courier_map_order
     fun getOrderMapSelectedIcon() = R.drawable.ic_courier_map_order_selected
 
+    fun getDialogTitle() = context.getString(R.string.courier_orders_confirm_dialog_title)
+    fun getDialogMessage() = context.getString(R.string.courier_orders_confirm_dialog_message)
+    fun getDialogButton() = context.getString(R.string.courier_orders_confirm_dialog_button)
+
 }

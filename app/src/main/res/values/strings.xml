@@ -33,7 +33,6 @@
     <string name="error_title">Ошибка</string>
 
     <string name="attention_title">Внимание</string>
-    <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
     <string name="courier_expects_message">Ваши данные находятся на рассмотрении</string>
     <string name="courier_expects_positive">OK</string>
 
@@ -223,6 +222,8 @@
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
     <string name="courier_orders_confirm_dialog_title">Заказ забрали</string>
+    <string name="courier_orders_confirm_dialog_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_confirm_dialog_button">OK</string>
     <string name="courier_orders_confirm_dialog_empty">Свободных заказов нет</string>
 
     <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>

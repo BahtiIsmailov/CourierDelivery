@@ -113,7 +113,7 @@ class CourierWarehousesViewModel(
 
     private fun getWarehouses() {
         addSubscription(
-            interactor.warehouses()
+            interactor.getServerWarehouses()
                 // TODO: 13.01.2022 для тестирования
 //                .map {
 //                    val test1 = CourierWarehouseLocalEntity(
@@ -435,7 +435,7 @@ class CourierWarehousesViewModel(
         onTechEventLog("onDetailClick", "index $index")
         val oldEntity = warehouseEntities[index].copy()
         addSubscription(
-            interactor.warehouses()
+            interactor.getServerWarehouses()
                 .doOnSuccess { saveWarehouseEntities(it) }
                 .subscribe(
                     { checkAndNavigate(it, oldEntity) },
