@@ -165,7 +165,7 @@ class CourierWarehousesViewModel(
                 .doOnSuccess { saveWarehouseEntities(it) }
                 .doOnSuccess { convertAndSaveItemsPointsMarkers(it) }
                 .subscribe(
-                    { courierWarehouseComplete(it) },
+                    { courierWarehouseComplete() },
                     { courierWarehouseError(it) })
         )
     }
@@ -189,9 +189,9 @@ class CourierWarehousesViewModel(
         saveMapMarkers(mapMarkers)
     }
 
-    private fun courierWarehouseComplete(warehouses: List<CourierWarehouseLocalEntity>) {
+    private fun courierWarehouseComplete() {
         updateMyLocation()
-        showWarehouseItems(warehouseItems)
+        initWarehouseItems(warehouseItems)
         requestFinishUnlockState()
     }
 
@@ -225,10 +225,14 @@ class CourierWarehousesViewModel(
     }
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
-        val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
-            coordinatePoints, myLocation, RADIUS_KM
-        )
-        interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, false))
+        if (coordinatePoints.isNotEmpty()) {
+            val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
+                coordinatePoints, myLocation, RADIUS_KM
+            )
+            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+        } else {
+            interactor.mapState(CourierMapState.NavigateToPoint(myLocation))
+        }
     }
 
     private fun navigateToMyLocation() {
@@ -268,7 +272,7 @@ class CourierWarehousesViewModel(
         _warehousesProgressState.value = CourierWarehousesProgressState.ProgressComplete
     }
 
-    private fun showWarehouseItems(warehouseItems: MutableList<CourierWarehouseItem>) {
+    private fun initWarehouseItems(warehouseItems: MutableList<CourierWarehouseItem>) {
         _warehouseItems.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
             else CourierWarehouseItemState.InitItems(warehouseItems)
@@ -284,11 +288,11 @@ class CourierWarehousesViewModel(
         } else {
             val indexItemClick = mapPoint.id.toInt()
             changeSelectedMapPoint(mapPoint)
+            updateMarkers()
             val isMapSelected = isMapSelected(indexItemClick)
             changeSelectedWarehouseItems(indexItemClick, isMapSelected)
-            //updateAndScrollToItems(indexItemClick)
+            updateAndScrollToItems(indexItemClick)
             changeShowOrders(isMapSelected)
-            updateMarkers()
         }
     }
 
@@ -312,7 +316,8 @@ class CourierWarehousesViewModel(
     }
 
     private fun updateAndScrollToItems(indexItemClick: Int) {
-        _warehouseItems.value = CourierWarehouseItemState.UpdateItems(warehouseItems)
+        _warehouseItems.value =
+            CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
         _warehouseItems.value = CourierWarehouseItemState.ScrollTo(indexItemClick)
     }
 
@@ -332,7 +337,7 @@ class CourierWarehousesViewModel(
     private fun changeItemSelected(clickItemIndex: Int) {
         val isSelected = isInvertWarehouseItemsSelected(clickItemIndex)
         changeMapMarkers(clickItemIndex, isSelected)
-        changeWarehouseItems(clickItemIndex)
+        changeWarehouseItems(clickItemIndex, isSelected)
         changeShowOrders(isSelected)
     }
 
@@ -362,15 +367,15 @@ class CourierWarehousesViewModel(
             if (selected) CourierWarehousesShowOrdersState.Enable else CourierWarehousesShowOrdersState.Disable
     }
 
-    private fun changeWarehouseItems(selectIndex: Int) {
+    private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
         warehouseItems.forEachIndexed { index, item ->
-            warehouseItems[index].isSelected =
-                if (selectIndex == index) !item.isSelected
+            item.isSelected =
+                if (selectIndex == index) isSelected
                 else false
         }
         _warehouseItems.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.UpdateItems(warehouseItems)
+            else CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
     }
 
     private fun checkAndNavigate(
@@ -378,36 +383,52 @@ class CourierWarehousesViewModel(
         oldEntity: CourierWarehouseLocalEntity
     ) {
         _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
-        if (warehouseEntities.find { it.id == oldEntity.id } == null) {
-            courierWarehouseComplete(warehouseEntities)
-            _navigateToDialogInfo.value =
-                NavigateToDialogInfo(
-                    DialogInfoStyle.WARNING.ordinal,
-                    resourceProvider.getDialogEmptyTitle(),
-                    resourceProvider.getDialogEmptyMessage(),
-                    resourceProvider.getDialogEmptyButton(),
-                )
+        val idWarehouseFound = warehouseEntities.find { it.id == oldEntity.id }
+        if (idWarehouseFound == null) {
+            convertAndSaveItemsPointsMarkers(warehouseEntities)
+            courierWarehouseComplete()
+            showWarehouseOrdersIsNotExistDialog()
         } else {
             interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
-            _navigationState.value =
-                CourierWarehousesNavigationState.NavigateToCourierOrder(
-                    oldEntity.id,
-                    oldEntity.latitude,
-                    oldEntity.longitude,
-                    oldEntity.name
-                )
+            navigateToCourierOrder(oldEntity)
             clearSubscription()
         }
         requestFinishUnlockState()
     }
 
+    private fun navigateToCourierOrder(oldEntity: CourierWarehouseLocalEntity) {
+        _navigationState.value = CourierWarehousesNavigationState.NavigateToCourierOrder(
+            oldEntity.id,
+            oldEntity.latitude,
+            oldEntity.longitude,
+            oldEntity.name
+        )
+    }
+
+    private fun showWarehouseOrdersIsNotExistDialog() {
+        _navigateToDialogInfo.value =
+            NavigateToDialogInfo(
+                DialogInfoStyle.WARNING.ordinal,
+                resourceProvider.getDialogEmptyTitle(),
+                resourceProvider.getDialogEmptyMessage(),
+                resourceProvider.getDialogEmptyButton(),
+            )
+    }
+
     fun onDetailClick() {
-        warehouseItems.forEachIndexed { index, _ ->
-            if (warehouseItems[index].isSelected) {
-                checkAndNavigateToOrders(index)
-                return@forEachIndexed
+        run lit@{
+            warehouseItems.forEachIndexed { index, item ->
+                if (item.isSelected) {
+                    checkAndNavigateToOrders(index)
+                    return@lit
+                }
             }
         }
+
+    }
+
+    fun onShowAllClick() {
+        zoomMarkersFromBoundingBox(myLocation)
     }
 
     private fun checkAndNavigateToOrders(index: Int) {

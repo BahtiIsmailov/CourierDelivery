@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -47,7 +48,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     companion object {
         const val MY_LOCATION_ID = "my_location_id"
-        const val WAREHOUSE_ID = "warehouse"
+        const val WAREHOUSE_ID = ""
         private const val REQUEST_ERROR = 0
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
@@ -188,27 +189,28 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         true
     }
 
-    private fun addMapMarker(id: String, lat: Double, long: Double, icon: Int) {
-        val markerMap = Marker(binding.map)
-        markerMap.setOnMarkerClickListener(onMarkerClickListener)
-        markerMap.id = id
-        markerMap.icon = getIcon(icon)
-        markerMap.position = GeoPoint(lat, long)
-        binding.map.overlays.add(markerMap)
-    }
+//    private fun addMapMarker(id: String, lat: Double, long: Double, icon: Int) {
+//        val markerMap = Marker(binding.map)
+//        markerMap.setOnMarkerClickListener(onMarkerClickListener)
+//        markerMap.id = id
+//        markerMap.icon = getIcon(icon)
+//        markerMap.position = GeoPoint(lat, long)
+//        markerMap.setAnchor(0.5f, 0.5f)
+//        binding.map.overlays.add(markerMap)
+//    }
 
-    private fun addMapMarkerWithIndex(
-        index: String,
+    private fun addMapMarker(
         id: String,
         lat: Double,
         long: Double,
-        icon: Int
+        icon: Drawable?
     ) {
         val markerMap = Marker(binding.map)
         markerMap.setOnMarkerClickListener(onMarkerClickListener)
         markerMap.id = id
-        markerMap.icon = BitmapDrawable(resources, getBitmapIndexMarker(index, icon))
+        markerMap.icon = icon
         markerMap.position = GeoPoint(lat, long)
+        markerMap.setAnchor(0.5f, 0.5f)
         binding.map.overlays.add(markerMap)
     }
 
@@ -261,10 +263,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
         with(binding.map) {
             if (height > 0) {
+                mapController.setCenter(boundingBox.centerWithDateLine)
                 zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
             } else {
                 viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
+                        mapController.setCenter(boundingBox.centerWithDateLine)
                         zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }
@@ -306,17 +310,16 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private val addMapMarker = { item: CourierMapMarker ->
-        with(item) { addMapMarker(point.id, point.lat, point.long, icon) }
+        with(item) { addMapMarker(point.id, point.lat, point.long, getIcon(icon)) }
     }
 
     private val addMapMarkerWithIndex = { index: Int, item: CourierMapMarker ->
         with(item) {
-            addMapMarkerWithIndex(
-                (index + 1).toString(),
+            addMapMarker(
                 point.id,
                 point.lat,
                 point.long,
-                icon
+                BitmapDrawable(resources, getBitmapIndexMarker(point.id, icon))
             )
         }
     }
@@ -326,6 +329,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun navigateToMyLocation() {
+        removeMyLocationPoint()
         if (lastLocation == null) {
             navigateToDefault()
         } else {
@@ -357,7 +361,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun addMyLocationPoint(latitude: Double, longitude: Double) {
-        addMapMarker(MY_LOCATION_ID, latitude, longitude, R.drawable.ic_warehouse_my_location)
+        val point = MapPoint(MY_LOCATION_ID, latitude, longitude)
+        val mapMarker = Empty(point, R.drawable.ic_warehouse_my_location)
+        addMapMarker(mapMarker)
         binding.map.invalidate()
     }
 

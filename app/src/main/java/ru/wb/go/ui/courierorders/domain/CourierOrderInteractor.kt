@@ -20,4 +20,6 @@ interface CourierOrderInteractor {
 
     fun observeMapAction(): Observable<CourierMapAction>
 
+    fun carNumberIsConfirm(): Boolean
+
 }

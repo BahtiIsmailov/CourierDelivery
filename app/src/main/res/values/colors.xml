@@ -84,6 +84,7 @@
     <color name="text_info">#6F6779</color>
 
     <color name="buttonColor">#642CA3</color>
+    <color name="refreshColor">#642CA3</color>
     <color name="button_text">#642CA3</color>
 
     <color name="splash_text">#fafafa</color>

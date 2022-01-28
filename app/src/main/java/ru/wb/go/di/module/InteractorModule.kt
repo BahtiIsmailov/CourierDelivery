@@ -41,8 +41,6 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.ui.courierorderconfirm.domain.CourierOrderConfirmInteractor
-import ru.wb.go.ui.courierorderconfirm.domain.CourierOrderConfirmInteractorImpl
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
 import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
@@ -188,26 +186,28 @@ val interactorModule = module {
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         courierMapRepository: CourierMapRepository,
+        userManager: UserManager
     ): CourierOrderInteractor {
         return CourierOrderInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             courierLocalRepository,
-            courierMapRepository
+            courierMapRepository,
+            userManager
         )
     }
 
     fun provideCourierOrderDetailsInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
+        appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         userManager: UserManager,
         courierMapRepository: CourierMapRepository
     ): CourierOrderDetailsInteractor {
         return CourierOrderDetailsInteractorImpl(
             rxSchedulerFactory,
-            networkMonitorRepository,
+            appRemoteRepository,
             courierLocalRepository,
             userManager,
             courierMapRepository
@@ -240,22 +240,6 @@ val interactorModule = module {
             courierLocalRepository,
             taskTimerRepository,
             timeFormatter,
-            userManager
-        )
-    }
-
-    fun provideCourierOrderConfirmInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager
-    ): CourierOrderConfirmInteractor {
-        return CourierOrderConfirmInteractorImpl(
-            rxSchedulerFactory,
-            networkMonitorRepository,
-            appRemoteRepository,
-            courierLocalRepository,
             userManager
         )
     }
@@ -405,11 +389,10 @@ val interactorModule = module {
 
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
-    single { provideCourierOrderInteractor(get(), get(), get(), get(), get()) }
+    single { provideCourierOrderInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
             get(),

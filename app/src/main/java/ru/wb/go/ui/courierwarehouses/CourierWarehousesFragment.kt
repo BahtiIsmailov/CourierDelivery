@@ -53,34 +53,18 @@ class CourierWarehousesFragment : Fragment() {
         initObservable()
         initListeners()
         viewModel.update()
-
-
-//        binding.navDrawerMenu.setImageBitmap(
-//            getBitmapIndexMarker(
-//                "8",
-//                R.drawable.ic_courier_map_order
-//            )
-//        )
-//
-//        binding.navDrawerMenu1.setImageBitmap(
-//            getBitmapIndexMarker(
-//                "200",
-//                R.drawable.ic_courier_map_order
-//            )
-//        )
-//        binding.navDrawerMenu2.setImageBitmap(
-//            getBitmapIndexMarker(
-//                "50",
-//                R.drawable.ic_courier_map_order_selected
-//            )
-//        )
-
     }
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).unlockNavDrawer()
         (activity as KeyboardListener).panMode()
+        binding.refresh.setColorSchemeResources(
+            R.color.refreshColor,
+            R.color.refreshColor,
+            R.color.refreshColor,
+            R.color.refreshColor
+        )
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -94,7 +78,7 @@ class CourierWarehousesFragment : Fragment() {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
                     binding.emptyList.visibility = GONE
-                    binding.warehousesProgress.visibility = GONE
+                    binding.refresh.isRefreshing = false
                     binding.items.visibility = VISIBLE
                     val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
@@ -111,7 +95,7 @@ class CourierWarehousesFragment : Fragment() {
                 }
                 is CourierWarehouseItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
-                    binding.warehousesProgress.visibility = GONE
+                    binding.refresh.isRefreshing = false
                     binding.items.visibility = GONE
                     binding.emptyTitle.text = it.info
                 }
@@ -126,22 +110,21 @@ class CourierWarehousesFragment : Fragment() {
         }
 
         viewModel.warehousesProgressState.observe(viewLifecycleOwner) {
-            when (it) {
-                CourierWarehousesProgressState.Progress -> binding.warehousesProgress.visibility =
-                    VISIBLE
-                CourierWarehousesProgressState.ProgressComplete -> binding.warehousesProgress.visibility =
-                    GONE
+            binding.refresh.isRefreshing = when (it) {
+                CourierWarehousesProgressState.Progress -> true
+                CourierWarehousesProgressState.ProgressComplete -> false
             }
         }
 
         viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = VISIBLE
-                false -> binding.holdLayout.visibility = GONE
+            binding.holdLayout.visibility = when (it) {
+                true -> VISIBLE
+                false -> GONE
             }
         }
 
         viewModel.showOrdersState.observe(viewLifecycleOwner) {
+
             when (it) {
                 CourierWarehousesShowOrdersState.Disable -> showOrdersDisable()
                 CourierWarehousesShowOrdersState.Enable -> {
@@ -188,6 +171,9 @@ class CourierWarehousesFragment : Fragment() {
 
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
+        binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
+        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
+        binding.refresh.setOnRefreshListener { viewModel.update() }
     }
 
     private fun initRecyclerView() {
@@ -200,7 +186,6 @@ class CourierWarehousesFragment : Fragment() {
             )
         )
         binding.items.setHasFixedSize(true)
-        binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
         initSmoothScroller()
     }
 
@@ -244,6 +229,5 @@ class CourierWarehousesFragment : Fragment() {
             }
         }
     }
-
 
 }

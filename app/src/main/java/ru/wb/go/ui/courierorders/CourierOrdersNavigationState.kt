@@ -4,16 +4,20 @@ import ru.wb.go.db.entity.courier.CourierOrderEntity
 
 sealed class CourierOrdersNavigationState {
 
-    data class NavigateToOrderDetails(val title: String, val order: CourierOrderEntity) :
-        CourierOrdersNavigationState()
-
-    data class NavigateToDialogInfo(
-        val type: Int,
+    data class NavigateToOrderDetails(
         val title: String,
-        val message: String,
-        val button: String
+        val orderNumber: String,
+        val order: CourierOrderEntity,
+        val warehouseLatitude: Double,
+        val warehouseLongitude: Double
     ) : CourierOrdersNavigationState()
 
-    object NavigateToBack : CourierOrdersNavigationState()
+    data class NavigateToCarNumber(
+        val title: String,
+        val orderNumber: String,
+        val order: CourierOrderEntity,
+        val warehouseLatitude: Double,
+        val warehouseLongitude: Double
+    ) : CourierOrdersNavigationState()
 
 }

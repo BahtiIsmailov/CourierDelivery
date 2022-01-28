@@ -13,6 +13,7 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
+    private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val resourceProvider: CourierCarNumberResourceProvider,
@@ -105,15 +106,18 @@ class CourierCarNumberViewModel(
 
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
-        _navigationState.value =
-            CourierCarNumberNavigationState.NavigateToTimer
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+            title = parameters.title, orderNumber = parameters.orderNumber, order = parameters.order
+        )
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
         onTechErrorLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+            title = parameters.title, orderNumber = parameters.orderNumber, order = parameters.order
+        )
     }
 
     fun onCancelLoadClick() {

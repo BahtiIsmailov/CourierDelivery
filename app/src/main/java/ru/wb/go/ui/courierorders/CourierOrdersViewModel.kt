@@ -16,11 +16,9 @@ import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
 import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
-import ru.wb.go.ui.courierwarehouses.CourierWarehousesShowOrdersState
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -32,28 +30,19 @@ class CourierOrdersViewModel(
     private val interactor: CourierOrderInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
-    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
 
-//    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-//    val toolbarNetworkState: LiveData<NetworkState>
-//        get() = _toolbarNetworkState
-
-//    private val _versionApp = MutableLiveData<String>()
-//    val versionApp: LiveData<String>
-//        get() = _versionApp
-
     private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
     val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
         get() = _navigateToDialogInfo
 
-    private val _orders = MutableLiveData<CourierOrderItemState>()
+    private val _orderItems = MutableLiveData<CourierOrderItemState>()
     val orders: LiveData<CourierOrderItemState>
-        get() = _orders
+        get() = _orderItems
 
     private val _progressState = MutableLiveData<CourierOrdersProgressState>()
     val progressState: LiveData<CourierOrdersProgressState>
@@ -67,25 +56,24 @@ class CourierOrdersViewModel(
     val holdState: LiveData<Boolean>
         get() = _holdState
 
-    private val _showOrdersState = MutableLiveData<CourierWarehousesShowOrdersState>()
-    val showOrdersState: LiveData<CourierWarehousesShowOrdersState>
-        get() = _showOrdersState
+    private val _showDetailsState = MutableLiveData<CourierOrderShowDetailsState>()
+    val showDetailsState: LiveData<CourierOrderShowDetailsState>
+        get() = _showDetailsState
 
     private var orderEntities = mutableListOf<CourierOrderEntity>()
     private var orderItems = mutableListOf<BaseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()
     private var centerGroupPoints = mutableListOf<CoordinatePoint>()
 
-
     init {
         onTechEventLog("init")
-//        observeNetworkState()
-//        fetchVersionApp()
         observeMapAction()
+    }
+
+    fun update() {
         initToolbarLabel()
         initOrders()
     }
-
 
     private fun observeMapAction() {
         addSubscription(
@@ -106,14 +94,25 @@ class CourierOrdersViewModel(
         onTechEventLog("onItemPointClick")
         if (mapPoint.id == WAREHOUSE_ID) {
         } else {
-            val indexItemClick = mapPoint.id.toInt()
+            val idMapClick = mapPoint.id
+            val indexItem = idMapClick.toInt() - 1
             changeSelectedMapPoint(mapPoint)
-            val isMapSelected = isMapSelected(indexItemClick)
-            changeSelectedOrderItems(indexItemClick, isMapSelected)
-//            //updateAndScrollToItems(indexItemClick)
-//            changeShowOrders(isMapSelected)
+            val isMapSelected = isMapSelected(idMapClick)
+            changeSelectedOrderItems(indexItem, isMapSelected)
+            updateAndScrollToItems(indexItem)
+            changeShowOrders(isMapSelected)
             updateMarkers()
         }
+    }
+
+    private fun updateAndScrollToItems(indexItemClick: Int) {
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
+        _orderItems.value = CourierOrderItemState.ScrollTo(indexItemClick)
+    }
+
+    private fun changeShowOrders(isSelected: Boolean) {
+        _showDetailsState.value =
+            if (isSelected) CourierOrderShowDetailsState.Enable else CourierOrderShowDetailsState.Disable
     }
 
     private fun changeSelectedOrderItems(indexItemClick: Int, isMapSelected: Boolean) {
@@ -126,8 +125,16 @@ class CourierOrdersViewModel(
         }
     }
 
-    private fun isMapSelected(indexItemClick: Int) =
-        mapMarkers[indexItemClick].icon == resourceProvider.getOrderMapSelectedIcon()
+    private fun isMapSelected(idItemClick: String): Boolean {
+        var isSelected = false
+        mapMarkers.forEach { item ->
+            if (item.point.id == idItemClick && item.icon == resourceProvider.getOrderMapSelectedIcon()) {
+                isSelected = true
+                return@forEach
+            }
+        }
+        return isSelected
+    }
 
     private fun changeSelectedMapPoint(mapPoint: MapPoint) {
         mapMarkers.forEach { item ->
@@ -145,19 +152,9 @@ class CourierOrdersViewModel(
         onTechErrorLog("observeMapActionError", throwable)
     }
 
-//    private fun observeNetworkState() {
-//        addSubscription(
-//            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
-//        )
-//    }
-
     private fun initToolbarLabel() {
         _toolbarLabelState.value = Label(parameters.address)
     }
-
-//    private fun fetchVersionApp() {
-//        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
-//    }
 
     private fun lockState() {
         _holdState.value = true
@@ -174,7 +171,6 @@ class CourierOrdersViewModel(
             .doOnSuccess { orderEntities = it.toMutableList() }
             .doOnSuccess { saveOrderEntities(it) }
             .doOnSuccess { convertAndSaveItemsPointsMarkers(it) }
-//            .flatMap { orderEntitiesToItem(it) }
             .subscribe({ ordersComplete() }, { ordersError(it) })
         )
     }
@@ -184,8 +180,6 @@ class CourierOrdersViewModel(
     }
 
     private fun convertAndSaveItemsPointsMarkers(orders: List<CourierOrderEntity>) {
-//        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouses.size)
-
         val orderItems = mutableListOf<BaseItem>()
         val centerGroupPoints = mutableListOf<CoordinatePoint>()
         val mapMarkers = mutableListOf<CourierMapMarker>()
@@ -197,9 +191,9 @@ class CourierOrdersViewModel(
         mapMarkers.add(warehouseMapMarker)
 
         orders.forEachIndexed { index, item ->
+            val idPoint = upToString(index)
 
-            val orderItem = dataBuilder.buildOrderItem(index, item, false)
-            //CourierOrderItem CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
+            val orderItem = dataBuilder.buildOrderItem(idPoint, index, item, false)
             orderItems.add(orderItem)
 
             val coordinatePoints = mutableListOf<CoordinatePoint>()
@@ -213,7 +207,7 @@ class CourierOrdersViewModel(
             centerGroupPoints.add(centerGroupPoint)
 
             val mapPoint =
-                MapPoint(index.toString(), centerGroupPoint.latitude, centerGroupPoint.longitude)
+                MapPoint(idPoint, centerGroupPoint.latitude, centerGroupPoint.longitude)
             val mapMarker = Empty(mapPoint, resourceProvider.getOrderMapIcon())
             mapMarkers.add(mapMarker)
         }
@@ -234,13 +228,6 @@ class CourierOrdersViewModel(
         this.mapMarkers = mapMarkers.toMutableList()
     }
 
-//    private fun orderEntitiesToItem(orders: List<CourierOrderEntity>) =
-//        Observable.fromIterable(orders.withIndex())
-//            .map { (index, item): IndexedValue<CourierOrderEntity> ->
-//                dataBuilder.buildOrderItem(index, item)
-//            }
-//            .toList()
-
     private fun showProgress() {
         _progressState.value = CourierOrdersProgressState.Progress
     }
@@ -248,31 +235,28 @@ class CourierOrdersViewModel(
     private fun ordersComplete() {
         if (orderItems.isEmpty()) {
             ordersEmpty()
-            _orders.value = CourierOrderItemState.Empty(resourceProvider.getDialogEmpty())
+            _orderItems.value = CourierOrderItemState.Empty(resourceProvider.getDialogEmpty())
         } else {
             updateMarkers()
             zoomAllGroupMarkersFromBoundingBox()
             showOrders()
         }
 
-//        onTechEventLog(
-//            "ordersComplete",
-//            "courierOrderUIListState " + courierOrderUIListState.toString()
-//        )
-
-        _progressState.value = CourierOrdersProgressState.Complete
+        hideProgress()
         unlockState()
     }
 
+    private fun hideProgress() {
+        _progressState.value = CourierOrdersProgressState.Complete
+    }
+
     private fun showOrders() {
-        _orders.value = CourierOrderItemState.ShowOrders(orderItems)
+        _orderItems.value = CourierOrderItemState.ShowOrders(orderItems)
     }
 
 
     private fun updateMarkers() {
         interactor.mapState(CourierMapState.UpdateMarkersWithIndex(mapMarkers))
-        // TODO: 24.01.2022 отобразить склад
-//        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
     }
 
     private fun zoomAllGroupMarkersFromBoundingBox() {
@@ -312,7 +296,7 @@ class CourierOrdersViewModel(
             )
         }
         _navigateToDialogInfo.value = message
-        _orders.value = CourierOrderItemState.Empty(message.title)
+        _orderItems.value = CourierOrderItemState.Empty(message.title)
         progressComplete()
         unlockState()
     }
@@ -322,13 +306,47 @@ class CourierOrdersViewModel(
     }
 
     fun onItemClick(idView: Int) {
-        onTechEventLog("onItemClick")
+        onTechEventLog("onItemClick", "idView $idView")
+        changeItemSelected(idView)
+    }
+
+    private fun changeItemSelected(clickItemIndex: Int) {
+        val isSelected = isInvertOrdersItemsSelected(clickItemIndex)
+        changeSelectedMapPoint(mapMarkers[clickItemIndex + 1].point)
+//        changeMapMarkers(clickItemIndex, isSelected)
+        changeSelectedOrderItems(clickItemIndex, isSelected)
+        updateItems()
+        changeShowOrders(isSelected)
+        updateMarkers()
+    }
+
+    private fun updateItems() {
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
+    }
+
+
+    private fun isInvertOrdersItemsSelected(selectIndex: Int) =
+        !(orderItems[selectIndex] as CourierOrderItem).isSelected
+
+    fun onDetailClick() {
         lockState()
-        val courierOrderEntity = orderEntities[idView]
+        _showDetailsState.value = CourierOrderShowDetailsState.Disable
+        orderItems.forEachIndexed { index, items ->
+            if (items is CourierOrderItem) {
+                if (items.isSelected) {
+                    checkAndNavigateToOrders(index)
+                    return@forEachIndexed
+                }
+            }
+        }
+    }
+
+    private fun checkAndNavigateToOrders(index: Int) {
+        val courierOrderEntity = orderEntities[index]
         addSubscription(
             interactor.clearAndSaveSelectedOrder(courierOrderEntity)
                 .subscribe(
-                    { clearAndSaveSelectedOrderComplete(idView) },
+                    { clearAndSaveSelectedOrderComplete(index) },
                     { clearAndSaveSelectedOrderError(it) })
         )
     }
@@ -336,20 +354,36 @@ class CourierOrdersViewModel(
     private fun clearAndSaveSelectedOrderComplete(idView: Int) {
         onTechEventLog("clearAndSaveSelectedOrderComplete")
         unlockState()
-        _navigationState.value =
-            CourierOrdersNavigationState.NavigateToOrderDetails(
-                parameters.address,
-                orderEntities[idView]
-            )
+        checkCarNumberAndNavigate(idView)
     }
+
+    private fun checkCarNumberAndNavigate(idView: Int) {
+        onTechEventLog("onTakeOrderClick")
+        val title = parameters.address
+        val orderNumber = upToString(idView)
+        val order = orderEntities[idView]
+        _navigationState.value = if (interactor.carNumberIsConfirm())
+            CourierOrdersNavigationState.NavigateToOrderDetails(
+                title,
+                orderNumber,
+                order,
+                parameters.warehouseLatitude,
+                parameters.warehouseLongitude
+            )
+        else CourierOrdersNavigationState.NavigateToCarNumber(
+            title,
+            orderNumber,
+            order,
+            parameters.warehouseLatitude,
+            parameters.warehouseLongitude
+        )
+    }
+
+    private fun upToString(number: Int) = (number + 1).toString()
 
     private fun clearAndSaveSelectedOrderError(throwable: Throwable) {
         onTechErrorLog("ordersError", throwable)
         unlockState()
-    }
-
-    fun onUpdateClick() {
-        initOrders()
     }
 
     fun onCancelLoadClick() {

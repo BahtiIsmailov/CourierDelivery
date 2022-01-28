@@ -2,6 +2,7 @@ package ru.wb.go.di.module
 
 import android.app.Application
 import org.koin.dsl.module
+import ru.wb.go.ui.app.AppResourceProvider
 import ru.wb.go.ui.auth.AuthResourceProvider
 import ru.wb.go.ui.courierbilling.CourierBillingResourceProvider
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataResourceProvider
@@ -15,7 +16,6 @@ import ru.wb.go.ui.courierintransit.CourierIntransitResourceProvider
 import ru.wb.go.ui.courierloader.CourierLoaderResourceProvider
 import ru.wb.go.ui.courierloading.CourierLoadingResourceProvider
 import ru.wb.go.ui.couriermap.CourierMapResourceProvider
-import ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmResourceProvider
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 import ru.wb.go.ui.courierorders.CourierOrdersResourceProvider
 import ru.wb.go.ui.courierordertimer.CourierOrderTimerResourceProvider
@@ -23,7 +23,6 @@ import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryResourceProvider
 import ru.wb.go.ui.courierunloading.CourierUnloadingResourceProvider
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlResourceProvider
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
-import ru.wb.go.ui.app.AppResourceProvider
 
 val resourceModule = module {
 
@@ -53,10 +52,6 @@ val resourceModule = module {
 
     fun provideCourierCarNumberResourceProvider(application: Application): CourierCarNumberResourceProvider {
         return CourierCarNumberResourceProvider(application)
-    }
-
-    fun provideCourierOrderConfirmResourceProvider(application: Application): CourierOrderConfirmResourceProvider {
-        return CourierOrderConfirmResourceProvider(application)
     }
 
     fun provideCourierLoaderResourceProvider(application: Application): CourierLoaderResourceProvider {
@@ -125,7 +120,6 @@ val resourceModule = module {
     single { provideCourierWarehouseResourceProvider(get()) }
     single { provideCourierOrderResourceProvider(get()) }
     single { provideCourierCarNumberResourceProvider(get()) }
-    single { provideCourierOrderConfirmResourceProvider(get()) }
     single { provideCourierLoaderResourceProvider(get()) }
     single { provideCourierOrderTimerResourceProvider(get()) }
     single { provideCourierScannerLoadingResourceProvider(get()) }

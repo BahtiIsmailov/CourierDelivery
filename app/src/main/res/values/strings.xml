@@ -217,6 +217,9 @@
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
+    <string name="courier_orders_empty_address">Список пуст</string>
+    <string name="courier_orders_automobile">Машина </string>
+    <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
     <string name="courier_orders_confirm_coast">%1$s ₽</string>
@@ -229,10 +232,15 @@
     <string name="courier_orders_confirm_dialog_button">OK</string>
     <string name="courier_orders_confirm_dialog_empty">Этот заказ уже взят в работу</string>
 
-    <string name="courier_orders_details_dialog_title">Подтвердить взятие заказа?</string>
-    <string name="courier_orders_details_dialog_message">Прибыть • за %1$d мин\nТранспорт • от %2$d кубов</string>
+    <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
+
+    <string name="courier_orders_details_dialog_message">Машина • <b> %1$s </b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
+
+    <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
+    <string name="courier_orders_details_dialog_is_not_exist_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_details_dialog_is_not_exist_button">Понятно</string>
 
     <string name="courier_orders_timer_dialog_title">Время вышло</string>
     <string name="courier_orders_timer_dialog_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>

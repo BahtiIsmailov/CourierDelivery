@@ -1,6 +1,7 @@
 package ru.wb.go.ui.couriercarnumber
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -11,25 +12,37 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierCarNumberFragmentBinding
+import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) {
 
+    companion object {
+        const val COURIER_CAR_NUMBER_ID_KEY = "courier_car_number_id_key"
+    }
+
+    private val viewModel by viewModel<CourierCarNumberViewModel> {
+        parametersOf(
+            requireArguments().getParcelable<CourierOrderDetailsParameters>(
+                COURIER_CAR_NUMBER_ID_KEY
+            )
+        )
+    }
+
     private lateinit var _binding: CourierCarNumberFragmentBinding
     private val binding get() = _binding
-
-    private val viewModel by viewModel<CourierCarNumberViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,27 +57,27 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         initViews()
         initListeners()
         initStateObserve()
-        initReturnResult()
+//        initReturnResult()
     }
 
-    private fun initReturnResult() {
-        setFragmentResultListener(ProgressDialogFragment.PROGRESS_DIALOG_RESULT) { _, bundle ->
-            if (bundle.containsKey(ProgressDialogFragment.PROGRESS_DIALOG_BACK_KEY)) {
-                viewModel.onCancelLoadClick()
-            }
-        }
-    }
+//    private fun initReturnResult() {
+//        setFragmentResultListener(ProgressDialogFragment.PROGRESS_DIALOG_RESULT) { _, bundle ->
+//            if (bundle.containsKey(ProgressDialogFragment.PROGRESS_DIALOG_BACK_KEY)) {
+//                viewModel.onCancelLoadClick()
+//            }
+//        }
+//    }
 
-    private fun showProgressDialog() {
-        val progressDialog = ProgressDialogFragment.newInstance()
-        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
-    }
-
-    private fun closeProgressDialog() {
-        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
-            if (it is ProgressDialogFragment) it.dismiss()
-        }
-    }
+//    private fun showProgressDialog() {
+//        val progressDialog = ProgressDialogFragment.newInstance()
+//        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
+//    }
+//
+//    private fun closeProgressDialog() {
+//        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+//            if (it is ProgressDialogFragment) it.dismiss()
+//        }
+//    }
 
     private fun initViews() {
         (activity as NavToolbarListener).hideToolbar()
@@ -82,9 +95,11 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     private fun initStateObserve() {
         viewModel.navigationState.observe(viewLifecycleOwner, { state ->
             when (state) {
-                is CourierCarNumberNavigationState.NavigateToTimer -> {
+                is CourierCarNumberNavigationState.NavigateToOrderDetails -> {
                     findNavController().navigate(
-                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderConfirmFragment()
+                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierCarNumberFragment(
+                            CourierCarNumberParameters(state.title, state.orderNumber, state.order)
+                        )
                     )
                 }
             }
@@ -145,8 +160,8 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierCarNumberProgressState.Progress -> showProgressDialog()
-                CourierCarNumberProgressState.ProgressComplete -> closeProgressDialog()
+                CourierCarNumberProgressState.Progress -> {} //showProgressDialog()
+                CourierCarNumberProgressState.ProgressComplete -> {}// closeProgressDialog()
             }
         }
     }
@@ -178,3 +193,10 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
 }
+
+@Parcelize
+data class CourierCarNumberParameters(
+    val title: String,
+    val orderNumber: String,
+    val order: CourierOrderEntity
+) : Parcelable

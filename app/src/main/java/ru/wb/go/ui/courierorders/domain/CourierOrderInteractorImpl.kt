@@ -11,6 +11,7 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
@@ -21,6 +22,7 @@ class CourierOrderInteractorImpl(
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
+    private val userManager: UserManager,
 ) : CourierOrderInteractor {
 
     override fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
@@ -31,21 +33,11 @@ class CourierOrderInteractorImpl(
     override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
-//        val courierOrderSrcOfficesLocalEntity = with(courierOrderEntity.srcOffice) {
-//            CourierOrderSrcOfficeLocalEntity(
-//                id = id,
-//                name = name,
-//                fullAddress = fullAddress,
-//                longitude = long,
-//                latitude = lat
-//            )
-//        }
         val courierOrderLocalEntity = with(courierOrderEntity) {
             CourierOrderLocalEntity(
                 id = id,
                 routeID = routeID,
                 gate = gate,
-//                srcOffice = courierOrderSrcOfficesLocalEntity,
                 minPrice = minPrice,
                 minVolume = minVolume,
                 minBoxesCount = minBoxesCount,
@@ -88,6 +80,10 @@ class CourierOrderInteractorImpl(
     override fun observeMapAction(): Observable<CourierMapAction> {
         return courierMapRepository.observeMapAction()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun carNumberIsConfirm(): Boolean {
+        return userManager.carNumber().isNotEmpty()
     }
 
 }

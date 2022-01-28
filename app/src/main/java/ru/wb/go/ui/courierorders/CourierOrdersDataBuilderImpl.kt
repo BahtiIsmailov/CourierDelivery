@@ -9,11 +9,16 @@ class CourierOrdersDataBuilderImpl(
     private val resourceProvider: CourierOrdersResourceProvider,
 ) : CourierOrdersDataBuilder {
 
-    override fun buildOrderItem(index: Int, courierOrderEntity: CourierOrderEntity, isSelected: Boolean): BaseItem {
+    override fun buildOrderItem(
+        id: String,
+        index: Int,
+        courierOrderEntity: CourierOrderEntity,
+        isSelected: Boolean
+    ): BaseItem {
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
-            orderNumber = index.toString(),
+            orderNumber = id,
             order = resourceProvider.getOrder(courierOrderEntity.id),
             coast = resourceProvider.getCoast(coast),
             countBox = resourceProvider.getBoxCountBox(courierOrderEntity.minBoxesCount),

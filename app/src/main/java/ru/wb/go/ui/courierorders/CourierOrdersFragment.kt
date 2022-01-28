@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -14,25 +15,24 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierOrderFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
+import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsFragmentDirections
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
+import ru.wb.go.ui.courierwarehouses.CourierWarehousesShowOrdersState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.app.NavDrawerListener
-import ru.wb.go.ui.app.NavToolbarListener
-
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.content.ContextCompat
-import ru.wb.go.R
-import ru.wb.go.ui.courierwarehouses.CourierWarehousesShowOrdersState
 
 
 class CourierOrderFragment : Fragment() {
@@ -72,35 +72,7 @@ class CourierOrderFragment : Fragment() {
         initListeners()
         initStateObserve()
         initReturnResult()
-
-        //val rLayout = RelativeLayout(requireContext())
-
-//        val frameLayout = FrameLayout(requireContext())
-//        val index = TextView(requireContext())
-//        val image = ImageView(requireContext())
-//        image.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_courier_map_order))
-//
-//        index.text = 10.toString()
-//        frameLayout.addView(index)
-//
-//        frameLayout.isDrawingCacheEnabled = true
-//        frameLayout.buildDrawingCache()
-//        val bm = view.drawingCache
-//        binding.backFull.setImageBitmap(bm)
-
-
-//        val viewBgrnd = BitmapFactory.decodeResource(requireContext().resources, R.drawable.ic_courier_map_order)
-//        val returnedBitmap =
-//            Bitmap.createBitmap(frameLayout.width, frameLayout.height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(returnedBitmap)
-//
-//        val paint = Paint()
-//        canvas.drawBitmap(ViewBgrnd, 0, 0, paint);
-//        frameLayout.dispaD
-
-        //rLayout.disdra
-
-
+        viewModel.update()
     }
 
     private fun initView() {
@@ -116,21 +88,9 @@ class CourierOrderFragment : Fragment() {
         }
     }
 
-    private fun showProgressDialog() {
-        val progressDialog = ProgressDialogFragment.newInstance()
-        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
-    }
-
-    private fun closeProgressDialog() {
-        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
-            if (it is ProgressDialogFragment) it.dismiss()
-        }
-    }
-
     private fun initListeners() {
         binding.backFull.setOnClickListener { findNavController().popBackStack() }
-//        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-//        binding.update.setOnClickListener { viewModel.onUpdateClick() }
+        binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
     }
 
     private fun initStateObserve() {
@@ -143,29 +103,27 @@ class CourierOrderFragment : Fragment() {
             showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
-//        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-//            val ic = when (it) {
-//                is NetworkState.Complete -> R.drawable.ic_inet_complete
-//                else -> R.drawable.ic_inet_failed
-//            }
-//            binding.toolbarLayout.noInternetImage.setImageDrawable(
-//                ContextCompat.getDrawable(requireContext(), ic)
-//            )
-//        }
-
-//        viewModel.versionApp.observe(viewLifecycleOwner) {
-//            binding.toolbarLayout.toolbarVersion.text = it
-//        }
-
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrdersNavigationState.NavigateToOrderDetails -> {
                     findNavController().navigate(
                         CourierOrderFragmentDirections.actionCourierOrderFragmentToCourierOrderDetailsFragment(
-                            CourierOrderDetailsParameters(it.title, it.order)
+                            CourierOrderDetailsParameters(
+                                it.title,
+                                it.orderNumber,
+                                it.order,
+                                it.warehouseLatitude,
+                                it.warehouseLongitude
+                            )
                         )
                     )
                 }
+                is CourierOrdersNavigationState.NavigateToCarNumber ->
+                    findNavController().navigate(
+                        CourierOrderFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
+                            CourierCarNumberParameters(it.title, it.orderNumber, it.order)
+                        )
+                    )
             }
         }
 
@@ -175,7 +133,6 @@ class CourierOrderFragment : Fragment() {
                     binding.emptyList.visibility = GONE
                     binding.orderProgress.visibility = GONE
                     binding.orders.visibility = VISIBLE
-//                    binding.update.setState(ProgressButtonMode.ENABLE)
                     displayItems(state.items)
                 }
                 is CourierOrderItemState.Empty -> {
@@ -183,15 +140,26 @@ class CourierOrderFragment : Fragment() {
                     binding.orderProgress.visibility = GONE
                     binding.orders.visibility = GONE
                     binding.emptyTitle.text = state.info
-//                    binding.update.setState(ProgressButtonMode.ENABLE)
+                }
+                is CourierOrderItemState.ScrollTo -> {
+                    smoothScrollToPosition(state.position)
+                }
+                is CourierOrderItemState.UpdateItem -> {
+                    adapter.setItem(state.position, state.item)
+                    adapter.notifyItemChanged(state.position, state.item)
+                }
+                is CourierOrderItemState.UpdateItems -> {
+                    adapter.clear()
+                    adapter.addItems(state.items)
+                    adapter.notifyDataSetChanged()
                 }
             }
         }
 
         viewModel.progressState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                CourierOrdersProgressState.Progress -> showProgressDialog()
-                CourierOrdersProgressState.Complete -> closeProgressDialog()
+            binding.orderProgress.visibility = when (state) {
+                CourierOrdersProgressState.Progress -> VISIBLE
+                CourierOrdersProgressState.Complete -> GONE
             }
         }
 
@@ -202,10 +170,10 @@ class CourierOrderFragment : Fragment() {
             }
         }
 
-        viewModel.showOrdersState.observe(viewLifecycleOwner) {
+        viewModel.showDetailsState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesShowOrdersState.Disable -> showOrdersDisable()
-                CourierWarehousesShowOrdersState.Enable -> {
+                CourierOrderShowDetailsState.Disable -> showOrdersDisable()
+                CourierOrderShowDetailsState.Enable -> {
                     binding.showOrdersFab.isEnabled = true
                     binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
                         ContextCompat.getColor(
@@ -214,10 +182,24 @@ class CourierOrderFragment : Fragment() {
                         )
                     )
                 }
-                CourierWarehousesShowOrdersState.Progress -> {}
+                CourierOrderShowDetailsState.Progress -> {}
             }
         }
 
+    }
+
+    private fun smoothScrollToPosition(position: Int) {
+        val smoothScroller: SmoothScroller = createSmoothScroller()
+        smoothScroller.targetPosition = position
+        layoutManager.startSmoothScroll(smoothScroller)
+    }
+
+    private fun createSmoothScroller(): SmoothScroller {
+        return object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+        }
     }
 
     private fun showOrdersDisable() {
