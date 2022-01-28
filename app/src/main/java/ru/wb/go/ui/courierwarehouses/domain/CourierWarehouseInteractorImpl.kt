@@ -22,9 +22,9 @@ class CourierWarehouseInteractorImpl(
     private val courierMapRepository: CourierMapRepository,
 ) : CourierWarehouseInteractor {
 
-    override fun warehouses(): Single<List<CourierWarehouseLocalEntity>> {
+
+    override fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
         return appRemoteRepository.courierWarehouses()
-            .delay(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

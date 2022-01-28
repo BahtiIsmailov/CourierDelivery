@@ -21,7 +21,8 @@
         android:src="@drawable/ic_order_list_confirm"
         app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/order"
@@ -42,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Внимательно проверьте данные "
+        android:text="@string/check_order_data_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/order" />
@@ -86,7 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="24dp"
-        android:text="Машина "
+        android:text="@string/car_hint"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -122,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Прибыть "
+        android:text="@string/arrive_hint"
         app:layout_constraintBottom_toTopOf="@+id/pvz"
         app:layout_constraintStart_toEndOf="@+id/show_route_image" />
 
@@ -183,7 +184,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="20dp"
-        android:text="от 200 шт. / 86 кубов"
+        tools:text="от 200 шт. / 86 кубов"
         app:layout_constraintBottom_toTopOf="@+id/refuse_order"
         app:layout_constraintStart_toEndOf="@+id/show_route_image" />
 
@@ -248,15 +249,5 @@
         app:progress_button_text_color_disable="@color/button_default_text_disable"
         app:progress_button_text_color_enable="@color/button_default_text_enable"
         app:progress_button_text_color_progress="@color/button_default_text_progress" />
-
-    <View
-        android:id="@+id/hold_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

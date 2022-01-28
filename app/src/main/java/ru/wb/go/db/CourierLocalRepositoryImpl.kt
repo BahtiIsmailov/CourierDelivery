@@ -7,13 +7,10 @@ import io.reactivex.Single
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
 import ru.wb.go.db.dao.CourierWarehouseDao
+import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
-import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
+
 import ru.wb.go.db.entity.courierlocal.*
-import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
 class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
@@ -29,26 +26,12 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.read()
     }
 
-    override fun courierTimerEntity(): Single<CourierTimerEntity> {
-        return courierWarehouseDao.courierTimerEntity()
-    }
-
-    override fun courierLoadingInfoEntity(): Single<CourierLoadingInfoEntity> {
-        return courierWarehouseDao.courierLoadingInfoEntity()
+    override fun getOrderGate(): Single<String> {
+        return Single.just(getOrder()!!.gate)
     }
 
     override fun deleteAllWarehouse() {
         courierWarehouseDao.deleteAll()
-    }
-
-    override fun saveWarehouseAndOrderAndOffices(
-        courierWarehouseLocalEntity: CourierWarehouseLocalEntity,
-        courierOrderLocalEntity: CourierOrderLocalEntity,
-        courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
-    ): Completable {
-        return courierWarehouseDao.insert(courierWarehouseLocalEntity)
-            .andThen(courierOrderDao.insertOrder(courierOrderLocalEntity))
-            .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
     }
 
     override fun saveOrderAndOffices(
@@ -59,11 +42,7 @@ class CourierLocalRepositoryImpl(
             .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
     }
 
-    override fun orderDataSync(): Single<CourierOrderLocalDataEntity> {
-        return courierOrderDao.orderDataSync()
-    }
-
-    override fun orderData(): CourierOrderLocalDataEntity {
+    override fun orderData(): CourierOrderLocalDataEntity? {
         return courierOrderDao.orderData()
     }
 
@@ -79,120 +58,116 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.deleteAllOffices()
     }
 
-    override fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable {
-        return courierOrderDao.updateVisitedAtOffice(officeId, visitedAt)
+    override fun findOfficeById(officeId: Int): Single<LocalOfficeEntity> {
+        return courierOrderDao.getOfficeById(officeId)
     }
 
-    override fun updateVisitedOfficeByBoxes(): Completable {
-        return courierOrderDao.updateVisitedOfficeByBoxes()
+    override fun getOrder(): LocalOrderEntity? {
+        return courierOrderDao.getOrder()
     }
 
-    override fun insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable {
-        return courierOrderDao.insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity)
+    override fun deleteOrder() {
+        courierLoadingBoxDao.deleteBoxes()
+        courierOrderDao.deleteOffices()
+        courierOrderDao.deleteOrder()
     }
 
-    override fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity) {
-        return courierOrderDao.insertVisitedOffice(courierOrderVisitedOfficeLocalEntity)
+    override fun saveRemoteOrder(
+        order: LocalComplexOrderEntity,
+        boxes: List<LocalBoxEntity>
+    ): Completable {
+        assert(order.order.status != "") { "Absent status" }
+        val bg = boxes.groupingBy { it.officeId }.fold(Pair(0, 0)) { t, o ->
+            Pair(t.first + 1, t.second + if (o.deliveredAt.isNotEmpty()) 1 else 0)
+        }
+
+        val offices = order.offices.map {
+            val cb = bg[it.officeId]?.first ?: 0
+            val db = bg[it.officeId]?.second ?: 0
+            it.copy(countBoxes = cb, deliveredBoxes = db, isVisited = db > 0, isOnline = true)
+        }
+
+//FIXME Нужно в транзакцию запихнуть
+        courierOrderDao.addOrder(order.order)
+        courierOrderDao.addOffices(offices)
+        courierLoadingBoxDao.addBoxes(boxes)
+        return Completable.complete()
     }
 
-    override fun insertAllVisitedOfficeSync(): Completable {
-        return courierOrderDao.insertAllVisitedOfficeSync()
+    override fun setOrderOrderStart(scanTime: String) {
+        courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
-    override fun insertAllVisitedOffice() {
-        return courierOrderDao.insertAllVisitedOffice()
+    override fun getOrderId(): Single<String> {
+        return Single.just(getOrder()!!.orderId.toString())
     }
 
-    override fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity> {
-        return courierOrderDao.findOfficeById(officeId)
+    override fun setOrderInReserve(order: LocalOrderEntity) {
+        courierOrderDao.addOrderFromReserve(order)
     }
 
-    override fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable {
-        return courierLoadingBoxDao.insertBox(boxEntity)
+    override fun setOrderAfterLoadStatus(cost: Int) {
+        assert(cost!=0)
+        courierOrderDao.setOrderAfterLoadStatus(TaskStatus.INTRANSIT.status, cost)
     }
 
-    override fun findLoadingBoxById(id: String): Maybe<CourierBoxEntity> {
-        return courierLoadingBoxDao.findLoadingBoxById(id)
+    override fun clearOrder() {
+        courierOrderDao.deleteAllOffices()
+        courierOrderDao.deleteAllOrder()
+        courierWarehouseDao.deleteAll()
+        deleteOrder()
     }
 
-    override fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable {
-        return courierLoadingBoxDao.insertBoxes(boxEntity)
-    }
-
-    override fun readAllLoadingBoxesSync(): Single<List<CourierBoxEntity>> {
+    override fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>> {
         return courierLoadingBoxDao.readAllBoxesSync()
     }
 
-    override fun readAllLoadingBoxes(): List<CourierBoxEntity> {
-        return courierLoadingBoxDao.readAllBoxes()
+    override fun getOffices(): List<LocalOfficeEntity> {
+        return courierOrderDao.getOffices()
     }
 
-    override fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>> {
-        return courierLoadingBoxDao.readAllLoadingBoxesByOfficeId(officeId)
+    override fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>> {
+        return courierOrderDao.getOfficesFlowable()
     }
 
-    override fun readLoadingBoxByOfficeIdAndId(
-        officeId: Int,
-        id: String
-    ): Maybe<CourierBoxEntity> {
-        return courierLoadingBoxDao.readLoadingBoxByOfficeIdAndId(officeId, id)
+    override fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean): Completable {
+        when (isNew) {
+            true -> courierLoadingBoxDao.addNewBox(box)
+            false -> courierLoadingBoxDao.updateBoxLoadingAt(box.boxId, box.loadingAt)
+        }
+        return Completable.complete()
     }
 
-    override fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>> {
-        return courierLoadingBoxDao.readAllUnloadingBoxesByOfficeId(officeId)
+    override fun visitOffice(officeId: Int) {
+        courierOrderDao.setVisitOffice(officeId)
     }
 
-    override fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult> {
-        return courierLoadingBoxDao.readInitLastUnloadingBox(officeId)
-            .onErrorReturn { CourierUnloadingInitLastBoxResult("", "") }
+    override fun getOfflineBoxes(): List<LocalBoxEntity> {
+        return courierLoadingBoxDao.getOfflineBoxes()
     }
 
-    override fun readNotUnloadingBoxesSync(): Single<List<CourierBoxEntity>> {
-        return courierLoadingBoxDao.readNotUnloadingBoxesSync()
+    override fun setOnlineOffices() {
+        return courierOrderDao.setOnlineOffice()
     }
 
-    override fun readNotUnloadingBoxes(): List<CourierBoxEntity> {
-        return courierLoadingBoxDao.readNotUnloadingBoxes()
+    override fun unloadBox(box: LocalBoxEntity) {
+        courierLoadingBoxDao.unloadBoxInOffice(box)
     }
 
-    override fun deleteAllVisitedOffices() {
-        courierLoadingBoxDao.deleteAllVisitedOffices()
+    override fun takeBackBox(box: LocalBoxEntity) {
+        courierLoadingBoxDao.takeBoxBack(box)
     }
 
-    override fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult> {
-        return courierLoadingBoxDao.readUnloadingBoxCounter(officeId)
+    override fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>> {
+        return courierLoadingBoxDao.getBoxesLive()
     }
 
-    override fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxScoreResult> {
-        return courierLoadingBoxDao.observeCounterBox(officeId)
+    override fun getBoxes(): List<LocalBoxEntity> {
+        return courierLoadingBoxDao.getBoxes()
     }
 
-    override fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>> {
-        return courierLoadingBoxDao.observeBoxes()
-    }
-
-    override fun deleteLoadingBox(boxEntity: CourierBoxEntity): Completable {
-        return courierLoadingBoxDao.deleteBox(boxEntity)
-    }
-
-    override fun deleteLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable {
-        return courierLoadingBoxDao.deleteBoxes(boxEntity)
-    }
-
-    override fun deleteLoadingBoxesByQrCode(qrCodes: List<String>): Completable {
-        return courierLoadingBoxDao.deleteBoxesByQrCode(qrCodes)
-    }
-
-    override fun deleteAllLoadingBoxes() {
-        return courierLoadingBoxDao.deleteAllBoxes()
-    }
-
-    override fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>> {
-        return courierLoadingBoxDao.observeBoxesGroupByOffice()
-    }
-
-    override fun completeDeliveryResult(): Single<CompleteDeliveryResult> {
-        return courierLoadingBoxDao.completeDeliveryResult()
+    override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
+        return courierLoadingBoxDao.getRemainBoxes(officeId)
     }
 
 }

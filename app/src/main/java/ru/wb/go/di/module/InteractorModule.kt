@@ -61,6 +61,8 @@ import ru.wb.go.ui.splash.domain.AppInteractor
 import ru.wb.go.ui.splash.domain.AppInteractorImpl
 import ru.wb.go.ui.splash.domain.AppSharedRepository
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -230,7 +232,7 @@ val interactorModule = module {
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
         timeFormatter: TimeFormatter,
-        userManager: UserManager
+        timeManager: TimeManager,
     ): CourierOrderTimerInteractor {
         return CourierOrderTimerInteractorImpl(
             rxSchedulerFactory,
@@ -238,7 +240,7 @@ val interactorModule = module {
             courierLocalRepository,
             taskTimerRepository,
             timeFormatter,
-            userManager
+            timeManager
         )
     }
 
@@ -247,14 +249,18 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager
+        userManager: UserManager,
+        timeManager: TimeManager,
+        errorDialogManager: ErrorDialogManager
     ): CourierOrderConfirmInteractor {
         return CourierOrderConfirmInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
             courierLocalRepository,
-            userManager
+            userManager,
+            timeManager,
+            errorDialogManager
         )
     }
 
@@ -266,7 +272,7 @@ val interactorModule = module {
         timeManager: TimeManager,
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
-        userManager: UserManager
+
     ): CourierLoadingInteractor {
         return CourierLoadingInteractorImpl(
             rxSchedulerFactory,
@@ -276,7 +282,6 @@ val interactorModule = module {
             timeManager,
             courierLocalRepository,
             taskTimerRepository,
-            userManager
         )
     }
 
@@ -390,7 +395,16 @@ val interactorModule = module {
     factory { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
-    single { provideCourierBillingAccountSelectorInteractor(get(), get(), get(), get(), get(), get()) }
+    single {
+        provideCourierBillingAccountSelectorInteractor(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
     single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get()) }
@@ -398,10 +412,9 @@ val interactorModule = module {
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get()) }
+    single { provideCourierOrderConfirmInteractor(get(), get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
-            get(),
             get(),
             get(),
             get(),

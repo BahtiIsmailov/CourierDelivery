@@ -33,7 +33,7 @@ class CourierBillingPositiveDelegate(
         holder.itemView.tag = item
         with(holder.binding) {
             date.text = item.date
-            time.text = item.time
+            mapTimer.text = item.time
             amount.text = item.amount
             statusDescription.text = "Оплата заказа"
         }

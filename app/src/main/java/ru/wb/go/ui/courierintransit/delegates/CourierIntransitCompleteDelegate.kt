@@ -8,7 +8,6 @@ import ru.wb.go.adapters.BaseAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitEmptyLayoutBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
-import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitEmptyItem
 
 class CourierIntransitCompleteDelegate(
     context: Context,
@@ -30,7 +29,7 @@ class CourierIntransitCompleteDelegate(
 
     override fun onBind(item: CourierIntransitCompleteItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
-        holder.binding.address.text = item.fullAddress
+        holder.binding.boxAddress.text = item.fullAddress
         holder.binding.deliveryCount.text = item.deliveryCount
         holder.binding.fromCount.text = item.fromCount
         holder.binding.selectedBackground.visibility =
@@ -45,7 +44,7 @@ class CourierIntransitCompleteDelegate(
         }
 
         init {
-            binding.main.setOnClickListener { view: View ->
+            binding.main.setOnClickListener {
                 val (_, _, _, _, _, idView) = getTag(itemView)
                 onCourierIntransitCallback.onPickToPointClick(idView)
             }

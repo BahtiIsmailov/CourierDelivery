@@ -23,13 +23,14 @@
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/address"
+        android:id="@+id/box_address"
         style="@style/LargeBlackRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:paddingTop="8dp"
+
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="@+id/selected_background"
@@ -47,7 +48,7 @@
         android:text="Доставлено"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintStart_toStartOf="@+id/selected_background"
-        app:layout_constraintTop_toBottomOf="@+id/address" />
+        app:layout_constraintTop_toBottomOf="@+id/box_address" />
 
     <TextView
         android:id="@+id/delivery_count"
@@ -60,7 +61,7 @@
         android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
-        app:layout_constraintTop_toBottomOf="@+id/address"
+        app:layout_constraintTop_toBottomOf="@+id/box_address"
         tools:text="0" />
 
     <TextView
@@ -75,7 +76,7 @@
         android:text="/"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintStart_toEndOf="@+id/delivery_count"
-        app:layout_constraintTop_toBottomOf="@+id/address" />
+        app:layout_constraintTop_toBottomOf="@+id/box_address" />
 
     <TextView
         android:id="@+id/from_count"
@@ -88,7 +89,7 @@
         android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintStart_toEndOf="@+id/divider_count"
-        app:layout_constraintTop_toBottomOf="@+id/address"
-        tools:text="24" />
+        app:layout_constraintTop_toBottomOf="@+id/box_address"
+        tools:text="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

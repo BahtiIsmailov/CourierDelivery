@@ -5,12 +5,8 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-import ru.wb.go.db.entity.courierboxes.CourierBoxEntity
-import ru.wb.go.db.entity.courierboxes.CourierIntransitGroupByOfficeEntity
+
 import ru.wb.go.db.entity.courierlocal.*
-import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingBoxScoreResult
-import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInitLastBoxResult
 
 interface CourierLocalRepository {
 
@@ -21,30 +17,19 @@ interface CourierLocalRepository {
 
     fun readCurrentWarehouse(): Single<CourierWarehouseLocalEntity>
 
-    fun courierTimerEntity(): Single<CourierTimerEntity>
-
-    fun courierLoadingInfoEntity(): Single<CourierLoadingInfoEntity>
-
     fun deleteAllWarehouse()
 
     //==============================================================================================
     //order and offices
     //==============================================================================================
 
-    fun saveWarehouseAndOrderAndOffices(
-        courierWarehouseLocalEntity: CourierWarehouseLocalEntity,
-        courierOrderLocalEntity: CourierOrderLocalEntity,
-        courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
-    ): Completable
-
     fun saveOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
     ): Completable
 
-    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+    fun orderData(): CourierOrderLocalDataEntity?
 
-    fun orderData(): CourierOrderLocalDataEntity
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
@@ -52,76 +37,47 @@ interface CourierLocalRepository {
 
     fun deleteAllOrderOffices()
 
-    fun updateVisitedAtOffice(officeId: Int, visitedAt: String): Completable
+    fun findOfficeById(officeId: Int): Single<LocalOfficeEntity>
 
-    fun updateVisitedOfficeByBoxes(): Completable
+    //==============================
+    // True Order
+    //==============================
 
-    fun insertVisitedOfficeSync(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity): Completable
+    fun getOrder(): LocalOrderEntity?
 
-    fun insertVisitedOffice(courierOrderVisitedOfficeLocalEntity: CourierOrderVisitedOfficeLocalEntity)
+    fun deleteOrder()
 
-    fun insertAllVisitedOfficeSync(): Completable
+    fun saveRemoteOrder(order: LocalComplexOrderEntity, boxes: List<LocalBoxEntity>): Completable
 
-    fun insertAllVisitedOffice()
+    fun setOrderOrderStart(scanTime: String)
 
-    fun findOfficeById(officeId: Int): Single<CourierOrderDstOfficeLocalEntity>
+    fun setOrderInReserve(order: LocalOrderEntity)
 
-    //==============================================================================================
-    //boxes
-    //==============================================================================================
+    fun setOrderAfterLoadStatus(cost: Int)
 
-    fun saveLoadingBox(boxEntity: CourierBoxEntity): Completable
+    fun getOrderId(): Single<String>
+    fun getOrderGate(): Single<String>
+    fun getOffices(): List<LocalOfficeEntity>
+    fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
+    fun getBoxes(): List<LocalBoxEntity>
+    fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>>
 
-    fun findLoadingBoxById(id: String): Maybe<CourierBoxEntity>
+    fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean): Completable
 
-    fun saveLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
+    fun visitOffice(officeId: Int)
 
-    fun readAllLoadingBoxesSync(): Single<List<CourierBoxEntity>>
+    fun getOfflineBoxes(): List<LocalBoxEntity>
 
-    fun readAllLoadingBoxes(): List<CourierBoxEntity>
+    fun setOnlineOffices()
 
-    fun readAllLoadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+    fun unloadBox(box: LocalBoxEntity)
 
-    fun readLoadingBoxByOfficeIdAndId(officeId: Int, id: String): Maybe<CourierBoxEntity>
+    fun takeBackBox(box: LocalBoxEntity)
 
-    fun readAllUnloadingBoxesByOfficeId(officeId: Int): Single<List<CourierBoxEntity>>
+    fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>>
 
-    fun readInitLastUnloadingBox(officeId: Int): Single<CourierUnloadingInitLastBoxResult>
+    fun clearOrder()
 
-    fun readNotUnloadingBoxesSync(): Single<List<CourierBoxEntity>>
-
-    fun readNotUnloadingBoxes(): List<CourierBoxEntity>
-
-    fun deleteAllVisitedOffices()
-
-    fun readUnloadingBoxCounter(officeId: Int): Single<CourierUnloadingBoxScoreResult>
-
-    fun observeUnloadingBoxCounter(officeId: Int): Flowable<CourierUnloadingBoxScoreResult>
-
-    fun observeLoadingBoxes(): Flowable<List<CourierBoxEntity>>
-
-    fun deleteLoadingBox(boxEntity: CourierBoxEntity): Completable
-
-    fun deleteLoadingBoxes(boxEntity: List<CourierBoxEntity>): Completable
-
-    fun deleteLoadingBoxesByQrCode(qrCodes: List<String>): Completable
-
-    fun deleteAllLoadingBoxes()
-
-    fun observeBoxesGroupByOffice(): Flowable<List<CourierIntransitGroupByOfficeEntity>>
-
-    fun completeDeliveryResult(): Single<CompleteDeliveryResult>
-
-    //==============================================================================================
-    //Billing
-    //==============================================================================================
-
-//    fun saveAccounts(courierBillingAccountEntities: List<CourierBillingAccountEntity>): Completable
-//
-//    fun readAccounts(): Single<List<CourierBillingAccountEntity>>
-
-
-    //==============================================================================================
-
+    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
 
 }

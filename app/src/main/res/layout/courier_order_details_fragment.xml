@@ -177,7 +177,8 @@
         android:src="@drawable/gradient_light_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/center_horizontal" />
+        app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:layout_width="0dp"
@@ -185,7 +186,8 @@
         android:src="@drawable/gradient_light_bottom"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/empty_list"
@@ -215,8 +217,8 @@
         android:id="@+id/back_order"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/center_vertical"
@@ -232,8 +234,8 @@
         android:id="@+id/take_order"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

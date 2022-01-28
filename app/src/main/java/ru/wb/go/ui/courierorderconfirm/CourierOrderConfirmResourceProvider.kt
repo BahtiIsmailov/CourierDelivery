@@ -28,7 +28,6 @@ class CourierOrderConfirmResourceProvider(private val context: Context) :
     }
 
     fun getVolume(minBoxesCount: Int, volume: Int): String {
-//        val v = context.resources.getQuantityString(R.plurals.volume, abs(volume), volume)
         return context.getString(R.string.courier_orders_confirm_volume, minBoxesCount, volume)
     }
 

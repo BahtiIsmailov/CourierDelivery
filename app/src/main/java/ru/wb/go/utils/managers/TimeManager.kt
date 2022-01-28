@@ -7,6 +7,5 @@ interface TimeManager {
     fun clear()
     fun getLocalTime(): String
     fun getLocalDateAndTime(): String
-    fun saveStartedTaskTime(dateTime: String)
-    fun getStartedTaskTime(): String
+    fun getPassedTime(startTime:String):Long
 }

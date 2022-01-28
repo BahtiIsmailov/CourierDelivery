@@ -16,13 +16,21 @@ class CourierUnloadingResourceProvider(private val context: Context) :
     fun getReadyStatus(): String =
         context.getString(R.string.courier_unloading_scanner_ready_status)
 
-    fun getReadyUnknownBox(): String =
+    fun getForbiddenBoxMessage(): String =
+        context.getString(R.string.receive_wrong_box)
+
+    fun getReadyWrongBoxMessage():String="Коробка для другого ПВЗ"
+
+    fun getReadyWrongBox(): String =
         context.getString(R.string.courier_unloading_scanner_unknown_status)
+
+    fun getReadyForbiddenBox(): String ="КОРОБКА НЕ ПРИНИМАЛАСЬ"
 
     fun getReadyAddedBox(): String =
         context.getString(R.string.courier_unloading_scanner_added_status)
 
     fun getEmptyQr(): String = context.getString(R.string.courier_unloading_scanner_empty_qr)
+    fun getUnknownQr(): String = context.getString(R.string.courier_order_scanner_unknown_qr)
 
     fun getEmptyAddress(): String =
         context.getString(R.string.courier_unloading_scanner_empty_address)

@@ -5,10 +5,13 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
+import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
+import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
 
 interface AppRemoteRepository {
 
@@ -19,26 +22,24 @@ interface AppRemoteRepository {
 
     fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
-    fun tasksMy(): Single<CourierTasksMyEntity>
+    fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 
     fun anchorTask(taskID: String, carNumber: String): Completable
 
     fun deleteTask(taskID: String): Completable
 
-    fun taskStatuses(taskID: String): Single<CourierTaskStatusesEntity>
+    fun taskBoxes(taskID: String): Single<List<LocalBoxEntity>>
 
-    fun taskBoxes(taskID: String): Single<CourierTaskBoxesEntity>
+    fun setStartTask(taskID: String, box: LocalBoxEntity): Single<StartTaskResponse>
 
-    fun taskStart(taskID: String, courierTaskStartEntity: CourierTaskStartEntity): Completable
-
-    fun taskStatusesReady(
+    fun setReadyTask(
             taskID: String,
-            courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
-    ): Single<CourierTaskStatusesIntransitCostEntity>
+            boxes: List<LocalBoxEntity>
+    ): Single<TaskCostEntity>
 
-    fun taskStatusesIntransit(
-            taskID: String,
-            courierTaskStatusesIntransitEntity: List<CourierTaskStatusesIntransitEntity>
+    fun setIntransitTask(
+        taskID: String,
+        boxes: List<LocalBoxEntity>
     ): Completable
 
     fun taskStatusesEnd(taskID: String): Completable

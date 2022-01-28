@@ -120,7 +120,7 @@ class CourierWarehousesViewModel(
 
     private fun getWarehouse() {
         addSubscription(
-            interactor.warehouses()
+            interactor.getServerWarehouses()
                 .doOnSuccess { saveWarehouseEntities(it) }
                 .subscribe(
                     { courierWarehouseComplete(it) },
@@ -282,43 +282,56 @@ class CourierWarehousesViewModel(
         if (isSelected) zoomMarkersFromBoundingBox(myLocation)
     }
 
-    private fun checkAndNavigate(
-        warehouseEntities: List<CourierWarehouseLocalEntity>,
-        oldEntity: CourierWarehouseLocalEntity
-    ) {
-        if (warehouseEntities.find { it.id == oldEntity.id } == null) {
-            courierWarehouseComplete(warehouseEntities)
-            _navigateToDialogInfo.value =
-                NavigateToDialogInfo(
-                    DialogInfoStyle.WARNING.ordinal,
-                    resourceProvider.getDialogEmptyTitle(),
-                    resourceProvider.getDialogEmptyMessage(),
-                    resourceProvider.getDialogEmptyButton(),
-                )
-        } else {
-            interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
-            _navigationState.value =
-                CourierWarehousesNavigationState.NavigateToCourierOrder(
-                    oldEntity.id,
-                    oldEntity.name
-                )
-            clearSubscription()
-        }
-        requestFinishUnlockState()
-    }
+//    private fun checkAndNavigate(
+////        warehouseEntities: List<CourierWarehouseLocalEntity>,
+//        oldEntity: CourierWarehouseLocalEntity
+//    ) {
+////        if (warehouseEntities.find { it.id == oldEntity.id } == null) {
+////            courierWarehouseComplete(warehouseEntities)
+////            _navigateToDialogInfo.value =
+////                NavigateToDialogInfo(
+////                    DialogInfoStyle.WARNING.ordinal,
+////                    resourceProvider.getDialogEmptyTitle(),
+////                    resourceProvider.getDialogEmptyMessage(),
+////                    resourceProvider.getDialogEmptyButton(),
+////                )
+////        } else {
+//            interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
+//            _navigationState.value =
+//                CourierWarehousesNavigationState.NavigateToCourierOrder(
+//                    oldEntity.id,
+//                    oldEntity.name
+//                )
+//            clearSubscription()
+////        }
+////        requestFinishUnlockState()
+//    }
 
     fun onDetailClick(index: Int) {
-        onTechEventLog("onDetailClick", "index $index")
-        lockState()
-        showProgress()
-        val oldEntity = warehouseEntities[index].copy()
-        addSubscription(
-            interactor.warehouses()
-                .doOnSuccess { saveWarehouseEntities(it) }
-                .subscribe(
-                    { checkAndNavigate(it, oldEntity) },
-                    { courierWarehouseError(it) })
-        )
+//        onTechEventLog("onDetailClick", "index $index")
+//        lockState()
+//        showProgress()
+        val selectedWh = warehouseEntities[index].copy()
+//        checkAndNavigate( oldEntity)
+//        addSubscription(
+//            interactor.getServerWarehouses()
+//                .doOnSuccess { saveWarehouseEntities(it) }
+//                .subscribe(
+//                    { checkAndNavigate(it, oldEntity) },
+//                    { courierWarehouseError(it) })
+//
+//        )
+        interactor.clearAndSaveCurrentWarehouses(selectedWh)
+            .andThen {
+                _navigationState.value =
+                    CourierWarehousesNavigationState.NavigateToCourierOrder(
+                        selectedWh.id,
+                        selectedWh.name
+                    )
+            }
+            .subscribe()
+
+        clearSubscription()
     }
 
     private fun showProgress() {

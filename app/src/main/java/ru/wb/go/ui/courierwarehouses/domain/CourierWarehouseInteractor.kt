@@ -9,7 +9,7 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierWarehouseInteractor {
 
-    fun warehouses(): Single<List<CourierWarehouseLocalEntity>>
+    fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 
     fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
 

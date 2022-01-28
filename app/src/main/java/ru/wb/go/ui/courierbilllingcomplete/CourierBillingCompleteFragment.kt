@@ -65,7 +65,7 @@ class CourierBillingCompleteFragment : Fragment() {
     }
 
     private fun initListener() {
-        binding.completeDelivery.setOnClickListener {
+        binding.completeDeliveryButton.setOnClickListener {
             viewModel.onCompleteClick()
         }
     }
