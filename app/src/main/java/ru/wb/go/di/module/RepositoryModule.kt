@@ -25,6 +25,7 @@ import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.ui.splash.domain.AppSharedRepository
 import ru.wb.go.ui.splash.domain.AppSharedRepositoryImpl
+import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.time.TimeFormatter
 
 val deliveryRepositoryModule = module {
@@ -33,8 +34,9 @@ val deliveryRepositoryModule = module {
         api: AuthApi,
         tokenManager: TokenManager,
         userManager: UserManager,
+        settingsManager: SettingsManager
     ): AuthRemoteRepository {
-        return AuthRemoteRepositoryImpl(api, tokenManager, userManager)
+        return AuthRemoteRepositoryImpl(api, tokenManager, userManager, settingsManager)
     }
 
     fun provideAppRemoteRepository(
@@ -89,7 +91,7 @@ val deliveryRepositoryModule = module {
         return AppSharedRepositoryImpl()
     }
 
-    single { provideAuthRemoteRepository(get(), get(), get()) }
+    single { provideAuthRemoteRepository(get(), get(), get(), get()) }
     single { provideAppRemoteRepository(get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
