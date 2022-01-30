@@ -54,13 +54,17 @@ val viewModelModule = module {
 
     viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: CheckSmsParameters) ->
-        CheckSmsViewModel(parameters, get(), get(), get(), get())
+        CheckSmsViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 
     viewModel {
-        CourierLoaderViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
-        )
+        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
@@ -75,7 +79,16 @@ val viewModelModule = module {
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: CourierExpectsParameters) ->
-        CouriersCompleteRegistrationViewModel(parameters, get(), get(), get(), get(), get(), get())
+        CouriersCompleteRegistrationViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 
     viewModel { (parameters: CourierOrderDetailsParameters) ->

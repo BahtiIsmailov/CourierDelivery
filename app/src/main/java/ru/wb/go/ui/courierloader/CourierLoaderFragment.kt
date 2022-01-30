@@ -64,7 +64,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 )
                 is CourierLoaderNavigationState.NavigateToCourierUserForm -> findNavController().navigate(
                     CourierLoaderFragmentDirections.actionCourierLoaderFragmentToUserFormFragment(
-                        CourierDataParameters(state.phone, state.docs)
+                        state.cdp
                     )
                 )
                 CourierLoaderNavigationState.NavigateToCourierWarehouse -> findNavController().navigate(

@@ -20,6 +20,7 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.managers.DeviceManager
@@ -182,7 +183,7 @@ class CourierLoaderViewModel(
         }
 
         return remoteRepo.taskBoxes(remoteOrder.order.orderId.toString())
-            .flatMapCompletable{
+            .flatMapCompletable {
                 locRepo.saveRemoteOrder(remoteOrder, it)
             }
 
@@ -228,7 +229,9 @@ class CourierLoaderViewModel(
                 .subscribe({
                     _state.value = CourierLoaderUIState.Complete
                     _navigationDrawerState.value =
-                        CourierLoaderNavigationState.NavigateToCourierUserForm(phone, it)
+                        CourierLoaderNavigationState.NavigateToCourierUserForm(
+                            CourierDataParameters(phone = phone, docs = it)
+                        )
 
                 }, { taskMyError(it) })
         )
@@ -239,14 +242,19 @@ class CourierLoaderViewModel(
         val docs = CourierDocumentsEntity()
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
-            CourierLoaderNavigationState.NavigateToCourierUserForm(phone, docs)
+            CourierLoaderNavigationState.NavigateToCourierUserForm(
+                CourierDataParameters(
+                    phone = phone,
+                    docs = docs
+                )
+            )
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
         onTechEventLog("toCouriersCompleteRegistration")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
-                CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
+            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }
 
     private fun toCourierWarehouse() = CourierLoaderNavigationState.NavigateToCourierWarehouse
