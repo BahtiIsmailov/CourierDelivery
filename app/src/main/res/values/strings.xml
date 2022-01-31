@@ -4,7 +4,6 @@
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_billing">Баланс</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
-    <string name="app_nav_update_app">Проверить обновление</string>
     <string name="app_version">%s</string>
     <string name="app_update_version">Новая версия %s</string>
     <string name="app_update_version_available">Доступна новая версия %s</string>

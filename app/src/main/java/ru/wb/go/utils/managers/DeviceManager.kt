@@ -8,6 +8,9 @@ interface DeviceManager {
     val versionOS: String
     val versionSDK: String
     val screenSize: Int
-    fun doRestart()
+
     val screenWidth: Int
+
+    fun isAppVersionActual(adminVersion:String):Boolean
+    var appAdminVersion:String
 }

@@ -1,9 +1,12 @@
 package ru.wb.go.ui.courierloader
 
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
+import ru.wb.go.ui.courierdata.CourierDataParameters
 
 sealed class CourierLoaderNavigationState {
-    data class NavigateToCourierUserForm(val phone: String, val docs:CourierDocumentsEntity) : CourierLoaderNavigationState()
+    data class NavigateToCourierUserForm(val cdp: CourierDataParameters) :
+        CourierLoaderNavigationState()
+
     data class NavigateToCouriersCompleteRegistration(val phone: String) :
         CourierLoaderNavigationState()
 

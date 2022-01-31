@@ -366,7 +366,7 @@ class AppRemoteRepositoryImpl(
     }
 
     override fun appVersion(): Single<String> {
-        return remoteRepo.version(tokenManager.apiVersion()).map { it.version }
+        return remoteRepo.getAppActualVersion(tokenManager.apiVersion()).map { it.version }
             .compose(rxSchedulerFactory.applySingleMetrics("appVersion"))
     }
 

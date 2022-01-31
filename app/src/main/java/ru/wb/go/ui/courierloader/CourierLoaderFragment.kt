@@ -42,7 +42,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
     }
 
     private fun initListeners() {
-        binding.update.setOnClickListener { viewModel.update() }
+        binding.update.setOnClickListener { viewModel.initVersion() }
     }
 
     private fun initObserver() {
@@ -64,7 +64,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 )
                 is CourierLoaderNavigationState.NavigateToCourierUserForm -> findNavController().navigate(
                     CourierLoaderFragmentDirections.actionCourierLoaderFragmentToUserFormFragment(
-                        CourierDataParameters(state.phone, state.docs)
+                        state.cdp
                     )
                 )
                 CourierLoaderNavigationState.NavigateToCourierWarehouse -> findNavController().navigate(
@@ -108,8 +108,8 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                 }
                 CourierLoaderUIState.Progress -> {
                     binding.progress.visibility = View.VISIBLE
-                    binding.errorMessage.visibility = View.INVISIBLE
-                    binding.update.visibility = View.VISIBLE
+                    binding.errorMessage.visibility = View.GONE
+                    binding.update.visibility = View.GONE
                     binding.update.setState(ProgressImageButtonMode.DISABLED)
                 }
                 CourierLoaderUIState.Complete -> {

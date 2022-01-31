@@ -48,6 +48,7 @@ android {
         print(runTasks)
         if (':app:sassembleRelease' in runTasks) {
             versionMinor++
+            versionCod++
             isNew = true
         }
         if (':app:assembleDebugQA' in runTasks) {
@@ -58,6 +59,7 @@ android {
 
         versionProps['VERSION_MINOR'] = versionMinor.toString()
         versionProps['VERSION_BUILD'] = versionBuild.toString()
+        versionProps['VERSION_CODE'] = versionCod.toString()
         if (isNew) {
             versionProps.store(versionPropsFile.newWriter(), null)
         }

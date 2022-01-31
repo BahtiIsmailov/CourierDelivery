@@ -64,6 +64,10 @@ val utilsModule = module {
         return ErrorDialogManagerImpl(context)
     }
 
+    fun provideSettingsManager(sharedWorker: SharedWorker): SettingsManager {
+        return SettingsManagerImpl(sharedWorker)
+    }
+
     single { provideSharedWorker(get(), get()) }
     single { provideDeviceManager(get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
@@ -73,5 +77,5 @@ val utilsModule = module {
     single { provideTimeManager(get(), get()) }
     single { provideYandexMetricManager(get(), get(), get()) }
     single { provideErrorManager(get()) }
-
+    single { provideSettingsManager(get()) }
 }

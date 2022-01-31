@@ -6,7 +6,6 @@ import ru.wb.go.ui.auth.AuthLoaderViewModel
 import ru.wb.go.ui.auth.CheckSmsParameters
 import ru.wb.go.ui.auth.CheckSmsViewModel
 import ru.wb.go.ui.auth.NumberPhoneViewModel
-import ru.wb.go.ui.config.ConfigViewModel
 import ru.wb.go.ui.courieragreement.CourierAgreementViewModel
 import ru.wb.go.ui.courierbilling.CourierBillingViewModel
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
@@ -46,23 +45,25 @@ import ru.wb.go.ui.splash.AppLoaderViewModel
 import ru.wb.go.ui.splash.AppViewModel
 
 val viewModelModule = module {
-    viewModel { ConfigViewModel(get(), get()) }
-
     viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
     viewModel { AuthLoaderViewModel(get(), get()) }
     viewModel { AppViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: CheckSmsParameters) ->
-        CheckSmsViewModel(parameters, get(), get(), get(), get())
+        CheckSmsViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 
     viewModel {
-        CourierLoaderViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
-        )
+        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get() )
     }
-    viewModel { CourierVersionControlViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
 
     viewModel { CourierWarehousesViewModel(get(), get(), get(), get()) }
@@ -75,7 +76,16 @@ val viewModelModule = module {
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: CourierExpectsParameters) ->
-        CouriersCompleteRegistrationViewModel(parameters, get(), get(), get(), get(), get(), get())
+        CouriersCompleteRegistrationViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 
     viewModel { (parameters: CourierOrderDetailsParameters) ->
@@ -94,7 +104,7 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { CourierScannerViewModel(get(), get(), get()) }
+    viewModel { CourierScannerViewModel(get(), get(), get() ,get()) }
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(

@@ -6,29 +6,26 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
-import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
-import java.util.*
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 
 class UserFormViewModel(
     private val parameters: CourierDataParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
-    private val resourceProvider: CourierDataResourceProvider,
-
+    private val errorDialogManager: ErrorDialogManager,
     ) : NetworkViewModel(compositeDisposable, metric) {
 
-    private val _navigateToMessageInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToMessageInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToMessageInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToMessageInfo: LiveData<ErrorDialogData>
         get() = _navigateToMessageInfo
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
@@ -52,7 +49,12 @@ class UserFormViewModel(
     val loaderState: LiveData<CourierDataUILoaderState>
         get() = _loaderState
 
+    private val _showAnnotationState = MutableLiveData<Boolean>()
+    val showAnnotationState: LiveData<Boolean>
+        get() = _showAnnotationState
+
     init {
+        _showAnnotationState.value = !parameters.docs.errorAnnotate.isNullOrEmpty()
         observeNetworkState()
     }
 
@@ -157,7 +159,11 @@ class UserFormViewModel(
         addSubscription(
             interactor.saveCourierDocuments(courierDocumentsEntity).subscribe(
                 { couriersFormComplete() },
-                { couriersFormError(it) })
+                {
+                    onTechErrorLog("couriersFormError", it)
+                    _loaderState.value = CourierDataUILoaderState.Enable
+                    errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
+                })
         )
     }
 
@@ -176,34 +182,7 @@ class UserFormViewModel(
             CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
     }
 
-    private fun couriersFormError(throwable: Throwable) {
-        onTechErrorLog("couriersFormError", throwable)
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.INFO.ordinal,
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.INFO.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _loaderState.value = CourierDataUILoaderState.Enable
-        _navigateToMessageInfo.value = message
-
-    }
-
-    private fun observeNetworkState() {
+     private fun observeNetworkState() {
         addSubscription(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
@@ -212,11 +191,21 @@ class UserFormViewModel(
 
     fun onShowAgreementClick() {
         onTechEventLog("onShowAgreementClick")
+        _showAnnotationState.value = false
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 
-    fun getDocsParam():CourierDocumentsEntity{
-        return parameters.docs
+    fun getParams(): CourierDataParameters {
+        return parameters
+    }
+
+    fun showAnnotation(){
+        if(!showAnnotationState.value!!){
+            return
+        }
+        assert(parameters.docs.errorAnnotate!=null)
+        val it = CustomException(parameters.docs.errorAnnotate!!)
+        errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
     }
 
     override fun getScreenTag(): String {
