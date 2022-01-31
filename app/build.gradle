@@ -54,6 +54,7 @@ android {
         if (':app:assembleDebugQA' in runTasks) {
             print("QA plugin debug...")
             versionBuild++
+            versionCod++
             isNew = true
         }
 
