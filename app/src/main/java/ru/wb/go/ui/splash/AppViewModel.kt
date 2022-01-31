@@ -27,23 +27,10 @@ class AppViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _flightsActionState = SingleLiveEvent<AppUIState>()
-    val flightsActionState: LiveData<AppUIState>
-        get() = _flightsActionState
-
-    private val _counterBoxesActionStatus = MutableLiveData<CounterBoxesActionStatus>()
-    val counterBoxesActionStatus: LiveData<CounterBoxesActionStatus>
-        get() = _counterBoxesActionStatus
-
-    private val _appVersionState = MutableLiveData<AppVersionState>()
-    val appVersionState: LiveData<AppVersionState>
-        get() = _appVersionState
-
     init {
         fetchNetworkState()
         fetchVersionApp()
         updateDrawer()
-//        observeUpdatedStatus()
     }
 
     private fun fetchVersionApp() {
@@ -63,25 +50,6 @@ class AppViewModel(
     private fun updateDrawer() {
         fetchVersionApp()
     }
-
-    fun checkUpdateVersionApp() {
-        // TODO: 14.11.2021 выключено до актуализации FTP сервера
-    }
-
-    fun updateVersionApp(destination: String) {
-        // TODO: 14.11.2021 выключено до актуализации FTP сервера
-//        _appVersionState.value = AppVersionState.UpdateProgress
-//        addSubscription(interactor.getUpdateApp(destination)
-//            .subscribe({ getUpdateAppComplete(it) }, { getUpdateAppError() }))
-    }
-
-//    private fun getUpdateAppComplete(appVersionState: AppVersionState) {
-//        _appVersionState.value = appVersionState
-//    }
-//
-//    private fun getUpdateAppError() {
-//        _appVersionState.value = AppVersionState.UpdateError
-//    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
