@@ -3,8 +3,6 @@ package ru.wb.go.ui.scanner
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -26,7 +24,6 @@ import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.hasPermission
-import java.util.*
 
 open class CourierScannerFragment : Fragment() {
 
@@ -38,7 +35,6 @@ open class CourierScannerFragment : Fragment() {
     private lateinit var barcodeView: DecoratedBarcodeView
     private lateinit var viewFinder: ViewfinderView
 
-    private var flashState = false
     private lateinit var beepManager: BeepManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +63,6 @@ open class CourierScannerFragment : Fragment() {
         barcodeView.barcodeView.decodeSingle(callback)
 
         changeLaserVisibility(true)
-//        changeMaskColor()
 
         return binding.root
     }
@@ -135,7 +130,6 @@ open class CourierScannerFragment : Fragment() {
         changeLaserVisibility(true)
         onResume()
         barcodeView.barcodeView.decodeSingle(callback)
-//        changeMaskColor()
     }
 
     private fun hasFlash(): Boolean {
@@ -143,24 +137,8 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun changeLaserVisibility(visible: Boolean) {
-        activity!!.runOnUiThread {
+        requireActivity().runOnUiThread {
             viewFinder.setLaserVisibility(visible)
-        }
-
-    }
-
-    open fun changeMaskColor() {
-        val rnd = Random()
-        val color = Color.argb(100, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-        viewFinder.setMaskColor(color)
-    }
-
-    private fun switchFlashlight() {
-        flashState = !flashState
-        if (flashState) {
-            barcodeView.setTorchOn()
-        } else {
-            barcodeView.setTorchOff()
         }
 
     }
@@ -170,10 +148,18 @@ open class CourierScannerFragment : Fragment() {
             when (it) {
                 ScannerState.Start -> startScanning()
                 ScannerState.StopScan -> stopScanning()
-//                ScannerState.BeepScan -> beepScan()
+
                 ScannerState.HoldScanComplete -> hold(R.drawable.ic_scan_complete)
                 ScannerState.HoldScanError -> hold(R.drawable.ic_scan_error)
                 ScannerState.HoldScanUnknown -> hold(R.drawable.ic_scan_unknown)
+            }
+        }
+
+        viewModel.flashState.observe(viewLifecycleOwner){
+            if(it){
+                barcodeView.setTorchOn()
+            }else{
+                barcodeView.setTorchOff()
             }
         }
     }
@@ -184,13 +170,13 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun hold(icon: Int) {
-//        stopScanning()
         binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
         binding.scanStatus.visibility = View.VISIBLE
     }
 
     private fun initListener() {
-        binding.flash.setOnClickListener { switchFlashlight() }
+        binding.flash.setOnClickListener { viewModel.switchFlashlight() }
+
         binding.requestPermission.setOnClickListener {
             requestPermission.launch(Manifest.permission.CAMERA)
         }
@@ -208,11 +194,6 @@ open class CourierScannerFragment : Fragment() {
         if (requestCode == PERMISSION_FROM_SETTING_REQUEST_CODE) {
             requestPermission.launch(Manifest.permission.CAMERA)
         }
-    }
-
-    private fun beepScan() { //TODO Теперь эта функция встроена в сканер
-        val mediaPlayer = MediaPlayer.create(context, R.raw.qr_box_scan_accepted)
-        mediaPlayer.start()
     }
 
     companion object {

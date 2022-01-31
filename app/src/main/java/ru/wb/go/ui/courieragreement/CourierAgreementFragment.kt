@@ -37,7 +37,6 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
     }
 
     private fun initListeners() {
-//        binding.cancel.setOnClickListener { viewModel.onCancelClick() }
         binding.confirm.setOnClickListener { viewModel.onCompleteClick() }
     }
 
@@ -57,7 +56,7 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierAgreementNavigationState.Complete -> {
-                    findNavController().navigateUp()
+                    findNavController().popBackStack()
                 }
             }
         }

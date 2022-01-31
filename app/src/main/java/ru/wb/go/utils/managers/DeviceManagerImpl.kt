@@ -1,16 +1,11 @@
 package ru.wb.go.utils.managers
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings.Secure
 import ru.wb.go.utils.LogUtils
 import java.util.*
-import kotlin.system.exitProcess
 
 class DeviceManagerImpl(private val context: Context) : DeviceManager {
 
@@ -48,23 +43,6 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
             }
         }
 
-    override fun doRestart() {
-        try {
-            val mStartActivity =
-                    context.packageManager?.getLaunchIntentForPackage(context.packageName)
-            mStartActivity?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            val mPendingIntent = PendingIntent.getActivity(
-                    context, PENDING_INTENT_ID, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT
-            )
-            val mgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            Thread.sleep(RESTART_DELAY_TIME)
-            mgr[AlarmManager.RTC, System.currentTimeMillis() + SYSTEM_TIME_OFFSET] = mPendingIntent
-            exitProcess(EXIT_STATUS_PROCESS)
-        } catch (ex: Exception) {
-            LogUtils { logError(this, "Was not able to restart application") }
-        }
-    }
-
     override val screenWidth: Int
         get() {
             val displayMetrics = context.resources.displayMetrics
@@ -72,11 +50,13 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
             return dpWidth.toInt()
         }
 
-    companion object {
-        private const val PENDING_INTENT_ID = 223344
-        private const val SYSTEM_TIME_OFFSET = 10
-        private const val RESTART_DELAY_TIME = 100L
-        private const val EXIT_STATUS_PROCESS = 0
+    override var appAdminVersion: String = ""
+
+    override fun isAppVersionActual(adminVersion: String): Boolean {
+        // FIXME: remove after front-update version
+        val av = adminVersion.replace("v", "")
+        appAdminVersion = av
+        return appVersion >= av
     }
 
 }

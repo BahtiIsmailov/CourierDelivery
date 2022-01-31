@@ -8,15 +8,14 @@ import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
-import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CouriersCompleteRegistrationViewModel(
     private val parameters: CourierExpectsParameters,
@@ -28,12 +27,12 @@ class CouriersCompleteRegistrationViewModel(
     private val interactor: CourierExpectsInteractor,
     private val appRemoteRepository: AppRemoteRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val errorDialogManager: ErrorDialogManager,
+) : NetworkViewModel(compositeDisposable, metric) {
 
-    ) : NetworkViewModel(compositeDisposable, metric) {
-
-    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToMessageState: LiveData<NavigateToDialogInfo>
-        get() = _navigateToMessageState
+    private val _showDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val showDialogInfo: LiveData<ErrorDialogData>
+        get() = _showDialogInfo
 
     private val _infoState = MutableLiveData<String>()
     val infoState: LiveData<String>
@@ -56,8 +55,14 @@ class CouriersCompleteRegistrationViewModel(
         _progressState.value = CourierExpectsProgressState.Progress
         addSubscription(
             interactor.isRegisteredStatus().subscribe(
-                { isRegisteredStatusComplete(it) },
-                { isRegisteredStatusError(it) })
+                {
+                    _progressState.value = CourierExpectsProgressState.Complete
+                    isRegisteredStatusComplete(it)
+                },
+                {
+                    _progressState.value = CourierExpectsProgressState.Complete
+                    errorDialogManager.showErrorDialog(it, _showDialogInfo)
+                })
         )
 
     }
@@ -82,17 +87,19 @@ class CouriersCompleteRegistrationViewModel(
                                     parameters.phone, it
                                 )
 
-                        }, { isRegisteredStatusError(it) })
+                        }, { errorDialogManager.showErrorDialog(it, _showDialogInfo) })
                 )
 
             }
             NEED_APPROVE_COURIER_DOCUMENTS -> {
-                _navigateToMessageState.value = NavigateToDialogInfo(
-                    DialogInfoStyle.INFO.ordinal,
-                    resourceProvider.notConfirmDataTitle(),
-                    resourceProvider.notConfirmDataMessage(),
-                    resourceProvider.notConfirmDataPositive()
-                )
+                val th = CustomException(resourceProvider.notConfirmDataMessage())
+                errorDialogManager.showErrorDialog(th, _showDialogInfo)
+//                _showDialogInfo.value = NavigateToDialogInfo(
+//                    DialogInfoStyle.INFO.ordinal,
+//                    resourceProvider.notConfirmDataTitle(),
+//                    resourceProvider.notConfirmDataMessage(),
+//                    resourceProvider.notConfirmDataPositive()
+//                )
                 _progressState.value = CourierExpectsProgressState.Complete
             }
             else -> {
@@ -103,32 +110,6 @@ class CouriersCompleteRegistrationViewModel(
         }
     }
 
-    private fun isRegisteredStatusError(throwable: Throwable) {
-        onTechErrorLog("isRegisteredStatusError", throwable)
-        _progressState.value = CourierExpectsProgressState.Complete
-        when (throwable) {
-            is NoInternetException -> _navigateToMessageState.value = NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> {
-                _navigateToMessageState.value = NavigateToDialogInfo(
-                    DialogInfoStyle.WARNING.ordinal,
-                    resourceProvider.getGenericServiceTitleError(),
-                    throwable.error.message,
-                    resourceProvider.getGenericServiceButtonError()
-                )
-            }
-            else -> _navigateToMessageState.value = NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

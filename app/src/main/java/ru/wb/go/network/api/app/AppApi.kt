@@ -132,7 +132,7 @@ interface AppApi {
     ): Completable
 
     @GET("{version}/settings/mobile-version")
-    fun version(
+    fun getAppActualVersion(
         @Path(value = "version", encoded = true) version: String
     ): Single<VersionAppResponse>
 

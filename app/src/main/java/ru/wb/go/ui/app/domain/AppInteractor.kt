@@ -10,7 +10,4 @@ interface AppInteractor {
     fun observeNetworkConnected(): Observable<NetworkState>
     fun exitAuth()
     fun onSearchChange(query: String)
-    fun checkUpdateApp(): Single<AppVersionState>
-    fun getUpdateApp(destination: String): Single<AppVersionState>
-
 }

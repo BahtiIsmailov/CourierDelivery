@@ -56,9 +56,6 @@
             android:id="@+id/action_courierLoaderFragment_to_auth_navigation"
             app:destination="@id/auth_navigation" />
         <action
-            android:id="@+id/action_courierLoaderFragment_to_courierAgreementFragment"
-            app:destination="@id/courierAgreementFragment" />
-        <action
             android:id="@+id/action_courierLoaderFragment_to_courierVersionControlFragment"
             app:destination="@id/courierVersionControlFragment" />
     </fragment>
@@ -78,10 +75,6 @@
         android:name="ru.wb.go.ui.courierdata.CourierDataFragment"
         android:label="UserFormFragment"
         tools:layout="@layout/courier_data_fragment">
-        <argument
-            android:name="phone_key"
-            app:argType="ru.wb.go.ui.courierdata.CourierDataParameters"
-            app:nullable="false" />
         <action
             android:id="@+id/action_userFormFragment_to_couriersCompleteRegistrationFragment"
             app:destination="@id/couriersCompleteRegistrationFragment"
@@ -96,10 +89,8 @@
             android:id="@+id/action_userFormFragment_to_auth_navigation"
             app:destination="@id/auth_navigation" />
         <argument
-            android:name="docs_key"
-            android:defaultValue="@null"
-            app:argType="ru.wb.go.ui.courierdata.CourierDataParameters"
-            app:nullable="true" />
+            android:name="REGISTER_FORM_PARAMS"
+            app:argType="ru.wb.go.ui.courierdata.CourierDataParameters" />
     </fragment>
 
     <fragment

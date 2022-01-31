@@ -59,6 +59,7 @@ import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -147,14 +148,12 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
         appSharedRepository: AppSharedRepository,
-        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
             appSharedRepository,
-            deviceManager
         )
     }
 
@@ -370,7 +369,7 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
