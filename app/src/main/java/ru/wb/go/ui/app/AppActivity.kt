@@ -1,7 +1,5 @@
 package ru.wb.go.ui.app
 
-import android.content.Intent
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
@@ -10,24 +8,17 @@ import android.graphics.Color
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import android.view.*
 import android.view.Gravity.LEFT
 import android.view.View.*
 import android.view.WindowManager.LayoutParams.*
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
@@ -52,8 +43,7 @@ import ru.wb.go.utils.SoftKeyboard
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
-    OnUserInfo, OnCourierScanner, OnSoundPlayer,
-    OnFlightsStatus, OnUserInfo, OnCourierScanner, OnSoundPlayer, StatusBarListener,
+    OnUserInfo, OnCourierScanner, OnSoundPlayer, StatusBarListener,
     NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener {
 
     private val viewModel by viewModel<AppViewModel>()
