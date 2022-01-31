@@ -18,11 +18,9 @@ import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
-import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierLoaderViewModel(
@@ -32,9 +30,7 @@ class CourierLoaderViewModel(
     private val tokenManager: TokenManager,
     private val locRepo: CourierLocalRepository,
     private val remoteRepo: AppRemoteRepository,
-    private val userManager: UserManager,
     private val deviceManager: DeviceManager,
-    private val configManager: ConfigManager,
     private val resourceProvider: CourierLoaderResourceProvider,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
@@ -62,10 +58,12 @@ class CourierLoaderViewModel(
         _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
     }
 
-    private fun initVersion() {
+    fun initVersion() {
+
+        _state.value = CourierLoaderUIState.Progress
+
         addSubscription(
             remoteRepo.appVersion()
-                .doOnSuccess { saveAppVersion(it) }
                 .compose(rxSchedulerFactory.applySingleSchedulers())
                 .subscribe(
                     { appVersionUpdateComplete(it) },
@@ -73,40 +71,23 @@ class CourierLoaderViewModel(
         )
     }
 
-    private fun saveAppVersion(it: String) {
-        val matchVersion = it.replace(Regex("[^\\d.]"), "")
-        configManager.saveAppVersion(matchVersion)
-    }
 
     private fun appVersionUpdateComplete(version: String) {
         onTechEventLog("appVersionUpdateComplete", "appStart $version")
-        appStart()
+        checkUserState(version)
     }
 
     private fun appVersionUpdateError(throwable: Throwable) {
         onTechErrorLog("appVersionUpdateError", throwable)
-        appStart()
+        checkUserState("0.0.0")
     }
 
-    private fun appStart() {
-        val appVersion = versionCodeToInt(configManager.readAppVersion())
-        if (isVersionActual(appVersion)) loadApp()
-        else toAppUpdate()
-    }
-
-    private fun loadApp() {
-        onTechEventLog("loadApp", "checkUserState")
-
-        checkUserState()
-
-    }
-
-    private fun isVersionActual(remotes: Int): Boolean {
-        return versionCodeToInt(deviceManager.appVersion) >= remotes
-    }
-
-    private fun versionCodeToInt(code: String): Int {
-        return code.replace("\\D+".toRegex(), "").toInt()
+    private fun goToUpdate(version: String): Boolean {
+        onTechEventLog("version app: $version")
+        val res = !deviceManager.isAppVersionActual(version)
+        if (res)
+            toAppUpdate()
+        return res
     }
 
     private fun checkRootState() {
@@ -115,21 +96,27 @@ class CourierLoaderViewModel(
         }
     }
 
-    private fun checkUserState() {
+    private fun checkUserState(version: String) {
         val phone = tokenManager.userPhone()
         when {
-            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> toNewRegistration(
-                phone
-            )
-            tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
-                toUserForm(phone)
+            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> {
+                if (!goToUpdate(version))
+                    toNewRegistration(phone)
             }
-            tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
-                toCouriersCompleteRegistration(phone)
+            tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
+                if (!goToUpdate(version))
+                    toUserForm(phone)
+            }
+            tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) -> {
+                if (!goToUpdate(version))
+                    toCouriersCompleteRegistration(phone)
+            }
             else -> {
                 val order = locRepo.getOrder()
                 val taskMy = remoteRepo.tasksMy(order?.orderId)
-
+                if(order==null && goToUpdate(version)){
+                    return
+                }
                 addSubscription(
                     taskMy
                         .flatMap {
@@ -273,12 +260,6 @@ class CourierLoaderViewModel(
     private fun errorState(message: String) {
         onTechEventLog("errorState", "message")
         _state.value = CourierLoaderUIState.Error(message)
-    }
-
-    fun update() {
-        onTechEventLog("update")
-        _state.value = CourierLoaderUIState.Progress
-        checkUserState()
     }
 
     override fun getScreenTag(): String {

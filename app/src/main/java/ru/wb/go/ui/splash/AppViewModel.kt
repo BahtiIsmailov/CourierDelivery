@@ -17,7 +17,7 @@ class AppViewModel(
     private val interactor: AppInteractor,
     private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager,
-    ) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _networkState = MutableLiveData<NetworkState>()
     val networkState: LiveData<NetworkState>
@@ -30,7 +30,6 @@ class AppViewModel(
     init {
         fetchNetworkState()
         fetchVersionApp()
-        updateDrawer()
     }
 
     private fun fetchVersionApp() {
@@ -45,10 +44,6 @@ class AppViewModel(
 
     fun onExitClick() {
         interactor.exitAuth()
-    }
-
-    private fun updateDrawer() {
-        fetchVersionApp()
     }
 
     override fun getScreenTag(): String {

@@ -3,7 +3,7 @@ package ru.wb.go.app
 object AppPreffsKeys {
     const val AUTH_SERVER_KEY = "AUTH_SERVER_KEY"
     const val APP_SERVER_KEY = "APP_SERVER_KEY"
-    const val APP_VERSION_KEY = "APP_VERSION_KEY"
+
     const val TOKEN_KEY = "TOKEN_KEY"
     const val USER_INN_KEY = "USER_INN"
     const val PHONE_KEY = "PHONE_KEY"

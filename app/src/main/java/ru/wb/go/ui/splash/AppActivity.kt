@@ -120,16 +120,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
         viewModel.versionApp.observe(this) {
             binding.layoutHost.toolbarLayout.toolbarVersion.text = it
+            binding.navigationHeaderMain.versionApp.text = it
         }
-
-
-
-        viewModel.versionApp.observe(this) {
-            with(binding.navigationHeaderMain) {
-                versionApp.text = it
-            }
-        }
-
 
     }
 

@@ -61,7 +61,6 @@ import ru.wb.go.ui.splash.domain.AppInteractor
 import ru.wb.go.ui.splash.domain.AppInteractorImpl
 import ru.wb.go.ui.splash.domain.AppSharedRepository
 import ru.wb.go.utils.managers.DeviceManager
-import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
@@ -151,14 +150,12 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
         appSharedRepository: AppSharedRepository,
-        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
             appSharedRepository,
-            deviceManager
         )
     }
 
@@ -391,7 +388,7 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
