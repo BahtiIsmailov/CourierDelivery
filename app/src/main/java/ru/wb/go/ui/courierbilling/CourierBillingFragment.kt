@@ -26,6 +26,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.managers.ErrorDialogData
 
 
 class CourierBillingFragment : Fragment() {
@@ -120,15 +121,11 @@ class CourierBillingFragment : Fragment() {
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierBillingNavigationState.NavigateToBack -> {}
-                is CourierBillingNavigationState.NavigateToDialogInfo -> with(it) {
-                    showDialogInfo(type, title, message, button)
-                }
                 is CourierBillingNavigationState.NavigateToAccountCreate -> findNavController().navigate(
                     CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountDataFragment(
                         CourierBillingAccountDataAmountParameters(null, it.billingAccount, it.balance)
@@ -146,18 +143,14 @@ class CourierBillingFragment : Fragment() {
             when (state) {
                 CourierBillingState.Init -> {
                     binding.emptyList.visibility = GONE
-                    binding.progress.visibility = GONE
-                    binding.progress.visibility = VISIBLE
                 }
                 is CourierBillingState.ShowBilling -> {
                     binding.emptyList.visibility = GONE
-                    binding.progress.visibility = GONE
                     binding.operations.visibility = VISIBLE
                     displayItems(state.items)
                 }
                 is CourierBillingState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
-                    binding.progress.visibility = GONE
                     binding.operations.visibility = GONE
                     binding.emptyTitle.text = state.info
                 }
@@ -212,16 +205,14 @@ class CourierBillingFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
     }
 

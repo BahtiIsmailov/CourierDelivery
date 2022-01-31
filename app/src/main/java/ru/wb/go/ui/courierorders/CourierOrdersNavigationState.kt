@@ -14,6 +14,4 @@ sealed class CourierOrdersNavigationState {
         val button: String
     ) : CourierOrdersNavigationState()
 
-    object NavigateToBack : CourierOrdersNavigationState()
-
 }

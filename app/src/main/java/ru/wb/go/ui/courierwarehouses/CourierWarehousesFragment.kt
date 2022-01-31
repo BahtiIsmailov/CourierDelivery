@@ -13,7 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
 import ru.wb.go.ui.courierorders.CourierOrderParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -25,6 +27,8 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment.Companion.PROGRESS_DIALOG_TAG
 import ru.wb.go.ui.splash.KeyboardListener
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
 
@@ -86,7 +90,7 @@ class CourierWarehousesFragment : Fragment() {
     private fun initObservable() {
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.warehouses.observe(viewLifecycleOwner) {
@@ -123,17 +127,10 @@ class CourierWarehousesFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) {
+        viewModel.waitLoader.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesProgressState.Progress -> showProgressDialog()
-                CourierWarehousesProgressState.ProgressComplete -> closeProgressDialog()
-            }
-        }
-
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = VISIBLE
-                false -> binding.holdLayout.visibility = GONE
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
@@ -176,16 +173,14 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

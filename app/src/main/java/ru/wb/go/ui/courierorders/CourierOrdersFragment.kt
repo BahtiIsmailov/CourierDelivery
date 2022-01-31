@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import kotlinx.parcelize.Parcelize
+
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
@@ -26,9 +27,12 @@ import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
 import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.splash.NavDrawerListener
 import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
 
@@ -107,7 +111,7 @@ class CourierOrderFragment : Fragment() {
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -155,34 +159,26 @@ class CourierOrderFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierOrdersProgressState.Progress -> showProgressDialog()
-                CourierOrdersProgressState.Complete -> closeProgressDialog()
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = VISIBLE
-                false -> binding.holdLayout.visibility = GONE
-            }
-        }
 
     }
 
     private fun showDialogInfo(
-        style: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = style,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     override fun onDestroyView() {

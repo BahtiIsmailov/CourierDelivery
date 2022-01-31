@@ -272,7 +272,7 @@ class AppRemoteRepositoryImpl(
             .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesEnd"))
     }
 
-    override fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity> {
+    override fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity> {
         return remoteRepo.getBilling(apiVersion(), isShowTransaction)
             .map { response ->
                 val billingTransactions = mutableListOf<BillingTransactionEntity>()

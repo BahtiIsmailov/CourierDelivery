@@ -5,16 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courier.CourierOrderEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
-import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
@@ -24,6 +23,7 @@ class CourierOrdersViewModel(
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -38,25 +38,22 @@ class CourierOrdersViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
     private val _orders = MutableLiveData<CourierOrdersState>()
     val orders: LiveData<CourierOrdersState>
         get() = _orders
 
-    private val _progressState = MutableLiveData<CourierOrdersProgressState>()
-    val progressState: LiveData<CourierOrdersProgressState>
-        get() = _progressState
-
     private val _navigationState = SingleLiveEvent<CourierOrdersNavigationState>()
     val navigationState: LiveData<CourierOrdersNavigationState>
         get() = _navigationState
 
-    private val _holdState = MutableLiveData<Boolean>()
-    val holdState: LiveData<Boolean>
-        get() = _holdState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private var copyCourierOrdersEntity = mutableListOf<CourierOrderEntity>()
 
@@ -81,110 +78,66 @@ class CourierOrdersViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
-    private fun lockState() {
-        _holdState.value = true
-    }
-
-    private fun unlockState() {
-        _holdState.value = false
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     private fun initOrders() {
-        lockState()
-        showProgress()
-        addSubscription(interactor.orders(parameters.currentWarehouseId)
-            .doOnSuccess { copyCourierOrdersEntity = it.toMutableList() }
-            .flatMap { orders ->
-                Observable.fromIterable(orders.withIndex())
-                    .map { (index, item): IndexedValue<CourierOrderEntity> ->
-                        dataBuilder.buildOrderItem(
-                            index,
-                            item
-                        )
-                    }
-                    .toList()
-            }
-            .map {
-                if (it.isEmpty()) {
-                    CourierOrdersState.Empty(resourceProvider.getDialogEmpty())
-                } else CourierOrdersState.ShowOrders(it)
+        setLoader(WaitLoader.Wait)
+        addSubscription(
+            interactor.orders(parameters.currentWarehouseId)
+                .doOnSuccess { copyCourierOrdersEntity = it.toMutableList() }
+                .flatMap { orders ->
+                    Observable.fromIterable(orders.withIndex())
+                        .map { (index, item): IndexedValue<CourierOrderEntity> ->
+                            dataBuilder.buildOrderItem(
+                                index,
+                                item
+                            )
+                        }
+                        .toList()
+                }
+                .map {
+                    if (it.isEmpty()) {
+                        CourierOrdersState.Empty(resourceProvider.getDialogEmpty())
+                    } else CourierOrdersState.ShowOrders(it)
 
-            }
-            .subscribe({ ordersComplete(it) }, { ordersError(it) })
+                }
+                .subscribe(
+                    { ordersComplete(it) }, {
+                        onTechErrorLog("ordersError", it)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+                        _orders.value = CourierOrdersState.Empty("Ошибка получения данных")
+                        setLoader(WaitLoader.Complete)
+                    })
         )
-    }
-
-    private fun showProgress() {
-        _progressState.value = CourierOrdersProgressState.Progress
     }
 
     private fun ordersComplete(courierOrderUIListState: CourierOrdersState) {
-        onTechEventLog(
-            "ordersComplete",
-            "courierOrderUIListState " + courierOrderUIListState.toString()
-        )
-        _progressState.value = CourierOrdersProgressState.Complete
         _orders.value = courierOrderUIListState
-        unlockState()
-    }
-
-    private fun ordersError(throwable: Throwable) {
-        onTechErrorLog("ordersError", throwable)
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigateToDialogInfo.value = message
-        _orders.value = CourierOrdersState.Empty(message.title)
-        progressComplete()
-        unlockState()
-    }
-
-    private fun progressComplete() {
-        _progressState.value = CourierOrdersProgressState.Complete
+        setLoader(WaitLoader.Complete)
     }
 
     fun onItemClick(idView: Int) {
         onTechEventLog("onItemClick")
-        lockState()
         val courierOrderEntity = copyCourierOrdersEntity[idView]
         addSubscription(
             interactor.clearAndSaveSelectedOrder(courierOrderEntity)
                 .subscribe(
                     { clearAndSaveSelectedOrderComplete(idView) },
-                    { clearAndSaveSelectedOrderError(it) })
+                    {
+                        onTechErrorLog("ordersError", it)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+                    })
         )
     }
 
     private fun clearAndSaveSelectedOrderComplete(idView: Int) {
-        onTechEventLog("clearAndSaveSelectedOrderComplete")
-        unlockState()
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(
                 parameters.address,
                 copyCourierOrdersEntity[idView]
             )
-    }
-
-    private fun clearAndSaveSelectedOrderError(throwable: Throwable) {
-        onTechErrorLog("ordersError", throwable)
-        unlockState()
     }
 
     fun onUpdateClick() {
