@@ -18,4 +18,6 @@ sealed class CourierOrderDetailsNavigationState {
 
     object NavigateToBack : CourierOrderDetailsNavigationState()
 
+    object NavigateToRegistrationDialog: CourierOrderDetailsNavigationState()
+
 }

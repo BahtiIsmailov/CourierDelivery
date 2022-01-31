@@ -124,7 +124,6 @@ class CourierWarehousesFragment : Fragment() {
         }
 
         viewModel.showOrdersState.observe(viewLifecycleOwner) {
-
             when (it) {
                 CourierWarehousesShowOrdersState.Disable -> showOrdersDisable()
                 CourierWarehousesShowOrdersState.Enable -> {
@@ -137,6 +136,21 @@ class CourierWarehousesFragment : Fragment() {
                     )
                 }
                 CourierWarehousesShowOrdersState.Progress -> {}
+            }
+        }
+
+        viewModel.demoState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> {
+                    binding.navDrawerMenu.visibility = GONE
+                    binding.toRegistrationBack.visibility = VISIBLE
+                    binding.toRegistration.visibility = VISIBLE
+                }
+                false -> {
+                    binding.navDrawerMenu.visibility = VISIBLE
+                    binding.toRegistrationBack.visibility = GONE
+                    binding.toRegistration.visibility = GONE
+                }
             }
         }
 
@@ -174,6 +188,7 @@ class CourierWarehousesFragment : Fragment() {
         binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
         binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
         binding.refresh.setOnRefreshListener { viewModel.update() }
+        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
     private fun initRecyclerView() {

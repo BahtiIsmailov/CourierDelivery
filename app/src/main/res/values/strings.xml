@@ -16,6 +16,15 @@
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
+    <string name="demo_registration">Войти или зарегистрироваться</string>
+    <string name="demo_show_demo">Ознакомиться с приложением</string>
+    <string name="demo_go_to_registration">Перейти к регистрации</string>
+
+    <string name="demo_registration_title_dialog">Внимание!</string>
+    <string name="demo_registration_message_dialog">Для продолжения работы необходимо зарегистрироваться</string>
+    <string name="demo_registration_positive_dialog">Регистрация</string>
+    <string name="demo_registration_negative_dialog">Отмена</string>
+
     <!--network error-->
     <string name="auth_session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
     <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>

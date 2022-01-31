@@ -7,13 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/background_content_light">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/content_center"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
     <fragment
         android:id="@+id/map"
         class="ru.wb.go.ui.couriermap.CourierMapFragment"
@@ -24,6 +17,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/map_fragment" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/content_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/to_registration"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/demo_rounded_corner"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:text="@string/demo_go_to_registration"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/back_full"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/back_full" />
 
     <ImageView
         android:id="@+id/back_full"

@@ -22,4 +22,6 @@ interface CourierOrderInteractor {
 
     fun carNumberIsConfirm(): Boolean
 
+    fun isDemoMode(): Boolean
+
 }

@@ -35,7 +35,6 @@ import ru.wb.go.ui.courierwarehouses.CourierWarehousesShowOrdersState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 
-
 class CourierOrderFragment : Fragment() {
 
     companion object {
@@ -184,6 +183,17 @@ class CourierOrderFragment : Fragment() {
                     )
                 }
                 CourierOrderShowDetailsState.Progress -> {}
+            }
+        }
+
+        viewModel.demoState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> {
+                    binding.toRegistration.visibility = VISIBLE
+                }
+                false -> {
+                    binding.toRegistration.visibility = GONE
+                }
             }
         }
 

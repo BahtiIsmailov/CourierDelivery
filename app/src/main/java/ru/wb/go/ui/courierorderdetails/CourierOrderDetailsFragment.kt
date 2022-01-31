@@ -27,9 +27,9 @@ import ru.wb.go.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
-import ru.wb.go.ui.courierunloading.CourierUnloadingScanFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.views.ProgressButtonMode
 
 
@@ -39,6 +39,7 @@ class CourierOrderDetailsFragment : Fragment() {
         const val COURIER_ORDER_DETAILS_ID_KEY = "courier_order_details_id_key"
         const val DIALOG_TASK_NOT_EXIST_RESULT_TAG = "DIALOG_TASK_NOT_EXIST_RESULT_TAG"
         const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
+        const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
     }
 
     private val viewModel by viewModel<CourierOrderDetailsViewModel> {
@@ -55,7 +56,6 @@ class CourierOrderDetailsFragment : Fragment() {
     private lateinit var adapter: CourierOrderDetailsAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
-//    private lateinit var progressDialog: AlertDialog
 
     private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<FrameLayout>
     private lateinit var bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
@@ -76,7 +76,6 @@ class CourierOrderDetailsFragment : Fragment() {
         initObservable()
         initListeners()
         initReturnDialogResult()
-//        initProgressDialog()
         viewModel.onUpdate()
     }
 
@@ -96,6 +95,16 @@ class CourierOrderDetailsFragment : Fragment() {
                 viewModel.onCancelOrderClick()
             }
         }
+
+        setFragmentResultListener(DIALOG_REGISTRATION_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.onRegistrationConfirmClick()
+            }
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
+                viewModel.onRegistrationCancelClick()
+            }
+        }
+
     }
 
     private fun initView() {
@@ -122,24 +131,6 @@ class CourierOrderDetailsFragment : Fragment() {
     }
 
     private fun initObservable() {
-
-//        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-//            binding.toolbarLayout.toolbarTitle.text = it.label
-//        }
-
-//        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-//            val ic = when (it) {
-//                is NetworkState.Complete -> R.drawable.ic_inet_complete
-//                else -> R.drawable.ic_inet_failed
-//            }
-//            binding.toolbarLayout.noInternetImage.setImageDrawable(
-//                ContextCompat.getDrawable(requireContext(), ic)
-//            )
-//        }
-//
-//        viewModel.versionApp.observe(viewLifecycleOwner) {
-//            binding.toolbarLayout.toolbarVersion.text = it
-//        }
 
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
@@ -221,16 +212,53 @@ class CourierOrderDetailsFragment : Fragment() {
                     )
                 }
                 CourierOrderDetailsNavigationState.NavigateToBack -> findNavController().popBackStack()
+                CourierOrderDetailsNavigationState.NavigateToRegistrationDialog -> {
+                    showRegistrationDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        getString(R.string.demo_registration_title_dialog),
+                        getString(R.string.demo_registration_message_dialog),
+                        getString(R.string.demo_registration_positive_dialog),
+                        getString(R.string.demo_registration_negative_dialog)
+                    )
+                }
             }
         }
 
         viewModel.holdState.observe(viewLifecycleOwner) {
             when (it) {
-                true -> binding.holdLayout.visibility = View.VISIBLE
-                false -> binding.holdLayout.visibility = View.GONE
+                true -> binding.holdLayout.visibility = VISIBLE
+                false -> binding.holdLayout.visibility = GONE
             }
         }
 
+        viewModel.demoState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> {
+                    binding.toRegistration.visibility = VISIBLE
+                }
+                false -> {
+                    binding.toRegistration.visibility = GONE
+                }
+            }
+        }
+
+    }
+
+    private fun showRegistrationDialogConfirmInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            resultTag = DIALOG_REGISTRATION_RESULT_TAG,
+            type = style,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun initListeners() {

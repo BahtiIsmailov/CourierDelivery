@@ -21,4 +21,6 @@ interface CourierWarehouseInteractor {
 
     fun mapState(state: CourierMapState)
 
+    fun isDemoMode(): Boolean
+
 }

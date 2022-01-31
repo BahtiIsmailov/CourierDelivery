@@ -8,6 +8,7 @@ import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -20,8 +21,8 @@ class CourierWarehouseInteractorImpl(
     private val appSharedRepository: AppSharedRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
+    private val userManager: UserManager
 ) : CourierWarehouseInteractor {
-
 
     override fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
         return appRemoteRepository.courierWarehouses()
@@ -53,6 +54,10 @@ class CourierWarehouseInteractorImpl(
 
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
+    }
+
+    override fun isDemoMode(): Boolean {
+        return userManager.isDemoMode()
     }
 
 }

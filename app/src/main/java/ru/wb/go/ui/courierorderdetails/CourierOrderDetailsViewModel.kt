@@ -20,7 +20,6 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -32,20 +31,7 @@ class CourierOrderDetailsViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierOrderDetailsInteractor,
     private val resourceProvider: CourierOrderDetailsResourceProvider,
-    private val deviceManager: DeviceManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
-
-//    private val _toolbarLabelState = MutableLiveData<Label>()
-//    val toolbarLabelState: LiveData<Label>
-//        get() = _toolbarLabelState
-
-//    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-//    val toolbarNetworkState: LiveData<NetworkState>
-//        get() = _toolbarNetworkState
-
-//    private val _versionApp = MutableLiveData<String>()
-//    val versionApp: LiveData<String>
-//        get() = _versionApp
 
     private val _orderInfo = MutableLiveData<CourierOrderDetailsInfoUIState>()
     val orderInfo: LiveData<CourierOrderDetailsInfoUIState>
@@ -78,6 +64,10 @@ class CourierOrderDetailsViewModel(
     private val _holdState = MutableLiveData<Boolean>()
     val holdState: LiveData<Boolean>
         get() = _holdState
+
+    private val _demoState = MutableLiveData<Boolean>()
+    val demoState: LiveData<Boolean>
+        get() = _demoState
 
     private var mapMarkers = mutableListOf<CourierMapMarker>()
     private var courierOrderDetailsItems = mutableListOf<CourierOrderDetailsItem>()
@@ -186,18 +176,23 @@ class CourierOrderDetailsViewModel(
     }
 
     fun confirmTakeOrderClick() {
+    // TODO: 31.01.2022 проверить состояние demo перейти в диалог или таймер
 
-        _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
-            DialogInfoStyle.INFO.ordinal,
-            resourceProvider.getConfirmTitleDialog(parameters.order.id),
-            resourceProvider.getConfirmMessageDialog(
-                interactor.carNumber(),
-                parameters.order.minVolume,
-                parameters.order.reservedDuration
-            ),
-            resourceProvider.getConfirmPositiveDialog(),
-            resourceProvider.getConfirmNegativeDialog()
-        )
+        if (interactor.isDemoMode()) {
+            // TODO: 31.01.2022
+        } else {
+            _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
+                DialogInfoStyle.INFO.ordinal,
+                resourceProvider.getConfirmTitleDialog(parameters.order.id),
+                resourceProvider.getConfirmMessageDialog(
+                    interactor.carNumber(),
+                    parameters.order.minVolume,
+                    parameters.order.reservedDuration
+                ),
+                resourceProvider.getConfirmPositiveDialog(),
+                resourceProvider.getConfirmNegativeDialog()
+            )
+        }
     }
 
     private fun anchorTaskComplete(anchorTaskStatus: AnchorTaskStatus) {
@@ -313,6 +308,14 @@ class CourierOrderDetailsViewModel(
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
+    }
+
+    fun onRegistrationConfirmClick() {
+        // TODO: 31.01.2022 перейти на экран регистрации
+    }
+
+    fun onRegistrationCancelClick() {
+
     }
 
     companion object {

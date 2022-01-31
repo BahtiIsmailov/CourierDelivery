@@ -49,9 +49,9 @@ class CourierWarehousesViewModel(
     val showOrdersState: LiveData<CourierWarehousesShowOrdersState>
         get() = _showOrdersState
 
-    init {
-        onTechEventLog("init", "init CourierWarehousesViewModel")
-    }
+    private val _demoState = MutableLiveData<Boolean>()
+    val demoState: LiveData<Boolean>
+        get() = _demoState
 
     private var warehouseEntities = mutableListOf<CourierWarehouseLocalEntity>()
     private var warehouseItems = mutableListOf<CourierWarehouseItem>()
@@ -59,16 +59,18 @@ class CourierWarehousesViewModel(
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private lateinit var myLocation: CoordinatePoint
 
-    private fun saveWarehouseEntities(warehouseEntities: List<CourierWarehouseLocalEntity>) {
-        this.warehouseEntities = warehouseEntities.toMutableList()
+    init {
+        onTechEventLog("init", "init CourierWarehousesViewModel")
     }
 
-    private fun saveCoordinatePoints(mapMarkers: List<CoordinatePoint>) {
-        this.coordinatePoints = mapMarkers.toMutableList()
+    fun update() {
+        changeDemoMode()
+        observeMapAction()
+        getWarehouses()
     }
 
-    private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
-        this.mapMarkers = mapMarkers.toMutableList()
+    private fun changeDemoMode() {
+        _demoState.value = interactor.isDemoMode()
     }
 
     private fun observeMapAction() {
@@ -98,9 +100,8 @@ class CourierWarehousesViewModel(
         onTechErrorLog("observeMapActionError", throwable)
     }
 
-    fun update() {
-        observeMapAction()
-        getWarehouses()
+    fun toRegistrationClick() {
+
     }
 
     private fun lockState() {
@@ -185,6 +186,18 @@ class CourierWarehousesViewModel(
         saveWarehouseItems(warehouseItems)
         saveCoordinatePoints(coordinatePoints)
         saveMapMarkers(mapMarkers)
+    }
+
+    private fun saveWarehouseEntities(warehouseEntities: List<CourierWarehouseLocalEntity>) {
+        this.warehouseEntities = warehouseEntities.toMutableList()
+    }
+
+    private fun saveCoordinatePoints(mapMarkers: List<CoordinatePoint>) {
+        this.coordinatePoints = mapMarkers.toMutableList()
+    }
+
+    private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
+        this.mapMarkers = mapMarkers.toMutableList()
     }
 
     private fun courierWarehouseComplete() {

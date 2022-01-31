@@ -69,6 +69,10 @@ class CourierOrderDetailsInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun isDemoMode(): Boolean {
+        return userManager.isDemoMode()
+    }
+
 }
 
 sealed class AnchorTaskStatus {

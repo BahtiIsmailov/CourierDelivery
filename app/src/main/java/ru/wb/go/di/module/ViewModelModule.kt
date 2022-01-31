@@ -78,7 +78,7 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: CourierOrderDetailsParameters) ->
-        CourierOrderDetailsViewModel(parameters, get(), get(), get(), get(), get())
+        CourierOrderDetailsViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { (parameters: CourierCarNumberParameters) ->

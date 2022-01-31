@@ -3,6 +3,8 @@ package ru.wb.go.ui.app
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -29,6 +31,12 @@ class AppLoaderFragment : Fragment(R.layout.app_loader_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initObserver()
+        initListener()
+    }
+
+    private fun initListener() {
+        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
+        binding.toDemo.setOnClickListener { viewModel.toDemoClick() }
     }
 
     private fun initView() {
@@ -51,6 +59,21 @@ class AppLoaderFragment : Fragment(R.layout.app_loader_fragment) {
 
             }
         }
+
+        viewModel.demoState.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> {
+                    binding.toRegistration.visibility = VISIBLE
+                    binding.toDemo.visibility = VISIBLE
+                    binding.progress.visibility = GONE
+                }
+                false -> {
+                    binding.toRegistration.visibility = GONE
+                    binding.toDemo.visibility = GONE
+                }
+            }
+        }
+
     }
 
     override fun onDestroyView() {

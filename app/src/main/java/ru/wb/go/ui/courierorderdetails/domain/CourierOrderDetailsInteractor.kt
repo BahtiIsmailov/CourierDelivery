@@ -21,4 +21,6 @@ interface CourierOrderDetailsInteractor {
 
     fun anchorTask(): Single<AnchorTaskStatus>
 
+    fun isDemoMode(): Boolean
+
 }

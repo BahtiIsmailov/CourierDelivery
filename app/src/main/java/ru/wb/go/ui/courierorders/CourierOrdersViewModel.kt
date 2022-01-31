@@ -60,6 +60,10 @@ class CourierOrdersViewModel(
     val showDetailsState: LiveData<CourierOrderShowDetailsState>
         get() = _showDetailsState
 
+    private val _demoState = MutableLiveData<Boolean>()
+    val demoState: LiveData<Boolean>
+        get() = _demoState
+
     private var orderEntities = mutableListOf<CourierOrderEntity>()
     private var orderItems = mutableListOf<BaseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()

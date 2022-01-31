@@ -87,4 +87,8 @@ class CourierOrderInteractorImpl(
         return userManager.carNumber().isNotEmpty()
     }
 
+    override fun isDemoMode(): Boolean {
+        return userManager.isDemoMode()
+    }
+
 }

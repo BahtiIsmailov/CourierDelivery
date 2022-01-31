@@ -9,7 +9,6 @@ import ru.wb.go.network.headers.RefreshTokenRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import java.net.UnknownHostException
 
@@ -25,6 +24,10 @@ class AppLoaderViewModel(
     val navState: LiveData<AppLoaderNavigatioState>
         get() = _navState
 
+    private val _demoState = MutableLiveData<Boolean>()
+    val demoState: LiveData<Boolean>
+        get() = _demoState
+
     init {
         refreshTokenAndNavigateToApp()
     }
@@ -32,30 +35,35 @@ class AppLoaderViewModel(
     private fun refreshTokenAndNavigateToApp() {
         addSubscription(repository.refreshAccessTokensSync()
             .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
-                {
-                    LogUtils { logDebugApp("refreshTokenAndNavigateToApp complete") }
-                    if (tokenManager.isContains()) {
-                        if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
-                            || tokenManager.resources().contains(COURIER_ROLE)
-                        ) toCourier()
-                        else toCourier()
-                    } else toAuth()
-                },
-                {
-                    LogUtils { logDebugApp("refreshTokenAndNavigateToApp error " + it) }
-                    if (it is UnknownHostException) {
-                        if (tokenManager.isContains()) {
-                            if (tokenManager.userCompanyId() == COURIER_COMPANY_ID
-                                || tokenManager.resources().contains(COURIER_ROLE)
-                            ) toCourier()
-                            else toAuth()
-                        } else toAuth()
-                    } else {
-                        toAuth()
-                    }
-                }
+                { refreshAccessTokensSyncComplete() },
+                { refreshAccessTokensSyncError(it) }
             ))
     }
+
+    private fun refreshAccessTokensSyncComplete() {
+        if (isContainsToken()) {
+            if (isCourierCompanyIdOrRole()) toCourier()
+            else toCourier()
+        } else {
+            _demoState.value = true
+        }
+    }
+
+    private fun refreshAccessTokensSyncError(it: Throwable?) {
+        if (it is UnknownHostException) {
+            if (isContainsToken()) {
+                if (isCourierCompanyIdOrRole()) toCourier()
+                else toAuth()
+            } else toAuth()
+        } else {
+            _demoState.value = true
+        }
+    }
+
+    private fun isContainsToken() = tokenManager.isContains()
+
+    private fun isCourierCompanyIdOrRole() = (tokenManager.userCompanyId() == COURIER_COMPANY_ID
+            || tokenManager.resources().contains(COURIER_ROLE))
 
     private fun toCourier() {
         _navState.value = AppLoaderNavigatioState.NavigateToCourier
@@ -67,6 +75,14 @@ class AppLoaderViewModel(
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
+    }
+
+    fun toRegistrationClick() {
+        toAuth()
+    }
+
+    fun toDemoClick() {
+        toCourier()
     }
 
     companion object {
