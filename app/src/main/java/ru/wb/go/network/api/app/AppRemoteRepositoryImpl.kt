@@ -11,12 +11,10 @@ import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
-
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
-import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountResponse
@@ -262,13 +260,6 @@ class AppRemoteRepositoryImpl(
 
     override fun taskStatusesEnd(taskID: String): Completable {
         return remoteRepo.taskStatusesEnd(apiVersion(), taskID)
-            .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesEnd"))
-    }
-
-    override fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable {
-        val carNumberRequest = mutableListOf<CarNumberRequest>()
-        carNumbersEntity.forEach { carNumberRequest.add(CarNumberRequest(it.number, it.isDefault)) }
-        return remoteRepo.putCarNumbers(apiVersion(), carNumberRequest)
             .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesEnd"))
     }
 

@@ -4,7 +4,6 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import retrofit2.http.*
-import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.VersionAppResponse
 import ru.wb.go.network.api.app.remote.accounts.AccountRequest
@@ -13,6 +12,7 @@ import ru.wb.go.network.api.app.remote.bank.BankResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
+
 
 interface AppApi {
 
@@ -90,12 +90,6 @@ interface AppApi {
     fun taskStatusesEnd(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Completable
-
-    @PUT("{version}/couriers/me/cars")
-    fun putCarNumbers(
-        @Path(value = "version", encoded = true) version: String,
-        @Body carNumbersRequest: List<CarNumberRequest>
     ): Completable
 
     //==============================================================================================
