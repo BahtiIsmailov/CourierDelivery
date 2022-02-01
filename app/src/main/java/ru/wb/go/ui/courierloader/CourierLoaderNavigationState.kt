@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierloader
 
-import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.ui.courierdata.CourierDataParameters
 
 sealed class CourierLoaderNavigationState {

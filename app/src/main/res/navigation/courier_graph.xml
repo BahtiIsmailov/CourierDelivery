@@ -170,8 +170,8 @@
             app:nullable="false" />
 
         <action
-            android:id="@+id/action_courierCarNumberFragment_to_courierCarNumberFragment"
-            app:destination="@id/courierCarNumberFragment"
+            android:id="@+id/action_courierCarNumberFragment_to_courierOrderDetailsFragment"
+            app:destination="@id/courierOrderDetailsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"

@@ -190,7 +190,13 @@ class CourierOrderDetailsFragment : Fragment() {
                 is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.title, it.orderNumber, it.order)
+                            CourierCarNumberParameters(
+                                it.title,
+                                it.orderNumber,
+                                it.order,
+                                it.warehouseLatitude,
+                                it.warehouseLongitude
+                            )
                         )
                     )
                 CourierOrderDetailsNavigationState.NavigateToTimer -> {
@@ -216,12 +222,7 @@ class CourierOrderDetailsFragment : Fragment() {
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.addresses.setOnClickListener { showAddresses() }
         binding.addressClose.setOnClickListener { showDetails() }
-        binding.detailsClose.setOnClickListener { collapsedDetails() }
         binding.takeOrder.setOnClickListener { viewModel.confirmTakeOrderClick() }
-    }
-
-    private fun collapsedDetails() {
-        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun expandedDetails() {
