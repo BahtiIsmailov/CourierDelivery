@@ -98,7 +98,9 @@ class CourierWarehousesViewModel(
         setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.getServerWarehouses()
-                .doFinally { whSelectedId = null }
+                .doFinally {
+                    clearFabAndWhList()
+                }
                 .subscribe(
                     {
                         warehouseEntities = it.sortedBy { w->w.name }.toMutableList()
@@ -272,7 +274,7 @@ class CourierWarehousesViewModel(
     fun onNextFab() {
         val index = warehouseItems.indexOfFirst { item -> item.isSelected }
         assert(index!=-1)
-        onTechEventLog("onDetailClick", "index $index")
+        clearFabAndWhList()
         val oldEntity = warehouseEntities[index].copy()
         interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
         navigateToCourierOrder(oldEntity)
@@ -283,12 +285,14 @@ class CourierWarehousesViewModel(
         zoomMarkersFromBoundingBox(myLocation)
     }
 
-
-
     fun onCancelLoadClick() {
         clearSubscription()
     }
 
+    private fun clearFabAndWhList(){
+        whSelectedId=null
+        changeShowOrders(false)
+    }
     override fun getScreenTag(): String {
         return SCREEN_TAG
     }
