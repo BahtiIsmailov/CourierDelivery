@@ -18,6 +18,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
 
@@ -92,10 +93,10 @@ class CourierOrderTimerFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) {
+        viewModel.waitLoader.observe(viewLifecycleOwner) {
             when (it) {
-                CourierOrderTimerProgressState.Progress -> showProgressDialog()
-                CourierOrderTimerProgressState.ProgressComplete -> closeProgressDialog()
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
