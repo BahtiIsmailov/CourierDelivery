@@ -232,6 +232,12 @@ class CourierOrdersViewModel(
     }
 
     private fun zoomAllGroupMarkersFromBoundingBox() {
+        centerGroupPoints.add(
+            CoordinatePoint(
+                parameters.warehouseLatitude,
+                parameters.warehouseLongitude
+            )
+        )
         val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(centerGroupPoints)
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
     }

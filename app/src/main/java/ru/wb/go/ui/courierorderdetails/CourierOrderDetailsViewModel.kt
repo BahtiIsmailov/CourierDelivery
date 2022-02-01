@@ -63,10 +63,15 @@ class CourierOrderDetailsViewModel(
         get() = _waitLoader
 
     private var mapMarkers = mutableListOf<CourierMapMarker>()
+    private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private var courierOrderDetailsItems = mutableListOf<CourierOrderDetailsItem>()
 
     private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
         this.mapMarkers = mapMarkers.toMutableList()
+    }
+
+    private fun saveCoordinatePoints(coordinatePoints: List<CoordinatePoint>) {
+        this.coordinatePoints = coordinatePoints.toMutableList()
     }
 
     private fun saveCourierOrderDetailsItems(items: List<CourierOrderDetailsItem>) {
@@ -75,6 +80,17 @@ class CourierOrderDetailsViewModel(
 
     init {
         onTechEventLog("init")
+    }
+
+    fun onHeightInfoBottom(height: Int) {
+        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+        interactor.mapState(
+            CourierMapState.ZoomToBoundingBoxOffsetY(
+                boundingBox,
+                true,
+                (height / 2) * -1
+            )
+        )
     }
 
     fun onUpdate() {
@@ -142,10 +158,10 @@ class CourierOrderDetailsViewModel(
             mapMarkers.add(mapMarker)
         }
         saveCourierOrderDetailsItems(items)
+        saveCoordinatePoints(coordinatePoints)
         initItems(items)
         saveMapMarkers(mapMarkers)
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        LogUtils { logDebugApp("coordinatePoints $coordinatePoints") }
         val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, false))
     }
