@@ -232,7 +232,7 @@
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
 
     <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
-    <string name="courier_orders_details_dialog_is_not_exist_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_details_dialog_is_not_exist_message">Заказ уже взят в работу</string>
     <string name="courier_orders_details_dialog_is_not_exist_button">Понятно</string>
 
     <string name="courier_orders_timer_dialog_title">Время вышло</string>
