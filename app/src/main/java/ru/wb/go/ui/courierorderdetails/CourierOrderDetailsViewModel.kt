@@ -18,7 +18,6 @@ import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
@@ -80,10 +79,15 @@ class CourierOrderDetailsViewModel(
         get() = _holdState
 
     private var mapMarkers = mutableListOf<CourierMapMarker>()
+    private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private var courierOrderDetailsItems = mutableListOf<CourierOrderDetailsItem>()
 
     private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
         this.mapMarkers = mapMarkers.toMutableList()
+    }
+
+    private fun saveCoordinatePoints(coordinatePoints: List<CoordinatePoint>) {
+        this.coordinatePoints = coordinatePoints.toMutableList()
     }
 
     private fun saveCourierOrderDetailsItems(items: List<CourierOrderDetailsItem>) {
@@ -92,6 +96,17 @@ class CourierOrderDetailsViewModel(
 
     init {
         onTechEventLog("init")
+    }
+
+    fun onHeightInfoBottom(height: Int) {
+        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+        interactor.mapState(
+            CourierMapState.ZoomToBoundingBoxOffsetY(
+                boundingBox,
+                true,
+                (height / 2) * -1
+            )
+        )
     }
 
     fun onUpdate() {
@@ -159,10 +174,10 @@ class CourierOrderDetailsViewModel(
             mapMarkers.add(mapMarker)
         }
         saveCourierOrderDetailsItems(items)
+        saveCoordinatePoints(coordinatePoints)
         initItems(items)
         saveMapMarkers(mapMarkers)
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        LogUtils { logDebugApp("coordinatePoints " + coordinatePoints.toString()) }
         val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, false))
     }

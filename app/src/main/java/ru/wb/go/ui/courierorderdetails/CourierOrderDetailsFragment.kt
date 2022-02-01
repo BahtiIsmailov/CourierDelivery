@@ -9,6 +9,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -155,6 +156,7 @@ class CourierOrderDetailsFragment : Fragment() {
                     binding.arrive.text = it.arrive
 
                     showDetails()
+                    updateHeightInfoPixels()
                 }
             }
         }
@@ -237,6 +239,19 @@ class CourierOrderDetailsFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun updateHeightInfoPixels() {
+        binding.orderDetails.viewTreeObserver.addOnGlobalLayoutListener(
+            object :
+                ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    binding.orderDetails.viewTreeObserver.removeOnGlobalLayoutListener(
+                        this
+                    )
+                    viewModel.onHeightInfoBottom(binding.orderDetails.height)
+                }
+            })
     }
 
     private fun initListeners() {

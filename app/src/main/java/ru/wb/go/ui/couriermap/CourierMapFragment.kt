@@ -189,16 +189,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         true
     }
 
-//    private fun addMapMarker(id: String, lat: Double, long: Double, icon: Int) {
-//        val markerMap = Marker(binding.map)
-//        markerMap.setOnMarkerClickListener(onMarkerClickListener)
-//        markerMap.id = id
-//        markerMap.icon = getIcon(icon)
-//        markerMap.position = GeoPoint(lat, long)
-//        markerMap.setAnchor(0.5f, 0.5f)
-//        binding.map.overlays.add(markerMap)
-//    }
-
     private fun addMapMarker(
         id: String,
         lat: Double,
@@ -238,7 +228,15 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
                 CourierMapState.UpdateMyLocation -> updateMyLocation()
                 is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
-                is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
+                is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(
+                    it.boundingBox,
+                    it.animate
+                )
+                is CourierMapState.ZoomToBoundingBoxOffsetY -> zoomToCenterBoundingBoxOffsetY(
+                    it.boundingBox,
+                    it.animate,
+                    it.offsetY
+                )
             }
         }
     }
@@ -260,11 +258,20 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.invalidate()
     }
 
-    private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
+    private fun zoomToCenterBoundingBoxOffsetY(
+        boundingBox: BoundingBox,
+        animate: Boolean,
+        offsetY: Int
+    ) {
+        binding.map.setMapCenterOffset(0, offsetY)
+        zoomToCenterBoundingBox(boundingBox, animate)
+    }
+
+    private fun zoomToCenterBoundingBox(boundingBox: BoundingBox, animate: Boolean) {
         with(binding.map) {
             if (height > 0) {
                 mapController.setCenter(boundingBox.centerWithDateLine)
-                zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+                zoomToBoundingBox(boundingBox, animate, SIZE_IN_PIXELS)
             } else {
                 viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
