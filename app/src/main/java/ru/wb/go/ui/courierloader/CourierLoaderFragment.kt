@@ -9,7 +9,6 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoaderFragmentBinding
-import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnUserInfo
