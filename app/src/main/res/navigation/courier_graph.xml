@@ -222,34 +222,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/courierOrderConfirmFragment"
-        android:name="ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmFragment"
-        android:label=""
-        tools:layout="@layout/courier_order_confirm_fragment">
-        <action
-            android:id="@+id/action_courierOrderConfirmFragment_to_courierOrderTimerFragment"
-            app:destination="@id/courierOrderTimerFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierOrderConfirmFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierOrderConfirmFragment_to_courierCarNumberFragment"
-            app:destination="@id/courierCarNumberFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
-
-    <fragment
         android:id="@+id/courierIntransitFragment"
         android:name="ru.wb.go.ui.courierintransit.CourierIntransitFragment"
         android:label=""

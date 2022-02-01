@@ -476,7 +476,7 @@
 
     <string name="courier_billing_title">Ваш баланс</string>
     <string name="courier_billing_date_and_time">&#160;• %1$s</string>
-    <string name="courier_billing_empty_list">Транзакций нет</string>
+    <string name="courier_billing_empty_list">Данные отсутствуют</string>
     <string name="courier_billing_positive_amount">+ %1$s ₽</string>
     <string name="courier_billing_negative_amount">- %1$s ₽</string>
 

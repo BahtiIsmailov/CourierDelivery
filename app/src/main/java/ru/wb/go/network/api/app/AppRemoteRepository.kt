@@ -20,7 +20,7 @@ interface AppRemoteRepository {
 
     fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 
-    fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
     fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 
@@ -46,7 +46,7 @@ interface AppRemoteRepository {
 
     fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable
 
-    fun billing(isShowTransaction: Boolean): Single<BillingCommonEntity>
+    fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity>
 
     fun payments(id: String, amount: Int, paymentEntity: PaymentEntity): Completable
 

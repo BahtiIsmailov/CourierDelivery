@@ -6,19 +6,16 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
-import ru.wb.go.ui.dialogs.DialogStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import java.text.DecimalFormat
-import java.util.*
 
 class CourierBillingAccountSelectorViewModel(
     private val parameters: CourierBillingAccountSelectorAmountParameters,
@@ -27,6 +24,7 @@ class CourierBillingAccountSelectorViewModel(
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
@@ -37,9 +35,9 @@ class CourierBillingAccountSelectorViewModel(
     val balanceState: LiveData<String>
         get() = _balanceState
 
-    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToMessageState: LiveData<NavigateToDialogInfo>
-        get() = _navigateToMessageState
+    private val _errorDialogState = SingleLiveEvent<ErrorDialogData>()
+    val errorDialogState: LiveData<ErrorDialogData>
+        get() = _errorDialogState
 
     private val _toolbarNetworkState = MutableLiveData<NetworkState>()
     val toolbarNetworkState: LiveData<NetworkState>
@@ -105,7 +103,12 @@ class CourierBillingAccountSelectorViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
+    fun setLoader(state:CourierBillingAccountSelectorUILoaderState){
+        _loaderState.value = state
+    }
+
     private fun initAccounts() {
+        setLoader(CourierBillingAccountSelectorUILoaderState.Progress)
         addSubscription(interactor.getBillingAccounts()
             .map { sortedAccounts(it) }
             .doOnSuccess {
@@ -115,9 +118,12 @@ class CourierBillingAccountSelectorViewModel(
             .doOnSuccess {
                 copyCourierBillingAccountSelectorAdapterItems = it.toMutableList()
             }
+            .doFinally { setLoader(CourierBillingAccountSelectorUILoaderState.Complete) }
             .subscribe({
                 _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
-            }, {})
+            }, {
+                errorDialogManager.showErrorDialog(it,_errorDialogState)
+            })
         )
     }
 
@@ -268,7 +274,9 @@ class CourierBillingAccountSelectorViewModel(
         addSubscription(
             interactor.payments(amountFromText, paymentEntity).subscribe(
                 { paymentsComplete(amountFromText) },
-                { paymentsError(it) })
+                {
+                    errorDialogManager.showErrorDialog(it,_errorDialogState)
+                })
         )
     }
 
@@ -305,32 +313,6 @@ class CourierBillingAccountSelectorViewModel(
         _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
         _navigationEvent.value =
             CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount)
-    }
-
-    private fun paymentsError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Enable
-        _navigateToMessageState.value = message
-
     }
 
     override fun getScreenTag(): String {

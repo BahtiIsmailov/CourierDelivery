@@ -28,9 +28,9 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
     override fun onBind(item: CourierOrderItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
         val binding = holder.binding
-        binding.orderNumber.text = item.orderNumber
+        binding.orderNumber.text = item.orderId
         binding.order.text = item.order
-        binding.coast.text = item.coast
+        binding.coast.text = item.cost
 
         binding.countBox.text = item.countBox
         binding.volume.text = item.volume

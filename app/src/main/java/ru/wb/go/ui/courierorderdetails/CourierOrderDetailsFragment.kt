@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierorderdetails
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
@@ -121,6 +122,7 @@ class CourierOrderDetailsFragment : Fragment() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
 //        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
@@ -226,8 +228,8 @@ class CourierOrderDetailsFragment : Fragment() {
 
         viewModel.holdState.observe(viewLifecycleOwner) {
             when (it) {
-                true -> binding.holdLayout.visibility = View.VISIBLE
-                false -> binding.holdLayout.visibility = View.GONE
+                true -> binding.holdLayout.visibility = VISIBLE
+                false -> binding.holdLayout.visibility = GONE
             }
         }
 

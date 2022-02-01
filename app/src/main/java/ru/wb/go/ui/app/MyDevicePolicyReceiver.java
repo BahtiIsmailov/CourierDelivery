@@ -21,8 +21,7 @@ public class MyDevicePolicyReceiver extends DeviceAdminReceiver {
 
     @Override
     public CharSequence onDisableRequested(Context context, Intent intent) {
-        CharSequence disableRequestedSeq = "Requesting to disable Device Admin";
-        return disableRequestedSeq;
+        return "Requesting to disable Device Admin";
     }
 
 

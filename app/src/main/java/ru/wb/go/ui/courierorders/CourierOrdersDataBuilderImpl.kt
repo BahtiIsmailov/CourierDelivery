@@ -18,9 +18,9 @@ class CourierOrdersDataBuilderImpl(
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
-            orderNumber = id,
+            orderId = id,
             order = resourceProvider.getOrder(courierOrderEntity.id),
-            coast = resourceProvider.getCoast(coast),
+            cost = resourceProvider.getCoast(coast),
             countBox = resourceProvider.getBoxCountBox(courierOrderEntity.minBoxesCount),
             volume = resourceProvider.getVolume(courierOrderEntity.minVolume),
             countPvz = resourceProvider.getCountPvz(courierOrderEntity.dstOffices.size),

@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         class="ru.wb.go.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"

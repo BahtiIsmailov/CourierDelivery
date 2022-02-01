@@ -49,7 +49,7 @@ class CourierOrderDetailsInteractorImpl(
     override fun anchorTask(): Single<AnchorTaskStatus> {
         return courierLocalRepository.readCurrentWarehouse()
             .map { it.id }
-            .flatMap { appRemoteRepository.courierOrders(it) }
+            .flatMap { appRemoteRepository.getFreeOrders(it) }
             .zipWith(
                 courierLocalRepository.orderDataSync().map { it.courierOrderLocalEntity },
                 { remoteOrders, localOrder ->

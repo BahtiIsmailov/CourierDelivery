@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         class="ru.wb.go.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"
@@ -152,15 +152,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white"
         tools:ignore="ContentDescription" />
-
-    <View
-        android:id="@+id/hold_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,6 +35,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.SoftKeyboard
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
 
@@ -200,8 +201,8 @@ class CourierBillingAccountSelectorFragment :
             }
         }
 
-        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
-            showDialog(it.type, it.title, it.message, it.button)
+        viewModel.errorDialogState.observe(viewLifecycleOwner) {
+            showDialogInfo(it)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -303,59 +304,54 @@ class CourierBillingAccountSelectorFragment :
             }
         }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    is CourierBillingAccountSelectorNavAction.NavigateToAccountEdit -> {
-                        findNavController().navigate(
-                            CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
-                                CourierBillingAccountDataAmountParameters(
-                                    state.account,
-                                    state.billingAccounts,
-                                    state.balance
-                                )
+        viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is CourierBillingAccountSelectorNavAction.NavigateToAccountEdit -> {
+                    findNavController().navigate(
+                        CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
+                            CourierBillingAccountDataAmountParameters(
+                                state.account,
+                                state.billingAccounts,
+                                state.balance
                             )
                         )
-                    }
-                    is CourierBillingAccountSelectorNavAction.NavigateToAccountCreate -> {
-                        findNavController().navigate(
-                            CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
-                                CourierBillingAccountDataAmountParameters(
-                                    account = null,
-                                    state.billingAccounts,
-                                    state.balance
-                                )
-                            )
-                        )
-                    }
-                    is CourierBillingAccountSelectorNavAction.NavigateToBillingComplete -> {
-                        findNavController().navigate(
-                            CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingCompleteFragment(
-                                CourierBillingCompleteParameters(state.balance)
-                            )
-                        )
-                    }
+                    )
                 }
-            })
+                is CourierBillingAccountSelectorNavAction.NavigateToAccountCreate -> {
+                    findNavController().navigate(
+                        CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingAccountDataFragment(
+                            CourierBillingAccountDataAmountParameters(
+                                account = null,
+                                state.billingAccounts,
+                                state.balance
+                            )
+                        )
+                    )
+                }
+                is CourierBillingAccountSelectorNavAction.NavigateToBillingComplete -> {
+                    findNavController().navigate(
+                        CourierBillingAccountSelectorFragmentDirections.actionCourierBillingAccountSelectorFragmentToCourierBillingCompleteFragment(
+                            CourierBillingCompleteParameters(state.balance)
+                        )
+                    )
+                }
+            }
+        }
 
-        viewModel.loaderState.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    CourierBillingAccountSelectorUILoaderState.Disable -> {
-                        binding.next.setState(ProgressButtonMode.DISABLE)
-                        binding.overlayBoxes.visibility = View.GONE
-                    }
-                    CourierBillingAccountSelectorUILoaderState.Enable -> {
-                        binding.next.setState(ProgressButtonMode.ENABLE)
-                        binding.overlayBoxes.visibility = View.GONE
-                    }
-                    CourierBillingAccountSelectorUILoaderState.Progress -> {
-                        hideKeyboard()
-                        binding.next.setState(ProgressButtonMode.PROGRESS)
-                        binding.overlayBoxes.visibility = View.VISIBLE
-                    }
+        viewModel.loaderState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CourierBillingAccountSelectorUILoaderState.Disable -> {
+                    binding.next.setState(ProgressButtonMode.DISABLE)
                 }
-            })
+                CourierBillingAccountSelectorUILoaderState.Enable -> {
+                    binding.next.setState(ProgressButtonMode.ENABLE)
+                }
+                CourierBillingAccountSelectorUILoaderState.Progress -> {
+                    hideKeyboard()
+//                    binding.next.setState(ProgressButtonMode.PROGRESS)
+                }
+            }
+        }
     }
 
     private fun scrollToViewTop(scrollView: ScrollView, childView: View) {
@@ -368,14 +364,16 @@ class CourierBillingAccountSelectorFragment :
         _binding = null
     }
 
-    private fun showDialog(type: Int, title: String, message: String, positiveButtonName: String) {
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
+    ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        )
-            .show(parentFragmentManager, DIALOG_INFO_TAG)
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun hideKeyboard() {

@@ -25,8 +25,8 @@ class CourierOrderInteractorImpl(
     private val userManager: UserManager,
 ) : CourierOrderInteractor {
 
-    override fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
-        return appRemoteRepository.courierOrders(srcOfficeID)
+    override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
+        return appRemoteRepository.getFreeOrders(srcOfficeID)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

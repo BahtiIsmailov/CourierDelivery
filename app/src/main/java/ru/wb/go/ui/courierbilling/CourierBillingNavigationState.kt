@@ -5,15 +5,6 @@ import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 
 sealed class CourierBillingNavigationState {
 
-    data class NavigateToDialogInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    ) : CourierBillingNavigationState()
-
-    object NavigateToBack : CourierBillingNavigationState()
-
     data class NavigateToAccountSelector(
         val balance: Int,
         val accounts: @RawValue List<CourierBillingAccountEntity>?

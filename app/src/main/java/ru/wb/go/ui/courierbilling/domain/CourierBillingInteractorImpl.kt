@@ -14,8 +14,8 @@ class CourierBillingInteractorImpl(
     private val appRemoteRepository: AppRemoteRepository,
 ) : CourierBillingInteractor {
 
-    override fun billing(): Single<BillingCommonEntity> {
-        return appRemoteRepository.billing(true)
+    override fun getBillingInfo(): Single<BillingCommonEntity> {
+        return appRemoteRepository.getBillingInfo(true)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

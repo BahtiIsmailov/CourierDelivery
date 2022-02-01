@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_content_light">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         class="ru.wb.go.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"

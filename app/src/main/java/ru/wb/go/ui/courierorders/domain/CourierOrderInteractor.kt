@@ -10,7 +10,7 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierOrderInteractor {
 
-    fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
     fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
 

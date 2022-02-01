@@ -60,15 +60,15 @@ val viewModelModule = module {
     }
 
     viewModel {
-        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get() )
+        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get())
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
 
-    viewModel { CourierWarehousesViewModel(get(), get(), get(), get()) }
+    viewModel { CourierWarehousesViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get())
+        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
     viewModel { (parameters: CourierDataParameters) ->
@@ -103,7 +103,7 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { CourierScannerViewModel(get(), get(), get() ,get()) }
+    viewModel { CourierScannerViewModel(get(), get(), get(), get()) }
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
@@ -119,18 +119,30 @@ val viewModelModule = module {
     }
     viewModel { CourierMapViewModel(get(), get(), get(), get()) }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel {
+        CourierBillingViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
         CourierBillingAccountDataViewModel(
             parameters,
-            get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get()
         )
     }
     viewModel { (parameters: CourierBillingAccountSelectorAmountParameters) ->
         CourierBillingAccountSelectorViewModel(
             parameters,
-            get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get()
         )
     }
 

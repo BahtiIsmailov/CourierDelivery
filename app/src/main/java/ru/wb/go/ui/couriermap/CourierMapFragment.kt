@@ -33,7 +33,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
-import ru.wb.go.BuildConfig
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
 import ru.wb.go.utils.hasPermissions
@@ -154,7 +153,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val config: IConfigurationProvider = Configuration.getInstance()
         config.osmdroidBasePath = createOsmdroidBasePath()
         config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
-        config.userAgentValue = BuildConfig.APPLICATION_ID
+        // FIXME: ??? 
+        config.userAgentValue = context?.packageName //BuildConfig.APPLICATION_ID
         config.load(
             requireActivity(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
