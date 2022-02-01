@@ -133,7 +133,13 @@ class CourierOrderFragment : Fragment() {
                 is CourierOrdersNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.title, it.orderNumber, it.order)
+                            CourierCarNumberParameters(
+                                it.title,
+                                it.orderNumber,
+                                it.order,
+                                it.warehouseLatitude,
+                                it.warehouseLongitude
+                            )
                         )
                     )
             }

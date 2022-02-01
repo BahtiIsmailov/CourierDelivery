@@ -103,7 +103,7 @@ class CourierWarehousesViewModel(
                 }
                 .subscribe(
                     {
-                        warehouseEntities = it.sortedBy { w->w.name }.toMutableList()
+                        sortedWarehouseEntities(it)
                         convertAndSaveItemsPointsMarkers(warehouseEntities)
                         courierWarehouseComplete()
                         setLoader(WaitLoader.Complete)
@@ -121,11 +121,15 @@ class CourierWarehousesViewModel(
         )
     }
 
+    private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
+        warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
+    }
+
     private fun convertAndSaveItemsPointsMarkers(warehouses: List<CourierWarehouseLocalEntity>) {
         onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouses.size)
         warehouseItems = mutableListOf()
         coordinatePoints = mutableListOf()
-        mapMarkers= mutableListOf()
+        mapMarkers = mutableListOf()
         warehouseEntities.forEachIndexed { index, item ->
             val wi = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
             warehouseItems.add(wi)
@@ -273,7 +277,7 @@ class CourierWarehousesViewModel(
 
     fun onNextFab() {
         val index = warehouseItems.indexOfFirst { item -> item.isSelected }
-        assert(index!=-1)
+        assert(index != -1)
         clearFabAndWhList()
         val oldEntity = warehouseEntities[index].copy()
         interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
@@ -289,10 +293,11 @@ class CourierWarehousesViewModel(
         clearSubscription()
     }
 
-    private fun clearFabAndWhList(){
-        whSelectedId=null
+    private fun clearFabAndWhList() {
+        whSelectedId = null
         changeShowOrders(false)
     }
+
     override fun getScreenTag(): String {
         return SCREEN_TAG
     }

@@ -28,7 +28,6 @@ import ru.wb.go.databinding.CourierOrderDetailsFragmentBinding
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
-import ru.wb.go.ui.courierunloading.CourierUnloadingScanFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.views.ProgressButtonMode
@@ -56,7 +55,6 @@ class CourierOrderDetailsFragment : Fragment() {
     private lateinit var adapter: CourierOrderDetailsAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
-//    private lateinit var progressDialog: AlertDialog
 
     private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<FrameLayout>
     private lateinit var bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
@@ -214,7 +212,13 @@ class CourierOrderDetailsFragment : Fragment() {
                 is CourierOrderDetailsNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.title, it.orderNumber, it.order)
+                            CourierCarNumberParameters(
+                                it.title,
+                                it.orderNumber,
+                                it.order,
+                                it.warehouseLatitude,
+                                it.warehouseLongitude
+                            )
                         )
                     )
                 CourierOrderDetailsNavigationState.NavigateToTimer -> {
@@ -240,12 +244,7 @@ class CourierOrderDetailsFragment : Fragment() {
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.addresses.setOnClickListener { showAddresses() }
         binding.addressClose.setOnClickListener { showDetails() }
-        binding.detailsClose.setOnClickListener { collapsedDetails() }
         binding.takeOrder.setOnClickListener { viewModel.confirmTakeOrderClick() }
-    }
-
-    private fun collapsedDetails() {
-        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun expandedDetails() {

@@ -180,7 +180,7 @@ class CourierOrderDetailsViewModel(
         onTechEventLog("onChangeCarNumberClick")
         with(parameters) {
             _navigationState.value = CourierOrderDetailsNavigationState.NavigateToCarNumber(
-                title, orderNumber, order
+                title, orderNumber, order, warehouseLatitude, warehouseLongitude
             )
         }
     }

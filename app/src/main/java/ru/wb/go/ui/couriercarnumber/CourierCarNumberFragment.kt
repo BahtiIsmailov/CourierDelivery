@@ -72,8 +72,14 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
             when (state) {
                 is CourierCarNumberNavigationState.NavigateToOrderDetails -> {
                     findNavController().navigate(
-                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(state.title, state.orderNumber, state.order)
+                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderDetailsFragment(
+                            CourierOrderDetailsParameters(
+                                state.title,
+                                state.orderNumber,
+                                state.order,
+                                state.warehouseLatitude,
+                                state.warehouseLongitude
+                            )
                         )
                     )
                 }
@@ -134,5 +140,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 data class CourierCarNumberParameters(
     val title: String,
     val orderNumber: String,
-    val order: CourierOrderEntity
+    val order: CourierOrderEntity,
+    val warehouseLatitude: Double,
+    val warehouseLongitude: Double,
 ) : Parcelable

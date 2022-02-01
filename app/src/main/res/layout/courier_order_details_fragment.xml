@@ -37,32 +37,17 @@
         android:id="@+id/order_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/reception_bottom_sheet_info"
         android:visibility="visible"
-        app:behavior_hideable="true"
-        app:behavior_peekHeight="60dp"
+        app:behavior_hideable="false"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/reception_bottom_sheet_info">
-
-            <ImageView
-                android:id="@+id/slider_details"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_bottom_sheet_slider"
-                tools:ignore="ContentDescription,MissingConstraints" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/center_vertical"
@@ -84,9 +69,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/courier_orders_automobile"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/slider_details" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/car_number"
@@ -111,18 +97,6 @@
                 app:layout_constraintStart_toEndOf="@+id/car_number"
                 app:layout_constraintTop_toTopOf="@+id/car_number"
                 app:srcCompat="@drawable/ic_change_car"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/details_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/car_number"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/car_number"
-                app:srcCompat="@drawable/ic_warehouse_detail_close"
                 tools:ignore="ContentDescription" />
 
             <View
