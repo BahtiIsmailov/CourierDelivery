@@ -28,6 +28,8 @@ interface CourierLocalRepository {
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
     ): Completable
 
+    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+
     fun orderData(): CourierOrderLocalDataEntity?
 
 

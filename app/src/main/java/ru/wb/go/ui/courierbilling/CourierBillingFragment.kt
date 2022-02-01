@@ -24,9 +24,9 @@ import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountPara
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
 
 
 class CourierBillingFragment : Fragment() {
@@ -61,7 +61,7 @@ class CourierBillingFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
     }
 
     private fun initReturnResult() {

@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.AppVersionState
-import ru.wb.go.ui.splash.domain.AppInteractor
+import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 

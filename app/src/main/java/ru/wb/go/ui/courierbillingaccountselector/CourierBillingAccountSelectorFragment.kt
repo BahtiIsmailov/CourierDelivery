@@ -32,7 +32,7 @@ import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorFr
 import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData

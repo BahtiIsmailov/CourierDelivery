@@ -34,7 +34,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.time.DateTimeFormatter

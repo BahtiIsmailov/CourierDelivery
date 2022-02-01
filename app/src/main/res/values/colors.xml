@@ -12,6 +12,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="fab_disable">#D1CED5</color>
+    <color name="fab_enable">#642CA3</color>
+    <color name="fab_progress">#642CA3</color>
+
+
+    <color name="order_number">#2196F3</color>
+    <color name="order_amount">#2CA364</color>
+
     <color name="transparent">#0000</color>
     <color name="keyboard_dot_select">#642CA3</color>
     <color name="keyboard_dot_stroke">#D5C0ED</color>
@@ -76,6 +84,7 @@
     <color name="text_info">#6F6779</color>
 
     <color name="buttonColor">#642CA3</color>
+    <color name="refreshColor">#642CA3</color>
     <color name="button_text">#642CA3</color>
 
     <color name="splash_text">#fafafa</color>

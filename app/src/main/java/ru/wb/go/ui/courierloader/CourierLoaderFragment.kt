@@ -11,8 +11,8 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoaderFragmentBinding
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
-import ru.wb.go.ui.splash.NavToolbarListener
-import ru.wb.go.ui.splash.OnUserInfo
+import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.app.OnUserInfo
 import ru.wb.go.views.ProgressImageButtonMode
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {

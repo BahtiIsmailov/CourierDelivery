@@ -2,6 +2,8 @@ package ru.wb.go.di.module
 
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import ru.wb.go.ui.app.AppLoaderViewModel
+import ru.wb.go.ui.app.AppViewModel
 import ru.wb.go.ui.auth.AuthLoaderViewModel
 import ru.wb.go.ui.auth.CheckSmsParameters
 import ru.wb.go.ui.auth.CheckSmsViewModel
@@ -14,6 +16,7 @@ import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAm
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorViewModel
 import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters
 import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteViewModel
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberViewModel
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
@@ -25,7 +28,6 @@ import ru.wb.go.ui.courierintransit.CourierIntransitViewModel
 import ru.wb.go.ui.courierloader.CourierLoaderViewModel
 import ru.wb.go.ui.courierloading.CourierLoadingScanViewModel
 import ru.wb.go.ui.couriermap.CourierMapViewModel
-import ru.wb.go.ui.courierorderconfirm.CourierOrderConfirmViewModel
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsViewModel
 import ru.wb.go.ui.courierorders.CourierOrderParameters
@@ -40,9 +42,6 @@ import ru.wb.go.ui.courierunloading.RemainBoxViewModel
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
-
-import ru.wb.go.ui.splash.AppLoaderViewModel
-import ru.wb.go.ui.splash.AppViewModel
 
 val viewModelModule = module {
     viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
@@ -69,7 +68,7 @@ val viewModelModule = module {
     viewModel { CourierWarehousesViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get(), get())
+        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
     viewModel { (parameters: CourierDataParameters) ->
@@ -92,9 +91,9 @@ val viewModelModule = module {
         CourierOrderDetailsViewModel(parameters, get(), get(), get(), get(), get())
     }
 
-    viewModel { CourierCarNumberViewModel(get(), get(), get(), get()) }
-
-    viewModel { CourierOrderConfirmViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { (parameters: CourierCarNumberParameters) ->
+        CourierCarNumberViewModel(parameters, get(), get(), get(), get())
+    }
 
     viewModel { CourierOrderTimerViewModel(get(), get(), get(), get(), get()) }
 
@@ -150,7 +149,10 @@ val viewModelModule = module {
     viewModel { (parameters: CourierBillingCompleteParameters) ->
         CourierBillingCompleteViewModel(
             parameters,
-            get(), get(), get(), get()
+            get(),
+            get(),
+            get(),
+            get()
         )
     }
 

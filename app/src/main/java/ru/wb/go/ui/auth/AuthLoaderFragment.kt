@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.AuthLoaderFragmentBinding
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavToolbarListener
 
 class AuthLoaderFragment : Fragment(R.layout.auth_loader_fragment) {
 

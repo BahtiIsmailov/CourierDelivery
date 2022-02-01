@@ -8,11 +8,11 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
 class CourierCarNumberViewModel(
+    private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val resourceProvider: CourierCarNumberResourceProvider,
@@ -23,10 +23,6 @@ class CourierCarNumberViewModel(
         SingleLiveEvent<CourierCarNumberNavigationState>()
     val navigationState: LiveData<CourierCarNumberNavigationState>
         get() = _navigationState
-
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
-        get() = _navigateToDialogInfo
 
     private val _stateUI = SingleLiveEvent<CourierCarNumberUIState>()
     val stateUI: LiveData<CourierCarNumberUIState>
@@ -48,7 +44,7 @@ class CourierCarNumberViewModel(
 
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
-            event.scan(String(), { accumulator, item -> accumulateNumber(accumulator, item) })
+            event.scan(String()) { accumulator, item -> accumulateNumber(accumulator, item) }
                 .doOnNext {
                     switchBackspace(it)
                     switchComplete(it)
@@ -105,15 +101,18 @@ class CourierCarNumberViewModel(
 
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
-        _navigationState.value =
-            CourierCarNumberNavigationState.NavigateToTimer
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+            title = parameters.title, orderNumber = parameters.orderNumber, order = parameters.order
+        )
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
         onTechErrorLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToTimer
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+            title = parameters.title, orderNumber = parameters.orderNumber, order = parameters.order
+        )
     }
 
     fun onCancelLoadClick() {

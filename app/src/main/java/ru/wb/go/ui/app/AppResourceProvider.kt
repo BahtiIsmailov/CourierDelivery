@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
 import android.content.Context
 import ru.wb.go.R

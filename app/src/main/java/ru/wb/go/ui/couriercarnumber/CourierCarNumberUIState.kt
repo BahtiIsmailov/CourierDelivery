@@ -12,13 +12,4 @@ sealed class CourierCarNumberUIState {
         val count: Int,
         @CarNumberKeyboardMode val mode: Int
     ) : CourierCarNumberUIState()
-
-    data class NumberNotFound(
-        val title: String,
-        val message: String,
-        val button: String
-    ) : CourierCarNumberUIState()
-
-    data class Error(val title: String, val message: String, val button: String) :
-        CourierCarNumberUIState()
 }

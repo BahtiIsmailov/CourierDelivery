@@ -97,7 +97,7 @@ class AppRemoteRepositoryImpl(
         }
     }
 
-    override fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
+    override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
         return remoteRepo.freeTasks(apiVersion(), srcOfficeID)
             .map { it.data }
             .flatMap {

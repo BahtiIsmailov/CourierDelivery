@@ -5,6 +5,7 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.utils.map.CoordinatePoint
+import ru.wb.go.utils.map.MapPoint
 
 class CourierMapInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -15,8 +16,12 @@ class CourierMapInteractorImpl(
         return courierMapRepository.observeMapState()
     }
 
-    override fun onItemClick(index: String) {
-        courierMapRepository.mapAction(CourierMapAction.ItemClick(index))
+    override fun onItemClick(point: MapPoint) {
+        courierMapRepository.mapAction(CourierMapAction.ItemClick(point))
+    }
+
+    override fun onMapClick() {
+        courierMapRepository.mapAction(CourierMapAction.MapClick)
     }
 
     override fun onInitPermission() {

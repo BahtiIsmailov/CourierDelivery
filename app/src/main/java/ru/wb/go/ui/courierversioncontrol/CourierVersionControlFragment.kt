@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.databinding.CourierVersionControlFragmentBinding
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
 
 class CourierVersionControlFragment : Fragment() {
 
@@ -38,7 +38,7 @@ class CourierVersionControlFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
     }
 
     private fun initObserver() {

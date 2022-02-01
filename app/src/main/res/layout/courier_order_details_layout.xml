@@ -11,27 +11,15 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/selected_background"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/courier_background_select_pvz"
-        tools:ignore="ContentDescription" />
-
-    <ImageView
         android:id="@+id/image_dot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
-        app:layout_constraintStart_toStartOf="@+id/selected_background"
-        app:layout_constraintTop_toTopOf="@+id/selected_background"
-        app:srcCompat="@drawable/ic_order_route_dot" />
+        android:layout_marginStart="25dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fullAddressWarehouse"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fullAddressWarehouse"
+        app:srcCompat="@drawable/ic_order_route_dot"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/fullAddressWarehouse"
@@ -40,13 +28,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
-        app:layout_constraintEnd_toEndOf="@+id/selected_background"
-        app:layout_constraintHorizontal_bias="0"
+        android:paddingTop="22dp"
+        android:paddingBottom="22dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_dot"
-        app:layout_constraintTop_toTopOf="@+id/selected_background"
-        tools:text="г. Подольск, ул. Троицкая, 20" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20" />
+
+    <View
+        android:id="@+id/view_divider1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="25dp"
+        android:background="#EDEEF0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

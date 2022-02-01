@@ -32,7 +32,8 @@
     <string name="error_title">Ошибка</string>
 
     <string name="attention_title">Внимание</string>
-    <string name="courier_expects_message" >Ваши данные находятся на рассмотрении</string>
+    <string name="courier_expects_message">Ваши данные находятся на рассмотрении</string>
+    <string name="courier_expects_positive">OK</string>
 
     <string name="ok_button_title">OK</string>
 
@@ -192,16 +193,26 @@
     <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>
     <string name="courier_warehouse_dialog_empty_message">Все заказы взяты в работу</string>
     <string name="courier_warehouse_dialog_empty_button">Понятно</string>
-
     <string name="courier_orders_update">Обновить</string>
+    <string name="courier_orders_order">\u0020- %1$d</string>
+    <string name="courier_orders_coast">от %1$s ₽</string>
+    <string name="courier_orders_count_box">от %1$d шт.</string>
+    <string name="courier_orders_volume">от %1$s</string>
+    <string name="courier_orders_count_pvz">%1$s</string>
+    <string name="courier_orders_arrive">\u0020%1$s мин</string>
     <string name="courier_orders_count">от %1$d шт. / %2$s</string>
     <string name="courier_orders_empty_list">Заказы не найдены</string>
     <string name="courier_order_dialog_title_error">Заказы</string>
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
+
+    <string name="courier_orders_details_arrive">резерв </string>
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
+    <string name="courier_orders_empty_address">Список пуст</string>
+    <string name="courier_orders_automobile">Машина </string>
+    <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
     <string name="courier_orders_confirm_coast">%1$s ₽</string>
@@ -210,12 +221,19 @@
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
     <string name="courier_orders_confirm_dialog_title">Заказ забрали</string>
+    <string name="courier_orders_confirm_dialog_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_confirm_dialog_button">OK</string>
     <string name="courier_orders_confirm_dialog_empty">Свободных заказов нет</string>
 
-    <string name="courier_orders_details_dialog_title">Подтвердить взятие заказа?</string>
-    <string name="courier_orders_details_dialog_message">Прибыть • за %1$d мин\nТранспорт • от %2$d кубов</string>
+    <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
+
+    <string name="courier_orders_details_dialog_message">Машина • <b> %1$s </b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
+
+    <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
+    <string name="courier_orders_details_dialog_is_not_exist_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_details_dialog_is_not_exist_button">Понятно</string>
 
     <string name="courier_orders_timer_dialog_title">Время вышло</string>
     <string name="courier_orders_timer_dialog_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
@@ -447,7 +465,6 @@
     <string name="keyboard_symbolY">Y</string>
     <string name="keyboard_symbolX">X</string>
 
-<!--    <string name="user_form_agreement">^1</string>-->
     <string name="user_form_agreement_link">Подтверждаю согласие с договором оферты</string>
 
     <string name="start_delivery_title">Погрузка завершена</string>
@@ -481,6 +498,7 @@
     <string name="courier_loading_load_in_car">ПОГРУЗИТЕ В МАШИНУ</string>
     <string name="courier_loading_forbidden_take">КОРОБКУ БРАТЬ ЗАПРЕЩЕНО</string>
     <string name="courier_loading_not_recognized_qr">QR КОРОБКИ НЕ РАСПОЗНАН</string>
+
     <string name="auth_user_fio">Фамилия</string>
     <string name="auth_user_name">Имя</string>
     <string name="auth_user_middle_name">Отчество</string>

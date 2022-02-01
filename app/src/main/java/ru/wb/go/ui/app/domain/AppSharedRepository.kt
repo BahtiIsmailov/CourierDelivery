@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash.domain
+package ru.wb.go.ui.app.domain
 
 import io.reactivex.Observable
 

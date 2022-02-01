@@ -8,9 +8,14 @@ sealed class CourierOrderDetailsNavigationState {
         val title: String, val message: String
     ) : CourierOrderDetailsNavigationState()
 
-    data class NavigateToCarNumber(val title: String, val order: CourierOrderEntity) :
-        CourierOrderDetailsNavigationState()
+    data class NavigateToCarNumber(
+        val title: String,
+        val orderNumber: String,
+        val order: CourierOrderEntity
+    ) : CourierOrderDetailsNavigationState()
 
-    object NavigateToOrderConfirm : CourierOrderDetailsNavigationState()
+    object NavigateToTimer : CourierOrderDetailsNavigationState()
+
+    object NavigateToBack : CourierOrderDetailsNavigationState()
 
 }

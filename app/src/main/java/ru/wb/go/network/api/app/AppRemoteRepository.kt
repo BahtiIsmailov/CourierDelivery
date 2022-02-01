@@ -20,7 +20,7 @@ interface AppRemoteRepository {
 
     fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 
-    fun courierOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
     fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 

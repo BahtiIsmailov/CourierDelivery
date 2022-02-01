@@ -1,7 +1,13 @@
 package ru.wb.go.ui.couriercarnumber
 
+import ru.wb.go.db.entity.courier.CourierOrderEntity
+
 sealed class CourierCarNumberNavigationState {
 
-    object NavigateToTimer : CourierCarNumberNavigationState()
+    data class NavigateToOrderDetails(
+        val title: String,
+        val orderNumber: String,
+        val order: CourierOrderEntity
+    ) : CourierCarNumberNavigationState()
 
 }

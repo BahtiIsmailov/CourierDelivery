@@ -11,8 +11,8 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.databinding.CourierCompleteDeliveryFragmentBinding
-import ru.wb.go.ui.splash.NavDrawerListener
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
 
 class CourierCompleteDeliveryFragment : Fragment() {
 
@@ -49,7 +49,7 @@ class CourierCompleteDeliveryFragment : Fragment() {
 
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
-        (activity as NavDrawerListener).lock()
+        (activity as NavDrawerListener).lockNavDrawer()
     }
 
     private fun initObserver() {

@@ -15,7 +15,7 @@ import ru.wb.go.databinding.AuthCourierExpectsFragmentBinding
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.splash.NavToolbarListener
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode

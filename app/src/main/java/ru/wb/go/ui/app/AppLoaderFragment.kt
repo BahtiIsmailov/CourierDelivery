@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
 import android.os.Bundle
 import android.view.LayoutInflater

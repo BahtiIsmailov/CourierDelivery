@@ -1,21 +1,24 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
-import android.content.Intent
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.*
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.view.*
+import android.view.Gravity.LEFT
+import android.view.View.*
+import android.view.WindowManager.LayoutParams.*
+import android.widget.*
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
@@ -40,7 +43,7 @@ import ru.wb.go.utils.SoftKeyboard
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
-    OnUserInfo, OnCourierScanner, OnSoundPlayer,
+    OnUserInfo, OnCourierScanner, OnSoundPlayer, StatusBarListener,
     NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -62,6 +65,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         initNavController()
         initObserver()
         initListener()
+        hideStatusBar()
     }
 
       private fun initToolbar() {
@@ -188,8 +192,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     override fun showStatusBar() {
-        setTheme(R.style.AppTheme_NoActionBar)
-        window.clearFlags(FLAG_FULLSCREEN)
+
+    }
+
+    override fun hideStatusBar() {
+        makeStatusBarTransparent()
     }
 
     override fun showNetworkDialog() {
@@ -254,21 +261,25 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         }
     }
 
-    override fun lock() {
+    override fun lockNavDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
-    override fun unlock() {
+    override fun unlockNavDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
 
+    @SuppressLint("RtlHardcoded")
+    override fun showNavDrawer() {
+        binding.drawerLayout.openDrawer(LEFT)
     }
 
     override fun adjustMode() {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        window.setSoftInputMode(SOFT_INPUT_ADJUST_NOTHING)
     }
 
     override fun panMode() {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        window.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
     }
 
     override fun holdBackButtonOnScanBox() {
@@ -312,8 +323,14 @@ interface NavToolbarListener {
 }
 
 interface NavDrawerListener {
-    fun lock()
-    fun unlock()
+    fun lockNavDrawer()
+    fun unlockNavDrawer()
+    fun showNavDrawer()
+}
+
+interface StatusBarListener {
+    fun showStatusBar()
+    fun hideStatusBar()
 }
 
 interface KeyboardListener {
@@ -331,4 +348,28 @@ interface OnCourierScanner {
 
 interface OnSoundPlayer {
     fun play(resId: Int)
+}
+
+fun AppActivity.hasPermissions(vararg permissions: String): Boolean =
+    permissions.all(::hasPermission)
+
+fun AppActivity.hasPermission(permission: String): Boolean {
+    return ActivityCompat.checkSelfPermission(
+        this,
+        permission
+    ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Activity.makeStatusBarTransparent() {
+    window.apply {
+        clearFlags(FLAG_TRANSLUCENT_STATUS)
+        addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            decorView.systemUiVisibility =
+                SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+        statusBarColor = Color.TRANSPARENT
+    }
 }

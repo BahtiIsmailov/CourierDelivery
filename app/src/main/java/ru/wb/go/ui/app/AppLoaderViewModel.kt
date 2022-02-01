@@ -1,4 +1,4 @@
-package ru.wb.go.ui.splash
+package ru.wb.go.ui.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

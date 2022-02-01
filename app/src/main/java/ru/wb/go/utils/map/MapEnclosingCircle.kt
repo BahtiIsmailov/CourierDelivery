@@ -31,19 +31,17 @@ class MapEnclosingCircle {
                 }
                 .forEach {
                     with(it.first) {
-                        val lat: Double = latitude
-                        val lon: Double = longitude
-                        maxLatPoint = max(maxLatPoint, lat)
-                        maxLongPoint = max(maxLongPoint, lon)
-                        minLatPoint = min(minLatPoint, lat)
-                        minLongPoint = min(minLongPoint, lon)
+                        maxLatPoint = max(maxLatPoint, latitude)
+                        maxLongPoint = max(maxLongPoint, longitude)
+                        minLatPoint = min(minLatPoint, latitude)
+                        minLongPoint = min(minLongPoint, longitude)
                     }
                 }
         }
         return BoundingBox(maxLatPoint, maxLongPoint, minLatPoint, minLongPoint)
     }
 
-    fun minimumBoundingBox(points: List<CoordinatePoint>): BoundingBox {
+    fun allCoordinatePointToBoundingBox(points: List<CoordinatePoint>): BoundingBox {
         var maxLat = Double.MAX_VALUE
         var maxLong = Double.MAX_VALUE
         var minLat = Double.MIN_VALUE
@@ -66,32 +64,32 @@ class MapEnclosingCircle {
         return BoundingBox(maxLat, maxLong, minLat, minLong)
     }
 
-    fun minimumEnclosingCircle(points: List<CoordinatePoint>): MapCircle {
-        val n = points.size
-        var memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
-        if (points.isEmpty()) {
-            memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
-        } else if (n == 1) {
-            memCircle = MapCircle(CoordinatePoint(points[0].latitude, points[0].longitude), 1.0)
-        } else if (n == 2) {
-            val point1 = CoordinatePoint(points[0].latitude, points[0].longitude)
-            val point2 = CoordinatePoint(points[1].latitude, points[1].longitude)
-            memCircle = circleFrom(point1, point2)
-            LogUtils { logDebugApp("memCircle " + memCircle.toString()) }
-        } else {
-            for (i in 0 until n) {
-                for (j in i + 1 until n) {
-                    val tmpCircle = circleFrom(points[i], points[j])
-                    LogUtils { logDebugApp("tmpCircle " + tmpCircle.toString()) }
-                    if (tmpCircle.radius > memCircle.radius) {
-                        if (n == 3 || isValidCircle(tmpCircle, points))
-                            memCircle = tmpCircle
-                    }
-                }
-            }
-        }
-        return memCircle
-    }
+//    fun minimumEnclosingCircle(points: List<CoordinatePoint>): MapCircle {
+//        val n = points.size
+//        var memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
+//        if (points.isEmpty()) {
+//            memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
+//        } else if (n == 1) {
+//            memCircle = MapCircle(CoordinatePoint(points[0].latitude, points[0].longitude), 1.0)
+//        } else if (n == 2) {
+//            val point1 = CoordinatePoint(points[0].latitude, points[0].longitude)
+//            val point2 = CoordinatePoint(points[1].latitude, points[1].longitude)
+//            memCircle = circleFrom(point1, point2)
+//            LogUtils { logDebugApp("memCircle " + memCircle.toString()) }
+//        } else {
+//            for (i in 0 until n) {
+//                for (j in i + 1 until n) {
+//                    val tmpCircle = circleFrom(points[i], points[j])
+//                    LogUtils { logDebugApp("tmpCircle " + tmpCircle.toString()) }
+//                    if (tmpCircle.radius > memCircle.radius) {
+//                        if (n == 3 || isValidCircle(tmpCircle, points))
+//                            memCircle = tmpCircle
+//                    }
+//                }
+//            }
+//        }
+//        return memCircle
+//    }
 
     private fun circleFrom(pointA: CoordinatePoint, pointB: CoordinatePoint): MapCircle {
         val pointCenter = center(pointA, pointB)
@@ -115,7 +113,7 @@ class MapEnclosingCircle {
     }
 
     fun distance(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
-        return kotlin.math.sqrt(
+        return sqrt(
             (pointA.latitude - pointB.latitude).pow(2.0) + (pointA.longitude - pointB.longitude).pow(
                 2.0
             )
@@ -126,7 +124,7 @@ class MapEnclosingCircle {
         return distance(mapCircle.point, point) >= mapCircle.radius
     }
 
-    fun distanceKm(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
+    private fun distanceKm(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
         val latARad = Math.toRadians(pointA.latitude)
         val latBRad = Math.toRadians(pointB.latitude)
         val deltaLonRad = Math.toRadians(pointB.longitude - pointA.longitude)

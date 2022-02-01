@@ -40,8 +40,8 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.splash.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData

@@ -34,40 +34,27 @@ class CourierMapViewModel(
     private fun subscribeMapState() {
         addSubscription(
             interactor.subscribeMapState().subscribe(
-                {
-                    when (it) {
-                        is CourierMapState.NavigateToMarker -> _mapState.value = it
-                        is CourierMapState.NavigateToPoint -> _mapState.value = it
-                        is CourierMapState.UpdateMarkers -> _mapState.value = it
-                        CourierMapState.NavigateToMyLocation -> _mapState.value = it
-                        is CourierMapState.UpdateMyLocationPoint -> _mapState.value = it
-                        CourierMapState.UpdateMyLocation -> _mapState.value = it
-                        is CourierMapState.ZoomToCenterBoundingBox -> _mapState.value = it
-                    }
-                },
-                {
-                    LogUtils { logDebugApp("subscribeMapState() error " + it) }
-                })
+                { _mapState.value = it },
+                { LogUtils { logDebugApp("subscribeMapState() error " + it) } }
+            )
         )
     }
 
-    fun onItemClick(index: String) {
-        interactor.onItemClick(index)
+    fun onItemClick(point: MapPoint) {
+        interactor.onItemClick(point)
+    }
+
+    fun onMapClick() {
+        interactor.onMapClick()
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-        //subscribeMapState()
         interactor.onForcedLocationUpdate(point)
     }
 
     fun onForcedLocationUpdateDefault() {
-        //subscribeMapState()
         interactor.onForcedLocationUpdate(moscowCoordinatePoint())
     }
-
-//    fun myLocationFailed() {
-//        interactor.onMyLocationFailed(moscowCoordinatePoint())
-//    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
