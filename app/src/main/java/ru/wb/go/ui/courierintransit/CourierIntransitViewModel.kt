@@ -15,6 +15,7 @@ import ru.wb.go.ui.courierintransit.domain.CourierIntransitScanOfficeData
 import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -66,9 +67,10 @@ class CourierIntransitViewModel(
     val beepEvent: LiveData<CourierIntransitScanOfficeBeepState>
         get() = _beepEvent
 
-    private val _progressState = MutableLiveData<CourierIntransitProgressState>()
-    val progressState: LiveData<CourierIntransitProgressState>
-        get() = _progressState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private val _intransitTime = MutableLiveData<CourierIntransitTimeState>()
     val intransitTime: LiveData<CourierIntransitTimeState>
@@ -136,6 +138,10 @@ class CourierIntransitViewModel(
                     )
                 }, {})
         )
+    }
+
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     private fun initScanner() {
@@ -324,31 +330,37 @@ class CourierIntransitViewModel(
     fun onCompleteDeliveryClick() {
         onTechEventLog("onCompleteDeliveryClick")
         _isEnableState.value = false
-        _progressState.value = CourierIntransitProgressState.Progress
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.completeDelivery()
                 .subscribe(
                     {
-                        val order = interactor.getOrder()
-                        completeDeliveryComplete(it, order.cost)
+                        completeDeliveryComplete(it)
                     },
                     {
                         onTechErrorLog("completeDeliveryError", it)
-                        _progressState.value = CourierIntransitProgressState.ProgressComplete
+                        setLoader(WaitLoader.Complete)
                         errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
                     })
         )
     }
 
-    private fun completeDeliveryComplete(cdr: CompleteDeliveryResult, cost: Int) {
+    private fun completeDeliveryComplete(cdr: CompleteDeliveryResult) {
         onTechEventLog(
             "completeDeliveryComplete",
-            "boxes: ${cdr.deliveredBoxes}. Cost: $cost"
+            "boxes: ${cdr.deliveredBoxes}. Cost: ${cdr.cost}"
         )
+        setLoader(WaitLoader.Complete)
+        val ob = interactor.getOfflineBoxes()
+        if (ob > 0) {
+            val ex = CustomException("Ошибка передачи данных. $ob")
+            onTechErrorLog("completeDelivery", ex)
+            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
+            return
+        }
         interactor.clearLocalTaskData()
-        _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
-            cost,
+            cdr.cost,
             cdr.deliveredBoxes,
             cdr.countBoxes
         )

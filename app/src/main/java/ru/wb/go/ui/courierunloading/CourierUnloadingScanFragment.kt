@@ -27,6 +27,7 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnSoundPlayer
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
@@ -131,10 +132,10 @@ class CourierUnloadingScanFragment : Fragment() {
             binding.toolbarLayout.toolbarVersion.text = it
         }
 
-        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierUnloadingScanProgress.LoaderProgress -> showProgressDialog()
-                CourierUnloadingScanProgress.LoaderComplete -> closeProgressDialog()
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 

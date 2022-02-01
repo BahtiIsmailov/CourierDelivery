@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierintransit.domain
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
@@ -92,15 +93,17 @@ class CourierIntransitInteractorImpl(
     override fun completeDelivery(): Single<CompleteDeliveryResult> {
 
         val boxes = locRepo.getBoxes()
+        val order = locRepo.getOrder()!!
+        val orderId = order.orderId.toString()
 
-        return Single.just(locRepo.getOrder())
-            .flatMap {
-                remoteRepo.setIntransitTask(it.orderId.toString(), boxes)
-                    .andThen(taskStatusesEnd(it.orderId.toString()))
-                    .andThen(
-                        Single.just(CompleteDeliveryResult(boxes.size, boxes.size, it.cost))
-                    )
+        return remoteRepo.setIntransitTask(orderId, boxes)
+            .doOnComplete {
+                locRepo.setOnlineOffices()
             }
+            .andThen(
+                taskStatusesEnd(orderId)
+                    .toSingle { CompleteDeliveryResult(boxes.size, boxes.size, order.cost) }
+            )
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -130,6 +133,10 @@ class CourierIntransitInteractorImpl(
         courierMapRepository.mapState(state)
     }
 
+    override fun getOfflineBoxes(): Int {
+        val boxes = locRepo.getOfflineBoxes()
+        return boxes.size
+    }
 }
 
 data class CompleteDeliveryResult(val deliveredBoxes: Int, val countBoxes: Int, val cost: Int)
