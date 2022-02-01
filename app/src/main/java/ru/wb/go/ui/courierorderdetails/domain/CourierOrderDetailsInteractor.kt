@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierorderdetails.domain
 
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -19,6 +20,6 @@ interface CourierOrderDetailsInteractor {
 
     fun mapState(state: CourierMapState)
 
-    fun anchorTask(): Single<AnchorTaskStatus>
+    fun anchorTask(): Completable
 
 }

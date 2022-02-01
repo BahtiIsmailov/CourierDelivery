@@ -31,6 +31,10 @@ import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.ProgressDialogFragment
+import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
 
@@ -76,7 +80,6 @@ class CourierOrderDetailsFragment : Fragment() {
         initObservable()
         initListeners()
         initReturnDialogResult()
-//        initProgressDialog()
         viewModel.onUpdate()
     }
 
@@ -92,8 +95,12 @@ class CourierOrderDetailsFragment : Fragment() {
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onConfirmOrderClick()
             }
-            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                viewModel.onCancelOrderClick()
+
+        }
+
+        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                viewModel.goBack()
             }
         }
     }
@@ -123,24 +130,6 @@ class CourierOrderDetailsFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-
-//        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-//            binding.toolbarLayout.toolbarTitle.text = it.label
-//        }
-
-//        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-//            val ic = when (it) {
-//                is NetworkState.Complete -> R.drawable.ic_inet_complete
-//                else -> R.drawable.ic_inet_failed
-//            }
-//            binding.toolbarLayout.noInternetImage.setImageDrawable(
-//                ContextCompat.getDrawable(requireContext(), ic)
-//            )
-//        }
-//
-//        viewModel.versionApp.observe(viewLifecycleOwner) {
-//            binding.toolbarLayout.toolbarVersion.text = it
-//        }
 
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
@@ -188,19 +177,8 @@ class CourierOrderDetailsFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) {
-            when (it) {
-                CourierOrderDetailsProgressState.Progress -> {}//showProgressDialog()
-                CourierOrderDetailsProgressState.ProgressComplete -> {}//closeProgressDialog()
-            }
-        }
-
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialog(it.type, it.title, it.message, it.button)
-        }
-
-        viewModel.navigateToTaskIsNotExistDialog.observe(viewLifecycleOwner) {
-            showTaskNotExistDialog(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
@@ -232,10 +210,10 @@ class CourierOrderDetailsFragment : Fragment() {
             }
         }
 
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = VISIBLE
-                false -> binding.holdLayout.visibility = GONE
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
@@ -281,51 +259,15 @@ class CourierOrderDetailsFragment : Fragment() {
         bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
-    // TODO: 20.08.2021 переработать
-//    private fun initProgressDialog() {
-//        val builder = AlertDialog.Builder(requireContext(), R.style.CustomProgressAlertDialog)
-//        val viewGroup: ViewGroup = binding.routes
-//        val dialogView = LayoutInflater.from(requireContext())
-//            .inflate(R.layout.custom_progress_layout_dialog, viewGroup, false)
-//        builder.setView(dialogView)
-//        progressDialog = builder.create()
-//        progressDialog.setCanceledOnTouchOutside(false)
-//        progressDialog.setOnKeyListener { _, keyCode, event ->
-//            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == ACTION_UP) {
-//                progressDialog.dismiss()
-//                viewModel.onCancelLoadClick()
-//            }
-//            true
-//        }
-//    }
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
+    }
 
-//    private fun closeProgressDialog() {
-//        if (progressDialog.isShowing) progressDialog.dismiss()
-//    }
-//
-//    private fun showProgressDialog() {
-//        progressDialog.show()
-//    }
-
-    private fun showEmptyOrderDialog(title: String, message: String, button: String) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-        val viewGroup: ViewGroup = binding.layout
-        val dialogView: View =
-            LayoutInflater.from(requireContext())
-                .inflate(R.layout.custom_layout_dialog_info_result, viewGroup, false)
-        val titleText: TextView = dialogView.findViewById(R.id.title)
-        val messageText: TextView = dialogView.findViewById(R.id.message)
-        val positive: Button = dialogView.findViewById(R.id.positive)
-
-        builder.setView(dialogView)
-        val alertDialog: AlertDialog = builder.create()
-        titleText.text = title
-        messageText.text = message
-        positive.setOnClickListener { alertDialog.dismiss() }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
-        positive.text = button
-        alertDialog.show()
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
     }
 
     // TODO: 27.08.2021 переработать
@@ -377,33 +319,16 @@ class CourierOrderDetailsFragment : Fragment() {
         _binding = null
     }
 
-    private fun showDialog(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
-    }
-
-    private fun showTaskNotExistDialog(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
-    ) {
-        DialogInfoFragment.newInstance(
-            DIALOG_TASK_NOT_EXIST_RESULT_TAG,
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     private fun showDialogConfirmScoreInfo(

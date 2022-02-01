@@ -2,24 +2,27 @@ package ru.wb.go.ui.courierorderdetails
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.go.network.exceptions.CustomException
+import ru.wb.go.network.exceptions.HttpObjectNotFoundException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapFragment
 import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
-import ru.wb.go.ui.courierorderdetails.domain.AnchorTaskStatus
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
+import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -31,20 +34,8 @@ class CourierOrderDetailsViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierOrderDetailsInteractor,
     private val resourceProvider: CourierOrderDetailsResourceProvider,
-    private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
-
-//    private val _toolbarLabelState = MutableLiveData<Label>()
-//    val toolbarLabelState: LiveData<Label>
-//        get() = _toolbarLabelState
-
-//    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-//    val toolbarNetworkState: LiveData<NetworkState>
-//        get() = _toolbarNetworkState
-
-//    private val _versionApp = MutableLiveData<String>()
-//    val versionApp: LiveData<String>
-//        get() = _versionApp
 
     private val _orderInfo = MutableLiveData<CourierOrderDetailsInfoUIState>()
     val orderInfo: LiveData<CourierOrderDetailsInfoUIState>
@@ -58,25 +49,18 @@ class CourierOrderDetailsViewModel(
     val navigationState: LiveData<CourierOrderDetailsNavigationState>
         get() = _navigationState
 
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
-
-    private val _navigateToTaskIsNotExistDialog = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToTaskIsNotExistDialog: LiveData<NavigateToDialogInfo>
-        get() = _navigateToTaskIsNotExistDialog
 
     private val _navigateToDialogConfirmScoreInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogConfirmScoreInfo
 
-    private val _progressState = MutableLiveData<CourierOrderDetailsProgressState>()
-    val progressState: LiveData<CourierOrderDetailsProgressState>
-        get() = _progressState
-
-    private val _holdState = MutableLiveData<Boolean>()
-    val holdState: LiveData<Boolean>
-        get() = _holdState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private var mapMarkers = mutableListOf<CourierMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
@@ -187,10 +171,6 @@ class CourierOrderDetailsViewModel(
         else CourierOrderDetailsUIState.InitItems(items)
     }
 
-    private fun progressComplete() {
-        _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-    }
-
     fun onChangeCarNumberClick() {
         onTechEventLog("onChangeCarNumberClick")
         with(parameters) {
@@ -213,53 +193,6 @@ class CourierOrderDetailsViewModel(
             resourceProvider.getConfirmPositiveDialog(),
             resourceProvider.getConfirmNegativeDialog()
         )
-    }
-
-    private fun anchorTaskComplete(anchorTaskStatus: AnchorTaskStatus) {
-        when (anchorTaskStatus) {
-            AnchorTaskStatus.AnchorTaskComplete -> {
-                onTechEventLog("anchorTaskComplete", "AnchorTaskComplete")
-                _navigationState.value = CourierOrderDetailsNavigationState.NavigateToTimer
-            }
-            AnchorTaskStatus.TaskIsNotExist -> {
-                onTechEventLog("anchorTaskComplete", "TaskIsNotExist")
-                showIsNotExistDialog()
-            }
-        }
-        _progressState.value = CourierOrderDetailsProgressState.ProgressComplete
-        unlockState()
-    }
-
-    private fun showIsNotExistDialog() {
-        _navigateToTaskIsNotExistDialog.value = NavigateToDialogInfo(
-            DialogInfoStyle.WARNING.ordinal,
-            resourceProvider.getOrderIsNotExistTitleDialog(),
-            resourceProvider.getOrderIsNotExistMessageDialog(),
-            resourceProvider.getOrderIsNotExistButtonDialog()
-        )
-    }
-
-    private fun anchorTaskError(throwable: Throwable) {
-        onTechErrorLog("anchorTaskError", throwable)
-        courierWarehouseError(throwable)
-        unlockState()
-    }
-
-    private fun courierWarehouseError(throwable: Throwable) {
-        progressComplete()
-        _navigateToDialogInfo.value = messageError(throwable, resourceProvider)
-    }
-
-    private fun actionProgress() = Completable.fromAction {
-        _progressState.value = CourierOrderDetailsProgressState.Progress
-    }
-
-    private fun lockState() {
-        _holdState.value = true
-    }
-
-    private fun unlockState() {
-        _holdState.value = false
     }
 
     fun onCancelLoadClick() {
@@ -304,22 +237,35 @@ class CourierOrderDetailsViewModel(
         interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
+    }
+
     fun onConfirmOrderClick() {
-        lockState()
-//        showProgress()
         onTechEventLog("onConfirmOrderClick")
-        // TODO: 27.01.2022 реализовать проверку наличия заказа
+        setLoader(WaitLoader.Wait)
         addSubscription(
-            actionProgress()
-                .andThen(interactor.anchorTask())
+            interactor.anchorTask()
                 .subscribe(
-                    { anchorTaskComplete(it) },
-                    { anchorTaskError(it) })
+                    {
+                        setLoader(WaitLoader.Complete)
+                        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToTimer
+                    },
+                    {
+                        onTechErrorLog("anchorTaskError", it)
+                        setLoader(WaitLoader.Complete)
+                        if(it is HttpObjectNotFoundException){
+                            val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
+                            errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
+                        }else {
+                            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo, DialogInfoFragment.DIALOG_INFO2_TAG)
+                        }
+                    })
         )
     }
 
-    fun onCancelOrderClick() {
-        onTechEventLog("onCancelOrderClick")
+    fun goBack() {
+        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToBack
     }
 
     fun onTaskNotExistConfirmClick() {

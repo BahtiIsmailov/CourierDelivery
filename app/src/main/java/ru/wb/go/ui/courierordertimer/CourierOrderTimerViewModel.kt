@@ -13,6 +13,7 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
@@ -52,9 +53,10 @@ class CourierOrderTimerViewModel(
     val navigationState: LiveData<CourierOrderTimerNavigationState>
         get() = _navigationState
 
-    private val _progressState = MutableLiveData<CourierOrderTimerProgressState>()
-    val progressState: LiveData<CourierOrderTimerProgressState>
-        get() = _progressState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     init {
         initOrder()
@@ -117,8 +119,8 @@ class CourierOrderTimerViewModel(
         }
     }
 
-    private fun setLoader(state: CourierOrderTimerProgressState) {
-        _progressState.postValue(state)
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     fun onRefuseOrderClick() {
@@ -147,25 +149,22 @@ class CourierOrderTimerViewModel(
     }
 
     private fun deleteTask() {
-        setLoader(CourierOrderTimerProgressState.Progress)
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.deleteTask()
                 .subscribe(
                     {
-                        toLoaderFragment()
+                        setLoader(WaitLoader.Complete)
+                        onTechEventLog("toWarehouse")
+                        _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
                     },
                     {
-                        setLoader(CourierOrderTimerProgressState.ProgressComplete)
+                        setLoader(WaitLoader.Complete)
                         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
 
                     }
                 )
         )
-    }
-
-    private fun toLoaderFragment() {
-        onTechEventLog("toWarehouse")
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
     }
 
     fun onCancelLoadClick() {
