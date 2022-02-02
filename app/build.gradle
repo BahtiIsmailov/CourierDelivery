@@ -46,7 +46,7 @@ android {
         def isNew = false
 
         print(runTasks)
-        if (':app:sassembleRelease' in runTasks) {
+        if (':app:assembleRelease' in runTasks) {
             versionMinor++
             versionCod++
             isNew = true
@@ -93,6 +93,9 @@ android {
             manifestPlaceholders = [appName: "WB Go"]
             signingConfig signingConfigs.release
             matchingFallbacks = ['release']
+            ndk{
+                debugSymbolLevel 'FULL'
+            }
         }
         debug {
 //            minifyEnabled true

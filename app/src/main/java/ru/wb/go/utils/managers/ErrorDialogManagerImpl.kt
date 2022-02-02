@@ -39,7 +39,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                 )
             }
             is BadRequestException->{
-                val msg = throwable.error.toString() ?: ""
+                val msg = throwable.error.toString()
                 ErrorDialogData(
                     dlgTag = dlgTag,
                     type = DialogInfoStyle.ERROR.ordinal,
