@@ -63,7 +63,8 @@
         <TextView
             android:id="@+id/toolbar_version"
             style="@style/SmallDarkRegularText"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:maxLines="1"
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/no_internet_image"
             android:layout_alignBottom="@+id/toolbar_title"
@@ -71,8 +72,8 @@
             android:layout_gravity="end"
             android:layout_marginBottom="8dp"
             android:gravity="center"
-            android:textSize="12sp"
-            tools:text="1.2.3" />
+            android:textSize="11sp"
+            tools:text="10.22.382277" />
 
         <View
             android:id="@+id/divider1"
