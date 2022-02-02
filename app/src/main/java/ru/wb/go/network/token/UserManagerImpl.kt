@@ -28,6 +28,7 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
     override fun savePaymentGuid(number: String) {
         worker.save(AppPreffsKeys.GUID_KEY, number)
     }
+
     override fun clearPaymentGuid() {
         savePaymentGuid("")
     }

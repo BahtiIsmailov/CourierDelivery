@@ -8,6 +8,7 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
@@ -36,23 +37,28 @@ class CourierCarNumberViewModel(
     val progressState: LiveData<CourierCarNumberProgressState>
         get() = _progressState
 
+    private var carNumber = ""
+
     fun onCheckCarNumberClick() {
         putCarNumber(carNumber)
     }
 
-    private var carNumber = ""
-
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
-            event.scan(String()) { accumulator, item -> accumulateNumber(accumulator, item) }
+            event
+                .scan(interactor.getCarNumber()) { accumulator, item -> accumulateNumber(accumulator, item) }
                 .doOnNext {
                     switchBackspace(it)
                     switchComplete(it)
                 }
                 .doOnNext { carNumber = it }
+                .doOnNext { LogUtils { logDebugApp(it) } }
                 .map { keyToNumberSpanFormat(it) }
                 .subscribe(
-                    { _stateUI.value = it },
+                    {
+                        LogUtils { logDebugApp(it.numberFormat) }
+                        _stateUI.value = it
+                    },
                     { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }

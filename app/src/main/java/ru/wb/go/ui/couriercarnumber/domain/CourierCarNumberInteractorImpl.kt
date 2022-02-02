@@ -16,4 +16,8 @@ class CourierCarNumberInteractorImpl(
         return Completable.complete()
     }
 
+    override fun getCarNumber(): String {
+       return userManager.carNumber()
+    }
+
 }

@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -31,6 +32,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.Projection
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.R
@@ -263,8 +265,16 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         animate: Boolean,
         offsetY: Int
     ) {
-        binding.map.setMapCenterOffset(0, offsetY)
-        zoomToCenterBoundingBox(boundingBox, animate)
+        val dimenOffset = R.dimen.map_offset
+        val offsetBoundingBox = boundingBox.withOffset(
+            binding.map,
+            offsetY,
+            dimenOffset,
+            dimenOffset,
+            dimenOffset,
+            dimenOffset
+        )
+        zoomToCenterBoundingBox(offsetBoundingBox, animate)
     }
 
     private fun zoomToCenterBoundingBox(boundingBox: BoundingBox, animate: Boolean) {
@@ -479,6 +489,53 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             listener.onBackgroundClick()
             return false
         }
+
+    }
+
+    private fun BoundingBox.withOffset(
+        mapView: MapView,
+        offsetY: Int,
+        @DimenRes top: Int,
+        @DimenRes bottom: Int,
+        @DimenRes left: Int,
+        @DimenRes right: Int
+    ): BoundingBox {
+        val offsetBottom = offsetY * -2
+        val topPx = mapView.context.resources.getDimensionPixelSize(top)
+        val bottomPx = mapView.context.resources.getDimensionPixelSize(bottom) + offsetBottom
+        val leftPx = mapView.context.resources.getDimensionPixelSize(left)
+        val rightPx = mapView.context.resources.getDimensionPixelSize(right)
+
+        val width = mapView.width
+        val height = mapView.height
+        val pScreenWidth = width - (leftPx + rightPx)
+        val pScreenHeight = height - (topPx + bottomPx)
+        val nextZoom = MapView.getTileSystem()
+            .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
+
+        val centerPoint = GeoPoint(centerLatitude, centerLongitude)
+
+        val projection = Projection(
+            nextZoom, width, height,
+            centerPoint,
+            mapView.mapOrientation,
+            mapView.isHorizontalMapRepetitionEnabled,
+            mapView.isVerticalMapRepetitionEnabled,
+            mapView.mapCenterOffsetX,
+            mapView.mapCenterOffsetY
+        )
+
+        val northWest = projection.fromPixels(0, 0)
+        val southEast = projection.fromPixels(width, height)
+        val lonPerPx = (southEast.longitude - northWest.longitude) / width
+        val latPerPx = (southEast.latitude - northWest.latitude) / height
+
+        return BoundingBox(
+            latNorth - topPx * latPerPx,
+            lonEast + rightPx * lonPerPx,
+            latSouth + bottomPx * latPerPx,
+            lonWest - leftPx * lonPerPx
+        )
 
     }
 
