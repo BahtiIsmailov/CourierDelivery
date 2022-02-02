@@ -88,7 +88,7 @@ android {
     buildTypes {
         release {
 //            debuggable true
-//            minifyEnabled true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
             signingConfig signingConfigs.release

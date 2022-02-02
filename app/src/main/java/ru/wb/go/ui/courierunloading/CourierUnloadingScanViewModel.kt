@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierunloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkState
@@ -12,6 +13,7 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -59,10 +61,10 @@ class CourierUnloadingScanViewModel(
     val beepEvent: LiveData<CourierUnloadingScanBeepState>
         get() = _beepEvent
 
-    private val _progressEvent =
-        SingleLiveEvent<CourierUnloadingScanProgress>()
-    val progressEvent: LiveData<CourierUnloadingScanProgress>
-        get() = _progressEvent
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private val _fragmentStateUI =
         MutableLiveData<UnloadingFragmentState>()
@@ -133,8 +135,12 @@ class CourierUnloadingScanViewModel(
     fun onCancelScoreUnloadingClick() {
         onTechEventLog("onCancelScoreUnloadingClick")
         _completeButtonEnable.value = true
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+        setLoader(WaitLoader.Complete)
         onStartScanner()
+    }
+
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     fun onConfirmScoreUnloadingClick() {
@@ -143,11 +149,11 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun confirmUnloading() {
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderProgress
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.completeOfficeUnload()
                 .doFinally {
-                    _progressEvent.postValue(CourierUnloadingScanProgress.LoaderComplete)
+                    setLoader(WaitLoader.Complete)
                     clearSubscription()
                     _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
                 }
@@ -287,17 +293,21 @@ class CourierUnloadingScanViewModel(
         onStopScanner()
         addSubscription(
             interactor.getCurrentOffice(parameters.officeId)
-                .subscribe({
+                .flatMapCompletable {
                     if (it.countBoxes == it.deliveredBoxes) {
                         confirmUnloading()
-                    }
-                    else {
+                    } else {
                         showUnloadingScoreDialog(it)
                     }
-                },
+                    Completable.complete()
+                }
+                .subscribe(
+                    {
+                        setLoader(WaitLoader.Complete)
+                    },
                     {
                         onTechErrorLog("readUnloadingBoxCounterError", it)
-                        _progressEvent.postValue( CourierUnloadingScanProgress.LoaderComplete)
+                        setLoader(WaitLoader.Complete)
                         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
                     })
         )
@@ -331,7 +341,7 @@ class CourierUnloadingScanViewModel(
     fun onScoreDialogConfirmClick() {
         _completeButtonEnable.value = true
         onStartScanner()
-        _progressEvent.value = CourierUnloadingScanProgress.LoaderComplete
+        setLoader(WaitLoader.Complete)
     }
 
     override fun getScreenTag(): String {

@@ -83,7 +83,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initStateObserve() {
-        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
+        viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is NumberPhoneNavAction.NavigateToCheckPassword -> {
                     findNavController().navigate(
@@ -91,9 +91,10 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                             CheckSmsParameters(state.number, state.ttl)
                         )
                     )
-                }else->{}
+                }
+                else -> {}
             }
-        })
+        }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
             val ic = when (it) {
@@ -116,7 +117,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
             }
         }
 
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+        viewModel.stateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 NumberPhoneUIState.NumberCheckProgress -> {
                     binding.numberNotFound.visibility = GONE
@@ -162,7 +163,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                 }
             }
 
-        })
+        }
     }
 
     override fun onDestroyView() {

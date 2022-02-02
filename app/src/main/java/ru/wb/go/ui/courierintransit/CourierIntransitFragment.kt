@@ -33,6 +33,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnSoundPlayer
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 import ru.wb.go.views.ProgressImageButtonMode
@@ -179,10 +180,10 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) {
+        viewModel.waitLoader.observe(viewLifecycleOwner) {
             when (it) {
-                CourierIntransitProgressState.Progress -> showProgressDialog()
-                CourierIntransitProgressState.ProgressComplete -> closeProgressDialog()
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
