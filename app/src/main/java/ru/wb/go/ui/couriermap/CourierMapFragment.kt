@@ -492,7 +492,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     }
 
-    fun BoundingBox.withOffset(
+    private fun BoundingBox.withOffset(
         mapView: MapView,
         offsetY: Int,
         @DimenRes top: Int,
