@@ -18,4 +18,8 @@ class CourierCarNumberInteractorImpl(
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
+    override fun getCarNumber(): String {
+       return userManager.carNumber()
+    }
+
 }

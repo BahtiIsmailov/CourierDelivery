@@ -6,4 +6,6 @@ interface CourierCarNumberInteractor {
 
     fun putCarNumber(carNumber: String): Completable
 
+    fun getCarNumber(): String
+
 }
