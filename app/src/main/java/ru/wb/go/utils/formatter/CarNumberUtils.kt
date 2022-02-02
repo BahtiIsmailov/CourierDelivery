@@ -5,7 +5,7 @@ import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardMode
 object CarNumberUtils {
 
     private const val MAX_PHONE_DIGITS = 11
-    const val MAX_NUMBER_DIGITS_MASK = "A 000 AA 000"
+    private const val MAX_NUMBER_DIGITS_MASK = "A 000 AA 000"
 
     private fun numberFormat(carNumber: String): String {
         val formatNumber = StringBuilder()

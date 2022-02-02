@@ -1,7 +1,6 @@
 package ru.wb.go.network.token
 
 import ru.wb.go.app.AppPreffsKeys
-import ru.wb.go.utils.formatter.CarNumberUtils.MAX_NUMBER_DIGITS_MASK
 import ru.wb.go.utils.prefs.SharedWorker
 
 class UserManagerImpl(private val worker: SharedWorker) : UserManager {
@@ -23,7 +22,7 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
     }
 
     override fun carNumber(): String {
-        return worker.load(AppPreffsKeys.CAR_NUMBER_KEY, MAX_NUMBER_DIGITS_MASK)
+        return worker.load(AppPreffsKeys.CAR_NUMBER_KEY, "")
     }
 
     override fun savePaymentGuid(number: String) {
