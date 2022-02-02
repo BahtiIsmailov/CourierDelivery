@@ -12,6 +12,7 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -55,9 +56,10 @@ class CourierBillingViewModel(
     val billingItems: LiveData<CourierBillingState>
         get() = _billingItems
 
-    private val _progressState = MutableLiveData<CourierBillingProgressState>()
-    val progressState: LiveData<CourierBillingProgressState>
-        get() = _progressState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private val _navigationState = SingleLiveEvent<CourierBillingNavigationState>()
     val navigationState: LiveData<CourierBillingNavigationState>
@@ -96,7 +98,7 @@ class CourierBillingViewModel(
     }
 
     private fun initBalanceAndTransactions() {
-        showProgress()
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.getBillingInfo()
                 .subscribe(
@@ -120,24 +122,21 @@ class CourierBillingViewModel(
         } else {
             _billingItems.value = CourierBillingState.ShowBilling(items)
         }
-        progressComplete()
+        setLoader(WaitLoader.Complete)
     }
 
     fun canCheckout() = balance > 0
 
     private fun billingError(throwable: Throwable) {
         onTechErrorLog("billingError", throwable)
-        errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
+        setLoader(WaitLoader.Complete)
         _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
-        progressComplete()
+        errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
+
     }
 
-    private fun progressComplete() {
-        _progressState.value = CourierBillingProgressState.Complete
-    }
-
-    private fun showProgress() {
-        _progressState.value = CourierBillingProgressState.Progress
+    private fun setLoader(state:WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     fun onUpdateClick() {
@@ -146,13 +145,16 @@ class CourierBillingViewModel(
     }
 
     fun gotoBillingAccountsClick() {
-        showProgress()
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactorSelector
                 .getBillingAccounts()
                 .subscribe(
                     { accountsComplete(it) },
-                    { accountsError(it) })
+                    {
+                        onTechErrorLog("getBillingAccounts", it)
+                        accountsError(it)
+                    })
         )
     }
 
@@ -160,11 +162,11 @@ class CourierBillingViewModel(
         _navigationState.value = if (accounts.isNotEmpty())
             CourierBillingNavigationState.NavigateToAccountSelector(balance, accounts)
         else CourierBillingNavigationState.NavigateToAccountCreate(null, listOf(), balance)
-        progressComplete()
+        setLoader(WaitLoader.Complete)
     }
 
     private fun accountsError(throwable: Throwable) {
-        progressComplete()
+        setLoader(WaitLoader.Complete)
         errorDialogManager.showErrorDialog(throwable,_navigateToDialogInfo)
     }
 

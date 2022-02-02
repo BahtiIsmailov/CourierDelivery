@@ -27,6 +27,7 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.utils.WaitLoader
 
 
 class CourierBillingFragment : Fragment() {
@@ -157,10 +158,10 @@ class CourierBillingFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierBillingProgressState.Progress -> showProgressDialog()
-                CourierBillingProgressState.Complete -> closeProgressDialog()
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
