@@ -41,9 +41,11 @@ const val APP_NAMED_HEADER_MANAGER = "app_named_header_manager"
 const val AUTH_NAMED_RETROFIT = "auth_named_retrofit"
 const val REFRESH_TOKEN_NAMED_RETROFIT = "refresh_token_named_retrofit"
 const val APP_NAMED_RETROFIT = "app_named_retrofit"
+const val APP_NAMED_DYNAMIC_RETROFIT = "app_named_dynamic_retrofit"
 const val AUTH_NAMED_HTTP_CLIENT = "auth_named_client"
 const val REFRESH_TOKEN_NAMED_HTTP_CLIENT = "refresh_token_named_client"
 const val APP_NAMED_HTTP_CLIENT = "app_named_client"
+const val APP_NAMED_HTTP_DYNAMIC_CLIENT = "app_named_dynamic_client"
 
 val networkModule = module {
 
@@ -189,6 +191,12 @@ val networkModule = module {
         )
     }
 
+    fun provideAppOkHttpDynamicClient(
+        httpLoggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient {
+        return OkHttpFactory.createAppOkHttpDynamicClient(httpLoggingInterceptor)
+    }
+
     //==============================================================================================
     // retrofit factory
     //==============================================================================================
@@ -221,6 +229,22 @@ val networkModule = module {
     }
 
     fun provideAppRetrofitFactory(
+        apiServer: String,
+        okHttpClient: OkHttpClient,
+        callAdapterFactory: CallAdapter.Factory,
+        nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
+        gsonConverterFactory: GsonConverterFactory,
+    ): RetrofitFactory {
+        return RetrofitFactory(
+            apiServer,
+            okHttpClient,
+            callAdapterFactory,
+            nullOnEmptyConverterFactory,
+            gsonConverterFactory
+        )
+    }
+
+    fun provideAppDynamicRetrofitFactory(
         apiServer: String,
         okHttpClient: OkHttpClient,
         callAdapterFactory: CallAdapter.Factory,
@@ -285,6 +309,10 @@ val networkModule = module {
 
     single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get(), get()) }
 
+    single(named(APP_NAMED_HTTP_DYNAMIC_CLIENT)) {
+        provideAppOkHttpDynamicClient(get())
+    }
+
     single { provideGsonConverterFactory() }
     single { provideGson() }
 
@@ -310,6 +338,16 @@ val networkModule = module {
         provideAppRetrofitFactory(
             get(named(APP_NAMED_HOST)),
             get(named(APP_NAMED_HTTP_CLIENT)),
+            get(),
+            get(),
+            get()
+        )
+    }
+
+    single(named(APP_NAMED_DYNAMIC_RETROFIT)) {
+        provideAppDynamicRetrofitFactory(
+            get(named(APP_NAMED_HOST)),
+            get(named(APP_NAMED_HTTP_DYNAMIC_CLIENT)),
             get(),
             get(),
             get()

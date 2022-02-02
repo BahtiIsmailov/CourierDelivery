@@ -58,4 +58,8 @@ object OkHttpFactory {
             )
         }
     }
+
+    fun createAppOkHttpDynamicClient(httpLogginInterceptor: HttpLoggingInterceptor): OkHttpClient {
+        return OkHttpClientUnsafe.create(httpLogginInterceptor)
+    }
 }

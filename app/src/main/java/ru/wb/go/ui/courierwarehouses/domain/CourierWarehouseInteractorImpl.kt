@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierwarehouses.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -54,5 +55,11 @@ class CourierWarehouseInteractorImpl(
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
+
+    override fun dynamicUrl(): Single<ResponseBody> {
+        return appRemoteRepository.dynamicUrl()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
 
 }

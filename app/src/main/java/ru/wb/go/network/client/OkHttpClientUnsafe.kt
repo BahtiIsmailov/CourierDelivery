@@ -51,4 +51,15 @@ object OkHttpClientUnsafe {
         return okHttpBuilder.build()
     }
 
+    @JvmStatic
+    fun create(
+        httpLoggerInterceptor: HttpLoggingInterceptor,
+    ): OkHttpClient {
+        val okHttpBuilder = OkHttpClient.Builder()
+            .addInterceptor(httpLoggerInterceptor)
+            .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
+        return okHttpBuilder.build()
+    }
+
 }

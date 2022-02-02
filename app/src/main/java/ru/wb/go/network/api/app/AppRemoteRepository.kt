@@ -3,6 +3,7 @@ package ru.wb.go.network.api.app
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -56,5 +57,7 @@ interface AppRemoteRepository {
     fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
 
     fun appVersion(): Single<String>
+
+    fun dynamicUrl(): Single<ResponseBody>
 
 }

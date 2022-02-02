@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -29,6 +30,7 @@ import ru.wb.go.network.token.TokenManager
 class AppRemoteRepositoryImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val remoteRepo: AppApi,
+    private val remoteDynamicRepo: AppDynamicApi,
     private val tokenManager: TokenManager,
 ) : AppRemoteRepository {
 
@@ -368,6 +370,12 @@ class AppRemoteRepositoryImpl(
     override fun appVersion(): Single<String> {
         return remoteRepo.getAppActualVersion(tokenManager.apiVersion()).map { it.version }
             .compose(rxSchedulerFactory.applySingleMetrics("appVersion"))
+    }
+
+    override fun dynamicUrl(): Single<ResponseBody> {
+        return remoteDynamicRepo.getDynamicUrl(
+            "https://habr.com/ru/company/surfstudio/blog/512326/"
+        )
     }
 
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {

@@ -6,6 +6,7 @@ import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
 import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.network.api.app.AppApi
+import ru.wb.go.network.api.app.AppDynamicApi
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppRemoteRepositoryImpl
 import ru.wb.go.network.api.auth.AuthApi
@@ -19,13 +20,13 @@ import ru.wb.go.network.monitor.NetworkMonitorRepositoryImpl
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
+import ru.wb.go.ui.app.domain.AppSharedRepository
+import ru.wb.go.ui.app.domain.AppSharedRepositoryImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.ui.couriermap.domain.CourierMapRepositoryImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
-import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.utils.managers.SettingsManager
-import ru.wb.go.ui.app.domain.AppSharedRepositoryImpl
 import ru.wb.go.utils.time.TimeFormatter
 
 val deliveryRepositoryModule = module {
@@ -42,9 +43,10 @@ val deliveryRepositoryModule = module {
     fun provideAppRemoteRepository(
         rxSchedulerFactory: RxSchedulerFactory,
         api: AppApi,
+        remoteDynamicRepo: AppDynamicApi,
         tokenManager: TokenManager,
-        ): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager)
+    ): AppRemoteRepository {
+        return AppRemoteRepositoryImpl(rxSchedulerFactory, api, remoteDynamicRepo, tokenManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -91,7 +93,7 @@ val deliveryRepositoryModule = module {
     }
 
     single { provideAuthRemoteRepository(get(), get(), get(), get()) }
-    single { provideAppRemoteRepository(get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get(), get()) }
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }

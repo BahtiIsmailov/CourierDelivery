@@ -12,6 +12,7 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractor
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -56,6 +57,14 @@ class CourierWarehousesViewModel(
     private lateinit var myLocation: CoordinatePoint
 
     private var whSelectedId: Int? = null
+
+    init {
+        addSubscription(
+            interactor.dynamicUrl().subscribe(
+                { LogUtils { logDebugApp(it.toString()) } },
+                { LogUtils { logDebugApp(it.toString()) } })
+        )
+    }
 
     private fun observeMapAction() {
         addSubscription(
