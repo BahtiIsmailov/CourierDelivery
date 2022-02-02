@@ -41,14 +41,6 @@
             <nav-graph android:value="@navigation/courier_graph" />
         </activity>
 
-
-        <activity
-            android:name="ru.wb.go.ui.config.ConfigActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
-            android:screenOrientation="locked"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
             android:value="false"
