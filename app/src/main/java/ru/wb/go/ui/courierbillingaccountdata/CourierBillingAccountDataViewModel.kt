@@ -205,7 +205,7 @@ class CourierBillingAccountDataViewModel(
             }
             .onErrorReturn {
                 _bicProgressState.value = false
-                _bankFindState.value = BankFind("Введите БИК", "")
+                _bankFindState.value = BankFind("Банк не найден", "")
                 bankEntity = null
                 CourierBillingAccountDataUIState.Error(
                     "БИК банка не найден", focusChange.type

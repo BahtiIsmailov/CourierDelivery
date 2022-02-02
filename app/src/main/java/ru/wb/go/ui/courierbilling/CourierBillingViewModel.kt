@@ -5,13 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
-import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
-import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
@@ -26,7 +24,6 @@ class CourierBillingViewModel(
     private val resourceProvider: CourierBillingResourceProvider,
     private val deviceManager: DeviceManager,
     private val userManager: UserManager,
-    private val interactorSelector: CourierBillingAccountSelectorInteractor,
     private val errorDialogManager: ErrorDialogManager
 ) : NetworkViewModel(compositeDisposable, metric) {
 
@@ -103,7 +100,12 @@ class CourierBillingViewModel(
             interactor.getBillingInfo()
                 .subscribe(
                     { billingComplete(it) },
-                    { billingError(it) })
+                    {
+                        onTechErrorLog("billingError", it)
+                        setLoader(WaitLoader.Complete)
+                        _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+                    })
         )
     }
 
@@ -127,15 +129,7 @@ class CourierBillingViewModel(
 
     fun canCheckout() = balance > 0
 
-    private fun billingError(throwable: Throwable) {
-        onTechErrorLog("billingError", throwable)
-        setLoader(WaitLoader.Complete)
-        _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
-        errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
-
-    }
-
-    private fun setLoader(state:WaitLoader) {
+    private fun setLoader(state: WaitLoader) {
         _waitLoader.postValue(state)
     }
 
@@ -145,29 +139,7 @@ class CourierBillingViewModel(
     }
 
     fun gotoBillingAccountsClick() {
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactorSelector
-                .getBillingAccounts()
-                .subscribe(
-                    { accountsComplete(it) },
-                    {
-                        onTechErrorLog("getBillingAccounts", it)
-                        accountsError(it)
-                    })
-        )
-    }
-
-    private fun accountsComplete(accounts: List<CourierBillingAccountEntity>) {
-        _navigationState.value = if (accounts.isNotEmpty())
-            CourierBillingNavigationState.NavigateToAccountSelector(balance, accounts)
-        else CourierBillingNavigationState.NavigateToAccountCreate(null, listOf(), balance)
-        setLoader(WaitLoader.Complete)
-    }
-
-    private fun accountsError(throwable: Throwable) {
-        setLoader(WaitLoader.Complete)
-        errorDialogManager.showErrorDialog(throwable,_navigateToDialogInfo)
+        _navigationState.value = CourierBillingNavigationState.NavigateToAccountSelector(balance)
     }
 
     fun onCancelLoadClick() {

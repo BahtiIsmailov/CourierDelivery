@@ -127,11 +127,6 @@ class CourierBillingFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierBillingNavigationState.NavigateToAccountCreate -> findNavController().navigate(
-                    CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountDataFragment(
-                        CourierBillingAccountDataAmountParameters(null, it.billingAccount, it.balance)
-                    )
-                )
                 is CourierBillingNavigationState.NavigateToAccountSelector -> findNavController().navigate(
                     CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountSelectorFragment(
                         CourierBillingAccountSelectorAmountParameters(it.balance)

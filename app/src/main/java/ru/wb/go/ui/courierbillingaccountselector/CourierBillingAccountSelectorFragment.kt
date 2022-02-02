@@ -348,7 +348,6 @@ class CourierBillingAccountSelectorFragment :
                 }
                 CourierBillingAccountSelectorUILoaderState.Progress -> {
                     hideKeyboard()
-//                    binding.next.setState(ProgressButtonMode.PROGRESS)
                 }
             }
         }

@@ -319,13 +319,6 @@
         android:label="CourierBalanceFragment"
         tools:layout="@layout/courier_billing_fragment">
         <action
-            android:id="@+id/action_courierBalanceFragment_to_courierBillingAccountDataFragment"
-            app:destination="@id/courierBillingAccountDataFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_courierBalanceFragment_to_courierBillingAccountSelectorFragment"
             app:destination="@id/courierBillingAccountSelectorFragment"
             app:enterAnim="@anim/slide_in_right"

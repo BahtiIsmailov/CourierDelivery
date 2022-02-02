@@ -103,27 +103,29 @@ class CourierBillingAccountSelectorViewModel(
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
-    fun setLoader(state:CourierBillingAccountSelectorUILoaderState){
+    fun setLoader(state: CourierBillingAccountSelectorUILoaderState) {
         _loaderState.value = state
     }
 
     private fun initAccounts() {
         setLoader(CourierBillingAccountSelectorUILoaderState.Progress)
-        addSubscription(interactor.getBillingAccounts()
-            .map { sortedAccounts(it) }
-            .doOnSuccess {
-                billingAccounts = it.toMutableList()
-            }
-            .map { convertToItems(it) }
-            .doOnSuccess {
-                copyCourierBillingAccountSelectorAdapterItems = it.toMutableList()
-            }
-            .doFinally { setLoader(CourierBillingAccountSelectorUILoaderState.Complete) }
-            .subscribe({
-                _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
-            }, {
-                errorDialogManager.showErrorDialog(it,_errorDialogState)
-            })
+        addSubscription(
+            interactor.getBillingAccounts()
+                .map { sortedAccounts(it) }
+                .doOnSuccess {
+                    billingAccounts = it.toMutableList()
+                }
+                .map { convertToItems(it) }
+                .doOnSuccess {
+                    copyCourierBillingAccountSelectorAdapterItems = it.toMutableList()
+                }
+                .doFinally { setLoader(CourierBillingAccountSelectorUILoaderState.Complete) }
+                .subscribe({
+                    _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
+                }, {
+                    onTechErrorLog("getBillingAccounts", it)
+                    errorDialogManager.showErrorDialog(it, _errorDialogState)
+                })
         )
     }
 
@@ -272,11 +274,13 @@ class CourierBillingAccountSelectorViewModel(
             )
         }
         addSubscription(
-            interactor.payments(amountFromText, paymentEntity).subscribe(
-                { paymentsComplete(amountFromText) },
-                {
-                    errorDialogManager.showErrorDialog(it,_errorDialogState)
-                })
+            interactor.payments(amountFromText, paymentEntity)
+                .subscribe(
+                    { paymentsComplete(amountFromText) },
+                    {
+                        onTechErrorLog("requestPayout", it)
+                        errorDialogManager.showErrorDialog(it, _errorDialogState)
+                    })
         )
     }
 
