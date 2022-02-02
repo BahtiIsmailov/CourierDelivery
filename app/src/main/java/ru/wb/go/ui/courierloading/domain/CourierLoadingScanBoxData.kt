@@ -10,4 +10,6 @@ sealed class CourierLoadingScanBoxData {
 
     object NotRecognizedQr : CourierLoadingScanBoxData()
 
+    object ScannerReady : CourierLoadingScanBoxData()
+
 }
