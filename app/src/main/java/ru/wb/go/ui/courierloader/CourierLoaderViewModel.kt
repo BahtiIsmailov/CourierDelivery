@@ -117,7 +117,7 @@ class CourierLoaderViewModel(
                 checkNewInstallation()
                 val order = locRepo.getOrder()
                 val taskMy = remoteRepo.tasksMy(order?.orderId)
-                if(order==null && goToUpdate(version)){
+                if (order == null && goToUpdate(version)) {
                     return
                 }
                 addSubscription(
@@ -266,8 +266,8 @@ class CourierLoaderViewModel(
     }
 
     private fun checkNewInstallation() {
-        if(settingsManager.checkNewInstall(deviceManager.appVersion)){
-            onTechEventLog("New Install Detected. ${deviceManager.appVersion}")
+        if (settingsManager.checkNewInstall(deviceManager.appVersion)) {
+            onTechEventLog("New Install Detected", deviceManager.appVersion)
         }
     }
 
