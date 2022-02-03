@@ -8,7 +8,6 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
@@ -52,13 +51,9 @@ class CourierCarNumberViewModel(
                     switchComplete(it)
                 }
                 .doOnNext { carNumber = it }
-                .doOnNext { LogUtils { logDebugApp(it) } }
                 .map { keyToNumberSpanFormat(it) }
                 .subscribe(
-                    {
-                        LogUtils { logDebugApp(it.numberFormat) }
-                        _stateUI.value = it
-                    },
+                    { _stateUI.value = it },
                     { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }

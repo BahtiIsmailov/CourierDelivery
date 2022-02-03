@@ -16,7 +16,8 @@ import java.lang.annotation.RetentionPolicy;
         TimeFormatType.DAY_AND_LETTER_MONTH,
         TimeFormatType.DAY_LETTER_MONTH_YEAR,
         TimeFormatType.HUMAN_DATE,
-        TimeFormatType.FULL_DATE_AND_TIME})
+        TimeFormatType.FULL_DATE_AND_TIME,
+        TimeFormatType.FULL_DATE_AND_TIME_AND_MILLIS})
 @Retention(RetentionPolicy.SOURCE)
 public @interface TimeFormatType {
     String NOT_SET = "";
@@ -31,4 +32,5 @@ public @interface TimeFormatType {
     String DAY_LETTER_MONTH_YEAR = "day_letter_month_year";
     String HUMAN_DATE = "human_date";
     String FULL_DATE_AND_TIME = "full_date_and_time";
+    String FULL_DATE_AND_TIME_AND_MILLIS = "yyyy-MM-dd HH:mm:ss.SSS";
 }

@@ -60,7 +60,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get())
+        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get())
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }

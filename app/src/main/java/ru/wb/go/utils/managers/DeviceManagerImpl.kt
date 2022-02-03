@@ -24,6 +24,10 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
             }
             return packageInfo?.versionName ?: ""
         }
+    override val toolbarVersion: String
+        get() {
+            return appVersion.replace(".\\d+$".toRegex(), "")
+        }
 
     override val appPackageName = context.packageName
 

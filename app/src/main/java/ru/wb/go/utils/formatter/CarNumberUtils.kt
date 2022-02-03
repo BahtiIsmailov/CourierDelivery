@@ -7,7 +7,7 @@ object CarNumberUtils {
     private const val MAX_PHONE_DIGITS = 11
     private const val MAX_NUMBER_DIGITS_MASK = "A 000 AA 000"
 
-    private fun numberFormat(carNumber: String): String {
+    fun numberFormat(carNumber: String): String {
         val formatNumber = StringBuilder()
         val lengthPhone = getLength(carNumber.length)
         for (position in 0 until lengthPhone) {

@@ -106,7 +106,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                 }
                 is CourierCarNumberUIState.NumberSpanFormat -> {
                     binding.carNumber.setText(
-                        phoneSpannable(state),
+                        carNumberSpannable(state),
                         TextView.BufferType.SPANNABLE
                     )
                     binding.viewKeyboard.setKeyboardMode(state.mode)
@@ -123,7 +123,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         }
     }
 
-    private fun phoneSpannable(state: CourierCarNumberUIState.NumberSpanFormat): Spannable {
+    private fun carNumberSpannable(state: CourierCarNumberUIState.NumberSpanFormat): Spannable {
         val phone = state.numberFormat
         val spannable: Spannable = SpannableString(phone)
         val first = 0

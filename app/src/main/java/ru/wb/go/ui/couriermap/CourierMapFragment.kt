@@ -53,6 +53,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         private const val REQUEST_ERROR = 0
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
+        private const val DEFAULT_ZOOM = 12.0
         private const val MIN_ZOOM = 3.5
         private const val MAX_ZOOM = 20.0
         private const val DEFAULT_POINT_ZOOM = 13.0
@@ -165,12 +166,16 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapController = binding.map.controller
-        mapController.setZoom(12.0)
+        mapController.setZoom(DEFAULT_ZOOM)
+        with(moscowCoordinatePoint()) {
+            mapController.setCenter(GeoPoint(latitude, longitude))
+        }
         binding.map.setBuiltInZoomControls(false)
         binding.map.setMultiTouchControls(true)
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
         binding.map.setUseDataConnection(true)
+
     }
 
     private fun createOsmdroidTilePath(osmdroidBasePath: File): File {
@@ -234,11 +239,31 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                     it.boundingBox,
                     it.animate
                 )
-                is CourierMapState.ZoomToBoundingBoxOffsetY -> zoomToCenterBoundingBoxOffsetY(
-                    it.boundingBox,
-                    it.animate,
-                    it.offsetY
+                is CourierMapState.ZoomToBoundingBoxOffsetY ->
+                    checkMapViewAndZoomToBoundingBoxOffsetY(it)
+            }
+        }
+    }
+
+    private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapState.ZoomToBoundingBoxOffsetY) {
+        with(binding.map) {
+            if (height > 0 && width > 0) {
+                zoomToCenterBoundingBoxOffsetY(
+                    zoomToBoundingBoxOffsetY.boundingBox,
+                    zoomToBoundingBoxOffsetY.animate,
+                    zoomToBoundingBoxOffsetY.offsetY
                 )
+            } else {
+                viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        zoomToCenterBoundingBoxOffsetY(
+                            zoomToBoundingBoxOffsetY.boundingBox,
+                            zoomToBoundingBoxOffsetY.animate,
+                            zoomToBoundingBoxOffsetY.offsetY
+                        )
+                        viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
+                })
             }
         }
     }

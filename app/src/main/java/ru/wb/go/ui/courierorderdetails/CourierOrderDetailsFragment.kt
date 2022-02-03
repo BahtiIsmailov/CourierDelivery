@@ -134,7 +134,6 @@ class CourierOrderDetailsFragment : Fragment() {
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderInfo -> {
-                    binding.carNumber.text = it.carNumber
                     binding.orderNumber.text = it.orderNumber
                     binding.order.text = it.order
                     binding.coast.text = it.coast
@@ -146,6 +145,9 @@ class CourierOrderDetailsFragment : Fragment() {
 
                     showDetails()
                     updateHeightInfoPixels()
+                }
+                is CourierOrderDetailsInfoUIState.NumberSpanFormat -> {
+                    binding.carNumber.text = it.numberFormat
                 }
             }
         }

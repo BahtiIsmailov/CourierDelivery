@@ -6,6 +6,7 @@ interface TimeManager {
     fun getOffsetTimeZone(dateTime: String): String
     fun clear()
     fun getLocalTime(): String
+    fun getLocalMetricTime(): String
     fun getLocalDateAndTime(): String
     fun getPassedTime(startTime:String):Long
 }

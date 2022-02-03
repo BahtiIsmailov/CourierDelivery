@@ -18,9 +18,9 @@ import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.formatter.CarNumberUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
@@ -122,7 +122,6 @@ class CourierOrderDetailsViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
-                carNumber = resourceProvider.getCarNumber(interactor.carNumber()),
                 orderNumber = parameters.orderNumber,
                 order = resourceProvider.getOrder(id),
                 coast = resourceProvider.getCoast(coast),
@@ -131,8 +130,14 @@ class CourierOrderDetailsViewModel(
                 countPvz = resourceProvider.getCountPvz(pvz),
                 arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration)
             )
+            _orderInfo.value = carNumberFormat(interactor.carNumber())
         }
     }
+
+    private fun carNumberFormat(it: String) =
+        CourierOrderDetailsInfoUIState.NumberSpanFormat(
+            resourceProvider.getCarNumber(CarNumberUtils.numberFormat(it))
+        )
 
     private fun initOrderItems(dstOffices: List<CourierOrderDstOfficeLocalEntity>) {
         val items = mutableListOf<CourierOrderDetailsItem>()
@@ -181,12 +186,11 @@ class CourierOrderDetailsViewModel(
     }
 
     fun confirmTakeOrderClick() {
-
         _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.INFO.ordinal,
             resourceProvider.getConfirmTitleDialog(parameters.order.id),
             resourceProvider.getConfirmMessageDialog(
-                interactor.carNumber(),
+                CarNumberUtils.numberFormat(interactor.carNumber()),
                 parameters.order.minVolume,
                 parameters.order.reservedDuration
             ),
@@ -254,11 +258,15 @@ class CourierOrderDetailsViewModel(
                     {
                         onTechErrorLog("anchorTaskError", it)
                         setLoader(WaitLoader.Complete)
-                        if(it is HttpObjectNotFoundException){
+                        if (it is HttpObjectNotFoundException) {
                             val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
                             errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
-                        }else {
-                            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo, DialogInfoFragment.DIALOG_INFO2_TAG)
+                        } else {
+                            errorDialogManager.showErrorDialog(
+                                it,
+                                _navigateToDialogInfo,
+                                DialogInfoFragment.DIALOG_INFO2_TAG
+                            )
                         }
                     })
         )

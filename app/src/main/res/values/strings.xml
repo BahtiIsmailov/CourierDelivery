@@ -216,7 +216,7 @@
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
     <string name="courier_orders_confirm_coast">%1$s ₽</string>
-    <string name="courier_orders_confirm_car_number">• %1$s</string>
+    <string name="courier_orders_confirm_car_number">\u0020• %1$s</string>
     <string name="courier_orders_confirm_arrive">• за %1$s мин</string>
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
@@ -227,7 +227,7 @@
 
     <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
 
-    <string name="courier_orders_details_dialog_message">Машина • <b> %1$s </b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
+    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
 
