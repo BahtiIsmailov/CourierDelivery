@@ -315,7 +315,7 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     fun onRemoveAccountClick() {
