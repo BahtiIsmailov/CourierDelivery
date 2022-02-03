@@ -205,7 +205,7 @@ class CourierBillingAccountDataViewModel(
             }
             .onErrorReturn {
                 _bicProgressState.value = false
-                _bankFindState.value = BankFind("Введите БИК", "")
+                _bankFindState.value = BankFind("Банк не найден", "")
                 bankEntity = null
                 CourierBillingAccountDataUIState.Error(
                     "БИК банка не найден", focusChange.type
@@ -315,7 +315,7 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     fun onRemoveAccountClick() {

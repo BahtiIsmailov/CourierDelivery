@@ -11,6 +11,8 @@ import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.SettingsManager
 import java.net.UnknownHostException
 
 class AppLoaderViewModel(

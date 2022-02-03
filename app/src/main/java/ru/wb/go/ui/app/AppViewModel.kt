@@ -10,6 +10,7 @@ import ru.wb.go.ui.auth.AppVersionState
 import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.SettingsManager
 
 class AppViewModel(
     compositeDisposable: CompositeDisposable,

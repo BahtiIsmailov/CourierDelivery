@@ -3,7 +3,7 @@ package ru.wb.go.utils.managers
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.utils.prefs.SharedWorker
 
-class SettingsManagerImpl(private val worker: SharedWorker):SettingsManager {
+class SettingsManagerImpl(private val worker: SharedWorker) : SettingsManager {
     override fun resetSettings() {
         worker.delete(AppPreffsKeys.START_FLASH_ON)
     }
@@ -14,5 +14,16 @@ class SettingsManagerImpl(private val worker: SharedWorker):SettingsManager {
 
     override fun saveFlash(state: Boolean) {
         worker.save(AppPreffsKeys.START_FLASH_ON, state)
+    }
+
+    override fun checkNewInstall(appVersion: String): Boolean {
+        val check = worker.load(AppPreffsKeys.NEW_INSTALLATION, "")
+
+        if (check == appVersion){
+            return false
+        }
+
+        worker.save(AppPreffsKeys.NEW_INSTALLATION, appVersion)
+        return true
     }
 }

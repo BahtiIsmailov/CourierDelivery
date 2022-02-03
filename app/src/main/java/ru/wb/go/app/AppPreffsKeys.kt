@@ -15,5 +15,5 @@ object AppPreffsKeys {
     const val OFFSET_LOCAL_DATE_TIME_KEY = "OFFSET_LOCAL_DATE_TIME_KEY"
 
     const val START_FLASH_ON = "FLASH_ON"
-
+    const val NEW_INSTALLATION = "NEW_INSTALLATIO"
 }
