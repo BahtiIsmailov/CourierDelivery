@@ -122,7 +122,8 @@
             app:nullable="false" />
         <action
             android:id="@+id/action_courierOrderFragment_to_courierOrderDetailsFragment"
-            app:destination="@id/courierOrderDetailsFragment" />
+            app:destination="@id/courierOrderDetailsFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_courierOrderFragment_to_courierCarNumberFragment"
             app:destination="@id/courierCarNumberFragment" />
@@ -175,7 +176,8 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/courierOrderFragment" />
 
     </fragment>
 
