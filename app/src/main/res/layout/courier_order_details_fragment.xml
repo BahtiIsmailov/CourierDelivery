@@ -372,39 +372,21 @@
                 android:id="@+id/routes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:clipToPadding="true"
+                android:divider="@null"
+                android:dividerHeight="0dp"
                 android:nestedScrollingEnabled="true"
+                android:visibility="visible"
+
                 app:behavior_peekHeight="80dp"
                 app:layout_behavior="@string/bottom_sheet_behavior"
-                android:layout_centerHorizontal="true"
-                android:divider="@null"
-
-                android:dividerHeight="0dp"
-                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title_address_divider"
                 tools:itemCount="20"
                 tools:listitem="@layout/courier_order_details_layout" />
-
-            <ImageView
-                android:id="@+id/imageView7"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/shadow_list"
-                android:src="@drawable/gradient_light_top"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title_address_divider"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="@dimen/shadow_list"
-                android:src="@drawable/gradient_light_bottom"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/empty_list"
