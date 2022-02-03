@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/button_progress_height">
+    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/progress_button"
+    <TextView
+        android:id="@+id/background_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:enabled="true"
-        android:background="@drawable/button_round_corner_gradient"
-        tools:text="..." />
+        android:background="@color/black"
+        android:clickable="true"
+        android:focusable="true" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleSmallTitle"
+        android:layout_width="@dimen/progress_bar_button"
+        android:layout_height="@dimen/progress_bar_button"
+        android:layout_marginEnd="10dp"
+        android:theme="@style/AppProgressBarCircularLight"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/text"
+        app:layout_constraintEnd_toStartOf="@+id/text"
+        app:layout_constraintTop_toTopOf="@+id/text" />
+
+    <TextView
+        android:id="@+id/text"
+        style="@style/LargeBrightMediumText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/background_layout"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:text="Далее" />
+
+    <View
+        android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="15dp"
-        android:theme="@style/AppProgressBarCircularLight"
-        android:visibility="gone" />
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

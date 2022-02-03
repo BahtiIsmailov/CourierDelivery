@@ -1,0 +1,14 @@
+﻿{
+  "auth_servers": [
+    {
+      "key": "AUTH_SERVER_FRONTEND",
+      "value": "https://wbtrans-auth.wildberries.ru"
+    }
+  ],
+  "app_servers": [
+    {
+      "key": "APP_SERVER_FRONTEND",
+      "value": "https://wbtrans-mobile-api.wildberries.ru"
+    }
+  ]
+}

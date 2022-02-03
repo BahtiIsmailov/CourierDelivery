@@ -3,11 +3,44 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/auth_navigation"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/authLoaderFragment">
 
     <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.wb.logistics.ui.auth.LoginFragment"
-        android:label="LoginFragment" />
+        android:id="@+id/authLoaderFragment"
+        android:name="ru.wb.go.ui.auth.AuthLoaderFragment"
+        android:label=""
+        tools:layout="@layout/auth_loader_fragment">
+        <action
+            android:id="@+id/action_authLoaderFragment_to_authNumberPhoneFragment"
+            app:destination="@id/authNumberPhoneFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authNumberPhoneFragment"
+        android:name="ru.wb.go.ui.auth.NumberPhoneFragment"
+        android:label="@string/auth_number_phone_toolbar_label"
+        tools:layout="@layout/auth_phone_fragment">
+        <action
+            android:id="@+id/action_authNumberPhoneFragment_to_checkSmsFragment"
+            app:destination="@id/checkSmsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/checkSmsFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkSmsFragment"
+        android:name="ru.wb.go.ui.auth.CheckSmsFragment"
+        android:label="CheckSmsFragment"
+        tools:layout="@layout/auth_check_sms_fragment">
+        <argument
+            android:name="check_sms_key"
+            app:argType="ru.wb.go.ui.auth.CheckSmsParameters"
+            app:nullable="false" />
+    </fragment>
 
 </navigation>

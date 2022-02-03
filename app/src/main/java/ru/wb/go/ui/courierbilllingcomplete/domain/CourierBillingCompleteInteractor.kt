@@ -1,0 +1,3 @@
+package ru.wb.go.ui.courierbilllingcomplete.domain
+
+interface CourierBillingCompleteInteractor

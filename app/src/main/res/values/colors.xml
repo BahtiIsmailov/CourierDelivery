@@ -1,62 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#276EA6</color>
-    <color name="purple_700">#95276EA6</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorPrimary">#642CA3</color>
+    <color name="colorPrimaryDark">#291466</color>
+    <color name="colorStatusBarBackground">#F2F3F5</color>
+    <color name="colorOnSecondary">#642CA3</color>
+
+    <color name="colorControlNormal">#8948D3</color>
+    <color name="colorControlActivated">#642CA3</color>
+    <color name="colorErrorAppearance">#116C15</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="fab_disable">#D1CED5</color>
+    <color name="fab_enable">#642CA3</color>
+    <color name="fab_progress">#642CA3</color>
+
+
+    <color name="order_number">#2196F3</color>
+    <color name="order_amount">#2CA364</color>
+
+    <color name="transparent">#0000</color>
+    <color name="keyboard_dot_select">#642CA3</color>
+    <color name="keyboard_dot_stroke">#D5C0ED</color>
+    <color name="keyboard_dot_background">#D5C0ED</color>
+    <color name="keyboard_ripple_color">#80F7F2FC</color>
+
+    <color name="toolbar_text">#231D2A</color>
+
     <color name="colorTextPrimaryLight">#FFFFFF</color>
 
+    <color name="text_clickable">#642CA3</color>
+    <color name="text_clickable_dark">#6F6779</color>
+    <color name="border_normal">#642CA3</color>
+    <color name="border_lite">#DBD7E0</color>
+    <color name="border_error">#B00020</color>
+
     <color name="background">#642CA3</color>
-    <color name="background_content">#F4F3F7</color>
+
+    <color name="dialog_title_info">#642CA3</color>
+    <color name="dialog_title_warning">#FB8C00</color>
+    <color name="dialog_title_alarm">#B00020</color>
+
+    <color name="danger">#B00020</color>
+    <color name="info">#DBD7E0</color>
+    <color name="complete">#2CA364</color>
+    <color name="error">#DF1F00</color>
+    <color name="accept">#4BCF85</color>
+    <color name="complete_text">#238137</color>
+    <color name="accept_trans">#1A4BCF85</color>
+    <color name="deny">#B00020</color>
+    <color name="deny_trans">#1AEC5C5C</color>
+    <color name="added">#FB8C00</color>
+    <color name="added_trans">#2FFB8C00</color>
+    <color name="primary">#642CA3</color>
+    <color name="disable_input_background">#F5F4F6</color>
+
+
+    <color name="icon_default">#CCC5D3</color>
+    <color name="icon_success">#2CA364</color>
+    <color name="icon_warning">#FB8C00</color>
+    <color name="icon_deny">#B00020</color>
+
+    <color name="background_content_light">#FFFFFF</color>
+    <color name="background_content">#E5E5E5</color>
+    <color name="background_auth_content">#FFFFFF</color>
     <color name="background_tint">#FD3F18</color>
     <color name="background_view">#642CA3</color>
+    <color name="background_search_view">#F1F1F4</color>
+
     <color name="background_transparently">#97276EA6</color>
 
-    <color name="color_tint">#BFC5D1</color>
-    <color name="color_progress">#FF5722</color>
-    <color name="invalid">#E22D2D</color>
-
+    <color name="tint">#F0EDF2</color>
+    <color name="color_progress">#642CA3</color>
+    <color name="invalid">#B00020</color>
+    <color name="btn_clear_phone">#DBD7E0</color>
 
     <color name="text_toolbar">#17233B</color>
     <color name="text_control_activated">#01b0e7</color>
+    <color name="text_spannable_phone">#231D2A</color>
+    <color name="text_spannable_time">#642CA3</color>
+
+    <color name="text_info">#6F6779</color>
+
+    <color name="buttonColor">#642CA3</color>
+    <color name="refreshColor">#642CA3</color>
+    <color name="button_text">#642CA3</color>
 
     <color name="splash_text">#fafafa</color>
 
-    <color name="text">#000000</color>
-    <color name="small_regular_light_text">#8C94A8</color>
-    <color name="small_regular_dark_text">#17233B</color>
-    <color name="smedium_regular_light_text">#8C94A8</color>
-    <color name="smedium_regular_dark_text">#17233B</color>
-    <color name="medium_regular_light_text">#8C94A8</color>
-    <color name="medium_regular_dark_text">#17233B</color>
-    <color name="large_regular_text">#17233B</color>
+    <color name="black_text">#231D2A</color>
+    <color name="dark_text">#6F6779</color>
+    <color name="light_text">#99939F</color>
+    <color name="bright_text">#ffffff</color>
 
     <color name="nav_delivery_count_background">#FB8C00</color>
 
-    <color name="delivery_flight_background">#E5E5E5</color>
-    <color name="delivery_background">#FFFFFF</color>
+    <color name="delivery_flight_background">#F1F1F4</color>
+    <color name="delivery_card_background">#FFFFFF</color>
     <color name="delivery_empty_background">#F6F6F6</color>
-    <color name="delivery_parking_number">#4CAF50</color>
+
+    <color name="background_transparent_text">#F9F5FD</color>
+    <color name="background_transparent_loader">#72F9F5FD</color>
 
     <color name="button_text_default">#FFFFFF</color>
-    <color name="button_disabled_gradient_start">#E0DDE4</color>
-    <color name="button_disabled_gradient_end">#E0DDE4</color>
-    <color name="button_normal_gradient_start">#642CA3</color>
-    <color name="button_normal_gradient_end">#642CA3</color>
-    <color name="button_pressed_gradient_start">#703AAC</color>
-    <color name="button_pressed_gradient_end">#703AAC</color>
 
     <color name="button_default_text_enable">#FFFFFF</color>
     <color name="button_default_text_progress">#FFFFFF</color>
-    <color name="button_default_text_disable">#FFFFFF</color>
+    <color name="button_default_text_disable">#B6B2BD</color>
+    <color name="button_default_text_enable1">#642CA3</color>
 
-    <color name="button_default_disabled">#E0DDE4</color>
+    <color name="button_alert_text_enable">#B00020</color>
+    <color name="button_alert_text_progress">#E0DDE4</color>
+    <color name="button_alert_text_disable">#E0DDE4</color>
+
+    <color name="button_round_default_disabled">#E0DDE4</color>
+    <color name="button_round_default_enabled">#642CA3</color>
+    <color name="button_round_default_pressed">#703AAC</color>
+
+    <color name="button_default_disabled">#EAE8ED</color>
     <color name="button_default_enabled">#642CA3</color>
     <color name="button_default_pressed">#703AAC</color>
+
+    <color name="button_refused_disabled">#EAE8ED</color>
+    <color name="button_refused_enabled">#FDF4F2</color>
+    <color name="button_refused_pressed">#CDFDF4F2</color>
+
+    <color name="button_default_enabled1">#EFE8F7</color>
+    <color name="button_default_pressed1">#E6D1FF</color>
+
 
     <color name="button_light_disabled">#E0DDE4</color>
     <color name="button_light_enabled">#FFFFFF</color>
@@ -70,6 +142,37 @@
     <color name="button_gray_enabled">#E0DDE4</color>
     <color name="button_gray_pressed">#BEBBC1</color>
 
+    <color name="button_success_disabled">#F3F1F6</color>
+    <color name="button_success_enabled">#4CAF50</color>
+    <color name="button_success_pressed">#66BC69</color>
+
+    <color name="button_danger_disabled">#F3F1F6</color>
+    <color name="button_danger_enabled">#B00020</color>
+    <color name="button_danger_pressed">#C50225</color>
+
+    <color name="button_warning_disabled">#F3F1F6</color>
+    <color name="button_warning_enabled">#FB8C00</color>
+    <color name="button_warning_pressed">#FA900A</color>
+
     <color name="reception_text_manual_input">#642CA3</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#673AB7</color>
+
+    <color name="keyboard_text_color">#231D2A</color>
+
+    <color name="color_arc_foreground">#FFFFFF</color>
+    <color name="color_arc_backgroundColor">#FFFFFF</color>
+    <color name="color_arc_scale_current">#673AB7</color>
+    <color name="color_arc_scale_wait">#E6E3EB</color>
+
+    <color name="disable_icon">#D1CED5</color>
+    <color name="enable_icon">#673AB7</color>
+
+    <color name="init_scan_status">#99939F</color>
+    <color name="complete_scan_status">#2CA364</color>
+    <color name="forbidden_scan_status">#B00020</color>
+    <color name="not_recognized_scan_status">#FB8C00</color>
+    <color name="start_scan_status">#673AB7</color>
+
+    <color name="support_tab_number_background">#B3B6D8F1</color>
 
 </resources>

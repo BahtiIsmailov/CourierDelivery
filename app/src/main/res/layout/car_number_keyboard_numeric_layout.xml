@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/ru.wb.go.ui.auth.keyboard.KeyboardButtonView"
+    android:id="@+id/numeric"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button1"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline12"
+        app:layout_constraintRight_toLeftOf="@+id/guideline13"
+        app:layout_constraintTop_toTopOf="parent"
+        app:value="BUTTON_1"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="1" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button2"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline4"
+        app:layout_constraintRight_toLeftOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="parent"
+        app:value="BUTTON_2"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="2" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button3"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline5"
+        app:layout_constraintRight_toLeftOf="@+id/guideline6"
+        app:layout_constraintTop_toTopOf="parent"
+        app:value="BUTTON_3"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="3" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button4"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline12"
+        app:layout_constraintRight_toLeftOf="@+id/guideline13"
+        app:layout_constraintTop_toTopOf="@+id/guideline8"
+        app:value="BUTTON_4"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="4" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button5"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline4"
+        app:layout_constraintRight_toLeftOf="@+id/guideline7"
+        app:layout_constraintTop_toBottomOf="@+id/button_3"
+        app:value="BUTTON_5"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="5" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button6"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline5"
+        app:layout_constraintRight_toLeftOf="@+id/guideline6"
+        app:layout_constraintTop_toTopOf="@+id/guideline8"
+        app:value="BUTTON_6"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="6" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button7"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline12"
+        app:layout_constraintRight_toLeftOf="@+id/guideline13"
+        app:layout_constraintTop_toTopOf="@+id/guideline9"
+        app:value="BUTTON_7"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="7" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_8"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button8"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline4"
+        app:layout_constraintRight_toLeftOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline9"
+        app:value="BUTTON_8"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="8" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_9"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button9"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline5"
+        app:layout_constraintRight_toLeftOf="@+id/guideline6"
+        app:layout_constraintTop_toTopOf="@+id/guideline9"
+        app:value="BUTTON_9"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="9" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
+        android:id="@+id/button_0"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/keyboard_button0"
+        android:textSize="@dimen/pin_button_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline4"
+        app:layout_constraintRight_toLeftOf="@+id/guideline7"
+        app:layout_constraintTop_toBottomOf="@+id/guideline10"
+        app:value="BUTTON_0"
+        custom:strokeWidth="@dimen/dp_0d2"
+        custom:value="0" />
+
+    <View
+        android:id="@+id/overlay_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/selected_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/courier_background_select_pvz"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/box_address"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageView6"
+        app:layout_constraintStart_toStartOf="@+id/selected_background"
+        app:layout_constraintTop_toTopOf="@+id/selected_background"
+        tools:text="г. Подольск, ул. Троицкая, 20" />
+
+    <TextView
+        android:id="@+id/delivery_prefix"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="Доставлено"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintStart_toStartOf="@+id/selected_background"
+        app:layout_constraintTop_toBottomOf="@+id/box_address" />
+
+    <TextView
+        android:id="@+id/delivery_count"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/invalid"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
+        app:layout_constraintTop_toBottomOf="@+id/box_address"
+        tools:text="20" />
+
+    <TextView
+        android:id="@+id/divider_count"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="/"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintStart_toEndOf="@+id/delivery_count"
+        app:layout_constraintTop_toBottomOf="@+id/box_address" />
+
+    <TextView
+        android:id="@+id/from_count"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintStart_toEndOf="@+id/divider_count"
+        app:layout_constraintTop_toBottomOf="@+id/box_address"
+        tools:text="24" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_intransit_is_faild_unloading_expects"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/selected_background"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

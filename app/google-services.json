@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "18800056228",
+    "project_id": "wb-go-e8a88",
+    "storage_bucket": "wb-go-e8a88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18800056228:android:42491b3d973fe0dfe7d331",
+        "android_client_info": {
+          "package_name": "ru.wb.go"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18800056228-c01n94tqho2irporc2jeocjmldean4us.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAznsiwT3Uxx3mFUFqZOxALXRIEexv5YJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18800056228-c01n94tqho2irporc2jeocjmldean4us.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18800056228:android:6a65a5f90049f967e7d331",
+        "android_client_info": {
+          "package_name": "ru.wb.go.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18800056228-c01n94tqho2irporc2jeocjmldean4us.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAznsiwT3Uxx3mFUFqZOxALXRIEexv5YJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18800056228-c01n94tqho2irporc2jeocjmldean4us.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

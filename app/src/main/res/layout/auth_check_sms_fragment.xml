@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!--    <include-->
+    <!--        android:id="@+id/toolbar_layout"-->
+    <!--        layout="@layout/toolbar_layout"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_auth_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
+        android:gravity="center"
+        android:text="@string/auth_check_sms_input"
+        android:textAppearance="@style/LargeBlackRegularText"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+
+    <ru.wb.go.ui.auth.keyboard.PasswordDotsView
+        android:id="@+id/view_pin_code"
+        android:layout_width="200dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="17dp"
+        android:background="@null"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:maxLength="4"
+        android:textSize="0px"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        custom:dotsSize="16dp"
+        custom:dotsStrokeWidth="1dp" />
+
+    <ProgressBar
+        android:id="@+id/sms_code_progress"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/view_pin_code"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view_pin_code" />
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/bottom_info"-->
+    <!--        style="@style/LargeDarkRegularText"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:gravity="center"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="14dp"-->
+    <!--        android:layout_marginStart="16dp"-->
+    <!--        android:layout_marginEnd="16dp"-->
+    <!--        android:text="@string/auth_check_sms_incorrect"-->
+    <!--        android:textColor="@color/danger"-->
+    <!--        android:visibility="invisible"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/view_pin_code" />-->
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardNumericView
+        android:id="@+id/view_keyboard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_pin_code"
+        custom:keyboardColor="@color/keyboard_text_color"
+        custom:layout_constraintLeft_toLeftOf="parent"
+        custom:layout_constraintRight_toRightOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="64dp" />
+
+    <TextView
+        android:id="@+id/number_phone_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="4dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4sp"
+        android:textAppearance="@style/MediumDarkRegularText"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="На номер +7 (000) 000-00-00 выслано СМС с кодом" />
+
+    <TextView
+        android:id="@+id/repeat_sms_timer"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/repeat_sms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Выслать CMC повторно через 00:30" />
+
+    <TextView
+        android:id="@+id/repeat_sms"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="36dp"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/auth_check_sms_repeat"
+        android:textColor="@color/text_clickable"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/repeat_password_progress"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/repeat_sms"
+        app:layout_constraintEnd_toStartOf="@+id/repeat_sms"
+        app:layout_constraintTop_toTopOf="@+id/repeat_sms" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

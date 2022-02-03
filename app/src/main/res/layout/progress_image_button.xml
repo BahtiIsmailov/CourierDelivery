@@ -13,13 +13,6 @@
         android:clickable="true"
         android:focusable="true" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/content_start"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/views"
         android:layout_width="wrap_content"
@@ -38,25 +31,26 @@
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleSmallTitle"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:theme="@style/AppProgressBarCircularDark"
+        android:layout_width="@dimen/progress_bar_button"
+        android:layout_height="@dimen/progress_bar_button"
+        android:theme="@style/AppProgressBarCircularLight"
         android:visibility="visible"
         tools:ignore="MissingConstraints" />
 
     <ImageView
         android:id="@+id/icon_image"
-        android:layout_width="24dp"
-        android:layout_height="24dp" />
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/text"
-        style="@style/SMediumRegularDarkText"
+        style="@style/LargeBrightMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="4dp"
-        android:text="@string/delivery_start_receiving_boxes_start"
-        android:textColor="@color/white"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:text="@string/flights_start_adding_boxes"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="CircleProgressView">
-        <attr name="ap_progress" format="integer" />
+    <declare-styleable name="TimerProgressView">
+        <attr name="ap_progress" format="float" />
+        <attr name="ap_is_divider" format="boolean" />
+        <attr name="ap_progress_width" format="integer" />
         <attr name="ap_progress_scale_current_color" format="color" />
         <attr name="ap_progress_scale_wait_color" format="color" />
         <attr name="ap_progress_background_color" format="color" />
@@ -16,6 +18,10 @@
             <enum name="enable" value="1" />
             <enum name="progress" value="2" />
         </attr>
+        <attr name="progress_button_text_color_enable" format="color" />
+        <attr name="progress_button_text_color_progress" format="color" />
+        <attr name="progress_button_text_color_disable" format="color" />
+        <attr name="progress_button_background" format="reference|color" />
     </declare-styleable>
 
     <declare-styleable name="ProgressImageButtonView">
@@ -30,6 +36,117 @@
         <attr name="app_text_color_disable" format="color" />
         <attr name="app_icon" format="integer" />
         <attr name="app_background" format="reference|color" />
+    </declare-styleable>
+
+    <declare-styleable name="ReceptionInfoView">
+        <attr name="reception_info_box" format="string" />
+        <attr name="reception_address_box" format="string" />
+        <attr name="reception_info_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="submerge_box" value="1" />
+            <enum name="return_box" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ReceptionAcceptedView">
+        <attr name="reception_accepted_box" format="string" />
+        <attr name="reception_accepted_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="contains_complete_box" value="1" />
+            <enum name="contains_deny_box" value="2" />
+            <enum name="contains_has_added_box" value="3" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ReceptionParkingView">
+        <attr name="reception_parking_number" format="string" />
+        <attr name="reception_parking_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="contains_complete_box" value="1" />
+            <enum name="contains_deny_box" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="UnloadingAcceptedView">
+        <attr name="unloading_accepted_box" format="string" />
+        <attr name="unloading_accepted_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="complete_box" value="1" />
+            <enum name="complete_active_box" value="2" />
+            <enum name="deny_box" value="3" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="UnloadingReturnView">
+        <attr name="unloading_return_box" format="string" />
+        <attr name="unloading_return_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="complete_active_box" value="1" />
+            <enum name="deny_box" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="UnloadingInfoView">
+        <attr name="unloading_info_box" format="string" />
+        <attr name="unloading_info_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="unloading_box" value="1" />
+            <enum name="return_box" value="2" />
+            <enum name="deny_car_box" value="3" />
+            <enum name="deny_info_box" value="4" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="DcUnloadingAcceptedView">
+        <attr name="dc_unloading_accepted_box" format="string" />
+        <attr name="dc_unloading_accepted_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="complete_box" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="DcUnloadingInfoView">
+        <attr name="dc_unloading_info_box" format="string" />`
+        <attr name="dc_unloading_info_state" format="enum">
+            <enum name="empty_box" value="0" />
+            <enum name="unloading_box" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="KeyboardButtonView">
+        <attr name="id" format="integer" />
+        <attr name="isBackgroundCircle" format="boolean" />
+        <attr name="value" format="string" />
+        <attr name="strokeWidth" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="KeyboardInputView">
+        <attr name="type" format="enum">
+            <enum name="sms" value="0" />
+            <enum name="pinCreate" value="1" />
+            <enum name="pinInput" value="2" />
+            <enum name="signUp" value="3" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="DotPasswordView">
+        <attr name="dotsPasswordCount" format="integer" />
+        <attr name="dotsPasswordBackgroundColor" format="color" />
+        <attr name="dotsPasswordColor" format="color" />
+        <attr name="dotsStrokeWidth" format="dimension" />
+        <attr name="dotsSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="KeyboardNumericView">
+        <attr name="keyboardColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CarNumberKeyboardView">
+        <attr name="carNumberKeyboardColor" format="color" />
+        <attr name="carNumberType" format="enum">
+            <enum name="numeric" value="0" />
+            <enum name="symbol" value="1" />
+        </attr>
     </declare-styleable>
 
 </resources>

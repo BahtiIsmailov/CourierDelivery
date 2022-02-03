@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/selected_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/courier_background_select_order"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/order_number"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/order_number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/order"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toEndOf="@+id/order_number"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text=" - 2000000243" />
+
+    <TextView
+        android:id="@+id/coast"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/order_amount"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/order"
+        tools:text="от 3200 \u20BD" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/icon_vertical_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.06" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/icon_vertical_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ImageView
+        android:id="@+id/show_route_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/count_box"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_1"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical_1"
+        app:layout_constraintTop_toTopOf="@+id/count_box"
+        app:srcCompat="@drawable/ic_box_count"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/count_box"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        app:layout_constraintTop_toBottomOf="@+id/order"
+        tools:text="от 50 шт." />
+
+    <ImageView
+        android:id="@+id/volume_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="@+id/volume"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_1"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical_1"
+        app:layout_constraintTop_toTopOf="@+id/volume"
+        app:srcCompat="@drawable/ic_truck"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/volume"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/show_route_image"
+        app:layout_constraintTop_toBottomOf="@+id/count_box"
+        tools:text="от 86 кубов" />
+
+    <ImageView
+        android:id="@+id/pvz_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/count_pvz"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_2"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
+        app:layout_constraintTop_toTopOf="@+id/count_pvz"
+        app:srcCompat="@drawable/ic_pvz_count"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/count_pvz"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
+        app:layout_constraintTop_toBottomOf="@+id/order"
+        tools:text="9 адресов" />
+
+    <ImageView
+        android:id="@+id/arrive_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
+        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_2"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
+        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
+        app:srcCompat="@drawable/ic_order_time"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/arrive_prefix"
+        style="@style/LargeDarkRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        android:text="@string/courier_orders_details_arrive"
+        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
+        app:layout_constraintTop_toBottomOf="@+id/count_pvz" />
+
+    <TextView
+        android:id="@+id/arrive"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
+        app:layout_constraintStart_toEndOf="@+id/arrive_prefix"
+        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
+        tools:text=" 20 мин" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

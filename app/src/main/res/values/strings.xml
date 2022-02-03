@@ -1,35 +1,532 @@
 <resources>
-    <string name="app_name">WB Logistics</string>
+    <string name="app_name">WB Go</string>
 
     <string name="app_nav_delivery">Доставка</string>
+    <string name="app_nav_billing">Баланс</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
-    <string name="app_version">Версия %s</string>
+    <string name="app_version">%s</string>
+    <string name="app_update_version">Новая версия %s</string>
+    <string name="app_update_version_available">Доступна новая версия %s</string>
+    <string name="app_update_version_status">Обновить</string>
+    <string name="app_update_version_load_status">Загрузка…</string>
+    <string name="app_update_version_error">Обновление не установлено. Повторите операцию позднее</string>
+    <string name="app_update_version_up_to_date">Обновлений нет</string>
+
+    <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
+    <string name="app_duration_time_span">через</string>
 
     <!--network error-->
+    <string name="auth_session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
+    <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
-    <string name="timeout_service_error">Ведутся работы по улучшению сервиса</string>
-    <string name="wrong_identity_error">Ошибка идентификации пользователя</string>
-    <string name="session_error">Ваша сессия устарела. Просьба пройти повторную авторизацию.</string>
+    <string name="http_timeout_error">"TimeOut. Возможно отсутствует интернет или низкая скорость соединения"</string>
+    <string name="http_timeout_service_error" />
+    <string name="http_error" />
+    <string name="http_unknown_error" />
 
-    <string name="auth_phone_input_title">Введите номер телефона</string>
-    <string name="auth_phone_input_title_description">Мы отправим на него код подтверждения</string>
-    <string name="auth_phone_hint">+7</string>
-    <string name="auth_phone_not_found">Номер телефона не зарегистрирован</string>
-    <string name="auth_phone_attempt">Осталось попаыток:</string>
-    <string name="auth_phone_next">Далее</string>
+    <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
-    <string name="nav_tools_company">OOO \"Восточная Транспортная Компания\"</string>
-    <string name="nav_default_count">100</string>
+    <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
+    <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>
 
-    <string name="delivery_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
-    <string name="delivery_empty_flight_update">Обновить</string>
-    <string name="delivery_parking_title">Парковка</string>
-    <string name="delivery_start_receiving_boxes_start">Начать прием коробок</string>
+    <string name="error_title">Ошибка</string>
 
-    <string name="reception_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
-    <string name="reception_manual_input_button">Ручной ввод</string>
-    <string name="reception_complete_button">Завершить</string>
+    <string name="attention_title">Внимание</string>
+    <string name="courier_expects_message">Ваши данные находятся на рассмотрении</string>
+    <string name="courier_expects_positive">OK</string>
+
+    <string name="ok_button_title">OK</string>
+
+    <string name="splash_uri_play_market">market://details?id=%s</string>
+    <string name="splash_uri_google">https://play.google.com/store/apps/details?id=%s</string>
+
+    <!--debug panel-->
+    <string name="debug_panel_caption">App Debug Console</string>
+    <string name="debug_auto_substitution">Auto substitution</string>
+    <string name="debug_auto_authorization">Auto authorization</string>
+    <string name="debug_save">Save</string>
+    <string name="debug_close">Close</string>
+
+    <string name="selector_title">Выбор</string>
+
+    <string name="auth_load" />
+    <string name="unloading_empty_title" />
+
+
+    <string name="count_boxes">%d кор.</string>
+    <string name="delivery">Рейс №%s</string>
+
+    <string name="inet_text">Интернет: </string>
+    <string name="inet_ok">Есть</string>
+    <string name="inet_no">Отсутствует</string>
+
+    <string name="accepted">Принял</string>
+    <string name="return_box">Возврат</string>
+    <string name="delivery_box">Доставил</string>
+    <string name="debt">Задолженность</string>
+    <string name="error">Заполните поле</string>
+    <string name="error_register_letter">Недопустимые символы</string>
+    <string name="error_register_size_12">12 цифр</string>
+    <string name="error_register_size_6">6 цифр</string>
+    <string name="error_register_size_4">4 цифры</string>
+    <string name="error_empty" />
+
+    <string name="status_on_way">В ПУТИ</string>
+    <string name="status_not_assigned">НЕ НАЗНАЧЕН</string>
+    <string name="status_loading_progress">ИДЁТ ПОГРУЗКА</string>
+    <string name="status_delivery">Рейс</string>
+    <string name="status_not_assigned_empty">Здесь будет информация по доставке</string>
+
+    <string name="app_ver">ver. </string>
+
+    <string name="exit_app">Выйти из приложения?</string>
+    <string name="exit_app_cancel">Отмена</string>
+
+    <string name="empty_list">Список пуст</string>
+
+    <string name="auth_number_phone_toolbar_label">Вход</string>
+    <string name="auth_number_phone_phone_hint">Номер телефона</string>
+    <string name="auth_number_phone_phone_not_found">Номер не найден, обратитесь к ответственному</string>
+    <string name="auth_number_phone_phone_attempt">Осталось попыток: %1$s</string>
+    <string name="auth_number_phone_phone_next">Далее</string>
+    <string name="auth_number_phone_phone_default">+7</string>
+
+    <string name="auth_check_sms_toolbar_label">Вход</string>
+    <string name="auth_check_sms_title">На номер %1$s выслано СМС с кодом</string>
+    <string name="auth_check_sms_hint">Код</string>
+    <string name="auth_check_sms_input">Введите код</string>
+    <string name="auth_check_sms_incorrect">Код введен неверно</string>
+    <string name="auth_check_sms_repeat"><u>Выслать CMC повторно</u></string>
+
+
+    <string name="auth_user_data_label">Регистрация</string>
+
+    <string name="nav_default_count">0</string>
+    <string name="nav_no_internet_dialog_title">У вас отсутствует интернет!</string>
+    <string name="nav_no_internet_dialog_description">Вы можете продолжить работу, сохранение произойдет после того как возобновится связь</string>
+    <string name="nav_no_internet_dialog_button">Понятно</string>
+
+    <string name="flights_label">Доставка</string>
+    <string name="flights_empty_flight">Вы не назначены ни на один рейс и не можете осуществлять приём товара. Обратитесь к сотруднику логистики чтобы вас назначили на рейс</string>
+    <string name="flights_error_flight">Что-то пошло не так, обновите экран для продолжения</string>
+    <string name="flights_empty_flight_update">Обновить</string>
+    <string name="flights_parking_title">ПАРКОВКА</string>
+    <string name="flights_start_adding_boxes">Начать прием коробок</string>
+    <string name="flights_return_balance">Вернуть\nна баланс</string>
+    <string name="flights_continue_acceptance">Продолжить\nприемку</string>
+    <string name="flights_flight_number">№ %1$d</string>
+    <string name="flights_parking_number">№%1$d</string>
+    <string name="flights_routes_title_pref">Маршрут %1$s</string>
+    <string name="flights_routes_empty">Маршруты не назначены</string>
+
+    <string name="flights_loader">Получаем данные по рейсу</string>
+
+    <string name="dc_loading_label">Прием</string>
+    <string name="dc_loading_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
+    <string name="dc_loading_scan_not_permission">Разрешение для использования камеры не установлено</string>
+    <string name="dc_loading_scan_loader">Идет загрузка данных</string>
+    <string name="dc_loading_scan_not_permission_request">Запросить</string>
+    <string name="dc_loading_scan_not_permission_request_setting">В настройки</string>
+    <string name="dc_loading_manual_input_button">Ручной ввод</string>
+    <string name="dc_loading_complete_button">Завершить</string>
+    <string name="dc_loading_current_box">Баркод коробки</string>
+    <string name="dc_loading_code_pref_box" />
+    <string name="dc_loading_code_box_divider">TRBX%1$s</string>
+    <string name="dc_loading_code_box">TRBX%1$s</string>
+    <string name="dc_loading_code_added_box">TRBX%1$s добавлена</string>
+    <string name="dc_loading_code_short_added_box">%1$s добавлена</string>
+    <string name="dc_loading_code_short_has_been_added_box">%1$s добавлена ранее</string>
+    <string name="dc_loading_status_box_empty_init" />
+    <string name="dc_loading_status_box_empty">Начните сканирование</string>
+    <string name="dc_loading_status_box_submerge">Погрузите в машину</string>
+    <string name="dc_loading_status_box_return">Верните коробку</string>
+    <string name="dc_loading_status_box_has_added">Погрузите в машину</string>
+    <string name="dc_loading_accepted">Принято</string>
+    <string name="dc_loading_parking">Парковка №</string>
+    <string name="dc_loading_list"><u>Список</u></string>
+    <string name="dc_loading_default_count_box">-</string>
+    <string name="dc_loading_default_parking" />
+
+    <string name="dc_loading_scan_dialog_title_error">Прием коробок</string>
+    <string name="dc_loading_scan_dialog_message_error">Коробка не добавлена, повторите операцию</string>
+    <string name="dc_loading_scan_switch_dialog_message_error">Не удается завершить приемку на РЦ, повторите операцию</string>
+
+    <string name="dc_loading_return_dialog_title">Вернуть на баланс?</string>
+    <string name="dc_loading_return_dialog_description">Все отсканированные коробки вернуться на баланс перевозчика</string>
+    <string name="dc_loading_return_dialog_positive_button">Вернуть</string>
+    <string name="dc_loading_return_dialog_negative_button">Отмена</string>
+
+    <string name="dc_loading_handle_label">Ручной ввод</string>
+    <string name="dc_loading_handle_receive">Принять</string>
+
+    <string name="dc_loading_box_not_belong_dc_toolbar_title" />
+    <string name="dc_loading_box_not_belong_dc_title">Коробка не принадлежит РЦ</string>
+    <string name="dc_loading_box_not_belong_dc_description">верните её сотруднику склада</string>
+    <string name="dc_loading_box_not_belong_flight_toolbar_title">Не принадлежит рейсу</string>
+    <string name="dc_loading_box_not_belong_flight_title">Коробка не принадлежит рейсу</string>
+    <string name="dc_loading_box_not_belong_empty_gate">-</string>
+    <string name="dc_loading_box_not_belong_info_title">Информация по ШК не найдена</string>
+    <string name="dc_loading_box_not_belong_address_title" />
+
+    <string name="dc_loading_box_not_code_title">ШК</string>
+    <string name="dc_loading_box_not_address_title">Адрес доставки</string>
+    <string name="dc_loading_box_not_belong_understand">Понятно</string>
+
+    <string name="dc_loading_boxes_label">Принято</string>
+    <string name="dc_loading_boxes_empty_list">Список пуст</string>
+    <string name="dc_loading_boxes_remove_item">Удалить отмеченные</string>
+    <string name="dc_loading_boxes_remove_dialog_title_error">Удаление коробки</string>
+    <string name="dc_loading_boxes_remove_dialog_positive_button_error">OK</string>
+    <string name="dc_loading_boxes_dialog_remove_error">Коробки не удалены, повторите операцию позднее</string>
+    <string name="dc_loading_boxes_time">%1$s • %2$s</string>
+    <string name="dc_loading_boxes_index">%1$d.</string>
+    <string name="dc_loading_boxes_index_barcode">%1$d. %2$s</string>
 
     <string name="confirm_info_dialog_button">Понятно</string>
+
+    <string name="courier_warehouse_title">Склады</string>
+    <string name="courier_warehouse_empty_list">Список заданий будет отображен в 09:00</string>
+    <string name="courier_warehouse_dialog_title_error">Склады</string>
+    <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
+    <string name="courier_warehouse_search_empty">Ничего не найдено</string>
+
+    <string name="courier_warehouse_dialog_empty_title">Заказов нет</string>
+    <string name="courier_warehouse_dialog_empty_message">Все заказы взяты в работу</string>
+    <string name="courier_warehouse_dialog_empty_button">Понятно</string>
+    <string name="courier_orders_update">Обновить</string>
+    <string name="courier_orders_order">\u0020- %1$d</string>
+    <string name="courier_orders_coast">от %1$s ₽</string>
+    <string name="courier_orders_count_box">от %1$d шт.</string>
+    <string name="courier_orders_volume">от %1$s</string>
+    <string name="courier_orders_count_pvz">%1$s</string>
+    <string name="courier_orders_arrive">\u0020%1$s мин</string>
+    <string name="courier_orders_count">от %1$d шт. / %2$s</string>
+    <string name="courier_orders_empty_list">Заказы не найдены</string>
+    <string name="courier_order_dialog_title_error">Заказы</string>
+    <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+
+
+    <string name="courier_orders_details_arrive">резерв </string>
+    <string name="courier_orders_details_order">Заказ %1$d</string>
+    <string name="courier_orders_details_coast">%1$s ₽</string>
+    <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
+    <string name="courier_orders_empty_address">Список пуст</string>
+    <string name="courier_orders_automobile">Машина </string>
+    <string name="courier_orders_address_title">Адреса доставки</string>
+
+    <string name="courier_orders_confirm_order">Заказ %1$d</string>
+    <string name="courier_orders_confirm_coast">%1$s ₽</string>
+    <string name="courier_orders_confirm_car_number">• %1$s</string>
+    <string name="courier_orders_confirm_arrive">• за %1$s мин</string>
+    <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
+    <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
+    <string name="courier_orders_confirm_dialog_title">Заказ забрали</string>
+    <string name="courier_orders_confirm_dialog_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_confirm_dialog_button">OK</string>
+    <string name="courier_orders_confirm_dialog_empty">Свободных заказов нет</string>
+
+    <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
+
+    <string name="courier_orders_details_dialog_message">Машина • <b> %1$s </b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
+    <string name="courier_orders_details_dialog_negative_button">Отмена</string>
+    <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
+
+    <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
+    <string name="courier_orders_details_dialog_is_not_exist_message">Заказ уже взят в работу</string>
+    <string name="courier_orders_details_dialog_is_not_exist_button">Понятно</string>
+
+    <string name="courier_orders_timer_dialog_title">Время вышло</string>
+    <string name="courier_orders_timer_dialog_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
+    <string name="courier_orders_timer_dialog_button">Вернуться к списку заказов</string>
+
+    <string name="courier_orders_timer_dialog_skip_title">Отказаться от заказа</string>
+    <string name="courier_orders_timer_dialog_skip_message">Вы уверены, что хотите отказаться от заказа?</string>
+    <string name="courier_orders_timer_dialog_negative_button">Отмена</string>
+    <string name="courier_orders_timer_dialog_positive_button">Отказаться</string>
+
+    <string name="courier_order_scanner_label">Погрузка</string>
+    <string name="courier_order_scanner_complete">Завершить погрузку</string>
+    <string name="courier_order_scanner_unknown_qr">\?????????</string>
+    <string name="courier_order_scanner_empty_address">-</string>
+    <string name="courier_order_scanner_empty_qr">000000000</string>
+    <string name="courier_order_scanner_accepted">%1$d шт.</string>
+    <string name="courier_order_scanner_dialog_negative_button">Отмена</string>
+    <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
+    <string name="courier_order_scanner_title">Время вышло</string>
+    <string name="courier_order_scanner_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
+    <string name="courier_order_scanner_dialog">Вернуться к списку заказов</string>
+
+    <string name="courier_loading_boxes_index">%1$d.</string>
+    <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
+
+    <string name="courier_loading_dialog_done_title">Завершить погрузку?</string>
+    <string name="courier_loading_dialog_done_message">Вы больше не сможете погрузить коробки</string>
+
+    <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
+    <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
+
+    <string name="courier_intransit_label_id">Доставка %1$s</string>
+    <string name="courier_intransit_label">Доставка</string>
+    <string name="courier_intransit_count">%1$d/%2$d</string>
+
+    <string name="courier_unloading_scanner_complete">Завершить выгрузку</string>
+    <string name="courier_unloading_scanner_accepted">%1$d/%2$d шт.</string>
+    <string name="courier_unloading_scanner_ready_status">ОТСКАНИРУЙТЕ</string>
+    <string name="courier_unloading_scanner_unknown_status">ВЕРНИТЕ КОРОБКУ В МАШИНУ</string>
+    <string name="courier_unloading_scanner_added_status">ВЫГРУЗИТЕ НА ПВЗ</string>
+    <string name="courier_unloading_scanner_empty_qr">000000000</string>
+    <string name="courier_unloading_scanner_empty_address">-</string>
+    <string name="courier_unloading_dialog_complete_title">Завершить выгрузку?</string>
+    <string name="courier_unloading_dialog_message">Выгружено • %1$d из %2$d</string>
+
+    <string name="courier_unloading_dialog_title_error">QR-код коробки не распознан</string>
+    <string name="courier_unloading_dialog_message_error" />
+    <string name="courier_unloading_dialog_button_error">Понятно</string>
+
+    <string name="courier_complete_delivery_title">Спасибо за проделанную работу!</string>
+    <string name="courier_complete_delivery_earned">Заработано</string>
+    <string name="courier_complete_delivery_delivered">Доставлено</string>
+    <string name="courier_complete_delivery_amount">%1$d ₽</string>
+    <string name="courier_complete_delivery_count">%1$d / %2$d</string>
+
+    <string name="flight_deliveries_start">Сформировать ТТН\nи перейти к доставке</string>
+    <string name="flight_deliveries_dialog_title">Начать доставку?</string>
+    <string name="flight_deliveries_dialog_description">После перехода к доставке, вы больше не сможете погрузить коробки в машину</string>
+    <string name="flight_deliveries_dialog_positive_button">Начать</string>
+    <string name="flight_deliveries_dialog_negative_button">Отмена</string>
+    <string name="flight_deliveries_dialog_negative_title">Принудительное завершение</string>
+
+    <string name="flight_deliveries_label" />
+    <string name="flight_deliveries_flight_toolbar_title">Рейс №%1$d</string>
+    <string name="flight_deliveries_flight_list_error">Ошибка получения данных</string>
+    <string name="flight_deliveries_flight_not_define_toolbar_title">Не определен</string>
+    <string name="flight_deliveries_delivery_toolbar_title">Доставка №%1$s</string>
+    <string name="flight_deliveries_delivery_toolbar_empty_title">Доставка</string>
+    <string name="flight_deliveries_title_empty">Рейс</string>
+    <string name="flight_deliveries_deliver_count">Доставить %1$d шт.</string>
+    <string name="flight_deliveries_pickup_count">Забрать %1$d шт.</string>
+    <string name="flight_deliveries_return_count">Забрал %1$d шт.</string>
+    <string name="flight_deliveries_not_delivery">Доставил %1$d из %2$d шт.</string>
+    <string name="flight_deliveries_delivery">Доставил %1$d шт.</string>
+    <string name="flight_deliveries_empty_count" />
+    <string name="flight_deliveries_count_box">Вы приняли %1$d коробок</string>
+    <string name="flight_deliveries_activated">ПВЗ активизируется, когда вы приблизитесь к нему </string>
+    <string name="flight_deliveries_dialog_force_positive_button">Завершить</string>
+    <string name="flight_deliveries_dialog_force_negative_button">Отмена</string>
+
+    <string name="flight_deliveries_dialog_title_error">Завершение доставки</string>
+    <string name="flight_deliveries_dialog_message_error">Доставка не завершена, повторите операцию позднее</string>
+
+    <string name="flight_deliveries_details_delivery_title">Доставка</string>
+    <string name="flight_deliveries_details_return_title">Возврат</string>
+    <string name="flight_deliveries_details_title_count">%1$d шт.</string>
+
+    <string name="flights_deliveries_details_proceed">Продолжить выгрузку</string>
+    <string name="flights_deliveries_complete">Завершить доставку</string>
+
+    <string name="unloading_scan_label" />
+
+    <string name="unloading_boxes_label">Выгруженные коробки</string>
+    <string name="unloading_boxes_title">Выгружено</string>
+    <string name="unloading_boxes_empty_count">0/0</string>
+    <string name="unloading_boxes_return_title">Возврат</string>
+    <string name="unloading_boxes_return_empty_count">0/0</string>
+    <string name="unloading_boxes_info_box_unload">Выгрузите на ПВЗ</string>
+    <string name="unloading_boxes_info_box_return">Погрузите в машину</string>
+    <string name="unloading_boxes_info_box_return_on_car">Верните в машину</string>
+    <string name="unloading_boxes_info_box_drop">Оставте коробку на том же месте</string>
+    <string name="unloading_boxes_numeric_barcode">%1$d. %2$s</string>
+    <string name="unloading_boxes_office_empty">ПВЗ %1$d</string>
+
+    <string name="unnamed_barcode_format_number">%1$d. %2$s.....%3$s</string>
+    <string name="unnamed_barcode_format">%1$s.....%2$s</string>
+    <string name="date_and_time_format">%1$s • %2$s</string>
+
+    <string name="unloading_boxes_dialog_complete_title">Выгрузка на ПВЗ</string>
+    <string name="unloading_boxes_dialog_complete_error">Выгрузка не завершена, повторите операцию позднее</string>
+
+    <string name="unloading_box_already_returned">%1$s уже принята</string>
+    <string name="unloading_box_already_delivery">%1$s уже доставлена</string>
+    <string name="unloading_box_returned">%1$s принята</string>
+    <string name="unloading_box_delivered">%1$s доставлена</string>
+
+    <string name="unloading_scan_dialog_title_error">Выгрузка на ПВЗ</string>
+    <string name="unloading_scan_dialog_message_error">Коробка не добавлена, повторите операцию</string>
+    <string name="unloading_scan_switch_dialog_message_error">Не удается завершить приемку на ПВЗ, повторите операцию</string>
+
+    <string name="unloading_handle_label" />
+
+    <string name="unloading_box_not_belong_point_toolbar_label" />
+    <string name="unloading_box_not_belong_title">Коробка с другого ПВЗ,\nверните её в машину</string>
+    <string name="unloading_box_not_belong_dc_title">Коробка с другого ПВЗ</string>
+    <string name="unloading_box_not_belong_dc_return_car">верните её в машину</string>
+    <string name="unloading_box_not_belong_info_title">Информация по ШК не найдена</string>
+    <string name="unloading_box_not_belong_info_empty_description">Оставте коробку на том же месте</string>
+    <string name="unloading_box_log_data">{\"k1\": %1$s, \"k2\": %2$s}</string>
+    <string name="unloading_box_accepted">%1$d / %2$d</string>
+
+    <string name="dc_unloading_box_not_found_title">ШК не найден</string>
+    <string name="dc_unloading_box_already_unloaded">%1$s уже выгружена на РЦ</string>
+    <string name="dc_unloading_box_unloaded">"%1$s выгрузите на РЦ"</string>
+    <string name="dc_unloading_box_unloaded_count">%1$d/%2$d</string>
+    <string name="dc_unloading_box_not_belong">неизвестный ШК</string>
+
+    <string name="unloading_handle_title_list">Список коробок для выгрузки</string>
+    <string name="unloading_handle_empty_list">Список пуст</string>
+
+    <string name="unloading_return_boxes_label">Взятые на возврат</string>
+    <string name="unloading_return_dialog_title">Удалить возвратные коробки?</string>
+    <string name="unloading_return_dialog_description">Убедитесь, что вы не забрали коробки в машину</string>
+    <string name="unloading_return_dialog_positive_button">Удалить</string>
+    <string name="unloading_return_dialog_negative_button">Отмена</string>
+
+    <string name="force_termination_label">Принудительное завершение</string>
+    <string name="force_termination_not_delivery">Невыгруженные коробки</string>
+    <string name="force_termination_not_delivery_count">%1$d шт.</string>
+    <string name="force_termination_not_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
+    <string name="force_termination_not_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
+    <string name="force_termination_info_empty_data">%1$s • %2$s - коробка не найдена при выгрузке на ПВЗ</string>
+    <string name="force_termination_not_belong_data">%1$s • %2$s - Вы пытались выгрузить коробку на %3$s</string>
+
+    <string name="force_termination_not_refund">Не взял на возврат</string>
+    <string name="force_termination_cause">Причина</string>
+    <string name="force_termination_box_not_found">Коробки не найдены</string>
+    <string name="force_termination_confirm">Подтвердить</string>
+    <string name="force_termination_complete">Завершить</string>
+    <string name="force_termination_empty" />
+
+    <string name="force_termination_complete_delivery">Завершить доставку</string>
+
+    <string name="congratulation_label" />
+    <string name="congratulation_title">Доставка завершена</string>
+    <string name="congratulation_info">Осталось вернуть возратные коробки\nна РЦ</string>
+    <string name="congratulation_info_count">%1$d / %2$d</string>
+    <string name="congratulation_complete_delivery">Перейти к возврату на РЦ</string>
+
+    <string name="courier_version_control_title">Доступна новая версия %1$s</string>
+    <string name="courier_version_control_info">Запросите новую версию\nУстановите её, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_info_">Обновите приложение, чтобы\nпродолжить работу</string>
+    <string name="courier_version_control_update">Обновить</string>
+
+    <string name="dc_congratulation_title">Вы завершили рейс</string>
+    <string name="dc_congratulation_info">Спасибо за проделанную работу!</string>
+    <string name="dc_congratulation_delivered_info">Доставил</string>
+    <string name="dc_congratulation_returned_info">Вернул</string>
+    <string name="dc_congratulation_count">%1$d / %2$d</string>
+    <string name="dc_congratulation_complete">Понятно</string>
+    <string name="dc_congratulation_dialog_title_error">Завершение рейса</string>
+    <string name="dc_congratulation_dialog_message_error">Рейс не завершен, повторите операцию</string>
+
+    <string name="dc_unloading_boxes_label">Возврат</string>
+    <string name="dc_unloading_boxes_title_list">Список коробок для выгрузки</string>
+    <string name="dc_unloading_boxes_info_box_unload">Выгрузите на РЦ</string>
+    <string name="dc_unloading_boxes_not_info_box_unload">Оставте коробку на РЦ</string>
+
+    <string name="dc_unloading_not_belong_title">Информация по ШК не найдена</string>
+    <string name="dc_unloading_not_belong_info">Данная коробка не является\nвозвратной, оставьте её на РЦ</string>
+
+    <string name="dc_unloading_handle_label" />
+
+    <string name="dc_unloading_forced_termination_label">Принудительное завершение</string>
+    <string name="dc_unloading_forced_termination_details_label">Невыгруженные коробки</string>
+    <string name="dc_unloading_forced_termination_details_delivery_data">%1$s • %2$s - коробка принята на РЦ</string>
+    <string name="dc_unloading_forced_termination_details_return_data">%1$s • %2$s - коробка принята на ПВЗ\n%3$s</string>
+
+    <string name="dc_unloading_forced_termination_dialog_title_error">Завершение рейса</string>
+    <string name="dc_unloading_forced_termination_dialog_message_error">Рейс не завершен, повторите операцию позднее</string>
+
+    <string name="permdesc_flashlight">permdesc_flashlight</string>
+
+    <string name="dc_loading_scan_dialog_title_return_error">Возврат коробок</string>
+    <string name="dc_loading_scan_dialog_message_return_error">Коробка не возвращена, повторите операцию</string>
+    <string name="dc_loading_scan_switch_dialog_message_return_error">Не удается завершить возврат на РЦ, повторите операцию</string>
+
+    <string name="keyboard_button0">0</string>
+    <string name="keyboard_button1">1</string>
+    <string name="keyboard_button2">2</string>
+    <string name="keyboard_button3">3</string>
+    <string name="keyboard_button4">4</string>
+    <string name="keyboard_button5">5</string>
+    <string name="keyboard_button6">6</string>
+    <string name="keyboard_button7">7</string>
+    <string name="keyboard_button8">8</string>
+    <string name="keyboard_button9">9</string>
+
+    <string name="keyboard_symbolA">A</string>
+    <string name="keyboard_symbolB">B</string>
+    <string name="keyboard_symbolE">E</string>
+    <string name="keyboard_symbolK">K</string>
+    <string name="keyboard_symbolM">M</string>
+    <string name="keyboard_symbolH">H</string>
+    <string name="keyboard_symbolO">O</string>
+    <string name="keyboard_symbolP">P</string>
+    <string name="keyboard_symbolC">C</string>
+    <string name="keyboard_symbolT">T</string>
+    <string name="keyboard_symbolY">Y</string>
+    <string name="keyboard_symbolX">X</string>
+
+    <string name="user_form_agreement_link">Подтверждаю согласие с договором оферты</string>
+
+    <string name="start_delivery_title">Погрузка завершена</string>
+    <string name="start_delivery_amount">Стоимость задания</string>
+    <string name="start_delivery_count">коробки</string>
+    <string name="start_delivery">Начать доставку</string>
+    <string name="courier_start_delivery_amount">%1$d ₽</string>
+    <string name="courier_start_delivery_count">%1$d шт.</string>
+
+    <string name="courier_billing_title">Ваш баланс</string>
+    <string name="courier_billing_date_and_time">&#160;• %1$s</string>
+    <string name="courier_billing_empty_list">Данные отсутствуют</string>
+    <string name="courier_billing_positive_amount">+ %1$s ₽</string>
+    <string name="courier_billing_negative_amount">- %1$s ₽</string>
+
+    <string name="courier_billing_account_create_title">Счет для вывода стредств</string>
+    <string name="courier_billing_account_edit_title">Редактировать счет</string>
+    <string name="courier_billing_account_save">Сохранить</string>
+
+    <string name="courier_billing_account_selector_title">Перевод</string>
+    <string name="courier_billing_account_selector_balance">%1$s ₽</string>
+    <string name="courier_billing_account_selector_format">%1$s ****%2$s</string>
+    <string name="courier_billing_account_selector_short_format">%1$s… ••••%2$s</string>
+    <string name="courier_billing_account_selector_long_format">%1$s ••••%2$s</string>
+    <string name="courier_billing_account_selector_amount_button_init">Вывести</string>
+    <string name="courier_billing_account_selector_amount_button">Вывести %1$s ₽</string>
+    <string name="courier_billing_account_selector_withdraw_balance">Вывести %1$s ₽</string>
+    <string name="courier_billing_account_selector_withdraw_balance_init">Вывести</string>
+
+    <string name="courier_loading_init_scanner">НАЧНИТЕ СКАНИРОВАНИЕ</string>
+    <string name="courier_loading_load_in_car">ПОГРУЗИТЕ В МАШИНУ</string>
+    <string name="courier_loading_forbidden_take">КОРОБКУ БРАТЬ ЗАПРЕЩЕНО</string>
+    <string name="courier_loading_not_recognized_qr">QR КОРОБКИ НЕ РАСПОЗНАН</string>
+
+    <string name="auth_user_fio">Фамилия</string>
+    <string name="auth_user_name">Имя</string>
+    <string name="auth_user_middle_name">Отчество</string>
+    <string name="auth_user_inn">ИНН</string>
+    <string name="auth_user_passport_series">Серия</string>
+    <string name="auth_user_passport_date">Дата выдачи</string>
+    <string name="auth_user_passport_number">Номер</string>
+    <string name="auth_user_passport_code">Код подразделения</string>
+    <string name="auth_user_passport_dep">Кем выдан</string>
+    <string name="auth_user_passport_code_dep">Код подразделения</string>
+    <string name="auth_user_passport_label">Паспорт</string>
+
+    <string name="billing_complete_title">Заявка на вывод %1$d ₽\nсоздана</string>
+    <string name="billing_complete_description">Обработка заявки зависит от вашего банка и может занимать до 3-х дней</string>
+    <string name="enter_phone_title">Введите номер телефона</string>
+    <string name="balance_title">Баланс</string>
+    <string name="courier_account_number_title">Счет зачисления</string>
+    <string name="write_off_amount_hint">Сумма списания ₽</string>
+    <string name="payment_account_hint">Расчётный счет</string>
+    <string name="bank_bik_hint">БИК</string>
+    <string name="pay_bank_hint">Банк получателя</string>
+    <string name="bank_details_title">Банковские реквизиты</string>
+    <string name="recipient_data_title">Данные получателя</string>
+    <string name="save_title">Сохранить</string>
+    <string name="check_order_data_hint">Внимательно проверьте данные</string>
+    <string name="car_hint">Машина</string>
+    <string name="arrive_hint">Прибыть</string>
+    <string name="receive_wrong_box">Вы не принимали эту коробку на складе</string>
+    <string name="remain_box_title">Осталось выгрузить</string>
 
 </resources>

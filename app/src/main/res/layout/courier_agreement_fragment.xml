@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdf_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_marginBottom="20dp" />
+
+    <ProgressBar
+        android:id="@+id/view_progress"
+        style="@style/AppProgressBarCircularDark"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:theme="@style/AppProgressBarCircularDark" />
+
+    <TextView
+        android:id="@+id/error_text"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:text="Документ недоступен" />
+
+    <LinearLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <ru.wb.go.views.ProgressButtonView
+            android:id="@+id/confirm"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/auth_button_height"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="1"
+            android:visibility="visible"
+            app:progress_button_background="@drawable/progress_image_button_round_default"
+            app:progress_button_name="OK"
+            app:progress_button_state="enable"
+            app:progress_button_text_color_disable="@color/button_default_text_disable"
+            app:progress_button_text_color_enable="@color/button_default_text_enable"
+            app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+    </LinearLayout>
+
+</RelativeLayout>

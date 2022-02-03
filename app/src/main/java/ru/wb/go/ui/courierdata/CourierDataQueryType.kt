@@ -1,0 +1,7 @@
+package ru.wb.go.ui.courierdata
+
+enum class CourierDataQueryType {
+
+    SURNAME, NAME, MIDDLE_NAME, INN, PASSPORT_SERIES, PASSPORT_NUMBER, PASSPORT_DATE, PASSPORT_ISSUED_BY, PASSPORT_DEPARTMENT_CODE
+
+}

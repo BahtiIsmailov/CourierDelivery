@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@android:color/transparent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleSmallTitle"
+        android:layout_width="@dimen/progress_bar_dialog"
+        android:layout_height="@dimen/progress_bar_dialog"
+        android:layout_gravity="center"
+        android:theme="@style/AppProgressBarCircularLight"
+        android:visibility="visible"
+        tools:ignore="MissingConstraints" />
+
+</FrameLayout>

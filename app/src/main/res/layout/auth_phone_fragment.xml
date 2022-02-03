@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_auth_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
+        android:gravity="center"
+        android:text="Введите номер телефона"
+        android:textAppearance="@style/LargeBlackRegularText"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+
+    <TextView
+        android:id="@+id/phone_number_title"
+        style="@style/ExtraLightRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
+        android:background="@android:color/transparent"
+        android:letterSpacing="0.1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="+7 (000) 000-00-00" />
+
+    <TextView
+        android:id="@+id/number_not_found"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/auth_number_phone_phone_not_found"
+        android:textAppearance="@style/SmallBlackRegularText"
+        android:textColor="@color/danger"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/phone_number_title"
+        app:layout_constraintTop_toBottomOf="@+id/phone_number_title" />
+
+    <ru.wb.go.ui.auth.keyboard.KeyboardNumericView
+        android:id="@+id/view_keyboard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone_number_title"
+        custom:keyboardColor="@color/keyboard_text_color"
+        custom:layout_constraintLeft_toLeftOf="parent"
+        custom:layout_constraintRight_toRightOf="parent" />
+
+    <ru.wb.go.views.ProgressButtonView
+        android:id="@+id/next"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/auth_button_height"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progress_button_background="@drawable/progress_image_button_round_default"
+        app:progress_button_name="@string/auth_number_phone_phone_next"
+        app:progress_button_state="enable"
+        app:progress_button_text_color_disable="@color/button_default_text_disable"
+        app:progress_button_text_color_enable="@color/button_default_text_enable"
+        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

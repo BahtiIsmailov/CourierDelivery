@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="max_phone_string">18</integer>
+    <integer name="max_phone_digits">11</integer>
+
+    <integer name="inn">12</integer>
+    <integer name="account">20</integer>
+    <integer name="bik">9</integer>
+    <integer name="kpp">9</integer>
+    <integer name="cor_account">20</integer>
+    <integer name="inn_bank">10</integer>
+
+</resources>

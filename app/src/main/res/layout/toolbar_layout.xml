@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"
+        android:background="@color/white" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/status_bar"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_back_arrow"
+            android:visibility="visible"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/TextToolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_toStartOf="@+id/no_internet_image"
+            android:layout_toEndOf="@+id/back"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:minHeight="?actionBarSize"
+            tools:text="Доставка Доставка Доставка Доставка Доставка Доставка Доставка" />
+
+        <ImageView
+            android:id="@+id/no_internet_image"
+            android:layout_width="?actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/toolbar_version"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="center"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_inet_failed"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/toolbar_version"
+            style="@style/SmallDarkRegularText"
+            android:layout_width="fill_parent"
+            android:maxLines="1"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/no_internet_image"
+            android:layout_alignBottom="@+id/toolbar_title"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:textSize="11sp"
+            tools:text="10.22.382277" />
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_below="@+id/toolbar_title"
+            android:background="#F0EDF2"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
