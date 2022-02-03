@@ -85,10 +85,14 @@ class CourierLocalRepositoryImpl(
             Pair(t.first + 1, t.second + if (o.deliveredAt.isNotEmpty()) 1 else 0)
         }
 
-        val offices = order.offices.map {
+        var offices = order.offices.map {
             val cb = bg[it.officeId]?.first ?: 0
             val db = bg[it.officeId]?.second ?: 0
             it.copy(countBoxes = cb, deliveredBoxes = db, isVisited = db > 0, isOnline = true)
+        }
+
+        if(order.order.status==TaskStatus.INTRANSIT.status){
+            offices = offices.filter { o -> o.countBoxes > 0 }
         }
 
 //FIXME Нужно в транзакцию запихнуть
@@ -111,7 +115,7 @@ class CourierLocalRepositoryImpl(
     }
 
     override fun setOrderAfterLoadStatus(cost: Int) {
-        assert(cost!=0)
+        assert(cost != 0)
         courierOrderDao.setOrderAfterLoadStatus(TaskStatus.INTRANSIT.status, cost)
     }
 

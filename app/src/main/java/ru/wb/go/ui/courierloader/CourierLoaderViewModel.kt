@@ -149,11 +149,14 @@ class CourierLoaderViewModel(
     ): Single<CourierLoaderNavigationState> {
         val remoteTaskId = remoteOrder.order.orderId
         return when {
-            (order == null || remoteTaskId != order.orderId) && remoteTaskId != -2 ->
+            (order == null || remoteTaskId != order.orderId) && remoteTaskId != -2 -> {
+                onTechEventLog("OrderSynchronization", "Get from server")
                 syncFromServer(remoteOrder)
                     .andThen(Single.just(getNavigationState(remoteOrder.order.status)))
+            }
             else -> {
                 val localStatus = order!!.status
+                onTechEventLog("OrderSynchronization", "Get local version")
                 Completable.complete()
                     .andThen(Single.just(getNavigationState(localStatus)))
             }
