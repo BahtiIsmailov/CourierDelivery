@@ -166,8 +166,8 @@ class CourierOrdersViewModel(
                     orderEntities = it.sortedBy { o -> o.id }.toMutableList()
                     selOrderId = -1
                     convertAndSaveItemsPointsMarkers(orderEntities)
-                    ordersComplete()
                     setLoader(WaitLoader.Complete)
+                    ordersComplete()
                 }, {
                     onTechErrorLog("ordersError", it)
 
@@ -218,7 +218,6 @@ class CourierOrdersViewModel(
 
     private fun ordersComplete() {
         if (orderItems.isEmpty()) {
-            ordersEmpty()
             _orderItems.value = CourierOrderItemState.Empty(resourceProvider.getDialogEmpty())
         } else {
             updateMarkers()
@@ -240,11 +239,6 @@ class CourierOrdersViewModel(
         )
         val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(centerGroupPoints)
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
-    }
-
-    private fun ordersEmpty() {
-        val ex = CustomException(resourceProvider.getDialogMessage())
-        errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
     }
 
     fun onItemClick(clickItemIndex: Int) {
