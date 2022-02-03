@@ -22,6 +22,7 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.SettingsManager
 
 class CourierLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -32,6 +33,7 @@ class CourierLoaderViewModel(
     private val remoteRepo: AppRemoteRepository,
     private val deviceManager: DeviceManager,
     private val resourceProvider: CourierLoaderResourceProvider,
+    private val settingsManager: SettingsManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -112,6 +114,7 @@ class CourierLoaderViewModel(
                     toCouriersCompleteRegistration(phone)
             }
             else -> {
+                checkNewInstallation()
                 val order = locRepo.getOrder()
                 val taskMy = remoteRepo.tasksMy(order?.orderId)
                 if(order==null && goToUpdate(version)){
@@ -260,6 +263,12 @@ class CourierLoaderViewModel(
     private fun errorState(message: String) {
         onTechEventLog("errorState", "message")
         _state.value = CourierLoaderUIState.Error(message)
+    }
+
+    private fun checkNewInstallation() {
+        if(settingsManager.checkNewInstall(deviceManager.appVersion)){
+            onTechEventLog("New Install Detected. ${deviceManager.appVersion}")
+        }
     }
 
     override fun getScreenTag(): String {
