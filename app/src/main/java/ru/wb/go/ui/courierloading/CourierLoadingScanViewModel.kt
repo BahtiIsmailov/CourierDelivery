@@ -97,7 +97,7 @@ class CourierLoadingScanViewModel(
                 .subscribe(
                     {
                         _orderTimer.value =
-                            CourierLoadingScanTimerState.Info(if (it.isEmpty()) "-" else it)
+                            CourierLoadingScanTimerState.Info(it.ifEmpty { "-" })
                     },
                     { _orderTimer.value = CourierLoadingScanTimerState.Info("-") })
         )
@@ -147,7 +147,7 @@ class CourierLoadingScanViewModel(
                 resourceProvider.getAccepted(boxes.size),
             )
             _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
-            _completeButtonState.value = boxes.size > 0
+            _completeButtonState.value = boxes.isNotEmpty()
         }
     }
 
