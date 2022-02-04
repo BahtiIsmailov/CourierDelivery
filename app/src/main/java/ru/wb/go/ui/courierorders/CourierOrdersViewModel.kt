@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.mvvm.model.base.BaseItem
-import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -67,10 +66,10 @@ class CourierOrdersViewModel(
 
     init {
         onTechEventLog("init")
-        observeMapAction()
     }
 
     fun update() {
+        observeMapAction()
         initToolbarLabel()
         initOrders()
     }
@@ -78,21 +77,20 @@ class CourierOrdersViewModel(
     private fun observeMapAction() {
         addSubscription(
             interactor.observeMapAction()
+                .filter { it is CourierMapAction.ItemClick }
+                .map { (it as CourierMapAction.ItemClick).point }
                 .subscribe(
                     { observeMapActionComplete(it) },
                     { observeMapActionError(it) }
                 ))
     }
 
-    private fun observeMapActionComplete(it: CourierMapAction) {
-        when (it) {
-            is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-            else -> {}
-        }
+    private fun observeMapActionComplete(it: MapPoint) {
+        onMapPointClick(it)
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        onTechEventLog("onItemPointClick")
+        onTechEventLog("onItemPointClick", "mapPoint.id = " + mapPoint.id)
         if (mapPoint.id != WAREHOUSE_ID) {
             val idMapClick = mapPoint.id
             val indexItem = idMapClick.toInt() - 1
@@ -275,6 +273,7 @@ class CourierOrdersViewModel(
     }
 
     private fun checkCarNumberAndNavigate(idView: Int) {
+        clearSubscription()
         onTechEventLog("onTakeOrderClick")
         val title = parameters.address
         val orderId = (orderItems[idView] as CourierOrderItem).orderId
