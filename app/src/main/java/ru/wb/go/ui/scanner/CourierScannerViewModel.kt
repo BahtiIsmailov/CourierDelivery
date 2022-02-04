@@ -2,6 +2,7 @@ package ru.wb.go.ui.scanner
 
 import androidx.lifecycle.LiveData
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
@@ -19,13 +20,14 @@ class CourierScannerViewModel(
     private val _scannerAction = SingleLiveEvent<ScannerState>()
     val scannerAction: LiveData<ScannerState>
         get() = _scannerAction
+
     private val _flashState = SingleLiveEvent<Boolean>()
     val flashState: LiveData<Boolean>
         get() = _flashState
 
     init {
 
-        _flashState.value = settingsManager.loadFlash()
+        _flashState.value = settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
 
         addSubscription(
             interactor.observeScannerState()
@@ -40,7 +42,6 @@ class CourierScannerViewModel(
     fun switchFlashlight(){
         val state = !_flashState.value!!
         _flashState.postValue(state)
-        settingsManager.saveFlash(state)
 
     }
 

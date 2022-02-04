@@ -58,6 +58,8 @@ import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
+import ru.wb.go.ui.settings.domain.SettingsInteractor
+import ru.wb.go.ui.settings.domain.SettingsInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
 
 import ru.wb.go.utils.managers.TimeManager
@@ -367,6 +369,13 @@ val interactorModule = module {
         )
     }
 
+    fun provideSettingsInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository
+    ): SettingsInteractor {
+        return SettingsInteractorImpl(rxSchedulerFactory, networkMonitorRepository)
+    }
+
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
@@ -432,5 +441,7 @@ val interactorModule = module {
     factory { provideCourierMapInteractor(get(), get()) }
     factory { provideCourierBillingInteractor(get(), get(), get()) }
     factory { provideCourierBillingCompleteInteractor(get(), get()) }
+
+    single { provideSettingsInteractor(get(), get()) }
 
 }

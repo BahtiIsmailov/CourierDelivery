@@ -1,5 +1,8 @@
 package ru.wb.go.network.api.app.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CourierDocumentsEntity(
     val firstName: String = "",
     val surName: String = "",

@@ -20,6 +20,7 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -31,6 +32,7 @@ class CourierLoadingScanViewModel(
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
     private val deviceManager: DeviceManager,
     private val errorDialogManager: ErrorDialogManager,
+    private val playManager: PlayManager,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
@@ -83,7 +85,6 @@ class CourierLoadingScanViewModel(
         fetchVersionApp()
         observeInitScanProcess()
         observeScanProcess()
-
         getGate()
     }
 
@@ -319,6 +320,10 @@ class CourierLoadingScanViewModel(
 
     private fun toWarehouse() {
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToWarehouse
+    }
+
+    fun play(resId: Int) {
+        playManager.play(resId)
     }
 
     override fun getScreenTag(): String {

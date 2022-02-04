@@ -7,6 +7,7 @@ plugins {
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'kotlinx-serialization'
 
 android {
 
@@ -46,14 +47,16 @@ android {
         def isNew = false
 
         print(runTasks)
-        if (':app:assembleRelease' in runTasks || ':app:bundleRelease' in runTasks) {
+        if (':app:bundleRelease' in runTasks) {
+            //Сборка для всех
             versionMinor++
             versionCod++
             isNew = true
         }
-        if (':app:assembleDebugQA' in runTasks) {
-            print("QA plugin debug...")
+        if (':app:bundleReleaseTest' in runTasks) {
+            //Сборка для тестирующих курьеров
             versionBuild++
+            versionCod++
             isNew = true
         }
 
@@ -96,6 +99,13 @@ android {
             ndk{
                 debugSymbolLevel 'FULL'
             }
+        }
+        releaseTest {
+            manifestPlaceholders = [appName: "WB Go"]
+            //FIXME необходмио внедрить тестовую информацию
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            matchingFallbacks = ['release']
         }
         debug {
 //            minifyEnabled true
@@ -221,5 +231,7 @@ dependencies {
 
     //yandex
     implementation 'com.yandex.android:mobmetricalib:3.21.0'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 
 }

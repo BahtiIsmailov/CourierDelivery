@@ -23,6 +23,7 @@ import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryResourceProvider
 import ru.wb.go.ui.courierunloading.CourierUnloadingResourceProvider
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlResourceProvider
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
+import ru.wb.go.ui.settings.domain.SettingsResourceProvider
 
 val resourceModule = module {
 
@@ -111,7 +112,9 @@ val resourceModule = module {
         return CourierDataResourceProvider(application)
     }
 
-
+    fun provideSettingsResourceProvider(application: Application): SettingsResourceProvider {
+        return SettingsResourceProvider(application)
+    }
 
     single { provideAppResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
@@ -135,5 +138,7 @@ val resourceModule = module {
 
     single { provideTemporaryPasswordResourceProvider(get()) }
     single { provideCourierDataResourceProvider(get()) }
+
+    single { provideSettingsResourceProvider(get()) }
 
 }

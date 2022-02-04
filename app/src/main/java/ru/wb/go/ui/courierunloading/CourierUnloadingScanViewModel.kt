@@ -18,6 +18,7 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import ru.wb.go.utils.managers.PlayManager
 
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
@@ -26,7 +27,8 @@ class CourierUnloadingScanViewModel(
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
     private val deviceManager: DeviceManager,
-    private val errorDialogManager: ErrorDialogManager
+    private val errorDialogManager: ErrorDialogManager,
+    private val playManager: PlayManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -342,6 +344,10 @@ class CourierUnloadingScanViewModel(
         _completeButtonEnable.value = true
         onStartScanner()
         setLoader(WaitLoader.Complete)
+    }
+
+    fun play(resId: Int) {
+        playManager.play(resId)
     }
 
     override fun getScreenTag(): String {
