@@ -30,38 +30,6 @@ abstract class NetworkViewModel(
         compositeDisposable.apply { if (!isDisposed) clear() }
     }
 
-    // FIXME: 25.01.2022 Delete after full refactor Dialogs
-    fun messageError(
-        throwable: Throwable,
-        resourceProvider: BaseMessageResourceProvider
-    ): NavigateToDialogInfo {
-        return when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> {
-                val msg = throwable.message
-                val message = if (msg.isNullOrEmpty()) throwable.toString() else msg
-                NavigateToDialogInfo(
-                    DialogInfoStyle.ERROR.ordinal,
-                    resourceProvider.getGenericServiceTitleError(),
-                    message,
-                    resourceProvider.getGenericServiceButtonError()
-                )
-            }
-        }
-
-    }
-
     fun onTechEventLog(method: String, message: String = EMPTY_MESSAGE) {
         metric.onTechEventLog(getScreenTag(), method, message)
     }

@@ -20,6 +20,7 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -31,7 +32,8 @@ class CourierIntransitViewModel(
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val deviceManager: DeviceManager,
-    private val errorDialogManager: ErrorDialogManager
+    private val errorDialogManager: ErrorDialogManager,
+    private val playManager: PlayManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -444,6 +446,10 @@ class CourierIntransitViewModel(
 
     fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
+    }
+
+    fun play(resId: Int) {
+        playManager.play(resId)
     }
 
     data class Label(val label: String)

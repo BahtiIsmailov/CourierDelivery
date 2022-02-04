@@ -32,7 +32,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
-import ru.wb.go.ui.app.OnSoundPlayer
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
@@ -354,18 +353,14 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun scanOfficeAccepted() {
-        play(R.raw.qr_office_accepted)
+        viewModel.play(R.raw.qr_office_accepted)
     }
 
     private fun scanOfficeFailed() {
-        play(R.raw.qr_office_failed)
+        viewModel.play(R.raw.qr_office_failed)
     }
     private fun scanWrongOffice() {
-        play(R.raw.wrongoffice)
-    }
-
-    private fun play(resId: Int) {
-        (activity as OnSoundPlayer).play(resId)
+        viewModel.play(R.raw.wrongoffice)
     }
 
 }
