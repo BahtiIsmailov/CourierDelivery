@@ -167,11 +167,6 @@ class CourierOrderTimerViewModel(
         )
     }
 
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
-    }
-
     override fun onTimerState(duration: Int, downTickSec: Int) {
         updateTimer(duration, downTickSec)
     }

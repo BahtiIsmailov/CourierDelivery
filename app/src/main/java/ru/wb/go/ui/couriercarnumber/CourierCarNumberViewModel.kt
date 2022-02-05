@@ -15,7 +15,6 @@ class CourierCarNumberViewModel(
     private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val resourceProvider: CourierCarNumberResourceProvider,
     private val interactor: CourierCarNumberInteractor,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
@@ -122,11 +121,6 @@ class CourierCarNumberViewModel(
             warehouseLatitude = parameters.warehouseLatitude,
             warehouseLongitude = parameters.warehouseLongitude
         )
-    }
-
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
     }
 
     override fun getScreenTag(): String {

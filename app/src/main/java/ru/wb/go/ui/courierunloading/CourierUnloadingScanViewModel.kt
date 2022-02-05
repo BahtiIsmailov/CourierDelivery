@@ -156,8 +156,8 @@ class CourierUnloadingScanViewModel(
             interactor.completeOfficeUnload()
                 .doFinally {
                     setLoader(WaitLoader.Complete)
-                    clearSubscription()
                     _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+                    clearSubscription()
                 }
                 .subscribe(
                     { },

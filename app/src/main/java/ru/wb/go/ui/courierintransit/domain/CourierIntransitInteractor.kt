@@ -1,7 +1,9 @@
 package ru.wb.go.ui.courierintransit.domain
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.monitor.NetworkState
@@ -21,7 +23,11 @@ interface CourierIntransitInteractor {
 
     fun initOrderTimer(): Observable<Long>
 
-    fun completeDelivery(): Single<CompleteDeliveryResult>
+    fun completeDelivery(
+        order: LocalOrderEntity
+    ): Completable
+
+    fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable
 
     fun clearLocalTaskData()
 
@@ -31,5 +37,6 @@ interface CourierIntransitInteractor {
 
     fun getOrder(): LocalOrderEntity
     fun getOrderId(): Single<String>
-    fun getOfflineBoxes(): Int
+    fun getOfflineBoxes(): List<LocalBoxEntity>
+    fun getBoxes(): List<LocalBoxEntity>
 }
