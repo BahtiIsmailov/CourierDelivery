@@ -228,7 +228,7 @@ class AppRemoteRepositoryImpl(
         val apiBox = box.convertToApiBoxRequest()
         val boxes = listOf(apiBox)
         return remoteRepo.setStartTask(apiVersion(), taskID, boxes)
-            .compose(rxSchedulerFactory.applySingleMetrics("taskStart"))
+            .compose(rxSchedulerFactory.applySingleMetrics("Set Start"))
     }
 
     override fun setReadyTask(
@@ -246,7 +246,7 @@ class AppRemoteRepositoryImpl(
             taskID,
             boxesRequest
         ).map { TaskCostEntity(it.cost / COST_DIVIDER) }
-            .compose(rxSchedulerFactory.applySingleMetrics("taskStatusesReady"))
+            .compose(rxSchedulerFactory.applySingleMetrics("Set Ready"))
     }
 
     override fun setIntransitTask(
@@ -255,12 +255,12 @@ class AppRemoteRepositoryImpl(
     ): Completable {
         val boxesRequest = boxes.map { it.convertToApiBoxRequest() }
         return remoteRepo.taskStatusesIntransit(apiVersion(), taskID, boxesRequest)
-            .compose(rxSchedulerFactory.applyCompletableMetrics("taskIntransit"))
+            .compose(rxSchedulerFactory.applyCompletableMetrics("Set Intransit"))
     }
 
     override fun taskStatusesEnd(taskID: String): Completable {
         return remoteRepo.taskStatusesEnd(apiVersion(), taskID)
-            .compose(rxSchedulerFactory.applyCompletableMetrics("taskStatusesEnd"))
+            .compose(rxSchedulerFactory.applyCompletableMetrics("Set End"))
     }
 
     override fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity> {

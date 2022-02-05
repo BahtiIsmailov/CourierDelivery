@@ -152,9 +152,6 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
-        binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
-
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierIntransitItemState.InitItems -> {

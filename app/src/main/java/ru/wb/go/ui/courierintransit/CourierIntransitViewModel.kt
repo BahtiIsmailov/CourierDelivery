@@ -330,7 +330,7 @@ class CourierIntransitViewModel(
     }
 
     fun onCompleteDeliveryClick() {
-        onTechEventLog("onCompleteDeliveryClick")
+        onTechEventLog("Click button CompleteDelivery")
         _isEnableState.value = false
         setLoader(WaitLoader.Wait)
         addSubscription(
@@ -340,7 +340,7 @@ class CourierIntransitViewModel(
                         completeDeliveryComplete(it)
                     },
                     {
-                        onTechErrorLog("completeDeliveryError", it)
+                        onTechErrorLog("CompleteDelivery", it)
                         setLoader(WaitLoader.Complete)
                         errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
                     })
@@ -349,7 +349,7 @@ class CourierIntransitViewModel(
 
     private fun completeDeliveryComplete(cdr: CompleteDeliveryResult) {
         onTechEventLog(
-            "completeDeliveryComplete",
+            "CompleteDelivery",
             "boxes: ${cdr.deliveredBoxes}. Cost: ${cdr.cost}"
         )
         setLoader(WaitLoader.Complete)
