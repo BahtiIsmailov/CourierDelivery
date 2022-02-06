@@ -293,7 +293,6 @@ val interactorModule = module {
         scannerRepository: ScannerRepository,
         intransitTimeRepository: IntransitTimeRepository,
         timeManager: TimeManager,
-        timeFormatter: TimeFormatter,
         courierMapRepository: CourierMapRepository
     ): CourierIntransitInteractor {
         return CourierIntransitInteractorImpl(
@@ -304,7 +303,6 @@ val interactorModule = module {
             scannerRepository,
             intransitTimeRepository,
             timeManager,
-            timeFormatter,
             courierMapRepository
         )
     }
@@ -424,7 +422,6 @@ val interactorModule = module {
     }
     factory {
         provideCourierIntransitInteractor(
-            get(),
             get(),
             get(),
             get(),

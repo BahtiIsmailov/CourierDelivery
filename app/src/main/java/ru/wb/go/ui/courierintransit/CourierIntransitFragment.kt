@@ -3,10 +3,7 @@ package ru.wb.go.ui.courierintransit
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.KeyEvent.ACTION_UP
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
@@ -24,14 +21,15 @@ import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.courierintransit.delegates.*
 import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.app.NavDrawerListener
-import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
@@ -54,7 +52,6 @@ class CourierIntransitFragment : Fragment() {
         }
     }
 
-    private lateinit var progressDialog: AlertDialog
     private var shortAnimationDuration: Int = 0
 
     override fun onCreateView(
@@ -65,7 +62,6 @@ class CourierIntransitFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
@@ -74,17 +70,10 @@ class CourierIntransitFragment : Fragment() {
         initObservable()
         initListeners()
         initReturnDialogResult()
-        initProgressDialog()
         shortAnimationDuration = resources.getInteger(android.R.integer.config_longAnimTime)
     }
 
     private fun initReturnDialogResult() {
-        setFragmentResultListener(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_RESULT_TAG) { _, bundle ->
-            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
-                viewModel.confirmTakeOrderClick()
-            }
-        }
-
         setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
                 viewModel.onErrorDialogConfirmClick()
@@ -151,9 +140,6 @@ class CourierIntransitFragment : Fragment() {
                 }
             }
         }
-
-        binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
 
         viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
@@ -274,30 +260,15 @@ class CourierIntransitFragment : Fragment() {
         binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
     }
 
-    // TODO: 20.08.2021 переработать
-    private fun initProgressDialog() {
-        val builder = AlertDialog.Builder(requireContext(), R.style.CustomProgressAlertDialog)
-        val viewGroup: ViewGroup = binding.routes
-        val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.custom_progress_layout_dialog, viewGroup, false)
-        builder.setView(dialogView)
-        progressDialog = builder.create()
-        progressDialog.setCanceledOnTouchOutside(false)
-        progressDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == ACTION_UP) {
-                progressDialog.dismiss()
-                viewModel.onCancelLoadClick()
-            }
-            true
-        }
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
     }
 
     private fun closeProgressDialog() {
-        if (progressDialog.isShowing) progressDialog.dismiss()
-    }
-
-    private fun showProgressDialog() {
-        progressDialog.show()
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
     }
 
     private fun showDialogConfirmInfo(
