@@ -23,6 +23,7 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.StatusBarListener
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.views.ProgressButtonMode
 
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
@@ -65,6 +66,8 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
         (activity as NavDrawerListener).lockNavDrawer()
         (activity as StatusBarListener).showStatusBar()
         binding.toolbarLayout.back.visibility = INVISIBLE
+
+        SoftKeyboard.hideKeyBoard(requireActivity())
     }
 
     private fun initListeners() {
