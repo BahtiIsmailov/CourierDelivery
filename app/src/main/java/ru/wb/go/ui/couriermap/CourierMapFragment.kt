@@ -33,7 +33,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
-import ru.wb.go.BuildConfig
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
 import ru.wb.go.utils.hasPermissions
@@ -52,7 +51,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         private const val REQUEST_ERROR = 0
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
-        private const val MIN_ZOOM = 4.0
+        private const val MIN_ZOOM = 3.5
         private const val MAX_ZOOM = 20.0
         private const val DEFAULT_POINT_ZOOM = 13.0
         private const val SIZE_IN_PIXELS = 100
@@ -154,7 +153,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val config: IConfigurationProvider = Configuration.getInstance()
         config.osmdroidBasePath = createOsmdroidBasePath()
         config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
-        config.userAgentValue = BuildConfig.APPLICATION_ID
+        // FIXME: ??? 
+        config.userAgentValue = context?.packageName //BuildConfig.APPLICATION_ID
         config.load(
             requireActivity(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -188,16 +188,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         viewModel.onItemClick(with(marker) { MapPoint(id, position.latitude, position.longitude) })
         true
     }
-
-//    private fun addMapMarker(id: String, lat: Double, long: Double, icon: Int) {
-//        val markerMap = Marker(binding.map)
-//        markerMap.setOnMarkerClickListener(onMarkerClickListener)
-//        markerMap.id = id
-//        markerMap.icon = getIcon(icon)
-//        markerMap.position = GeoPoint(lat, long)
-//        markerMap.setAnchor(0.5f, 0.5f)
-//        binding.map.overlays.add(markerMap)
-//    }
 
     private fun addMapMarker(
         id: String,
@@ -238,7 +228,15 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
                 CourierMapState.UpdateMyLocation -> updateMyLocation()
                 is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
-                is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(it.boundingBox)
+                is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(
+                    it.boundingBox,
+                    it.animate
+                )
+                is CourierMapState.ZoomToBoundingBoxOffsetY -> zoomToCenterBoundingBoxOffsetY(
+                    it.boundingBox,
+                    it.animate,
+                    it.offsetY
+                )
             }
         }
     }
@@ -260,11 +258,20 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.invalidate()
     }
 
-    private fun zoomToCenterBoundingBox(boundingBox: BoundingBox) {
+    private fun zoomToCenterBoundingBoxOffsetY(
+        boundingBox: BoundingBox,
+        animate: Boolean,
+        offsetY: Int
+    ) {
+        binding.map.setMapCenterOffset(0, offsetY)
+        zoomToCenterBoundingBox(boundingBox, animate)
+    }
+
+    private fun zoomToCenterBoundingBox(boundingBox: BoundingBox, animate: Boolean) {
         with(binding.map) {
             if (height > 0) {
                 mapController.setCenter(boundingBox.centerWithDateLine)
-                zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+                zoomToBoundingBox(boundingBox, animate, SIZE_IN_PIXELS)
             } else {
                 viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {

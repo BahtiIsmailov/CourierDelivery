@@ -8,9 +8,9 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
-interface CourierOrderInteractor {
+interface CourierOrdersInteractor {
 
-    fun orders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
     fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
 

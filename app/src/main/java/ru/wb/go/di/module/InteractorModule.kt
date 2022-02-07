@@ -1,5 +1,6 @@
 package ru.wb.go.di.module
 
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
@@ -43,8 +44,8 @@ import ru.wb.go.ui.couriermap.domain.CourierMapInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
-import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
-import ru.wb.go.ui.courierorders.domain.CourierOrderInteractorImpl
+import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
+import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractorImpl
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractorImpl
 import ru.wb.go.ui.courierstartdelivery.domain.CourierStartDeliveryInteractor
@@ -53,12 +54,13 @@ import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractorImpl
 import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractor
 import ru.wb.go.ui.courierversioncontrol.domain.CourierVersionControlInteractorImpl
-import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractor
-import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractorImpl
+import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
+import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.utils.managers.DeviceManager
+
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -147,14 +149,12 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
         appSharedRepository: AppSharedRepository,
-        deviceManager: DeviceManager
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
             appSharedRepository,
-            deviceManager
         )
     }
 
@@ -171,8 +171,8 @@ val interactorModule = module {
         courierLocalRepository: CourierLocalRepository,
         courierMapRepository: CourierMapRepository,
         userManager: UserManager
-    ): CourierWarehouseInteractor {
-        return CourierWarehouseInteractorImpl(
+    ): CourierWarehousesInteractor {
+        return CourierWarehousesInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
             appSharedRepository,
@@ -189,8 +189,8 @@ val interactorModule = module {
         courierLocalRepository: CourierLocalRepository,
         courierMapRepository: CourierMapRepository,
         userManager: UserManager
-    ): CourierOrderInteractor {
-        return CourierOrderInteractorImpl(
+    ): CourierOrdersInteractor {
+        return CourierOrdersInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             appRemoteRepository,
@@ -205,14 +205,16 @@ val interactorModule = module {
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         userManager: UserManager,
-        courierMapRepository: CourierMapRepository
+        courierMapRepository: CourierMapRepository,
+        timeManager: TimeManager,
     ): CourierOrderDetailsInteractor {
         return CourierOrderDetailsInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
             courierLocalRepository,
             userManager,
-            courierMapRepository
+            courierMapRepository,
+            timeManager
         )
     }
 
@@ -372,7 +374,7 @@ val interactorModule = module {
     single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get(), get()) }
     factory { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
@@ -388,9 +390,18 @@ val interactorModule = module {
     }
 
     // TODO: 15.09.2021 вынести в отдельный модуль
-    single { provideCourierWarehouseInteractor(get(), get(), get(), get(), get(), get()) }
+    single {
+        provideCourierWarehouseInteractor(
+            rxSchedulerFactory = get(),
+            appRemoteRepository = get(if (IS_DEMO) named(APP_DEMO) else named(APP_RELEASE)),
+            appSharedRepository = get(),
+            courierLocalRepository = get(),
+            courierMapRepository = get()
+        )
+    }
+
     single { provideCourierOrderInteractor(get(), get(), get(), get(), get(), get()) }
-    single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get()) }
+    single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
     factory {

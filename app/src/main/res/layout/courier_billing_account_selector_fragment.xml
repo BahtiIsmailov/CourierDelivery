@@ -121,14 +121,7 @@
                     tools:ignore="ContentDescription" />
 
             </RelativeLayout>
-
-
         </LinearLayout>
-
-        <!--                    android:background="@drawable/spinner_background"-->
-
-        <!--            android:background="@drawable/rounded_billing_transperent_layout"-->
-
 
     </ScrollView>
 
@@ -147,15 +140,5 @@
         app:progress_button_text_color_enable="@color/button_default_text_enable"
         app:progress_button_text_color_progress="@color/button_default_text_progress"
         tools:layout_editor_absoluteX="16dp" />
-
-    <View
-        android:id="@+id/overlay_boxes"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 
-interface AppApi {
+interface AppDemoApi {
 
     @POST("{version}/me/courier-documents")
     fun saveCourierDocuments(

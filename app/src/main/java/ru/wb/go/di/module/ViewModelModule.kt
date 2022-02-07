@@ -1,6 +1,7 @@
 package ru.wb.go.di.module
 
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.ui.app.AppLoaderViewModel
 import ru.wb.go.ui.app.AppViewModel
@@ -8,7 +9,6 @@ import ru.wb.go.ui.auth.AuthLoaderViewModel
 import ru.wb.go.ui.auth.CheckSmsParameters
 import ru.wb.go.ui.auth.CheckSmsViewModel
 import ru.wb.go.ui.auth.NumberPhoneViewModel
-import ru.wb.go.ui.config.ConfigViewModel
 import ru.wb.go.ui.courieragreement.CourierAgreementViewModel
 import ru.wb.go.ui.courierbilling.CourierBillingViewModel
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
@@ -45,36 +45,55 @@ import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
 
 val viewModelModule = module {
-    viewModel { ConfigViewModel(get(), get()) }
-
     viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
     viewModel { AuthLoaderViewModel(get(), get()) }
     viewModel { AppViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: CheckSmsParameters) ->
-        CheckSmsViewModel(parameters, get(), get(), get(), get())
+        CheckSmsViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 
     viewModel {
         CourierLoaderViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
-        )
+            compositeDisposable = get(),
+            metric = get(),
+            rxSchedulerFactory = get(),
+            tokenManager = get(),
+            locRepo = get(),
+            remoteRepo = get(if (IS_DEMO) named(APP_DEMO) else named(APP_RELEASE)),
+            deviceManager = get(),
+            resourceProvider = get())
     }
-    viewModel { CourierVersionControlViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
 
-    viewModel { CourierWarehousesViewModel(get(), get(), get(), get()) }
+    viewModel { CourierWarehousesViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get())
+        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
     viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: CourierExpectsParameters) ->
-        CouriersCompleteRegistrationViewModel(parameters, get(), get(), get(), get(), get(), get())
+        CouriersCompleteRegistrationViewModel(
+            parameters,
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 
     viewModel { (parameters: CourierOrderDetailsParameters) ->
@@ -93,7 +112,7 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { CourierScannerViewModel(get(), get(), get()) }
+    viewModel { CourierScannerViewModel(get(), get(), get(), get()) }
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
@@ -109,18 +128,30 @@ val viewModelModule = module {
     }
     viewModel { CourierMapViewModel(get(), get(), get(), get()) }
 
-    viewModel { CourierBillingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel {
+        CourierBillingViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     viewModel { (parameters: CourierBillingAccountDataAmountParameters) ->
         CourierBillingAccountDataViewModel(
             parameters,
-            get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get()
         )
     }
     viewModel { (parameters: CourierBillingAccountSelectorAmountParameters) ->
         CourierBillingAccountSelectorViewModel(
             parameters,
-            get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get()
         )
     }
 

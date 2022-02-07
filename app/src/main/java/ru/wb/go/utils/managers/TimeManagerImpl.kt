@@ -41,7 +41,6 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
     override fun clear() {
         worker.delete(AppPreffsKeys.SERVER_DATE_TIME_KEY)
         worker.delete(AppPreffsKeys.LOCAL_DATE_TIME_KEY)
-//        worker.delete(AppPreffsKeys.STARTED_TASK_TIME_KEY)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -60,13 +59,5 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
 
         return (timeFormatter.currentDateTime().millis - start) / 1000
     }
-
-//    override fun saveStartedTaskTime(dateTime: String) {
-//        worker.save(AppPreffsKeys.STARTED_TASK_TIME_KEY, dateTime)
-//    }
-//
-//    override fun getStartedTaskTime(): String {
-//        return worker.load(AppPreffsKeys.STARTED_TASK_TIME_KEY, "")
-//    }
 
 }

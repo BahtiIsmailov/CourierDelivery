@@ -24,6 +24,9 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorders.CourierOrderParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.ProgressDialogFragment
+import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.managers.ErrorDialogData
 
 
 class CourierWarehousesFragment : Fragment() {
@@ -52,7 +55,7 @@ class CourierWarehousesFragment : Fragment() {
         initRecyclerView()
         initObservable()
         initListeners()
-        viewModel.update()
+        viewModel.updateData()
     }
 
     private fun initView() {
@@ -71,10 +74,10 @@ class CourierWarehousesFragment : Fragment() {
     private fun initObservable() {
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
-        viewModel.warehouses.observe(viewLifecycleOwner) {
+        viewModel.warehouseState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
                     binding.emptyList.visibility = GONE
@@ -109,23 +112,24 @@ class CourierWarehousesFragment : Fragment() {
             }
         }
 
-        viewModel.warehousesProgressState.observe(viewLifecycleOwner) {
-            binding.refresh.isRefreshing = when (it) {
-                CourierWarehousesProgressState.Progress -> true
-                CourierWarehousesProgressState.ProgressComplete -> false
-            }
-        }
-
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            binding.holdLayout.visibility = when (it) {
-                true -> VISIBLE
-                false -> GONE
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
         viewModel.showOrdersState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesShowOrdersState.Disable -> showOrdersDisable()
+                CourierWarehousesShowOrdersState.Disable -> {
+                    binding.showOrdersFab.isEnabled = false
+                    binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.fab_disable
+                        )
+                    )
+                }
                 CourierWarehousesShowOrdersState.Enable -> {
                     binding.showOrdersFab.isEnabled = true
                     binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
@@ -135,7 +139,6 @@ class CourierWarehousesFragment : Fragment() {
                         )
                     )
                 }
-                CourierWarehousesShowOrdersState.Progress -> {}
             }
         }
 
@@ -173,21 +176,11 @@ class CourierWarehousesFragment : Fragment() {
 
     }
 
-    private fun showOrdersDisable() {
-        binding.showOrdersFab.isEnabled = false
-        binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.fab_disable
-            )
-        )
-    }
-
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
-        binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
+        binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
         binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
-        binding.refresh.setOnRefreshListener { viewModel.update() }
+        binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
@@ -218,16 +211,14 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
@@ -242,6 +233,17 @@ class CourierWarehousesFragment : Fragment() {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
+        }
+    }
+
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
+    }
+
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
         }
     }
 

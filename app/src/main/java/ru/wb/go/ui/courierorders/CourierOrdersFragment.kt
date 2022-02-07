@@ -1,13 +1,12 @@
 package ru.wb.go.ui.courierorders
 
-import android.content.res.ColorStateList
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -27,13 +25,14 @@ import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
-import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsFragmentDirections
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
-import ru.wb.go.ui.courierwarehouses.CourierWarehousesShowOrdersState
 import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
+import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.managers.ErrorDialogData
 
 class CourierOrderFragment : Fragment() {
 
@@ -88,11 +87,23 @@ class CourierOrderFragment : Fragment() {
         }
     }
 
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
+    }
+
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
+    }
+
     private fun initListeners() {
         binding.backFull.setOnClickListener { findNavController().popBackStack() }
         binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initStateObserve() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
@@ -100,7 +111,7 @@ class CourierOrderFragment : Fragment() {
         }
 
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
@@ -121,7 +132,13 @@ class CourierOrderFragment : Fragment() {
                 is CourierOrdersNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.title, it.orderNumber, it.order)
+                            CourierCarNumberParameters(
+                                it.title,
+                                it.orderNumber,
+                                it.order,
+                                it.warehouseLatitude,
+                                it.warehouseLongitude
+                            )
                         )
                     )
             }
@@ -156,19 +173,13 @@ class CourierOrderFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) { state ->
-            binding.orderProgress.visibility = when (state) {
-                CourierOrdersProgressState.Progress -> VISIBLE
-                CourierOrdersProgressState.Complete -> GONE
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
-        viewModel.holdState.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.holdLayout.visibility = VISIBLE
-                false -> binding.holdLayout.visibility = GONE
-            }
-        }
 
         viewModel.showDetailsState.observe(viewLifecycleOwner) {
             when (it) {
@@ -224,17 +235,15 @@ class CourierOrderFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        style: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = style,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     override fun onDestroyView() {

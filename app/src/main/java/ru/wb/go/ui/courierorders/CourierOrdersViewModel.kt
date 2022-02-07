@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.mvvm.model.base.BaseItem
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -15,10 +14,11 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
-import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
-import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
+import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -27,38 +27,36 @@ class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val interactor: CourierOrderInteractor,
+    private val interactor: CourierOrdersInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
+    private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
 
-    private val _navigateToDialogInfo = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToDialogInfo: LiveData<NavigateToDialogInfo>
+    private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
+    val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
     private val _orderItems = MutableLiveData<CourierOrderItemState>()
     val orders: LiveData<CourierOrderItemState>
         get() = _orderItems
 
-    private val _progressState = MutableLiveData<CourierOrdersProgressState>()
-    val progressState: LiveData<CourierOrdersProgressState>
-        get() = _progressState
-
     private val _navigationState = SingleLiveEvent<CourierOrdersNavigationState>()
     val navigationState: LiveData<CourierOrdersNavigationState>
         get() = _navigationState
 
-    private val _holdState = MutableLiveData<Boolean>()
-    val holdState: LiveData<Boolean>
-        get() = _holdState
-
     private val _showDetailsState = MutableLiveData<CourierOrderShowDetailsState>()
     val showDetailsState: LiveData<CourierOrderShowDetailsState>
         get() = _showDetailsState
+
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private val _demoState = MutableLiveData<Boolean>()
     val demoState: LiveData<Boolean>
@@ -68,6 +66,8 @@ class CourierOrdersViewModel(
     private var orderItems = mutableListOf<BaseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()
     private var centerGroupPoints = mutableListOf<CoordinatePoint>()
+
+    private var selOrderId: Int = -1
 
     init {
         onTechEventLog("init")
@@ -81,10 +81,11 @@ class CourierOrdersViewModel(
 
     private fun observeMapAction() {
         addSubscription(
-            interactor.observeMapAction().subscribe(
-                { observeMapActionComplete(it) },
-                { observeMapActionError(it) }
-            ))
+            interactor.observeMapAction()
+                .subscribe(
+                    { observeMapActionComplete(it) },
+                    { observeMapActionError(it) }
+                ))
     }
 
     private fun observeMapActionComplete(it: CourierMapAction) {
@@ -96,8 +97,7 @@ class CourierOrdersViewModel(
 
     private fun onMapPointClick(mapPoint: MapPoint) {
         onTechEventLog("onItemPointClick")
-        if (mapPoint.id == WAREHOUSE_ID) {
-        } else {
+        if (mapPoint.id != WAREHOUSE_ID) {
             val idMapClick = mapPoint.id
             val indexItem = idMapClick.toInt() - 1
             changeSelectedMapPoint(mapPoint)
@@ -119,14 +119,12 @@ class CourierOrdersViewModel(
             if (isSelected) CourierOrderShowDetailsState.Enable else CourierOrderShowDetailsState.Disable
     }
 
-    private fun changeSelectedOrderItems(indexItemClick: Int, isMapSelected: Boolean) {
-        orderItems.forEachIndexed { index, item ->
-            if (item is CourierOrderItem) {
-                item.isSelected =
-                    if (index == indexItemClick) isMapSelected
-                    else false
-            }
+    private fun changeSelectedOrderItems(itemId: Int, isSelected: Boolean) {
+        if (selOrderId != -1 && selOrderId != itemId) {
+            (orderItems[selOrderId] as CourierOrderItem).isSelected = false
         }
+        (orderItems[itemId] as CourierOrderItem).isSelected = isSelected
+        selOrderId = if (isSelected) itemId else -1
     }
 
     private fun isMapSelected(idItemClick: String): Boolean {
@@ -160,28 +158,30 @@ class CourierOrdersViewModel(
         _toolbarLabelState.value = Label(parameters.address)
     }
 
-    private fun lockState() {
-        _holdState.value = true
-    }
-
-    private fun unlockState() {
-        _holdState.value = false
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     private fun initOrders() {
-        lockState()
-        showProgress()
-        addSubscription(interactor.orders(parameters.warehouseId)
-            .doOnSuccess { orderEntities = it.toMutableList() }
-            .doOnSuccess { saveOrderEntities(it) }
-            .doOnSuccess { convertAndSaveItemsPointsMarkers(it) }
-            .subscribe({ ordersComplete() }, { ordersError(it) })
+        setLoader(WaitLoader.Wait)
+        addSubscription(
+            interactor.getFreeOrders(parameters.warehouseId)
+                .subscribe({
+                    orderEntities = it.sortedBy { o -> o.id }.toMutableList()
+                    selOrderId = -1
+                    convertAndSaveItemsPointsMarkers(orderEntities)
+                    ordersComplete()
+                    setLoader(WaitLoader.Complete)
+                }, {
+                    onTechErrorLog("ordersError", it)
+
+                    errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+                    _orderItems.value = CourierOrderItemState.Empty("Ошибка получения данных")
+                    setLoader(WaitLoader.Complete)
+                })
         )
     }
 
-    private fun saveOrderEntities(warehouseEntities: List<CourierOrderEntity>) {
-        this.orderEntities = warehouseEntities.toMutableList()
-    }
 
     private fun convertAndSaveItemsPointsMarkers(orders: List<CourierOrderEntity>) {
         val orderItems = mutableListOf<BaseItem>()
@@ -195,7 +195,7 @@ class CourierOrdersViewModel(
         mapMarkers.add(warehouseMapMarker)
 
         orders.forEachIndexed { index, item ->
-            val idPoint = upToString(index)
+            val idPoint = (index + 1).toString()
 
             val orderItem = dataBuilder.buildOrderItem(idPoint, index, item, false)
             orderItems.add(orderItem)
@@ -215,25 +215,9 @@ class CourierOrdersViewModel(
             val mapMarker = Empty(mapPoint, resourceProvider.getOrderMapIcon())
             mapMarkers.add(mapMarker)
         }
-        saveOrderItems(orderItems)
-        saveCenterGroupPoints(centerGroupPoints)
-        saveMapMarkers(mapMarkers)
-    }
-
-    private fun saveOrderItems(orderItems: List<BaseItem>) {
         this.orderItems = orderItems.toMutableList()
-    }
-
-    private fun saveCenterGroupPoints(mapMarkers: List<CoordinatePoint>) {
-        this.centerGroupPoints = mapMarkers.toMutableList()
-    }
-
-    private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
+        this.centerGroupPoints = centerGroupPoints.toMutableList()
         this.mapMarkers = mapMarkers.toMutableList()
-    }
-
-    private fun showProgress() {
-        _progressState.value = CourierOrdersProgressState.Progress
     }
 
     private fun ordersComplete() {
@@ -243,97 +227,42 @@ class CourierOrdersViewModel(
         } else {
             updateMarkers()
             zoomAllGroupMarkersFromBoundingBox()
-            showOrders()
+            _orderItems.value = CourierOrderItemState.ShowOrders(orderItems)
         }
-
-        hideProgress()
-        unlockState()
     }
-
-    private fun hideProgress() {
-        _progressState.value = CourierOrdersProgressState.Complete
-    }
-
-    private fun showOrders() {
-        _orderItems.value = CourierOrderItemState.ShowOrders(orderItems)
-    }
-
 
     private fun updateMarkers() {
         interactor.mapState(CourierMapState.UpdateMarkersWithIndex(mapMarkers))
     }
 
     private fun zoomAllGroupMarkersFromBoundingBox() {
+        centerGroupPoints.add(
+            CoordinatePoint(
+                parameters.warehouseLatitude,
+                parameters.warehouseLongitude
+            )
+        )
         val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(centerGroupPoints)
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
     }
 
     private fun ordersEmpty() {
-        _navigateToDialogInfo.value = NavigateToDialogInfo(
-            DialogInfoStyle.WARNING.ordinal,
-            resourceProvider.getDialogTitle(),
-            resourceProvider.getDialogMessage(),
-            resourceProvider.getDialogButton()
-        )
+        val ex = CustomException(resourceProvider.getDialogMessage())
+        errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
     }
 
-    private fun ordersError(throwable: Throwable) {
-        onTechErrorLog("ordersError", throwable)
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogInfoStyle.WARNING.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogInfoStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _navigateToDialogInfo.value = message
-        _orderItems.value = CourierOrderItemState.Empty(message.title)
-        progressComplete()
-        unlockState()
-    }
+    fun onItemClick(clickItemIndex: Int) {
+        onTechEventLog("onItemClick", "idView $clickItemIndex")
+        val isSelected = !(orderItems[clickItemIndex] as CourierOrderItem).isSelected
 
-    private fun progressComplete() {
-        _progressState.value = CourierOrdersProgressState.Complete
-    }
-
-    fun onItemClick(idView: Int) {
-        onTechEventLog("onItemClick", "idView $idView")
-        changeItemSelected(idView)
-    }
-
-    private fun changeItemSelected(clickItemIndex: Int) {
-        val isSelected = isInvertOrdersItemsSelected(clickItemIndex)
         changeSelectedMapPoint(mapMarkers[clickItemIndex + 1].point)
-//        changeMapMarkers(clickItemIndex, isSelected)
         changeSelectedOrderItems(clickItemIndex, isSelected)
-        updateItems()
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
         changeShowOrders(isSelected)
         updateMarkers()
     }
 
-    private fun updateItems() {
-        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
-    }
-
-
-    private fun isInvertOrdersItemsSelected(selectIndex: Int) =
-        !(orderItems[selectIndex] as CourierOrderItem).isSelected
-
     fun onDetailClick() {
-        lockState()
         _showDetailsState.value = CourierOrderShowDetailsState.Disable
         orderItems.forEachIndexed { index, items ->
             if (items is CourierOrderItem) {
@@ -350,44 +279,31 @@ class CourierOrdersViewModel(
         addSubscription(
             interactor.clearAndSaveSelectedOrder(courierOrderEntity)
                 .subscribe(
-                    { clearAndSaveSelectedOrderComplete(index) },
-                    { clearAndSaveSelectedOrderError(it) })
+                    { checkCarNumberAndNavigate(index) },
+                    { onTechErrorLog("ordersError", it) })
         )
-    }
-
-    private fun clearAndSaveSelectedOrderComplete(idView: Int) {
-        onTechEventLog("clearAndSaveSelectedOrderComplete")
-        unlockState()
-        checkCarNumberAndNavigate(idView)
     }
 
     private fun checkCarNumberAndNavigate(idView: Int) {
         onTechEventLog("onTakeOrderClick")
         val title = parameters.address
-        val orderNumber = upToString(idView)
+        val orderId = (orderItems[idView] as CourierOrderItem).orderId
         val order = orderEntities[idView]
         _navigationState.value = if (interactor.carNumberIsConfirm())
             CourierOrdersNavigationState.NavigateToOrderDetails(
                 title,
-                orderNumber,
+                orderId,
                 order,
                 parameters.warehouseLatitude,
                 parameters.warehouseLongitude
             )
         else CourierOrdersNavigationState.NavigateToCarNumber(
             title,
-            orderNumber,
+            orderId,
             order,
             parameters.warehouseLatitude,
             parameters.warehouseLongitude
         )
-    }
-
-    private fun upToString(number: Int) = (number + 1).toString()
-
-    private fun clearAndSaveSelectedOrderError(throwable: Throwable) {
-        onTechErrorLog("ordersError", throwable)
-        unlockState()
     }
 
     fun onCancelLoadClick() {

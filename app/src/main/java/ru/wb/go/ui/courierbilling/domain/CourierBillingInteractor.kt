@@ -7,7 +7,7 @@ import ru.wb.go.network.monitor.NetworkState
 
 interface CourierBillingInteractor {
 
-    fun billing(): Single<BillingCommonEntity>
+    fun getBillingInfo(): Single<BillingCommonEntity>
 
 
 

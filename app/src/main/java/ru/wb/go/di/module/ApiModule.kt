@@ -1,12 +1,13 @@
 package ru.wb.go.di.module
 
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import ru.wb.go.network.api.app.AppApi
+import ru.wb.go.network.api.app.AppDemoApi
 import ru.wb.go.network.api.auth.AuthApi
 import ru.wb.go.network.headers.RefreshTokenApi
 import ru.wb.go.network.rest.RefreshTokenRetrofitFactory
 import ru.wb.go.network.rest.RetrofitFactory
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
 
 val apiModule = module {
 
@@ -22,8 +23,13 @@ val apiModule = module {
         return retrofitFactory.getApiInterface(AppApi::class.java)
     }
 
+    fun provideAppDynamicApi(retrofitFactory: RetrofitFactory): AppDemoApi {
+        return retrofitFactory.getApiDynamicInterface(AppDemoApi::class.java)
+    }
+
     single { provideAuthApi(get(named(AUTH_NAMED_RETROFIT))) }
     single { provideRefreshTokenApi(get(named(REFRESH_TOKEN_NAMED_RETROFIT))) }
     single { provideAppApi(get(named(APP_NAMED_RETROFIT))) }
+    single { provideAppDynamicApi(get(named(APP_NAMED_DYNAMIC_RETROFIT))) }
 
 }

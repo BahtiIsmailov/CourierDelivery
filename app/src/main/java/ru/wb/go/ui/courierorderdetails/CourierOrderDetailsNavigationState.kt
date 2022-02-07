@@ -11,7 +11,9 @@ sealed class CourierOrderDetailsNavigationState {
     data class NavigateToCarNumber(
         val title: String,
         val orderNumber: String,
-        val order: CourierOrderEntity
+        val order: CourierOrderEntity,
+        val warehouseLatitude: Double,
+        val warehouseLongitude: Double,
     ) : CourierOrderDetailsNavigationState()
 
     object NavigateToTimer : CourierOrderDetailsNavigationState()

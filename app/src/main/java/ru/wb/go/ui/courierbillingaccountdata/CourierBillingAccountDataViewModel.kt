@@ -4,24 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.R
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
-import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.DialogStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
-import java.util.*
+import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierBillingAccountDataViewModel(
     private val parameters: CourierBillingAccountDataAmountParameters,
@@ -31,6 +27,7 @@ class CourierBillingAccountDataViewModel(
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
     private val tokenManager: TokenManager,
     private val deviceManager: DeviceManager,
+    private val errorDialogManager: ErrorDialogManager
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     companion object {
@@ -57,8 +54,8 @@ class CourierBillingAccountDataViewModel(
     val initUIState: LiveData<CourierBillingAccountDataInitUIState>
         get() = _initUIState
 
-    private val _navigateToMessageState = SingleLiveEvent<NavigateToDialogInfo>()
-    val navigateToMessageState: LiveData<NavigateToDialogInfo>
+    private val _navigateToMessageState = SingleLiveEvent<ErrorDialogData>()
+    val navigateToMessageState: LiveData<ErrorDialogData>
         get() = _navigateToMessageState
 
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
@@ -90,9 +87,10 @@ class CourierBillingAccountDataViewModel(
     val loaderState: LiveData<CourierBillingAccountDataUILoaderState>
         get() = _loaderState
 
-    private val _holderState = MutableLiveData<Boolean>()
-    val holderState: LiveData<Boolean>
-        get() = _holderState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     init {
         initToolbarLabel()
@@ -157,6 +155,7 @@ class CourierBillingAccountDataViewModel(
                 if (text.substring(0, prefix.length) == prefix) isPrefix = true
             }
         }
+        // FIXME: Необходимо еще проверить БИК, чтобы утверждать, что такой счет заведен
         if (isPrefix) {
             if (text.length == ACCOUNT_LENGTH) {
                 if (parameters.billingAccounts.find { it.account == text } != null) {
@@ -250,7 +249,6 @@ class CourierBillingAccountDataViewModel(
 
     private fun checkFieldAll(action: CourierBillingAccountDataUIAction.SaveClick):
             Observable<CourierBillingAccountDataUIState> {
-        holdAndProgress()
         val iterator = action.userData.iterator()
         while (iterator.hasNext()) {
             val nextItem = iterator.next()
@@ -266,71 +264,47 @@ class CourierBillingAccountDataViewModel(
             if (action.userData.isEmpty()) {
                 CourierBillingAccountDataUIState.Next
             } else {
-                _holderState.value = false
-                _loaderState.value = CourierBillingAccountDataUILoaderState.Enable
                 CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
             }
         )
     }
 
-    private fun holdAndProgress() {
-        _holderState.value = true
-        _loaderState.value = CourierBillingAccountDataUILoaderState.Progress
+    private fun setButtonAndLoaderState(isAction: Boolean) {
+        if (isAction) {
+            _loaderState.value = CourierBillingAccountDataUILoaderState.Disable
+            _waitLoader.postValue(WaitLoader.Wait)
+        } else {
+            _loaderState.value = CourierBillingAccountDataUILoaderState.Enable
+            _waitLoader.postValue(WaitLoader.Complete)
+        }
     }
 
     fun onSaveAccountClick(changedAccount: CourierBillingAccountEntity) {
-        holdAndProgress()
+        setButtonAndLoaderState(true)
         val newData = parameters.billingAccounts.toMutableList()
         if (parameters.account != null) {
             newData.remove(parameters.account)
         }
         newData.add(changedAccount)
         addSubscription(
-            interactor.saveBillingAccounts(newData).subscribe(
-                { saveAccountComplete() },
-                { saveAccountError(it) })
+            interactor.saveBillingAccounts(newData)
+                .subscribe(
+                    { saveAccountComplete() },
+                    {
+                        setButtonAndLoaderState(false)
+                        errorDialogManager.showErrorDialog(it, _navigateToMessageState)
+                    })
         )
     }
 
     private fun saveAccountComplete() {
-        progressComplete()
+        setButtonAndLoaderState(false)
         navigateToAccountSelector()
-    }
-
-    private fun progressComplete() {
-        _holderState.value = false
-        _loaderState.value = CourierBillingAccountDataUILoaderState.Disable
     }
 
     private fun navigateToAccountSelector() {
         _navigationEvent.value =
             CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.balance)
-    }
-
-    private fun saveAccountError(throwable: Throwable) {
-        val message = when (throwable) {
-            is NoInternetException -> NavigateToDialogInfo(
-                DialogStyle.INFO.ordinal,
-                throwable.message,
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
-            is BadRequestException -> NavigateToDialogInfo(
-                DialogStyle.INFO.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.error.message,
-                resourceProvider.getGenericServiceButtonError()
-            )
-            else -> NavigateToDialogInfo(
-                DialogStyle.ERROR.ordinal,
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
-        }
-        _holderState.value = false
-        _loaderState.value = CourierBillingAccountDataUILoaderState.Enable
-        _navigateToMessageState.value = message
     }
 
     private fun observeNetworkState() {
@@ -345,22 +319,14 @@ class CourierBillingAccountDataViewModel(
     }
 
     fun onRemoveAccountClick() {
-        holdAndProgress()
         _navigationEvent.value =
             CourierBillingAccountDataNavAction.NavigateToConfirmDialog(parameters.account!!.account)
 
     }
 
     private fun removeAccountComplete() {
-        progressComplete()
-        navigateToBack()
-    }
-
-    private fun navigateToBack() {
+        setButtonAndLoaderState(false)
         _navigationEvent.value = CourierBillingAccountDataNavAction.NavigateToBack
-    }
-
-    private fun removeAccountError() {
     }
 
     fun getBankEntity() = bankEntity
@@ -374,11 +340,15 @@ class CourierBillingAccountDataViewModel(
             it != parameters.account
         }
         assert(newList.isNotEmpty())
+        setButtonAndLoaderState(true)
         addSubscription(
             interactor.saveBillingAccounts(newList)
                 .subscribe(
                     { removeAccountComplete() },
-                    { removeAccountError() }
+                    {
+                    setButtonAndLoaderState(false)
+                        errorDialogManager.showErrorDialog(it,_navigateToMessageState)
+                    }
                 )
         )
     }

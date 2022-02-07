@@ -3,11 +3,12 @@ package ru.wb.go.ui.courierwarehouses.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
-interface CourierWarehouseInteractor {
+interface CourierWarehousesInteractor {
 
     fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 
@@ -22,5 +23,7 @@ interface CourierWarehouseInteractor {
     fun mapState(state: CourierMapState)
 
     fun isDemoMode(): Boolean
+
+    fun dynamicUrl(): Single<ResponseBody>
 
 }

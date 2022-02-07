@@ -78,5 +78,6 @@
     <dimen name="code_keyboard_font_size">40sp</dimen>
     <dimen name="pad16">16dp</dimen>
     <dimen name="pad24">24dp</dimen>
+    <dimen name="pad8">8dp</dimen>
 
 </resources>

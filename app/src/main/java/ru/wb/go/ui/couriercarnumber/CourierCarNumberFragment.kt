@@ -22,9 +22,6 @@ import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
-import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) {
@@ -57,27 +54,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         initViews()
         initListeners()
         initStateObserve()
-//        initReturnResult()
     }
-
-//    private fun initReturnResult() {
-//        setFragmentResultListener(ProgressDialogFragment.PROGRESS_DIALOG_RESULT) { _, bundle ->
-//            if (bundle.containsKey(ProgressDialogFragment.PROGRESS_DIALOG_BACK_KEY)) {
-//                viewModel.onCancelLoadClick()
-//            }
-//        }
-//    }
-
-//    private fun showProgressDialog() {
-//        val progressDialog = ProgressDialogFragment.newInstance()
-//        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
-//    }
-//
-//    private fun closeProgressDialog() {
-//        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
-//            if (it is ProgressDialogFragment) it.dismiss()
-//        }
-//    }
 
     private fun initViews() {
         (activity as NavToolbarListener).hideToolbar()
@@ -85,28 +62,28 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
     private fun initListeners() {
-        with(binding.carNumber) {
-            binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick() }
-        }
+        binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick() }
         binding.cancel.setOnClickListener { findNavController().popBackStack() }
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
     }
 
     private fun initStateObserve() {
-        viewModel.navigationState.observe(viewLifecycleOwner, { state ->
+        viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierCarNumberNavigationState.NavigateToOrderDetails -> {
                     findNavController().navigate(
-                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(state.title, state.orderNumber, state.order)
+                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderDetailsFragment(
+                            CourierOrderDetailsParameters(
+                                state.title,
+                                state.orderNumber,
+                                state.order,
+                                state.warehouseLatitude,
+                                state.warehouseLongitude
+                            )
                         )
                     )
                 }
             }
-        })
-
-        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
         }
 
         viewModel.stateBackspaceUI.observe(viewLifecycleOwner) {
@@ -116,7 +93,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
             }
         }
 
-        viewModel.stateUI.observe(viewLifecycleOwner, { state ->
+        viewModel.stateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierCarNumberUIState.NumberFormatComplete -> {
                     binding.confirm.setState(ProgressButtonMode.ENABLE)
@@ -127,26 +104,6 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                     binding.confirm.setState(ProgressButtonMode.DISABLE)
                     binding.numberNotFound.visibility = INVISIBLE
                 }
-                is CourierCarNumberUIState.NumberNotFound -> {
-                    showDialogInfo(
-                        DialogInfoStyle.WARNING.ordinal,
-                        state.title,
-                        state.message,
-                        state.button
-                    )
-                    binding.viewKeyboard.unlock()
-                    binding.viewKeyboard.active()
-                }
-                is CourierCarNumberUIState.Error -> {
-                    showDialogInfo(
-                        DialogInfoStyle.WARNING.ordinal,
-                        state.title,
-                        state.message,
-                        state.button
-                    )
-                    binding.viewKeyboard.unlock()
-                    binding.viewKeyboard.active()
-                }
                 is CourierCarNumberUIState.NumberSpanFormat -> {
                     binding.carNumber.setText(
                         phoneSpannable(state),
@@ -156,7 +113,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                 }
             }
 
-        })
+        }
 
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
@@ -177,26 +134,13 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         spannable.setSpan(span, first, last, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return spannable
     }
-
-    private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
-    ) {
-        DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
-        ).show(parentFragmentManager, DIALOG_INFO_TAG)
-    }
-
 }
 
 @Parcelize
 data class CourierCarNumberParameters(
     val title: String,
     val orderNumber: String,
-    val order: CourierOrderEntity
+    val order: CourierOrderEntity,
+    val warehouseLatitude: Double,
+    val warehouseLongitude: Double,
 ) : Parcelable

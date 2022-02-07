@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierwarehouses.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -15,12 +16,13 @@ import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import java.util.concurrent.TimeUnit
 
-class CourierWarehouseInteractorImpl(
+class CourierWarehousesInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
     private val appSharedRepository: AppSharedRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
+) : CourierWarehousesInteractor {
     private val userManager: UserManager
 ) : CourierWarehouseInteractor {
 
@@ -55,6 +57,13 @@ class CourierWarehouseInteractorImpl(
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
+
+    override fun dynamicUrl(): Single<ResponseBody> {
+
+        return appRemoteRepository.dynamicUrl()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
 
     override fun isDemoMode(): Boolean {
         return userManager.isDemoMode()

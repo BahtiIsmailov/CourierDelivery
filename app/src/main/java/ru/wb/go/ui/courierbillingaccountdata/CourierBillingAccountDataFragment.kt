@@ -37,9 +37,14 @@ import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.C
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.SoftKeyboard
+import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
 
@@ -168,7 +173,6 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         return ClickEventInterface { view ->
             view.clicks().map {
                 view.isEnabled = false
-                binding.overlay.visibility = VISIBLE
                 CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
             }
         }
@@ -263,7 +267,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
                 is CourierBillingAccountDataUIState.Error -> {
                     val textLayout =
                         changeText.find { it.type == state.typeBillingAccount }?.textLayout
-                    textLayout?.error = state.message//getText(R.string.error)
+                    textLayout?.error = state.message
                 }
                 is CourierBillingAccountDataUIState.ErrorFocus -> {
                     changeText.find { it.type == state.typeBillingAccount }?.text?.let {
@@ -293,54 +297,53 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             binding.bank.setText(it.name)
         }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    is CourierBillingAccountDataNavAction.NavigateToAccountSelector ->
-                        findNavController().navigate(
-                            CourierBillingAccountDataFragmentDirections
-                                .actionCourierBillingAccountDataFragmentToCourierBillingAccountSelectorFragment(
-                                    CourierBillingAccountSelectorAmountParameters(
-                                        state.balance
-                                    )
+        viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is CourierBillingAccountDataNavAction.NavigateToAccountSelector ->
+                    findNavController().navigate(
+                        CourierBillingAccountDataFragmentDirections
+                            .actionCourierBillingAccountDataFragmentToCourierBillingAccountSelectorFragment(
+                                CourierBillingAccountSelectorAmountParameters(
+                                    state.balance
                                 )
-                        )
-                    CourierBillingAccountDataNavAction.NavigateToBack ->
-                        findNavController().popBackStack()
-                    is CourierBillingAccountDataNavAction.NavigateToConfirmDialog -> {
-                        val msg = "Удалить счет\n${state.account}?"
-//TODO Диалог не работает. Невозможно получить результат
-                        showDialogConfirmInfo(
-                            DialogInfoStyle.INFO.ordinal,
-                            getString(R.string.attention_title),
-                            msg,
-                            getString(R.string.ok_button_title),
-                            getString(R.string.exit_app_cancel)
-                        )
-                        ////viewModel.removeConfirmed()
-                    }
-                }
-            })
+                            )
+                    )
+                CourierBillingAccountDataNavAction.NavigateToBack ->
+                    findNavController().popBackStack()
+                is CourierBillingAccountDataNavAction.NavigateToConfirmDialog -> {
+                    val msg = "Удалить счет\n${state.account}?"
+                    showDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        getString(R.string.attention_title),
+                        msg,
+                        getString(R.string.ok_button_title),
+                        getString(R.string.exit_app_cancel)
+                    )
 
-        viewModel.loaderState.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    CourierBillingAccountDataUILoaderState.Disable ->
-                        binding.saveAccountButton.setState(ProgressButtonMode.DISABLE)
-                    CourierBillingAccountDataUILoaderState.Enable ->
-                        binding.saveAccountButton.setState(ProgressButtonMode.ENABLE)
-                    CourierBillingAccountDataUILoaderState.Progress ->
-                        binding.saveAccountButton.setState(ProgressButtonMode.PROGRESS)
                 }
-            })
+            }
+        }
 
-        viewModel.holderState.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    true -> binding.overlay.visibility = VISIBLE
-                    false -> binding.overlay.visibility = INVISIBLE
-                }
-            })
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
+            }
+        }
+
+        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
+            showDialogInfo(it)
+        }
+
+        viewModel.loaderState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CourierBillingAccountDataUILoaderState.Disable ->
+                    binding.saveAccountButton.setState(ProgressButtonMode.DISABLE)
+                CourierBillingAccountDataUILoaderState.Enable ->
+                    binding.saveAccountButton.setState(ProgressButtonMode.ENABLE)
+
+            }
+        }
 
     }
 
@@ -399,6 +402,29 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
             positiveButtonName = positiveButtonName,
             negativeButtonName = negativeButtonName
         ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
+    }
+
+    private fun showDialogInfo(
+        errorDialogData: ErrorDialogData
+    ) {
+        DialogInfoFragment.newInstance(
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
+        ).show(parentFragmentManager, DIALOG_INFO_TAG)
+    }
+
+    private fun showProgressDialog() {
+        val progressDialog = ProgressDialogFragment.newInstance()
+        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
+    }
+
+    private fun closeProgressDialog() {
+        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
+            if (it is ProgressDialogFragment) it.dismiss()
+        }
     }
 
     companion object {

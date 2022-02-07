@@ -14,7 +14,7 @@ import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
 
-interface AppRemoteRepository {
+interface AppDemoRepository {
 
     fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
 

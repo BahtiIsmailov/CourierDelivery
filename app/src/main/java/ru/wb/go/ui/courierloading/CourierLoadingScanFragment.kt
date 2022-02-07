@@ -288,7 +288,7 @@ class CourierLoadingScanFragment : Fragment() {
             type = errorDialogData.type,
             title = errorDialogData.title,
             message = errorDialogData.message,
-            positiveButtonName = context!!.getString(R.string.ok_button_title)
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

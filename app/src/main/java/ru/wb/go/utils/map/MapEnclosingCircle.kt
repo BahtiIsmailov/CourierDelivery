@@ -14,13 +14,18 @@ class MapEnclosingCircle {
 
         LogUtils { logDebugApp("myLocation " + myLocation) }
 
-        val firstPoint = points[0]
-        var maxLatPoint = max(myLocation.latitude, firstPoint.latitude)
-        var maxLongPoint = max(myLocation.longitude, firstPoint.longitude)
-        var minLatPoint = min(myLocation.latitude, firstPoint.latitude)
-        var minLongPoint = min(myLocation.longitude, firstPoint.longitude)
+        var maxLatPoint = myLocation.latitude
+        var maxLongPoint = myLocation.longitude
+        var minLatPoint = myLocation.latitude
+        var minLongPoint = myLocation.longitude
 
-        if (points.size > 1) {
+        if (points.size == 1) {
+            val firstPoint = points[0]
+            maxLatPoint = max(myLocation.latitude, firstPoint.latitude)
+            maxLongPoint = max(myLocation.longitude, firstPoint.longitude)
+            minLatPoint = min(myLocation.latitude, firstPoint.latitude)
+            minLongPoint = min(myLocation.longitude, firstPoint.longitude)
+        } else if (points.size > 1) {
             val pointDistances = mutableListOf<Pair<CoordinatePoint, Double>>()
             points.forEach { pointDistances.add(Pair(it, distanceKm(it, myLocation))) }
             pointDistances.filter { it.second <= radiusKm }

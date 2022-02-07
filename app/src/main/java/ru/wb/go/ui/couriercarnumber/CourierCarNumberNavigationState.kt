@@ -7,7 +7,9 @@ sealed class CourierCarNumberNavigationState {
     data class NavigateToOrderDetails(
         val title: String,
         val orderNumber: String,
-        val order: CourierOrderEntity
+        val order: CourierOrderEntity,
+        val warehouseLatitude: Double,
+        val warehouseLongitude: Double,
     ) : CourierCarNumberNavigationState()
 
 }

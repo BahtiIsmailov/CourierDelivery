@@ -10,12 +10,14 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import ru.wb.go.R
 import ru.wb.go.databinding.AuthCourierExpectsFragmentBinding
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
 class CourierExpectsFragment : Fragment() {
@@ -57,8 +59,8 @@ class CourierExpectsFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+        viewModel.showDialogInfo.observe(viewLifecycleOwner) {
+            showDialogInfo(it)
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
@@ -68,11 +70,14 @@ class CourierExpectsFragment : Fragment() {
                         CourierExpectsFragmentDirections
                             .actionCouriersCompleteRegistrationFragmentToCourierWarehouseFragment()
                     )
-               is CourierExpectsNavAction.NavigateToRegistrationCouriers->
+                is CourierExpectsNavAction.NavigateToRegistrationCouriers ->
                     findNavController().navigate(
                         CourierExpectsFragmentDirections
                             .actionCouriersCompleteRegistrationFragmentToUserFormFragment(
-                                CourierDataParameters(state.phone, state.docs)
+                                CourierDataParameters(
+                                    phone = state.phone,
+                                    docs = state.docs
+                                )
                             )
                     )
             }
@@ -89,16 +94,14 @@ class CourierExpectsFragment : Fragment() {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 

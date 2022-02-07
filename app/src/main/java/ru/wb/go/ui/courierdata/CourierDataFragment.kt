@@ -32,11 +32,11 @@ import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
+import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.time.DateTimeFormatter
 import ru.wb.go.views.ProgressButtonMode
 import java.util.*
@@ -49,12 +49,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     private lateinit var inputMethod: InputMethodManager
     private val viewModel by viewModel<UserFormViewModel> {
-        parametersOf(
-            requireArguments().getParcelable<CourierDataParameters>(PHONE_KEY),
-            requireArguments().getParcelable<CourierDataParameters>(
-                DOCS_KEY
-            )
-        )
+        parametersOf(requireArguments().getParcelable<CourierDataParameters>(REGISTER_FORM_PARAMS))
     }
 
     override fun onCreateView(
@@ -78,33 +73,24 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
     private fun initializeFields() {
 
-        val docs = viewModel.getDocsParam()
-        if (docs.errorAnnotate.isNullOrEmpty()) {
+        val params = viewModel.getParams()
+        if (params.docs.errorAnnotate.isNullOrEmpty()) {
             SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
             return
-        } else {
-
-            DialogInfoFragment.newInstance(
-                type = DialogInfoStyle.ERROR.ordinal,
-                title = "Ошибка",
-                message = docs.errorAnnotate,
-                positiveButtonName = getText(R.string.ok_button_title).toString()
-            ).show(parentFragmentManager, DIALOG_INFO_TAG)
-
         }
-        with(binding) {
-            surname.setText(docs.surName)
-            firstName.setText(docs.firstName)
-            middleName.setText(docs.middleName)
-            inn.setText(docs.inn)
-            passportSeries.setText(docs.passportSeries)
-            passportNumber.setText(docs.passportNumber)
-            passportDateOfIssue.setText(docs.passportDateOfIssue)
-            passportDepartmentCode.setText(docs.passportDepartmentCode)
-            passportIssuedBy.setText(docs.passportIssuedBy)
-            checkedAgreement.isChecked = true
+        viewModel.showAnnotation()
+        with(params.docs) {
+            binding.surname.setText(surName)
+            binding.firstName.setText(firstName)
+            binding.middleName.setText(middleName)
+            binding.inn.setText(inn)
+            binding.passportSeries.setText(passportSeries)
+            binding.passportNumber.setText(passportNumber)
+            binding.passportDateOfIssue.setText(passportDateOfIssue)
+            binding.passportDepartmentCode.setText(passportDepartmentCode)
+            binding.passportIssuedBy.setText(passportIssuedBy)
+            binding.checkedAgreement.isChecked = false
         }
-        updateChecked()
 
     }
 
@@ -337,7 +323,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     private fun initObservers() {
 
         viewModel.navigateToMessageInfo.observe(viewLifecycleOwner) {
-            showDialogInfo(it.type, it.title, it.message, it.button)
+            showDialogInfo(it)
         }
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
@@ -380,38 +366,36 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             }
         }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    is CourierDataNavAction.NavigateToCouriersCompleteRegistration -> {
-                        findNavController().navigate(
-                            CourierDataFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
-                                CourierExpectsParameters(state.phone)
-                            )
+        viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is CourierDataNavAction.NavigateToCouriersCompleteRegistration -> {
+                    findNavController().navigate(
+                        CourierDataFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
+                            CourierExpectsParameters(state.phone)
                         )
-                    }
-                    CourierDataNavAction.NavigateToAgreement -> {
-                        findNavController().navigate(
-                            CourierDataFragmentDirections.actionUserFormFragmentToCourierAgreementFragment()
-                        )
-                    }
+                    )
                 }
-            })
-
-        viewModel.loaderState.observe(viewLifecycleOwner,
-            { state ->
-                when (state) {
-                    CourierDataUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
-                    CourierDataUILoaderState.Enable -> {
-                        binding.next.setState(ProgressButtonMode.ENABLE)
-
-                    }
-                    CourierDataUILoaderState.Progress -> {
-                        binding.next.setState(ProgressButtonMode.PROGRESS)
-
-                    }
+                CourierDataNavAction.NavigateToAgreement -> {
+                    findNavController().navigate(
+                        CourierDataFragmentDirections.actionUserFormFragmentToCourierAgreementFragment()
+                    )
                 }
-            })
+            }
+        }
+
+        viewModel.loaderState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CourierDataUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
+                CourierDataUILoaderState.Enable -> {
+                    binding.next.setState(ProgressButtonMode.ENABLE)
+
+                }
+                CourierDataUILoaderState.Progress -> {
+                    binding.next.setState(ProgressButtonMode.PROGRESS)
+
+                }
+            }
+        }
     }
 
     private fun errorFieldHint(field: CourierData): CharSequence {
@@ -438,22 +422,19 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun showDialogInfo(
-        type: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String
+        errorDialogData: ErrorDialogData
     ) {
         DialogInfoFragment.newInstance(
-            type = type,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
     companion object {
-        const val PHONE_KEY = "phone_key"
-        const val DOCS_KEY = "docs_key"
+        const val REGISTER_FORM_PARAMS = "REGISTER_FORM_PARAMS"
         const val DATE_TIME_PICKER_FRAGMENT = "date_time_picker_fragment"
         const val DATE_PICKER_PATTERN = "dd.MM.yyyy"
     }
@@ -461,8 +442,10 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 }
 
 @Parcelize
-data class CourierDataParameters(val phone: String, val docs: @RawValue CourierDocumentsEntity) :
-    Parcelable
+data class CourierDataParameters(
+    val phone: String,
+    val docs: @RawValue CourierDocumentsEntity
+) : Parcelable
 
 data class CourierData(val text: String, val type: CourierDataQueryType)
 

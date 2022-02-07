@@ -4,7 +4,6 @@
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_billing">Баланс</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
-    <string name="app_nav_update_app">Проверить обновление</string>
     <string name="app_version">%s</string>
     <string name="app_update_version">Новая версия %s</string>
     <string name="app_update_version_available">Доступна новая версия %s</string>
@@ -242,7 +241,7 @@
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
 
     <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
-    <string name="courier_orders_details_dialog_is_not_exist_message">Этот заказ уже взят в работу</string>
+    <string name="courier_orders_details_dialog_is_not_exist_message">Заказ уже взят в работу</string>
     <string name="courier_orders_details_dialog_is_not_exist_button">Понятно</string>
 
     <string name="courier_orders_timer_dialog_title">Время вышло</string>
@@ -486,7 +485,7 @@
 
     <string name="courier_billing_title">Ваш баланс</string>
     <string name="courier_billing_date_and_time">&#160;• %1$s</string>
-    <string name="courier_billing_empty_list">Транзакций нет</string>
+    <string name="courier_billing_empty_list">Данные отсутствуют</string>
     <string name="courier_billing_positive_amount">+ %1$s ₽</string>
     <string name="courier_billing_negative_amount">- %1$s ₽</string>
 

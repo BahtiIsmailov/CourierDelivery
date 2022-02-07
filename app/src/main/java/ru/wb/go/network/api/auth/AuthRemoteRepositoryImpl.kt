@@ -9,11 +9,13 @@ import ru.wb.go.network.api.auth.query.RefreshTokenQuery
 import ru.wb.go.network.api.auth.response.StatisticsResponse
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
+import ru.wb.go.utils.managers.SettingsManager
 
 class AuthRemoteRepositoryImpl(
     private val authApi: AuthApi,
     private val tokenManager: TokenManager,
     private val userManager: UserManager,
+    private val settingsManager: SettingsManager,
 ) : AuthRemoteRepository {
 
     override fun auth(
@@ -57,6 +59,7 @@ class AuthRemoteRepositoryImpl(
     override fun clearToken() {
         tokenManager.clear()
         userManager.clearAll()
+        settingsManager.resetSettings()
     }
 
     override fun userPhone(): String {
