@@ -12,8 +12,6 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 class AppLoaderViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val repository: RefreshTokenRepository,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
@@ -22,34 +20,13 @@ class AppLoaderViewModel(
         get() = _navState
 
     init {
-        refreshTokenAndNavigateToApp()
+        selectStateApp()
     }
 
-    private fun refreshTokenAndNavigateToApp() {
-        addSubscription(repository.refreshAccessTokensSync()
-            .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
-                {
-                    solveGraph()
-                },
-                {
-                    onTechErrorLog("Loader. RefreshToken", it)
-                    solveGraph()
-                }
-            ))
-    }
-
-    private fun solveGraph() {
+    private fun selectStateApp() {
         if (tokenManager.isUserCourier()) {
-            toCourier()
-        } else toAuth()
-    }
-
-    private fun toCourier() {
-        _navState.value = AppLoaderNavigatioState.NavigateToCourier
-    }
-
-    private fun toAuth() {
-        _navState.value = AppLoaderNavigatioState.NavigateToAuth
+            _navState.value = AppLoaderNavigatioState.NavigateToCourier
+        } else _navState.value = AppLoaderNavigatioState.NavigateToAuth
     }
 
     override fun getScreenTag(): String {
