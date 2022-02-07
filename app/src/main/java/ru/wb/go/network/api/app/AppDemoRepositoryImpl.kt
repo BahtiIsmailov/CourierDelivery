@@ -12,6 +12,7 @@ import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
+
 import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
@@ -26,9 +27,9 @@ import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 
-class AppRemoteRepositoryImpl(
+class AppDemoRepositoryImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
-    private val remoteRepo: AppApi,
+    private val remoteRepo: AppDemoApi,
     private val tokenManager: TokenManager,
 ) : AppRemoteRepository {
 
@@ -372,7 +373,7 @@ class AppRemoteRepositoryImpl(
 
     override fun dynamicUrl(): Single<ResponseBody> {
         return remoteRepo.getDynamicUrl(
-            "https://medium.com/@shinoogoyalaggarwal/koin-a-dependency-injection-framework-85ed1eb2eaa5"
+            "https://habr.com/ru/company/surfstudio/blog/512326/"
         )
     }
 
@@ -409,10 +410,4 @@ class AppRemoteRepositoryImpl(
 
     private fun apiVersion() = tokenManager.apiVersion()
 
-}
-
-sealed class StatusOK {
-    object IsRejected : StatusOK()
-    object IsProcessing : StatusOK()
-    object IsComplete : StatusOK()
 }

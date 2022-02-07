@@ -15,13 +15,13 @@ import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import java.util.concurrent.TimeUnit
 
-class CourierWarehouseInteractorImpl(
+class CourierWarehousesInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
     private val appSharedRepository: AppSharedRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
-) : CourierWarehouseInteractor {
+) : CourierWarehousesInteractor {
 
 
     override fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
@@ -57,6 +57,7 @@ class CourierWarehouseInteractorImpl(
     }
 
     override fun dynamicUrl(): Single<ResponseBody> {
+
         return appRemoteRepository.dynamicUrl()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }

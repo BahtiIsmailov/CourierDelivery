@@ -3,7 +3,7 @@ package ru.wb.go.di.module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.network.api.app.AppApi
-import ru.wb.go.network.api.app.AppDynamicApi
+import ru.wb.go.network.api.app.AppDemoApi
 import ru.wb.go.network.api.auth.AuthApi
 import ru.wb.go.network.headers.RefreshTokenApi
 import ru.wb.go.network.rest.RefreshTokenRetrofitFactory
@@ -23,8 +23,8 @@ val apiModule = module {
         return retrofitFactory.getApiInterface(AppApi::class.java)
     }
 
-    fun provideAppDynamicApi(retrofitFactory: RetrofitFactory): AppDynamicApi {
-        return retrofitFactory.getApiDynamicInterface(AppDynamicApi::class.java)
+    fun provideAppDynamicApi(retrofitFactory: RetrofitFactory): AppDemoApi {
+        return retrofitFactory.getApiDynamicInterface(AppDemoApi::class.java)
     }
 
     single { provideAuthApi(get(named(AUTH_NAMED_RETROFIT))) }

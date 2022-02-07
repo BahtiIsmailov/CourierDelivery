@@ -11,7 +11,7 @@ import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
 import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
-import ru.wb.go.ui.courierwarehouses.domain.CourierWarehouseInteractor
+import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -24,7 +24,7 @@ import ru.wb.go.utils.map.MapPoint
 class CourierWarehousesViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val interactor: CourierWarehouseInteractor,
+    private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {

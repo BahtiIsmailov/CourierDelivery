@@ -8,7 +8,7 @@ import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
-interface CourierWarehouseInteractor {
+interface CourierWarehousesInteractor {
 
     fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 

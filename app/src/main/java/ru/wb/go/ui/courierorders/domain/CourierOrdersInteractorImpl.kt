@@ -16,14 +16,14 @@ import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 
-class CourierOrderInteractorImpl(
+class CourierOrdersInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
     private val userManager: UserManager,
-) : CourierOrderInteractor {
+) : CourierOrdersInteractor {
 
     override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
         return appRemoteRepository.getFreeOrders(srcOfficeID)

@@ -8,7 +8,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
-interface CourierOrderInteractor {
+interface CourierOrdersInteractor {
 
     fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 

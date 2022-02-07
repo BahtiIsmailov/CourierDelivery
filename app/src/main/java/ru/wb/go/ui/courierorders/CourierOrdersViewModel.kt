@@ -14,7 +14,7 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
-import ru.wb.go.ui.courierorders.domain.CourierOrderInteractor
+import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -27,7 +27,7 @@ class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val interactor: CourierOrderInteractor,
+    private val interactor: CourierOrdersInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val errorDialogManager: ErrorDialogManager,

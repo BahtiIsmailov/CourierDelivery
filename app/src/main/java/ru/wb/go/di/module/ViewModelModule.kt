@@ -1,6 +1,7 @@
 package ru.wb.go.di.module
 
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.ui.app.AppLoaderViewModel
 import ru.wb.go.ui.app.AppViewModel
@@ -60,7 +61,15 @@ val viewModelModule = module {
     }
 
     viewModel {
-        CourierLoaderViewModel(get(), get(), get(), get(), get(), get(), get(), get())
+        CourierLoaderViewModel(
+            compositeDisposable = get(),
+            metric = get(),
+            rxSchedulerFactory = get(),
+            tokenManager = get(),
+            locRepo = get(),
+            remoteRepo = get(if (IS_DEMO) named(APP_DEMO) else named(APP_RELEASE)),
+            deviceManager = get(),
+            resourceProvider = get())
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
