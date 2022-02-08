@@ -289,10 +289,6 @@ class CourierWarehousesViewModel(
         zoomMarkersFromBoundingBox(myLocation)
     }
 
-    fun onCancelLoadClick() {
-        clearSubscription()
-    }
-
     private fun clearFabAndWhList() {
         whSelectedId = null
         changeShowOrders(false)

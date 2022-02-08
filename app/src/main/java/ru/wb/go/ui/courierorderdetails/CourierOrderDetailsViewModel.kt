@@ -199,11 +199,6 @@ class CourierOrderDetailsViewModel(
         )
     }
 
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
-    }
-
     fun onItemClick(index: Int) {
         onTechEventLog("onItemClick")
         changeItemSelected(index)

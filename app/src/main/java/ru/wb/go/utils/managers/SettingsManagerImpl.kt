@@ -5,15 +5,16 @@ import ru.wb.go.utils.prefs.SharedWorker
 
 class SettingsManagerImpl(private val worker: SharedWorker) : SettingsManager {
     override fun resetSettings() {
-        worker.delete(AppPreffsKeys.START_FLASH_ON)
+        worker.delete(AppPreffsKeys.SETTING_START_FLASH_ON)
+        worker.delete(AppPreffsKeys.SETTING_VOICE_SCAN)
     }
 
-    override fun loadFlash(): Boolean {
-        return worker.load(AppPreffsKeys.START_FLASH_ON, false)
+    override fun getSetting(name: String, default: Boolean): Boolean {
+        return worker.load(name, default)
     }
 
-    override fun saveFlash(state: Boolean) {
-        worker.save(AppPreffsKeys.START_FLASH_ON, state)
+    override fun setSetting(name: String, state: Boolean) {
+        worker.save(name, state)
     }
 
     override fun checkNewInstall(appVersion: String): Boolean {

@@ -68,6 +68,10 @@ val utilsModule = module {
         return SettingsManagerImpl(sharedWorker)
     }
 
+    fun providePlayManager(context: Context, settingsManager: SettingsManager): PlayManager {
+        return PlayManagerImpl(context, settingsManager)
+    }
+
     single { provideSharedWorker(get(), get()) }
     single { provideDeviceManager(get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
@@ -78,4 +82,5 @@ val utilsModule = module {
     single { provideYandexMetricManager(get(), get(), get()) }
     single { provideErrorManager(get()) }
     single { provideSettingsManager(get()) }
+    single { providePlayManager(get(), get()) }
 }

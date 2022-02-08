@@ -26,7 +26,6 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnCourierScanner
-import ru.wb.go.ui.app.OnSoundPlayer
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
@@ -318,15 +317,11 @@ class CourierLoadingScanFragment : Fragment() {
     }
 
     private fun beepWrongBox() {
-        play(R.raw.unloading_unknown_box)
+        viewModel.play(R.raw.unloading_unknown_box)
     }
 
     private fun beepUnknownQr() {
-        play(R.raw.unloading_scan_unknown_qr)
-    }
-
-    private fun play(resId: Int) {
-        (activity as OnSoundPlayer).play(resId)
+        viewModel.play(R.raw.unloading_scan_unknown_qr)
     }
 
 }

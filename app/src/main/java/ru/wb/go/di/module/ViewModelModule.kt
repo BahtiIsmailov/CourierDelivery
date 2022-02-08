@@ -42,6 +42,7 @@ import ru.wb.go.ui.courierunloading.RemainBoxViewModel
 import ru.wb.go.ui.courierversioncontrol.CourierVersionControlViewModel
 import ru.wb.go.ui.courierwarehouses.CourierWarehousesViewModel
 import ru.wb.go.ui.scanner.CourierScannerViewModel
+import ru.wb.go.ui.settings.SettingsViewModel
 
 val viewModelModule = module {
     viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
@@ -92,22 +93,22 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: CourierCarNumberParameters) ->
-        CourierCarNumberViewModel(parameters, get(), get(), get(), get())
+        CourierCarNumberViewModel(parameters, get(), get(), get())
     }
 
     viewModel { CourierOrderTimerViewModel(get(), get(), get(), get(), get()) }
 
     viewModel {
         CourierLoadingScanViewModel(
-            get(), get(), get(), get(), get(), get(), get()
+            get(), get(), get(), get(), get(), get(), get(),get()
         )
     }
 
     viewModel { CourierScannerViewModel(get(), get(), get(), get()) }
-    viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
-            parameters, get(), get(), get(), get(), get(), get()
+            parameters, get(), get(), get(), get(), get(), get(),get()
         )
     }
 
@@ -158,5 +159,7 @@ val viewModelModule = module {
     viewModel { (parameters: RemainBoxParameters) ->
         RemainBoxViewModel(parameters, get(), get(), get(), get(), get())
     }
+
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get()) }
 
 }
