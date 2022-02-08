@@ -31,8 +31,8 @@ import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -45,6 +45,7 @@ class CourierOrderDetailsFragment : Fragment() {
         const val COURIER_ORDER_DETAILS_ID_KEY = "courier_order_details_id_key"
         const val DIALOG_TASK_NOT_EXIST_RESULT_TAG = "DIALOG_TASK_NOT_EXIST_RESULT_TAG"
         const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
+        const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
     }
 
     private val viewModel by viewModel<CourierOrderDetailsViewModel> {
@@ -102,6 +103,15 @@ class CourierOrderDetailsFragment : Fragment() {
         setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
             if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
                 viewModel.goBack()
+            }
+        }
+
+        setFragmentResultListener(DIALOG_REGISTRATION_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
+                viewModel.onRegistrationConfirmClick()
+            }
+            if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
+                viewModel.onRegistrationCancelClick()
             }
         }
     }
@@ -208,6 +218,20 @@ class CourierOrderDetailsFragment : Fragment() {
                     )
                 }
                 CourierOrderDetailsNavigationState.NavigateToBack -> findNavController().popBackStack()
+                CourierOrderDetailsNavigationState.NavigateToRegistrationDialog -> {
+                    showRegistrationDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        getString(R.string.demo_registration_title_dialog),
+                        getString(R.string.demo_registration_message_dialog),
+                        getString(R.string.demo_registration_positive_dialog),
+                        getString(R.string.demo_registration_negative_dialog)
+                    )
+                }
+                CourierOrderDetailsNavigationState.NavigateToRegistration -> {
+                    findNavController().navigate(
+                        CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToAuthNavigation()
+                    )
+                }
             }
         }
 
@@ -222,13 +246,38 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 true -> {
                     binding.toRegistration.visibility = VISIBLE
+                    carNumberTextColor(R.color.light_text)
+                    binding.carChangeImage.visibility = GONE
                 }
                 false -> {
                     binding.toRegistration.visibility = GONE
+                    carNumberTextColor(R.color.black_text)
+                    binding.carChangeImage.visibility = VISIBLE
                 }
             }
         }
 
+    }
+
+    private fun carNumberTextColor(color: Int) {
+        binding.carNumber.setTextColor(ContextCompat.getColor(requireContext(), color))
+    }
+
+    private fun showRegistrationDialogConfirmInfo(
+        style: Int,
+        title: String,
+        message: String,
+        positiveButtonName: String,
+        negativeButtonName: String
+    ) {
+        DialogConfirmInfoFragment.newInstance(
+            resultTag = DIALOG_REGISTRATION_RESULT_TAG,
+            type = style,
+            title = title,
+            message = message,
+            positiveButtonName = positiveButtonName,
+            negativeButtonName = negativeButtonName
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun updateHeightInfoPixels() {
@@ -249,6 +298,7 @@ class CourierOrderDetailsFragment : Fragment() {
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.addresses.setOnClickListener { showAddresses() }
         binding.addressClose.setOnClickListener { showDetails() }
+        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.confirmTakeOrderClick() }
     }
 

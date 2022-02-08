@@ -3,7 +3,6 @@ package ru.wb.go.network.api.app
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import okhttp3.ResponseBody
 import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
@@ -136,10 +135,5 @@ interface AppApi {
     fun getAppActualVersion(
         @Path(value = "version", encoded = true) version: String
     ): Single<VersionAppResponse>
-
-    @GET
-    fun getDynamicUrl(
-        @Url url: String
-    ): Single<ResponseBody>
 
 }

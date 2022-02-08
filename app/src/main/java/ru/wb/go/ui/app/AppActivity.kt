@@ -2,7 +2,7 @@ package ru.wb.go.ui.app
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.*
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.AudioManager
@@ -10,11 +10,13 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.*
 import android.view.Gravity.LEFT
+import android.view.View
 import android.view.View.*
 import android.view.WindowManager.LayoutParams.*
-import android.widget.*
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -92,7 +94,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         navController.addOnDestinationChangedListener(onDestinationChangedListener)
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.courierWarehouseFragment),
+            setOf(R.id.courierWarehousesFragment),
             binding.drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -232,7 +234,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             R.id.userFormFragment -> findNavController(R.id.nav_host_fragment).navigate(
                 CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
             )
-            R.id.couriersCompleteRegistrationFragment, R.id.courierWarehouseFragment,
+            R.id.couriersCompleteRegistrationFragment, R.id.courierWarehousesFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment,
             R.id.courierOrderTimerFragment, R.id.courierStartDeliveryFragment -> showExitDialog()
             R.id.courierScannerLoadingScanFragment -> {

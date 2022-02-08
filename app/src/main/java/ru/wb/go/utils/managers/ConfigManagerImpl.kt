@@ -24,7 +24,7 @@ class ConfigManagerImpl(private val reader: ConfigReader, private val worker: Sh
         return worker.load(AUTH_SERVER_KEY, KeyValueDao::class.java) ?: KeyValueDao("", "")
     }
 
-    override fun readAuthServerUrl(): String {
+    override fun readAuthBaseUrlServer(): String {
         return serverUrl(readDaoAuthServerUrl())
     }
 
@@ -39,7 +39,7 @@ class ConfigManagerImpl(private val reader: ConfigReader, private val worker: Sh
         return worker.load(APP_SERVER_KEY, KeyValueDao::class.java) ?: KeyValueDao("", "")
     }
 
-    override fun readAppServerUrl(): String {
+    override fun readAppBaseUrlServer(): String {
         return serverUrl(readDaoAppServerUrl())
     }
 

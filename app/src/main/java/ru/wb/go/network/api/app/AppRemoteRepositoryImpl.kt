@@ -2,12 +2,7 @@ package ru.wb.go.network.api.app
 
 import io.reactivex.Completable
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
-import okhttp3.ResponseBody
-import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
-import ru.wb.go.db.entity.courier.CourierOrderEntity
-import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -20,7 +15,9 @@ import ru.wb.go.network.api.app.remote.CarNumberRequest
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountResponse
-import ru.wb.go.network.api.app.remote.courier.*
+import ru.wb.go.network.api.app.remote.courier.CourierAnchorResponse
+import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
+import ru.wb.go.network.api.app.remote.courier.convertToApiBoxRequest
 import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -72,40 +69,6 @@ class AppRemoteRepositoryImpl(
                     )
                 }
             }
-    }
-
-    override fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
-        return remoteRepo.freeTasksOffices(apiVersion())
-            .map { it.data }
-            .flatMap {
-                Observable.fromIterable(it)
-                    .map { office -> convertCourierWarehouseEntity(office) }
-                    .toList()
-            }
-            .compose(rxSchedulerFactory.applySingleMetrics("courierWarehouses"))
-    }
-
-    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
-        return with(courierOfficeResponse) {
-            CourierWarehouseLocalEntity(
-                id = id,
-                name = name,
-                fullAddress = fullAddress,
-                longitude = long,
-                latitude = lat
-            )
-        }
-    }
-
-    override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
-        return remoteRepo.freeTasks(apiVersion(), srcOfficeID)
-            .map { it.data }
-            .flatMap {
-                Observable.fromIterable(it)
-                    .map { order -> convertCourierOrderEntity(order) }
-                    .toList()
-            }
-            .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
     }
 
     override fun tasksMy(orderId: Int?): Single<LocalComplexOrderEntity> {
@@ -368,43 +331,6 @@ class AppRemoteRepositoryImpl(
     override fun appVersion(): Single<String> {
         return remoteRepo.getAppActualVersion(tokenManager.apiVersion()).map { it.version }
             .compose(rxSchedulerFactory.applySingleMetrics("appVersion"))
-    }
-
-    override fun dynamicUrl(): Single<ResponseBody> {
-        return remoteRepo.getDynamicUrl(
-            "https://medium.com/@shinoogoyalaggarwal/koin-a-dependency-injection-framework-85ed1eb2eaa5"
-        )
-    }
-
-    private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
-        val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
-        courierOrderResponse.dstOffices.forEach { dstOffice ->
-            // TODO: 05.10.2021 убрать после исправлениня на беке получение минусового id
-            if (dstOffice.id != -1) {
-                dstOffices.add(
-                    CourierOrderDstOfficeEntity(
-                        id = dstOffice.id,
-                        name = dstOffice.name ?: "",
-                        fullAddress = dstOffice.fullAddress ?: "",
-                        long = dstOffice.long,
-                        lat = dstOffice.lat,
-                    )
-                )
-            }
-        }
-        return with(courierOrderResponse) {
-            CourierOrderEntity(
-                id = id,
-                routeID = routeID ?: 0,
-                gate = gate ?: "",
-                minPrice = minPrice,
-                minVolume = minVolume,
-                minBoxesCount = minBoxesCount,
-                dstOffices = dstOffices,
-                reservedAt = "",
-                reservedDuration = reservedDuration
-            )
-        }
     }
 
     private fun apiVersion() = tokenManager.apiVersion()

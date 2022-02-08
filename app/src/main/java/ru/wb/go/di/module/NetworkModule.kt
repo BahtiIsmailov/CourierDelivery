@@ -33,31 +33,32 @@ import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.prefs.SharedWorker
 import java.net.URI
 
-const val AUTH_NAMED_HOST = "auth_named_host"
-const val APP_NAMED_HOST = "app_named_host"
+const val AUTH_NAMED_BASE_URL = "auth_named_base_url"
+const val APP_NAMED_BASE_URL = "app_named_base_url"
 const val AUTH_NAMED_HEADER_MANAGER = "auth_named_header_manager"
 const val REFRESH_TOKEN_NAMED_HEADER_MANAGER = "refresh_token_named_header_manager"
 const val APP_NAMED_HEADER_MANAGER = "app_named_header_manager"
+const val APP_NAMED_DEMO_HEADER_MANAGER = "app_named_demo_header_manager"
 const val AUTH_NAMED_RETROFIT = "auth_named_retrofit"
 const val REFRESH_TOKEN_NAMED_RETROFIT = "refresh_token_named_retrofit"
 const val APP_NAMED_RETROFIT = "app_named_retrofit"
-const val APP_NAMED_DYNAMIC_RETROFIT = "app_named_dynamic_retrofit"
+const val APP_NAMED_TASKS_RETROFIT = "app_named_tasks_retrofit"
 const val AUTH_NAMED_HTTP_CLIENT = "auth_named_client"
 const val REFRESH_TOKEN_NAMED_HTTP_CLIENT = "refresh_token_named_client"
 const val APP_NAMED_HTTP_CLIENT = "app_named_client"
-const val APP_NAMED_HTTP_DYNAMIC_CLIENT = "app_named_dynamic_client"
+const val APP_NAMED_HTTP_DEMO_CLIENT = "app_named_tasks_client"
 
 val networkModule = module {
 
     //==============================================================================================
     // url api
     //==============================================================================================
-    fun provideAuthServer(configManager: ConfigManager): String {
-        return configManager.readAuthServerUrl()
+    fun provideAuthBaseUrlServer(configManager: ConfigManager): String {
+        return configManager.readAuthBaseUrlServer()
     }
 
-    fun provideAppServer(configManager: ConfigManager): String {
-        return configManager.readAppServerUrl()
+    fun provideAppBaseUrlServer(configManager: ConfigManager): String {
+        return configManager.readAppBaseUrlServer()
     }
 
     //==============================================================================================
@@ -115,6 +116,10 @@ val networkModule = module {
 
     fun provideAppHeaderManager(tokenManager: TokenManager, host: String): HeaderManager {
         return AppHeaderManagerImpl(tokenManager, URI(host).host)
+    }
+
+    fun provideAppDemoHeaderManager(host: String): HeaderManager {
+        return AppDemoHeaderManagerImpl(URI(host).host)
     }
 
     //==============================================================================================
@@ -191,10 +196,11 @@ val networkModule = module {
         )
     }
 
-    fun provideAppOkHttpDynamicClient(
+    fun provideAppOkHttpDemoClient(
+        certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
-        return OkHttpFactory.createAppOkHttpDynamicClient(httpLoggingInterceptor)
+        return OkHttpFactory.createAppOkHttpDemoClient(certificateStore, httpLoggingInterceptor)
     }
 
     //==============================================================================================
@@ -229,14 +235,14 @@ val networkModule = module {
     }
 
     fun provideAppRetrofitFactory(
-        apiServer: String,
+        baseUrlServer: String,
         okHttpClient: OkHttpClient,
         callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
         gsonConverterFactory: GsonConverterFactory,
     ): RetrofitFactory {
         return RetrofitFactory(
-            apiServer,
+            baseUrlServer,
             okHttpClient,
             callAdapterFactory,
             nullOnEmptyConverterFactory,
@@ -244,15 +250,15 @@ val networkModule = module {
         )
     }
 
-    fun provideAppDynamicRetrofitFactory(
-        apiServer: String,
+    fun provideAppTasksRetrofitFactory(
+        baseUrlServer: String,
         okHttpClient: OkHttpClient,
         callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
-        gsonConverterFactory: GsonConverterFactory,
+        gsonConverterFactory: GsonConverterFactory
     ): RetrofitFactory {
         return RetrofitFactory(
-            apiServer,
+            baseUrlServer,
             okHttpClient,
             callAdapterFactory,
             nullOnEmptyConverterFactory,
@@ -271,8 +277,8 @@ val networkModule = module {
         return GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create()
     }
 
-    single(named(AUTH_NAMED_HOST)) { provideAuthServer(get()) }
-    single(named(APP_NAMED_HOST)) { provideAppServer(get()) }
+    single(named(AUTH_NAMED_BASE_URL)) { provideAuthBaseUrlServer(get()) }
+    single(named(APP_NAMED_BASE_URL)) { provideAppBaseUrlServer(get()) }
 
     single { provideErrorResolutionResourceProvider(get()) }
     single { provideErrorResolutionStrategy(get()) }
@@ -286,9 +292,12 @@ val networkModule = module {
     single { provideUserManager(get()) }
 
     factory(named(AUTH_NAMED_HEADER_MANAGER)) { provideAuthHeaderManager() }
-    factory(named(REFRESH_TOKEN_NAMED_HEADER_MANAGER)) { provideRefreshTokenHeaderManager(get()) } //get(named(AUTH_NAMED_HOST))
+    factory(named(REFRESH_TOKEN_NAMED_HEADER_MANAGER)) { provideRefreshTokenHeaderManager(get()) }
     factory(named(APP_NAMED_HEADER_MANAGER)) {
-        provideAppHeaderManager(get(), get(named(APP_NAMED_HOST)))
+        provideAppHeaderManager(get(), get(named(APP_NAMED_BASE_URL)))
+    }
+    factory(named(APP_NAMED_DEMO_HEADER_MANAGER)) {
+        provideAppDemoHeaderManager(get(named(APP_NAMED_BASE_URL)))
     }
 
     single { provideNullOnEmptyConverterFactory() }
@@ -301,6 +310,7 @@ val networkModule = module {
 
     single { provideRefreshTokenInterceptor(get(), get(named(APP_NAMED_HEADER_MANAGER)), get()) }
 
+    //OkHttp
     single(named(AUTH_NAMED_HTTP_CLIENT)) { provideAuthOkHttpClient(get(), get(), get()) }
 
     single(named(REFRESH_TOKEN_NAMED_HTTP_CLIENT)) {
@@ -309,16 +319,14 @@ val networkModule = module {
 
     single(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get(), get()) }
 
-    single(named(APP_NAMED_HTTP_DYNAMIC_CLIENT)) {
-        provideAppOkHttpDynamicClient(get())
-    }
+    single(named(APP_NAMED_HTTP_DEMO_CLIENT)) { provideAppOkHttpDemoClient(get(), get()) }
 
     single { provideGsonConverterFactory() }
     single { provideGson() }
 
     single(named(AUTH_NAMED_RETROFIT)) {
         provideAuthRetrofitFactory(
-            get(named(AUTH_NAMED_HOST)),
+            get(named(AUTH_NAMED_BASE_URL)),
             get(named(AUTH_NAMED_HTTP_CLIENT)),
             get(),
             get(),
@@ -328,7 +336,7 @@ val networkModule = module {
 
     single(named(REFRESH_TOKEN_NAMED_RETROFIT)) {
         provideRefreshTokenRetrofitFactory(
-            get(named(AUTH_NAMED_HOST)),
+            get(named(AUTH_NAMED_BASE_URL)),
             get(named(REFRESH_TOKEN_NAMED_HTTP_CLIENT)),
             get(),
         )
@@ -336,22 +344,25 @@ val networkModule = module {
 
     single(named(APP_NAMED_RETROFIT)) {
         provideAppRetrofitFactory(
-            get(named(APP_NAMED_HOST)),
-            get(named(APP_NAMED_HTTP_CLIENT)),
-            get(),
-            get(),
-            get()
+            baseUrlServer = get(named(APP_NAMED_BASE_URL)),
+            okHttpClient = get(named(APP_NAMED_HTTP_CLIENT)),
+            callAdapterFactory = get(),
+            nullOnEmptyConverterFactory = get(),
+            gsonConverterFactory = get()
         )
     }
 
-    single(named(APP_NAMED_DYNAMIC_RETROFIT)) {
-        provideAppDynamicRetrofitFactory(
-            get(named(APP_NAMED_HOST)),
-            get(named(APP_NAMED_HTTP_DYNAMIC_CLIENT)),
-            get(),
-            get(),
-            get()
+    single(named(APP_NAMED_TASKS_RETROFIT)) {
+        provideAppTasksRetrofitFactory(
+            baseUrlServer = get(named(APP_NAMED_BASE_URL)),
+            okHttpClient = get(named(okHttpClientNamed(tokenManager = get()))),
+            callAdapterFactory = get(),
+            nullOnEmptyConverterFactory = get(),
+            gsonConverterFactory = get(),
         )
     }
 
 }
+
+private fun okHttpClientNamed(tokenManager: TokenManager) =
+    if (tokenManager.isDemo()) APP_NAMED_HTTP_DEMO_CLIENT else APP_NAMED_HTTP_CLIENT

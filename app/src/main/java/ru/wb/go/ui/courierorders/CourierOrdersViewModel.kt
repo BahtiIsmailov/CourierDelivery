@@ -71,12 +71,18 @@ class CourierOrdersViewModel(
 
     init {
         onTechEventLog("init")
+        checkDemoMode()
         observeMapAction()
     }
 
     fun update() {
+        checkDemoMode()
         initToolbarLabel()
         initOrders()
+    }
+
+    private fun checkDemoMode() {
+        _demoState.value = interactor.isDemoMode()
     }
 
     private fun observeMapAction() {
@@ -86,6 +92,10 @@ class CourierOrdersViewModel(
                     { observeMapActionComplete(it) },
                     { observeMapActionError(it) }
                 ))
+    }
+
+    fun toRegistrationClick() {
+        _navigationState.value = CourierOrdersNavigationState.NavigateToRegistration
     }
 
     private fun observeMapActionComplete(it: CourierMapAction) {
@@ -289,7 +299,7 @@ class CourierOrdersViewModel(
         val title = parameters.address
         val orderId = (orderItems[idView] as CourierOrderItem).orderId
         val order = orderEntities[idView]
-        _navigationState.value = if (interactor.carNumberIsConfirm())
+        _navigationState.value = if (interactor.carNumberIsConfirm() || interactor.isDemoMode())
             CourierOrdersNavigationState.NavigateToOrderDetails(
                 title,
                 orderId,

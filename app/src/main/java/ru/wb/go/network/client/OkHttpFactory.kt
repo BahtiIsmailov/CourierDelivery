@@ -59,7 +59,14 @@ object OkHttpFactory {
         }
     }
 
-    fun createAppOkHttpDynamicClient(httpLogginInterceptor: HttpLoggingInterceptor): OkHttpClient {
-        return OkHttpClientUnsafe.create(httpLogginInterceptor)
+    fun createAppOkHttpDemoClient(
+        certificateStore: CertificateStore,
+        httpLogginInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient {
+        return if (BuildConfig.DEBUG) {
+            OkHttpClientUnsafe.create(certificateStore, httpLogginInterceptor)
+        } else {
+            OkHttpClientSafe.create(certificateStore, httpLogginInterceptor)
+        }
     }
 }

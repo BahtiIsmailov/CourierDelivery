@@ -7,10 +7,11 @@ import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
-import ru.wb.go.network.api.app.AppRemoteRepository
+import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -19,10 +20,11 @@ import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 class CourierOrdersInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
-    private val appRemoteRepository: AppRemoteRepository,
+    private val appRemoteRepository: AppTasksRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
     private val userManager: UserManager,
+    private val tokenManager: TokenManager,
 ) : CourierOrdersInteractor {
 
     override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
@@ -88,7 +90,7 @@ class CourierOrdersInteractorImpl(
     }
 
     override fun isDemoMode(): Boolean {
-        return userManager.isDemoMode()
+        return tokenManager.isDemo()
     }
 
 }

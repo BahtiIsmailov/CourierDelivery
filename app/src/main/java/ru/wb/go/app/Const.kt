@@ -5,6 +5,7 @@ const val DATABASE_NAME = "logistics.database"
 const val APP_JSON = "application/json"
 
 const val VERSION_API = "/api/v1"
+const val VERSION_DEMO_API = "/api/v2"
 
 const val VERSION_DATABASE = 33
 const val EXPORT_SCHEMA_DATABASE = false

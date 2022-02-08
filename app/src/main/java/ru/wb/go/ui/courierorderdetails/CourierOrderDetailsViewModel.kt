@@ -18,7 +18,6 @@ import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -84,6 +83,7 @@ class CourierOrderDetailsViewModel(
 
     init {
         onTechEventLog("init")
+        checkDemoMode()
     }
 
     fun onHeightInfoBottom(height: Int) {
@@ -99,7 +99,12 @@ class CourierOrderDetailsViewModel(
 
     fun onUpdate() {
         onTechEventLog("onUpdate")
+        checkDemoMode()
         initOrder()
+    }
+
+    private fun checkDemoMode() {
+        _demoState.value = interactor.isDemoMode()
     }
 
     private fun initOrder() {
@@ -126,7 +131,10 @@ class CourierOrderDetailsViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
-                carNumber = resourceProvider.getCarNumber(interactor.carNumber()),
+                carNumber = interactor.carNumber().let {
+                    if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
+                    else resourceProvider.getCarNumber(it)
+                },
                 orderNumber = parameters.orderNumber,
                 order = resourceProvider.getOrder(id),
                 coast = resourceProvider.getCoast(coast),
@@ -185,10 +193,8 @@ class CourierOrderDetailsViewModel(
     }
 
     fun confirmTakeOrderClick() {
-    // TODO: 31.01.2022 проверить состояние demo перейти в диалог или таймер
-
         if (interactor.isDemoMode()) {
-            // TODO: 31.01.2022
+            _navigationState.value = CourierOrderDetailsNavigationState.NavigateToRegistrationDialog
         } else {
             _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
                 DialogInfoStyle.INFO.ordinal,
@@ -202,6 +208,10 @@ class CourierOrderDetailsViewModel(
                 resourceProvider.getConfirmNegativeDialog()
             )
         }
+    }
+
+    fun toRegistrationClick() {
+        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToRegistration
     }
 
     fun onCancelLoadClick() {
@@ -263,11 +273,15 @@ class CourierOrderDetailsViewModel(
                     {
                         onTechErrorLog("anchorTaskError", it)
                         setLoader(WaitLoader.Complete)
-                        if(it is HttpObjectNotFoundException){
+                        if (it is HttpObjectNotFoundException) {
                             val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
                             errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
-                        }else {
-                            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo, DialogInfoFragment.DIALOG_INFO2_TAG)
+                        } else {
+                            errorDialogManager.showErrorDialog(
+                                it,
+                                _navigateToDialogInfo,
+                                DialogInfoFragment.DIALOG_INFO2_TAG
+                            )
                         }
                     })
         )
@@ -283,6 +297,14 @@ class CourierOrderDetailsViewModel(
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
+    }
+
+    fun onRegistrationConfirmClick() {
+        _navigationState.value = CourierOrderDetailsNavigationState.NavigateToRegistration
+    }
+
+    fun onRegistrationCancelClick() {
+
     }
 
     companion object {

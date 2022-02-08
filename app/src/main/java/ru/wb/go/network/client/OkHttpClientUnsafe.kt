@@ -53,9 +53,15 @@ object OkHttpClientUnsafe {
 
     @JvmStatic
     fun create(
+        certificateStore: CertificateStore,
         httpLoggerInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
+            .sslSocketFactory(
+                certificateStore.sslSocketFactory(),
+                certificateStore.x509TrustManager()
+            )
+            .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(httpLoggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)

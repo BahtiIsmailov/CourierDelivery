@@ -114,7 +114,7 @@ class CourierLoaderViewModel(
             else -> {
                 val order = locRepo.getOrder()
                 val taskMy = remoteRepo.tasksMy(order?.orderId)
-                if(order==null && goToUpdate(version)){
+                if (order == null && goToUpdate(version)) {
                     return
                 }
                 addSubscription(

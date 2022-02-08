@@ -1,7 +1,6 @@
 package ru.wb.go.network.token
 
-import ru.wb.go.app.AppPreffsKeys
-import ru.wb.go.app.VERSION_API
+import ru.wb.go.app.*
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.utils.prefs.SharedWorker
 
@@ -9,6 +8,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
 
     override fun apiVersion(): String {
         return VERSION_API
+    }
+
+    override fun apiDemoVersion(): String {
+        return VERSION_DEMO_API
     }
 
     override fun wbUserID(): String {
@@ -70,6 +73,14 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
 
     override fun isContains(): Boolean {
         return readTokenEntity() != null
+    }
+
+    override fun isDemo(): Boolean {
+        return !isContains()
+    }
+
+    override fun isCourierCompanyIdOrRole(): Boolean {
+        return (userCompanyId() == COURIER_COMPANY_ID || resources().contains(COURIER_ROLE))
     }
 
     override fun resources(): List<String> {

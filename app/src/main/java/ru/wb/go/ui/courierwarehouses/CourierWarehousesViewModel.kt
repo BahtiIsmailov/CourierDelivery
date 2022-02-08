@@ -12,7 +12,6 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -63,20 +62,16 @@ class CourierWarehousesViewModel(
     private var whSelectedId: Int? = null
 
     init {
-        addSubscription(
-            interactor.dynamicUrl().subscribe(
-                { LogUtils { logDebugApp(it.toString()) } },
-                { LogUtils { logDebugApp(it.toString()) } })
-        )
+        checkDemoMode()
     }
 
     fun update() {
-        changeDemoMode()
+        checkDemoMode()
         observeMapAction()
         getWarehouses()
     }
 
-    private fun changeDemoMode() {
+    private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
     }
 
@@ -111,6 +106,11 @@ class CourierWarehousesViewModel(
     fun updateData() {
         observeMapAction()
         getWarehouses()
+    }
+
+
+    fun toRegistrationClick() {
+        _navigationState.value = CourierWarehousesNavigationState.NavigateToRegistration
     }
 
     private fun setLoader(state: WaitLoader) {
@@ -162,18 +162,6 @@ class CourierWarehousesViewModel(
             mapMarkers.add(mapMarker)
         }
 
-    }
-
-    private fun saveWarehouseEntities(warehouseEntities: List<CourierWarehouseLocalEntity>) {
-        this.warehouseEntities = warehouseEntities.toMutableList()
-    }
-
-    private fun saveCoordinatePoints(mapMarkers: List<CoordinatePoint>) {
-        this.coordinatePoints = mapMarkers.toMutableList()
-    }
-
-    private fun saveMapMarkers(mapMarkers: List<CourierMapMarker>) {
-        this.mapMarkers = mapMarkers.toMutableList()
     }
 
     private fun courierWarehouseComplete() {

@@ -11,4 +11,6 @@ sealed class CourierWarehousesNavigationState {
 
     object NavigateToBack : CourierWarehousesNavigationState()
 
+    object NavigateToRegistration : CourierWarehousesNavigationState()
+
 }

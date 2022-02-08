@@ -3,8 +3,6 @@ package ru.wb.go.ui.app
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.app.COURIER_COMPANY_ID
-import ru.wb.go.app.COURIER_ROLE
 import ru.wb.go.network.headers.RefreshTokenRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
@@ -42,7 +40,7 @@ class AppLoaderViewModel(
 
     private fun refreshAccessTokensSyncComplete() {
         if (isContainsToken()) {
-            if (isCourierCompanyIdOrRole()) toCourier()
+            if (tokenManager.isCourierCompanyIdOrRole()) toCourier()
             else toCourier()
         } else {
             _demoState.value = true
@@ -52,7 +50,7 @@ class AppLoaderViewModel(
     private fun refreshAccessTokensSyncError(it: Throwable?) {
         if (it is UnknownHostException) {
             if (isContainsToken()) {
-                if (isCourierCompanyIdOrRole()) toCourier()
+                if (tokenManager.isCourierCompanyIdOrRole()) toCourier()
                 else toAuth()
             } else toAuth()
         } else {
@@ -61,9 +59,6 @@ class AppLoaderViewModel(
     }
 
     private fun isContainsToken() = tokenManager.isContains()
-
-    private fun isCourierCompanyIdOrRole() = (tokenManager.userCompanyId() == COURIER_COMPANY_ID
-            || tokenManager.resources().contains(COURIER_ROLE))
 
     private fun toCourier() {
         _navState.value = AppLoaderNavigatioState.NavigateToCourier

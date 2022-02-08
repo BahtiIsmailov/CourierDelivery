@@ -13,14 +13,6 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
         worker.save(AppPreffsKeys.PHONE_KEY, phone)
     }
 
-    override fun isDemoMode(): Boolean {
-        return !worker.load(AppPreffsKeys.DEMO_MODE_KEY, false)
-    }
-
-    override fun resetDemoMode() {
-        worker.save(AppPreffsKeys.DEMO_MODE_KEY, true)
-    }
-
     override fun phone(): String {
         return worker.load(AppPreffsKeys.PHONE_KEY, "")
     }

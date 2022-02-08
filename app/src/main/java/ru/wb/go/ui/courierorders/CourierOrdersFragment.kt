@@ -20,7 +20,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
-import ru.wb.go.databinding.CourierOrderFragmentBinding
+import ru.wb.go.databinding.CourierOrdersFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
@@ -48,7 +48,7 @@ class CourierOrderFragment : Fragment() {
         )
     }
 
-    private var _binding: CourierOrderFragmentBinding? = null
+    private var _binding: CourierOrdersFragmentBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var adapter: DefaultAdapterDelegate
@@ -59,7 +59,7 @@ class CourierOrderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = CourierOrderFragmentBinding.inflate(inflater, container, false)
+        _binding = CourierOrdersFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -101,6 +101,7 @@ class CourierOrderFragment : Fragment() {
     private fun initListeners() {
         binding.backFull.setOnClickListener { findNavController().popBackStack() }
         binding.showOrdersFab.setOnClickListener { viewModel.onDetailClick() }
+        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -141,6 +142,11 @@ class CourierOrderFragment : Fragment() {
                             )
                         )
                     )
+                CourierOrdersNavigationState.NavigateToRegistration -> {
+                    findNavController().navigate(
+                        CourierOrderFragmentDirections.actionCourierOrdersFragmentToAuthNavigation()
+                    )
+                }
             }
         }
 

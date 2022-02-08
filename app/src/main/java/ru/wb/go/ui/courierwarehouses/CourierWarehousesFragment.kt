@@ -5,8 +5,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -145,13 +144,11 @@ class CourierWarehousesFragment : Fragment() {
         viewModel.demoState.observe(viewLifecycleOwner) {
             when (it) {
                 true -> {
-                    binding.navDrawerMenu.visibility = GONE
-                    binding.toRegistrationBack.visibility = VISIBLE
+                    binding.navDrawerMenu.visibility = INVISIBLE
                     binding.toRegistration.visibility = VISIBLE
                 }
                 false -> {
                     binding.navDrawerMenu.visibility = VISIBLE
-                    binding.toRegistrationBack.visibility = GONE
                     binding.toRegistration.visibility = GONE
                 }
             }
@@ -162,7 +159,7 @@ class CourierWarehousesFragment : Fragment() {
                 CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrder ->
                     findNavController().navigate(
-                        CourierWarehousesFragmentDirections.actionCourierWarehouseFragmentToCourierOrderFragment(
+                        CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
                             CourierOrderParameters(
                                 it.officeId,
                                 it.warehouseLatitude,
@@ -171,6 +168,11 @@ class CourierWarehousesFragment : Fragment() {
                             )
                         )
                     )
+                CourierWarehousesNavigationState.NavigateToRegistration -> {
+                    findNavController().navigate(
+                        CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
+                    )
+                }
             }
         }
 

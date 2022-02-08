@@ -1,6 +1,5 @@
 package ru.wb.go.di.module
 
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ru.wb.go.db.*
 import ru.wb.go.db.dao.CourierBoxDao
@@ -27,10 +26,6 @@ import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.time.TimeFormatter
 
-const val APP_RELEASE = "app_release"
-const val APP_DEMO = "app_demo"
-const val IS_DEMO = false
-
 val deliveryRepositoryModule = module {
 
     fun provideAuthRemoteRepository(
@@ -50,12 +45,13 @@ val deliveryRepositoryModule = module {
         return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager)
     }
 
-    fun provideAppDemoRepository(
+    fun provideAppTasksRepository(
         rxSchedulerFactory: RxSchedulerFactory,
-        api: AppDemoApi,
-        tokenManager: TokenManager,
-    ): AppRemoteRepository {
-        return AppDemoRepositoryImpl(rxSchedulerFactory, api, tokenManager)
+        apiTasks: AppTasksApi,
+        tokenManager: TokenManager
+
+    ): AppTasksRepository {
+        return AppTasksRepositoryImpl(rxSchedulerFactory, apiTasks, tokenManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -103,8 +99,8 @@ val deliveryRepositoryModule = module {
 
     single { provideAuthRemoteRepository(get(), get(), get(), get()) }
 
-    single(named(APP_RELEASE)) { provideAppRemoteRepository(get(), get(), get()) }
-    single(named(APP_DEMO)) { provideAppDemoRepository(get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get()) }
+    single { provideAppTasksRepository(get(), get(), get()) }
 
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }

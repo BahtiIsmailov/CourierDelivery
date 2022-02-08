@@ -2,19 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_layout"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_content_light">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/content_center"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/map"
         class="ru.wb.go.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"
@@ -24,6 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/map_fragment" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/content_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/to_registration"
@@ -36,37 +36,23 @@
         android:text="@string/demo_go_to_registration"
         android:textColor="@color/white"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/nav_drawer_menu"
+        app:layout_constraintBottom_toBottomOf="@+id/back_full"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/nav_drawer_menu" />
+        app:layout_constraintTop_toTopOf="@+id/back_full" />
 
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/nav_drawer_menu"
+    <ImageView
+        android:id="@+id/back_full"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="36dp"
-        android:background="@drawable/button_rounded_corner"
-        android:padding="6dp"
-        android:src="@drawable/ic_navigation_drawer_menu_"
-        android:text="@string/demo_go_to_registration"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/show_all"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="30dp"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         android:scaleType="center"
-        android:src="@drawable/ic_warehouse_show_all"
-        app:layout_constraintBottom_toTopOf="@+id/content_center"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_back_full_screen"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -74,12 +60,14 @@
         style="@style/LargeBlackRegularText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:ellipsize="end"
         android:gravity="center_vertical"
+        android:maxLines="1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="@string/courier_warehouse_title"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/content_center" />
+        app:layout_constraintTop_toBottomOf="@+id/content_center"
+        tools:text="РЦ Петрозаводск" />
 
     <View
         android:id="@+id/title_divider"
@@ -94,15 +82,25 @@
         android:id="@+id/empty_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_divider">
+
+        <ImageView
+            android:id="@+id/return_danger"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_info"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/empty_title"
             style="@style/LargeDarkRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/return_danger"
             android:layout_centerInParent="true"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
@@ -111,22 +109,18 @@
 
     </RelativeLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refresh"
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/orders"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/background_content_light"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_divider">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/items"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="center_vertical"
-            android:clipToPadding="false"
-            tools:listitem="@layout/courier_warehouse_item_layout" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_divider"
+        tools:listitem="@layout/courier_order_delegate" />
 
     <ImageView
         android:layout_width="0dp"
@@ -145,6 +139,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="ContentDescription" />
+
+    <ProgressBar
+        android:id="@+id/order_progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:indeterminateTint="@color/color_progress"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/content_center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/content_center" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/show_orders_fab"

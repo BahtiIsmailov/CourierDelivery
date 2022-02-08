@@ -20,4 +20,6 @@ sealed class CourierOrdersNavigationState {
         val warehouseLongitude: Double
     ) : CourierOrdersNavigationState()
 
+    object NavigateToRegistration : CourierOrdersNavigationState()
+
 }

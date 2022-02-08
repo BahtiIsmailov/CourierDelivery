@@ -22,4 +22,6 @@ sealed class CourierOrderDetailsNavigationState {
 
     object NavigateToRegistrationDialog: CourierOrderDetailsNavigationState()
 
+    object NavigateToRegistration: CourierOrderDetailsNavigationState()
+
 }

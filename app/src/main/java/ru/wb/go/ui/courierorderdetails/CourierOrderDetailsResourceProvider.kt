@@ -12,6 +12,10 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_confirm_car_number, carNumber)
     }
 
+    fun getCarNumberEmpty(): String {
+        return context.getString(R.string.courier_orders_confirm_car_number_empty)
+    }
+
     fun getOrder(order: Int): String {
         return context.getString(R.string.courier_orders_order, order)
     }

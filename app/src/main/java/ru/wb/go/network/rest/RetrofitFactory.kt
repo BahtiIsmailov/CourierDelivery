@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.wb.go.network.NullOnEmptyConverterFactory
 
 class RetrofitFactory(
-    private val apiServer: String,
+    private val baseUrlServer: String,
     private val okHttpClient: OkHttpClient,
     private val callAdapterFactory: CallAdapter.Factory,
     private val nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
@@ -16,7 +16,7 @@ class RetrofitFactory(
     fun <T> getApiInterface(apiClass: Class<T>): T {
         return Retrofit.Builder()
             .addCallAdapterFactory(callAdapterFactory)
-            .baseUrl(apiServer)
+            .baseUrl(baseUrlServer)
             .client(okHttpClient)
             .addConverterFactory(nullOnEmptyConverterFactory)
             .addConverterFactory(gsonConverterFactory)
@@ -27,7 +27,7 @@ class RetrofitFactory(
     fun <T> getApiDynamicInterface(apiClass: Class<T>): T {
         return Retrofit.Builder()
             .addCallAdapterFactory(callAdapterFactory)
-            .baseUrl(apiServer)
+            .baseUrl(baseUrlServer)
             .client(okHttpClient)
             .addConverterFactory(nullOnEmptyConverterFactory)
             .addConverterFactory(gsonConverterFactory)

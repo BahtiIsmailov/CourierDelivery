@@ -12,7 +12,7 @@
         tools:layout="@layout/courier_loader_fragment">
         <action
             android:id="@+id/action_courierLoaderFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment"
+            app:destination="@id/courierWarehousesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -61,13 +61,18 @@
     </fragment>
 
     <fragment
-        android:id="@+id/courierWarehouseFragment"
+        android:id="@+id/courierWarehousesFragment"
         android:name="ru.wb.go.ui.courierwarehouses.CourierWarehousesFragment"
         android:label="@string/courier_warehouse_title"
         tools:layout="@layout/courier_warehouse_fragment">
         <action
-            android:id="@+id/action_courierWarehouseFragment_to_courierOrderFragment"
-            app:destination="@id/courierOrderFragment" />
+            android:id="@+id/action_courierWarehousesFragment_to_courierOrdersFragment"
+            app:destination="@id/courierOrdersFragment" />
+        <action
+            android:id="@+id/action_courierWarehousesFragment_to_auth_navigation"
+            app:destination="@id/auth_navigation"
+            app:popUpTo="@+id/courierWarehousesFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -104,17 +109,17 @@
             app:nullable="false" />
         <action
             android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierWarehouseFragment" />
+            app:destination="@id/courierWarehousesFragment" />
         <action
             android:id="@+id/action_couriersCompleteRegistrationFragment_to_userFormFragment"
             app:destination="@id/userFormFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/courierOrderFragment"
+        android:id="@+id/courierOrdersFragment"
         android:name="ru.wb.go.ui.courierorders.CourierOrderFragment"
         android:label=""
-        tools:layout="@layout/courier_order_fragment">
+        tools:layout="@layout/courier_orders_fragment">
 
         <argument
             android:name="courier_order_id_key"
@@ -126,6 +131,11 @@
         <action
             android:id="@+id/action_courierOrderFragment_to_courierCarNumberFragment"
             app:destination="@id/courierCarNumberFragment" />
+        <action
+            android:id="@+id/action_courierOrdersFragment_to_auth_navigation"
+            app:destination="@id/auth_navigation"
+            app:popUpTo="@+id/courierOrdersFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -155,6 +165,11 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/courierOrderDetailsFragment" />
+        <action
+            android:id="@+id/action_courierOrderDetailsFragment_to_auth_navigation"
+            app:destination="@id/auth_navigation"
+            app:popUpTo="@+id/courierOrderDetailsFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -285,8 +300,6 @@
             app:popUpToInclusive="true" />
     </fragment>
 
-    <include app:graph="@navigation/auth_graph" />
-
     <fragment
         android:id="@+id/courierAgreementFragment"
         android:name="ru.wb.go.ui.courieragreement.CourierAgreementFragment"
@@ -415,10 +428,12 @@
         android:id="@+id/remainBoxFragment"
         android:name="ru.wb.go.ui.courierunloading.RemainBoxFragment"
         android:label="RemainBoxFragment"
-        tools:layout="@layout/remain_box_fragment"
-        >
-        <argument android:name="box_remain_id_key"
+        tools:layout="@layout/remain_box_fragment">
+        <argument
+            android:name="box_remain_id_key"
             app:argType="ru.wb.go.ui.courierunloading.RemainBoxParameters" />
     </fragment>
+
+    <include app:graph="@navigation/auth_graph" />
 
 </navigation>

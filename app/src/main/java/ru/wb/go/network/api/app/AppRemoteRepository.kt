@@ -3,9 +3,6 @@ package ru.wb.go.network.api.app
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import okhttp3.ResponseBody
-import ru.wb.go.db.entity.courier.CourierOrderEntity
-import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.network.api.app.entity.*
@@ -19,10 +16,6 @@ interface AppRemoteRepository {
     fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
 
     fun getCourierDocuments():Single<CourierDocumentsEntity>
-
-    fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
-
-    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
     fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 
@@ -59,7 +52,5 @@ interface AppRemoteRepository {
     fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
 
     fun appVersion(): Single<String>
-
-    fun dynamicUrl(): Single<ResponseBody>
 
 }

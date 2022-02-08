@@ -9,6 +9,7 @@ import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -22,6 +23,7 @@ class CourierOrderDetailsInteractorImpl(
     private val userManager: UserManager,
     private val courierMapRepository: CourierMapRepository,
     private val timeManager: TimeManager,
+    private val tokenManager: TokenManager,
 ) : CourierOrderDetailsInteractor {
 
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
@@ -88,9 +90,7 @@ class CourierOrderDetailsInteractorImpl(
     }
 
     override fun isDemoMode(): Boolean {
-        return userManager.isDemoMode()
+        return tokenManager.isDemo()
     }
-
-}
 
 }
