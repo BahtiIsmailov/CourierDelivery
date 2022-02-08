@@ -2,6 +2,8 @@ package ru.wb.go.ui.courierintransit
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.annotations.Since
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.exceptions.CustomException
@@ -15,10 +17,12 @@ import ru.wb.go.ui.courierintransit.domain.CourierIntransitScanOfficeData
 import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
@@ -30,7 +34,8 @@ class CourierIntransitViewModel(
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val deviceManager: DeviceManager,
-    private val errorDialogManager: ErrorDialogManager
+    private val errorDialogManager: ErrorDialogManager,
+    private val playManager: PlayManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
@@ -66,9 +71,10 @@ class CourierIntransitViewModel(
     val beepEvent: LiveData<CourierIntransitScanOfficeBeepState>
         get() = _beepEvent
 
-    private val _progressState = MutableLiveData<CourierIntransitProgressState>()
-    val progressState: LiveData<CourierIntransitProgressState>
-        get() = _progressState
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private val _intransitTime = MutableLiveData<CourierIntransitTimeState>()
     val intransitTime: LiveData<CourierIntransitTimeState>
@@ -110,7 +116,7 @@ class CourierIntransitViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun observeNetworkState() {
@@ -123,7 +129,11 @@ class CourierIntransitViewModel(
     private fun observeOffices() {
         addSubscription(
             interactor.getOffices()
-                .subscribe({ initOfficesComplete(it) }, { initOfficesError(it) })
+                .subscribe({ initOfficesComplete(it) },
+                    {
+                        onTechErrorLog("Get Offices", it)
+                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+                    })
         )
     }
 
@@ -136,6 +146,10 @@ class CourierIntransitViewModel(
                     )
                 }, {})
         )
+    }
+
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     private fun initScanner() {
@@ -185,10 +199,6 @@ class CourierIntransitViewModel(
             },
                 { onTechErrorLog("observeMapAction", it) }
             ))
-    }
-
-    private fun initOfficesError(it: Throwable) {
-        onTechErrorLog("initOfficesError", it)
     }
 
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
@@ -316,52 +326,63 @@ class CourierIntransitViewModel(
     }
 
     fun onScanQrPvzClick() {
-        onTechEventLog("onScanQrPvzClick")
+        onTechEventLog("Button scan QR Office")
         onStartScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
+
     }
 
     fun onCompleteDeliveryClick() {
-        onTechEventLog("onCompleteDeliveryClick")
+        onTechEventLog("Button CompleteDelivery")
         _isEnableState.value = false
-        _progressState.value = CourierIntransitProgressState.Progress
+        val boxes = interactor.getOfflineBoxes()
+        val order = interactor.getOrder()
+        val orderId = order.orderId.toString()
+
+        setLoader(WaitLoader.Wait)
         addSubscription(
-            interactor.completeDelivery()
+            interactor.setIntransitTask(orderId, boxes)
+                .concatWith(interactor.completeDelivery(order))
                 .subscribe(
                     {
-                        val order = interactor.getOrder()
-                        completeDeliveryComplete(it, order.cost)
+                        completeDeliveryComplete(order.cost)
                     },
                     {
-                        onTechErrorLog("completeDeliveryError", it)
-                        _progressState.value = CourierIntransitProgressState.ProgressComplete
+                        onTechErrorLog("CompleteDelivery", it)
+                        setLoader(WaitLoader.Complete)
                         errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
                     })
         )
     }
 
-    private fun completeDeliveryComplete(cdr: CompleteDeliveryResult, cost: Int) {
+    private fun completeDeliveryComplete(cost: Int) {
+        setLoader(WaitLoader.Complete)
+        val boxes = interactor.getBoxes()
+        val cdr = CompleteDeliveryResult(boxes.size, boxes.size, cost)
         onTechEventLog(
-            "completeDeliveryComplete",
-            "boxes: ${cdr.deliveredBoxes}. Cost: $cost"
+            "CompleteDelivery",
+            "boxes: ${cdr.deliveredBoxes}. Cost: ${cdr.cost}"
         )
+        val ob = interactor.getOfflineBoxes()
+        if (ob.isNotEmpty()) {
+            val ex = CustomException("Ошибка передачи данных. $ob")
+            onTechErrorLog("CompleteDelivery check fail", ex)
+            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
+            return
+        }
         interactor.clearLocalTaskData()
-        _progressState.value = CourierIntransitProgressState.ProgressComplete
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
-            cost,
+            cdr.cost,
             cdr.deliveredBoxes,
             cdr.countBoxes
         )
+        clearSubscription()
     }
 
     fun onCloseScannerClick() {
-        onTechEventLog("onCloseScannerClick")
+        onTechEventLog("Button Close Scanner")
         onStopScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToMap
-    }
-
-    fun confirmTakeOrderClick() {
-
     }
 
     fun onErrorDialogConfirmClick() {
@@ -369,17 +390,8 @@ class CourierIntransitViewModel(
         _isEnableState.value = true
     }
 
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
-    }
-
-    fun onItemOfficeClick(index: Int) {
-        onTechEventLog("onItemOfficeClick")
-        changeItemSelected(index)
-    }
-
-    private fun changeItemSelected(selectIndex: Int) {
+    fun onItemOfficeClick(selectIndex: Int) {
+        onTechEventLog("Select Office index=$selectIndex")
         copyIntransitItems.forEachIndexed { index, item ->
             copyIntransitItems[index].isSelected =
                 if (selectIndex == index) !item.isSelected
@@ -426,12 +438,16 @@ class CourierIntransitViewModel(
             else -> resourceProvider.getEmptyMapSelectedIcon()
         }
 
-    fun onStopScanner() {
+    private fun onStopScanner() {
         interactor.scannerAction(ScannerState.StopScan)
     }
 
-    fun onStartScanner() {
+    private fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
+    }
+
+    fun play(resId: Int) {
+        playManager.play(resId)
     }
 
     data class Label(val label: String)

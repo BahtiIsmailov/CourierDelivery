@@ -39,8 +39,6 @@ interface AppRemoteRepository {
 
     fun taskStatusesEnd(taskID: String): Completable
 
-    fun putCarNumbers(carNumbersEntity: List<CarNumberEntity>): Completable
-
     fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity>
 
     fun payments(id: String, amount: Int, paymentEntity: PaymentEntity): Completable

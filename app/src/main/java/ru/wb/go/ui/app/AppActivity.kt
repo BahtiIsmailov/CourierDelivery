@@ -5,9 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.net.Uri
+
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity.LEFT
@@ -45,7 +43,7 @@ import ru.wb.go.utils.SoftKeyboard
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
-    OnUserInfo, OnCourierScanner, OnSoundPlayer, StatusBarListener,
+    OnUserInfo, OnCourierScanner, StatusBarListener,
     NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener {
 
     private val viewModel by viewModel<AppViewModel>()
@@ -55,8 +53,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: NavController.OnDestinationChangedListener
-
-    private val player = MediaPlayer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -70,7 +66,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         hideStatusBar()
     }
 
-      private fun initToolbar() {
+    private fun initToolbar() {
         val toolbar: Toolbar = binding.layoutHost.toolbarLayout.toolbar
         setSupportActionBar(toolbar)
         binding.layoutHost.toolbarLayout.toolbarTitle.text = toolbar.title
@@ -137,16 +133,17 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             findViewById<View>(R.id.billing_layout).setOnClickListener {
                 navController.navigate(R.id.courierBalanceFragment)
             }
-        }
 
-
-        with(binding.navView) {
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()
                 panMode()
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 Navigation.findNavController(this@AppActivity, R.id.nav_host_fragment)
                     .navigate(R.id.load_navigation)
+            }
+            
+            findViewById<View>(R.id.settings_layout).setOnClickListener {
+                navController.navigate(R.id.settingsFragment)
             }
         }
 
@@ -288,16 +285,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         isLoadingCourierBox = true
     }
 
-    override fun play(resId: Int) {
-        val source =
-            Uri.parse("android.resource://$packageName/raw/$resId")
-        player.reset()
-        player.setDataSource(this, source)
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        player.prepare()
-        player.start()
-    }
-
     companion object {
         private const val EXIT_DIALOG_TAG = "EXIT_DIALOG_TAG"
     }
@@ -346,10 +333,6 @@ interface OnUserInfo {
 
 interface OnCourierScanner {
     fun holdBackButtonOnScanBox()
-}
-
-interface OnSoundPlayer {
-    fun play(resId: Int)
 }
 
 fun AppActivity.hasPermissions(vararg permissions: String): Boolean =

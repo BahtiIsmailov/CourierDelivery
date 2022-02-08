@@ -12,4 +12,5 @@ sealed class CourierCarNumberUIState {
         val count: Int,
         @CarNumberKeyboardMode val mode: Int
     ) : CourierCarNumberUIState()
+
 }

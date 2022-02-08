@@ -7,6 +7,7 @@ plugins {
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'kotlinx-serialization'
 
 android {
 
@@ -46,14 +47,16 @@ android {
         def isNew = false
 
         print(runTasks)
-        if (':app:sassembleRelease' in runTasks) {
+        if (':app:bundleRelease' in runTasks) {
+            //Сборка для всех
             versionMinor++
             versionCod++
             isNew = true
         }
-        if (':app:assembleDebugQA' in runTasks) {
-            print("QA plugin debug...")
+        if (':app:bundleReleaseTest' in runTasks) {
+            //Сборка для тестирующих курьеров
             versionBuild++
+            versionCod++
             isNew = true
         }
 
@@ -91,6 +94,16 @@ android {
 //            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
+            signingConfig signingConfigs.release
+            matchingFallbacks = ['release']
+            ndk{
+                debugSymbolLevel 'FULL'
+            }
+        }
+        releaseTest {
+            manifestPlaceholders = [appName: "WB Go"]
+            //FIXME необходмио внедрить тестовую информацию
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             matchingFallbacks = ['release']
         }
@@ -164,10 +177,6 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     implementation "com.squareup.okhttp3:logging-interceptor:4.9.0"
 
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
-    annotationProcessor 'androidx.room:room-compiler:2.4.1'
-
     //ViewModel
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
@@ -184,7 +193,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$version_room"
     kapt "android.arch.persistence.room:compiler:1.1.1"
     implementation "android.arch.persistence.room:runtime:1.1.1"
-    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+//    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    annotationProcessor 'androidx.room:room-compiler:2.4.1'
 
     // navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
@@ -221,5 +231,7 @@ dependencies {
 
     //yandex
     implementation 'com.yandex.android:mobmetricalib:3.21.0'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 
 }

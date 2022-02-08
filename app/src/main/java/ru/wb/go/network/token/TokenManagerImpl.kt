@@ -1,6 +1,9 @@
 package ru.wb.go.network.token
 
-import ru.wb.go.app.*
+import ru.wb.go.app.AppPreffsKeys
+import ru.wb.go.app.COURIER_COMPANY_ID
+import ru.wb.go.app.COURIER_ROLE
+import ru.wb.go.app.VERSION_API
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.utils.prefs.SharedWorker
 
@@ -87,4 +90,9 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return tokenResource().extra?.resources ?: mutableListOf()
     }
 
+    override fun isUserCourier(): Boolean {
+        return (readTokenEntity() != null) && (userCompanyId() == COURIER_COMPANY_ID
+                || resources().contains(COURIER_ROLE))
+
+    }
 }

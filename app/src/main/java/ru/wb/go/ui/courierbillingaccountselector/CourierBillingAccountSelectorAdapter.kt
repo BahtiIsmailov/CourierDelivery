@@ -100,7 +100,7 @@ open class CourierBillingAccountSelectorAdapter(
                 holder.layoutAdd.visibility = View.VISIBLE
                 holder.layoutEdit.visibility = View.GONE
                 holder.textAdd.text = item.text
-                holder.imageAdd.setOnClickListener { callback.onAddClick() }
+                holder.layoutAdd.setOnClickListener { callback.onAddClick() }
             }
         }
         return newConvertView!!

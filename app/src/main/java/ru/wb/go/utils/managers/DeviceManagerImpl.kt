@@ -24,6 +24,10 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
             }
             return packageInfo?.versionName ?: ""
         }
+    override val toolbarVersion: String
+        get() {
+            return appVersion.replace(".\\d+$".toRegex(), "")
+        }
 
     override val appPackageName = context.packageName
 
@@ -54,9 +58,12 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
 
     override fun isAppVersionActual(adminVersion: String): Boolean {
         // FIXME: remove after front-update version
-        val av = adminVersion.replace("v", "")
-        appAdminVersion = av
-        return appVersion >= av
+        var av = adminVersion.replace("\\D".toRegex(), "")
+        if (av == "") av = "0"
+        var apv = appVersion.replace("\\D".toRegex(), "")
+        if (apv == "") apv = "0"
+        appAdminVersion = adminVersion
+        return apv.toInt() >= av.toInt()
     }
 
 }

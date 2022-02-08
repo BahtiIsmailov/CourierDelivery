@@ -13,13 +13,14 @@ import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.ui.courierloading.domain.*
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -31,6 +32,7 @@ class CourierLoadingScanViewModel(
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
     private val deviceManager: DeviceManager,
     private val errorDialogManager: ErrorDialogManager,
+    private val playManager: PlayManager,
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
@@ -59,10 +61,10 @@ class CourierLoadingScanViewModel(
     val beepEvent: LiveData<CourierLoadingScanBeepState>
         get() = _beepEvent
 
-    private val _progressEvent =
-        SingleLiveEvent<CourierLoadingScanProgress>()
-    val progressEvent: LiveData<CourierLoadingScanProgress>
-        get() = _progressEvent
+    private val _waitLoader =
+        SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader>
+        get() = _waitLoader
 
     private val _fragmentStateUI =
         MutableLiveData<CourierLoadingScanBoxState>()
@@ -83,12 +85,11 @@ class CourierLoadingScanViewModel(
         fetchVersionApp()
         observeInitScanProcess()
         observeScanProcess()
-        observeFragmentLoader()
         getGate()
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun getGate() {
@@ -97,7 +98,7 @@ class CourierLoadingScanViewModel(
                 .subscribe(
                     {
                         _orderTimer.value =
-                            CourierLoadingScanTimerState.Info(if (it.isEmpty()) "-" else it)
+                            CourierLoadingScanTimerState.Info(it.ifEmpty { "-" })
                     },
                     { _orderTimer.value = CourierLoadingScanTimerState.Info("-") })
         )
@@ -147,7 +148,7 @@ class CourierLoadingScanViewModel(
                 resourceProvider.getAccepted(boxes.size),
             )
             _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
-            _completeButtonState.value = boxes.size > 0
+            _completeButtonState.value = boxes.isNotEmpty()
         }
     }
 
@@ -173,20 +174,6 @@ class CourierLoadingScanViewModel(
         errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }
 
-    private fun observeFragmentLoader() {
-        addSubscription(
-            interactor.scanLoaderProgress()
-                .subscribe({
-                    setLoader(
-                        when (it) {
-                            CourierLoadingProgressData.Complete -> CourierLoadingScanProgress.LoaderComplete
-                            CourierLoadingProgressData.Progress -> CourierLoadingScanProgress.LoaderProgress
-                        }
-                    )
-                }, {})
-        )
-    }
-
     private fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
         LogUtils { logDebugApp("observeScanProcessComplete $scanResult") }
         onTechEventLog(
@@ -195,7 +182,7 @@ class CourierLoadingScanViewModel(
         )
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
-//        _completeButtonState.value = false
+
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
@@ -238,8 +225,6 @@ class CourierLoadingScanViewModel(
                 }
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownQR
             }
-            CourierLoadingScanBoxData.ScannerReady -> {}
-//               _completeButtonState.value = scanProcess.count > 0 //TODO Не понятная ветка
         }
     }
 
@@ -248,20 +233,19 @@ class CourierLoadingScanViewModel(
         _completeButtonState.value = true
     }
 
-    private fun setLoader(state: CourierLoadingScanProgress) {
-        _progressEvent.postValue(state)
+    private fun setLoader(state: WaitLoader) {
+        _waitLoader.postValue(state)
     }
 
     fun onConfirmLoadingClick() {
-        setLoader(CourierLoadingScanProgress.LoaderProgress)
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.confirmLoadingBoxes()
-//                .doOnError { onStartScanner() }
                 .subscribe({
-                    setLoader(CourierLoadingScanProgress.LoaderComplete)
+                    setLoader(WaitLoader.Complete)
                     confirmLoadingBoxesComplete(it)
                 }, {
-                    setLoader(CourierLoadingScanProgress.LoaderComplete)
+                    setLoader(WaitLoader.Complete)
                     onTechErrorLog("confirmLoadingBoxesError", it)
                     errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
                 })
@@ -336,6 +320,10 @@ class CourierLoadingScanViewModel(
 
     private fun toWarehouse() {
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToWarehouse
+    }
+
+    fun play(resId: Int) {
+        playManager.play(resId)
     }
 
     override fun getScreenTag(): String {

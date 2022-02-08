@@ -66,7 +66,7 @@ class NumberPhoneViewModel(
     fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
         val initPhone = Observable.just(interactor.userPhone())
         val eventKeyboard =
-            event.scan(String(), { accumulator, item -> accumulateNumber(accumulator, item) })
+            event.scan(String()) { accumulator, item -> accumulateNumber(accumulator, item) }
         addSubscription(
             initPhone.concatWith(eventKeyboard)
                 .doOnNext { switchNext(it) }

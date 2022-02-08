@@ -20,6 +20,7 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.utils.formatter.CarNumberUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
@@ -131,10 +132,6 @@ class CourierOrderDetailsViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
-                carNumber = interactor.carNumber().let {
-                    if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
-                    else resourceProvider.getCarNumber(it)
-                },
                 orderNumber = parameters.orderNumber,
                 order = resourceProvider.getOrder(id),
                 coast = resourceProvider.getCoast(coast),
@@ -143,8 +140,15 @@ class CourierOrderDetailsViewModel(
                 countPvz = resourceProvider.getCountPvz(pvz),
                 arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration)
             )
+            _orderInfo.value = carNumberFormat(interactor.carNumber())
         }
     }
+
+    private fun carNumberFormat(it: String) =
+        CourierOrderDetailsInfoUIState.NumberSpanFormat(it.let {
+            if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
+            else resourceProvider.getCarNumber(CarNumberUtils.numberFormat(it))
+        })
 
     private fun initOrderItems(dstOffices: List<CourierOrderDstOfficeLocalEntity>) {
         val items = mutableListOf<CourierOrderDetailsItem>()
@@ -193,30 +197,21 @@ class CourierOrderDetailsViewModel(
     }
 
     fun confirmTakeOrderClick() {
-        if (interactor.isDemoMode()) {
-            _navigationState.value = CourierOrderDetailsNavigationState.NavigateToRegistrationDialog
-        } else {
-            _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
-                DialogInfoStyle.INFO.ordinal,
-                resourceProvider.getConfirmTitleDialog(parameters.order.id),
-                resourceProvider.getConfirmMessageDialog(
-                    interactor.carNumber(),
-                    parameters.order.minVolume,
-                    parameters.order.reservedDuration
-                ),
-                resourceProvider.getConfirmPositiveDialog(),
-                resourceProvider.getConfirmNegativeDialog()
-            )
-        }
+        _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
+            DialogInfoStyle.INFO.ordinal,
+            resourceProvider.getConfirmTitleDialog(parameters.order.id),
+            resourceProvider.getConfirmMessageDialog(
+                CarNumberUtils.numberFormat(interactor.carNumber()),
+                parameters.order.minVolume,
+                parameters.order.reservedDuration
+            ),
+            resourceProvider.getConfirmPositiveDialog(),
+            resourceProvider.getConfirmNegativeDialog()
+        )
     }
 
     fun toRegistrationClick() {
         _navigationState.value = CourierOrderDetailsNavigationState.NavigateToRegistration
-    }
-
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
     }
 
     fun onItemClick(index: Int) {

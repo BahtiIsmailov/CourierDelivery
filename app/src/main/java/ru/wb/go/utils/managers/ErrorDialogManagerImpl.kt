@@ -2,12 +2,8 @@ package ru.wb.go.utils.managers
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.network.exceptions.CustomException
-import ru.wb.go.network.exceptions.HttpPageNotFound
-import ru.wb.go.network.exceptions.NoInternetException
-import ru.wb.go.network.exceptions.TimeoutException
+import ru.wb.go.network.exceptions.*
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 
 class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
@@ -42,13 +38,21 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     message = throwable.message!!
                 )
             }
-            else -> {
-                assert(throwable.message != "")
+            is BadRequestException->{
+                val msg = throwable.error.toString()
                 ErrorDialogData(
                     dlgTag = dlgTag,
                     type = DialogInfoStyle.ERROR.ordinal,
                     title = context.getString(R.string.error_title),
-                    message = throwable.message ?: throwable.toString()
+                    message = (throwable.message ?: throwable.toString()) + msg
+                )
+            }
+            else -> {
+                ErrorDialogData(
+                    dlgTag = dlgTag,
+                    type = DialogInfoStyle.ERROR.ordinal,
+                    title = context.getString(R.string.error_title),
+                    message = (throwable.message ?: throwable.toString())
                 )
             }
         }

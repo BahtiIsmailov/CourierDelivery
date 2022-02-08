@@ -15,7 +15,6 @@ class CourierCarNumberViewModel(
     private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val resourceProvider: CourierCarNumberResourceProvider,
     private val interactor: CourierCarNumberInteractor,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
@@ -36,15 +35,16 @@ class CourierCarNumberViewModel(
     val progressState: LiveData<CourierCarNumberProgressState>
         get() = _progressState
 
+    private var carNumber = ""
+
     fun onCheckCarNumberClick() {
         putCarNumber(carNumber)
     }
 
-    private var carNumber = ""
-
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
-            event.scan(String()) { accumulator, item -> accumulateNumber(accumulator, item) }
+            event
+                .scan(interactor.getCarNumber()) { accumulator, item -> accumulateNumber(accumulator, item) }
                 .doOnNext {
                     switchBackspace(it)
                     switchComplete(it)
@@ -121,11 +121,6 @@ class CourierCarNumberViewModel(
             warehouseLatitude = parameters.warehouseLatitude,
             warehouseLongitude = parameters.warehouseLongitude
         )
-    }
-
-    fun onCancelLoadClick() {
-        onTechEventLog("onCancelLoadClick")
-        clearSubscription()
     }
 
     override fun getScreenTag(): String {

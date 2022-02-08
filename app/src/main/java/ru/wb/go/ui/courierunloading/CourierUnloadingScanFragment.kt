@@ -26,7 +26,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
-import ru.wb.go.ui.app.OnSoundPlayer
+import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 
@@ -131,10 +131,10 @@ class CourierUnloadingScanFragment : Fragment() {
             binding.toolbarLayout.toolbarVersion.text = it
         }
 
-        viewModel.progressEvent.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierUnloadingScanProgress.LoaderProgress -> showProgressDialog()
-                CourierUnloadingScanProgress.LoaderComplete -> closeProgressDialog()
+                WaitLoader.Wait -> showProgressDialog()
+                WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
@@ -335,19 +335,15 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun beepSuccess() {
         // TODO: 11.10.2021 unused
-        play(R.raw.qr_box_first_accepted)
+        viewModel.play(R.raw.qr_box_first_accepted)
     }
 
     private fun beepUnknownQR() {
-        play(R.raw.unloading_scan_unknown_qr)
+        viewModel.play(R.raw.unloading_scan_unknown_qr)
     }
 
     private fun beepUnknownBox() {
-        play(R.raw.unloading_unknown_box)
-    }
-
-    private fun play(resId: Int) {
-        (activity as OnSoundPlayer).play(resId)
+        viewModel.play(R.raw.unloading_unknown_box)
     }
 
 }

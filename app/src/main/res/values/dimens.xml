@@ -18,6 +18,8 @@
     <dimen name="input_corner">8dp</dimen>
     <dimen name="input_height">56dp</dimen>
 
+    <dimen name="map_offset">14dp</dimen>
+
     <dimen name="auth_padding_left">16dp</dimen>
     <dimen name="auth_padding_right">4dp</dimen>
     <dimen name="auth_padding_top">16dp</dimen>

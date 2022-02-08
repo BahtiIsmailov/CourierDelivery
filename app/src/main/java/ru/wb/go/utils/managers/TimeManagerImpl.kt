@@ -5,9 +5,8 @@ import org.joda.time.DateTime
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.time.TimeFormatType.DATE_AND_TIME
+import ru.wb.go.utils.time.TimeFormatType.FULL_DATE_AND_TIME_AND_MILLIS
 import ru.wb.go.utils.time.TimeFormatter
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatter: TimeFormatter) :
@@ -45,8 +44,11 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
 
     @SuppressLint("SimpleDateFormat")
     override fun getLocalTime(): String {
-        return SimpleDateFormat("yyyy-MM-dd'T'H:mm:ssZZZZZ").format(Date())
-//        return timeFormatter.currentDateTime().toString()
+        return timeFormatter.currentDateTime().toString()
+    }
+
+    override fun getLocalMetricTime(): String {
+       return timeFormatter.format(timeFormatter.currentDateTime(), FULL_DATE_AND_TIME_AND_MILLIS)
     }
 
     override fun getLocalDateAndTime(): String {

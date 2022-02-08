@@ -11,6 +11,7 @@ interface DeviceManager {
 
     val screenWidth: Int
 
-    fun isAppVersionActual(adminVersion:String):Boolean
-    var appAdminVersion:String
+    fun isAppVersionActual(adminVersion: String): Boolean
+    var appAdminVersion: String
+    val toolbarVersion: String
 }

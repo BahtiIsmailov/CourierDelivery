@@ -20,4 +20,5 @@ interface TokenManager {
     fun isDemo(): Boolean
     fun isCourierCompanyIdOrRole(): Boolean
     fun resources(): List<String>
+    fun isUserCourier():Boolean
 }

@@ -1,10 +1,11 @@
 package ru.wb.go.utils.time
 
-import ru.wb.go.app.AppConsts
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
+import ru.wb.go.app.AppConsts
+import ru.wb.go.utils.time.TimeFormatType.FULL_DATE_AND_TIME_AND_MILLIS
 import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -47,6 +48,7 @@ class TimeFormatterImpl : TimeFormatter {
             TimeFormatType.DAY_AND_LETTER_MONTH -> formatDayLetterMonth(dateTime)
             TimeFormatType.HUMAN_DATE -> formatHumanDate(dateTime)
             TimeFormatType.FULL_DATE_AND_TIME -> formatFullDateTime(dateTime)
+            TimeFormatType.FULL_DATE_AND_TIME_AND_MILLIS -> formatFullDateTimeWithMills(dateTime)
             TimeFormatType.DATE_AND_TIME -> formatDateTime(dateTime, DATE_AND_TIME)
             else -> formatDateTime(dateTime, DATE_AND_TIME)
         }
@@ -87,6 +89,10 @@ class TimeFormatterImpl : TimeFormatter {
             formatDateTime(time, DAY_LETTER_MONTH_YEAR),
             formatDateTime(time, ONLY_TIME)
         )
+    }
+
+    private fun formatFullDateTimeWithMills(time: DateTime): String {
+        return formatDateTime(time, FULL_DATE_AND_TIME_AND_MILLIS)
     }
 
     override fun format(seconds: Long, @TimeFormatType formatType: String): String {

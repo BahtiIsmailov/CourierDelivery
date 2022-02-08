@@ -8,7 +8,6 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.analytics.YandexMetricManager
-import java.net.UnknownHostException
 
 class AppLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -33,32 +32,21 @@ class AppLoaderViewModel(
     private fun refreshTokenAndNavigateToApp() {
         addSubscription(repository.refreshAccessTokensSync()
             .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
-                { refreshAccessTokensSyncComplete() },
-                { refreshAccessTokensSyncError(it) }
+                { solveGraph() },
+                {
+                    onTechErrorLog("Loader. RefreshToken", it)
+                    solveGraph()
+                }
             ))
     }
 
-    private fun refreshAccessTokensSyncComplete() {
-        if (isContainsToken()) {
-            if (tokenManager.isCourierCompanyIdOrRole()) toCourier()
-            else toCourier()
+    private fun solveGraph() {
+        if (tokenManager.isUserCourier()) {
+            toCourier()
         } else {
             _demoState.value = true
         }
     }
-
-    private fun refreshAccessTokensSyncError(it: Throwable?) {
-        if (it is UnknownHostException) {
-            if (isContainsToken()) {
-                if (tokenManager.isCourierCompanyIdOrRole()) toCourier()
-                else toAuth()
-            } else toAuth()
-        } else {
-            _demoState.value = true
-        }
-    }
-
-    private fun isContainsToken() = tokenManager.isContains()
 
     private fun toCourier() {
         _navState.value = AppLoaderNavigatioState.NavigateToCourier
