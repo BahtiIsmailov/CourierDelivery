@@ -185,7 +185,6 @@ class CourierBillingAccountSelectorViewModel(
 
     fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
         addSubscription(Observable.merge(changeObservables)
-            .doOnNext { LogUtils { logDebugApp(it.toString()) } }
             .distinctUntilChanged()
             .map { mapAction(it) }
             .subscribe(

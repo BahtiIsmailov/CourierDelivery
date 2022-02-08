@@ -1,7 +1,6 @@
 package ru.wb.go.utils.map
 
 import org.osmdroid.util.BoundingBox
-import ru.wb.go.utils.LogUtils
 import kotlin.math.*
 
 class MapEnclosingCircle {
@@ -11,9 +10,6 @@ class MapEnclosingCircle {
         myLocation: CoordinatePoint,
         radiusKm: Int
     ): BoundingBox {
-
-        LogUtils { logDebugApp("myLocation " + myLocation) }
-
         var maxLatPoint = myLocation.latitude
         var maxLongPoint = myLocation.longitude
         var minLatPoint = myLocation.latitude
@@ -69,37 +65,9 @@ class MapEnclosingCircle {
         return BoundingBox(maxLat, maxLong, minLat, minLong)
     }
 
-//    fun minimumEnclosingCircle(points: List<CoordinatePoint>): MapCircle {
-//        val n = points.size
-//        var memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
-//        if (points.isEmpty()) {
-//            memCircle = MapCircle(CoordinatePoint(0.0, 0.0), 0.0)
-//        } else if (n == 1) {
-//            memCircle = MapCircle(CoordinatePoint(points[0].latitude, points[0].longitude), 1.0)
-//        } else if (n == 2) {
-//            val point1 = CoordinatePoint(points[0].latitude, points[0].longitude)
-//            val point2 = CoordinatePoint(points[1].latitude, points[1].longitude)
-//            memCircle = circleFrom(point1, point2)
-//            LogUtils { logDebugApp("memCircle " + memCircle.toString()) }
-//        } else {
-//            for (i in 0 until n) {
-//                for (j in i + 1 until n) {
-//                    val tmpCircle = circleFrom(points[i], points[j])
-//                    LogUtils { logDebugApp("tmpCircle " + tmpCircle.toString()) }
-//                    if (tmpCircle.radius > memCircle.radius) {
-//                        if (n == 3 || isValidCircle(tmpCircle, points))
-//                            memCircle = tmpCircle
-//                    }
-//                }
-//            }
-//        }
-//        return memCircle
-//    }
-
     private fun circleFrom(pointA: CoordinatePoint, pointB: CoordinatePoint): MapCircle {
         val pointCenter = center(pointA, pointB)
         val radius = distance(pointA, pointB) / 2.0
-        LogUtils { logDebugApp("circleFrom radius " + radius.toString()) }
         return MapCircle(pointCenter, radius)
     }
 

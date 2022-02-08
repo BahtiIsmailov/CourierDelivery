@@ -26,18 +26,16 @@ import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierBillingAccountSelectorFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorFragment.ClickEventInterface
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorFragment.TextChangesInterface
 import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.app.NavToolbarListener
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
-import java.util.*
 
 
 class CourierBillingAccountSelectorFragment :
@@ -153,7 +151,6 @@ class CourierBillingAccountSelectorFragment :
         return TextChangesInterface { textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
-                .doOnNext { LogUtils { logDebugApp("Edit amount " + it) } }
                 .map { it.toString() }
                 .map { CourierBillingAccountSelectorUIAction.TextChange(it, queryType) }
             val focusChanges = editText.focusChanges()

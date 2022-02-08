@@ -10,11 +10,13 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
-import ru.wb.go.ui.courierloading.domain.*
+import ru.wb.go.ui.courierloading.domain.CourierCompleteData
+import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractor
+import ru.wb.go.ui.courierloading.domain.CourierLoadingProcessData
+import ru.wb.go.ui.courierloading.domain.CourierLoadingScanBoxData
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
@@ -175,7 +177,6 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
-        LogUtils { logDebugApp("observeScanProcessComplete $scanResult") }
         onTechEventLog(
             "observeScanProcessComplete",
             scanResult.scanBoxData.toString() + " " + scanResult.count

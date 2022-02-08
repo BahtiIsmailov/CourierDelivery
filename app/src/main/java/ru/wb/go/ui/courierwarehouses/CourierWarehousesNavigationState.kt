@@ -2,7 +2,7 @@ package ru.wb.go.ui.courierwarehouses
 
 sealed class CourierWarehousesNavigationState {
 
-    data class NavigateToCourierOrder(
+    data class NavigateToCourierOrders(
         val officeId: Int,
         val warehouseLatitude: Double,
         val warehouseLongitude: Double,

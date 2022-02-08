@@ -71,7 +71,6 @@ class CourierOrdersViewModel(
     init {
         onTechEventLog("init")
         checkDemoMode()
-        observeMapAction()
     }
 
     fun update() {

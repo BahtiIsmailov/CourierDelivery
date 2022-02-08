@@ -65,12 +65,6 @@ class CourierWarehousesViewModel(
         checkDemoMode()
     }
 
-    fun update() {
-        checkDemoMode()
-        observeMapAction()
-        getWarehouses()
-    }
-
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
     }
@@ -89,7 +83,7 @@ class CourierWarehousesViewModel(
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             CourierMapAction.PermissionComplete -> {
                 onTechEventLog("observeMapActionComplete", "PermissionComplete")
-                getWarehouses()
+                //getWarehouses()
             }
             is CourierMapAction.AutomatedLocationUpdate -> {
             }
@@ -289,8 +283,9 @@ class CourierWarehousesViewModel(
             else CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
     }
 
-    private fun navigateToCourierOrder(oldEntity: CourierWarehouseLocalEntity) {
-        _navigationState.value = CourierWarehousesNavigationState.NavigateToCourierOrder(
+    private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
+//        clearSubscription()
+        _navigationState.value = CourierWarehousesNavigationState.NavigateToCourierOrders(
             oldEntity.id,
             oldEntity.latitude,
             oldEntity.longitude,
@@ -304,7 +299,7 @@ class CourierWarehousesViewModel(
         clearFabAndWhList()
         val oldEntity = warehouseEntities[index].copy()
         interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
-        navigateToCourierOrder(oldEntity)
+        navigateToCourierOrders(oldEntity)
         clearSubscription()
     }
 

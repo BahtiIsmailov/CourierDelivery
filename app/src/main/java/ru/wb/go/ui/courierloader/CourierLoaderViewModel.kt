@@ -100,6 +100,7 @@ class CourierLoaderViewModel(
 
     private fun checkUserState(version: String) {
         val phone = tokenManager.userPhone()
+
         when {
             tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> {
                 if (!goToUpdate(version))
@@ -116,22 +117,17 @@ class CourierLoaderViewModel(
             else -> {
                 checkNewInstallation()
                 val order = locRepo.getOrder()
-                val taskMy = remoteRepo.tasksMy(order?.orderId)
+                val taskMy =
+                    remoteRepo.tasksMy(order?.orderId).flatMap { solveJobInitialState(it, order) }
                 if (order == null && goToUpdate(version)) {
                     return
                 }
+                val navigation = if (tokenManager.isDemo()) Single.just(toCourierWarehouse())
+                else taskMy
                 addSubscription(
-                    taskMy
-                        .flatMap {
-                            solveJobInitialState(
-                                it,
-                                order
-                            )
-                        }
+                    navigation
                         .compose(rxSchedulerFactory.applySingleSchedulers())
                         .subscribe({ taskMyComplete(it) }, { taskMyError(it) })
-
-
                 )
             }
         }

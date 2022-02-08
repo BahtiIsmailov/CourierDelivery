@@ -17,7 +17,6 @@ import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierIntransitInteractorImpl(
@@ -49,7 +48,6 @@ class CourierIntransitInteractorImpl(
 
     override fun observeOfficeIdScanProcess(): Observable<CourierIntransitScanOfficeData> {
         return scannerRepo.observeBarcodeScanned()
-            .doOnNext { LogUtils { logDebugApp("CourierIntransitInteractorImpl scannerRepository.observeBarcodeScanned() $it") } }
             .map { scannerRepo.parseScanOfficeQr(it) }
             .flatMap { parse ->
                 when (parse.isOk) {
