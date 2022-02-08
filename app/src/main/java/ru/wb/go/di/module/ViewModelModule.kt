@@ -45,7 +45,7 @@ import ru.wb.go.ui.scanner.CourierScannerViewModel
 import ru.wb.go.ui.settings.SettingsViewModel
 
 val viewModelModule = module {
-    viewModel { AppLoaderViewModel(get(), get(), get(), get(), get()) }
+    viewModel { AppLoaderViewModel(get(), get(), get()) }
     viewModel { AuthLoaderViewModel(get(), get()) }
     viewModel { AppViewModel(get(), get(), get(), get(), get()) }
 

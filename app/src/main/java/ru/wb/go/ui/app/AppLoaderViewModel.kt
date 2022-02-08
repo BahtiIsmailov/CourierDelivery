@@ -3,8 +3,6 @@ package ru.wb.go.ui.app
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.network.headers.RefreshTokenRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -12,8 +10,6 @@ import ru.wb.go.utils.analytics.YandexMetricManager
 class AppLoaderViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val repository: RefreshTokenRepository,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
@@ -26,24 +22,12 @@ class AppLoaderViewModel(
         get() = _demoState
 
     init {
-        refreshTokenAndNavigateToApp()
+        selectStateApp()
     }
 
-    private fun refreshTokenAndNavigateToApp() {
-        addSubscription(repository.refreshAccessTokensSync()
-            .compose(rxSchedulerFactory.applyCompletableSchedulers()).subscribe(
-                { solveGraph() },
-                {
-                    onTechErrorLog("Loader. RefreshToken", it)
-                    solveGraph()
-                }
-            ))
-    }
-
-    private fun solveGraph() {
-        if (tokenManager.isUserCourier()) {
-            toCourier()
-        } else {
+    private fun selectStateApp() {
+        if (tokenManager.isUserCourier()) toCourier()
+        else {
             if (tokenManager.isDemo()) _demoState.value = true
             else toAuth()
         }

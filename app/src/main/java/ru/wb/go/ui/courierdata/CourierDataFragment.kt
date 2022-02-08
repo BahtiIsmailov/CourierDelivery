@@ -17,7 +17,6 @@ import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,6 +26,7 @@ import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
@@ -34,12 +34,10 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
-import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.time.DateTimeFormatter
 import ru.wb.go.views.ProgressButtonMode
-import java.util.*
 
 
 class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
@@ -441,12 +439,12 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
 }
 
+
 @Parcelize
 data class CourierDataParameters(
     val phone: String,
-    val docs: @RawValue CourierDocumentsEntity
+    val docs: CourierDocumentsEntity
 ) : Parcelable
 
+
 data class CourierData(val text: String, val type: CourierDataQueryType)
-
-

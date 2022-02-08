@@ -1,8 +1,9 @@
 package ru.wb.go.network.api.app.entity
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@Serializable
+@Parcelize
 data class CourierDocumentsEntity(
     val firstName: String = "",
     val surName: String = "",
@@ -14,4 +15,4 @@ data class CourierDocumentsEntity(
     val passportIssuedBy: String = "",
     val passportDepartmentCode: String = "",
     val errorAnnotate: String? = null,
-)
+): Parcelable
