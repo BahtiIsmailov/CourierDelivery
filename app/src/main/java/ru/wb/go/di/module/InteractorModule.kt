@@ -61,6 +61,7 @@ import ru.wb.go.ui.scanner.domain.ScannerInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.settings.domain.SettingsInteractor
 import ru.wb.go.ui.settings.domain.SettingsInteractorImpl
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
@@ -173,6 +174,7 @@ val interactorModule = module {
         courierMapRepository: CourierMapRepository,
         tokenManager: TokenManager
     ): CourierWarehousesInteractor {
+        LogUtils{logDebugApp("demo create CourierWarehousesInteractor")}
         return CourierWarehousesInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
@@ -183,7 +185,7 @@ val interactorModule = module {
         )
     }
 
-    fun provideCourierOrderInteractor(
+    fun provideCourierOrdersInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppTasksRepository,
@@ -399,9 +401,8 @@ val interactorModule = module {
         )
     }
 
-    single { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get()) }
-
-    single { provideCourierOrderInteractor(get(), get(), get(), get(), get(), get(), get()) }
+    factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideCourierOrdersInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }

@@ -44,7 +44,8 @@ class AppLoaderViewModel(
         if (tokenManager.isUserCourier()) {
             toCourier()
         } else {
-            _demoState.value = true
+            if (tokenManager.isDemo()) _demoState.value = true
+            else toAuth()
         }
     }
 

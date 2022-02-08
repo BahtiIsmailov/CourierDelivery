@@ -13,7 +13,6 @@ import ru.wb.go.network.token.TokenManager
 class AppTasksRepositoryImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val remoteRepo: AppTasksApi,
-//    private val apiVersion: String,
     private val tokenManager: TokenManager
 ) : AppTasksRepository {
 

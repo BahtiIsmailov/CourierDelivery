@@ -28,6 +28,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.network.token.UserManagerImpl
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.reader.MockResponseImpl
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.prefs.SharedWorker
@@ -188,6 +189,7 @@ val networkModule = module {
         httpLoggingInterceptor: HttpLoggingInterceptor,
         appMetricResponseInterceptor: AppMetricResponseInterceptor,
     ): OkHttpClient {
+        LogUtils { logDebugApp("demo create okHttpClient") }
         return OkHttpFactory.createAppOkHttpClient(
             certificateStore,
             refreshResponseInterceptor,
@@ -200,6 +202,7 @@ val networkModule = module {
         certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
+        LogUtils { logDebugApp("demo create okHttpDemoClient") }
         return OkHttpFactory.createAppOkHttpDemoClient(certificateStore, httpLoggingInterceptor)
     }
 
@@ -257,6 +260,7 @@ val networkModule = module {
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
         gsonConverterFactory: GsonConverterFactory
     ): RetrofitFactory {
+        LogUtils { logDebugApp("demo okHttpClient" + okHttpClient.toString()) }
         return RetrofitFactory(
             baseUrlServer,
             okHttpClient,
@@ -352,7 +356,7 @@ val networkModule = module {
         )
     }
 
-    single(named(APP_NAMED_TASKS_RETROFIT)) {
+    factory(named(APP_NAMED_TASKS_RETROFIT)) {
         provideAppTasksRetrofitFactory(
             baseUrlServer = get(named(APP_NAMED_BASE_URL)),
             okHttpClient = get(named(okHttpClientNamed(tokenManager = get()))),
@@ -364,5 +368,7 @@ val networkModule = module {
 
 }
 
-private fun okHttpClientNamed(tokenManager: TokenManager) =
-    if (tokenManager.isDemo()) APP_NAMED_HTTP_DEMO_CLIENT else APP_NAMED_HTTP_CLIENT
+private fun okHttpClientNamed(tokenManager: TokenManager): String {
+    LogUtils { logDebugApp("demo okHttpClient isDemo " + tokenManager.isDemo()) }
+    return if (tokenManager.isDemo()) APP_NAMED_HTTP_DEMO_CLIENT else APP_NAMED_HTTP_CLIENT
+}

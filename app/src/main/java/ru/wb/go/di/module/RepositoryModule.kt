@@ -49,7 +49,6 @@ val deliveryRepositoryModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         apiTasks: AppTasksApi,
         tokenManager: TokenManager
-
     ): AppTasksRepository {
         return AppTasksRepositoryImpl(rxSchedulerFactory, apiTasks, tokenManager)
     }
@@ -100,7 +99,7 @@ val deliveryRepositoryModule = module {
     single { provideAuthRemoteRepository(get(), get(), get(), get()) }
 
     single { provideAppRemoteRepository(get(), get(), get()) }
-    single { provideAppTasksRepository(get(), get(), get()) }
+    factory { provideAppTasksRepository(get(), get(), get()) }
 
     single { provideRefreshTokenRepository(get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }

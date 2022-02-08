@@ -89,7 +89,7 @@ class CourierWarehousesViewModel(
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             CourierMapAction.PermissionComplete -> {
                 onTechEventLog("observeMapActionComplete", "PermissionComplete")
-
+                getWarehouses()
             }
             is CourierMapAction.AutomatedLocationUpdate -> {
             }

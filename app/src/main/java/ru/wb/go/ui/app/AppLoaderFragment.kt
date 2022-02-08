@@ -12,6 +12,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.AppLoaderFragmentBinding
 
+
 class AppLoaderFragment : Fragment(R.layout.app_loader_fragment) {
 
     private var _binding: AppLoaderFragmentBinding? = null

@@ -30,6 +30,6 @@ val apiModule = module {
     single { provideAuthApi(get(named(AUTH_NAMED_RETROFIT))) }
     single { provideRefreshTokenApi(get(named(REFRESH_TOKEN_NAMED_RETROFIT))) }
     single { provideAppApi(get(named(APP_NAMED_RETROFIT))) }
-    single { provideAppTasksApi(get(named(APP_NAMED_TASKS_RETROFIT))) }
+    factory { provideAppTasksApi(get(named(APP_NAMED_TASKS_RETROFIT))) }
 
 }

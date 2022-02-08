@@ -25,6 +25,7 @@ class AuthRemoteRepositoryImpl(
         val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
             .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
             .doOnSuccess { saveToken(it) }
+            .doOnSuccess { turnOffDemo() }
         return Completable.fromSingle(auth)
     }
 
@@ -46,6 +47,10 @@ class AuthRemoteRepositoryImpl(
 
     private fun saveToken(tokenEntity: TokenEntity) {
         tokenManager.saveToken(tokenEntity)
+    }
+
+    private fun turnOffDemo() {
+        tokenManager.turnOffDemo()
     }
 
     override fun statistics(): Single<StatisticsResponse> {

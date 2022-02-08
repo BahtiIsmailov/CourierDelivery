@@ -192,7 +192,7 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/courierOrderFragment" />
+            app:popUpTo="@id/courierOrdersFragment" />
 
     </fragment>
 

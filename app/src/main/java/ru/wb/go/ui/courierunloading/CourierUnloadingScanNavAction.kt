@@ -7,11 +7,4 @@ sealed class CourierUnloadingScanNavAction {
 
     object NavigateToIntransit : CourierUnloadingScanNavAction()
 
-    data class NavigateToDialogInfo(
-        val type: Int,
-        val title: String,
-        val message: String,
-        val button: String
-    ) : CourierUnloadingScanNavAction()
-
 }

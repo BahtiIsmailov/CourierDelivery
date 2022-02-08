@@ -60,6 +60,7 @@
         android:text="@string/demo_registration"
         android:textColor="@color/white"
         android:textSize="14sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/to_demo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/content_left" />
@@ -75,6 +76,7 @@
         android:text="@string/demo_show_demo"
         android:textColor="#642CA3"
         android:textSize="14sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintEnd_toStartOf="@+id/content_right"
         app:layout_constraintStart_toStartOf="@+id/content_left" />
