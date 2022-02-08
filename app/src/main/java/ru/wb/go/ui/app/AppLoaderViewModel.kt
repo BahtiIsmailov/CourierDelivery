@@ -3,8 +3,6 @@ package ru.wb.go.ui.app
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.network.headers.RefreshTokenRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.analytics.YandexMetricManager

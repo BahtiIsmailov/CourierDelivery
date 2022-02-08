@@ -232,6 +232,6 @@ dependencies {
     //yandex
     implementation 'com.yandex.android:mobmetricalib:3.21.0'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
+//    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 
 }
