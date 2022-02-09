@@ -227,10 +227,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     override fun onBackPressed() {
         when (findNavController(R.id.nav_host_fragment).currentDestination?.id) {
-            R.id.authNumberPhoneFragment -> finish()
             R.id.userFormFragment -> findNavController(R.id.nav_host_fragment).navigate(
                 CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
             )
+            R.id.authNumberPhoneFragment,
             R.id.couriersCompleteRegistrationFragment, R.id.courierWarehousesFragment,
             R.id.courierUnloadingScanFragment, R.id.courierIntransitFragment,
             R.id.courierOrderTimerFragment, R.id.courierStartDeliveryFragment -> showExitDialog()

@@ -197,17 +197,21 @@ class CourierOrderDetailsViewModel(
     }
 
     fun confirmTakeOrderClick() {
-        _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
-            DialogInfoStyle.INFO.ordinal,
-            resourceProvider.getConfirmTitleDialog(parameters.order.id),
-            resourceProvider.getConfirmMessageDialog(
-                CarNumberUtils.numberFormat(interactor.carNumber()),
-                parameters.order.minVolume,
-                parameters.order.reservedDuration
-            ),
-            resourceProvider.getConfirmPositiveDialog(),
-            resourceProvider.getConfirmNegativeDialog()
-        )
+        if (interactor.isDemoMode())
+            _navigationState.value = CourierOrderDetailsNavigationState.NavigateToRegistrationDialog
+        else
+            _navigateToDialogConfirmScoreInfo.value =
+                NavigateToDialogConfirmInfo(
+                    DialogInfoStyle.INFO.ordinal,
+                    resourceProvider.getConfirmTitleDialog(parameters.order.id),
+                    resourceProvider.getConfirmMessageDialog(
+                        CarNumberUtils.numberFormat(interactor.carNumber()),
+                        parameters.order.minVolume,
+                        parameters.order.reservedDuration
+                    ),
+                    resourceProvider.getConfirmPositiveDialog(),
+                    resourceProvider.getConfirmNegativeDialog()
+                )
     }
 
     fun toRegistrationClick() {
