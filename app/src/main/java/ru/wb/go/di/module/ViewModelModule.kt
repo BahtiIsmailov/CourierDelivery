@@ -127,7 +127,7 @@ val viewModelModule = module {
     viewModel { (parameters: CourierCompleteDeliveryParameters) ->
         CourierCompleteDeliveryViewModel(parameters, get(), get(), get(), get())
     }
-    viewModel { CourierMapViewModel(get(), get(), get(), get()) }
+    viewModel { CourierMapViewModel(get(), get(), get()) }
 
     viewModel {
         CourierBillingViewModel(

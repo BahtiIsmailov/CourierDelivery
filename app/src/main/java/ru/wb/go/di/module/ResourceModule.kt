@@ -15,7 +15,6 @@ import ru.wb.go.ui.courierexpects.CourierExpectsResourceProvider
 import ru.wb.go.ui.courierintransit.CourierIntransitResourceProvider
 import ru.wb.go.ui.courierloader.CourierLoaderResourceProvider
 import ru.wb.go.ui.courierloading.CourierLoadingResourceProvider
-import ru.wb.go.ui.couriermap.CourierMapResourceProvider
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsResourceProvider
 import ru.wb.go.ui.courierorders.CourierOrdersResourceProvider
 import ru.wb.go.ui.courierordertimer.CourierOrderTimerResourceProvider
@@ -88,10 +87,6 @@ val resourceModule = module {
         return CourierStartDeliveryResourceProvider(application)
     }
 
-    fun provideCourierMapResourceProvider(application: Application): CourierMapResourceProvider {
-        return CourierMapResourceProvider(application)
-    }
-
     fun provideCourierBillingAccountDataResourceProvider(application: Application): CourierBillingAccountDataResourceProvider {
         return CourierBillingAccountDataResourceProvider(application)
     }
@@ -130,7 +125,6 @@ val resourceModule = module {
     single { provideCourierUnloadingResourceProvider(get()) }
     single { provideCourierCompleteDeliveryResourceProvider(get()) }
     single { provideCourierStartDeliveryResourceProvider(get()) }
-    single { provideCourierMapResourceProvider(get()) }
     single { provideCourierBillingResourceProvider(get()) }
     single { provideCourierBillingAccountDataResourceProvider(get()) }
     single { provideCourierBillingAccountSelectorResourceProvider(get()) }

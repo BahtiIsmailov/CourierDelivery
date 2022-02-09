@@ -2,8 +2,6 @@ package ru.wb.go.ui.courierintransit
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.annotations.Since
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.exceptions.CustomException
@@ -183,20 +181,8 @@ class CourierIntransitViewModel(
 
     private fun observeMapAction() {
         addSubscription(
-            interactor.observeMapAction().subscribe({
-                when (it) {
-                    is CourierMapAction.ItemClick -> {
-                    }
-                    CourierMapAction.PermissionComplete -> {
-                        onTechEventLog("observeMapAction", "PermissionComplete")
-                        observeOffices()
-                    }
-                    is CourierMapAction.AutomatedLocationUpdate -> {
-                    }
-                    is CourierMapAction.ForcedLocationUpdate -> {
-                    }
-                }
-            },
+            interactor.observeMapAction().subscribe(
+                {},
                 { onTechErrorLog("observeMapAction", it) }
             ))
     }

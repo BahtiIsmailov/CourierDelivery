@@ -14,21 +14,14 @@ class CourierMapViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierMapInteractor,
-    private val resourceProvider: CourierMapResourceProvider,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _mapState = MutableLiveData<CourierMapState>()
     val mapState: LiveData<CourierMapState>
         get() = _mapState
 
-    fun onInitPermission() {
+    init {
         subscribeMapState()
-        interactor.onInitPermission()
-    }
-
-    fun onDeniedPermission() {
-        subscribeMapState()
-        interactor.onDeniedPermission(moscowCoordinatePoint())
     }
 
     private fun subscribeMapState() {
@@ -66,16 +59,4 @@ class CourierMapViewModel(
 
 }
 
-fun moscowMapPoint() = MapPoint("0", 55.751244, 37.618423)
-
 fun moscowCoordinatePoint() = CoordinatePoint(55.751244, 37.618423)
-//fun moscowMapPoint() = MapPoint("0", 0.01, 37.618423)
-
-//myLocation CoordinatePoint(latitude=55.7618109, longitude=37.7777639)
-
-//fun testMapPoint0() = MapPoint("0", 58.7618109, 37.8777639) //37.313508 58.7617864, 30.313508
-fun testMapPoint0() = MapPoint("0", 59.7617864, 37.313508) //37.313508
-fun testMapPoint1() = MapPoint("1", 55.7617864, 73.498648) //37.842315
-//56.524096, 73.498648
-
-fun myCoordinatePoint() = CoordinatePoint(55.759958, 37.852315)

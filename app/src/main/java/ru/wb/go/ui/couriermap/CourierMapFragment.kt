@@ -42,7 +42,6 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
 
-
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private val viewModel by viewModel<CourierMapViewModel>()
@@ -64,6 +63,13 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var googleApiClient: GoogleApiClient
+    private lateinit var locationRequest: LocationRequest
+    private var lastLocation: Location? = null
+    private var isRequestAccessLocation = false
+
+    private lateinit var mapController: IMapController
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -72,18 +78,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         return binding.root
     }
 
-    private lateinit var mapController: IMapController
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initObservable()
         initListeners()
-        initPermission()
+        initMapView()
     }
-
-    private lateinit var googleApiClient: GoogleApiClient
-    private lateinit var locationRequest: LocationRequest
-    private var lastLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,14 +109,39 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     override fun onStart() {
         super.onStart()
-        if (!googleApiClient.isConnected) {
-            googleApiClient.connect()
-        }
+        startGoogleApiClient()
+    }
+
+    private fun startGoogleApiClient() {
+        if (!googleApiClient.isConnected) googleApiClient.connect()
     }
 
     override fun onStop() {
         super.onStop()
+        stopGoogleApiClient()
+    }
+
+    private fun stopGoogleApiClient() {
         googleApiClient.disconnect()
+    }
+
+    private fun initAccessLocationPermissions() {
+        if (hasPermissions(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) || isRequestAccessLocation
+        ) updateLocation()
+        else launchPermissionsRequest()
+    }
+
+    private fun launchPermissionsRequest() {
+        requestMultiplePermissions.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            )
+        )
+        isRequestAccessLocation = true
     }
 
     private val requestMultiplePermissions =
@@ -126,29 +151,19 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 if (!it.value) grand = false
             }
             if (grand) {
-                initMapView()
-                viewModel.onInitPermission()
-            } else {
-                viewModel.onDeniedPermission()
+                stopGoogleApiClient()
+                startGoogleApiClient()
             }
+            updateLocation()
         }
 
-    private fun initPermission() {
-        if (hasPermissions(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            )
-        ) {
-            initMapView()
-            viewModel.onInitPermission()
+    private fun updateLocation() {
+        if (lastLocation == null) {
+            viewModel.onForcedLocationUpdateDefault()
         } else {
-            requestMultiplePermissions.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                )
+            viewModel.onForcedLocationUpdate(
+                CoordinatePoint(lastLocation!!.latitude, lastLocation!!.longitude)
             )
-
         }
     }
 
@@ -175,7 +190,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
         binding.map.setUseDataConnection(true)
-
     }
 
     private fun createOsmdroidTilePath(osmdroidBasePath: File): File {
@@ -233,7 +247,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 is CourierMapState.NavigateToPointZoom -> navigateToPointZoom(it.point)
                 is CourierMapState.NavigateToPoint -> navigateToPoint(it.point)
                 CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
-                CourierMapState.UpdateMyLocation -> updateMyLocation()
                 is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
                 is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(
                     it.boundingBox,
@@ -241,6 +254,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 )
                 is CourierMapState.ZoomToBoundingBoxOffsetY ->
                     checkMapViewAndZoomToBoundingBoxOffsetY(it)
+                CourierMapState.UpdateMyLocation -> updateMyLocation()
             }
         }
     }
@@ -410,13 +424,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun updateMyLocation() {
-        if (lastLocation == null) {
-            viewModel.onForcedLocationUpdateDefault()
-        } else {
-            viewModel.onForcedLocationUpdate(
-                CoordinatePoint(lastLocation!!.latitude, lastLocation!!.longitude)
-            )
-        }
+        initAccessLocationPermissions()
     }
 
     override fun onDestroyView() {
@@ -446,15 +454,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     @SuppressLint("MissingPermission")
     private fun updateLastLocation() {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
+        updateLocation()
     }
-
-    private fun isLocationPermissionGranted() = ActivityCompat.checkSelfPermission(
-        requireContext(),
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-        requireContext(),
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
@@ -464,6 +465,14 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             )
         }
     }
+
+    private fun isLocationPermissionGranted() = ActivityCompat.checkSelfPermission(
+        requireContext(),
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        requireContext(),
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
 
     private fun locationListener(): (Location) -> Unit =
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }

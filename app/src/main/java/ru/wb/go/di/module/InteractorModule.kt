@@ -313,11 +313,8 @@ val interactorModule = module {
         )
     }
 
-    fun provideCourierMapInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        courierMapRepository: CourierMapRepository,
-    ): CourierMapInteractor {
-        return CourierMapInteractorImpl(rxSchedulerFactory, courierMapRepository)
+    fun provideCourierMapInteractor(courierMapRepository: CourierMapRepository): CourierMapInteractor {
+        return CourierMapInteractorImpl(courierMapRepository)
     }
 
     fun provideCourierBillingInteractor(
@@ -440,7 +437,7 @@ val interactorModule = module {
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
-    factory { provideCourierMapInteractor(get(), get()) }
+    factory { provideCourierMapInteractor(get()) }
     factory { provideCourierBillingInteractor(get(), get(), get()) }
     factory { provideCourierBillingCompleteInteractor(get(), get()) }
 

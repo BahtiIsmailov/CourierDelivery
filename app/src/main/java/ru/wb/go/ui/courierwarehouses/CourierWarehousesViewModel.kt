@@ -81,14 +81,7 @@ class CourierWarehousesViewModel(
     private fun observeMapActionComplete(it: CourierMapAction) {
         when (it) {
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-            CourierMapAction.PermissionComplete -> {
-                onTechEventLog("observeMapActionComplete", "PermissionComplete")
-                //getWarehouses()
-            }
-            is CourierMapAction.AutomatedLocationUpdate -> {
-            }
-            is CourierMapAction.ForcedLocationUpdate -> initMapByLocation(it.point)
-            is CourierMapAction.PermissionDenied -> initMapByLocation(it.point)
+            is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
             CourierMapAction.MapClick -> {}
         }
     }
@@ -114,10 +107,8 @@ class CourierWarehousesViewModel(
     private fun getWarehouses() {
         setLoader(WaitLoader.Wait)
         addSubscription(
-            interactor.getServerWarehouses()
-                .doFinally {
-                    clearFabAndWhList()
-                }
+            interactor.getWarehouses()
+                .doFinally { clearFabAndWhList() }
                 .subscribe(
                     {
                         sortedWarehouseEntities(it)
@@ -166,7 +157,6 @@ class CourierWarehousesViewModel(
             } else {
                 CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
             }
-
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {

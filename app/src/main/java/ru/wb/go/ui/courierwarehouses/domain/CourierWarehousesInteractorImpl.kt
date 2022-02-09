@@ -13,6 +13,7 @@ import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
+import ru.wb.go.utils.LogUtils
 import java.util.concurrent.TimeUnit
 
 class CourierWarehousesInteractorImpl(
@@ -24,7 +25,8 @@ class CourierWarehousesInteractorImpl(
     private val tokenManager: TokenManager
 ) : CourierWarehousesInteractor {
 
-    override fun getServerWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
+    override fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
+        LogUtils{logDebugApp("getWarehouses")}
         return appRemoteRepository.courierWarehouses()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
