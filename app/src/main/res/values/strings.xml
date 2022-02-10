@@ -196,7 +196,7 @@
     <string name="confirm_info_dialog_button">Понятно</string>
 
     <string name="courier_warehouse_title">Склады</string>
-    <string name="courier_warehouse_empty_list">Список заданий будет отображен в 09:00</string>
+    <string name="courier_warehouse_empty_list">Список заданий будет отображен в 09:00 по московскому времени</string>
     <string name="courier_warehouse_dialog_title_error">Склады</string>
     <string name="courier_warehouse_dialog_error">Не удалось получить список. Повторите операцию позднее</string>
     <string name="courier_warehouse_search_empty">Ничего не найдено</string>
