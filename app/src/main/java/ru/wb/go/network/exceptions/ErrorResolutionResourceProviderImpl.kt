@@ -17,4 +17,8 @@ class ErrorResolutionResourceProviderImpl(private val context: Context) :
         get() = context.getString(R.string.http_error)
     override val unknownHttpError: String
         get() = context.getString(R.string.http_unknown_error)
+    override val bodyIsEmptyOrNull: String
+        get() = context.getString(R.string.body_is_empty_or_null)
+    override val bodyIsEmpty: String
+        get() = context.getString(R.string.body_is_empty_or_null)
 }

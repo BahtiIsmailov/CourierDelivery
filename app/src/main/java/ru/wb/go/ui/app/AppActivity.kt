@@ -125,6 +125,13 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             binding.navigationHeaderMain.versionApp.text = it
         }
 
+        viewModel.navigation.observe(this) {
+            panMode()
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            Navigation.findNavController(this@AppActivity, R.id.nav_host_fragment)
+                .navigate(R.id.load_navigation)
+        }
+
     }
 
     private fun initListener() {
@@ -136,10 +143,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()
-                panMode()
-                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-                Navigation.findNavController(this@AppActivity, R.id.nav_host_fragment)
-                    .navigate(R.id.load_navigation)
             }
             
             findViewById<View>(R.id.settings_layout).setOnClickListener {
@@ -290,8 +293,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     override fun onPositiveDialogClick(resultTag: String) {
-        if (resultTag == EXIT_DIALOG_TAG)
-            finish()
+        if (resultTag == EXIT_DIALOG_TAG) exitApp()
+    }
+
+    private fun exitApp() {
+        finish()
     }
 
     override fun onNegativeDialogClick(resultTag: String) {

@@ -2,9 +2,10 @@ package ru.wb.go.network.headers
 
 import android.os.ConditionVariable
 import android.text.TextUtils
-import ru.wb.go.network.token.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
+import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
+import ru.wb.go.network.token.TokenManager
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -16,7 +17,7 @@ class RefreshTokenInterceptor(
 ) : Interceptor {
 
     private val lock = ConditionVariable(true)
-    private val mIsRefreshing: AtomicBoolean = AtomicBoolean(false)
+    private val isRefreshing: AtomicBoolean = AtomicBoolean(false)
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
@@ -31,11 +32,11 @@ class RefreshTokenInterceptor(
 
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             if (!TextUtils.isEmpty(tokenManager.bearerToken())) {
-                if (mIsRefreshing.compareAndSet(false, true)) {
+                if (isRefreshing.compareAndSet(false, true)) {
                     lock.close()
-                    refreshTokenRepository.refreshAccessTokens()
+                    refreshTokenRepository.refreshAccessTokenSync()
                     lock.open()
-                    mIsRefreshing.set(false)
+                    isRefreshing.set(false)
                 } else {
                     val conditionOpened = lock.block(REFRESH_TIME_OUT)
                     if (conditionOpened) {

@@ -5,7 +5,6 @@ import io.reactivex.Single
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.api.auth.query.AuthBySmsOrPasswordQuery
-import ru.wb.go.network.api.auth.query.RefreshTokenQuery
 import ru.wb.go.network.api.auth.response.StatisticsResponse
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
@@ -33,16 +32,6 @@ class AuthRemoteRepositoryImpl(
         return authApi.couriersAuth(tokenManager.apiVersion(), phone)
             .doOnSuccess { userManager.savePhone(phone) }
             .ignoreElement()
-    }
-
-    override fun refreshToken(): Completable {
-        val refreshToken = authApi.refreshToken(
-            tokenManager.apiVersion(),
-            RefreshTokenQuery(tokenManager.refreshToken())
-        )
-            .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
-            .doOnSuccess { saveToken(it) }
-        return Completable.fromSingle(refreshToken)
     }
 
     private fun saveToken(tokenEntity: TokenEntity) {

@@ -5,12 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.auth.AppVersionState
 import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
-import ru.wb.go.utils.managers.SettingsManager
 
 class AppViewModel(
     compositeDisposable: CompositeDisposable,
@@ -28,9 +25,18 @@ class AppViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
+    private val _navigation = MutableLiveData<NavigateToRegistration>()
+    val navigation: LiveData<NavigateToRegistration>
+        get() = _navigation
+
     init {
         fetchNetworkState()
         fetchVersionApp()
+
+        addSubscription(interactor.observeNavigationApp().subscribe({
+            interactor.exitAuth()
+            _navigation.value = NavigateToRegistration
+        }, {}))
     }
 
     private fun fetchVersionApp() {
@@ -45,6 +51,7 @@ class AppViewModel(
 
     fun onExitClick() {
         interactor.exitAuth()
+        _navigation.value = NavigateToRegistration
     }
 
     override fun getScreenTag(): String {
@@ -54,5 +61,7 @@ class AppViewModel(
     companion object {
         const val SCREEN_TAG = "App"
     }
+
+    object NavigateToRegistration
 
 }

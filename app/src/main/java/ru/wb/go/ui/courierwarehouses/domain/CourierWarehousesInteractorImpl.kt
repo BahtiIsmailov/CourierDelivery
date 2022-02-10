@@ -9,7 +9,6 @@ import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
-import ru.wb.go.ui.app.domain.AppSharedRepository
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
@@ -19,7 +18,6 @@ import java.util.concurrent.TimeUnit
 class CourierWarehousesInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppTasksRepository,
-    private val appSharedRepository: AppSharedRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
     private val tokenManager: TokenManager
@@ -35,13 +33,6 @@ class CourierWarehousesInteractorImpl(
         courierLocalRepository.deleteAllWarehouse()
         return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
-
-
-    override fun observeSearch(): Observable<String> {
-        return appSharedRepository.observeSearch()
-            .debounce(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun loadProgress(): Completable {

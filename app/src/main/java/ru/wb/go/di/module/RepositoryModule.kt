@@ -9,16 +9,16 @@ import ru.wb.go.network.api.app.*
 import ru.wb.go.network.api.auth.AuthApi
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.api.auth.AuthRemoteRepositoryImpl
-import ru.wb.go.network.headers.RefreshTokenApi
-import ru.wb.go.network.headers.RefreshTokenRepository
-import ru.wb.go.network.headers.RefreshTokenRepositoryImpl
+import ru.wb.go.network.api.refreshtoken.RefreshTokenApi
+import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
+import ru.wb.go.network.api.refreshtoken.RefreshTokenRepositoryImpl
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepositoryImpl
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
-import ru.wb.go.ui.app.domain.AppSharedRepository
-import ru.wb.go.ui.app.domain.AppSharedRepositoryImpl
+import ru.wb.go.ui.app.domain.AppNavRepository
+import ru.wb.go.ui.app.domain.AppNavRepositoryImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.ui.couriermap.domain.CourierMapRepositoryImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
@@ -92,8 +92,8 @@ val deliveryRepositoryModule = module {
         return NetworkMonitorRepositoryImpl()
     }
 
-    fun provideAppSharedRepository(): AppSharedRepository {
-        return AppSharedRepositoryImpl()
+    fun provideAppNavRepository(): AppNavRepository {
+        return AppNavRepositoryImpl()
     }
 
     single { provideAuthRemoteRepository(get(), get(), get(), get()) }
@@ -108,6 +108,6 @@ val deliveryRepositoryModule = module {
     single { provideIntransitTimeRepository() }
     single { provideScannerRepository(get()) }
     single { provideNetworkMonitorRepository() }
-    single { provideAppSharedRepository() }
+    single { provideAppNavRepository() }
 
 }

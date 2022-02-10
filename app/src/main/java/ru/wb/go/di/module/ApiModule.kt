@@ -5,7 +5,7 @@ import org.koin.dsl.module
 import ru.wb.go.network.api.app.AppApi
 import ru.wb.go.network.api.app.AppTasksApi
 import ru.wb.go.network.api.auth.AuthApi
-import ru.wb.go.network.headers.RefreshTokenApi
+import ru.wb.go.network.api.refreshtoken.RefreshTokenApi
 import ru.wb.go.network.rest.RefreshTokenRetrofitFactory
 import ru.wb.go.network.rest.RetrofitFactory
 

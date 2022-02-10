@@ -13,8 +13,6 @@ interface CourierWarehousesInteractor {
 
     fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
 
-    fun observeSearch(): Observable<String>
-
     fun loadProgress(): Completable
 
     fun observeMapAction(): Observable<CourierMapAction>

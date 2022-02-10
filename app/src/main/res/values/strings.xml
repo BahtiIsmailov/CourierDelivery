@@ -32,6 +32,8 @@
     <string name="http_timeout_service_error" />
     <string name="http_error" />
     <string name="http_unknown_error" />
+    <string name="body_is_empty_or_null">"Body is null or empty" </string>
+    <string name="body_is_empty">"Body is empty" </string>
 
     <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 

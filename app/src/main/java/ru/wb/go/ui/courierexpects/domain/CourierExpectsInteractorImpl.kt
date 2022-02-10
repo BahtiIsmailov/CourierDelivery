@@ -4,7 +4,7 @@ import io.reactivex.Single
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
-import ru.wb.go.network.headers.RefreshTokenRepository
+import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 
@@ -15,7 +15,7 @@ class CourierExpectsInteractorImpl(
 ) : CourierExpectsInteractor {
 
     override fun isRegisteredStatus(): Single<String> {
-        val refreshToken = refreshTokenRepository.refreshAccessTokensSync()
+        val refreshToken = refreshTokenRepository.refreshAccessToken()
         val registrationToken =
             Single.fromCallable {
                 val resource = tokenManager.resources()

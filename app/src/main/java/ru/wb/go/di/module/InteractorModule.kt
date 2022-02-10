@@ -7,14 +7,14 @@ import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.api.auth.AuthRemoteRepository
-import ru.wb.go.network.headers.RefreshTokenRepository
+import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.app.domain.AppInteractorImpl
-import ru.wb.go.ui.app.domain.AppSharedRepository
+import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.ui.auth.domain.CheckSmsInteractor
 import ru.wb.go.ui.auth.domain.CheckSmsInteractorImpl
 import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
@@ -149,13 +149,13 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
-        appSharedRepository: AppSharedRepository,
+        appNavRepository: AppNavRepository
     ): AppInteractor {
         return AppInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
-            appSharedRepository,
+            appNavRepository
         )
     }
 
@@ -168,7 +168,6 @@ val interactorModule = module {
     fun provideCourierWarehousesInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppTasksRepository,
-        appSharedRepository: AppSharedRepository,
         courierLocalRepository: CourierLocalRepository,
         courierMapRepository: CourierMapRepository,
         tokenManager: TokenManager
@@ -176,7 +175,6 @@ val interactorModule = module {
         return CourierWarehousesInteractorImpl(
             rxSchedulerFactory,
             appRemoteRepository,
-            appSharedRepository,
             courierLocalRepository,
             courierMapRepository,
             tokenManager
@@ -396,7 +394,7 @@ val interactorModule = module {
         )
     }
 
-    factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get()) }
+    factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get()) }
     factory { provideCourierOrdersInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get(), get(), get()) }

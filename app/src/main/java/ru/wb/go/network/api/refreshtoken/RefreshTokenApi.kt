@@ -1,11 +1,11 @@
-package ru.wb.go.network.headers
+package ru.wb.go.network.api.refreshtoken
 
-import ru.wb.go.network.api.auth.query.RefreshTokenQuery
-import ru.wb.go.network.api.auth.response.RefreshResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.PUT
+import ru.wb.go.network.api.auth.query.RefreshTokenQuery
+import ru.wb.go.network.api.auth.response.RefreshResponse
 
 interface RefreshTokenApi {
 

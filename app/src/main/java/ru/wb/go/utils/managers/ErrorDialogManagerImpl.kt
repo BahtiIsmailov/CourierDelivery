@@ -30,7 +30,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     message = context.getString(R.string.unknown_internet_title_error)
                 )
             }
-            is CustomException, is HttpPageNotFound -> {
+            is CustomException, is HttpPageNotFoundException -> {
                 ErrorDialogData(
                     dlgTag = dlgTag,
                     type = DialogInfoStyle.WARNING.ordinal,

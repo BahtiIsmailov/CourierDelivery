@@ -11,6 +11,7 @@ import org.koin.dsl.module
 import retrofit2.CallAdapter
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.wb.go.network.NullOnEmptyConverterFactory
+import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.certificate.CertificateStore
 import ru.wb.go.network.certificate.CertificateStoreFactory
 import ru.wb.go.network.client.OkHttpFactory
@@ -28,6 +29,7 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.network.token.UserManagerImpl
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.reader.MockResponseImpl
+import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.prefs.SharedWorker
@@ -70,8 +72,9 @@ val networkModule = module {
 
     fun provideErrorResolutionStrategy(
         resourceProvider: ErrorResolutionResourceProvider,
+        appNavRepository: AppNavRepository
     ): ErrorResolutionStrategy {
-        return ErrorResolutionStrategyImpl(resourceProvider)
+        return ErrorResolutionStrategyImpl(resourceProvider, appNavRepository)
     }
 
     fun provideCallAdapterFactory(errorResolutionStrategy: ErrorResolutionStrategy): CallAdapter.Factory {
@@ -281,7 +284,7 @@ val networkModule = module {
     single(named(APP_NAMED_BASE_URL)) { provideAppBaseUrlServer(get()) }
 
     single { provideErrorResolutionResourceProvider(get()) }
-    single { provideErrorResolutionStrategy(get()) }
+    single { provideErrorResolutionStrategy(get(), get()) }
     single { provideCallAdapterFactory(get()) }
 
     single { provideCertificateStore(get()) }

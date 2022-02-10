@@ -7,4 +7,6 @@ interface ErrorResolutionResourceProvider {
     val unauthorizedError: String
     val unknownError: String
     val unknownHttpError: String
+    val bodyIsEmptyOrNull: String
+    val bodyIsEmpty: String
 }

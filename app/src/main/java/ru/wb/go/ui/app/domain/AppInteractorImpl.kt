@@ -10,7 +10,7 @@ class AppInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val authRemoteRepository: AuthRemoteRepository,
-    private val appSharedRepository: AppSharedRepository,
+    private val appNavRepository: AppNavRepository,
 ) : AppInteractor {
 
     override fun observeNetworkConnected(): Observable<NetworkState> {
@@ -22,8 +22,9 @@ class AppInteractorImpl(
         authRemoteRepository.clearToken()
     }
 
-    override fun onSearchChange(query: String) {
-        appSharedRepository.search(query)
+    override fun observeNavigationApp(): Observable<String> {
+        return appNavRepository.observeNavigation()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
 }

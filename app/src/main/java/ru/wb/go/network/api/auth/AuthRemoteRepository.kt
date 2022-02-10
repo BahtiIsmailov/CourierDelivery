@@ -11,8 +11,6 @@ interface AuthRemoteRepository {
 
     fun couriersExistAndSavePhone(phone: String): Completable
 
-    fun refreshToken(): Completable
-
     fun statistics(): Single<StatisticsResponse>
 
     fun userInfo(): Single<UserInfoEntity>
