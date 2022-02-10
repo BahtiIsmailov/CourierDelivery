@@ -65,6 +65,7 @@
         android:focusable="true"
         android:scaleType="center"
         android:src="@drawable/ic_warehouse_show_all"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/content_center"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="ContentDescription" />

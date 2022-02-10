@@ -325,7 +325,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
                         mapController.setCenter(boundingBox.centerWithDateLine)
-                        zoomToBoundingBox(boundingBox, false, SIZE_IN_PIXELS)
+                        zoomToBoundingBox(boundingBox, animate, SIZE_IN_PIXELS)
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }
                 })

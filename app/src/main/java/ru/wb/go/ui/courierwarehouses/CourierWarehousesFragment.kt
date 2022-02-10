@@ -79,6 +79,7 @@ class CourierWarehousesFragment : Fragment() {
         viewModel.warehouseState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
+                    binding.showAll.visibility = VISIBLE
                     binding.emptyList.visibility = GONE
                     binding.refresh.isRefreshing = false
                     binding.items.visibility = VISIBLE
