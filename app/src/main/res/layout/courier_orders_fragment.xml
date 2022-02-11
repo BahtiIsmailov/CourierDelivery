@@ -130,7 +130,7 @@
         android:layout_gravity="center"
         android:layout_marginBottom="20dp"
         android:indeterminateTint="@color/color_progress"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/content_center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

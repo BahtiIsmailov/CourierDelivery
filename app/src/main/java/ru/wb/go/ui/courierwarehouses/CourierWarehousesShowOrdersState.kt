@@ -6,6 +6,4 @@ sealed class CourierWarehousesShowOrdersState {
 
     object Enable : CourierWarehousesShowOrdersState()
 
-    object Progress : CourierWarehousesShowOrdersState()
-
 }

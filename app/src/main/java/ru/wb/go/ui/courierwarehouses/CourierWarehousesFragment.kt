@@ -23,7 +23,6 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorders.CourierOrderParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
@@ -114,8 +113,14 @@ class CourierWarehousesFragment : Fragment() {
 
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
-                WaitLoader.Wait -> showProgressDialog()
-                WaitLoader.Complete -> closeProgressDialog()
+                WaitLoader.Wait -> {
+                    binding.refresh.isRefreshing = true
+                    binding.holdLayout.visibility = VISIBLE
+                }
+                WaitLoader.Complete -> {
+                    binding.refresh.isRefreshing = false
+                    binding.holdLayout.visibility = INVISIBLE
+                }
             }
         }
 
@@ -236,17 +241,6 @@ class CourierWarehousesFragment : Fragment() {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
-        }
-    }
-
-    private fun showProgressDialog() {
-        val progressDialog = ProgressDialogFragment.newInstance()
-        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
-    }
-
-    private fun closeProgressDialog() {
-        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
-            if (it is ProgressDialogFragment) it.dismiss()
         }
     }
 

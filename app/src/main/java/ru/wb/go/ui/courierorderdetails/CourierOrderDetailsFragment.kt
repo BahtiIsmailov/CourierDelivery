@@ -33,7 +33,6 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
@@ -126,13 +125,10 @@ class CourierOrderDetailsFragment : Fragment() {
         bottomSheetOrderDetails = BottomSheetBehavior.from(binding.orderDetails)
 
         bottomSheetOrderAddresses = BottomSheetBehavior.from(binding.orderAddresses)
-        bottomSheetOrderAddresses.setBottomSheetCallback(object :
+        bottomSheetOrderAddresses.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                // TODO: 26.01.2022 закрыть список
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    expandedDetails()
-                }
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) expandedDetails()
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
@@ -239,8 +235,15 @@ class CourierOrderDetailsFragment : Fragment() {
 
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
-                WaitLoader.Wait -> showProgressDialog()
-                WaitLoader.Complete -> closeProgressDialog()
+                WaitLoader.Wait -> {
+                    binding.holdLayout.visibility = VISIBLE
+                    binding.progress.visibility = GONE
+
+                }
+                WaitLoader.Complete -> {
+                    binding.holdLayout.visibility = GONE
+                    binding.progress.visibility = GONE
+                }
             }
         }
 
@@ -321,17 +324,6 @@ class CourierOrderDetailsFragment : Fragment() {
     private fun showAddresses() {
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_COLLAPSED
-    }
-
-    private fun showProgressDialog() {
-        val progressDialog = ProgressDialogFragment.newInstance()
-        progressDialog.show(parentFragmentManager, ProgressDialogFragment.PROGRESS_DIALOG_TAG)
-    }
-
-    private fun closeProgressDialog() {
-        parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
-            if (it is ProgressDialogFragment) it.dismiss()
-        }
     }
 
     // TODO: 27.08.2021 переработать

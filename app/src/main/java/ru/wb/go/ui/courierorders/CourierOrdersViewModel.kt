@@ -52,8 +52,7 @@ class CourierOrdersViewModel(
     val showDetailsState: LiveData<CourierOrderShowDetailsState>
         get() = _showDetailsState
 
-    private val _waitLoader =
-        SingleLiveEvent<WaitLoader>()
+    private val _waitLoader = SingleLiveEvent<WaitLoader>()
     val waitLoader: LiveData<WaitLoader>
         get() = _waitLoader
 

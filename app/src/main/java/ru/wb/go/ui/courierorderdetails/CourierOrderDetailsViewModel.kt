@@ -57,8 +57,7 @@ class CourierOrderDetailsViewModel(
     val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogConfirmScoreInfo
 
-    private val _waitLoader =
-        SingleLiveEvent<WaitLoader>()
+    private val _waitLoader = SingleLiveEvent<WaitLoader>()
     val waitLoader: LiveData<WaitLoader>
         get() = _waitLoader
 
