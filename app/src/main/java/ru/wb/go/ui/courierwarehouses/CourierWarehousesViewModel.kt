@@ -118,13 +118,13 @@ class CourierWarehousesViewModel(
                     },
                     {
                         onTechErrorLog("courierWarehouseError", it)
+                        setLoader(WaitLoader.Complete)
 
                         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
                         if (warehouseItems.isEmpty()) {
                             _warehouseState.value =
                                 CourierWarehouseItemState.Empty("Ошибка получения данных")
                         }
-                        setLoader(WaitLoader.Complete)
                     })
         )
     }

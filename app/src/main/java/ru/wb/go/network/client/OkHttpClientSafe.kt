@@ -40,6 +40,7 @@ object OkHttpClientSafe {
             .addInterceptor(loggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            .callTimeout(AppConfig.HTTP_CALL_TIMEOUT, TimeUnit.MILLISECONDS)
             .build()
     }
 

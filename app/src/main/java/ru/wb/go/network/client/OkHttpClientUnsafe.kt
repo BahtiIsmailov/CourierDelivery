@@ -26,6 +26,7 @@ object OkHttpClientUnsafe {
             .addInterceptor(authMockResponseInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            .callTimeout(AppConfig.HTTP_CALL_TIMEOUT, TimeUnit.MILLISECONDS)
         return okHttpBuilder.build()
     }
 
@@ -47,6 +48,7 @@ object OkHttpClientUnsafe {
             .addInterceptor(appMetricResponseInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            .callTimeout(AppConfig.HTTP_CALL_TIMEOUT, TimeUnit.MILLISECONDS)
         return okHttpBuilder.build()
     }
 
@@ -64,6 +66,7 @@ object OkHttpClientUnsafe {
             .addInterceptor(httpLoggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            .callTimeout(AppConfig.HTTP_CALL_TIMEOUT, TimeUnit.MILLISECONDS)
         return okHttpBuilder.build()
     }
 

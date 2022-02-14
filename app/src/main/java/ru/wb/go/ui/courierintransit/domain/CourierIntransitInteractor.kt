@@ -23,9 +23,7 @@ interface CourierIntransitInteractor {
 
     fun initOrderTimer(): Observable<Long>
 
-    fun completeDelivery(
-        order: LocalOrderEntity
-    ): Completable
+    fun completeDelivery(order: LocalOrderEntity): Completable
 
     fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable
 

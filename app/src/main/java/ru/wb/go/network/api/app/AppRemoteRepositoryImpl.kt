@@ -159,7 +159,7 @@ class AppRemoteRepositoryImpl(
             apiVersion(),
             taskID,
             CourierAnchorResponse(carNumber)
-        ).compose(rxSchedulerFactory.applyCompletableMetrics("anchorTask"))
+        ).compose(rxSchedulerFactory.applyCompletableMetrics("reserveTask"))
     }
 
     override fun deleteTask(taskID: String): Completable {
@@ -192,7 +192,7 @@ class AppRemoteRepositoryImpl(
         val apiBox = box.convertToApiBoxRequest()
         val boxes = listOf(apiBox)
         return remoteRepo.setStartTask(apiVersion(), taskID, boxes)
-            .compose(rxSchedulerFactory.applySingleMetrics("Set Start"))
+            .compose(rxSchedulerFactory.applySingleMetrics("setStart"))
     }
 
     override fun setReadyTask(
@@ -210,7 +210,7 @@ class AppRemoteRepositoryImpl(
             taskID,
             boxesRequest
         ).map { TaskCostEntity(it.cost / COST_DIVIDER) }
-            .compose(rxSchedulerFactory.applySingleMetrics("Set Ready"))
+            .compose(rxSchedulerFactory.applySingleMetrics("setReady"))
     }
 
     override fun setIntransitTask(
@@ -219,12 +219,12 @@ class AppRemoteRepositoryImpl(
     ): Completable {
         val boxesRequest = boxes.map { it.convertToApiBoxRequest() }
         return remoteRepo.taskStatusesIntransit(apiVersion(), taskID, boxesRequest)
-            .compose(rxSchedulerFactory.applyCompletableMetrics("Set Intransit"))
+            .compose(rxSchedulerFactory.applyCompletableMetrics("setIntransit"))
     }
 
     override fun taskStatusesEnd(taskID: String): Completable {
         return remoteRepo.taskStatusesEnd(apiVersion(), taskID)
-            .compose(rxSchedulerFactory.applyCompletableMetrics("Set End"))
+            .compose(rxSchedulerFactory.applyCompletableMetrics("setEnd"))
     }
 
     override fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity> {
