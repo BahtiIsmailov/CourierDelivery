@@ -19,7 +19,7 @@ interface AppRemoteRepository {
 
     fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 
-    fun anchorTask(taskID: String, carNumber: String): Completable
+    fun reserveTask(taskID: String, carNumber: String): Completable
 
     fun deleteTask(taskID: String): Completable
 
