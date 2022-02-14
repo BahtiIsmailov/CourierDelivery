@@ -16,6 +16,7 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.exceptions.BadRequestException
+import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
@@ -194,20 +195,15 @@ class CourierLoaderViewModel(
                 _state.value = CourierLoaderUIState.Complete
                 _navigationDrawerState.value = toCourierWarehouse()
             }
-
-            is BadRequestException -> {
-                errorState(throwable.message.toString())
-            }
-            else -> {
-                errorState(throwable.toString())
-            }
+            is BadRequestException -> errorState(throwable.message.toString())
+            is NoInternetException -> errorState(throwable.message)
+            else -> errorState(throwable.toString())
         }
     }
 
     private fun clearCurrentLocalData() {
         //FIXME Clear local repo
         locRepo.clearOrder()
-
     }
 
     private fun toUserForm(phone: String) {
