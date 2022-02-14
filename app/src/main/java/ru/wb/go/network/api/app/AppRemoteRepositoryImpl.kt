@@ -151,11 +151,11 @@ class AppRemoteRepositoryImpl(
 
     }
 
-    override fun anchorTask(
+    override fun reserveTask(
         taskID: String,
         carNumber: String
     ): Completable {
-        return remoteRepo.anchorTask(
+        return remoteRepo.reserveTask(
             apiVersion(),
             taskID,
             CourierAnchorResponse(carNumber)

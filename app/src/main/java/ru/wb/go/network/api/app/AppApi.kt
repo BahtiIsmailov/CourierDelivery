@@ -47,7 +47,7 @@ interface AppApi {
     ): Single<MyTaskResponse>
 
     @POST("{version}/tasks/{taskID}/courier")
-    fun anchorTask(
+    fun reserveTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body courierAnchorResponse: CourierAnchorResponse

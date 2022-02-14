@@ -85,7 +85,7 @@ class CourierLoaderViewModel(
     }
 
     private fun goToUpdate(version: String): Boolean {
-        onTechEventLog("version app: $version")
+        onTechEventLog("admin version: $version")
         val res = !deviceManager.isAppVersionActual(version)
         if (res)
             toAppUpdate()
@@ -94,7 +94,7 @@ class CourierLoaderViewModel(
 
     private fun checkRootState() {
         if (resourceProvider.isRooted()) {
-            onTechEventLog("checkRootState", "isRooted")
+            onTechEventLog("phoneIsRooted")
         }
     }
 
@@ -118,7 +118,8 @@ class CourierLoaderViewModel(
                 checkNewInstallation()
                 val order = locRepo.getOrder()
                 val taskMy =
-                    remoteRepo.tasksMy(order?.orderId).flatMap { solveJobInitialState(it, order) }
+                    remoteRepo.tasksMy(order?.orderId)
+                        .flatMap { solveJobInitialState(it, order) }
                 if (order == null && goToUpdate(version)) {
                     return
                 }
@@ -127,7 +128,10 @@ class CourierLoaderViewModel(
                 addSubscription(
                     navigation
                         .compose(rxSchedulerFactory.applySingleSchedulers())
-                        .subscribe({ taskMyComplete(it) }, { taskMyError(it) })
+                        .subscribe({ taskMyComplete(it) }, {
+                            onTechErrorLog("startNavigation", it)
+                            onRxError(it)
+                        })
                 )
             }
         }
@@ -186,8 +190,7 @@ class CourierLoaderViewModel(
             else -> toCourierWarehouse()
         }
 
-    private fun taskMyError(throwable: Throwable) {
-        onTechErrorLog("taskMyError", throwable)
+    private fun onRxError(throwable: Throwable) {
         when (throwable) {
             is NullPointerException -> {
                 clearCurrentLocalData()
@@ -196,22 +199,19 @@ class CourierLoaderViewModel(
             }
 
             is BadRequestException -> {
-                errorState(throwable.message.toString())
+                _state.value = CourierLoaderUIState.Error(throwable.message.toString())
             }
             else -> {
-                errorState(throwable.toString())
+                _state.value = CourierLoaderUIState.Error(throwable.toString())
             }
         }
     }
 
     private fun clearCurrentLocalData() {
-        //FIXME Clear local repo
         locRepo.clearOrder()
-
     }
 
     private fun toUserForm(phone: String) {
-        onTechEventLog("toUserForm")
         addSubscription(
             remoteRepo.getCourierDocuments()
                 .compose(rxSchedulerFactory.applySingleSchedulers())
@@ -222,12 +222,14 @@ class CourierLoaderViewModel(
                             CourierDataParameters(phone = phone, docs = it)
                         )
 
-                }, { taskMyError(it) })
+                }, {
+                    onTechErrorLog("getUserDocs", it)
+                    onRxError(it)
+                })
         )
     }
 
     private fun toNewRegistration(phone: String) {
-        onTechEventLog("toNewRegistration")
         val docs = CourierDocumentsEntity()
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
@@ -240,7 +242,6 @@ class CourierLoaderViewModel(
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
-        onTechEventLog("toCouriersCompleteRegistration")
         _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
@@ -255,18 +256,12 @@ class CourierLoaderViewModel(
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
 
     private fun toAppUpdate() {
-        onTechEventLog("toAppUpdate", "NavigateToAppUpdate")
         _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToAppUpdate
-    }
-
-    private fun errorState(message: String) {
-        onTechEventLog("errorState", "message")
-        _state.value = CourierLoaderUIState.Error(message)
     }
 
     private fun checkNewInstallation() {
         if (settingsManager.checkNewInstall(deviceManager.appVersion)) {
-            onTechEventLog("New Install Detected", deviceManager.appVersion)
+            onTechEventLog("newInstallDetected", deviceManager.appVersion)
         }
     }
 

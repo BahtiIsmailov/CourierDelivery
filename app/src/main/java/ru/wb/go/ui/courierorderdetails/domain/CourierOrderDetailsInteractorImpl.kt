@@ -54,7 +54,7 @@ class CourierOrderDetailsInteractorImpl(
 
         val order = locRepo.orderData()!!
 
-        return appRemoteRepository.anchorTask(
+        return appRemoteRepository.reserveTask(
             order.courierOrderLocalEntity.id.toString(),
             userManager.carNumber()
         )
