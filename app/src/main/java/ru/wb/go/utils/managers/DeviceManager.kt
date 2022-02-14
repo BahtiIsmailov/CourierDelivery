@@ -4,6 +4,9 @@ interface DeviceManager {
     fun guid(): String
     val deviceName: String
     val appVersion: String
+    fun lastLocation(): String
+    fun saveLocation(location: String)
+
     val appPackageName: String
     val versionOS: String
     val versionSDK: String

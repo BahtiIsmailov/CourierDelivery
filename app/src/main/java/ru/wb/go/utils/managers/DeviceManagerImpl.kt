@@ -4,10 +4,18 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.prefs.SharedWorker
 import java.util.*
 
-class DeviceManagerImpl(private val context: Context) : DeviceManager {
+class DeviceManagerImpl(private val context: Context,
+                        private val worker: SharedWorker
+) : DeviceManager {
+
+    companion object {
+        const val DEFAULT_MOSCOW_COORDINATE = "55.751244:37.618423"
+    }
 
     override fun guid() = UUID.randomUUID().toString()
 
@@ -24,6 +32,15 @@ class DeviceManagerImpl(private val context: Context) : DeviceManager {
             }
             return packageInfo?.versionName ?: ""
         }
+
+    override fun lastLocation(): String {
+        return worker.load(AppPreffsKeys.USER_INN_KEY, DEFAULT_MOSCOW_COORDINATE)
+    }
+
+    override fun saveLocation(location: String) {
+        worker.save(AppPreffsKeys.LOCATION_KEY, location)
+    }
+
     override val toolbarVersion: String
         get() {
             return appVersion.replace(".\\d+$".toRegex(), "")

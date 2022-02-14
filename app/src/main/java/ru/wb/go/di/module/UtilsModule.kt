@@ -25,8 +25,8 @@ val utilsModule = module {
         return SharedWorkerImpl(application, gson)
     }
 
-    fun provideDeviceManager(application: Application): DeviceManager {
-        return DeviceManagerImpl(application)
+    fun provideDeviceManager(application: Application, worker: SharedWorker): DeviceManager {
+        return DeviceManagerImpl(application, worker)
     }
 
     fun provideConfigPath(): String {
@@ -73,7 +73,7 @@ val utilsModule = module {
     }
 
     single { provideSharedWorker(get(), get()) }
-    single { provideDeviceManager(get()) }
+    single { provideDeviceManager(get(), get()) }
     single(named(PATH_CONFIG_NAMED)) { provideConfigPath() }
     single { provideConfigReader(get(), get(), get(named(PATH_CONFIG_NAMED))) }
     single { provideConfigManager(get(), get()) }

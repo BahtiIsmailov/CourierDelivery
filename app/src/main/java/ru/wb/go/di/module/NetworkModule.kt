@@ -33,6 +33,7 @@ import ru.wb.go.reader.MockResponseImpl
 import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ConfigManager
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.prefs.SharedWorker
 import java.net.URI
 
@@ -118,8 +119,12 @@ val networkModule = module {
         return RefreshTokenHeaderManagerImpl(tokenManager)
     }
 
-    fun provideAppHeaderManager(tokenManager: TokenManager, host: String): HeaderManager {
-        return AppHeaderManagerImpl(tokenManager, URI(host).host)
+    fun provideAppHeaderManager(
+        tokenManager: TokenManager,
+        deviceManager: DeviceManager,
+        host: String
+    ): HeaderManager {
+        return AppHeaderManagerImpl(tokenManager, deviceManager, URI(host).host)
     }
 
     fun provideAppDemoHeaderManager(host: String): HeaderManager {
@@ -298,7 +303,7 @@ val networkModule = module {
     factory(named(AUTH_NAMED_HEADER_MANAGER)) { provideAuthHeaderManager() }
     factory(named(REFRESH_TOKEN_NAMED_HEADER_MANAGER)) { provideRefreshTokenHeaderManager(get()) }
     factory(named(APP_NAMED_HEADER_MANAGER)) {
-        provideAppHeaderManager(get(), get(named(APP_NAMED_BASE_URL)))
+        provideAppHeaderManager(get(), get(), get(named(APP_NAMED_BASE_URL)))
     }
     factory(named(APP_NAMED_DEMO_HEADER_MANAGER)) {
         provideAppDemoHeaderManager(get(named(APP_NAMED_BASE_URL)))

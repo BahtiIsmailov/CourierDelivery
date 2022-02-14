@@ -311,8 +311,11 @@ val interactorModule = module {
         )
     }
 
-    fun provideCourierMapInteractor(courierMapRepository: CourierMapRepository): CourierMapInteractor {
-        return CourierMapInteractorImpl(courierMapRepository)
+    fun provideCourierMapInteractor(
+        courierMapRepository: CourierMapRepository,
+        deviceManager: DeviceManager
+    ): CourierMapInteractor {
+        return CourierMapInteractorImpl(courierMapRepository, deviceManager)
     }
 
     fun provideCourierBillingInteractor(
@@ -435,7 +438,7 @@ val interactorModule = module {
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }
-    factory { provideCourierMapInteractor(get()) }
+    factory { provideCourierMapInteractor(get(), get()) }
     factory { provideCourierBillingInteractor(get(), get(), get()) }
     factory { provideCourierBillingCompleteInteractor(get(), get()) }
 
