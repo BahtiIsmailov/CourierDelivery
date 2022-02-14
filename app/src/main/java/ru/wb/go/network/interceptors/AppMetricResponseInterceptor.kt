@@ -1,4 +1,4 @@
-package ru.wb.go.network.headers
+package ru.wb.go.network.interceptors
 
 import okhttp3.Interceptor
 import okhttp3.Request

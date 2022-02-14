@@ -1,10 +1,10 @@
 package ru.wb.go.network.client
 
-import ru.wb.go.app.AppConfig
-import ru.wb.go.network.certificate.CertificateStore
-import ru.wb.go.network.headers.RefreshTokenInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import ru.wb.go.app.AppConfig
+import ru.wb.go.network.certificate.CertificateStore
+import ru.wb.go.network.interceptors.RefreshTokenInterceptor
 import java.util.concurrent.TimeUnit
 
 object OkHttpClientSafe {

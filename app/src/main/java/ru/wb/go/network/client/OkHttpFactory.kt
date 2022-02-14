@@ -4,9 +4,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.BuildConfig
 import ru.wb.go.network.certificate.CertificateStore
-import ru.wb.go.network.headers.AppMetricResponseInterceptor
-import ru.wb.go.network.headers.AuthMockResponseInterceptor
-import ru.wb.go.network.headers.RefreshTokenInterceptor
+import ru.wb.go.network.interceptors.AppMetricResponseInterceptor
+import ru.wb.go.network.interceptors.AuthMockResponseInterceptor
+import ru.wb.go.network.interceptors.RefreshTokenInterceptor
 
 object OkHttpFactory {
 

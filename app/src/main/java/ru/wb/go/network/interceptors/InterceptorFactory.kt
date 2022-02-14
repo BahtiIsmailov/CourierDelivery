@@ -1,8 +1,9 @@
-package ru.wb.go.network.headers
+package ru.wb.go.network.interceptors
 
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.BuildConfig
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
+import ru.wb.go.network.headers.HeaderManager
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.utils.analytics.YandexMetricManager

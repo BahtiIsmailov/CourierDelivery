@@ -20,6 +20,7 @@ import ru.wb.go.network.exceptions.ErrorResolutionResourceProviderImpl
 import ru.wb.go.network.exceptions.ErrorResolutionStrategy
 import ru.wb.go.network.exceptions.ErrorResolutionStrategyImpl
 import ru.wb.go.network.headers.*
+import ru.wb.go.network.interceptors.*
 import ru.wb.go.network.rest.RefreshTokenRetrofitFactory
 import ru.wb.go.network.rest.RetrofitFactory
 import ru.wb.go.network.rx.RxHandlingCallAdapterFactory
@@ -172,7 +173,7 @@ val networkModule = module {
     fun provideAuthOkHttpClient(
         certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        authMockResponseInterceptor: AuthMockResponseInterceptor
+        authMockResponseInterceptor: ru.wb.go.network.interceptors.AuthMockResponseInterceptor
     ): OkHttpClient {
         return OkHttpFactory.createAuthOkHttpClient(
             certificateStore,

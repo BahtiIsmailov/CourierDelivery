@@ -4,9 +4,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.app.AppConfig
 import ru.wb.go.network.certificate.CertificateStore
-import ru.wb.go.network.headers.AppMetricResponseInterceptor
-import ru.wb.go.network.headers.AuthMockResponseInterceptor
-import ru.wb.go.network.headers.RefreshTokenInterceptor
+import ru.wb.go.network.interceptors.AppMetricResponseInterceptor
+import ru.wb.go.network.interceptors.RefreshTokenInterceptor
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
@@ -15,7 +14,7 @@ object OkHttpClientUnsafe {
     fun create(
         certificateStore: CertificateStore,
         httpLoggerInterceptor: HttpLoggingInterceptor,
-        authMockResponseInterceptor: AuthMockResponseInterceptor
+        authMockResponseInterceptor: ru.wb.go.network.interceptors.AuthMockResponseInterceptor
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
             .sslSocketFactory(

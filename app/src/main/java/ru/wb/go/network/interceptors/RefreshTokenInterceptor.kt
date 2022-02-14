@@ -1,10 +1,10 @@
-package ru.wb.go.network.headers
+package ru.wb.go.network.interceptors
 
 import android.os.ConditionVariable
-import android.text.TextUtils
 import okhttp3.Interceptor
 import okhttp3.Response
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
+import ru.wb.go.network.headers.HeaderManager
 import ru.wb.go.network.token.TokenManager
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
@@ -31,7 +31,7 @@ class RefreshTokenInterceptor(
         var response = chain.proceed(newRequest)
 
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            if (!TextUtils.isEmpty(tokenManager.bearerToken())) {
+            if (tokenManager.bearerToken().isNotEmpty()) {
                 if (isRefreshing.compareAndSet(false, true)) {
                     lock.close()
                     refreshTokenRepository.refreshAccessTokenSync()

@@ -16,7 +16,6 @@ import ru.wb.go.app.AppConsts.SERVICE_CODE_FORBIDDEN
 import ru.wb.go.app.AppConsts.SERVICE_CODE_LOCKED
 import ru.wb.go.app.AppConsts.SERVICE_CODE_UNAUTHORIZED
 import ru.wb.go.ui.app.domain.AppNavRepository
-import ru.wb.go.utils.LogUtils
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -33,6 +32,18 @@ class ErrorResolutionStrategyImpl(
             retryWhenUnauthorized(throwableObservable)
         }
     }
+
+    private fun retryWhenUnauthorized(throwableObservable: Observable<Throwable>): Observable<Completable> {
+        return throwableObservable
+            .flatMap {
+                if (isUnauthorized(it)) Observable.just(Completable.complete())
+                else Observable.error(convertException(it))
+            }
+            .take(NUMBER_ATTEMPTS_ON_ERROR.toLong())
+    }
+
+    private fun isUnauthorized(it: Throwable) =
+        it is HttpException && it.code() == SERVICE_CODE_UNAUTHORIZED
 
     override fun apply(call: Single<*>): Single<*> {
         return call.retryWhen { throwableFlowable: Flowable<Throwable> ->
@@ -52,18 +63,6 @@ class ErrorResolutionStrategyImpl(
         }
     }
 
-    private fun retryWhenUnauthorized(throwableObservable: Observable<Throwable>): Observable<Completable> {
-        return throwableObservable
-            .flatMap {
-                if (isUnauthorized(it)) Observable.just(Completable.complete())
-                else Observable.error(convertException(it))
-            }
-            .take(NUMBER_ATTEMPTS_ON_ERROR.toLong())
-    }
-
-    private fun isUnauthorized(it: Throwable) =
-        it is HttpException && it.code() == SERVICE_CODE_UNAUTHORIZED
-
     private fun retryWhenUnauthorized(throwableFlowable: Flowable<Throwable>): Flowable<Completable> {
         return throwableFlowable
             .flatMap { makeError(it) }
@@ -73,11 +72,14 @@ class ErrorResolutionStrategyImpl(
     private fun makeError(throwable: Throwable) =
         when {
             isUnauthorized(throwable) -> {
-                LogUtils { logDebugApp(throwable.toString()) }
                 Flowable.just(Completable.complete())
             }
-            throwable is RefreshAccessTokenException -> Flowable.error(refreshTokenException(throwable))
-            else -> Flowable.error(convertException(throwable))
+            throwable is RefreshAccessTokenException -> {
+                Flowable.error(refreshTokenException(throwable))
+            }
+            else -> {
+                Flowable.error(convertException(throwable))
+            }
         }
 
     private fun refreshTokenException(exceptionAccess: RefreshAccessTokenException): Throwable {

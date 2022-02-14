@@ -26,10 +26,6 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return "Bearer ${token().accessToken}"
     }
 
-    override fun bearerRefreshToken(): String {
-        return "Bearer ${token().refreshToken}"
-    }
-
     override fun refreshToken(): String {
         return token().refreshToken
     }

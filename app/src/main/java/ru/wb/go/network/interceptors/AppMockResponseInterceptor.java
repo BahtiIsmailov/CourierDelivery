@@ -1,4 +1,4 @@
-package ru.wb.go.network.headers;
+package ru.wb.go.network.interceptors;
 
 import static ru.wb.go.app.AppConsts.SERVICE_CODE_OK;
 
@@ -11,22 +11,32 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import ru.wb.go.reader.FreeTasksOfficesPath;
+import ru.wb.go.reader.FreeTasksPath;
+import ru.wb.go.reader.MockResponse;
+import ru.wb.go.reader.MockType;
 
-public class AuthMockResponseInterceptor implements Interceptor {
+public class AppMockResponseInterceptor implements Interceptor {
 
-    private static final String GET_APP_USER_FORM_URL = "http://ip-api.com/json/208.80.152.200";
-    private static final String GET_APP_USER_FORM_API = "couriers-auth/form";
-    private static final String GET_APP_USER_FORM_JSON = "{}";
+    private static final String GET_APP_FREE_TASKS_OFFICES_URL = "http://ip-api.com/json/208.80.152.200";
+    private static final String GET_APP_FREE_TASKS_OFFICES_API = "free-tasks/offices";
+    private static final String GET_APP_FREE_TASKS_URL = "http://ip-api.com/json/208.80.152.201";
+    private static final String GET_APP_FREE_TASKS_API = "free-tasks?srcOfficeID=234";
 
     private static final String SLASH_SYMBOL = "/";
 
     @NonNull
     private final String apiServer;
 
-    public AuthMockResponseInterceptor(@NonNull String apiServer) {
+    @NonNull
+    private final MockResponse mockResponse;
+
+    public AppMockResponseInterceptor(@NonNull String apiServer, @NonNull MockResponse mockResponse) {
         this.apiServer = apiServer;
+        this.mockResponse = mockResponse;
     }
 
+    @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request request = getRequestBuilder(chain.request()).build();
@@ -39,8 +49,10 @@ public class AuthMockResponseInterceptor implements Interceptor {
         Request.Builder builder = request.newBuilder();
         String requestUrl = request.url().toString();
         switch (getApiMethod(requestUrl)) {
-            case GET_APP_USER_FORM_API:
-                return builder.url(GET_APP_USER_FORM_URL).get();
+            case GET_APP_FREE_TASKS_OFFICES_API:
+                return builder.url(GET_APP_FREE_TASKS_OFFICES_URL).get();
+            case GET_APP_FREE_TASKS_API:
+                return builder.url(GET_APP_FREE_TASKS_URL).get();
             default:
                 return builder;
         }
@@ -53,9 +65,13 @@ public class AuthMockResponseInterceptor implements Interceptor {
         ResponseBody responseBody = response.body();
         MediaType contentType = responseBody == null ? MediaType.parse("application") : responseBody.contentType();
         switch (url) {
-            case GET_APP_USER_FORM_URL:
+            case GET_APP_FREE_TASKS_OFFICES_URL:
                 return response.newBuilder()
-                        .body(ResponseBody.create(contentType, GET_APP_USER_FORM_JSON.getBytes()))
+                        .body(ResponseBody.create(contentType, mockResponse.read(new FreeTasksOfficesPath(MockType.COMPLETE))))
+                        .code(SERVICE_CODE_OK);
+            case GET_APP_FREE_TASKS_URL:
+                return response.newBuilder()
+                        .body(ResponseBody.create(contentType, mockResponse.read(new FreeTasksPath(MockType.COMPLETE))))
                         .code(SERVICE_CODE_OK);
             default:
                 return response.newBuilder()
