@@ -321,7 +321,7 @@ class CourierIntransitViewModel(
     fun onCompleteDeliveryClick() {
         onTechEventLog("Button CompleteDelivery")
         _isEnableState.value = false
-        val boxes = interactor.getOfflineBoxes()
+        val boxes = interactor.getBoxes()
         val order = interactor.getOrder()
         val orderId = order.orderId.toString()
 
@@ -344,18 +344,16 @@ class CourierIntransitViewModel(
     private fun completeDeliveryComplete(cost: Int) {
         setLoader(WaitLoader.Complete)
         val boxes = interactor.getBoxes()
-        val cdr = CompleteDeliveryResult(boxes.size, boxes.size, cost)
+        val cdr = CompleteDeliveryResult(
+            boxes.filter { box -> box.deliveredAt != "" }.size,
+            boxes.size,
+            cost
+        )
         onTechEventLog(
             "CompleteDelivery",
-            "boxes: ${cdr.deliveredBoxes}. Cost: ${cdr.cost}"
+            "boxes: ${cdr.countBoxes}/${cdr.deliveredBoxes} - ${cdr.cost} руб"
         )
-        val ob = interactor.getOfflineBoxes()
-        if (ob.isNotEmpty()) {
-            val ex = CustomException("Ошибка передачи данных. $ob")
-            onTechErrorLog("CompleteDelivery check fail", ex)
-            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
-            return
-        }
+
         interactor.clearLocalTaskData()
         _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
             cdr.cost,
@@ -366,7 +364,6 @@ class CourierIntransitViewModel(
     }
 
     fun onCloseScannerClick() {
-        onTechEventLog("Button Close Scanner")
         onStopScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToMap
     }

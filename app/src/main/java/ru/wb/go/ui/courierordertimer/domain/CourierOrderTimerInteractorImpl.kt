@@ -24,10 +24,10 @@ class CourierOrderTimerInteractorImpl(
 ) : CourierOrderTimerInteractor {
 
     override fun deleteTask(): Completable {
+        taskTimerRepository.stopTimer()
         return locRepo.getOrderId()
             .flatMapCompletable { appRemoteRepository.deleteTask(it) }
             .doOnComplete {
-                taskTimerRepository.stopTimer()
                 locRepo.deleteOrder()
             }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())

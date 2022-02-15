@@ -6,8 +6,6 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.UserManager
 
 class CourierCarNumberInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val appRepository: AppRemoteRepository,
     private val userManager: UserManager
 ) : CourierCarNumberInteractor {
 

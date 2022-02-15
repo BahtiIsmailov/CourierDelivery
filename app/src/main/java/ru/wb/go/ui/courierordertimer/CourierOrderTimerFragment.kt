@@ -62,6 +62,12 @@ class CourierOrderTimerFragment : Fragment() {
                 viewModel.onRefuseOrderConfirmClick()
             }
         }
+
+        setFragmentResultListener(DIALOG_INFO_TAG) { _, _ ->
+            if (viewModel.timeOut.value==true){
+                viewModel.timeOutReturnToList()
+            }
+        }
     }
 
     private fun initView() {

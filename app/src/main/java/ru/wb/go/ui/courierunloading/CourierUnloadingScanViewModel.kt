@@ -63,10 +63,8 @@ class CourierUnloadingScanViewModel(
     val beepEvent: LiveData<CourierUnloadingScanBeepState>
         get() = _beepEvent
 
-    private val _waitLoader =
-        SingleLiveEvent<WaitLoader>()
-    val waitLoader: LiveData<WaitLoader>
-        get() = _waitLoader
+    private val _waitLoader = SingleLiveEvent<WaitLoader>()
+    val waitLoader: LiveData<WaitLoader> get() = _waitLoader
 
     private val _fragmentStateUI =
         MutableLiveData<UnloadingFragmentState>()
@@ -155,12 +153,14 @@ class CourierUnloadingScanViewModel(
         addSubscription(
             interactor.completeOfficeUnload()
                 .doFinally {
-                    setLoader(WaitLoader.Complete)
                     _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+                    setLoader(WaitLoader.Complete)
                     clearSubscription()
                 }
                 .subscribe(
-                    { },
+                    {
+
+                    },
                     {
                         onTechErrorLog("confirmUnload", it)
                     })
@@ -304,12 +304,9 @@ class CourierUnloadingScanViewModel(
                     Completable.complete()
                 }
                 .subscribe(
-                    {
-                        setLoader(WaitLoader.Complete)
-                    },
+                    { },
                     {
                         onTechErrorLog("readUnloadingBoxCounterError", it)
-                        setLoader(WaitLoader.Complete)
                         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
                     })
         )
@@ -328,11 +325,11 @@ class CourierUnloadingScanViewModel(
         )
     }
 
-    fun onStopScanner() {
+    private fun onStopScanner() {
         interactor.scannerAction(ScannerState.StopScan)
     }
 
-    fun onStartScanner() {
+    private fun onStartScanner() {
         interactor.scannerAction(ScannerState.Start)
     }
 

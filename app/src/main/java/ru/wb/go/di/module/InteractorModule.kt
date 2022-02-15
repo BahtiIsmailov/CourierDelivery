@@ -222,13 +222,9 @@ val interactorModule = module {
     }
 
     fun provideCourierCarNumberInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
         userManager: UserManager
     ): CourierCarNumberInteractor {
         return CourierCarNumberInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
             userManager
         )
     }
@@ -400,7 +396,7 @@ val interactorModule = module {
     factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get()) }
     factory { provideCourierOrdersInteractor(get(), get(), get(), get(), get(), get(), get()) }
     single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get(), get(), get()) }
-    single { provideCourierCarNumberInteractor(get(), get(), get()) }
+    single { provideCourierCarNumberInteractor(get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(

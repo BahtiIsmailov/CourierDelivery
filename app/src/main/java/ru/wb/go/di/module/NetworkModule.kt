@@ -164,11 +164,13 @@ val networkModule = module {
         refreshTokenRepository: RefreshTokenRepository,
         headerManager: HeaderManager,
         tokenManager: TokenManager,
+        appNavRepository: AppNavRepository
     ): RefreshTokenInterceptor {
         return InterceptorFactory.createRefreshTokenInterceptor(
             refreshTokenRepository,
             headerManager,
-            tokenManager
+            tokenManager,
+            appNavRepository
         )
     }
 
@@ -317,7 +319,14 @@ val networkModule = module {
     single { provideAppMockResponseInterceptor(get()) }
     single { provideAppMetricResponseInterceptor(get()) }
 
-    single { provideRefreshTokenInterceptor(get(), get(named(APP_NAMED_HEADER_MANAGER)), get()) }
+    single {
+        provideRefreshTokenInterceptor(
+            get(),
+            get(named(APP_NAMED_HEADER_MANAGER)),
+            get(),
+            get()
+        )
+    }
 
     //OkHttp
     single(named(AUTH_NAMED_HTTP_CLIENT)) { provideAuthOkHttpClient(get(), get(), get()) }

@@ -6,6 +6,7 @@ import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.headers.HeaderManager
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.reader.MockResponse
+import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 object InterceptorFactory {
@@ -19,7 +20,10 @@ object InterceptorFactory {
         return AuthMockResponseInterceptor(apiServer)
     }
 
-    fun createAppMockResponseInterceptor(apiServer: String, mockResponse : MockResponse): AppMockResponseInterceptor {
+    fun createAppMockResponseInterceptor(
+        apiServer: String,
+        mockResponse: MockResponse
+    ): AppMockResponseInterceptor {
         return AppMockResponseInterceptor(apiServer, mockResponse)
     }
 
@@ -31,8 +35,14 @@ object InterceptorFactory {
         refreshTokenRepository: RefreshTokenRepository,
         headerManager: HeaderManager,
         tokenManager: TokenManager,
+        appNavRepository: AppNavRepository
     ): RefreshTokenInterceptor {
-        return RefreshTokenInterceptor(refreshTokenRepository, headerManager, tokenManager)
+        return RefreshTokenInterceptor(
+            refreshTokenRepository,
+            headerManager,
+            tokenManager,
+            appNavRepository
+        )
     }
 
 }

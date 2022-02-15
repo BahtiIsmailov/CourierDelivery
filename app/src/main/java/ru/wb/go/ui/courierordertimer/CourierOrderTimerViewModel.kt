@@ -57,6 +57,10 @@ class CourierOrderTimerViewModel(
     val waitLoader: LiveData<WaitLoader>
         get() = _waitLoader
 
+    private val _timeOut = SingleLiveEvent<Boolean>()
+        .apply { value = false }
+    val timeOut: LiveData<Boolean> get() = _timeOut
+
     init {
         initOrder()
     }
@@ -94,6 +98,7 @@ class CourierOrderTimerViewModel(
     }
 
     private fun timeIsOut() {
+        _timeOut.postValue(true)
         _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerTitle(),
@@ -147,6 +152,7 @@ class CourierOrderTimerViewModel(
     }
 
     private fun deleteTask() {
+
         setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.deleteTask()
@@ -154,7 +160,9 @@ class CourierOrderTimerViewModel(
                     {
                         setLoader(WaitLoader.Complete)
                         onTechEventLog("toWarehouse")
-                        _navigationState.value = CourierOrderTimerNavigationState.NavigateToWarehouse
+                        _navigationState.value =
+                            CourierOrderTimerNavigationState.NavigateToWarehouse
+                        _timeOut.postValue(false)
                     },
                     {
                         setLoader(WaitLoader.Complete)

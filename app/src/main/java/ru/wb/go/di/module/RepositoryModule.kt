@@ -23,6 +23,7 @@ import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.ui.couriermap.domain.CourierMapRepositoryImpl
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
+import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -56,8 +57,10 @@ val deliveryRepositoryModule = module {
     fun provideRefreshTokenRepository(
         api: RefreshTokenApi,
         tokenManager: TokenManager,
+        metric: YandexMetricManager,
+        appNavRepository: AppNavRepository
     ): RefreshTokenRepository {
-        return RefreshTokenRepositoryImpl(api, tokenManager)
+        return RefreshTokenRepositoryImpl(api, tokenManager, metric, appNavRepository)
     }
 
     fun provideCourierLocalRepository(
@@ -101,7 +104,7 @@ val deliveryRepositoryModule = module {
     single { provideAppRemoteRepository(get(), get(), get()) }
     factory { provideAppTasksRepository(get(), get(), get()) }
 
-    single { provideRefreshTokenRepository(get(), get()) }
+    single { provideRefreshTokenRepository(get(), get(), get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }

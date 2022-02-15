@@ -82,6 +82,10 @@ class CourierLoadingScanViewModel(
     val completeButtonState: LiveData<Boolean>
         get() = _completeButtonState
 
+    private val _timeOut = SingleLiveEvent<Boolean>()
+        .apply { value = false }
+    val timeOut: LiveData<Boolean> get() = _timeOut
+
     init {
         observeNetworkState()
         fetchVersionApp()
@@ -298,6 +302,8 @@ class CourierLoadingScanViewModel(
 
     override fun onTimeIsOverState() {
         onTechEventLog("onTimeIsOverState")
+        _timeOut.postValue(true)
+        stopScanner()
         _orderTimer.value = CourierLoadingScanTimerState.TimeIsOut(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getScanDialogTimeIsOutTitle(),
@@ -312,10 +318,22 @@ class CourierLoadingScanViewModel(
     }
 
     private fun deleteTask() {
+        setLoader(WaitLoader.Wait)
         addSubscription(
             interactor.deleteTask()
                 .subscribe(
-                    { toWarehouse() }, {})
+                    {
+                        setLoader(WaitLoader.Complete)
+                        onTechEventLog("toWarehouse")
+                        toWarehouse()
+                        _timeOut.postValue(false)
+                    },
+                    {
+                        setLoader(WaitLoader.Complete)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+
+                    }
+                )
         )
     }
 

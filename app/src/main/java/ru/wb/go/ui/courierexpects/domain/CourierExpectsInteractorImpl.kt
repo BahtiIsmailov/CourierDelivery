@@ -20,13 +20,18 @@ class CourierExpectsInteractorImpl(
             Single.fromCallable {
                 val resource = tokenManager.resources()
                 //TODO WHEN not work
-                if (resource.contains(NEED_SEND_COURIER_DOCUMENTS)) {
-                    NEED_SEND_COURIER_DOCUMENTS
-                } else if (resource.contains(NEED_CORRECT_COURIER_DOCUMENTS)) {
-                    NEED_CORRECT_COURIER_DOCUMENTS
-                } else if (resource.contains(NEED_APPROVE_COURIER_DOCUMENTS)) {
-                    NEED_APPROVE_COURIER_DOCUMENTS
-                } else{""}
+                when {
+                    resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> {
+                        NEED_SEND_COURIER_DOCUMENTS
+                    }
+                    resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
+                        NEED_CORRECT_COURIER_DOCUMENTS
+                    }
+                    resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> {
+                        NEED_APPROVE_COURIER_DOCUMENTS
+                    }
+                    else -> {""}
+                }
 
 
             }

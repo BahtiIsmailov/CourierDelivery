@@ -62,9 +62,12 @@ class CourierLoadingScanFragment : Fragment() {
         }
 
         setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
-            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
-                viewModel.onErrorDialogConfirmClick()
-            }
+            if (viewModel.timeOut.value == true) {
+                viewModel.returnToListOrderClick()
+            } else
+                if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+                    viewModel.onErrorDialogConfirmClick()
+                }
         }
 
         setFragmentResultListener(DIALOG_LOADING_CONFIRM_TAG) { _, bundle ->
@@ -77,7 +80,7 @@ class CourierLoadingScanFragment : Fragment() {
         }
 
         setFragmentResultListener(DIALOG_TIME_IS_OUT_INFO_TAG) { _, bundle ->
-            if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
+            if (viewModel.timeOut.value == true) {
                 viewModel.returnToListOrderClick()
             }
         }

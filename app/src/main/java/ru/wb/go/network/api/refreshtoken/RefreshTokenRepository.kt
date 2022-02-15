@@ -4,8 +4,8 @@ import io.reactivex.Completable
 
 interface RefreshTokenRepository {
 
-    fun refreshAccessTokenSync()
-
     fun refreshAccessToken(): Completable
+
+    fun doRefreshToken():RefreshResult
 
 }

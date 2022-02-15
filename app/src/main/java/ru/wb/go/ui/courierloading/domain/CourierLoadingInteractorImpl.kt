@@ -113,7 +113,7 @@ class CourierLoadingInteractorImpl(
         box: LocalBoxEntity,
         countBox: Int,
         isNewBox: Boolean,
-        scanTime:String
+        scanTime: String
     ): Observable<CourierLoadingProcessData> {
         return when (countBox) {
             0 ->
@@ -162,7 +162,7 @@ class CourierLoadingInteractorImpl(
         scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Progress)
     }
 
-    private fun firstBoxLoaderComplete()  {
+    private fun firstBoxLoaderComplete() {
 
         scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Complete)
     }
@@ -181,8 +181,12 @@ class CourierLoadingInteractorImpl(
     }
 
     override fun deleteTask(): Completable {
+        taskTimerRepository.stopTimer()
         return localRepo.getOrderId()
             .flatMapCompletable { remoteRepo.deleteTask(it) }
+            .doOnComplete {
+                localRepo.deleteOrder()
+            }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
