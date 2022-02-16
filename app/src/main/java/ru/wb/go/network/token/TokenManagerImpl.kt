@@ -79,10 +79,6 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         worker.save(AppPreffsKeys.DEMO_OFF_KEY, true)
     }
 
-    override fun isCourierCompanyIdOrRole(): Boolean {
-        return (userCompanyId() == COURIER_COMPANY_ID || resources().contains(COURIER_ROLE))
-    }
-
     override fun resources(): List<String> {
         return tokenResource().extra?.resources ?: mutableListOf()
     }

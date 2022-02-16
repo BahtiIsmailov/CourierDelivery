@@ -10,6 +10,7 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
@@ -28,15 +29,12 @@ class CouriersCompleteRegistrationViewModel(
     private val appRemoteRepository: AppRemoteRepository,
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val errorDialogManager: ErrorDialogManager,
+    private val tokenManager: TokenManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _showDialogInfo = SingleLiveEvent<ErrorDialogData>()
     val showDialogInfo: LiveData<ErrorDialogData>
         get() = _showDialogInfo
-
-    private val _infoState = MutableLiveData<String>()
-    val infoState: LiveData<String>
-        get() = _infoState
 
     private val _navAction = MutableLiveData<CourierExpectsNavAction>()
     val navigationState: LiveData<CourierExpectsNavAction>
@@ -94,18 +92,18 @@ class CouriersCompleteRegistrationViewModel(
             NEED_APPROVE_COURIER_DOCUMENTS -> {
                 val th = CustomException(resourceProvider.notConfirmDataMessage())
                 errorDialogManager.showErrorDialog(th, _showDialogInfo)
-//                _showDialogInfo.value = NavigateToDialogInfo(
-//                    DialogInfoStyle.INFO.ordinal,
-//                    resourceProvider.notConfirmDataTitle(),
-//                    resourceProvider.notConfirmDataMessage(),
-//                    resourceProvider.notConfirmDataPositive()
-//                )
-                _progressState.value = CourierExpectsProgressState.Complete
             }
             else -> {
-                //TODO не отображается ФИО при этом переходе
-                _navAction.value =
-                    CourierExpectsNavAction.NavigateToCouriers
+                if (tokenManager.isUserCourier()) {
+                    //TODO не отображается ФИО при этом переходе
+                    _navAction.value = CourierExpectsNavAction.NavigateToCouriers
+                } else {
+                    // TODO: Ждем появления этого кейса
+                    val ce = CustomException("Неизвестная ошибка")
+                    onTechErrorLog("CheckRegistrationStatus", ce)
+                    errorDialogManager.showErrorDialog(ce, _showDialogInfo)
+                }
+
             }
         }
     }
