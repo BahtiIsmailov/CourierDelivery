@@ -18,7 +18,6 @@ interface TokenManager {
     fun isContains(): Boolean
     fun isDemo(): Boolean
     fun turnOffDemo()
-    fun isCourierCompanyIdOrRole(): Boolean
     fun resources(): List<String>
     fun isUserCourier():Boolean
 }
