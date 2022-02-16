@@ -13,6 +13,7 @@ object AppConsts {
     const val HTTP_PAGE_NOT_FOUND = 404
 
     const val REFRESH_TOKEN_INVALID = "REFRESH_TOKEN_INVALID"
+    const val PHONE_IS_UNEXPECTED = "PHONE_IS_UNEXPECTED"
 
 
     const val APP_PACKAGE = "package"

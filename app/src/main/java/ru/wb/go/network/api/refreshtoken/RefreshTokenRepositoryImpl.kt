@@ -4,8 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Completable
 import io.reactivex.Single
+import ru.wb.go.app.AppConsts.PHONE_IS_UNEXPECTED
 
 import ru.wb.go.app.AppConsts.REFRESH_TOKEN_INVALID
+import ru.wb.go.app.AppConsts.SERVICE_CODE_BAD_REQUEST
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.query.RefreshTokenQuery
 import ru.wb.go.network.api.auth.response.RefreshResponse
@@ -50,7 +52,10 @@ class RefreshTokenRepositoryImpl(
                 val type = object : TypeToken<ErrorResponse>() {}.type
                 val errorResponse: ErrorResponse? =
                     gson.fromJson(response.errorBody()!!.charStream(), type)
-                if (errorResponse?.error?.code == REFRESH_TOKEN_INVALID) {
+                val code = errorResponse?.error?.code
+                if (code == REFRESH_TOKEN_INVALID ||
+                    (code == PHONE_IS_UNEXPECTED || response.code() == SERVICE_CODE_BAD_REQUEST) //При удалении реквизитов курьера, телефона больше не сущестует
+                ) {
                     tokenManager.clear()
                     RefreshResult.TokenInvalid
                 } else {
