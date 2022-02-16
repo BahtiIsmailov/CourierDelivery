@@ -23,7 +23,6 @@ class CourierWarehousesInteractorImpl(
 ) : CourierWarehousesInteractor {
 
     override fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
-
         return appRemoteRepository.courierWarehouses()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }

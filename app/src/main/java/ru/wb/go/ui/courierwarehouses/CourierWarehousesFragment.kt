@@ -97,9 +97,9 @@ class CourierWarehousesFragment : Fragment() {
                 }
                 is CourierWarehouseItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
+                    binding.emptyTitle.text = it.info
                     binding.refresh.isRefreshing = false
                     binding.items.visibility = GONE
-                    binding.emptyTitle.text = it.info
                 }
                 is CourierWarehouseItemState.UpdateItem -> {
                     adapter.setItem(it.position, it.item)

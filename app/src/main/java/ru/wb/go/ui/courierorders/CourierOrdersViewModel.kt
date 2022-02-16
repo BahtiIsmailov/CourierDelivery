@@ -242,12 +242,7 @@ class CourierOrdersViewModel(
     }
 
     private fun zoomAllGroupMarkersFromBoundingBox() {
-        centerGroupPoints.add(
-            CoordinatePoint(
-                parameters.warehouseLatitude,
-                parameters.warehouseLongitude
-            )
-        )
+        centerGroupPoints.add(warehouseCoordinatePoint())
         val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(centerGroupPoints)
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
     }
@@ -258,9 +253,25 @@ class CourierOrdersViewModel(
 
         changeSelectedMapPoint(mapMarkers[clickItemIndex + 1].point)
         changeSelectedOrderItems(clickItemIndex, isSelected)
-        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
-        changeShowOrders(isSelected)
+        updateItems()
         updateMarkers()
+        if (isSelected) zoomAllGroupMarkersFromBoundingBox(clickItemIndex)
+        else zoomAllGroupMarkersFromBoundingBox()
+        changeShowOrders(isSelected)
+    }
+
+    private fun zoomAllGroupMarkersFromBoundingBox(index: Int) {
+        val selectedGroup = mutableListOf(centerGroupPoints[index])
+        selectedGroup.add(warehouseCoordinatePoint())
+        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(selectedGroup)
+        interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+    }
+
+    private fun warehouseCoordinatePoint() =
+        CoordinatePoint(parameters.warehouseLatitude, parameters.warehouseLongitude)
+
+    private fun updateItems() {
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
     }
 
     fun onDetailClick() {
