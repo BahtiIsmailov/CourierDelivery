@@ -2,7 +2,10 @@ package ru.wb.go.network.exceptions
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import io.reactivex.*
+import io.reactivex.Completable
+import io.reactivex.Maybe
+import io.reactivex.Observable
+import io.reactivex.Single
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -10,86 +13,35 @@ import retrofit2.HttpException
 import retrofit2.Response
 import ru.wb.go.app.AppConsts.HTTP_OBJECT_NOT_FOUND
 import ru.wb.go.app.AppConsts.HTTP_PAGE_NOT_FOUND
-import ru.wb.go.app.AppConsts.REFRESH_TOKEN_INVALID
 import ru.wb.go.app.AppConsts.SERVICE_CODE_BAD_REQUEST
 import ru.wb.go.app.AppConsts.SERVICE_CODE_FORBIDDEN
 import ru.wb.go.app.AppConsts.SERVICE_CODE_LOCKED
 import ru.wb.go.app.AppConsts.SERVICE_CODE_UNAUTHORIZED
-import ru.wb.go.ui.app.domain.AppNavRepository
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 
+
 class ErrorResolutionStrategyImpl(
-    private val resourceProvider: ErrorResolutionResourceProvider,
-    private val appNavRepository: AppNavRepository
-) :
-    ErrorResolutionStrategy {
+    private val resourceProvider: ErrorResolutionResourceProvider
+) : ErrorResolutionStrategy {
 
     override fun apply(call: Observable<*>): Observable<*> {
-        return call.retryWhen { throwableObservable: Observable<Throwable> ->
-            retryWhenUnauthorized(throwableObservable)
-        }
+        return call
+            .onErrorResumeNext { throwable: Throwable -> Observable.error(convertException(throwable)) }
     }
-
-    private fun retryWhenUnauthorized(throwableObservable: Observable<Throwable>): Observable<Completable> {
-        return throwableObservable
-            .flatMap {
-                if (isUnauthorized(it)) Observable.just(Completable.complete())
-                else Observable.error(convertException(it))
-            }
-            .take(NUMBER_ATTEMPTS_ON_ERROR.toLong())
-    }
-
-    private fun isUnauthorized(it: Throwable) =
-        it is HttpException && it.code() == SERVICE_CODE_UNAUTHORIZED
 
     override fun apply(call: Single<*>): Single<*> {
-        return call.retryWhen { throwableFlowable: Flowable<Throwable> ->
-            retryWhenUnauthorized(throwableFlowable)
-        }
+        return call.onErrorResumeNext { Single.error { convertException(it) } }
     }
 
     override fun apply(call: Completable): Completable {
-        return call.retryWhen { throwableFlowable: Flowable<Throwable> ->
-            retryWhenUnauthorized(throwableFlowable)
-        }
+        return call.onErrorResumeNext { Completable.error { convertException(it) } }
     }
 
     override fun apply(call: Maybe<*>): Maybe<*> {
-        return call.retryWhen { throwableFlowable: Flowable<Throwable> ->
-            retryWhenUnauthorized(throwableFlowable)
-        }
-    }
-
-    private fun retryWhenUnauthorized(throwableFlowable: Flowable<Throwable>): Flowable<Completable> {
-        return throwableFlowable
-            .flatMap { makeError(it) }
-            .take(NUMBER_ATTEMPTS_ON_ERROR.toLong())
-    }
-
-    private fun makeError(throwable: Throwable) =
-        when {
-            isUnauthorized(throwable) -> {
-                Flowable.just(Completable.complete())
-            }
-            throwable is RefreshAccessTokenException -> {
-                Flowable.error(refreshTokenException(throwable))
-            }
-            else -> {
-                Flowable.error(convertException(throwable))
-            }
-        }
-
-    private fun refreshTokenException(exceptionAccess: RefreshAccessTokenException): Throwable {
-        val error = convertMessageException(exceptionAccess.message)
-        return if (error.code == REFRESH_TOKEN_INVALID) {
-            appNavRepository.navigate("to_auth")
-            UnauthorizedException(resourceProvider.unauthorizedError)
-        } else {
-            convertException(exceptionAccess)
-        }
+        return call.onErrorResumeNext { throwable: Throwable? -> Maybe.error(throwable) }
     }
 
     private fun convertException(throwable: Throwable): Throwable {
@@ -149,18 +101,6 @@ class ErrorResolutionStrategyImpl(
         }.error
     }
 
-    private fun convertMessageException(message: String): Error {
-        return if (isJSONValid(message))
-            Gson().fromJson(message, ApiErrorModel::class.java).error
-        else {
-            Error(
-                message.ifEmpty { resourceProvider.bodyIsEmpty },
-                "E$SERVICE_CODE_UNAUTHORIZED",
-                Data(0)
-            )
-        }
-    }
-
     private fun isJSONValid(body: String?): Boolean {
         if (body == null) return false
         try {
@@ -173,10 +113,6 @@ class ErrorResolutionStrategyImpl(
             }
         }
         return true
-    }
-
-    companion object {
-        private const val NUMBER_ATTEMPTS_ON_ERROR = 2
     }
 
 }
