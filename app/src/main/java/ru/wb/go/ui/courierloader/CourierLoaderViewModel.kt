@@ -102,6 +102,14 @@ class CourierLoaderViewModel(
     private fun checkUserState(version: String) {
         val phone = tokenManager.userPhone()
 
+        checkNewInstallation()
+
+        val order = locRepo.getOrder()
+
+        if (order == null && goToUpdate(version)) {
+            return
+        }
+
         when {
             tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> {
                 if (!goToUpdate(version))
@@ -115,33 +123,25 @@ class CourierLoaderViewModel(
                 if (!goToUpdate(version))
                     toCouriersCompleteRegistration(phone)
             }
-            else -> {
-                checkNewInstallation()
-                val order = locRepo.getOrder()
-                val taskMy =
+            tokenManager.isUserCourier() -> {
+                addSubscription(
                     remoteRepo.tasksMy(order?.orderId)
                         .flatMap { solveJobInitialState(it, order) }
-                if (order == null && goToUpdate(version)) {
-                    return
-                }
-                val navigation = if (tokenManager.isDemo()) Single.just(toCourierWarehouse())
-                else taskMy
-                addSubscription(
-                    navigation
                         .compose(rxSchedulerFactory.applySingleSchedulers())
-                        .subscribe({ taskMyComplete(it) }, {
-                            onTechErrorLog("startNavigation", it)
+                        .subscribe({
+//                            _state.value = CourierLoaderUIState.Complete
+                            _navigationDrawerState.postValue(it)
+                        }, {
+                            onTechErrorLog("getMyTask", it)
                             onRxError(it)
                         })
                 )
             }
+            else -> {
+                assert(tokenManager.isDemo())
+                _navigationDrawerState.postValue(toCourierWarehouse())
+            }
         }
-    }
-
-    private fun taskMyComplete(navigationState: CourierLoaderNavigationState) {
-        onTechEventLog("taskMyComplete", "navigationState $navigationState")
-        _state.value = CourierLoaderUIState.Complete
-        _navigationDrawerState.value = navigationState
     }
 
     private fun solveJobInitialState(
@@ -219,7 +219,7 @@ class CourierLoaderViewModel(
             remoteRepo.getCourierDocuments()
                 .compose(rxSchedulerFactory.applySingleSchedulers())
                 .subscribe({
-                    _state.value = CourierLoaderUIState.Complete
+//                    _state.value = CourierLoaderUIState.Complete
                     _navigationDrawerState.value =
                         CourierLoaderNavigationState.NavigateToCourierUserForm(
                             CourierDataParameters(phone = phone, docs = it)
@@ -234,7 +234,7 @@ class CourierLoaderViewModel(
 
     private fun toNewRegistration(phone: String) {
         val docs = CourierDocumentsEntity()
-        _state.value = CourierLoaderUIState.Complete
+//        _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCourierUserForm(
                 CourierDataParameters(
@@ -245,7 +245,7 @@ class CourierLoaderViewModel(
     }
 
     private fun toCouriersCompleteRegistration(phone: String) {
-        _state.value = CourierLoaderUIState.Complete
+//        _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }

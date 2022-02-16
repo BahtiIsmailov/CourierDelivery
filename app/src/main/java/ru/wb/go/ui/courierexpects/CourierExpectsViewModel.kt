@@ -54,12 +54,11 @@ class CouriersCompleteRegistrationViewModel(
         addSubscription(
             interactor.isRegisteredStatus().subscribe(
                 {
-                    _progressState.value = CourierExpectsProgressState.Complete
                     isRegisteredStatusComplete(it)
                 },
                 {
-                    _progressState.value = CourierExpectsProgressState.Complete
                     errorDialogManager.showErrorDialog(it, _showDialogInfo)
+                    _progressState.value = CourierExpectsProgressState.Complete
                 })
         )
 
@@ -85,13 +84,17 @@ class CouriersCompleteRegistrationViewModel(
                                     parameters.phone, it
                                 )
 
-                        }, { errorDialogManager.showErrorDialog(it, _showDialogInfo) })
+                        }, {
+                            errorDialogManager.showErrorDialog(it, _showDialogInfo)
+                            _progressState.value = CourierExpectsProgressState.Complete
+                        })
                 )
 
             }
             NEED_APPROVE_COURIER_DOCUMENTS -> {
                 val th = CustomException(resourceProvider.notConfirmDataMessage())
                 errorDialogManager.showErrorDialog(th, _showDialogInfo)
+                _progressState.value = CourierExpectsProgressState.Complete
             }
             else -> {
                 if (tokenManager.isUserCourier()) {
@@ -102,6 +105,8 @@ class CouriersCompleteRegistrationViewModel(
                     val ce = CustomException("Неизвестная ошибка")
                     onTechErrorLog("CheckRegistrationStatus", ce)
                     errorDialogManager.showErrorDialog(ce, _showDialogInfo)
+                    _progressState.value = CourierExpectsProgressState.Complete
+
                 }
 
             }

@@ -55,9 +55,9 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         savedInstanceState: Bundle?,
     ): View {
         _binding = CourierDataFragmentBinding.inflate(inflater, container, false)
-
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
