@@ -73,10 +73,9 @@ val networkModule = module {
     }
 
     fun provideErrorResolutionStrategy(
-        resourceProvider: ErrorResolutionResourceProvider,
-        appNavRepository: AppNavRepository
+        resourceProvider: ErrorResolutionResourceProvider
     ): ErrorResolutionStrategy {
-        return ErrorResolutionStrategyImpl(resourceProvider, appNavRepository)
+        return ErrorResolutionStrategyImpl(resourceProvider)
     }
 
     fun provideCallAdapterFactory(errorResolutionStrategy: ErrorResolutionStrategy): CallAdapter.Factory {
@@ -180,7 +179,7 @@ val networkModule = module {
     fun provideAuthOkHttpClient(
         certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        authMockResponseInterceptor: ru.wb.go.network.interceptors.AuthMockResponseInterceptor
+        authMockResponseInterceptor: AuthMockResponseInterceptor
     ): OkHttpClient {
         return OkHttpFactory.createAuthOkHttpClient(
             certificateStore,
@@ -292,7 +291,7 @@ val networkModule = module {
     single(named(APP_NAMED_BASE_URL)) { provideAppBaseUrlServer(get()) }
 
     single { provideErrorResolutionResourceProvider(get()) }
-    single { provideErrorResolutionStrategy(get(), get()) }
+    single { provideErrorResolutionStrategy(get()) }
     single { provideCallAdapterFactory(get()) }
 
     single { provideCertificateStore(get()) }
