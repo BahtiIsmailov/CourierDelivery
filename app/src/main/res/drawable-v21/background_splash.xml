@@ -5,10 +5,10 @@
     <item android:drawable="@drawable/background_scanner_gradient" />
 
     <item
-        android:top="500dp"
         android:bottom="500dp"
         android:left="200dp"
-        android:right="200dp">
+        android:right="200dp"
+        android:top="500dp">
         <bitmap
             android:gravity="center"
             android:src="@drawable/ic_splash" />
