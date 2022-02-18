@@ -6,8 +6,10 @@ import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.app.domain.AppInteractor
+import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
+import java.lang.IllegalStateException
 
 class AppViewModel(
     compositeDisposable: CompositeDisposable,
@@ -33,10 +35,16 @@ class AppViewModel(
         fetchNetworkState()
         fetchVersionApp()
 
-        addSubscription(interactor.observeNavigationApp().subscribe({
-            interactor.exitAuth()
-            _navigation.value = NavigateToRegistration
-        }, {}))
+        addSubscription(
+            interactor.observeNavigationApp()
+                .subscribe({
+                    if (it == INVALID_TOKEN) {
+                        interactor.exitAuth()
+                        _navigation.value = NavigateToRegistration
+                    } else
+                        throw IllegalStateException("Wrong param $it")
+                }, {})
+        )
     }
 
     private fun fetchVersionApp() {

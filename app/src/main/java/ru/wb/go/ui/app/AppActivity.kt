@@ -3,7 +3,7 @@ package ru.wb.go.ui.app
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
+
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity.LEFT
@@ -16,15 +16,18 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
+
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -35,7 +38,6 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierdata.CourierDataFragmentDirections
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
-import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard
 
@@ -48,7 +50,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     private lateinit var binding: SplashActivityBinding
 
-    private lateinit var navController: NavController
+    private var navController: NavController? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: NavController.OnDestinationChangedListener
 
@@ -62,6 +64,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         initObserver()
         initListener()
         hideStatusBar()
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentListener, true)
+
     }
 
     private fun initToolbar() {
@@ -74,7 +79,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private fun initNavController() {
         binding.navView.itemIconTintList = null
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            supportFragmentManager.findFragmentById(R.id.nav_host_app_fragment) as NavHostFragment
 
         navController = navHostFragment.navController
         onDestinationChangedListener =
@@ -85,13 +90,26 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
                     }
                 }
             }
-        navController.addOnDestinationChangedListener(onDestinationChangedListener)
+        navController!!.addOnDestinationChangedListener(onDestinationChangedListener)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(R.id.courierWarehousesFragment),
             binding.drawerLayout
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        setupActionBarWithNavController(navController!!, appBarConfiguration)
+    }
+
+    private val fragmentListener = object : FragmentManager.FragmentLifecycleCallbacks() {
+        override fun onFragmentViewCreated(
+            fm: FragmentManager,
+            f: Fragment,
+            v: View,
+            savedInstanceState: Bundle?
+        ) {
+            super.onFragmentViewCreated(fm, f, v, savedInstanceState)
+            if (f is NavHostFragment) return
+            navController = f.findNavController()
+        }
     }
 
     private fun initObserver() {
@@ -126,8 +144,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         viewModel.navigation.observe(this) {
             panMode()
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            Navigation.findNavController(this@AppActivity, R.id.nav_host_fragment)
-                .navigate(R.id.load_navigation)
+            val navHost =
+                supportFragmentManager.findFragmentById(R.id.nav_host_app_fragment) as NavHostFragment
+            navHost.navController.navigate(R.id.load_navigation)
+
         }
 
     }
@@ -136,7 +156,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
         with(binding.navView) {
             findViewById<View>(R.id.billing_layout).setOnClickListener {
-                navController.navigate(R.id.courierBalanceFragment)
+                navController?.navigate(R.id.courierBalanceFragment)
             }
 
             findViewById<View>(R.id.logout_layout).setOnClickListener {
@@ -144,7 +164,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             }
 
             findViewById<View>(R.id.settings_layout).setOnClickListener {
-                navController.navigate(R.id.settingsFragment)
+                navController?.navigate(R.id.settingsFragment)
             }
         }
 
@@ -170,10 +190,15 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    override fun onDestroy() {
+        supportFragmentManager.unregisterFragmentLifecycleCallbacks(fragmentListener)
+        navController = null
+        super.onDestroy()
     }
+
+    override fun onSupportNavigateUp() =
+        (navController?.navigateUp(appBarConfiguration) ?: false) || super.onSupportNavigateUp()
+
 
     override fun updateTitle(title: String) {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -199,15 +224,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         makeStatusBarTransparent()
     }
 
-    override fun showNetworkDialog() {
-        DialogInfoFragment.newInstance(
-            type = DialogInfoStyle.WARNING.ordinal,
-            title = getString(R.string.nav_no_internet_dialog_title),
-            message = getString(R.string.nav_no_internet_dialog_description),
-            positiveButtonName = getString(R.string.nav_no_internet_dialog_button),
-        ).show(supportFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
-    }
-
     override fun leftIcon(resId: Int) {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val leftIcon = toolbar.findViewById<ImageView>(R.id.left_icon)
@@ -227,8 +243,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private var isLoadingCourierBox = false
 
     override fun onBackPressed() {
-        when (findNavController(R.id.nav_host_fragment).currentDestination?.id) {
-            R.id.userFormFragment -> findNavController(R.id.nav_host_fragment).navigate(
+        when (navController?.currentDestination?.id) {
+            R.id.userFormFragment -> findNavController(R.id.nav_host_app_fragment).navigate(
                 CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
             )
             R.id.authNumberPhoneFragment,
@@ -312,7 +328,6 @@ interface NavToolbarListener {
     fun hideToolbar()
     fun showToolbar()
     fun showStatusBar()
-    fun showNetworkDialog()
 }
 
 interface NavDrawerListener {
@@ -337,13 +352,6 @@ interface OnUserInfo {
 
 interface OnCourierScanner {
     fun holdBackButtonOnScanBox()
-}
-
-fun AppActivity.hasPermission(permission: String): Boolean {
-    return ActivityCompat.checkSelfPermission(
-        this,
-        permission
-    ) == PackageManager.PERMISSION_GRANTED
 }
 
 fun Activity.makeStatusBarTransparent() {

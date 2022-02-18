@@ -13,6 +13,8 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
+import ru.wb.go.ui.app.domain.AppNavRepository
+import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -30,6 +32,7 @@ class CouriersCompleteRegistrationViewModel(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val errorDialogManager: ErrorDialogManager,
     private val tokenManager: TokenManager,
+    private val appNavRepository: AppNavRepository
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _showDialogInfo = SingleLiveEvent<ErrorDialogData>()
@@ -52,14 +55,15 @@ class CouriersCompleteRegistrationViewModel(
         onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierExpectsProgressState.Progress
         addSubscription(
-            interactor.isRegisteredStatus().subscribe(
-                {
-                    isRegisteredStatusComplete(it)
-                },
-                {
-                    errorDialogManager.showErrorDialog(it, _showDialogInfo)
-                    _progressState.value = CourierExpectsProgressState.Complete
-                })
+            interactor.isRegisteredStatus()
+                .subscribe(
+                    {
+                        isRegisteredStatusComplete(it)
+                    },
+                    {
+                        errorDialogManager.showErrorDialog(it, _showDialogInfo)
+                        _progressState.value = CourierExpectsProgressState.Complete
+                    })
         )
 
     }
@@ -67,6 +71,9 @@ class CouriersCompleteRegistrationViewModel(
     private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
         when (registerStatus) {
+            INVALID_TOKEN->{
+                appNavRepository.navigate(INVALID_TOKEN)
+            }
             NEED_SEND_COURIER_DOCUMENTS -> {
                 _navAction.value =
                     CourierExpectsNavAction.NavigateToRegistrationCouriers(
@@ -101,11 +108,11 @@ class CouriersCompleteRegistrationViewModel(
                     //TODO не отображается ФИО при этом переходе
                     _navAction.value = CourierExpectsNavAction.NavigateToCouriers
                 } else {
-                    // TODO: Ждем появления этого кейса
-                    val ce = CustomException("Неизвестная ошибка")
+                    val ce = CustomException("Unknown error")
                     onTechErrorLog("CheckRegistrationStatus", ce)
                     errorDialogManager.showErrorDialog(ce, _showDialogInfo)
-                    _progressState.value = CourierExpectsProgressState.Complete
+//                    _progressState.value = CourierExpectsProgressState.Complete
+
 
                 }
 

@@ -15,4 +15,8 @@ class AppNavRepositoryImpl : AppNavRepository {
         return searchSubject
     }
 
+    companion object{
+        const val INVALID_TOKEN = "INVALID_TOKEN"
+    }
+
 }

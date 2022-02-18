@@ -70,7 +70,8 @@ val viewModelModule = module {
             remoteRepo = get(),
             deviceManager = get(),
             resourceProvider = get(),
-            settingsManager = get())
+            settingsManager = get()
+        )
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
     viewModel { CourierAgreementViewModel(get(), get()) }
@@ -94,6 +95,7 @@ val viewModelModule = module {
             get(),
             get(),
             get(),
+            get(),
             get()
         )
     }
@@ -110,7 +112,7 @@ val viewModelModule = module {
 
     viewModel {
         CourierLoadingScanViewModel(
-            get(), get(), get(), get(), get(), get(), get(),get()
+            get(), get(), get(), get(), get(), get(), get(), get()
         )
     }
 
@@ -118,7 +120,7 @@ val viewModelModule = module {
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
-            parameters, get(), get(), get(), get(), get(), get(),get()
+            parameters, get(), get(), get(), get(), get(), get(), get()
         )
     }
 

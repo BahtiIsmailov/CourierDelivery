@@ -15,7 +15,7 @@ interface AuthRemoteRepository {
 
     fun userInfo(): Single<UserInfoEntity>
 
-    fun clearToken()
+    fun clearCurrentUser()
 
     fun userPhone(): String
 

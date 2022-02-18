@@ -40,6 +40,7 @@ class UserManagerImpl(private val worker: SharedWorker) : UserManager {
     override fun clearAll() {
         worker.delete(AppPreffsKeys.PHONE_KEY)
         worker.delete(AppPreffsKeys.CAR_NUMBER_KEY)
+        worker.delete(AppPreffsKeys.DEMO_OFF_KEY)
     }
 
 }

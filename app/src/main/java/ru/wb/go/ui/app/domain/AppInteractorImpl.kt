@@ -19,7 +19,7 @@ class AppInteractorImpl(
     }
 
     override fun exitAuth() {
-        authRemoteRepository.clearToken()
+        authRemoteRepository.clearCurrentUser()
     }
 
     override fun observeNavigationApp(): Observable<String> {

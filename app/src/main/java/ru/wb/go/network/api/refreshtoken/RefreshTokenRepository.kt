@@ -1,10 +1,8 @@
 package ru.wb.go.network.api.refreshtoken
 
-import io.reactivex.Completable
+import io.reactivex.Single
 
 interface RefreshTokenRepository {
-
-    fun refreshAccessToken(): Completable
 
     fun doRefreshToken():RefreshResult
 

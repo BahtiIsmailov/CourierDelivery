@@ -58,9 +58,8 @@ val deliveryRepositoryModule = module {
         api: RefreshTokenApi,
         tokenManager: TokenManager,
         metric: YandexMetricManager,
-        appNavRepository: AppNavRepository
     ): RefreshTokenRepository {
-        return RefreshTokenRepositoryImpl(api, tokenManager, metric, appNavRepository)
+        return RefreshTokenRepositoryImpl(api, tokenManager, metric)
     }
 
     fun provideCourierLocalRepository(
@@ -104,7 +103,7 @@ val deliveryRepositoryModule = module {
     single { provideAppRemoteRepository(get(), get(), get()) }
     factory { provideAppTasksRepository(get(), get(), get()) }
 
-    single { provideRefreshTokenRepository(get(), get(), get(), get()) }
+    single { provideRefreshTokenRepository(get(), get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }
     single { provideCourierMapRepository() }
     single { provideTaskTimerRepository() }

@@ -4,9 +4,11 @@ import io.reactivex.Single
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
+import ru.wb.go.network.api.refreshtoken.RefreshResult
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
+import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 
 class CourierExpectsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
@@ -15,27 +17,27 @@ class CourierExpectsInteractorImpl(
 ) : CourierExpectsInteractor {
 
     override fun isRegisteredStatus(): Single<String> {
-        val refreshToken = refreshTokenRepository.refreshAccessToken()
-        val registrationToken =
-            Single.fromCallable {
-                val resource = tokenManager.resources()
-                //TODO WHEN not work
-                when {
-                    resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> {
-                        NEED_SEND_COURIER_DOCUMENTS
-                    }
-                    resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
-                        NEED_CORRECT_COURIER_DOCUMENTS
-                    }
-                    resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> {
-                        NEED_APPROVE_COURIER_DOCUMENTS
-                    }
-                    else -> {""}
+
+        val regStatus = Single.fromCallable {
+            val refreshResult = refreshTokenRepository.doRefreshToken()
+            val resource = tokenManager.resources()
+            when {
+                refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN
+                resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> {
+                    NEED_SEND_COURIER_DOCUMENTS
                 }
-
-
+                resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
+                    NEED_CORRECT_COURIER_DOCUMENTS
+                }
+                resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> {
+                    NEED_APPROVE_COURIER_DOCUMENTS
+                }
+                else -> {
+                    ""
+                }
             }
-        return refreshToken.andThen(registrationToken)
+        }
+        return regStatus
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 

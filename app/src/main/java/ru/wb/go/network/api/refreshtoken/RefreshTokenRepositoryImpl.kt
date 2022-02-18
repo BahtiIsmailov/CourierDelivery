@@ -2,8 +2,6 @@ package ru.wb.go.network.api.refreshtoken
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.reactivex.Completable
-import io.reactivex.Single
 import ru.wb.go.app.AppConsts.PHONE_IS_UNEXPECTED
 
 import ru.wb.go.app.AppConsts.REFRESH_TOKEN_INVALID
@@ -14,15 +12,13 @@ import ru.wb.go.network.api.auth.response.RefreshResponse
 import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.network.exceptions.UnknownException
 import ru.wb.go.network.token.TokenManager
-import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.utils.analytics.YandexMetricManager
 import java.net.SocketTimeoutException
 
 class RefreshTokenRepositoryImpl(
     private var server: RefreshTokenApi,
     private val tokenManager: TokenManager,
-    private val metric: YandexMetricManager,
-    private val appNavRepository: AppNavRepository
+    private val metric: YandexMetricManager
 ) : RefreshTokenRepository {
 
     override fun doRefreshToken(): RefreshResult {
@@ -88,16 +84,6 @@ class RefreshTokenRepositoryImpl(
 
     private fun saveToken(tokenEntity: TokenEntity) {
         tokenManager.saveToken(tokenEntity)
-    }
-
-    override fun refreshAccessToken(): Completable {
-        return Completable.fromSingle(
-            Single.fromCallable {
-                if (doRefreshToken() == RefreshResult.TokenInvalid) {
-                    appNavRepository.navigate("to_auth")
-                }
-            }
-        )
     }
 
     companion object {

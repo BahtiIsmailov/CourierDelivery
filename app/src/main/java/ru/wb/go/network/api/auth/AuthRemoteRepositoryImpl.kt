@@ -50,8 +50,7 @@ class AuthRemoteRepositoryImpl(
         return Single.just(UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
     }
 
-    override fun clearToken() {
-        tokenManager.clear()
+    override fun clearCurrentUser() {
         userManager.clearAll()
         settingsManager.resetSettings()
     }

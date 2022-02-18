@@ -10,6 +10,7 @@ import ru.wb.go.network.headers.HeaderManager
 import ru.wb.go.network.headers.HeaderManager.Companion.TOKEN_AUTH
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.app.domain.AppNavRepository
+import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -35,7 +36,6 @@ class RefreshTokenInterceptor(
         var response = chain.proceed(builder.build())
 
         if (tokenManager.bearerToken().isEmpty() || tokenManager.refreshToken().isEmpty()) {
-            appNavRepository.navigate("to_auth")
             return response
         }
 
@@ -46,7 +46,7 @@ class RefreshTokenInterceptor(
                     lock.close()
                     when (refreshTokenRepository.doRefreshToken()) {
                         RefreshResult.TokenInvalid -> {
-                            appNavRepository.navigate("to_auth")
+                            appNavRepository.navigate(INVALID_TOKEN)
                         }
                         RefreshResult.Success -> {
                             val newRequest = createRequest(request, tokenManager.bearerToken())
@@ -73,9 +73,12 @@ class RefreshTokenInterceptor(
                 }
             } else {
                 val conditionOpened = lock.block(REFRESH_TIME_OUT)
-                if (conditionOpened) {
-                    val newRequest = createRequest(request, tokenManager.bearerToken())
-                    response = chain.proceed(newRequest)
+                if (conditionOpened ) {
+                    val token = tokenManager.bearerToken()
+                    if(token.isNotEmpty()) {
+                        val newRequest = createRequest(request, token)
+                        response = chain.proceed(newRequest)
+                    }
                 }
             }
 
