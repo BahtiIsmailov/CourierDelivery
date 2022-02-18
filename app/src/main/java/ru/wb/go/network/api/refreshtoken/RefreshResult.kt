@@ -1,9 +1,10 @@
 package ru.wb.go.network.api.refreshtoken
 
-import ru.wb.go.network.api.auth.response.RefreshResponse
+import okhttp3.Response
 
 sealed class RefreshResult {
     object Success : RefreshResult()
-    object Failed : RefreshResult()
+    data class Failed(val ex: Throwable) : RefreshResult()
     object TokenInvalid : RefreshResult()
+    object TimeOut : RefreshResult()
 }

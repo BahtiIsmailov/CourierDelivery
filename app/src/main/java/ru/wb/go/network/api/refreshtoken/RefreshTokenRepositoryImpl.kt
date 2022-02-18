@@ -11,10 +11,12 @@ import ru.wb.go.app.AppConsts.SERVICE_CODE_BAD_REQUEST
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.query.RefreshTokenQuery
 import ru.wb.go.network.api.auth.response.RefreshResponse
+import ru.wb.go.network.exceptions.TimeoutException
+import ru.wb.go.network.exceptions.UnknownException
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.utils.analytics.YandexMetricManager
-
+import java.net.SocketTimeoutException
 
 class RefreshTokenRepositoryImpl(
     private var server: RefreshTokenApi,
@@ -30,7 +32,7 @@ class RefreshTokenRepositoryImpl(
         do {
             result = refreshAccessTokenSync()
             retry++
-        } while (result is RefreshResult.Failed && retry < RETRY)
+        } while (result is RefreshResult.TimeOut && retry < RETRY)
 
         return result
     }
@@ -46,7 +48,11 @@ class RefreshTokenRepositoryImpl(
                 if (refreshResponse != null) {
                     saveToken(convertTokenEntity(refreshResponse))
                     RefreshResult.Success
-                } else RefreshResult.Failed
+                } else {
+                    val ex = UnknownException("Empty body", "")
+                    metric.onTechErrorLog("RefreshToken", "refreshSuccessResponse", "emptyBody")
+                    RefreshResult.Failed(ex)
+                }
             } else {
                 val gson = Gson()
                 val type = object : TypeToken<ErrorResponse>() {}.type
@@ -59,17 +65,18 @@ class RefreshTokenRepositoryImpl(
                     tokenManager.clear()
                     RefreshResult.TokenInvalid
                 } else {
-                    metric.onTechErrorLog(
-                        "RefreshToken",
-                        "unknownResponse",
-                        errorResponse?.toString() ?: "-"
-                    )
-                    RefreshResult.Failed
+                    val msg = errorResponse?.toString() ?: "-"
+                    metric.onTechErrorLog("RefreshToken", "unknownResponse", msg)
+                    val ex = UnknownException("Validation error", "")
+                    RefreshResult.Failed(ex)
                 }
             }
         } catch (ex: Exception) {
-            metric.onTechErrorLog("RefreshToken", "catchException", ex?.message ?: "-")
-            RefreshResult.Failed
+            metric.onTechErrorLog("RefreshToken", "catchException", ex.message ?: "-")
+            if (ex is TimeoutException || ex is SocketTimeoutException) {
+                RefreshResult.TimeOut
+            } else
+                RefreshResult.Failed(ex)
         }
 
     }

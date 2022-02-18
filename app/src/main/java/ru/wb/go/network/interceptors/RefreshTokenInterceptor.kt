@@ -34,7 +34,7 @@ class RefreshTokenInterceptor(
 
         var response = chain.proceed(builder.build())
 
-        if (tokenManager.bearerToken().isEmpty()) {
+        if (tokenManager.bearerToken().isEmpty() || tokenManager.refreshToken().isEmpty()) {
             appNavRepository.navigate("to_auth")
             return response
         }
@@ -42,20 +42,35 @@ class RefreshTokenInterceptor(
 
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             if (isRefreshing.compareAndSet(false, true)) {
-                lock.close()
-                when (refreshTokenRepository.doRefreshToken()) {
-                    RefreshResult.TokenInvalid -> {
-                        appNavRepository.navigate("to_auth")
+                try {
+                    lock.close()
+                    when (refreshTokenRepository.doRefreshToken()) {
+                        RefreshResult.TokenInvalid -> {
+                            appNavRepository.navigate("to_auth")
+                        }
+                        RefreshResult.Success -> {
+                            val newRequest = createRequest(request, tokenManager.bearerToken())
+                            response.close()
+                            response = chain.proceed(newRequest)
+                        }
+                        is RefreshResult.Failed -> {
+                            // refresh failed. Attempt to continue without auth.
+                            // if 500 or timeout - show error
+                            response.close()
+                            val newRequest = createRequest(request, "")
+                            response = chain.proceed(newRequest)
+                        }
+                        RefreshResult.TimeOut -> {
+                            val newRequest = createRequest(request, tokenManager.bearerToken())
+                            response.close()
+                            response = chain.proceed(newRequest)
+                        }
                     }
-                    RefreshResult.Success -> {
-                        val newRequest = createRequest(request, tokenManager.bearerToken())
-                        response.close()
-                        response = chain.proceed(newRequest)
-                    }
-                    RefreshResult.Failed -> {}
+
+                }finally {
+                    lock.open()
+                    isRefreshing.set(false)
                 }
-                lock.open()
-                isRefreshing.set(false)
             } else {
                 val conditionOpened = lock.block(REFRESH_TIME_OUT)
                 if (conditionOpened) {

@@ -1,7 +1,6 @@
 package ru.wb.go.network.exceptions
 
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -51,7 +50,8 @@ class ErrorResolutionStrategyImpl(
             is SSLException -> timeoutException()
             is HttpException -> getHttpException(throwable)
             is SocketTimeoutException -> timeoutException()
-            is JsonSyntaxException -> timeoutException()
+            // FIXME: что за кейс?
+//            is JsonSyntaxException -> timeoutException()
             else -> getUnknownException(throwable.message)
         }
     }

@@ -29,7 +29,6 @@
     <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
     <string name="http_timeout_error">"TimeOut. Возможно отсутствует интернет или низкая скорость соединения"</string>
-    <string name="http_timeout_service_error" />
     <string name="http_error" />
     <string name="http_unknown_error" />
     <string name="body_is_empty_or_null">"Body is null or empty" </string>

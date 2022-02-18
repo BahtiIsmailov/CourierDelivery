@@ -8,7 +8,7 @@ class ErrorResolutionResourceProviderImpl(private val context: Context) :
     override val noInternetError: String
         get() = context.getString(R.string.no_internet_error)
     override val timeoutServiceError: String
-        get() = context.getString(R.string.http_timeout_service_error)
+        get() = context.getString(R.string.http_timeout_error)
     override val wrongIdentityError: String
         get() = context.getString(R.string.auth_wrong_identity_error)
     override val unauthorizedError: String
