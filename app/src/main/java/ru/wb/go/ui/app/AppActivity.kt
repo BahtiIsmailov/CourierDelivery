@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity.LEFT
 import android.view.View
@@ -144,7 +142,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()
             }
-            
+
             findViewById<View>(R.id.settings_layout).setOnClickListener {
                 navController.navigate(R.id.settingsFragment)
             }
@@ -341,9 +339,6 @@ interface OnCourierScanner {
     fun holdBackButtonOnScanBox()
 }
 
-fun AppActivity.hasPermissions(vararg permissions: String): Boolean =
-    permissions.all(::hasPermission)
-
 fun AppActivity.hasPermission(permission: String): Boolean {
     return ActivityCompat.checkSelfPermission(
         this,
@@ -355,12 +350,8 @@ fun Activity.makeStatusBarTransparent() {
     window.apply {
         clearFlags(FLAG_TRANSLUCENT_STATUS)
         addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            decorView.systemUiVisibility =
-                SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        } else {
-            decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        }
+        decorView.systemUiVisibility =
+            SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         statusBarColor = Color.TRANSPARENT
     }
 }
