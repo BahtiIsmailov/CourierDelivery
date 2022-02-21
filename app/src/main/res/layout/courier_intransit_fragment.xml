@@ -7,20 +7,13 @@
     android:layout_height="match_parent"
     android:background="@color/background_content_light">
 
-    <include
-        android:id="@+id/toolbar_layout"
-        layout="@layout/toolbar_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/map_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
+        app:layout_constraintTop_toTopOf="parent">
 
         <fragment
             android:id="@+id/map"
@@ -34,56 +27,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout="@layout/map_fragment" />
 
-        <!--        <org.osmdroid.views.MapView-->
-        <!--            android:id="@+id/map"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintHorizontal_bias="0.0"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/imageView4"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="16dp"-->
-        <!--            android:src="@drawable/gradient_dark_top"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/imageView5"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="16dp"-->
-        <!--            android:src="@drawable/gradient_dark_bottom"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent" />-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/zoom_in"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginEnd="8dp"-->
-        <!--            android:layout_marginBottom="8dp"-->
-        <!--            android:src="@drawable/ic_zoom_in"-->
-        <!--            android:visibility="invisible"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/view"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent" />-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/zoom_out"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:layout_marginEnd="8dp"-->
-        <!--            android:src="@drawable/ic_zoom_out"-->
-        <!--            android:visibility="invisible"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/view" />-->
-
         <View
             android:id="@+id/view"
             android:layout_width="match_parent"
@@ -96,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="36dp"
             android:background="@drawable/rounded_corner_light"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -107,7 +50,8 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_time" />
+                android:src="@drawable/ic_time"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/map_timer"
@@ -119,37 +63,21 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/show_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_corner_light"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="4dp"
-            app:layout_constraintStart_toEndOf="@+id/timer_layout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/delivery_prefix"
-                style="@style/LargeDarkRegularText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Доставлено"
-                app:layout_constraintBottom_toBottomOf="@+id/selected_background"
-                app:layout_constraintStart_toStartOf="@+id/selected_background"
-                app:layout_constraintTop_toBottomOf="@+id/box_address" />
-
-            <TextView
-                android:id="@+id/delivery_total_count"
-                style="@style/LargeBlackRegularText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                tools:text="0 / 0" />
-
-        </LinearLayout>
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="30dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_warehouse_show_all"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -159,7 +87,7 @@
         android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
+        app:layout_constraintTop_toTopOf="parent">
 
         <fragment
             android:id="@+id/scanner_frame"
@@ -177,7 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="36dp"
             android:background="@drawable/rounded_corner_light"
             android:clickable="true"
             android:focusable="true"
@@ -192,13 +120,6 @@
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:src="@drawable/ic_close_dialog" />
-
-            <TextView
-                android:id="@+id/close"
-                style="@style/LargeBlackRegularText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="" />
 
         </LinearLayout>
 
@@ -219,39 +140,79 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/title"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
+        tools:text="2000000251" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/rounded_corner_light"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/center_horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_box_count"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/delivery_total_count"
+            style="@style/LargeBlackRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            tools:text="0 / 0" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EDEEF0"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/routes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="10dp"
         android:divider="@null"
         android:dividerHeight="0dp"
         app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/view_divider"
         tools:listitem="@layout/courier_intransit_empty_layout" />
 
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="@dimen/shadow_list"
-        android:layout_marginBottom="10dp"
-        android:src="@drawable/gradient_light_top"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/center_horizontal" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="@dimen/shadow_list"
-        android:layout_marginBottom="10dp"
-        android:src="@drawable/gradient_light_bottom"
+    <View
+        android:id="@+id/hold_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/view_divider"
+        />
 
     <TextView
         android:id="@+id/empty_list"

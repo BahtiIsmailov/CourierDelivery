@@ -47,7 +47,7 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
 
     fun getOfficeMapIcon() = R.drawable.ic_warehouse_detail_address
 
-    fun getOfficeMapSelectedIcon() = R.drawable.ic_unload_office_map_empty_select
+    fun getOfficeMapSelectedIcon() = R.drawable.ic_intransit_office_map_empty_select
 
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)

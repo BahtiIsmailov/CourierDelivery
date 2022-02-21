@@ -228,10 +228,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
 
     private fun navigateToMarker(id: String) {
-        binding.map.overlays.find { (it as Marker).id == id }?.apply {
-            mapController.setCenter((this as Marker).position)
+        binding.map.overlays.find { it is Marker && it.id == id }?.apply {
+            mapController.animateTo((this as Marker).position)
         }
-        mapController.setZoom(16.0)
         binding.map.invalidate()
     }
 

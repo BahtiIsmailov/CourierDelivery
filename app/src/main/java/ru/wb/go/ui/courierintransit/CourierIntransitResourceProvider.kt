@@ -20,20 +20,20 @@ class CourierIntransitResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_intransit_count, unload, total)
     }
 
-    fun getEmptyMapIcon() = R.drawable.ic_unload_office_map_empty
+    fun getEmptyMapIcon() = R.drawable.ic_intransit_office_map_empty
 
-    fun getEmptyMapSelectedIcon() = R.drawable.ic_unload_office_map_empty_select
+    fun getEmptySelectedMapIcon() = R.drawable.ic_intransit_office_map_empty_select
 
-    fun getCompleteMapIcon() = R.drawable.ic_unload_office_map_complete
+    fun getFailedUndeliveredAllMapIcon() = R.drawable.ic_intransit_office_map_undelivered_all
 
-    fun getCompleteMapSelectIcon() = R.drawable.ic_unload_office_map_complete_select
+    fun getFailedUndeliveredAllSelectedMapIcon() = R.drawable.ic_intransit_office_map_undelivered_all_select
 
-    fun getFailedMapIcon() = R.drawable.ic_unload_office_map_failed
+    fun getUnloadingExpectsMapIcon() = R.drawable.ic_intransit_expects_office_map
 
-    fun getFailedMapSelectedIcon() = R.drawable.ic_unload_office_map_failed_select
+    fun getUnloadingExpectsSelectedMapIcon() = R.drawable.ic_intransit_expects_office_map_selected
 
-    fun getWaitMapIcon() = R.drawable.ic_unload_wait_office_map
+    fun getCompleteMapIcon() = R.drawable.ic_intransit_office_map_complete
 
-    fun getWaitMapSelectedIcon() = R.drawable.ic_unload_wait_office_map_selected
+    fun getCompleteSelectMapIcon() = R.drawable.ic_intransit_office_map_complete_select
 
 }

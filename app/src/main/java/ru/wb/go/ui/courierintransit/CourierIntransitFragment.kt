@@ -8,10 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +20,6 @@ import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
@@ -34,7 +33,6 @@ import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
 import ru.wb.go.views.ProgressImageButtonMode
-
 
 class CourierIntransitFragment : Fragment() {
 
@@ -84,28 +82,13 @@ class CourierIntransitFragment : Fragment() {
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
-        binding.toolbarLayout.back.visibility = INVISIBLE
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarTitle.text = it.label
-        }
-
-        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
-                else -> R.drawable.ic_inet_failed
-            }
-            binding.toolbarLayout.noInternetImage.setImageDrawable(
-                ContextCompat.getDrawable(requireContext(), ic)
-            )
-        }
-
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
+            binding.title.text = it.label
         }
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
@@ -141,9 +124,10 @@ class CourierIntransitFragment : Fragment() {
             }
         }
 
-        viewModel.orderDetails.observe(viewLifecycleOwner) {
+        viewModel.intransitOrders.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierIntransitItemState.InitItems -> {
+                    binding.showAll.visibility = VISIBLE
                     binding.deliveryTotalCount.text = it.boxTotal
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
@@ -153,15 +137,14 @@ class CourierIntransitFragment : Fragment() {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
                 }
-                is CourierIntransitItemState.UpdateItems -> {
-                    displayItems(it.items)
-                    binding.routes.scrollToPosition(it.position)
-                }
+                is CourierIntransitItemState.UpdateItems -> displayItems(it.items)
                 CourierIntransitItemState.CompleteDelivery -> {
                     binding.scanQrPvzButton.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.visibility = VISIBLE
                     binding.completeDeliveryButton.visibility = VISIBLE
                 }
+                is CourierIntransitItemState.ScrollTo -> binding.routes.scrollToPosition(it.position)
+
             }
         }
 
@@ -181,12 +164,14 @@ class CourierIntransitFragment : Fragment() {
                 CourierIntransitNavigationState.NavigateToMap -> {
                     crossFade(binding.mapLayout, binding.zxingBarcodeScanner)
                     binding.scanQrPvzButton.setState(ProgressButtonMode.ENABLE)
+                    binding.holdList.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
                     binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
                 }
                 CourierIntransitNavigationState.NavigateToScanner -> {
                     crossFade(binding.zxingBarcodeScanner, binding.mapLayout)
                     binding.scanQrPvzButton.setState(ProgressButtonMode.DISABLE)
+                    binding.holdList.visibility = VISIBLE
                     binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
                     binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
                 }
@@ -253,7 +238,7 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.toolbarLayout.back.setOnClickListener { }
+        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
         binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
         binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
@@ -290,6 +275,12 @@ class CourierIntransitFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.routes.layoutManager = layoutManager
+        binding.routes.addItemDecoration(
+            DividerItemDecoration(
+                activity,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         binding.routes.setHasFixedSize(true)
         initSmoothScroller()
     }
@@ -306,13 +297,7 @@ class CourierIntransitFragment : Fragment() {
         adapter = with(DefaultAdapterDelegate()) {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
-            addDelegate(CourierIntransitFailedUnloadingAllDelegate(requireContext(), itemCallback))
-            addDelegate(
-                CourierIntransitFailedUnloadingExpectsDelegate(
-                    requireContext(),
-                    itemCallback
-                )
-            )
+            addDelegate(CourierIntransitUndeliveredAllDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
         binding.routes.adapter = adapter
@@ -330,6 +315,7 @@ class CourierIntransitFragment : Fragment() {
     private fun scanOfficeFailed() {
         viewModel.play(R.raw.qr_office_failed)
     }
+
     private fun scanWrongOffice() {
         viewModel.play(R.raw.wrongoffice)
     }

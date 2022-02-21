@@ -27,9 +27,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:paddingTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageView6"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="@+id/selected_background"
         tools:text="г. Подольск, ул. Троицкая, 20" />
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:paddingBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:text="Доставлено"
         app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintStart_toStartOf="@+id/selected_background"
@@ -53,13 +53,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
         app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
-        app:layout_constraintTop_toBottomOf="@+id/box_address"
-        tools:text="20" />
+        app:layout_constraintTop_toTopOf="@+id/delivery_prefix"
+        tools:text="24" />
 
     <TextView
         android:id="@+id/divider_count"
@@ -67,13 +64,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:paddingBottom="8dp"
         android:text="/"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
         app:layout_constraintStart_toEndOf="@+id/delivery_count"
-        app:layout_constraintTop_toBottomOf="@+id/box_address" />
+        app:layout_constraintTop_toTopOf="@+id/delivery_prefix" />
 
     <TextView
         android:id="@+id/from_count"
@@ -81,12 +75,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
         app:layout_constraintStart_toEndOf="@+id/divider_count"
-        app:layout_constraintTop_toBottomOf="@+id/box_address"
+        app:layout_constraintTop_toTopOf="@+id/delivery_prefix"
         tools:text="24" />
 
     <ImageView
@@ -94,10 +85,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_unload_wait_office"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/ic_intransit_is_faild_unloading_expects"
+        app:layout_constraintBottom_toBottomOf="@+id/from_count"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/from_count"
+        app:tint="@color/icon_warning"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

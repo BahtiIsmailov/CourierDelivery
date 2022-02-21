@@ -9,7 +9,10 @@ sealed class CourierIntransitItemState {
     ) :
         CourierIntransitItemState()
 
-    data class UpdateItems(val items: MutableList<BaseIntransitItem>, val position: Int) :
+    data class UpdateItems(val items: MutableList<BaseIntransitItem>) :
+        CourierIntransitItemState()
+
+    data class ScrollTo(val position: Int) :
         CourierIntransitItemState()
 
     object Empty : CourierIntransitItemState()
