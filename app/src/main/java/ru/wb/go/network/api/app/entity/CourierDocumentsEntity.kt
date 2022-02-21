@@ -1,7 +1,7 @@
 package ru.wb.go.network.api.app.entity
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CourierDocumentsEntity(
