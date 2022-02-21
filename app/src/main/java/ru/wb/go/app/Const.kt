@@ -8,7 +8,7 @@ const val VERSION_API = "/api/v1"
 const val VERSION_DEMO_API = "/api/v2"
 
 const val VERSION_DATABASE = 33
-const val EXPORT_SCHEMA_DATABASE = false
+const val EXPORT_SCHEMA_DATABASE = true
 
 const val NEED_SEND_COURIER_DOCUMENTS = "NEED_SEND_COURIER_DOCUMENTS" //не заполнил данные
 const val NEED_APPROVE_COURIER_DOCUMENTS =

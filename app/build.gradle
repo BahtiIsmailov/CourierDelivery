@@ -88,6 +88,12 @@ android {
         throw new GradleException("Could not read version.properties!")
     }
 
+    kapt{
+        arguments{
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
+    }
+
     buildTypes {
         release {
 //            debuggable true
