@@ -81,5 +81,8 @@
     <dimen name="pad16">16dp</dimen>
     <dimen name="pad24">24dp</dimen>
     <dimen name="pad8">8dp</dimen>
+    <dimen name="pad48">48dp</dimen>
+    <dimen name="pad64">64dp</dimen>
+    <dimen name="pad56">56dp</dimen>
 
 </resources>

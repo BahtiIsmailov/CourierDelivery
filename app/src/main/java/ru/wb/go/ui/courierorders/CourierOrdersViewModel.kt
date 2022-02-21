@@ -300,7 +300,7 @@ class CourierOrdersViewModel(
         clearSubscription()
         onTechEventLog("onTakeOrderClick")
         val title = parameters.address
-        val orderId = (orderItems[idView] as CourierOrderItem).orderId
+        val orderId = (orderItems[idView] as CourierOrderItem).lineNumber
         val order = orderEntities[idView]
         _navigationState.value = if (interactor.carNumberIsConfirm() || interactor.isDemoMode())
             CourierOrdersNavigationState.NavigateToOrderDetails(

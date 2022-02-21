@@ -10,7 +10,7 @@ class CourierOrdersDataBuilderImpl(
 ) : CourierOrdersDataBuilder {
 
     override fun buildOrderItem(
-        id: String,
+        lineNumber: String,
         index: Int,
         courierOrderEntity: CourierOrderEntity,
         isSelected: Boolean
@@ -18,11 +18,13 @@ class CourierOrdersDataBuilderImpl(
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
         return CourierOrderItem(
-            orderId = id,
-            order = resourceProvider.getOrder(courierOrderEntity.id),
-            cost = resourceProvider.getCoast(coast),
-            countBox = resourceProvider.getBoxCountBox(courierOrderEntity.minBoxesCount),
-            volume = resourceProvider.getVolume(courierOrderEntity.minVolume),
+            lineNumber = lineNumber,
+            orderId = resourceProvider.getOrder(courierOrderEntity.id),
+            cost = resourceProvider.getCost(coast),
+            cargo = resourceProvider.getCargo(
+                courierOrderEntity.minBoxesCount,
+                courierOrderEntity.minVolume
+            ),
             countPvz = resourceProvider.getCountPvz(courierOrderEntity.dstOffices.size),
             arrive = resourceProvider.getArrive(courierOrderEntity.reservedDuration),
             isSelected = isSelected,

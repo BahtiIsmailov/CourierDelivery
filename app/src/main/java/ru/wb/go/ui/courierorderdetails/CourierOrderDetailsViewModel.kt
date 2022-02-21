@@ -131,13 +131,12 @@ class CourierOrderDetailsViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
-                orderNumber = parameters.orderNumber,
-                order = resourceProvider.getOrder(id),
-                coast = resourceProvider.getCoast(coast),
-                countBox = resourceProvider.getBoxCountBox(minBoxesCount),
-                volume = resourceProvider.getVolume(minVolume),
+                lineNumber = parameters.orderNumber,
+                orderId = resourceProvider.getOrder(id),
+                cost = resourceProvider.getCost(coast),
+                cargo = resourceProvider.getCargo(minBoxesCount, minVolume),
                 countPvz = resourceProvider.getCountPvz(pvz),
-                arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration)
+                reserve = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration)
             )
             _orderInfo.value = carNumberFormat(interactor.carNumber())
         }

@@ -80,6 +80,7 @@
         android:paddingEnd="16dp"
         android:text="@string/courier_warehouse_title"
         android:textStyle="bold"
+        android:background="@color/listHeaderBackground"
         app:layout_constraintTop_toBottomOf="@+id/content_center" />
 
     <View

@@ -175,4 +175,6 @@
 
     <color name="support_tab_number_background">#B3B6D8F1</color>
 
+    <color name="listHeaderBackground">#FAF9FB</color>
+
 </resources>

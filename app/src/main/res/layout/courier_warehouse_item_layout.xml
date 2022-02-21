@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_details"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="г. Подольск, ул. Троицкая, 20" />
+        tools:text="@sample/offices.json/offices/name" />
 
     <TextView
         android:id="@+id/full_address_warehouse"
@@ -40,23 +40,24 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/pad16"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/pad8"
         android:layout_marginStart="@dimen/pad8"
         android:layout_marginBottom="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_details"
         app:layout_constraintTop_toBottomOf="@+id/name_warehouse"
-        tools:text="Респ. Карелия, г. Петрозаводск, ш. Шуйское 12Г" />
+        tools:text="@sample/offices.json/offices/address" />
 
     <ImageView
         android:id="@+id/image_details"
-        android:layout_width="32dp"
-        android:layout_height="wrap_content"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:scaleType="fitStart"
         android:layout_marginStart="@dimen/pad8"
         android:src="@drawable/ic_courier_map_warehouse"
         app:layout_constraintTop_toTopOf="@id/name_warehouse"
-        app:layout_constraintBottom_toBottomOf="@id/full_address_warehouse"
+        app:layout_constraintBottom_toBottomOf="@id/name_warehouse"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="ContentDescription" />
 

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground"
+    app:layout_constraintTop_toTopOf="parent"
     android:clickable="true"
     android:focusable="true">
 
@@ -21,153 +22,105 @@
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/order_number"
-        style="@style/LargeBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:textColor="@color/order_number"
+        android:id="@+id/linerNumber"
+        style="@style/MediumBrightSmallRegularText"
+        android:layout_width="@dimen/pad24"
+        android:layout_height="@dimen/pad24"
+        android:layout_marginHorizontal="@dimen/pad16"
+        android:background="@drawable/ic_courier_map_order"
+        android:gravity="center"
+
+        app:layout_constraintBottom_toBottomOf="@id/orderId"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="1" />
-
-    <TextView
-        android:id="@+id/order"
-        style="@style/LargeBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toEndOf="@+id/order_number"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text=" - 2000000243" />
-
-    <TextView
-        android:id="@+id/coast"
-        style="@style/LargeBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/order_amount"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/order"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/order"
-        tools:text="от 3200 \u20BD" />
+        app:layout_constraintTop_toTopOf="@id/orderId"
+        tools:text="12" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/icon_vertical_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.06" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/icon_vertical_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <ImageView
-        android:id="@+id/show_route_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/count_box"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_1"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical_1"
-        app:layout_constraintTop_toTopOf="@+id/count_box"
-        app:srcCompat="@drawable/ic_box_count"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintGuide_begin="@dimen/pad56"
+         />
 
     <TextView
-        android:id="@+id/count_box"
+        android:id="@+id/orderId"
+        style="@style/LargeBlackRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toEndOf="@+id/icon_vertical_1"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlSymmetry"
+        tools:text="@sample/orders.json/orders/id" />
+
+    <TextView
+        android:id="@+id/countOffice"
         style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/show_route_image"
-        app:layout_constraintTop_toBottomOf="@+id/order"
-        tools:text="от 50 шт." />
+        app:layout_constraintStart_toEndOf="@+id/orderId"
+        app:layout_constraintTop_toTopOf="@+id/orderId"
+        tools:text="@sample/orders.json/orders/num" />
 
-    <ImageView
-        android:id="@+id/volume_image"
+    <TextView
+        android:id="@+id/cost"
+        style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/volume"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_1"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical_1"
-        app:layout_constraintTop_toTopOf="@+id/volume"
+        android:layout_marginEnd="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/orderId"
+        tools:text="@sample/orders.json/orders/price" />
+
+
+    <ImageView
+        android:id="@+id/carIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/cargo"
+        app:layout_constraintStart_toEndOf="@+id/icon_vertical_1"
+        app:layout_constraintTop_toTopOf="@+id/cargo"
         app:srcCompat="@drawable/ic_truck"
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/volume"
-        style="@style/LargeDarkRegularText"
+        android:id="@+id/cargo"
+        style="@style/SmallDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/show_route_image"
-        app:layout_constraintTop_toBottomOf="@+id/count_box"
-        tools:text="от 86 кубов" />
-
-    <ImageView
-        android:id="@+id/pvz_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/count_pvz"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_2"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
-        app:layout_constraintTop_toTopOf="@+id/count_pvz"
-        app:srcCompat="@drawable/ic_pvz_count"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintStart_toEndOf="@+id/carIcon"
+        app:layout_constraintTop_toBottomOf="@+id/countOffice"
+        tools:text="@sample/orders.json/orders/val" />
 
     <TextView
-        android:id="@+id/count_pvz"
         style="@style/LargeDarkRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
-        app:layout_constraintTop_toBottomOf="@+id/order"
-        tools:text="9 адресов" />
-
-    <ImageView
-        android:id="@+id/arrive_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical_2"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
-        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
-        app:srcCompat="@drawable/ic_order_time"
-        tools:ignore="ContentDescription" />
+        android:layout_marginEnd="@dimen/pad8"
+        android:text="@string/reserveTitle"
+        app:layout_constraintBottom_toBottomOf="@id/reserve"
+        app:layout_constraintEnd_toStartOf="@id/reserve"
+        app:layout_constraintTop_toTopOf="@id/reserve"
+        tools:layout_editor_absoluteY="26dp"
+        />
 
     <TextView
-        android:id="@+id/arrive_prefix"
-        style="@style/LargeDarkRegularText"
+        android:id="@+id/reserve"
+        style="@style/LargeRedRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="12dp"
-        android:text="@string/courier_orders_details_arrive"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical_2"
-        app:layout_constraintTop_toBottomOf="@+id/count_pvz" />
+        android:layout_marginEnd="@dimen/pad16"
 
-    <TextView
-        android:id="@+id/arrive"
-        style="@style/LargeBlackRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/arrive_prefix"
-        app:layout_constraintStart_toEndOf="@+id/arrive_prefix"
-        app:layout_constraintTop_toTopOf="@+id/arrive_prefix"
-        tools:text=" 20 мин" />
+        app:layout_constraintBottom_toBottomOf="@id/cargo"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="RtlSymmetry"
+        tools:text="@sample/orders.json/orders/reserve" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

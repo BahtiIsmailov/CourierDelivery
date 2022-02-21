@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Button
@@ -117,11 +116,14 @@ class CourierOrderDetailsFragment : Fragment() {
 
     private fun initView() {
         (activity as NavDrawerListener).lockNavDrawer()
+        binding.selectedOrder.selectedBackground.visibility = INVISIBLE
         initBottomSheet()
         hideAllBottomSheet()
     }
 
     private fun initBottomSheet() {
+        binding.orderAddresses.visibility = VISIBLE
+
         bottomSheetOrderDetails = BottomSheetBehavior.from(binding.orderDetails)
 
         bottomSheetOrderAddresses = BottomSheetBehavior.from(binding.orderAddresses)
@@ -141,14 +143,15 @@ class CourierOrderDetailsFragment : Fragment() {
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderInfo -> {
-                    binding.orderNumber.text = it.orderNumber
-                    binding.order.text = it.order
-                    binding.coast.text = it.coast
+                    with(binding.selectedOrder) {
+                        linerNumber.text = it.lineNumber
+                        orderId.text = it.orderId
+                        cost.text = it.cost
+                        cargo.text = it.cargo
+                        countOffice.text = it.countPvz
+                        reserve.text = it.reserve
+                    }
 
-                    binding.countBox.text = it.countBox
-                    binding.volume.text = it.volume
-                    binding.countPvz.text = it.countPvz
-                    binding.arrive.text = it.arrive
 
                     showDetails()
                     updateHeightInfoPixels()

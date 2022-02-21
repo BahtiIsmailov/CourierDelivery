@@ -155,6 +155,11 @@
         <item name="android:textColor">@color/black_text</item>
     </style>
 
+    <style name="LargeRedRegularText" parent="RegularBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/forbidden_scan_status</item>
+    </style>
+
     <style name="LargeDarkRegularText" parent="RegularBaseFont">
         <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/dark_text</item>

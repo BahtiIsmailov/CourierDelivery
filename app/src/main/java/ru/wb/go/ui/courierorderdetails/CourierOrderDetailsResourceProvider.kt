@@ -3,7 +3,6 @@ package ru.wb.go.ui.courierorderdetails
 import android.content.Context
 import ru.wb.go.R
 import ru.wb.go.mvvm.BaseMessageResourceProvider
-import kotlin.math.abs
 
 class CourierOrderDetailsResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
@@ -17,25 +16,20 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
     }
 
     fun getOrder(order: Int): String {
-        return context.getString(R.string.courier_orders_order, order)
+        return order.toString()
     }
 
-    fun getCoast(coast: String): String {
-        return context.getString(R.string.courier_orders_coast, coast)
+    fun getCost(cost: String): String {
+        return context.getString(R.string.orderCost, cost)
     }
 
-    fun getBoxCountBox(boxCount: Int): String {
-        return context.getString(R.string.courier_orders_count_box, boxCount)
-    }
-
-    fun getVolume(volume: Int): String {
-        val v = context.resources.getQuantityString(R.plurals.volume, abs(volume), volume)
-        return context.getString(R.string.courier_orders_volume, v)
+    fun getCargo(boxCount: Int, volume: Int): String {
+        return context.getString(R.string.orderCargo, boxCount, volume)
     }
 
     fun getCountPvz(pvzCount: Int): String {
         val address =
-            context.resources.getQuantityString(R.plurals.address, abs(pvzCount), pvzCount)
+            context.getString(R.string.itemOfficeCount, pvzCount)
         return context.getString(R.string.courier_orders_count_pvz, address)
     }
 
@@ -66,12 +60,4 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
     fun getConfirmNegativeDialog() =
         context.getString(R.string.courier_orders_details_dialog_negative_button)
 
-    fun getOrderIsNotExistTitleDialog() =
-        context.getString(R.string.courier_orders_details_dialog_is_not_exist_title)
-
-    fun getOrderIsNotExistMessageDialog() =
-        context.getString(R.string.courier_orders_details_dialog_is_not_exist_message)
-
-    fun getOrderIsNotExistButtonDialog() =
-        context.getString(R.string.courier_orders_details_dialog_is_not_exist_button)
 }
