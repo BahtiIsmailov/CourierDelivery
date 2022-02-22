@@ -37,6 +37,8 @@ import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractorImpl
+import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScannerInteractor
+import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScannerInteractorImpl
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
@@ -307,6 +309,20 @@ val interactorModule = module {
         )
     }
 
+    fun provideCourierIntransitOfficeScannerInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        courierLocalRepository: CourierLocalRepository,
+        scannerRepository: ScannerRepository
+    ): CourierIntransitOfficeScannerInteractor {
+        return CourierIntransitOfficeScannerInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            courierLocalRepository,
+            scannerRepository
+        )
+    }
+
     fun provideCourierMapInteractor(
         courierMapRepository: CourierMapRepository,
         deviceManager: DeviceManager
@@ -430,6 +446,9 @@ val interactorModule = module {
             get(),
             get()
         )
+    }
+    factory {
+        provideCourierIntransitOfficeScannerInteractor(get(), get(), get(), get())
     }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierVersionControlInteractor(get(), get()) }

@@ -1,7 +1,5 @@
 package ru.wb.go.ui.courierintransit
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,7 +22,6 @@ import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.courierintransit.delegates.*
-import ru.wb.go.ui.courierunloading.CourierUnloadingScanParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
@@ -161,25 +158,13 @@ class CourierIntransitFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierIntransitNavigationState.NavigateToMap -> {
-                    crossFade(binding.mapLayout, binding.zxingBarcodeScanner)
-                    binding.scanQrPvzButton.setState(ProgressButtonMode.ENABLE)
-                    binding.holdList.visibility = INVISIBLE
-                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
-                    binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
-                }
                 CourierIntransitNavigationState.NavigateToScanner -> {
-                    crossFade(binding.zxingBarcodeScanner, binding.mapLayout)
                     binding.scanQrPvzButton.setState(ProgressButtonMode.DISABLE)
                     binding.holdList.visibility = VISIBLE
                     binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
                     binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
-                }
-                is CourierIntransitNavigationState.NavigateToUnloadingScanner -> {
                     findNavController().navigate(
-                        CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierUnloadingScanFragment(
-                            CourierUnloadingScanParameters(it.officeId)
-                        )
+                        CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierIntransitOfficeScannerFragment()
                     )
                 }
                 is CourierIntransitNavigationState.NavigateToCompleteDelivery -> {
@@ -218,29 +203,9 @@ class CourierIntransitFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun crossFade(showView: View, hideView: View) {
-        showView.apply {
-            alpha = 0f
-            visibility = VISIBLE
-            animate()
-                .alpha(1f)
-                .setDuration(shortAnimationDuration.toLong())
-                .setListener(null)
-        }
-        hideView.animate()
-            .alpha(0f)
-            .setDuration(shortAnimationDuration.toLong())
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    hideView.visibility = GONE
-                }
-            })
-    }
-
     private fun initListeners() {
         binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
         binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
-        binding.closeScannerLayout.setOnClickListener { viewModel.onCloseScannerClick() }
         binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
     }

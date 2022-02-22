@@ -9,17 +9,12 @@ import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
-import ru.wb.go.ui.scanner.domain.ScannerState
 
 interface CourierIntransitInteractor {
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
     fun getOffices(): Observable<List<LocalOfficeEntity>>
-
-    fun observeOfficeIdScanProcess(): Observable<CourierIntransitScanOfficeData>
-
-    fun scannerAction(scannerAction: ScannerState)
 
     fun initOrderTimer(): Observable<Long>
 

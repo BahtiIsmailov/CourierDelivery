@@ -16,7 +16,6 @@ import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.ui.scanner.domain.ScannerRepository
-import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierIntransitInteractorImpl(
@@ -44,36 +43,6 @@ class CourierIntransitInteractorImpl(
                 )
             }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
-
-    override fun observeOfficeIdScanProcess(): Observable<CourierIntransitScanOfficeData> {
-        return scannerRepo.observeBarcodeScanned()
-            .map { scannerRepo.parseScanOfficeQr(it) }
-            .flatMap { parse ->
-                when (parse.isOk) {
-                    true -> {
-                        Single.just(locRepo.getOffices())
-                            .map { offices ->
-                                if (offices.find { it.officeId == parse.officeId } == null) {
-                                    CourierIntransitScanOfficeData.WrongOffice
-                                } else {
-                                    locRepo.visitOffice(parse.officeId)
-                                    CourierIntransitScanOfficeData.NecessaryOffice(parse.officeId)
-                                }
-                            }
-
-                    }
-                    else -> {
-                        Single.just(CourierIntransitScanOfficeData.UnknownQrOffice)
-                    }
-                }
-                    .toObservable()
-            }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
-
-    override fun scannerAction(scannerAction: ScannerState) {
-        scannerRepo.scannerState(scannerAction)
     }
 
     override fun initOrderTimer(): Observable<Long> {
