@@ -81,10 +81,13 @@ class CourierIntransitViewModel(
     }
 
     init {
-        initTitle()
-        observeOffices()
         initTime()
         observeMapAction()
+    }
+
+    fun update() {
+        initTitle()
+        observeOffices()
     }
 
     private fun initTitle() {
@@ -109,7 +112,7 @@ class CourierIntransitViewModel(
 
     private fun initTime() {
         addSubscription(
-            interactor.initOrderTimer()
+            interactor.observeOrderTimer()
                 .subscribe({
                     _intransitTime.value = CourierIntransitTimeState.Time(
                         DateTimeFormatter.getDigitFullTime(it.toInt())

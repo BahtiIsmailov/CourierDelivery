@@ -92,6 +92,11 @@ class CourierLoadingScanViewModel(
         observeInitScanProcess()
         observeScanProcess()
         getGate()
+        holdSplashScanner()
+    }
+
+    private fun holdSplashScanner() {
+        interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
     private fun fetchVersionApp() {
@@ -281,7 +286,7 @@ class CourierLoadingScanViewModel(
     }
 
     fun onStartScanner() {
-        interactor.scannerAction(ScannerState.Start)
+        interactor.scannerAction(ScannerState.StartScan)
     }
 
     private fun stopScanner() {

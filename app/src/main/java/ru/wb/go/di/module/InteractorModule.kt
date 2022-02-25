@@ -292,7 +292,6 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
-        scannerRepository: ScannerRepository,
         intransitTimeRepository: IntransitTimeRepository,
         timeManager: TimeManager,
         courierMapRepository: CourierMapRepository
@@ -302,7 +301,6 @@ val interactorModule = module {
             networkMonitorRepository,
             appRemoteRepository,
             courierLocalRepository,
-            scannerRepository,
             intransitTimeRepository,
             timeManager,
             courierMapRepository
@@ -395,7 +393,7 @@ val interactorModule = module {
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get()) }
-    factory { provideScannerInteractor(get(), get()) }
+    single { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
     single {
@@ -437,7 +435,6 @@ val interactorModule = module {
     }
     factory {
         provideCourierIntransitInteractor(
-            get(),
             get(),
             get(),
             get(),

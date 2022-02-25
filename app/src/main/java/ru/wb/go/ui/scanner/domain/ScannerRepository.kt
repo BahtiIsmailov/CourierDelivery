@@ -7,9 +7,9 @@ import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity
 
 interface ScannerRepository {
 
-    fun scannerAction(barcode: String)
+    fun scannerAction(action: ScannerAction)
 
-    fun observeBarcodeScanned(): Observable<String>
+    fun observeScannerAction(): Observable<ScannerAction>
 
     fun scannerState(state: ScannerState)
 
@@ -17,7 +17,7 @@ interface ScannerRepository {
 
     fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity
 
-    fun parseScanOfficeQr(qrCode:String):ParsedScanOfficeQrEntity
+    fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity
 
-    fun holdStart():Completable
+    fun holdStart(): Completable
 }

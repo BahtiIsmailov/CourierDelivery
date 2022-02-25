@@ -13,6 +13,7 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.managers.TimeManager
@@ -65,10 +66,10 @@ class CourierLoadingInteractorImpl(
     }
 
     override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
-        return scanRepo.observeBarcodeScanned()
-            .map {
-                scanRepo.parseScanBoxQr(it)
-            }
+        return scanRepo.observeScannerAction()
+            .filter { it is ScannerAction.ScanResult }
+            .map { it as ScannerAction.ScanResult }
+            .map { scanRepo.parseScanBoxQr(it.value) }
             .flatMap { parsedScan ->
                 val boxes = localRepo.getBoxes()
                 val scanTime = timeManager.getLocalTime()

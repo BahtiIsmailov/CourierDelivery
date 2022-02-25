@@ -47,8 +47,6 @@ class CourierIntransitFragment : Fragment() {
         }
     }
 
-    private var shortAnimationDuration: Int = 0
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -65,7 +63,7 @@ class CourierIntransitFragment : Fragment() {
         initObservable()
         initListeners()
         initReturnDialogResult()
-        shortAnimationDuration = resources.getInteger(android.R.integer.config_longAnimTime)
+        viewModel.update()
     }
 
     private fun initReturnDialogResult() {

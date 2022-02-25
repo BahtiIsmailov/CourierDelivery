@@ -35,9 +35,13 @@ class CourierIntransitOfficeScannerViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _toolbarLabelState = MutableLiveData<Label>()
-    val toolbarLabelState: LiveData<Label>
+    private val _toolbarLabelState = MutableLiveData<String>()
+    val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
+
+    private val _infoCameraVisibleState = MutableLiveData<Boolean>()
+    val infoCameraVisibleState: LiveData<Boolean>
+        get() = _infoCameraVisibleState
 
     private val _navigateToErrorDialog = SingleLiveEvent<ErrorDialogData>()
     val navigateToErrorDialog: LiveData<ErrorDialogData>
@@ -80,7 +84,7 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun initTitle() {
-        _toolbarLabelState.value = Label(resourceProvider.getLabel())
+        _toolbarLabelState.value = resourceProvider.getLabel()
     }
 
     private fun initScanner() {
@@ -103,17 +107,23 @@ class CourierIntransitOfficeScannerViewModel(
                 onCleared()
             }
             CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
+                onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.UnknownQrOffice
-                _navigationState.value =CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
-                    "QR код офиса не распознан", "Повторите сканирование"
-                )
+                _navigationState.value =
+                    CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
+                        "QR код офиса не распознан", "Повторите сканирование"
+                    )
             }
             CourierIntransitOfficeScanData.WrongOfficeScan -> {
+                onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.WrongOffice
-                _navigationState.value =CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
-                    "Офис не принадлежит маршруту", "Повторите сканирование"
-                )
+                _navigationState.value =
+                    CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
+                        "Офис не принадлежит маршруту", "Повторите сканирование"
+                    )
             }
+            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
+            CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
         }
     }
 
@@ -132,6 +142,10 @@ class CourierIntransitOfficeScannerViewModel(
         _navigationState.value = CourierIntransitOfficeScannerNavigationState.NavigateToScanner
     }
 
+    fun onDestroy() {
+        clearSubscription()
+    }
+
     fun onErrorDialogConfirmClick() {
         onStartScanner()
     }
@@ -141,14 +155,12 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun onStartScanner() {
-        interactor.scannerAction(ScannerState.Start)
+        interactor.scannerAction(ScannerState.StartScan)
     }
 
     fun play(resId: Int) {
         playManager.play(resId)
     }
-
-    data class Label(val label: String)
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

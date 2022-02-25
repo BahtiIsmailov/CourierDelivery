@@ -16,7 +16,7 @@ interface CourierIntransitInteractor {
 
     fun getOffices(): Observable<List<LocalOfficeEntity>>
 
-    fun initOrderTimer(): Observable<Long>
+    fun observeOrderTimer(): Observable<Long>
 
     fun completeDelivery(order: LocalOrderEntity): Completable
 

@@ -6,6 +6,10 @@ sealed class CourierIntransitOfficeScanData {
 
     object UnknownQrOfficeScan : CourierIntransitOfficeScanData()
 
+    object HoldSplashUnlock : CourierIntransitOfficeScanData()
+
+    object HoldSplashLock : CourierIntransitOfficeScanData()
+
     object WrongOfficeScan : CourierIntransitOfficeScanData()
 
 }

@@ -35,7 +35,7 @@
             tools:layout="@layout/courier_scanner_fragment" />
 
         <TextView
-            android:id="@+id/ribbon_status"
+            android:id="@+id/info_status"
             style="@style/MediumBrightSmallRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

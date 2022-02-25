@@ -7,6 +7,7 @@ import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
 
@@ -34,28 +35,32 @@ class CourierIntransitOfficeScannerInteractorImpl(
     }
 
     override fun observeOfficeIdScanProcess(): Observable<CourierIntransitOfficeScanData> {
-        return scannerRepo.observeBarcodeScanned()
-            .map { scannerRepo.parseScanOfficeQr(it) }
-            .flatMap { parse ->
-                when (parse.isOk) {
-                    true -> {
-                        Single.just(locRepo.getOffices())
-                            .map { offices ->
-                                if (offices.find { it.officeId == parse.officeId } == null) {
-                                    CourierIntransitOfficeScanData.WrongOfficeScan
-                                } else {
-                                    locRepo.visitOffice(parse.officeId)
-                                    CourierIntransitOfficeScanData.NecessaryOfficeScan(parse.officeId)
-                                }
-                            }
-                    }
-                    else -> {
-                        Single.just(CourierIntransitOfficeScanData.UnknownQrOfficeScan)
-                    }
-                }
-                    .toObservable()
-            }
+        return scannerRepo.observeScannerAction()
+            .flatMap { convertScannerAction(it) }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    private fun convertScannerAction(it: ScannerAction) = Single.just(
+        when (it) {
+            ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
+            ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
+            is ScannerAction.ScanResult -> scanResult(it)
+        }
+    ).toObservable()
+
+    private fun scanResult(it: ScannerAction.ScanResult): CourierIntransitOfficeScanData {
+        val parse = scannerRepo.parseScanOfficeQr(it.value)
+        return when (parse.isOk) {
+            true -> {
+                if (locRepo.getOffices().find { it.officeId == parse.officeId } == null) {
+                    CourierIntransitOfficeScanData.WrongOfficeScan
+                } else {
+                    locRepo.visitOffice(parse.officeId)
+                    CourierIntransitOfficeScanData.NecessaryOfficeScan(parse.officeId)
+                }
+            }
+            else -> CourierIntransitOfficeScanData.UnknownQrOfficeScan
+        }
     }
 
     override fun scannerAction(scannerAction: ScannerState) {

@@ -15,7 +15,6 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierIntransitInteractorImpl(
@@ -23,7 +22,6 @@ class CourierIntransitInteractorImpl(
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val remoteRepo: AppRemoteRepository,
     private val locRepo: CourierLocalRepository,
-    private val scannerRepo: ScannerRepository,
     private val intransitTimeRepository: IntransitTimeRepository,
     private val timeManager: TimeManager,
     private val courierMapRepository: CourierMapRepository,
@@ -45,7 +43,7 @@ class CourierIntransitInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun initOrderTimer(): Observable<Long> {
+    override fun observeOrderTimer(): Observable<Long> {
         val order = locRepo.getOrder()!!
         // TODO: 25.11.2021 переработать с учетом часового пояса
         val offsetSec = timeManager.getPassedTime(order.startedAt)
@@ -58,9 +56,7 @@ class CourierIntransitInteractorImpl(
 
     override fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable {
         return remoteRepo.setIntransitTask(orderId, boxes)
-            .doOnComplete {
-                locRepo.setOnlineOffices()
-            }
+            .doOnComplete { locRepo.setOnlineOffices() }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

@@ -10,21 +10,19 @@ import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_V1
 import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl.Companion.DELAY_HOLD_SCANNER
-
 import ru.wb.go.utils.time.TimeFormatter
 import java.util.concurrent.TimeUnit
 
 class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerRepository {
 
-    private var scannerActionSubject = PublishSubject.create<String>()
-
+    private var scannerActionSubject = PublishSubject.create<ScannerAction>()
     private val scannerStateSubject = PublishSubject.create<ScannerState>()
 
-    override fun scannerAction(barcode: String) {
-        scannerActionSubject.onNext(barcode)
+    override fun scannerAction(action: ScannerAction) {
+        scannerActionSubject.onNext(action)
     }
 
-    override fun observeBarcodeScanned(): Observable<String> {
+    override fun observeScannerAction(): Observable<ScannerAction> {
         return scannerActionSubject
     }
 
@@ -38,32 +36,18 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {
         val result = ParsedScanBoxQrEntity("", "", false)
-
-        if (!qrCode.startsWith(PREFIX_BOX_QR_CODE_V1)) {
-            return result
-        }
-
+        if (!qrCode.startsWith(PREFIX_BOX_QR_CODE_V1)) return result
         val parseParams = qrCode.split(PREFIX_BOX_QR_CODE_SPLITTER_V1)
-        if (parseParams.size != 4) {
-            return result
-        }
+        if (parseParams.size != 4) return result
         parseParams[3].toIntOrNull() ?: return result
         parseParams[2].toIntOrNull() ?: return result
-
-
         return ParsedScanBoxQrEntity(parseParams[2], parseParams[3], isOk = true)
-
     }
 
     override fun holdStart(): Completable =
         Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.MILLISECONDS)
-            .doOnNext {
-                scannerState(ScannerState.Start)
-            }
-            .flatMapCompletable {
-                Completable.complete()
-
-            }
+            .doOnNext { scannerState(ScannerState.StartScan) }
+            .flatMapCompletable { Completable.complete() }
 
     override fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity {
 

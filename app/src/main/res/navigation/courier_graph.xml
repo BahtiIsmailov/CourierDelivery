@@ -272,6 +272,7 @@
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/courierIntransitFragment"
             app:popUpToInclusive="true" />
+
         <action
             android:id="@+id/action_courierUnloadingScanFragment_to_remainBoxFragment"
             app:destination="@id/remainBoxFragment"
@@ -428,18 +429,20 @@
         android:id="@+id/settingsFragment"
         android:name="ru.wb.go.ui.settings.SettingsFragment"
         android:label="SettingsFragment"
-        tools:layout="@layout/settings_fragment"/>
+        tools:layout="@layout/settings_fragment" />
 
     <include app:graph="@navigation/auth_graph" />
 
     <fragment
         android:id="@+id/courierIntransitOfficeScannerFragment"
-        tools:layout="@layout/courier_intransit_office_scanner_fragment"
         android:name="ru.wb.go.ui.courierintransitofficescanner.CourierIntransitOfficeScannerFragment"
-        android:label="CourierIntransitOfficeScannerFragment" >
+        android:label="CourierIntransitOfficeScannerFragment"
+        tools:layout="@layout/courier_intransit_office_scanner_fragment">
         <action
             android:id="@+id/action_courierIntransitOfficeScannerFragment_to_courierUnloadingScanFragment"
-            app:destination="@id/courierUnloadingScanFragment" />
+            app:destination="@id/courierUnloadingScanFragment"
+            app:popUpTo="@id/courierUnloadingScanFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 

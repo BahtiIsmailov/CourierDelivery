@@ -8,7 +8,10 @@ import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.courierunloading.domain.*
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProcessData
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProgressData
+import ru.wb.go.ui.courierunloading.domain.CourierUnloadingScanBoxData
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
@@ -75,13 +78,17 @@ class CourierUnloadingScanViewModel(
     val completeButtonEnable: LiveData<Boolean>
         get() = _completeButtonEnable
 
-    init {
+    fun update() {
         initToolbar()
         fetchVersionApp()
         observeNetworkState()
         observeBoxInfoProcessInitState()
         observeScanProcess()
         observeScanProgress()
+    }
+
+    private fun holdSplashScanner() {
+        interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
     private fun fetchVersionApp() {
@@ -93,9 +100,7 @@ class CourierUnloadingScanViewModel(
             interactor.getCurrentOffice(parameters.officeId)
                 .map { mapInitScanProcess(it) }
                 .subscribe(
-                    {
-                        _fragmentStateUI.value = it
-                    },
+                    { _fragmentStateUI.value = it },
                     { onTechErrorLog("observeInitScanProcessError", it) }
                 )
         )
@@ -143,6 +148,10 @@ class CourierUnloadingScanViewModel(
         _waitLoader.postValue(state)
     }
 
+    fun onDestroy() {
+        clearSubscription()
+    }
+
     fun onConfirmScoreUnloadingClick() {
         onTechEventLog("onConfirmScoreUnloadingClick")
         confirmUnloading()
@@ -170,6 +179,7 @@ class CourierUnloadingScanViewModel(
     private fun observeScanProcess() {
         addSubscription(
             interactor.observeScanProcess(parameters.officeId)
+                .doOnSubscribe { holdSplashScanner() }
                 .subscribe(
                     { observeScanProcessComplete(it) },
                     {
@@ -330,7 +340,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun onStartScanner() {
-        interactor.scannerAction(ScannerState.Start)
+        interactor.scannerAction(ScannerState.StartScan)
     }
 
     fun onScoreDialogInfoClick() {

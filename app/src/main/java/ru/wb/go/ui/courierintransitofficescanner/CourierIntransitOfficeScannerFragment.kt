@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -104,7 +106,11 @@ class CourierIntransitOfficeScannerFragment : Fragment() {
         }
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarTitle.text = it.label
+            binding.toolbarLayout.toolbarTitle.text = it
+        }
+
+        viewModel.infoCameraVisibleState.observe(viewLifecycleOwner) {
+            binding.infoStatus.visibility = if (it) VISIBLE else GONE
         }
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
@@ -201,6 +207,7 @@ class CourierIntransitOfficeScannerFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.onDestroy()
         super.onDestroyView()
         _binding = null
     }
