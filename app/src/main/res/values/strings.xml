@@ -134,6 +134,7 @@
     <string name="dc_loading_label">Прием</string>
     <string name="dc_loading_scan_info">Наведите камеру на штрих-код. Сканирование произойдет автоматически</string>
     <string name="dc_loading_scan_not_permission">Разрешение для использования камеры не установлено</string>
+    <string name="dc_loading_hold_camera">Нажмите на экран,\nчтобы включить камеру</string>
     <string name="dc_loading_scan_loader">Идет загрузка данных</string>
     <string name="dc_loading_scan_not_permission_request">Запросить</string>
     <string name="dc_loading_scan_not_permission_request_setting">В настройки</string>
@@ -280,6 +281,8 @@
     <string name="courier_intransit_label_id">Доставка %1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
+
+    <string name="courier_intransit_office_scanner_title">Сканировать QR ПВЗ</string>
 
     <string name="courier_unloading_scanner_complete">Завершить выгрузку</string>
     <string name="courier_unloading_scanner_accepted">%1$d/%2$d шт.</string>

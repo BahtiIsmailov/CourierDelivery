@@ -37,6 +37,8 @@ import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
 import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractorImpl
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractorImpl
+import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScannerInteractor
+import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScannerInteractorImpl
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractor
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
@@ -290,7 +292,6 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
-        scannerRepository: ScannerRepository,
         intransitTimeRepository: IntransitTimeRepository,
         timeManager: TimeManager,
         courierMapRepository: CourierMapRepository
@@ -300,10 +301,23 @@ val interactorModule = module {
             networkMonitorRepository,
             appRemoteRepository,
             courierLocalRepository,
-            scannerRepository,
             intransitTimeRepository,
             timeManager,
             courierMapRepository
+        )
+    }
+
+    fun provideCourierIntransitOfficeScannerInteractor(
+        rxSchedulerFactory: RxSchedulerFactory,
+        networkMonitorRepository: NetworkMonitorRepository,
+        courierLocalRepository: CourierLocalRepository,
+        scannerRepository: ScannerRepository
+    ): CourierIntransitOfficeScannerInteractor {
+        return CourierIntransitOfficeScannerInteractorImpl(
+            rxSchedulerFactory,
+            networkMonitorRepository,
+            courierLocalRepository,
+            scannerRepository
         )
     }
 
@@ -379,7 +393,7 @@ val interactorModule = module {
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get()) }
-    factory { provideScannerInteractor(get(), get()) }
+    single { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
     single {
@@ -427,9 +441,11 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-            get(),
             get()
         )
+    }
+    factory {
+        provideCourierIntransitOfficeScannerInteractor(get(), get(), get(), get())
     }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierVersionControlInteractor(get(), get()) }

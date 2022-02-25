@@ -32,7 +32,6 @@ import ru.wb.go.views.ProgressButtonMode
 
 class CourierUnloadingScanFragment : Fragment() {
 
-
     companion object {
         const val COURIER_UNLOADING_ID_KEY = "courier_unloading_id_key"
         const val DIALOG_ERROR_RESULT_TAG = "DIALOG_ERROR_RESULT_TAG"
@@ -66,6 +65,7 @@ class CourierUnloadingScanFragment : Fragment() {
         initListener()
         initObserver()
         initReturnDialogResult()
+        viewModel.update()
     }
 
     private fun initReturnDialogResult() {
@@ -328,6 +328,7 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.onDestroy()
         super.onDestroyView()
         _binding = null
     }

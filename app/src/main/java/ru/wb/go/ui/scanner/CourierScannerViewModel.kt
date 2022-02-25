@@ -25,24 +25,47 @@ class CourierScannerViewModel(
     val flashState: LiveData<Boolean>
         get() = _flashState
 
-    init {
+    fun update() {
+        observeHoldSplash()
+        flashState()
+        observeScannerState()
+    }
 
-        _flashState.value = settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
-
+    private fun observeScannerState() {
         addSubscription(
             interactor.observeScannerState()
                 .subscribe { _scannerAction.value = it }
         )
     }
 
+    private fun flashState() {
+        _flashState.value = settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
+    }
+
+    private fun observeHoldSplash() {
+        addSubscription(interactor.observeHoldSplash().subscribe({
+            _scannerAction.value = ScannerState.StopScanWithHoldSplash
+        }, {}))
+    }
+
     fun onBarcodeScanned(barcode: String) {
+        interactor.prolongHoldTimer()
         interactor.barcodeScanned(barcode)
     }
 
-    fun switchFlashlight(){
+    fun onHoldSplashClick() {
+        interactor.prolongHoldTimer()
+        interactor.holdSplashUnlock()
+        _scannerAction.value = ScannerState.StartScan
+    }
+
+    fun onDestroy() {
+        clearSubscription()
+    }
+
+    fun switchFlashlight() {
         val state = !_flashState.value!!
         _flashState.postValue(state)
-
     }
 
     override fun getScreenTag(): String {

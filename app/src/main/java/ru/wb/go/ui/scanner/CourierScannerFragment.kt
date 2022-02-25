@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import ru.wb.go.R
 import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.hasPermission
 
 open class CourierScannerFragment : Fragment() {
@@ -72,6 +74,7 @@ open class CourierScannerFragment : Fragment() {
         initListener()
         initObserver()
         initPermission()
+        viewModel.update()
     }
 
     private fun initPermission() {
@@ -129,6 +132,7 @@ open class CourierScannerFragment : Fragment() {
     private fun startScanning() {
         changeLaserVisibility(true)
         onResume()
+        binding.holdSplash.visibility = GONE
         barcodeView.barcodeView.decodeSingle(callback)
     }
 
@@ -146,32 +150,40 @@ open class CourierScannerFragment : Fragment() {
     private fun initObserver() {
         viewModel.scannerAction.observe(viewLifecycleOwner) {
             when (it) {
-                ScannerState.Start -> startScanning()
+                ScannerState.StartScan -> startScanning()
                 ScannerState.StopScan -> stopScanning()
-
-                ScannerState.HoldScanComplete -> hold(R.drawable.ic_scan_complete)
-                ScannerState.HoldScanError -> hold(R.drawable.ic_scan_error)
-                ScannerState.HoldScanUnknown -> hold(R.drawable.ic_scan_unknown)
+                ScannerState.StopScanWithHoldSplash -> holdSplash()
+                ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
+                ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
+                ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
             }
         }
 
-        viewModel.flashState.observe(viewLifecycleOwner){
-            if(it){
-                barcodeView.setTorchOn()
-            }else{
-                barcodeView.setTorchOff()
-            }
+        viewModel.flashState.observe(viewLifecycleOwner) {
+            if (it) barcodeView.setTorchOn()
+            else barcodeView.setTorchOff()
         }
     }
 
-    private fun stopScanning(){
+    private fun stopScanning() {
         changeLaserVisibility(false)
         barcodeView.pauseAndWait()
     }
 
-    private fun hold(icon: Int) {
+    private fun holdSplash() {
+        stopScanning()
+        binding.holdSplash.visibility = VISIBLE
+    }
+
+    private fun holdWithIcon(icon: Int) {
         binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
-        binding.scanStatus.visibility = View.VISIBLE
+        binding.scanStatus.visibility = VISIBLE
+    }
+
+    override fun onDestroyView() {
+        viewModel.onDestroy()
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initListener() {
@@ -187,6 +199,8 @@ open class CourierScannerFragment : Fragment() {
             intent.data = uri
             startActivityForResult(intent, PERMISSION_FROM_SETTING_REQUEST_CODE)
         }
+
+        binding.holdSplash.setOnClickListener { viewModel.onHoldSplashClick() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -81,65 +81,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/zxing_barcode_scanner"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <fragment
-            android:id="@+id/scanner_frame"
-            class="ru.wb.go.ui.scanner.CourierScannerFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/ribbon_status"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout="@layout/courier_scanner_fragment" />
-
-        <LinearLayout
-            android:id="@+id/close_scanner_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="36dp"
-            android:background="@drawable/rounded_corner_light"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:src="@drawable/ic_close_dialog" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/ribbon_status"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@color/init_scan_status"
-            android:gravity="center"
-            android:letterSpacing="0.2"
-            android:text="Отсканируйте QR ПВЗ"
-            android:textAllCaps="true"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <TextView
         android:id="@+id/title"
         style="@style/LargeBlackRegularText"

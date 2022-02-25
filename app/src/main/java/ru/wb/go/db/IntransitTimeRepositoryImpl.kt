@@ -15,7 +15,7 @@ class IntransitTimeRepositoryImpl : IntransitTimeRepository {
     override fun startTimer(): Flowable<Long> {
         if (timerDisposable == null) {
             timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                .scan(0L, { accumulator, _ -> accumulator + 1 })
+                .scan(0L) { accumulator, _ -> accumulator + 1 }
                 .subscribe({ timerStates.onNext(it) }) { }
         }
         return timerStates.toFlowable(BackpressureStrategy.BUFFER)

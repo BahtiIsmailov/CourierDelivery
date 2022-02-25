@@ -4,16 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
-import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransit.delegates.items.*
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
-import ru.wb.go.ui.courierintransit.domain.CourierIntransitScanOfficeData
 import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -84,11 +81,13 @@ class CourierIntransitViewModel(
     }
 
     init {
+        initTime()
+        observeMapAction()
+    }
+
+    fun update() {
         initTitle()
         observeOffices()
-        initTime()
-        initScanner()
-        observeMapAction()
     }
 
     private fun initTitle() {
@@ -113,7 +112,7 @@ class CourierIntransitViewModel(
 
     private fun initTime() {
         addSubscription(
-            interactor.initOrderTimer()
+            interactor.observeOrderTimer()
                 .subscribe({
                     _intransitTime.value = CourierIntransitTimeState.Time(
                         DateTimeFormatter.getDigitFullTime(it.toInt())
@@ -124,35 +123,6 @@ class CourierIntransitViewModel(
 
     private fun setLoader(state: WaitLoader) {
         _waitLoader.postValue(state)
-    }
-
-    private fun initScanner() {
-        addSubscription(
-            interactor.observeOfficeIdScanProcess()
-                .subscribe({
-                    when (it) {
-                        is CourierIntransitScanOfficeData.NecessaryOffice -> {
-                            _beepEvent.value = CourierIntransitScanOfficeBeepState.Office
-                            _navigationState.value =
-                                CourierIntransitNavigationState.NavigateToUnloadingScanner(it.id)
-                            onCleared()
-                        }
-                        CourierIntransitScanOfficeData.UnknownQrOffice -> {
-                            val ex = CustomException("QR код офиса не распознан")
-                            _beepEvent.value = CourierIntransitScanOfficeBeepState.UnknownQrOffice
-                            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
-                        }
-                        CourierIntransitScanOfficeData.WrongOffice -> {
-                            val ex = CustomException("Офис не принадлежит маршруту")
-                            _beepEvent.value = CourierIntransitScanOfficeBeepState.WrongOffice
-                            errorDialogManager.showErrorDialog(ex, _navigateToErrorDialog)
-                        }
-                    }
-                }, {
-                    onTechErrorLog("observeOfficeIdScanProcess", it)
-                    errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
-                })
-        )
     }
 
     private fun observeMapAction() {
@@ -316,12 +286,12 @@ class CourierIntransitViewModel(
     }
 
     fun onScanQrPvzClick() {
+
         onTechEventLog("Button scan QR Office")
         changeSelectedMarkers("1", false)
         updateMarkers()
         changeSelectedItemsByMarker(0, false)
         updateAndScrollToItems(0)
-        onStartScanner()
         _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
     }
 
@@ -368,13 +338,7 @@ class CourierIntransitViewModel(
         clearSubscription()
     }
 
-    fun onCloseScannerClick() {
-        onStopScanner()
-        _navigationState.value = CourierIntransitNavigationState.NavigateToMap
-    }
-
     fun onErrorDialogConfirmClick() {
-        onStartScanner()
         _isEnableState.value = true
     }
 
@@ -434,14 +398,6 @@ class CourierIntransitViewModel(
             IntransitItemType.UnloadingExpects -> resourceProvider.getUnloadingExpectsSelectedMapIcon()
             IntransitItemType.Complete -> resourceProvider.getCompleteSelectMapIcon()
         }
-
-    private fun onStopScanner() {
-        interactor.scannerAction(ScannerState.StopScan)
-    }
-
-    private fun onStartScanner() {
-        interactor.scannerAction(ScannerState.Start)
-    }
 
     fun play(resId: Int) {
         playManager.play(resId)

@@ -25,6 +25,7 @@ import ru.wb.go.ui.courierdata.UserFormViewModel
 import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.courierexpects.CouriersCompleteRegistrationViewModel
 import ru.wb.go.ui.courierintransit.CourierIntransitViewModel
+import ru.wb.go.ui.courierintransitofficescanner.CourierIntransitOfficeScannerViewModel
 import ru.wb.go.ui.courierloader.CourierLoaderViewModel
 import ru.wb.go.ui.courierloading.CourierLoadingScanViewModel
 import ru.wb.go.ui.couriermap.CourierMapViewModel
@@ -118,6 +119,7 @@ val viewModelModule = module {
 
     viewModel { CourierScannerViewModel(get(), get(), get(), get()) }
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierIntransitOfficeScannerViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
             parameters, get(), get(), get(), get(), get(), get(), get()
