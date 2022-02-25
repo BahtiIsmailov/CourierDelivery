@@ -12,6 +12,7 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -28,7 +29,7 @@ class CourierWarehousesViewModel(
     private val errorDialogManager: ErrorDialogManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
-    private val _warehouseState = MutableLiveData<CourierWarehouseItemState>()
+    private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
     val warehouseState: LiveData<CourierWarehouseItemState>
         get() = _warehouseState
 
@@ -95,6 +96,9 @@ class CourierWarehousesViewModel(
         getWarehouses()
     }
 
+    fun onDestroy() {
+        clearSubscription()
+    }
 
     fun toRegistrationClick() {
         _navigationState.value = CourierWarehousesNavigationState.NavigateToRegistration
@@ -112,7 +116,8 @@ class CourierWarehousesViewModel(
                 .subscribe(
                     {
                         sortedWarehouseEntities(it)
-                        convertAndSaveItemsPointsMarkers(warehouseEntities)
+                        convertAndSaveItemsPointsMarkers()
+                        updateMyLocation()
                         courierWarehouseComplete()
                         setLoader(WaitLoader.Complete)
                     },
@@ -133,8 +138,8 @@ class CourierWarehousesViewModel(
         warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
     }
 
-    private fun convertAndSaveItemsPointsMarkers(warehouses: List<CourierWarehouseLocalEntity>) {
-        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouses.size)
+    private fun convertAndSaveItemsPointsMarkers() {
+        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouseEntities.size)
         warehouseItems = mutableListOf()
         coordinatePoints = mutableListOf()
         mapMarkers = mutableListOf()
@@ -146,17 +151,16 @@ class CourierWarehousesViewModel(
             val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
             mapMarkers.add(mapMarker)
         }
-
     }
 
     private fun courierWarehouseComplete() {
-        interactor.mapState(CourierMapState.UpdateMyLocation)
         _warehouseState.value =
-            if (warehouseItems.isEmpty()) {
-                CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            } else {
-                CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
-            }
+            if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
+            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+    }
+
+    private fun updateMyLocation() {
+        interactor.mapState(CourierMapState.UpdateMyLocation)
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
@@ -267,6 +271,8 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
+
+        LogUtils { logDebugApp("CourierWarehousesViewModel changeWarehouseItems") }
         changeSelectedWarehouseItemsByMap(selectIndex, isSelected)
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())

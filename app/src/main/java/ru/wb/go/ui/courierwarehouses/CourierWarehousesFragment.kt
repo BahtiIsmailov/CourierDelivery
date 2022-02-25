@@ -214,6 +214,7 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.onDestroy()
         super.onDestroyView()
         _binding = null
     }

@@ -10,7 +10,7 @@
     <color name="colorErrorAppearance">#116C15</color>
 
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
 
     <color name="fab_disable">#D1CED5</color>
     <color name="fab_enable">#642CA3</color>
