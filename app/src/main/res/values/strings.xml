@@ -546,5 +546,6 @@
     <string name="settings_title">Настройки</string>
     <string name="autoflash_hint">Автоматически включать подсветку при работе с камерой</string>
     <string name="voice_help_hint">Голосовое сопровождение результата сканирования</string>
+    <string name="scannerAutoOffHint">Автоматическая блокировка сканера при неактивности (25 сек)</string>
 
 </resources>

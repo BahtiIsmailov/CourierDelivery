@@ -45,6 +45,7 @@ class SettingsFragment : Fragment() {
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         binding.flashSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
         binding.voiceSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_VOICE_SCAN, true)
+        binding.scannerAutoOff.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)
     }
 
     private fun initObserver() {
@@ -71,6 +72,9 @@ class SettingsFragment : Fragment() {
         }
         binding.flashSwitch.setOnCheckedChangeListener { _, b ->
             viewModel.settingClick(AppPreffsKeys.SETTING_START_FLASH_ON, b)
+        }
+        binding.scannerAutoOff.setOnCheckedChangeListener { _, b ->
+            viewModel.settingClick(AppPreffsKeys.SETTING_SANNER_OFF, b)
         }
     }
 

@@ -3,7 +3,6 @@ package ru.wb.go.ui.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.settings.domain.SettingsInteractor
@@ -11,7 +10,6 @@ import ru.wb.go.ui.settings.domain.SettingsResourceProvider
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
-import ru.wb.go.utils.prefs.SharedWorker
 
 class SettingsViewModel(
     compositeDisposable: CompositeDisposable,

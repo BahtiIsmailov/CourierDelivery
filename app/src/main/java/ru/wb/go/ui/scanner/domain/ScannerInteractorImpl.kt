@@ -4,13 +4,16 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.subjects.PublishSubject
+import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.utils.managers.SettingsManager
 import java.util.concurrent.TimeUnit
 
 
 class ScannerInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val scannerRepository: ScannerRepository,
+    private val settingsManager: SettingsManager,
 ) : ScannerInteractor {
 
     private val holdSplashSubject = PublishSubject.create<Action>()
@@ -38,12 +41,19 @@ class ScannerInteractorImpl(
         return scannerRepository.observeScannerState()
             .doOnNext {
                 if (it is ScannerState.StartScan) startTimer()
-                else if (it is ScannerState.StopScan || it is ScannerState.HoldScanComplete || it is ScannerState.HoldScanError || it is ScannerState.HoldScanUnknown) stopTimer()
+                else if (it is ScannerState.StopScan ||
+                    it is ScannerState.HoldScanComplete ||
+                    it is ScannerState.HoldScanError ||
+                    it is ScannerState.HoldScanUnknown
+                ) stopTimer()
             }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     private fun startTimer() {
+        if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
+            return
+        }
         if (timerDisposable == null) {
             timerDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
                 .repeatWhen { repeatHandler -> repeatHandler.flatMap { prolongHoldSubject } }

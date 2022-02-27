@@ -85,7 +85,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/permission_info" />
+        app:layout_constraintTop_toBottomOf="@id/permission_info" />
 
     <Button
         android:id="@+id/request_permission_setting"
@@ -98,7 +98,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/permission_info" />
+        app:layout_constraintTop_toBottomOf="@id/permission_info" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/hold_splash"
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:src="@drawable/ic_hold_camera"
-            app:layout_constraintBottom_toTopOf="@+id/hold_center"
+            app:layout_constraintBottom_toTopOf="@id/hold_center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="ContentDescription" />
@@ -138,7 +138,7 @@
             android:text="@string/dc_loading_hold_camera"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hold_center"
+            app:layout_constraintTop_toBottomOf="@id/hold_center"
             app:layout_constraintVertical_bias="0.5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
