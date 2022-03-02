@@ -25,7 +25,7 @@
         android:layout_gravity="end"
         android:layout_marginEnd="10dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:textColor="@color/primary"
+        android:textColor="@color/colorPrimary"
         tools:ignore="ButtonStyle"
         tools:text="Отмена" />
 

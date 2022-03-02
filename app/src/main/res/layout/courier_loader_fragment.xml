@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/primary">
 
     <ImageView
         android:id="@+id/logo"
@@ -43,7 +43,7 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
-        android:indeterminateTint="@color/color_progress"
+        android:indeterminateTint="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="@id/content_right"
         app:layout_constraintStart_toStartOf="@id/content_left"
         app:layout_constraintTop_toTopOf="@+id/content_center" />
@@ -54,7 +54,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/text_info"
+        android:textColor="@color/primary"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/update"
         app:layout_constraintEnd_toEndOf="@id/content_right"
@@ -74,9 +74,9 @@
         app:app_icon="@drawable/ic_update"
         app:app_state="enable"
         app:app_text="@string/flights_empty_flight_update"
-        app:app_text_color_disable="@color/button_default_text_disable"
-        app:app_text_color_enable="@color/button_default_text_enable"
-        app:app_text_color_progress="@color/button_default_text_progress"
+        app:app_text_color_disable="@color/tertiary"
+        app:app_text_color_enable="@color/colorPrimary"
+        app:app_text_color_progress="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

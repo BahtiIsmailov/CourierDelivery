@@ -254,12 +254,12 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 true -> {
                     binding.toRegistration.visibility = VISIBLE
-                    carNumberTextColor(R.color.light_text)
+                    carNumberTextColor(R.color.lvl_2)
                     binding.carChangeImage.visibility = GONE
                 }
                 false -> {
                     binding.toRegistration.visibility = GONE
-                    carNumberTextColor(R.color.black_text)
+                    carNumberTextColor(R.color.primary)
                     binding.carChangeImage.visibility = VISIBLE
                 }
             }
@@ -347,13 +347,13 @@ class CourierOrderDetailsFragment : Fragment() {
         titleText.text = title
         messageText.text = message
         negative.setOnClickListener { alertDialog.dismiss() }
-        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        negative.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
         negative.text = getString(R.string.courier_orders_details_dialog_negative_button)
         positive.setOnClickListener {
             alertDialog.dismiss()
             viewModel.confirmTakeOrderClick()
         }
-        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+        positive.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
         positive.text = getString(R.string.courier_orders_details_dialog_positive_button)
         alertDialog.show()
     }

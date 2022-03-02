@@ -89,7 +89,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/from_count"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="@+id/from_count"
-        app:tint="@color/icon_warning"
+        app:tint="@color/yellow"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

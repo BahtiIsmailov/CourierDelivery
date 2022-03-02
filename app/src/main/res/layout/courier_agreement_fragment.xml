@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/lvl_1">
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdf_view"
@@ -51,9 +51,9 @@
             app:progress_button_background="@drawable/progress_image_button_round_default"
             app:progress_button_name="OK"
             app:progress_button_state="enable"
-            app:progress_button_text_color_disable="@color/button_default_text_disable"
-            app:progress_button_text_color_enable="@color/button_default_text_enable"
-            app:progress_button_text_color_progress="@color/button_default_text_progress" />
+            app:progress_button_text_color_disable="@color/tertiary"
+            app:progress_button_text_color_enable="@color/colorPrimary"
+            app:progress_button_text_color_progress="@color/colorPrimary" />
 
     </LinearLayout>
 

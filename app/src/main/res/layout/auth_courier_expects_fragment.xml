@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/delivery_card_background">
+    android:background="@color/lvl_1">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -15,7 +15,8 @@
         android:src="@drawable/ic_complete_registration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/self_employed_title"
@@ -24,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="Завершение регистрации"
+        android:text="@string/auth_courier_expects_registration"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <TextView
@@ -37,9 +38,8 @@
         android:layout_marginEnd="16dp"
         android:gravity="center"
         android:lineSpacingExtra="5sp"
-        android:text="Рассмотрение заявки на регистрацию занимает до 24 часов"
+        android:text="@string/auth_courier_expects_registration_24"
         app:layout_constraintTop_toBottomOf="@+id/self_employed_title" />
-
 
     <ru.wb.go.views.ProgressButtonView
         android:id="@+id/update_status"
@@ -53,9 +53,9 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Проверить статус регистрации"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress"
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/tertiary"
         tools:layout_editor_absoluteX="16dp" />
 
     <androidx.constraintlayout.widget.Guideline

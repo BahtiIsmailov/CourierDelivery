@@ -6,14 +6,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
-    <!--    <include-->
-    <!--        android:id="@+id/toolbar_layout"-->
-    <!--        layout="@layout/toolbar_layout"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+    android:background="@color/lvl_1">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -92,7 +85,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_pin_code"
-        custom:keyboardColor="@color/keyboard_text_color"
+        custom:keyboardColor="@color/primary"
         custom:layout_constraintLeft_toLeftOf="parent"
         custom:layout_constraintRight_toRightOf="parent" />
 
@@ -138,7 +131,7 @@
         android:clickable="true"
         android:focusable="true"
         android:text="@string/auth_check_sms_repeat"
-        android:textColor="@color/text_clickable"
+        android:textColor="@color/colorPrimary"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

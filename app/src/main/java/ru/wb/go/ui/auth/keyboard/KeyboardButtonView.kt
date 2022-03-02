@@ -56,7 +56,7 @@ class KeyboardButtonView : AppCompatTextView {
         animationPaint.style = Paint.Style.FILL
         animationPaint.strokeWidth = strokeWidth
         animationPaint.isAntiAlias = true
-        animationPaint.color = ContextCompat.getColor(context, R.color.keyboard_ripple_color)
+        animationPaint.color = ContextCompat.getColor(context, R.color.secondary)
     }
 
     private fun initUI() {

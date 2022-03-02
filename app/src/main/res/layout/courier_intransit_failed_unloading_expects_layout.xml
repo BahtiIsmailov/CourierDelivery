@@ -53,7 +53,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:textColor="@color/invalid"
+        android:textColor="@color/red"
         app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
         app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
         app:layout_constraintTop_toTopOf="@+id/delivery_prefix"

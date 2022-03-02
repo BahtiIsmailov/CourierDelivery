@@ -78,11 +78,12 @@
     <dimen name="pin_button_text_size">30sp</dimen>
     <dimen name="dp_0d2">2dp</dimen>
     <dimen name="code_keyboard_font_size">40sp</dimen>
+    <dimen name="pad8">8dp</dimen>
+    <dimen name="pad12">12dp</dimen>
     <dimen name="pad16">16dp</dimen>
     <dimen name="pad24">24dp</dimen>
-    <dimen name="pad8">8dp</dimen>
     <dimen name="pad48">48dp</dimen>
-    <dimen name="pad64">64dp</dimen>
     <dimen name="pad56">56dp</dimen>
+    <dimen name="pad64">64dp</dimen>
 
 </resources>

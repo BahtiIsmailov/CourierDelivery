@@ -5,7 +5,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content_light">
+    android:background="@color/lvl_1">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
@@ -18,20 +18,18 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/map_fragment" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/back_full"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="36dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:scaleType="center"
-        android:src="@drawable/ic_back_full_screen"
+        android:background="@drawable/button_rounded_corner"
+        android:padding="6dp"
+        android:src="@drawable/ic_back_arrow"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -40,7 +38,7 @@
         android:layout_height="36dp"
         android:layout_gravity="center"
         android:layout_marginBottom="20dp"
-        android:indeterminateTint="@color/color_progress"
+        android:indeterminateTint="@color/colorPrimary"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/content_center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +59,7 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:text="@string/demo_go_to_registration"
-        android:textColor="@color/white"
+        android:textColor="@color/lvl_1"
         android:textSize="14sp" />
 
     <FrameLayout
@@ -121,22 +119,21 @@
                 android:layout_height="1dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:background="@color/tint"
+                android:background="@color/colorDividerPale"
                 app:layout_constraintTop_toBottomOf="@+id/car_number_prefix" />
 
             <include
                 android:id="@+id/selectedOrder"
                 layout="@layout/courier_order_delegate"
-                app:layout_constraintTop_toTopOf="@id/title_divider"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/addresses"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="38dp"
                 android:clickable="false"
                 android:focusable="false"
-                />
+                app:layout_constraintBottom_toTopOf="@id/addresses"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/title_divider" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/center_vertical"
@@ -160,9 +157,9 @@
                 app:progress_button_background="@drawable/progress_image_button_round_default1"
                 app:progress_button_name="Адреса доставки"
                 app:progress_button_state="enable"
-                app:progress_button_text_color_disable="@color/button_default_text_disable"
-                app:progress_button_text_color_enable="@color/button_default_text_enable1"
-                app:progress_button_text_color_progress="@color/button_default_text_progress" />
+                app:progress_button_text_color_disable="@color/tertiary"
+                app:progress_button_text_color_enable="@color/lvl_1"
+                app:progress_button_text_color_progress="@color/lvl_1" />
 
             <ru.wb.go.views.ProgressButtonView
                 android:id="@+id/take_order"
@@ -177,9 +174,9 @@
                 app:progress_button_background="@drawable/progress_image_button_round_default"
                 app:progress_button_name="Взять заказ"
                 app:progress_button_state="enable"
-                app:progress_button_text_color_disable="@color/button_default_text_disable"
-                app:progress_button_text_color_enable="@color/button_default_text_enable"
-                app:progress_button_text_color_progress="@color/button_default_text_progress" />
+                app:progress_button_text_color_disable="@color/tertiary"
+                app:progress_button_text_color_enable="@color/lvl_1"
+                app:progress_button_text_color_progress="@color/lvl_1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -243,7 +240,7 @@
                 android:layout_height="1dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:background="@color/tint"
+                android:background="@color/colorDividerPale"
                 app:layout_constraintTop_toBottomOf="@+id/address_title" />
 
             <androidx.recyclerview.widget.RecyclerView

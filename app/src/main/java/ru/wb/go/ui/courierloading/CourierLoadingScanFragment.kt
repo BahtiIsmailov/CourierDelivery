@@ -13,6 +13,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavDrawerListener
+import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.app.OnCourierScanner
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryParameters
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_NEGATIVE_KEY
@@ -23,9 +26,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_BACK_KEY
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.ui.app.NavDrawerListener
-import ru.wb.go.ui.app.NavToolbarListener
-import ru.wb.go.ui.app.OnCourierScanner
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.views.ProgressButtonMode
@@ -190,13 +190,13 @@ class CourierLoadingScanFragment : Fragment() {
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.boxInfoLayout.visibility = View.GONE
                     binding.ribbonStatus.setText(R.string.courier_loading_init_scanner)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.init_scan_status))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.lvl_2))
                 }
                 is CourierLoadingScanBoxState.LoadInCar -> {
                     holdBackButtonOnScanBox()
                     binding.ribbonStatus.setText(R.string.courier_loading_load_in_car)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.complete_scan_status))
-                    binding.qrCode.setTextColor(getColor(R.color.black_text))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.green))
+                    binding.qrCode.setTextColor(getColor(R.color.primary))
                     binding.timerLayout.visibility = View.GONE
                     binding.boxInfoLayout.visibility = View.VISIBLE
                 }
@@ -204,29 +204,29 @@ class CourierLoadingScanFragment : Fragment() {
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.boxInfoLayout.visibility = View.GONE
                     binding.ribbonStatus.setText(R.string.courier_loading_forbidden_take)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.forbidden_scan_status))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.red))
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeBox -> {
                     holdBackButtonOnScanBox()
                     binding.timerLayout.visibility = View.GONE
                     binding.boxInfoLayout.visibility = View.VISIBLE
                     binding.ribbonStatus.setText(R.string.courier_loading_forbidden_take)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.forbidden_scan_status))
-                    binding.qrCode.setTextColor(getColor(R.color.black_text))
-                    binding.boxAddress.setTextColor(getColor(R.color.black_text))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.red))
+                    binding.qrCode.setTextColor(getColor(R.color.primary))
+                    binding.boxAddress.setTextColor(getColor(R.color.primary))
                 }
                 CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.boxInfoLayout.visibility = View.GONE
                     binding.ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
                 }
                 is CourierLoadingScanBoxState.NotRecognizedQr -> {
                     holdBackButtonOnScanBox()
                     binding.timerLayout.visibility = View.GONE
                     binding.boxInfoLayout.visibility = View.VISIBLE
                     binding.ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
                 }
             }
         }

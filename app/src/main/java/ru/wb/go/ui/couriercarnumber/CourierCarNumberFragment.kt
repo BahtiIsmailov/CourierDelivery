@@ -129,7 +129,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         val first = 0
         val last = state.count
         val span = ForegroundColorSpan(
-            ResourcesCompat.getColor(resources, R.color.text_spannable_phone, null)
+            ResourcesCompat.getColor(resources, R.color.primary, null)
         )
         spannable.setSpan(span, first, last, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return spannable

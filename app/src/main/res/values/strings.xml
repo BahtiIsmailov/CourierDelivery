@@ -15,6 +15,9 @@
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
+    <string name="auth_courier_expects_registration">Завершение регистрации</string>
+    <string name="auth_courier_expects_registration_24">Рассмотрение заявки на регистрацию занимает до 24 часов</string>
+
     <string name="demo_registration">Войти или зарегистрироваться</string>
     <string name="demo_show_demo">Ознакомиться с приложением</string>
     <string name="demo_go_to_registration">Перейти к регистрации</string>
@@ -513,6 +516,13 @@
     <string name="courier_loading_load_in_car">ПОГРУЗИТЕ В МАШИНУ</string>
     <string name="courier_loading_forbidden_take">КОРОБКУ БРАТЬ ЗАПРЕЩЕНО</string>
     <string name="courier_loading_not_recognized_qr">QR КОРОБКИ НЕ РАСПОЗНАН</string>
+    <string name="courier_loading_qr">QR</string>
+    <string name="courier_loading_receive">Принято</string>
+    <string name="courier_loading_address">Адрес доставки</string>
+    <string name="courier_loading_reserve">Резерв</string>
+    <string name="courier_loading_gate">Ворота</string>
+
+
 
     <string name="auth_user_fio">Фамилия</string>
     <string name="auth_user_name">Имя</string>

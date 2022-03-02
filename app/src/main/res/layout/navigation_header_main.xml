@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lvl_2"
     android:orientation="vertical">
 
     <TextView
@@ -21,12 +22,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/pad8"
-        >
+        android:paddingTop="@dimen/pad8">
 
         <TextView
             android:id="@+id/version_app_title"
-            style="@style/LargeLightRegularText"
+            style="@style/LargeBlackRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/pad24"
@@ -48,7 +48,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center"
         android:layout_marginTop="24dp"
-        android:background="@color/tint" />
+        android:background="@color/colorDividerPale" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inet_ok"
-            android:textColor="@color/complete"
+            android:textColor="@color/green"
             android:visibility="gone" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inet_no"
-            android:textColor="@color/danger"
+            android:textColor="@color/red"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -89,7 +89,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tint" />
+        android:background="@color/colorDividerPale" />
 
     <LinearLayout
         android:id="@+id/billing_layout"
@@ -119,7 +119,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tint" />
+        android:background="@color/colorDividerPale" />
 
     <LinearLayout
         android:id="@+id/settings_layout"
@@ -163,7 +163,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_gravity="center"
-                android:background="@color/tint" />
+                android:background="@color/colorDividerPale" />
 
             <RelativeLayout
                 android:id="@+id/check_version_layout"

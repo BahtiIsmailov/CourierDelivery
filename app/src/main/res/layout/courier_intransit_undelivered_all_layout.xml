@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:textColor="@color/invalid"
+        android:textColor="@color/red"
         app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
         app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
         app:layout_constraintTop_toBottomOf="@+id/box_address"
@@ -94,6 +94,7 @@
         android:src="@drawable/ic_unload_failed_office"
         app:layout_constraintBottom_toBottomOf="@+id/from_count"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
-        app:layout_constraintTop_toTopOf="@+id/from_count" />
+        app:layout_constraintTop_toTopOf="@+id/from_count"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

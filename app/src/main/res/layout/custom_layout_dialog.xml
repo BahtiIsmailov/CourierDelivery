@@ -41,7 +41,7 @@
             android:layout_gravity="center"
             android:layout_marginEnd="10dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:textColor="@color/primary"
+            android:textColor="@color/colorPrimary"
             tools:ignore="ButtonStyle"
             tools:text="Отмена" />
 
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="?selectableItemBackgroundBorderless"
-            android:textColor="@color/accept"
+            android:textColor="@color/green"
             tools:ignore="ButtonStyle"
             tools:text="Начать" />
 

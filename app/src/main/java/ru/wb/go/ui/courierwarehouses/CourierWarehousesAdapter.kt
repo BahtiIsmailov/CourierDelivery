@@ -28,8 +28,9 @@ class CourierWarehousesAdapter(
         val (_, name, address, isSelected) = items[position]
         holder.binding.nameWarehouse.text = name
         holder.binding.fullAddressWarehouse.text = address
-        holder.binding.selectedBackground.visibility =
-            if (isSelected) View.VISIBLE else View.INVISIBLE
+        val selectable = if (isSelected) View.VISIBLE else View.INVISIBLE
+        holder.binding.selectedBackground.visibility = selectable
+        holder.binding.imageItemBorder.visibility = selectable
     }
 
     override fun getItemCount(): Int {

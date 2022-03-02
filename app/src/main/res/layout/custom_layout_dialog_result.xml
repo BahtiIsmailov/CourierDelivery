@@ -54,7 +54,7 @@
             android:layout_marginEnd="10dp"
             android:background="?selectableItemBackgroundBorderless"
             android:textAllCaps="false"
-            android:textColor="@color/primary"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             tools:ignore="ButtonStyle"
             tools:text="Отмена" />
@@ -67,7 +67,7 @@
             android:layout_gravity="center"
             android:background="?selectableItemBackgroundBorderless"
             android:textAllCaps="false"
-            android:textColor="@color/primary"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             tools:ignore="ButtonStyle"
             tools:text="Подтвердить" />

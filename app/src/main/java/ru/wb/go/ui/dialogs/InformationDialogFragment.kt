@@ -74,7 +74,7 @@ class InformationDialogFragment : DialogFragment() {
         context?.let {
             (dialog as AlertDialog)
                 .getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(ContextCompat.getColor(it, R.color.button_text))
+                .setTextColor(ContextCompat.getColor(it, R.color.colorPrimary))
         }
     }
 

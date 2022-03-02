@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
@@ -27,6 +26,7 @@ import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
+import ru.wb.go.ui.courierwarehouses.gethorizontalDividerDecoration
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.WaitLoader
@@ -174,7 +174,7 @@ class CourierOrderFragment : Fragment() {
                     binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.fab_enable
+                            R.color.colorPrimary
                         )
                     )
                 }
@@ -214,7 +214,7 @@ class CourierOrderFragment : Fragment() {
         binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
             ContextCompat.getColor(
                 requireContext(),
-                R.color.fab_disable
+                R.color.tertiary
             )
         )
     }
@@ -246,9 +246,7 @@ class CourierOrderFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.orders.layoutManager = layoutManager
-        binding.orders.addItemDecoration(
-            DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        )
+        binding.orders.addItemDecoration(gethorizontalDividerDecoration())
         binding.orders.setHasFixedSize(true)
         initSmoothScroller()
     }

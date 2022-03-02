@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/lvl_1">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -56,18 +56,20 @@
     <ImageView
         android:layout_width="0dp"
         android:layout_height="30dp"
-        android:src="@drawable/gradient_dark_top"
+        android:src="@drawable/gradient_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:layout_width="0dp"
         android:layout_height="30dp"
-        android:src="@drawable/gradient_light_bottom"
+        android:src="@drawable/gradient_bottom"
         app:layout_constraintBottom_toTopOf="@+id/remove"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
     <View
         android:id="@+id/overlay_boxes"
@@ -92,8 +94,8 @@
         app:progress_button_background="@drawable/progress_image_button_round_danger"
         app:progress_button_name="Удалить отмеченные"
         app:progress_button_state="disable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/colorPrimary"
+        app:progress_button_text_color_progress="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

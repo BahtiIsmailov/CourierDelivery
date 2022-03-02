@@ -5,10 +5,10 @@
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground"
-    app:layout_constraintTop_toTopOf="parent"
+    android:background="@color/lvl_1"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    app:layout_constraintTop_toTopOf="parent">
 
     <ImageView
         android:id="@+id/selected_background"
@@ -27,7 +27,7 @@
         android:layout_width="@dimen/pad24"
         android:layout_height="@dimen/pad24"
         android:layout_marginHorizontal="@dimen/pad16"
-        android:background="@drawable/ic_courier_map_order"
+        android:background="@drawable/ic_courier_map_order_none_border"
         android:gravity="center"
 
         app:layout_constraintBottom_toBottomOf="@id/orderId"
@@ -40,8 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/pad56"
-         />
+        app:layout_constraintGuide_begin="@dimen/pad56" />
 
     <TextView
         android:id="@+id/orderId"
@@ -108,8 +107,7 @@
         app:layout_constraintBottom_toBottomOf="@id/reserve"
         app:layout_constraintEnd_toStartOf="@id/reserve"
         app:layout_constraintTop_toTopOf="@id/reserve"
-        tools:layout_editor_absoluteY="26dp"
-        />
+        tools:layout_editor_absoluteY="26dp" />
 
     <TextView
         android:id="@+id/reserve"
@@ -117,10 +115,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/pad16"
-
         app:layout_constraintBottom_toBottomOf="@id/cargo"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="RtlSymmetry"
         tools:text="@sample/orders.json/orders/reserve" />
+
+    <ImageView
+        android:id="@+id/image_item_border"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_courier_orders_item_border"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

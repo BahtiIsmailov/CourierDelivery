@@ -183,7 +183,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             ForegroundColorSpan(
                 ResourcesCompat.getColor(
                     resources,
-                    R.color.text_spannable_time,
+                    R.color.colorPrimary,
                     null
                 )
             ),
@@ -203,7 +203,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             ForegroundColorSpan(
                 ResourcesCompat.getColor(
                     resources,
-                    R.color.text_spannable_phone,
+                    R.color.primary,
                     null
                 )
             ),

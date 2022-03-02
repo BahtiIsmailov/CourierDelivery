@@ -5,7 +5,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content_light">
+    android:background="@color/lvl_1">
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
@@ -21,7 +21,7 @@
         android:id="@+id/imageView4"
         android:layout_width="0dp"
         android:layout_height="4dp"
-        android:src="@drawable/gradient_dark_top"
+        android:src="@drawable/gradient_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +31,7 @@
         android:id="@+id/imageView5"
         android:layout_width="0dp"
         android:layout_height="4dp"
-        android:src="@drawable/gradient_dark_bottom"
+        android:src="@drawable/gradient_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/lvl_1">
 
     <TextView
         android:id="@+id/title"
@@ -49,7 +49,7 @@
         android:layout_marginTop="4dp"
         android:text="@string/auth_number_phone_phone_not_found"
         android:textAppearance="@style/SmallBlackRegularText"
-        android:textColor="@color/danger"
+        android:textColor="@color/red"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@+id/car_number"
         app:layout_constraintTop_toBottomOf="@+id/car_number" />
@@ -66,7 +66,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/car_number"
-        custom:carNumberKeyboardColor="@color/keyboard_text_color"
+        custom:carNumberKeyboardColor="@color/primary"
         custom:carNumberType="numeric"
         custom:layout_constraintLeft_toLeftOf="parent"
         custom:layout_constraintRight_toRightOf="parent" />
@@ -82,8 +82,8 @@
         android:id="@+id/cancel"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/center_vertical"
@@ -91,16 +91,16 @@
         app:progress_button_background="@drawable/progress_image_button_round_default1"
         app:progress_button_name="Отмена"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable1"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/colorPrimary"
+        app:progress_button_text_color_progress="@color/colorPrimary" />
 
     <ru.wb.go.views.ProgressButtonView
         android:id="@+id/confirm"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,9 +108,9 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Подтвердить"
         app:progress_button_state="disable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/colorPrimary"
+        app:progress_button_text_color_progress="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -5,7 +5,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/lvl_1">
 
     <ru.wb.go.ui.courierordertimer.view.TimerProgressView
         android:id="@+id/timer"
@@ -13,10 +13,10 @@
         android:layout_height="250dp"
         app:ap_is_divider="true"
         app:ap_progress="90"
-        app:ap_progress_background_color="@color/color_arc_foreground"
-        app:ap_progress_foreground_color="@color/color_arc_backgroundColor"
-        app:ap_progress_scale_current_color="@color/color_arc_scale_current"
-        app:ap_progress_scale_wait_color="@color/color_arc_scale_wait"
+        app:ap_progress_background_color="@color/lvl_1"
+        app:ap_progress_foreground_color="@color/colorPrimary"
+        app:ap_progress_scale_current_color="@color/colorPrimary"
+        app:ap_progress_scale_wait_color="@color/primary"
         app:ap_progress_width="5"
         app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:textSize="40dp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/view2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +71,7 @@
         style="@style/LargeBlackRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="40dp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -229,8 +229,8 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Начать погрузку"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/colorPrimary"
+        app:progress_button_text_color_progress="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

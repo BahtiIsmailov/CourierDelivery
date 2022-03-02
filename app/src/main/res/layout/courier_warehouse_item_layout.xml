@@ -5,10 +5,9 @@
     android:id="@+id/warehouse_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/lvl_1"
     android:clickable="true"
-    android:focusable="true"
-    android:background="?android:attr/actionBarItemBackground"
-    android:orientation="horizontal">
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/selected_background"
@@ -26,7 +25,7 @@
         style="@style/LargeBlackRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/pad8"
+        android:layout_marginStart="@dimen/pad16"
         android:layout_marginTop="@dimen/pad16"
         android:layout_marginEnd="@dimen/pad16"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,9 +38,9 @@
         style="@style/LargeDarkRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/pad16"
+        android:layout_marginStart="@dimen/pad16"
         android:layout_marginTop="@dimen/pad8"
-        android:layout_marginStart="@dimen/pad8"
+        android:layout_marginEnd="@dimen/pad16"
         android:layout_marginBottom="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,12 +52,23 @@
         android:id="@+id/image_details"
         android:layout_width="28dp"
         android:layout_height="28dp"
+        android:layout_marginStart="@dimen/pad12"
         android:scaleType="fitStart"
-        android:layout_marginStart="@dimen/pad8"
-        android:src="@drawable/ic_courier_map_warehouse"
-        app:layout_constraintTop_toTopOf="@id/name_warehouse"
+        android:src="@drawable/ic_courier_map_warehouse_none_border"
         app:layout_constraintBottom_toBottomOf="@id/name_warehouse"
+        app:layout_constraintStart_toEndOf="@+id/image_item_border"
+        app:layout_constraintTop_toTopOf="@id/name_warehouse"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/image_item_border"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_courier_warehouse_item_border"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

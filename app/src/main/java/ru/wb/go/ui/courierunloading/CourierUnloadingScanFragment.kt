@@ -181,7 +181,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.statusIcon.visibility = View.VISIBLE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.light_text)
+                        ContextCompat.getColor(requireContext(), R.color.lvl_2)
                     )
                     binding.totalBoxes.text = state.data.accepted
                     binding.counterLayout.isEnabled = false
@@ -212,7 +212,7 @@ class CourierUnloadingScanFragment : Fragment() {
                 }
                 is UnloadingFragmentState.UnknownQr -> {
                     binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(getColor(R.color.not_recognized_scan_status))
+                    binding.statusLayout.setBackgroundColor(getColor(R.color.yellow))
                     binding.statusIcon.visibility = View.GONE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
@@ -257,14 +257,14 @@ class CourierUnloadingScanFragment : Fragment() {
 
     private fun getColor(colorId: Int) = ContextCompat.getColor(requireContext(), colorId)
 
-    private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.init_scan_status)
+    private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.lvl_2)
 
-    private fun colorRed() = ContextCompat.getColor(requireContext(), R.color.forbidden_scan_status)
+    private fun colorRed() = ContextCompat.getColor(requireContext(), R.color.red)
 
     private fun colorGreen() =
-        ContextCompat.getColor(requireContext(), R.color.complete_scan_status)
+        ContextCompat.getColor(requireContext(), R.color.green)
 
-    private fun colorBlack() = ContextCompat.getColor(requireContext(), R.color.black_text)
+    private fun colorBlack() = ContextCompat.getColor(requireContext(), R.color.primary)
 
     private fun showProgressDialog() {
         val progressDialog = ProgressDialogFragment.newInstance()
