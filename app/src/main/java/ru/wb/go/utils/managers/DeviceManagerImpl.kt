@@ -34,7 +34,7 @@ class DeviceManagerImpl(private val context: Context,
         }
 
     override fun lastLocation(): String {
-        return worker.load(AppPreffsKeys.USER_INN_KEY, DEFAULT_MOSCOW_COORDINATE)
+        return worker.load(AppPreffsKeys.LOCATION_KEY, DEFAULT_MOSCOW_COORDINATE)
     }
 
     override fun saveLocation(location: String) {
