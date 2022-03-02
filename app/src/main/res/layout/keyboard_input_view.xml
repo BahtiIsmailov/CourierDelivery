@@ -16,10 +16,10 @@
         android:textSize="0px"
         custom:dotsSize="20dp"
         custom:dotsStrokeWidth="1dp"
-        custom:layout_constraintBottom_toTopOf="@+id/guideline22"
-        custom:layout_constraintLeft_toLeftOf="@+id/guideline1"
-        custom:layout_constraintRight_toLeftOf="@+id/guideline2"
-        custom:layout_constraintTop_toTopOf="@+id/guideline19" />
+        custom:layout_constraintBottom_toTopOf="@id/guideline22"
+        custom:layout_constraintLeft_toLeftOf="@id/guideline1"
+        custom:layout_constraintRight_toLeftOf="@id/guideline2"
+        custom:layout_constraintTop_toTopOf="@id/guideline19" />
 
     <TextView
         android:id="@+id/text_description"
@@ -49,7 +49,7 @@
         custom:layout_constraintLeft_toLeftOf="@+id/guideline16"
         custom:layout_constraintRight_toLeftOf="@+id/guideline17"
         custom:layout_constraintTop_toTopOf="@+id/guideline22"
-        tools:text="@string/input_sms_repeat_no_timer" />
+        tools:text="@string/auth_check_sms_repeat" />
 
     <ru.wb.go.ui.auth.keyboard.KeyboardNumericView
         android:id="@+id/view_keyboard"

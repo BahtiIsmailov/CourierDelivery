@@ -18,8 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/update"
-        app:layout_constraintTop_toBottomOf="@+id/content_center">
+        app:layout_constraintBottom_toTopOf="@id/update"
+        app:layout_constraintTop_toBottomOf="@id/content_center">
 
         <TextView
             android:id="@+id/empty_title"
@@ -41,7 +41,7 @@
         android:layout_gravity="center_vertical"
         android:clipToPadding="false"
         android:paddingHorizontal="@dimen/pad24"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         tools:listitem="@layout/remain_box_item" />
 
 </LinearLayout>

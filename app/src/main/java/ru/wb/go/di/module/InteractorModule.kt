@@ -64,6 +64,7 @@ import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.settings.domain.SettingsInteractor
 import ru.wb.go.ui.settings.domain.SettingsInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
+import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
@@ -162,9 +163,11 @@ val interactorModule = module {
     }
 
     fun provideScannerInteractor(
-        rxSchedulerFactory: RxSchedulerFactory, scannerRepository: ScannerRepository,
+        rxSchedulerFactory: RxSchedulerFactory,
+        scannerRepository: ScannerRepository,
+        settingsManager: SettingsManager
     ): ScannerInteractor {
-        return ScannerInteractorImpl(rxSchedulerFactory, scannerRepository)
+        return ScannerInteractorImpl(rxSchedulerFactory, scannerRepository, settingsManager)
     }
 
     fun provideCourierWarehousesInteractor(
@@ -393,7 +396,7 @@ val interactorModule = module {
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get()) }
-    single { provideScannerInteractor(get(), get()) }
+    single { provideScannerInteractor(get(), get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
     single {

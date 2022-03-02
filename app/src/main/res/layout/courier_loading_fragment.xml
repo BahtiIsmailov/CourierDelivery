@@ -14,15 +14,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/scanner_frame"
         class="ru.wb.go.ui.scanner.CourierScannerFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_center_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/guideline_center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         tools:layout="@layout/courier_scanner_fragment" />
 
     <TextView
@@ -38,7 +38,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_center_horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/guideline_center_horizontal" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/box_info_layout"
@@ -47,7 +47,7 @@
         android:background="@color/white"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ribbon_status">
+        app:layout_constraintTop_toBottomOf="@id/ribbon_status">
 
         <TextView
             android:id="@+id/prefix_qr_code"
@@ -55,10 +55,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="QR"
-            app:layout_constraintBottom_toBottomOf="@+id/qr_code"
+            android:text="@string/qrTitle"
+            app:layout_constraintBottom_toBottomOf="@id/qr_code"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/qr_code" />
+            app:layout_constraintTop_toTopOf="@id/qr_code" />
 
         <TextView
             android:id="@+id/qr_code"
@@ -67,9 +67,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             tools:text="0000000000"
-            app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
-            app:layout_constraintStart_toEndOf="@+id/prefix_qr_code"
-            app:layout_constraintTop_toTopOf="@+id/counter_layout" />
+            app:layout_constraintBottom_toBottomOf="@id/counter_layout"
+            app:layout_constraintStart_toEndOf="@id/prefix_qr_code"
+            app:layout_constraintTop_toTopOf="@id/counter_layout" />
 
         <View
             android:id="@+id/divider2"
@@ -78,9 +78,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="#EDEEF0"
-            app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
-            app:layout_constraintEnd_toStartOf="@+id/counter_layout"
-            app:layout_constraintTop_toTopOf="@+id/counter_layout" />
+            app:layout_constraintBottom_toBottomOf="@id/counter_layout"
+            app:layout_constraintEnd_toStartOf="@id/counter_layout"
+            app:layout_constraintTop_toTopOf="@id/counter_layout" />
 
         <LinearLayout
             android:id="@+id/counter_layout"
@@ -102,7 +102,7 @@
                 style="@style/LargeDarkRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Принято" />
+                android:text="@string/receiveTitle" />
 
             <TextView
                 android:id="@+id/total_boxes"
@@ -119,10 +119,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/complete_button"
+            app:layout_constraintBottom_toTopOf="@id/complete_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/counter_layout">
+            app:layout_constraintTop_toBottomOf="@id/counter_layout">
 
             <TextView
                 android:id="@+id/address_title"
@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Адрес доставки" />
+                android:text="@string/addressTitle" />
 
             <TextView
                 android:id="@+id/box_address"
@@ -197,8 +197,8 @@
             style="@style/LargeDarkRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Резерв"
-            app:layout_constraintBottom_toTopOf="@+id/time_digit"
+            android:text="@string/reserveCapTitle"
+            app:layout_constraintBottom_toTopOf="@id/time_digit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -210,7 +210,7 @@
             android:layout_marginBottom="10dp"
             android:textSize="40sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/view2"
+            app:layout_constraintBottom_toTopOf="@id/view2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="13:10" />
@@ -219,10 +219,10 @@
             android:id="@+id/view2"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            app:layout_constraintBottom_toBottomOf="@+id/timer"
-            app:layout_constraintEnd_toEndOf="@+id/timer"
-            app:layout_constraintStart_toStartOf="@+id/timer"
-            app:layout_constraintTop_toTopOf="@+id/timer" />
+            app:layout_constraintBottom_toBottomOf="@id/timer"
+            app:layout_constraintEnd_toEndOf="@id/timer"
+            app:layout_constraintStart_toStartOf="@id/timer"
+            app:layout_constraintTop_toTopOf="@id/timer" />
 
         <TextView
             android:id="@+id/gate"
@@ -230,10 +230,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Ворота"
+            android:text="@string/gateTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view2" />
+            app:layout_constraintTop_toBottomOf="@id/view2" />
 
         <TextView
             android:id="@+id/gate_digit"
@@ -244,7 +244,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/gate"
+            app:layout_constraintTop_toBottomOf="@id/gate"
             tools:text="303" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

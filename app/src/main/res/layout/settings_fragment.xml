@@ -91,4 +91,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/voice_title" />
 
+    <TextView
+        android:id="@+id/scannerAutoOffTitle"
+        style="@style/MediumDarkRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/pad16"
+        android:text="@string/scannerAutoOffHint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/scannerAutoOff"
+        app:layout_constraintTop_toBottomOf="@+id/sett_divider3" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/scannerAutoOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:checked="false"
+        android:paddingHorizontal="@dimen/pad16"
+        app:layout_constraintBottom_toBottomOf="@id/scannerAutoOffTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sett_divider3"
+        app:showText="false" />
+
+    <View
+        android:id="@+id/settingDivider4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="12dp"
+        android:background="#EDEEF0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scannerAutoOff" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

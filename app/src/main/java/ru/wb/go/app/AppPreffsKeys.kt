@@ -21,4 +21,5 @@ object AppPreffsKeys {
     // App Settings
     const val SETTING_START_FLASH_ON = "SETTING_FLASH_ON"
     const val SETTING_VOICE_SCAN = "SETTING_VOICE_SCAN"
+    const val SETTING_SANNER_OFF = "SETTING_SANNER_OFF"
 }

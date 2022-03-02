@@ -219,6 +219,7 @@
 
 
     <string name="reserveTitle">резерв </string>
+    <string name="reserveCapTitle">Резерв </string>
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
@@ -546,5 +547,10 @@
     <string name="settings_title">Настройки</string>
     <string name="autoflash_hint">Автоматически включать подсветку при работе с камерой</string>
     <string name="voice_help_hint">Голосовое сопровождение результата сканирования</string>
+    <string name="scannerAutoOffHint">Автоматическая блокировка сканера при неактивности (25 сек)</string>
+    <string name="qrTitle">QR</string>
+    <string name="receiveTitle">Принято</string>
+    <string name="addressTitle">Адрес доставки</string>
+    <string name="gateTitle">Ворота</string>
 
 </resources>
