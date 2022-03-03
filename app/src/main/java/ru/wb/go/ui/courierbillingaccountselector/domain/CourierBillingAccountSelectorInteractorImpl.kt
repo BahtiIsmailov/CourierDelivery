@@ -7,6 +7,7 @@ import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
+import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -36,6 +37,11 @@ class CourierBillingAccountSelectorInteractorImpl(
                     amount,
                     paymentEntity
                 )
+            }
+            .doOnError {
+                if(it !is TimeoutException){
+                    userManager.clearPaymentGuid()
+                }
             }
             .doOnComplete { userManager.clearPaymentGuid() }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
