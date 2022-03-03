@@ -7,6 +7,7 @@ class SettingsManagerImpl(private val worker: SharedWorker) : SettingsManager {
     override fun resetSettings() {
         worker.delete(AppPreffsKeys.SETTING_START_FLASH_ON)
         worker.delete(AppPreffsKeys.SETTING_VOICE_SCAN)
+        worker.delete(AppPreffsKeys.SETTING_SANNER_OFF)
     }
 
     override fun getSetting(name: String, default: Boolean): Boolean {

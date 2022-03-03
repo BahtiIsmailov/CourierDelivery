@@ -51,6 +51,7 @@ class AuthRemoteRepositoryImpl(
     }
 
     override fun clearCurrentUser() {
+        tokenManager.clear()
         userManager.clearAll()
         settingsManager.resetSettings()
     }
