@@ -49,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        app:layout_constraintStart_toEndOf="@+id/icon_vertical_1"
+        app:layout_constraintStart_toEndOf="@id/icon_vertical_1"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlSymmetry"
         tools:text="@sample/orders.json/orders/id" />
@@ -60,8 +60,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@+id/orderId"
-        app:layout_constraintTop_toTopOf="@+id/orderId"
+        app:layout_constraintStart_toEndOf="@id/orderId"
+        app:layout_constraintTop_toTopOf="@id/orderId"
         tools:text="@sample/orders.json/orders/num" />
 
     <TextView
@@ -72,7 +72,7 @@
         android:layout_marginEnd="16dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/orderId"
+        app:layout_constraintTop_toTopOf="@id/orderId"
         tools:text="@sample/orders.json/orders/price" />
 
 
@@ -80,9 +80,9 @@
         android:id="@+id/carIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/cargo"
-        app:layout_constraintStart_toEndOf="@+id/icon_vertical_1"
-        app:layout_constraintTop_toTopOf="@+id/cargo"
+        app:layout_constraintBottom_toBottomOf="@id/cargo"
+        app:layout_constraintStart_toEndOf="@id/icon_vertical_1"
+        app:layout_constraintTop_toTopOf="@id/cargo"
         app:srcCompat="@drawable/ic_truck"
         tools:ignore="ContentDescription" />
 
@@ -95,8 +95,8 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/carIcon"
-        app:layout_constraintTop_toBottomOf="@+id/countOffice"
+        app:layout_constraintStart_toEndOf="@id/carIcon"
+        app:layout_constraintTop_toBottomOf="@id/countOffice"
         tools:text="@sample/orders.json/orders/val" />
 
     <TextView
