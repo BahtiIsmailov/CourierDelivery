@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <TextView
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="@dimen/pad16"

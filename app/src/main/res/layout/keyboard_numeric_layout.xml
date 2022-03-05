@@ -142,13 +142,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/transparent"
-        android:textColor="@color/reception_text_manual_input"
+        android:textColor="@color/colorPrimary"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintLeft_toLeftOf="@+id/guideline12"
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
         app:layout_constraintTop_toBottomOf="@+id/guideline10"
-        app:tint="@color/reception_text_manual_input"
+        app:tint="@color/colorPrimary"
         tools:text="Left" />
 
     <ImageButton

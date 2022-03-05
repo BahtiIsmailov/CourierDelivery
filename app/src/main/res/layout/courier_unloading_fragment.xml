@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/lvl_1">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -29,7 +29,7 @@
         android:id="@+id/status_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/init_scan_status"
+        android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,41 +42,34 @@
             android:layout_height="48dp"
             android:gravity="center"
             android:letterSpacing="0.2"
-            android:text="ОТСКАНИРУЙТЕ"
+            android:text="@string/courier_unloading_scanner_ready_status"
             android:textAllCaps="true"
-            android:textColor="@color/white"
+            android:textColor="@color/lvl_1"
             android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/status_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/ic_qr" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/prefix_qr_code"
-        style="@style/VeryLargeDarkRegularText"
+        style="@style/VeryLargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="QR"
+        android:text="@string/courier_unloading_qr"
         app:layout_constraintBottom_toBottomOf="@+id/qr_code"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/qr_code" />
 
     <TextView
         android:id="@+id/qr_code"
-        style="@style/VeryLargeLightRegularText"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="@string/courier_unloading_scanner_empty_qr"
         app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
         app:layout_constraintStart_toEndOf="@+id/prefix_qr_code"
-        app:layout_constraintTop_toTopOf="@+id/counter_layout" />
+        app:layout_constraintTop_toTopOf="@+id/counter_layout"
+        tools:text="@string/courier_unloading_scanner_empty_qr" />
 
     <View
         android:id="@+id/divider2"
@@ -101,17 +94,17 @@
 
         <TextView
             android:id="@+id/address_title"
-            style="@style/LargeLightRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="Адрес доставки" />
+            android:text="@string/courier_unloading_address" />
 
         <TextView
             android:id="@+id/box_address"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -139,14 +132,14 @@
 
         <TextView
             android:id="@+id/receive_title"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Доставил" />
+            android:text="@string/courier_unloading_delivery" />
 
         <TextView
             android:id="@+id/total_boxes"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -169,9 +162,9 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="@string/courier_unloading_scanner_complete"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_center_horizontal"

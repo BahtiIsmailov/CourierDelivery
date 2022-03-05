@@ -5,19 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/lvl_1">
 
     <RelativeLayout
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
-        android:background="@color/white" />
+        android:background="@color/lvl_1" />
 
     <RelativeLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/status_bar"
-        android:background="@color/white">
+        android:layout_below="@+id/status_bar"
+        android:background="@color/lvl_1">
 
         <ImageView
             android:id="@+id/back"
@@ -62,7 +63,7 @@
 
         <TextView
             android:id="@+id/toolbar_version"
-            style="@style/SmallDarkRegularText"
+            style="@style/SmallSecondaryRegularText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignStart="@id/no_internet_image"
@@ -75,14 +76,13 @@
             android:textSize="11sp"
             tools:text="10.22.3877" />
 
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:layout_below="@id/toolbar_title"
-            android:background="#F0EDF2"
-            android:visibility="invisible" />
-
     </RelativeLayout>
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@+id/content"
+        android:background="@color/colorDividerPale" />
 
 </RelativeLayout>

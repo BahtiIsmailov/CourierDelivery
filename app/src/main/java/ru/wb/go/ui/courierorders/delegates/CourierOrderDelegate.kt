@@ -37,8 +37,9 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
             countOffice.text = item.countPvz
             reserve.text = item.arrive
 
-            selectedBackground.visibility =
-                if (item.isSelected) View.VISIBLE else View.INVISIBLE
+            val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
+            holder.binding.selectedBackground.visibility = selectable
+            holder.binding.imageItemBorder.visibility = selectable
         }
     }
 

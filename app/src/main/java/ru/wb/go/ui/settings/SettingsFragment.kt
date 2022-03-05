@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -35,7 +36,7 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initObserver()
-        initListener()
+        initListeners()
     }
 
     private fun initView() {
@@ -43,8 +44,10 @@ class SettingsFragment : Fragment() {
         (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.settings_title)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        binding.flashSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
+        binding.flashSwitch.isChecked =
+            viewModel.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
         binding.voiceSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_VOICE_SCAN, true)
+        binding.themeDarkSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_THEME, true)
         binding.scannerAutoOff.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)
     }
 
@@ -66,15 +69,28 @@ class SettingsFragment : Fragment() {
 
     }
 
-    private fun initListener() {
+    private fun initListeners() {
         binding.voiceSwitch.setOnCheckedChangeListener { _, b ->
             viewModel.settingClick(AppPreffsKeys.SETTING_VOICE_SCAN, b)
         }
         binding.flashSwitch.setOnCheckedChangeListener { _, b ->
             viewModel.settingClick(AppPreffsKeys.SETTING_START_FLASH_ON, b)
         }
+
+        binding.themeDarkSwitch.setOnCheckedChangeListener { _, b ->
+            viewModel.settingClick(AppPreffsKeys.SETTING_THEME, b)
+            switchTheme(b)
+        }
         binding.scannerAutoOff.setOnCheckedChangeListener { _, b ->
             viewModel.settingClick(AppPreffsKeys.SETTING_SANNER_OFF, b)
+        }
+    }
+
+    private fun switchTheme(isDark: Boolean) {
+        AppCompatDelegate.setDefaultNightMode(if (isDark) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES)
+        activity?.apply {
+            setTheme(R.style.AppTheme_NoActionBar)
+            recreate()
         }
     }
 

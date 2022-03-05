@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/message"
-        style="@style/VeryLargeDarkRegularText"
+        style="@style/VeryLargeSecondaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -25,7 +25,7 @@
         android:layout_gravity="end"
         android:layout_marginEnd="10dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:textColor="@color/primary"
+        android:textColor="@color/colorPrimary"
         tools:ignore="ButtonStyle"
         tools:text="Отмена" />
 

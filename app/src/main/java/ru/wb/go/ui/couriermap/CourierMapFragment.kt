@@ -19,6 +19,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.GoogleApiClient
@@ -41,6 +42,7 @@ import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
+
 
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
@@ -190,6 +192,17 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.minZoomLevel = MIN_ZOOM
         binding.map.maxZoomLevel = MAX_ZOOM
         binding.map.setUseDataConnection(true)
+
+        val colorMatrix = updateScaleMatrix(0.9f, 0.9f, 0.9f, 0.9f)
+        binding.map.overlayManager.tilesOverlay.setColorFilter(colorMatrix) //TilesOverlay.INVERT_COLORS
+    }
+
+    private fun updateScaleMatrix(
+        rScale: Float, gScale: Float, bScale: Float, aScale: Float
+    ): ColorMatrixColorFilter {
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setScale(rScale, gScale, bScale, aScale)
+        return ColorMatrixColorFilter(colorMatrix)
     }
 
     private fun createOsmdroidTilePath(osmdroidBasePath: File): File {
@@ -487,7 +500,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             paint.style = Paint.Style.FILL
 
             paint.textAlign = Paint.Align.CENTER
-            paint.color = Color.WHITE
+            paint.color =  ResourcesCompat.getColor(resources, R.color.lvl_1, null)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             paint.textSize = 40f
 

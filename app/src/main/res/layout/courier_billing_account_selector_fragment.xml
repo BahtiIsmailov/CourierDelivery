@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_auth_content">
+    android:background="@color/lvl_1">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -37,14 +37,14 @@
 
                 <TextView
                     android:id="@+id/prefix_balance"
-                    style="@style/VeryLargeDarkRegularText"
+                    style="@style/VeryLargeSecondaryRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/balance_title" />
 
                 <TextView
                     android:id="@+id/balance"
-                    style="@style/VeryLargeBlackRegularText"
+                    style="@style/VeryLargePrimaryRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -79,7 +79,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                style="@style/VeryLargeBlackRegularText"
+                style="@style/VeryLargePrimaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -136,9 +136,9 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="@string/courier_billing_account_selector_amount_button_init"
         app:progress_button_state="disable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress"
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/tertiary"
         tools:layout_editor_absoluteX="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

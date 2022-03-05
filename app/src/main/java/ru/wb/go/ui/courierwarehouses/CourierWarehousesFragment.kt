@@ -8,6 +8,7 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -61,10 +62,10 @@ class CourierWarehousesFragment : Fragment() {
         (activity as NavDrawerListener).unlockNavDrawer()
         (activity as KeyboardListener).panMode()
         binding.refresh.setColorSchemeResources(
-            R.color.refreshColor,
-            R.color.refreshColor,
-            R.color.refreshColor,
-            R.color.refreshColor
+            R.color.colorPrimary,
+            R.color.colorPrimary,
+            R.color.colorPrimary,
+            R.color.colorPrimary
         )
     }
 
@@ -131,7 +132,7 @@ class CourierWarehousesFragment : Fragment() {
                     binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.fab_disable
+                            R.color.tertiary
                         )
                     )
                 }
@@ -140,7 +141,7 @@ class CourierWarehousesFragment : Fragment() {
                     binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.fab_enable
+                            R.color.colorPrimary
                         )
                     )
                 }
@@ -195,12 +196,7 @@ class CourierWarehousesFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.layoutManager = layoutManager
-        binding.items.addItemDecoration(
-            DividerItemDecoration(
-                activity,
-                DividerItemDecoration.VERTICAL
-            )
-        )
+        binding.items.addItemDecoration(gethorizontalDividerDecoration())
         binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
@@ -245,4 +241,11 @@ class CourierWarehousesFragment : Fragment() {
         }
     }
 
+}
+
+fun Fragment.gethorizontalDividerDecoration(): DividerItemDecoration {
+    val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
+    ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
+        ?.let { decoration.setDrawable(it) }
+    return decoration
 }

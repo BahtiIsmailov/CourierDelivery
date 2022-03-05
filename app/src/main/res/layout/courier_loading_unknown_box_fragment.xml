@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content_light">
+    android:background="@color/lvl_1">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/VeryLargeBlackRegularText"
+            style="@style/VeryLargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/return_danger"
@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/unload_box_error_message"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/title"
@@ -63,8 +63,8 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Понятно"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/colorPrimary"
+        app:progress_button_text_color_progress="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,13 +27,14 @@ class CourierIntransitUndeliveredAllDelegate(
         return RouterViewHolder(view)
     }
 
-    override fun onBind(unloadingAllItem: CourierIntransitUndeliveredAllItem, holder: RouterViewHolder) {
-        holder.itemView.tag = unloadingAllItem
-        holder.binding.boxAddress.text = unloadingAllItem.fullAddress
-        holder.binding.deliveryCount.text = unloadingAllItem.deliveryCount
-        holder.binding.fromCount.text = unloadingAllItem.fromCount
-        holder.binding.selectedBackground.visibility =
-            if (unloadingAllItem.isSelected) View.VISIBLE else View.INVISIBLE
+    override fun onBind(item: CourierIntransitUndeliveredAllItem, holder: RouterViewHolder) {
+        holder.itemView.tag = item
+        holder.binding.boxAddress.text = item.fullAddress
+        holder.binding.deliveryCount.text = item.deliveryCount
+        holder.binding.fromCount.text = item.fromCount
+        val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
+        holder.binding.selectedBackground.visibility = selectable
+        holder.binding.imageItemBorder.visibility = selectable
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

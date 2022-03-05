@@ -32,8 +32,9 @@ class CourierIntransitUnloadingExpectsDelegate(
         holder.binding.boxAddress.text = item.fullAddress
         holder.binding.deliveryCount.text = item.deliveryCount
         holder.binding.fromCount.text = item.fromCount
-        holder.binding.selectedBackground.visibility =
-            if (item.isSelected) View.VISIBLE else View.INVISIBLE
+        val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
+        holder.binding.selectedBackground.visibility = selectable
+        holder.binding.imageItemBorder.visibility = selectable
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

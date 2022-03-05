@@ -38,14 +38,14 @@ class PasswordDotsView : AppCompatEditText {
             setBackgroundColor(
                 attributes.getInt(
                     R.styleable.DotPasswordView_dotsPasswordBackgroundColor, ContextCompat.getColor(
-                        context, R.color.keyboard_dot_background
+                        context, R.color.tertiary
                     )
                 )
             )
             setColor(
                 attributes.getInt(
                     R.styleable.DotPasswordView_dotsPasswordColor, ContextCompat.getColor(
-                        context, R.color.keyboard_dot_select
+                        context, R.color.colorPrimary
                     )
                 )
             )

@@ -77,9 +77,9 @@ class SimpleResultDialogFragment : DialogFragment() {
     }
 
     private val positiveTextColorButtonDefault: Int
-        get() = ContextCompat.getColor(requireContext(), R.color.danger)
+        get() = ContextCompat.getColor(requireContext(), R.color.red)
     private val negativeTextColorButtonDefault: Int
-        get() = ContextCompat.getColor(requireContext(), R.color.primary)
+        get() = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
 
     companion object {
         fun newInstance(

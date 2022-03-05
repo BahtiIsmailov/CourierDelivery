@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:background="@color/white"
+        android:background="@color/lvl_1"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <ImageView
@@ -59,7 +59,7 @@
 
             <TextView
                 android:id="@+id/toolbar_version"
-                style="@style/SmallDarkRegularText"
+                style="@style/SmallSecondaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/no_internet_image"

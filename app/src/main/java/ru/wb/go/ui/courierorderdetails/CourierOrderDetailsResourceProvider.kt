@@ -39,7 +39,7 @@ class CourierOrderDetailsResourceProvider(private val context: Context) :
 
     fun getWarehouseMapSelectedIcon() = R.drawable.ic_courier_map_warehouse_select
 
-    fun getOfficeMapIcon() = R.drawable.ic_warehouse_detail_address
+    fun getOfficeMapIcon() = R.drawable.ic_order_details_office
 
     fun getOfficeMapSelectedIcon() = R.drawable.ic_intransit_office_map_empty_select
 

@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lvl_2"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/nav_header_name"
-        style="@style/VeryLargeBlackRegularText"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -21,12 +22,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/pad8"
-        >
+        android:paddingTop="@dimen/pad8">
 
         <TextView
             android:id="@+id/version_app_title"
-            style="@style/LargeLightRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/pad24"
@@ -36,7 +36,7 @@
 
         <TextView
             android:id="@+id/version_app"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="0.1.100" />
@@ -48,7 +48,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center"
         android:layout_marginTop="24dp"
-        android:background="@color/tint" />
+        android:background="@color/colorDividerPale" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
 
         <TextView
             android:id="@+id/inet_app_text"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -68,20 +68,20 @@
 
         <TextView
             android:id="@+id/inet_app_status_make_text"
-            style="@style/LargeLightRegularText"
+            style="@style/LargeLvl2RegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inet_ok"
-            android:textColor="@color/complete"
+            android:textColor="@color/green"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/inet_app_status_no_text"
-            style="@style/LargeLightRegularText"
+            style="@style/LargeLvl2RegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inet_no"
-            android:textColor="@color/danger"
+            android:textColor="@color/red"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -89,7 +89,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tint" />
+        android:background="@color/colorDividerPale" />
 
     <LinearLayout
         android:id="@+id/billing_layout"
@@ -107,7 +107,7 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -118,7 +118,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tint" />
+        android:background="@color/colorDividerPale" />
 
     <LinearLayout
         android:id="@+id/settings_layout"
@@ -136,7 +136,7 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -161,7 +161,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_gravity="center"
-                android:background="@color/tint" />
+                android:background="@color/colorDividerPale" />
 
             <RelativeLayout
                 android:id="@+id/check_version_layout"
@@ -190,7 +190,7 @@
                     tools:ignore="ContentDescription" />
 
                 <TextView
-                    style="@style/LargeBlackRegularText"
+                    style="@style/LargePrimaryRegularText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad16"

@@ -15,6 +15,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 
 import androidx.core.content.ContextCompat
@@ -55,18 +56,22 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     private lateinit var onDestinationChangedListener: NavController.OnDestinationChangedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme_NoActionBar)
+        initTheme()
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initToolbar()
         initNavController()
         initObserver()
-        initListener()
+        initListeners()
         hideStatusBar()
+    }
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentListener, true)
-
+    private fun initTheme() {
+        AppCompatDelegate.setDefaultNightMode(
+            if (viewModel.getDarkThemeSetting()) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
+        setTheme(R.style.AppTheme_NoActionBar)
     }
 
     private fun initToolbar() {
@@ -152,7 +157,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     }
 
-    private fun initListener() {
+    private fun initListeners() {
 
         with(binding.navView) {
             findViewById<View>(R.id.billing_layout).setOnClickListener {
@@ -167,6 +172,11 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
                 navController?.navigate(R.id.settingsFragment)
             }
         }
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(
+            fragmentListener,
+            true
+        )
 
     }
 

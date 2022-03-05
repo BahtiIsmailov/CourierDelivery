@@ -39,7 +39,7 @@ class DialogInfoFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =
-            requireActivity().layoutInflater.inflate(R.layout.custom_dialog_info_fragment, null)
+            requireActivity().layoutInflater.inflate(R.layout.custom_lauout_dialog_title_info_fragment, null)
         val titleLayout: ImageView = dialogView.findViewById(R.id.title_layout)
         val title: TextView = dialogView.findViewById(R.id.title)
         val message: TextView = dialogView.findViewById(R.id.message)

@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content_light">
+    android:background="@color/lvl_1">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/content_center"
@@ -34,7 +34,7 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:text="@string/demo_go_to_registration"
-        android:textColor="@color/white"
+        android:textColor="@color/lvl_1"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/nav_drawer_menu"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
         android:layout_marginTop="36dp"
         android:background="@drawable/button_rounded_corner"
         android:padding="6dp"
-        android:src="@drawable/ic_navigation_drawer_menu_"
+        android:src="@drawable/ic_nav_menu"
         android:text="@string/demo_go_to_registration"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:gravity="center_vertical"
@@ -80,7 +80,7 @@
         android:paddingEnd="16dp"
         android:text="@string/courier_warehouse_title"
         android:textStyle="bold"
-        android:background="@color/listHeaderBackground"
+        android:background="@color/lvl_2"
         app:layout_constraintTop_toBottomOf="@+id/content_center" />
 
     <View
@@ -89,7 +89,7 @@
         android:layout_height="1dp"
         android:layout_below="@+id/title"
         android:layout_gravity="center"
-        android:background="@color/tint"
+        android:background="@color/colorDividerSaturated"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -121,7 +121,7 @@
 
                 <TextView
                     android:id="@+id/empty_title"
-                    style="@style/LargeDarkRegularText"
+                    style="@style/LargeSecondaryRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -144,10 +144,10 @@
         android:clickable="false"
         android:focusable="false"
         android:src="@drawable/ic_next"
-        app:backgroundTint="@color/fab_disable"
+        app:backgroundTint="@color/tertiary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white"
+        app:tint="@color/lvl_1"
         tools:ignore="ContentDescription" />
 
     <View

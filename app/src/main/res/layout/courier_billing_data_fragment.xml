@@ -5,7 +5,7 @@
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_auth_content">
+    android:background="@color/lvl_1">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -33,7 +33,7 @@
 
             <TextView
                 android:id="@+id/recipient_title"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -97,7 +97,7 @@
 
             <TextView
                 android:id="@+id/account_title"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -219,9 +219,9 @@
             app:progress_button_background="@drawable/progress_image_button_round_default"
             app:progress_button_name="@string/save_title"
             app:progress_button_state="enable"
-            app:progress_button_text_color_disable="@color/button_default_text_disable"
-            app:progress_button_text_color_enable="@color/button_default_text_enable"
-            app:progress_button_text_color_progress="@color/button_default_text_progress"
+            app:progress_button_text_color_disable="@color/tertiary"
+            app:progress_button_text_color_enable="@color/lvl_1"
+            app:progress_button_text_color_progress="@color/lvl_1"
             tools:progress_button_name="Сохранить"/>
 
     </LinearLayout>

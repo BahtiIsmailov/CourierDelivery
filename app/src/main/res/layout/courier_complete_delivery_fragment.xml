@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/delivery_card_background">
+    android:background="@color/lvl_1">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -19,13 +19,13 @@
 
         <ImageView
             android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:src="@drawable/ic_handshake" />
 
         <TextView
             android:id="@+id/textView2"
-            style="@style/VeryLargeBlackRegularText"
+            style="@style/VeryLargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
@@ -33,7 +33,7 @@
 
         <TextView
             android:id="@+id/info"
-            style="@style/LargeLightRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -45,95 +45,77 @@
         android:id="@+id/divider2"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:layout_marginBottom="68dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        android:background="@color/colorDividerPale"
+        android:layout_marginBottom="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/earned_count"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/ic_earned"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginStart="25dp"
         android:src="@drawable/ic_money"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        app:layout_constraintBottom_toBottomOf="@+id/earned"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toTopOf="@+id/earned"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/earned"
-        style="@style/LargeLightRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="@string/courier_complete_delivery_earned"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        app:layout_constraintBottom_toBottomOf="@+id/earned_count"
         app:layout_constraintStart_toEndOf="@+id/ic_delivered"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toTopOf="@+id/earned_count" />
 
     <TextView
         android:id="@+id/earned_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        android:layout_marginBottom="@dimen/pad24"
+        app:layout_constraintBottom_toTopOf="@+id/delivered_count"
         app:layout_constraintStart_toEndOf="@+id/earned"
-        app:layout_constraintTop_toBottomOf="@+id/divider2"
         tools:text="3200 \u20BD" />
-
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_marginBottom="68dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/ic_delivered"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginStart="25dp"
-        android:src="@drawable/ic_delivered"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        android:src="@drawable/ic_box_count_complete"
+        app:layout_constraintBottom_toBottomOf="@+id/delivered"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider1" />
+        app:layout_constraintTop_toTopOf="@+id/delivered"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/delivered"
-        style="@style/LargeLightRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="@string/courier_complete_delivery_delivered"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintBottom_toBottomOf="@+id/delivered_count"
         app:layout_constraintStart_toEndOf="@+id/ic_delivered"
-        app:layout_constraintTop_toTopOf="@+id/divider1" />
+        app:layout_constraintTop_toTopOf="@+id/delivered_count" />
 
     <TextView
         android:id="@+id/delivered_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
-        app:layout_constraintStart_toEndOf="@+id/delivered"
-        app:layout_constraintTop_toTopOf="@+id/divider1"
-        tools:text="148 / 148" />
-
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_marginBottom="24dp"
-        android:background="#EDEEF0"
+        android:layout_marginBottom="34dp"
         app:layout_constraintBottom_toTopOf="@+id/complete_delivery_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/delivered"
+        tools:text="148 / 148" />
 
     <ru.wb.go.views.ProgressButtonView
         android:id="@+id/complete_delivery_button"
@@ -148,8 +130,8 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="За новой работой"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

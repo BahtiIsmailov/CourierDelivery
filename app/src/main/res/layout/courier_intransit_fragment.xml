@@ -5,7 +5,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_content_light">
+    android:background="@color/lvl_1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/map_layout"
@@ -55,7 +55,7 @@
 
             <TextView
                 android:id="@+id/map_timer"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -83,16 +83,16 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:background="@color/lvl_2"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:textStyle="bold"
-        android:background="@color/listHeaderBackground"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
         tools:text="2000000251" />
 
@@ -100,7 +100,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:background="@color/listHeaderBackground"
+        android:background="@color/lvl_2"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="4dp"
@@ -116,7 +116,7 @@
 
         <TextView
             android:id="@+id/delivery_total_count"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -128,7 +128,7 @@
         android:id="@+id/view_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#EDEEF0"
+        android:background="@color/colorDividerPale"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -146,21 +146,27 @@
         tools:listitem="@layout/courier_intransit_empty_layout" />
 
     <View
+        android:id="@+id/view_divider_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorDividerPale"
+        app:layout_constraintTop_toBottomOf="@+id/routes" />
+
+    <View
         android:id="@+id/hold_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@+id/view_divider"
-        />
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
+        app:layout_constraintTop_toBottomOf="@+id/view_divider" />
 
     <TextView
         android:id="@+id/empty_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Список пуст"
+        android:text="@string/empty_list"
         app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -187,13 +193,13 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Сканировать QR ПВЗ"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
     <ru.wb.go.views.ProgressImageButtonView
         android:id="@+id/scan_qr_pvz_complete_button"
-        android:layout_width="90dp"
+        android:layout_width="64dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="20dp"
@@ -201,10 +207,10 @@
         app:app_background="@drawable/progress_image_button_round_default"
         app:app_icon="@drawable/ic_qr"
         app:app_state="enable"
-        app:app_text="ПВЗ"
-        app:app_text_color_disable="@color/button_gray_text_disable"
-        app:app_text_color_enable="@color/button_gray_text_enable"
-        app:app_text_color_progress="@color/button_gray_text_progress"
+        app:app_text=""
+        app:app_text_color_disable="@color/lvl_1"
+        app:app_text_color_enable="@color/lvl_1"
+        app:app_text_color_progress="@color/lvl_1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -220,11 +226,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete_button"
         app:progress_button_background="@drawable/progress_image_button_round_complete"
-        app:progress_button_name="Завершить доставку"
+        app:progress_button_name="Завершить"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
     <ru.wb.go.views.ProgressButtonView
         android:id="@+id/forced_complete_button"
@@ -240,8 +246,8 @@
         app:progress_button_background="@drawable/progress_image_button_round_default"
         app:progress_button_name="Принудительно завершить"
         app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/button_default_text_disable"
-        app:progress_button_text_color_enable="@color/button_default_text_enable"
-        app:progress_button_text_color_progress="@color/button_default_text_progress" />
+        app:progress_button_text_color_disable="@color/tertiary"
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

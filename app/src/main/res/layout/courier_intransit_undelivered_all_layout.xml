@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground"
+    android:background="@color/lvl_1"
     android:clickable="true"
     android:focusable="true"
     android:orientation="horizontal">
@@ -20,80 +20,81 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/courier_background_select_pvz"
+        app:srcCompat="@drawable/courier_intransit_background_select_red"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/box_address"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/pad8"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintEnd_toStartOf="@+id/delivery_count"
         app:layout_constraintStart_toStartOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="@+id/selected_background"
-        tools:text="г. Подольск, ул. Троицкая, 20" />
-
-    <TextView
-        android:id="@+id/delivery_prefix"
-        style="@style/LargeDarkRegularText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:text="Доставлено"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
-        app:layout_constraintStart_toStartOf="@+id/selected_background"
-        app:layout_constraintTop_toBottomOf="@+id/box_address" />
+        tools:text="г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20" />
 
     <TextView
         android:id="@+id/delivery_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
+        android:textColor="@color/red"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/invalid"
-        app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
-        app:layout_constraintStart_toEndOf="@+id/delivery_prefix"
-        app:layout_constraintTop_toBottomOf="@+id/box_address"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/from_count"
+        app:layout_constraintEnd_toStartOf="@+id/divider_count"
+        app:layout_constraintTop_toTopOf="@+id/from_count"
         tools:text="20" />
 
     <TextView
         android:id="@+id/divider_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         android:text="/"
-        app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
-        app:layout_constraintStart_toEndOf="@+id/delivery_count"
-        app:layout_constraintTop_toBottomOf="@+id/box_address" />
+        app:layout_constraintBottom_toBottomOf="@+id/from_count"
+        app:layout_constraintEnd_toStartOf="@+id/from_count"
+        app:layout_constraintTop_toTopOf="@+id/from_count" />
 
     <TextView
         android:id="@+id/from_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/delivery_prefix"
-        app:layout_constraintStart_toEndOf="@+id/divider_count"
-        app:layout_constraintTop_toBottomOf="@+id/box_address"
+        android:layout_marginTop="@dimen/pad8"
+        android:layout_marginEnd="@dimen/pad16"
+        android:layout_marginBottom="@dimen/pad8"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView6"
+        app:layout_constraintVertical_bias="0.0"
         tools:text="24" />
 
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/pad8"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_unload_failed_office"
-        app:layout_constraintBottom_toBottomOf="@+id/from_count"
+        android:src="@drawable/ic_intransit_item_error"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
-        app:layout_constraintTop_toTopOf="@+id/from_count" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/image_item_border"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_courier_intransit_item_border_red"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

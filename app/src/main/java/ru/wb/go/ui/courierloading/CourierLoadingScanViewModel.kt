@@ -84,7 +84,8 @@ class CourierLoadingScanViewModel(
 
     private val _timeOut = SingleLiveEvent<Boolean>()
         .apply { value = false }
-    val timeOut: LiveData<Boolean> get() = _timeOut
+    val timeOut: LiveData<Boolean>
+        get() = _timeOut
 
     init {
         observeNetworkState()

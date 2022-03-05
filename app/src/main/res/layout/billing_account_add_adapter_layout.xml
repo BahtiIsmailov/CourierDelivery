@@ -16,7 +16,7 @@
         android:clickable="true"
         android:padding="10dp"
         android:src="@drawable/ic_billing_add_account"
-        tools:ignore="KeyboardInaccessibleWidget" />
+        tools:ignore="ContentDescription,KeyboardInaccessibleWidget" />
 
     <TextView
         android:id="@+id/text1"

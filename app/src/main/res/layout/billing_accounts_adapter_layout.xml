@@ -48,7 +48,7 @@
 
         <TextView
             android:id="@+id/text_1"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -75,7 +75,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="KeyboardInaccessibleWidget" />
+            tools:ignore="ContentDescription,KeyboardInaccessibleWidget" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

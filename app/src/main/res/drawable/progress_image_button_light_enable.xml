@@ -2,6 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="@color/button_light_enabled" />
+    <solid android:color="@color/lvl_1" />
 
 </shape>
