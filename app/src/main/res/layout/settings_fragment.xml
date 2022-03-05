@@ -42,7 +42,6 @@
         android:id="@+id/sett_divider2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginVertical="12dp"
         android:background="@color/colorDividerPale"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +75,6 @@
         android:id="@+id/sett_divider3"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginVertical="12dp"
         android:background="@color/colorDividerPale"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -110,7 +108,6 @@
         android:id="@+id/sett_divider4"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginVertical="12dp"
         android:background="@color/colorDividerPale"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,14 +115,14 @@
 
     <TextView
         android:id="@+id/scannerAutoOffTitle"
-        style="@style/MediumDarkRegularText"
+        style="@style/MediumSecondaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/pad16"
         android:text="@string/scannerAutoOffHint"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/scannerAutoOff"
-        app:layout_constraintTop_toBottomOf="@+id/sett_divider3" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sett_divider4" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/scannerAutoOff"
@@ -135,9 +132,9 @@
         android:layout_centerVertical="true"
         android:checked="false"
         android:paddingHorizontal="@dimen/pad16"
-        app:layout_constraintBottom_toBottomOf="@id/scannerAutoOffTitle"
+        app:layout_constraintBottom_toBottomOf="@+id/scannerAutoOffTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sett_divider3"
+        app:layout_constraintTop_toTopOf="@+id/scannerAutoOffTitle"
         app:showText="false" />
 
     <View
@@ -145,7 +142,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="12dp"
-        android:background="#EDEEF0"
+        android:background="@color/colorDividerPale"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scannerAutoOff" />
