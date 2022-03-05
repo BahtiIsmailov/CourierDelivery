@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/name_warehouse"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/pad16"
@@ -35,7 +35,7 @@
 
     <TextView
         android:id="@+id/full_address_warehouse"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/pad16"

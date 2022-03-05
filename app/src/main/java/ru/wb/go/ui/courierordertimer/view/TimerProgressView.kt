@@ -8,11 +8,14 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
+import androidx.core.content.ContextCompat
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import ru.wb.go.R
+import ru.wb.go.utils.LogUtils
 import java.util.concurrent.TimeUnit
 
 class TimerProgressView : View {
@@ -20,7 +23,7 @@ class TimerProgressView : View {
     private val pCenter = Point(0, 0)
     private val rectBox = RectF()
     private val rectScale = RectF()
-    private var currentAngle = 0
+    private var currentAngle = 0.0F
 
     @FloatRange(from = MIN_PROGRESS_SCALE.toDouble(), to = MAX_PROGRESS_SCALE.toDouble())
     private var progress = DEFAULT_PROGRESS_VALUE
@@ -64,7 +67,7 @@ class TimerProgressView : View {
                     R.styleable.TimerProgressView_ap_progress,
                     DEFAULT_PROGRESS_VALUE
                 )
-                progress = styleProgress.coerceAtMost(MAX_ANGLE_SCALE.toFloat())
+                progress = styleProgress.coerceAtMost(MAX_ANGLE_SCALE)
                 progressWidth = array.getInteger(
                     R.styleable.TimerProgressView_ap_progress_width,
                     DEFAULT_STROKE_WIDTH_SCALE
@@ -108,8 +111,8 @@ class TimerProgressView : View {
     private fun calculateRect() {}
 
     private fun calculateAnimationAngle(animationProgress: Float) {
-        val factor = MAX_ANGLE_SCALE.toFloat() / MAX_PROGRESS_SCALE
-        currentAngle = (factor * animationProgress).toInt()
+        val factor = MAX_ANGLE_SCALE / MAX_PROGRESS_SCALE
+        currentAngle = factor * animationProgress
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -132,18 +135,18 @@ class TimerProgressView : View {
 
     private fun drawDivider() {
         if (!isDividerScale) return
-        val scaleWidth = dpToPx(progressWidth).toFloat() / 2
+        val scaleWidth = dpToPx(progressWidth).toFloat() / 4
         val backgroundPaint = Paint()
         backgroundPaint.style = Paint.Style.STROKE
         backgroundPaint.isAntiAlias = true
         backgroundPaint.strokeCap = Paint.Cap.ROUND
-        backgroundPaint.color = scaleWaitColor
+        backgroundPaint.color = ContextCompat.getColor(context, R.color.colorDividerPale)
         backgroundPaint.strokeWidth = scaleWidth
         val pRadiusScale = radiusBox * RADIUS_SCALE
         canvas!!.drawLine(
-            pCenter.x.toFloat() - pRadiusScale,
+            pCenter.x.toFloat() - pRadiusScale / 2,
             pCenter.y.toFloat(),
-            pCenter.x.toFloat() + pRadiusScale,
+            pCenter.x.toFloat() + pRadiusScale / 2,
             pCenter.y.toFloat(),
             backgroundPaint
         )
@@ -157,7 +160,8 @@ class TimerProgressView : View {
         pCenter[width / 2] = height / 2
     }
 
-    private fun drawArc(currentAngle: Int) {
+    private fun drawArc(currentAngle: Float) {
+        LogUtils { logDebugApp("drawArc " + currentAngle) }
         val pRadiusScale = radiusBox * RADIUS_SCALE
         val scaleWidth = dpToPx(progressWidth).toFloat()
         val backgroundPaint = Paint()
@@ -206,6 +210,11 @@ class TimerProgressView : View {
     ) {
         this.progress = progress
         recalculate()
+        invalidate()
+    }
+
+    fun setScaleWaitColorColor(@ColorInt scaleWaitColor: Int) {
+        this.scaleWaitColor = scaleWaitColor
         invalidate()
     }
 
@@ -267,7 +276,7 @@ class TimerProgressView : View {
         private const val DEFAULT_PROGRESS_FOREGROUND_COLOR = -0x9bd35d
         private const val FRAMES_PER_SECOND = 20
         private const val FRAME_FACTOR = 0.20f
-        private const val MAX_ANGLE_SCALE = 360
+        private const val MAX_ANGLE_SCALE = 360.0f
         private const val MIN_PROGRESS_SCALE = 0f
         private const val MAX_PROGRESS_SCALE = 100f
         private const val DEFAULT_PROGRESS_VALUE = 0f

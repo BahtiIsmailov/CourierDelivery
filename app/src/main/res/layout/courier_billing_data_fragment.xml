@@ -33,7 +33,7 @@
 
             <TextView
                 android:id="@+id/recipient_title"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -97,7 +97,7 @@
 
             <TextView
                 android:id="@+id/account_title"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"

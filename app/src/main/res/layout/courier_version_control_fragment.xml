@@ -40,7 +40,7 @@
 
         <TextView
             android:id="@+id/version_title"
-            style="@style/VeryLargeBlackRegularText"
+            style="@style/VeryLargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
@@ -48,7 +48,7 @@
 
         <TextView
             android:id="@+id/info"
-            style="@style/LargeLightRegularText"
+            style="@style/LargeLvl2RegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#B499D4</color>
+
+    <color name="primary">#EEEDEE</color>
+    <color name="secondary">#A8A4AB</color>
+    <color name="tertiary">#7B787D</color>
+    <color name="lvl_1">#121212</color>
+    <color name="lvl_2">#252525</color>
+
+    <color name="colorDividerPale">#363636</color>
+    <color name="colorDividerSaturated">#474747</color>
+
+    <color name="green">#66CF80</color>
+    <color name="red">#CF6679</color>
+    <color name="yellow">#E5B060</color>
+    <color name="blue">#7EA5E0</color>
+
+    <color name="colorPrimaryTransparentlySelectableLight">#00B499D4</color>
+    <color name="colorPrimaryTransparentlySelectableDark">#24B499D4</color>
+
+    <color name="colorGreenTransparentlySelectableLight">#0066CF80</color>
+    <color name="colorGreenTransparentlySelectableDark">#2466CF80</color>
+
+    <color name="colorRedTransparentlySelectableLight">#00CF6679</color>
+    <color name="colorRedTransparentlySelectableDark">#24CF6679</color>
+
+    <color name="colorYellowTransparentlySelectableLight">#00E5B060</color>
+    <color name="colorYellowTransparentlySelectableDark">#24E5B060</color>
+
+    <color name="colorBlueTransparentlySelectableLight">#007EA5E0</color>
+    <color name="colorBlueTransparentlySelectableDark">#247EA5E0</color>
+
+</resources>

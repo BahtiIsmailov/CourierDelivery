@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:selectableItemBackground"
+    android:background="@color/lvl_1"
     android:clickable="true"
     android:focusable="true"
     android:orientation="horizontal">
@@ -18,12 +18,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/courier_background_select_pvz"
+        app:srcCompat="@drawable/courier_intransit_background_select_red"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/box_address"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -36,7 +36,7 @@
 
     <TextView
         android:id="@+id/delivery_prefix"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -49,7 +49,7 @@
 
     <TextView
         android:id="@+id/delivery_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -61,7 +61,7 @@
 
     <TextView
         android:id="@+id/divider_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -72,7 +72,7 @@
 
     <TextView
         android:id="@+id/from_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -86,8 +86,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_intransit_is_faild_unloading_expects"
+        android:src="@drawable/ic_intransit_item_error"
+        app:layout_constraintBottom_toBottomOf="@+id/from_count"
         app:layout_constraintEnd_toEndOf="@+id/selected_background"
-        app:layout_constraintTop_toTopOf="@+id/delivery_prefix" />
+        app:layout_constraintTop_toTopOf="@+id/from_count"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/image_item_border"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_courier_intransit_item_border_red"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,99 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    <color name="colorPrimary">#642CA3</color>-->
-<!--    <color name="colorPrimaryTransparently">#A577DA</color>-->
-<!--    <color name="colorPrimaryTransparentlySelectableDark">#28B499D4</color>-->
-<!--    <color name="colorPrimaryTransparentlySelectableLight">#00B499D4</color>-->
+    <color name="colorPrimary">#642CA3</color>
 
-    <color name="colorPrimary">#B499D4</color>
-
-    <color name="colorPrimaryTransparentlySelectableLight">#00B499D4</color>
-    <color name="colorPrimaryTransparentlySelectableDark">#29B499D4</color>
-
-    <color name="colorBlueTransparentlySelectableLight">#007EA5E0</color>
-    <color name="colorBlueTransparentlySelectableDark">#247EA5E0</color>
-
-<!--    <color name="primary">#2C2731</color>-->
-<!--    <color name="secondary">#767479</color>-->
-<!--    <color name="tertiary">#A6A3AA</color>-->
-<!--    <color name="lvl_1">#FFFFFF</color>-->
-<!--    <color name="lvl_2">#F9F9FA</color>-->
-
-    <color name="primary">#EEEDEE</color>
-    <color name="secondary">#A8A4AB</color>
-    <color name="tertiary">#7B787D</color>
-    <color name="lvl_1">#121212</color>
-    <color name="lvl_2">#252525</color>
-
-<!--    <color name="white">#FFFFFF</color>-->
-<!--    <color name="green">#1EBD48</color>-->
-<!--    <color name="red">#B00020</color>-->
-<!--    <color name="yellow">#EB9826</color>-->
-<!--    <color name="blue">#1C6FEB</color>-->
-
-    <color name="green">#30D158</color>
-    <color name="red">#CF6679</color>
-    <color name="yellow">#FF9F0A</color>
-    <color name="blue">#7EA5E0</color>
-
-
-    <color name="colorPrimaryDark">#291466</color>
-    <color name="colorStatusBarBackground">#F2F3F5</color>
-    <color name="colorSecondary">#642CA3</color>
-    <color name="colorControlNormal">#8948D3</color>
+    <color name="primary">#2C2731</color>
+    <color name="secondary">#767479</color>
+    <color name="tertiary">#A6A3AA</color>
+    <color name="lvl_1">#FFFFFF</color>
+    <color name="lvl_2">#F9F9FA</color>
 
     <color name="colorDividerPale">#F3F2F5</color>
     <color name="colorDividerSaturated">#EBEBEB</color>
 
+    <color name="green">#00B02C</color>
+    <color name="red">#B00020</color>
+    <color name="yellow">#F09000</color>
+    <color name="blue">#1C6FEB</color>
+
+    <color name="colorPrimaryTransparentlySelectableLight">#00B499D4</color>
+    <color name="colorPrimaryTransparentlySelectableDark">#16B499D4</color>
+
+    <color name="colorGreenTransparentlySelectableLight">#0000B02C</color>
+    <color name="colorGreenTransparentlySelectableDark">#1600B02C</color>
+
+    <color name="colorRedTransparentlySelectableLight">#00B00020</color>
+    <color name="colorRedTransparentlySelectableDark">#16B00020</color>
+
+    <color name="colorYellowTransparentlySelectableLight">#00F09000</color>
+    <color name="colorYellowTransparentlySelectableDark">#16F09000</color>
+
+    <color name="colorBlueTransparentlySelectableLight">#001C6FEB</color>
+    <color name="colorBlueTransparentlySelectableDark">#161C6FEB</color>
+
+    <color name="colorPrimaryDark">#291466</color>
+    <color name="colorSecondary">#642CA3</color>
+    <color name="colorControlNormal">#8948D3</color>
+
     <color name="transparent">#0000</color>
     <color name="button_default_pressed">#703AAC</color>
 
-
-    <color name="info_">#DBD7E0</color>
-    <color name="error_">#DF1F00</color>
-    <color name="icon_default_">#CCC5D3</color>
-    <color name="background_content_">#E5E5E5</color>
-    <color name="background_tint_">#FD3F18</color>
-    <color name="background_search_view_">#F1F1F4</color>
-    <color name="background_transparently_">#97276EA6</color>
-    <color name="invalid_">#B00020</color>
-    <color name="btn_clear_phone_">#DBD7E0</color>
-    <color name="text_toolbar_">#17233B</color>
-    <color name="text_spannable_phone_">#231D2A</color>
-    <color name="text_info_">#6F6779</color>
-    <color name="splash_text_">#fafafa</color>
-    <color name="delivery_flight_background_">#F1F1F4</color>
-    <color name="delivery_empty_background_">#F6F6F6</color>
-    <color name="background_transparent_text_">#F9F5FD</color>
-    <color name="background_transparent_loader_">#72F9F5FD</color>
-    <color name="button_alert_text_enable_">#B00020</color>
-    <color name="button_alert_text_progress_">#E0DDE4</color>
-    <color name="button_alert_text_disable_">#E0DDE4</color>
-    <color name="button_round_default_disabled_">#E0DDE4</color>
-    <color name="button_default_disabled_">#EAE8ED</color>
-    <color name="button_refused_disabled_">#EAE8ED</color>
-    <color name="button_refused_enabled_">#FDF4F2</color>
-    <color name="button_refused_pressed_">#CDFDF4F2</color>
-    <color name="button_default_enabled1_">#EFE8F7</color>
-    <color name="button_default_pressed1_">#E6D1FF</color>
-    <color name="button_light_disabled_">#E0DDE4</color>
-    <color name="button_light_pressed_">#E0DDE4</color>
-    <color name="button_gray_disabled_">#F3F1F6</color>
-    <color name="button_gray_enabled_">#E0DDE4</color>
-    <color name="button_gray_pressed_">#BEBBC1</color>
-    <color name="button_success_disabled_">#F3F1F6</color>
-    <color name="button_danger_disabled_">#F3F1F6</color>
-    <color name="button_danger_enabled_">#B00020</color>
-    <color name="button_danger_pressed_">#C50225</color>
-    <color name="button_warning_disabled_">#F3F1F6</color>
-    <color name="mtrl_textinput_default_box_stroke_color_">#673AB7</color>
-    <color name="keyboard_text_color_">#231D2A</color>
-    <color name="color_arc_scale_current_">#673AB7</color>
-    <color name="color_arc_scale_wait_">#E6E3EB</color>
-    <color name="disable_icon_">#D1CED5</color>
-    <color name="enable_icon_">#673AB7</color>
-    <color name="init_scan_status_">#99939F</color>
-    <color name="start_scan_status_">#673AB7</color>
-    <color name="support_tab_number_background_">#B3B6D8F1</color>
+    <color name="transparentKeyboardClick">#25A8A4AB</color>
 
 </resources>

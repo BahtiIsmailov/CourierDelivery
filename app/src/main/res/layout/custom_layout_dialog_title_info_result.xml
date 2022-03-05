@@ -8,36 +8,38 @@
     <ImageView
         android:id="@+id/title_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:layout_height="wrap_content"
         android:src="@drawable/ic_dialog_title_alarm"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/VeryLargeBlackRegularText"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
         android:textStyle="bold"
         tools:text="Title" />
 
     <TextView
         android:id="@+id/message"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="24dp"
         android:lineSpacingExtra="5sp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
         tools:text="Message" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:gravity="end"
         android:orientation="horizontal"
         android:paddingTop="12dp"
@@ -45,16 +47,16 @@
 
         <Button
             android:id="@+id/positive"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginEnd="24dp"
             android:background="?selectableItemBackgroundBorderless"
             android:textAllCaps="false"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
-            tools:text="Отмена" />
+            tools:ignore="ButtonStyle"
+            tools:text="Ok" />
 
     </LinearLayout>
 

@@ -177,12 +177,8 @@ class CourierUnloadingScanFragment : Fragment() {
             when (state) {
                 is UnloadingFragmentState.Empty -> {
                     binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(grayColor())
-                    binding.statusIcon.visibility = View.VISIBLE
+                    binding.statusLayout.setBackgroundColor(primaryColor())
                     binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.lvl_2)
-                    )
                     binding.totalBoxes.text = state.data.accepted
                     binding.counterLayout.isEnabled = false
                     binding.boxAddress.text = state.data.address
@@ -191,7 +187,6 @@ class CourierUnloadingScanFragment : Fragment() {
                 is UnloadingFragmentState.BoxInit -> {
                     binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(grayColor())
-                    binding.statusIcon.visibility = View.VISIBLE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.totalBoxes.text = state.data.accepted
@@ -202,7 +197,6 @@ class CourierUnloadingScanFragment : Fragment() {
                 is UnloadingFragmentState.BoxAdded -> {
                     binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(colorGreen())
-                    binding.statusIcon.visibility = View.GONE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.totalBoxes.text = state.data.accepted
@@ -213,7 +207,6 @@ class CourierUnloadingScanFragment : Fragment() {
                 is UnloadingFragmentState.UnknownQr -> {
                     binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(getColor(R.color.yellow))
-                    binding.statusIcon.visibility = View.GONE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.boxAddress.text = state.data.address
@@ -223,7 +216,6 @@ class CourierUnloadingScanFragment : Fragment() {
                 is UnloadingFragmentState.ScannerReady -> {
                     binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(grayColor())
-                    binding.statusIcon.visibility = View.VISIBLE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.totalBoxes.text = state.data.accepted
@@ -234,7 +226,6 @@ class CourierUnloadingScanFragment : Fragment() {
                 is UnloadingFragmentState.ForbiddenBox -> {
                     binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(colorRed())
-                    binding.statusIcon.visibility = View.GONE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.boxAddress.text = state.data.address
@@ -244,7 +235,6 @@ class CourierUnloadingScanFragment : Fragment() {
                 is UnloadingFragmentState.WrongBox -> {
                     binding.ribbonStatus.text = state.data.status
                     binding.statusLayout.setBackgroundColor(colorRed())
-                    binding.statusIcon.visibility = View.GONE
                     binding.qrCode.text = state.data.qrCode
                     binding.qrCode.setTextColor(colorBlack())
                     binding.boxAddress.text = state.data.address
@@ -256,6 +246,8 @@ class CourierUnloadingScanFragment : Fragment() {
     }
 
     private fun getColor(colorId: Int) = ContextCompat.getColor(requireContext(), colorId)
+
+    private fun primaryColor() = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
 
     private fun grayColor() = ContextCompat.getColor(requireContext(), R.color.lvl_2)
 

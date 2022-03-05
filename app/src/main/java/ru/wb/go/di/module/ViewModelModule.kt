@@ -48,7 +48,7 @@ import ru.wb.go.ui.settings.SettingsViewModel
 val viewModelModule = module {
     viewModel { AppLoaderViewModel(get(), get(), get()) }
     viewModel { AuthLoaderViewModel(get(), get()) }
-    viewModel { AppViewModel(get(), get(), get(), get(), get()) }
+    viewModel { AppViewModel(get(), get(), get(), get(), get(), get()) }
 
     viewModel { NumberPhoneViewModel(get(), get(), get(), get()) }
     viewModel { (parameters: CheckSmsParameters) ->

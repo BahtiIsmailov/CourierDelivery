@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/VeryLargeBlackRegularText"
+            style="@style/VeryLargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/return_danger"
@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/unload_box_error_message"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/title"

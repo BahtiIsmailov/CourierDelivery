@@ -16,7 +16,7 @@
         app:ap_progress_background_color="@color/lvl_1"
         app:ap_progress_foreground_color="@color/colorPrimary"
         app:ap_progress_scale_current_color="@color/colorPrimary"
-        app:ap_progress_scale_wait_color="@color/primary"
+        app:ap_progress_scale_wait_color="@color/lvl_2"
         app:ap_progress_width="5"
         app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,17 +25,17 @@
 
     <TextView
         android:id="@+id/arrive"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Резерв"
+        android:text="@string/courier_orders_timer_reserve"
         app:layout_constraintBottom_toTopOf="@+id/time_digit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/time_digit"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -57,18 +57,18 @@
 
     <TextView
         android:id="@+id/gate"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Ворота"
+        android:text="@string/courier_orders_timer_gate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 
     <TextView
         android:id="@+id/gate_digit"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="40sp"
@@ -80,7 +80,7 @@
 
     <TextView
         android:id="@+id/order"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -92,7 +92,7 @@
 
     <TextView
         android:id="@+id/name"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -103,21 +103,18 @@
 
     <ImageView
         android:id="@+id/home_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_width="@dimen/pad16"
+        android:layout_height="@dimen/pad16"
+        android:layout_marginStart="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="@+id/name"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/name"
         app:srcCompat="@drawable/ic_home"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/coast"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -128,21 +125,18 @@
 
     <ImageView
         android:id="@+id/coast_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_width="@dimen/pad16"
+        android:layout_height="@dimen/pad16"
+        android:layout_marginStart="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="@+id/coast"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/coast"
         app:srcCompat="@drawable/ic_coast"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/volume"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -153,21 +147,18 @@
 
     <ImageView
         android:id="@+id/show_route_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_width="@dimen/pad16"
+        android:layout_height="@dimen/pad16"
+        android:layout_marginStart="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="@+id/volume"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/volume"
         app:srcCompat="@drawable/ic_box_count"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/pvz"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -178,14 +169,11 @@
 
     <ImageView
         android:id="@+id/pvz_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_width="@dimen/pad16"
+        android:layout_height="@dimen/pad16"
+        android:layout_marginStart="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="@+id/pvz"
-        app:layout_constraintEnd_toStartOf="@+id/icon_vertical"
-        app:layout_constraintStart_toStartOf="@+id/icon_vertical"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/pvz"
         app:srcCompat="@drawable/ic_pvz_count"
         tools:ignore="ContentDescription" />
@@ -197,20 +185,13 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/icon_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.055" />
-
     <ImageButton
         android:id="@+id/refuse_order"
         android:layout_width="64dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/progress_image_button_round_refuse"
+        android:background="@drawable/progress_image_button_round_default_background"
         android:src="@drawable/ic_stop_timer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -230,7 +211,7 @@
         app:progress_button_name="Начать погрузку"
         app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/colorPrimary"
-        app:progress_button_text_color_progress="@color/colorPrimary" />
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

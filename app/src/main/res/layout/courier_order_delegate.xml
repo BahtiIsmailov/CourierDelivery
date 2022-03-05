@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/linerNumber"
-        style="@style/MediumBrightSmallRegularText"
+        style="@style/MediumLvl1SmallRegularText"
         android:layout_width="@dimen/pad24"
         android:layout_height="@dimen/pad24"
         android:layout_marginHorizontal="@dimen/pad16"
@@ -44,7 +44,7 @@
 
     <TextView
         android:id="@+id/orderId"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -55,7 +55,7 @@
 
     <TextView
         android:id="@+id/countOffice"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -65,7 +65,7 @@
 
     <TextView
         android:id="@+id/cost"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -87,7 +87,7 @@
 
     <TextView
         android:id="@+id/cargo"
-        style="@style/SmallDarkRegularText"
+        style="@style/SmallSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -99,7 +99,7 @@
         tools:text="@sample/orders.json/orders/val" />
 
     <TextView
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/pad8"

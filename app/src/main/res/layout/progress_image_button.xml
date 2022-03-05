@@ -41,11 +41,12 @@
         android:id="@+id/icon_image"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text"
-        style="@style/LargeBrightMediumText"
+        style="@style/LargeLvl1RegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

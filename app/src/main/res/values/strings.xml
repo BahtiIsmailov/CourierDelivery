@@ -260,6 +260,9 @@
     <string name="courier_orders_timer_dialog_negative_button">Отмена</string>
     <string name="courier_orders_timer_dialog_positive_button">Отказаться</string>
 
+    <string name="courier_orders_timer_reserve">Резерв</string>
+    <string name="courier_orders_timer_gate">Ворота</string>
+
     <string name="courier_order_scanner_label">Погрузка</string>
     <string name="courier_order_scanner_complete">Завершить погрузку</string>
     <string name="courier_order_scanner_unknown_qr">\?????????</string>
@@ -289,17 +292,22 @@
 
     <string name="courier_unloading_scanner_complete">Завершить выгрузку</string>
     <string name="courier_unloading_scanner_accepted">%1$d/%2$d шт.</string>
-    <string name="courier_unloading_scanner_ready_status">ОТСКАНИРУЙТЕ</string>
+    <string name="courier_unloading_scanner_ready_status">НАЧНИТЕ СКАНИРОВАНИЕ</string>
     <string name="courier_unloading_scanner_unknown_status">ВЕРНИТЕ КОРОБКУ В МАШИНУ</string>
     <string name="courier_unloading_scanner_added_status">ВЫГРУЗИТЕ НА ПВЗ</string>
     <string name="courier_unloading_scanner_empty_qr">000000000</string>
     <string name="courier_unloading_scanner_empty_address">-</string>
+    <string name="courier_unloading_delivery">Доставил</string>
+    <string name="courier_unloading_address">Адрес доставки</string>
+    <string name="courier_unloading_qr">QR</string>
+
     <string name="courier_unloading_dialog_complete_title">Завершить выгрузку?</string>
     <string name="courier_unloading_dialog_message">Выгружено • %1$d из %2$d</string>
-
     <string name="courier_unloading_dialog_title_error">QR-код коробки не распознан</string>
     <string name="courier_unloading_dialog_message_error" />
     <string name="courier_unloading_dialog_button_error">Понятно</string>
+
+
 
     <string name="courier_complete_delivery_title">Спасибо за проделанную работу!</string>
     <string name="courier_complete_delivery_earned">Заработано</string>
@@ -522,6 +530,10 @@
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
 
+    <string name="courier_intransit_office_scanner_info">Наведите камеру на QR-код,\ncканирование произойдет автоматически</string>
+
+
+
 
 
     <string name="auth_user_fio">Фамилия</string>
@@ -553,8 +565,10 @@
     <string name="arrive_hint">Прибыть</string>
     <string name="receive_wrong_box">Вы не принимали эту коробку на складе</string>
     <string name="remain_box_title">Осталось выгрузить</string>
+
     <string name="settings_title">Настройки</string>
-    <string name="autoflash_hint">Автоматически включать подсветку при работе с камерой</string>
-    <string name="voice_help_hint">Голосовое сопровождение результата сканирования</string>
+    <string name="settings_autoflash_hint">Автоматически включать подсветку при работе с камерой</string>
+    <string name="settings_voice_help_hint">Голосовое сопровождение результата сканирования</string>
+    <string name="settings_theme_help_hint">Включить темную тему</string>
 
 </resources>

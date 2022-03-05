@@ -3,13 +3,14 @@ package ru.wb.go.ui.app
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
-import java.lang.IllegalStateException
+import ru.wb.go.utils.managers.SettingsManager
 
 class AppViewModel(
     compositeDisposable: CompositeDisposable,
@@ -17,6 +18,7 @@ class AppViewModel(
     private val interactor: AppInteractor,
     private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager,
+    private val settingsManager: SettingsManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _networkState = MutableLiveData<NetworkState>()
@@ -60,6 +62,13 @@ class AppViewModel(
     fun onExitClick() {
         interactor.exitAuth()
         _navigation.value = NavigateToRegistration
+    }
+
+    fun getDarkThemeSetting(): Boolean {
+        return settingsManager.getSetting(
+            AppPreffsKeys.SETTING_THEME,
+            false
+        )
     }
 
     override fun getScreenTag(): String {

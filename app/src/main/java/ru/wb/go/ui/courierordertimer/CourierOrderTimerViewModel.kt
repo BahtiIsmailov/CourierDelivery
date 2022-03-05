@@ -98,6 +98,10 @@ class CourierOrderTimerViewModel(
     }
 
     private fun timeIsOut() {
+        _orderTimer.value = CourierOrderTimerState.TimerIsOut(
+            DateTimeFormatter.getAnalogTime(0, 0),
+            DateTimeFormatter.getDigitTime(0)
+        )
         _timeOut.postValue(true)
         _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
             DialogInfoStyle.WARNING.ordinal,

@@ -25,7 +25,7 @@
         android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
         android:gravity="center"
         android:text="@string/auth_check_sms_input"
-        android:textAppearance="@style/LargeBlackRegularText"
+        android:textAppearance="@style/LargePrimaryRegularText"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +104,7 @@
         android:layout_marginBottom="4dp"
         android:gravity="center"
         android:lineSpacingExtra="4sp"
-        android:textAppearance="@style/MediumDarkRegularText"
+        android:textAppearance="@style/MediumSecondaryRegularText"
         app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +112,7 @@
 
     <TextView
         android:id="@+id/repeat_sms_timer"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -123,7 +123,7 @@
 
     <TextView
         android:id="@+id/repeat_sms"
-        style="@style/LargeDarkRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"

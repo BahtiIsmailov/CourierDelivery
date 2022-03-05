@@ -15,7 +15,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
 
-
         <include
             android:id="@+id/toolbar_layout"
             layout="@layout/toolbar_layout"
@@ -36,12 +35,12 @@
 
         <TextView
             android:id="@+id/info_status"
-            style="@style/MediumBrightSmallRegularText"
+            style="@style/MediumPrimaryRegularText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:gravity="center"
-            android:text="Наведите камеру на QR-код,\ncканирование произойдет автоматически"
+            android:text="@string/courier_intransit_office_scanner_info"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
@@ -77,7 +76,7 @@
 
             <TextView
                 android:id="@+id/title"
-                style="@style/VeryLargeBlackRegularText"
+                style="@style/VeryLargePrimaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -90,7 +89,7 @@
 
             <TextView
                 android:id="@+id/message"
-                style="@style/LargeDarkRegularText"
+                style="@style/LargeSecondaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -116,8 +115,8 @@
                 app:progress_button_name="Понятно"
                 app:progress_button_state="enable"
                 app:progress_button_text_color_disable="@color/tertiary"
-                app:progress_button_text_color_enable="@color/colorPrimary"
-                app:progress_button_text_color_progress="@color/colorPrimary" />
+                app:progress_button_text_color_enable="@color/lvl_1"
+                app:progress_button_text_color_progress="@color/lvl_1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/coast"
-        style="@style/ExtraLargeBlackRegularText"
+        style="@style/ExtraLargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
@@ -97,7 +97,7 @@
 
         <TextView
             android:id="@+id/empty_title"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"

@@ -7,40 +7,37 @@
     android:layout_height="match_parent"
     android:background="@color/lvl_1">
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="128dp"
+        android:src="@drawable/ic_intransit_load_complete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_intransit_load_complete" />
+    <TextView
+        android:id="@+id/textView2"
+        style="@style/VeryLargePrimaryRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/pad16"
+        android:text="@string/start_delivery_title"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:textStyle="bold"
-            style="@style/VeryLargeBlackRegularText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="@string/start_delivery_title" />
-
-    </LinearLayout>
 
     <View
         android:id="@+id/divider2"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:layout_marginBottom="68dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        android:layout_marginBottom="18dp"
+        android:background="@color/colorDividerPale"
+        app:layout_constraintBottom_toTopOf="@+id/earned"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -50,41 +47,32 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:src="@drawable/ic_start_delivery_amount"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        app:layout_constraintBottom_toBottomOf="@+id/earned"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toTopOf="@+id/earned"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/earned"
-        style="@style/LargeLightRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:layout_marginBottom="@dimen/pad24"
         android:text="@string/start_delivery_amount"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
-        app:layout_constraintStart_toEndOf="@+id/ic_delivered"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintBottom_toTopOf="@+id/delivered"
+        app:layout_constraintStart_toEndOf="@+id/ic_delivered" />
 
     <TextView
         android:id="@+id/earned_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider1"
+        app:layout_constraintBottom_toBottomOf="@+id/earned"
         app:layout_constraintStart_toEndOf="@+id/earned"
-        app:layout_constraintTop_toBottomOf="@+id/divider2"
+        app:layout_constraintTop_toTopOf="@+id/earned"
         tools:text="3200 \u20BD" />
-
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_marginBottom="68dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/ic_delivered"
@@ -92,41 +80,32 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:src="@drawable/ic_start_delivery_count"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintBottom_toBottomOf="@+id/delivered"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider1" />
+        app:layout_constraintTop_toTopOf="@+id/delivered"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/delivered"
-        style="@style/LargeLightRegularText"
+        style="@style/LargeSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:layout_marginBottom="34dp"
         android:text="@string/start_delivery_count"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
-        app:layout_constraintStart_toEndOf="@+id/ic_delivered"
-        app:layout_constraintTop_toTopOf="@+id/divider1" />
+        app:layout_constraintBottom_toTopOf="@+id/complete_delivery_button"
+        app:layout_constraintStart_toEndOf="@+id/ic_delivered" />
 
     <TextView
         android:id="@+id/delivered_count"
-        style="@style/LargeBlackRegularText"
+        style="@style/LargePrimaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintBottom_toBottomOf="@+id/delivered"
         app:layout_constraintStart_toEndOf="@+id/delivered"
-        app:layout_constraintTop_toTopOf="@+id/divider1"
+        app:layout_constraintTop_toTopOf="@+id/delivered"
         tools:text="66 шт." />
-
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_marginBottom="24dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toTopOf="@+id/complete_delivery_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <ru.wb.go.views.ProgressButtonView
         android:id="@+id/complete_delivery_button"
@@ -142,7 +121,7 @@
         app:progress_button_name="@string/start_delivery"
         app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/colorPrimary"
-        app:progress_button_text_color_progress="@color/colorPrimary" />
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

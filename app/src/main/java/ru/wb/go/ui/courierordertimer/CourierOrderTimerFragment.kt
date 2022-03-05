@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -64,7 +65,7 @@ class CourierOrderTimerFragment : Fragment() {
         }
 
         setFragmentResultListener(DIALOG_INFO_TAG) { _, _ ->
-            if (viewModel.timeOut.value==true){
+            if (viewModel.timeOut.value == true) {
                 viewModel.timeOutReturnToList()
             }
         }
@@ -95,6 +96,13 @@ class CourierOrderTimerFragment : Fragment() {
                 is CourierOrderTimerState.Timer -> {
                     binding.timer.setProgress(it.timeAnalog)
                     binding.timeDigit.text = it.timeDigit
+                }
+                is CourierOrderTimerState.TimerIsOut -> {
+                    val isOutColor = ContextCompat.getColor(requireContext(), R.color.red)
+                    binding.timer.setProgress(it.timeAnalog)
+                    binding.timer.setScaleWaitColorColor(isOutColor)
+                    binding.timeDigit.text = it.timeDigit
+                    binding.timeDigit.setTextColor(isOutColor)
                 }
             }
         }

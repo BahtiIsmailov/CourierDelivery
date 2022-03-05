@@ -29,7 +29,7 @@
         android:id="@+id/ribbon_status"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/lvl_2"
+        android:background="@color/colorPrimary"
         android:gravity="center"
         android:letterSpacing="0.2"
         tools:text="Начните сканирование"
@@ -51,7 +51,7 @@
 
         <TextView
             android:id="@+id/prefix_qr_code"
-            style="@style/VeryLargeDarkRegularText"
+            style="@style/VeryLargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -62,7 +62,7 @@
 
         <TextView
             android:id="@+id/qr_code"
-            style="@style/VeryLargeLightRegularText"
+            style="@style/VeryLargeLvl2RegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -99,14 +99,14 @@
 
             <TextView
                 android:id="@+id/receive_title"
-                style="@style/LargeDarkRegularText"
+                style="@style/LargeSecondaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/courier_loading_receive" />
 
             <TextView
                 android:id="@+id/total_boxes"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -126,7 +126,7 @@
 
             <TextView
                 android:id="@+id/address_title"
-                style="@style/LargeLightRegularText"
+                style="@style/LargeSecondaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -135,7 +135,7 @@
 
             <TextView
                 android:id="@+id/box_address"
-                style="@style/LargeBlackRegularText"
+                style="@style/LargePrimaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -162,8 +162,8 @@
             app:progress_button_name="@string/courier_order_scanner_complete"
             app:progress_button_state="disable"
             app:progress_button_text_color_disable="@color/tertiary"
-            app:progress_button_text_color_enable="@color/colorPrimary"
-            app:progress_button_text_color_progress="@color/colorPrimary" />
+            app:progress_button_text_color_enable="@color/lvl_1"
+            app:progress_button_text_color_progress="@color/lvl_1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -182,10 +182,10 @@
             android:layout_height="wrap_content"
             app:ap_is_divider="true"
             app:ap_progress="0"
-            app:ap_progress_background_color="@color/colorPrimary"
+            app:ap_progress_background_color="@color/lvl_1"
             app:ap_progress_foreground_color="@color/colorPrimary"
             app:ap_progress_scale_current_color="@color/colorPrimary"
-            app:ap_progress_scale_wait_color="@color/primary"
+            app:ap_progress_scale_wait_color="@color/lvl_2"
             app:ap_progress_width="5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -194,7 +194,7 @@
 
         <TextView
             android:id="@+id/arrive"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/courier_loading_reserve"
@@ -204,7 +204,7 @@
 
         <TextView
             android:id="@+id/time_digit"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -226,7 +226,7 @@
 
         <TextView
             android:id="@+id/gate"
-            style="@style/LargeDarkRegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -237,7 +237,7 @@
 
         <TextView
             android:id="@+id/gate_digit"
-            style="@style/LargeBlackRegularText"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"
