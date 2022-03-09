@@ -47,7 +47,7 @@ class SettingsFragment : Fragment() {
         binding.flashSwitch.isChecked =
             viewModel.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
         binding.voiceSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_VOICE_SCAN, true)
-        binding.themeDarkSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_THEME, true)
+        binding.themeDarkSwitch.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_THEME, false)
         binding.scannerAutoOff.isChecked = viewModel.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)
     }
 
