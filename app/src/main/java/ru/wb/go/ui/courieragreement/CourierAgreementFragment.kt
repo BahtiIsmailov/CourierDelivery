@@ -42,7 +42,11 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
 
     private fun initAgreement() {
         val input = requireContext().resources.openRawResource(R.raw.agreement_wbgo)
-        binding.pdfView.fromStream(input).load()
+        binding.pdfView
+            .fromStream(input)
+            .nightMode(viewModel.getDarkThemeSetting())
+            .load()
+        binding.pdfView.invalidate()
         binding.viewProgress.visibility = GONE
     }
 

@@ -97,6 +97,9 @@
 
     <string name="empty_list">Список пуст</string>
 
+    <string name="courier_car_number_title">Введите номер машины</string>
+    <string name="auth_phone_title">Введите номер телефона</string>
+
     <string name="auth_number_phone_toolbar_label">Вход</string>
     <string name="auth_number_phone_phone_hint">Номер телефона</string>
     <string name="auth_number_phone_phone_not_found">Номер не найден, обратитесь к ответственному</string>

@@ -31,12 +31,12 @@
     <color name="colorBlueTransparentlySelectableLight">#001C6FEB</color>
     <color name="colorBlueTransparentlySelectableDark">#161C6FEB</color>
 
-    <color name="colorPrimaryDark">#291466</color>
+    <color name="colorPrimaryDark">#642CA3</color>
     <color name="colorSecondary">#642CA3</color>
-    <color name="colorControlNormal">#8948D3</color>
+<!--    <color name="colorControlNormal">#F09000</color>-->
 
     <color name="transparent">#0000</color>
-    <color name="button_default_pressed">#703AAC</color>
+    <color name="button_default_pressed">#88642CA3</color>
 
     <color name="transparentKeyboardClick">#25A8A4AB</color>
 

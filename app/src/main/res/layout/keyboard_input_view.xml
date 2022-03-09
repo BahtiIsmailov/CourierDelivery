@@ -15,7 +15,6 @@
         android:maxLength="4"
         android:textSize="0px"
         custom:dotsSize="20dp"
-        custom:dotsStrokeWidth="1dp"
         custom:layout_constraintBottom_toTopOf="@id/guideline22"
         custom:layout_constraintLeft_toLeftOf="@id/guideline1"
         custom:layout_constraintRight_toLeftOf="@id/guideline2"

@@ -13,10 +13,9 @@ class PasswordDotsView : AppCompatEditText {
     private var color = 0
     private var count = 0
     private var paint: Paint? = null
-    private var strokeWidth = 0f
     private var dotSize = 0f
 
-    constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(attrs)
     }
@@ -48,12 +47,6 @@ class PasswordDotsView : AppCompatEditText {
                         context, R.color.colorPrimary
                     )
                 )
-            )
-            setStrokeWidth(
-                attributes.getDimensionPixelSize(
-                    R.styleable.DotPasswordView_dotsStrokeWidth,
-                    1
-                ).toFloat()
             )
             setDotSize(
                 attributes.getDimensionPixelSize(R.styleable.DotPasswordView_dotsSize, 7).toFloat()
@@ -94,7 +87,6 @@ class PasswordDotsView : AppCompatEditText {
         val startX = width / count
         setFillStyle(position)
         paint!!.color = color
-        paint!!.strokeWidth = strokeWidth
         paint!!.isAntiAlias = true
         canvas.drawCircle(
             (position * startX + startX / 2).toFloat(),
@@ -122,10 +114,6 @@ class PasswordDotsView : AppCompatEditText {
 
     fun setCount(count: Int) {
         this.count = count
-    }
-
-    fun setStrokeWidth(strokeWidth: Float) {
-        this.strokeWidth = strokeWidth
     }
 
     fun setDotSize(dotSize: Float) {

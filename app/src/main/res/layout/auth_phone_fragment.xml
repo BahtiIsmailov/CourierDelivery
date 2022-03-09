@@ -24,7 +24,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
         android:gravity="center"
-        android:text="Введите номер телефона"
+        android:text="@string/auth_phone_title"
         android:textAppearance="@style/LargePrimaryRegularText"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,8 +90,8 @@
         app:progress_button_name="@string/auth_number_phone_phone_next"
         app:progress_button_state="enable"
         app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/colorPrimary"
-        app:progress_button_text_color_progress="@color/colorPrimary" />
+        app:progress_button_text_color_enable="@color/lvl_1"
+        app:progress_button_text_color_progress="@color/lvl_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -75,7 +75,7 @@ val viewModelModule = module {
         )
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
-    viewModel { CourierAgreementViewModel(get(), get()) }
+    viewModel { CourierAgreementViewModel(get(), get(), get()) }
 
     viewModel { CourierWarehousesViewModel(get(), get(), get(), get(), get()) }
 
@@ -119,7 +119,17 @@ val viewModelModule = module {
 
     viewModel { CourierScannerViewModel(get(), get(), get(), get()) }
     viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { CourierIntransitOfficeScannerViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel {
+        CourierIntransitOfficeScannerViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
             parameters, get(), get(), get(), get(), get(), get(), get()

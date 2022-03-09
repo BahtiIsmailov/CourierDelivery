@@ -16,7 +16,7 @@
         android:layout_marginTop="96dp"
         android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
         android:gravity="center"
-        android:text="Введите номер машины"
+        android:text="@string/courier_car_number_title"
         android:textAppearance="@style/LargePrimaryRegularText"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

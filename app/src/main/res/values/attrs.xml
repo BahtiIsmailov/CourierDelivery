@@ -133,7 +133,6 @@
         <attr name="dotsPasswordCount" format="integer" />
         <attr name="dotsPasswordBackgroundColor" format="color" />
         <attr name="dotsPasswordColor" format="color" />
-        <attr name="dotsStrokeWidth" format="dimension" />
         <attr name="dotsSize" format="dimension" />
     </declare-styleable>
 

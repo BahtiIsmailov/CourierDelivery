@@ -52,8 +52,8 @@
             app:progress_button_name="OK"
             app:progress_button_state="enable"
             app:progress_button_text_color_disable="@color/tertiary"
-            app:progress_button_text_color_enable="@color/colorPrimary"
-            app:progress_button_text_color_progress="@color/colorPrimary" />
+            app:progress_button_text_color_enable="@color/lvl_1"
+            app:progress_button_text_color_progress="@color/lvl_1" />
 
     </LinearLayout>
 
