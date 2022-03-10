@@ -28,8 +28,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
-import ru.wb.go.views.ProgressImageButtonMode
 
 class CourierIntransitFragment : Fragment() {
 
@@ -107,16 +105,8 @@ class CourierIntransitFragment : Fragment() {
         }
 
         viewModel.isEnableBottomState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                true -> {
-                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.ENABLED)
-                    binding.completeDeliveryButton.setState(ProgressButtonMode.ENABLE)
-                }
-                false -> {
-                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
-                    binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
-                }
-            }
+            binding.scanQrPvzCompleteButton.isEnabled = state
+            binding.completeDeliveryButton.isEnabled = state
         }
 
         viewModel.intransitOrders.observe(viewLifecycleOwner) {
@@ -157,10 +147,11 @@ class CourierIntransitFragment : Fragment() {
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierIntransitNavigationState.NavigateToScanner -> {
-                    binding.scanQrPvzButton.setState(ProgressButtonMode.DISABLE)
+                    binding.scanQrPvzButton.isEnabled = false
+                    binding.scanQrPvzCompleteButton.isEnabled = false
+                    binding.completeDeliveryButton.isEnabled = false
+
                     binding.holdList.visibility = VISIBLE
-                    binding.scanQrPvzCompleteButton.setState(ProgressImageButtonMode.DISABLED)
-                    binding.completeDeliveryButton.setState(ProgressButtonMode.DISABLE)
                     findNavController().navigate(
                         CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierIntransitOfficeScannerFragment()
                     )

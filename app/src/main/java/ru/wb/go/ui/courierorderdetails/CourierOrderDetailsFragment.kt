@@ -34,7 +34,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
 
 
 class CourierOrderDetailsFragment : Fragment() {
@@ -167,7 +166,7 @@ class CourierOrderDetailsFragment : Fragment() {
                 is CourierOrderDetailsUIState.InitItems -> {
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
-                    binding.takeOrder.setState(ProgressButtonMode.ENABLE)
+                    binding.takeOrder.isEnabled = true
                     val callback = object : CourierOrderDetailsAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
                             viewModel.onItemClick(index)
@@ -179,7 +178,7 @@ class CourierOrderDetailsFragment : Fragment() {
                 is CourierOrderDetailsUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
-                    binding.takeOrder.setState(ProgressButtonMode.DISABLE)
+                    binding.takeOrder.isEnabled = false
                 }
                 is CourierOrderDetailsUIState.UpdateItems -> {
                     adapter.clear()

@@ -37,7 +37,6 @@ import ru.wb.go.ui.dialogs.date.OnDateSelected
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.time.DateTimeFormatter
-import ru.wb.go.views.ProgressButtonMode
 
 
 class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
@@ -383,15 +382,9 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
 
         viewModel.loaderState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierDataUILoaderState.Disable -> binding.next.setState(ProgressButtonMode.DISABLE)
-                CourierDataUILoaderState.Enable -> {
-                    binding.next.setState(ProgressButtonMode.ENABLE)
-
-                }
-                CourierDataUILoaderState.Progress -> {
-                    binding.next.setState(ProgressButtonMode.PROGRESS)
-
-                }
+                CourierDataUILoaderState.Disable -> binding.next.isEnabled = false
+                CourierDataUILoaderState.Enable -> binding.next.isEnabled = true
+                CourierDataUILoaderState.Progress -> binding.next.isEnabled = false
             }
         }
     }

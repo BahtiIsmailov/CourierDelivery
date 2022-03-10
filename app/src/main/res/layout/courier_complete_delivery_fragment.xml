@@ -21,7 +21,8 @@
             android:id="@+id/imageView3"
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:src="@drawable/ic_handshake" />
+            android:src="@drawable/ic_handshake"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/textView2"
@@ -45,8 +46,8 @@
         android:id="@+id/divider2"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:background="@color/colorDividerPale"
         android:layout_marginBottom="18dp"
+        android:background="@color/colorDividerPale"
         app:layout_constraintBottom_toTopOf="@+id/earned_count"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -117,21 +118,17 @@
         app:layout_constraintStart_toEndOf="@+id/delivered"
         tools:text="148 / 148" />
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/complete_delivery_button"
+        style="@style/AppButtonStyle"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
+        android:text="@string/courier_complete_delivery"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="За новой работой"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

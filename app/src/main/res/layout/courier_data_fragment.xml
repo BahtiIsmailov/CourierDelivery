@@ -328,21 +328,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
-                <!--                    <TextView-->
-                <!--                        android:id="@+id/text_agreements_"-->
-                <!--                        style="@style/LargeDarkRegularText"-->
-                <!--                        android:layout_width="0dp"-->
-                <!--                        android:layout_height="wrap_content"-->
-                <!--                        android:layout_marginStart="32dp"-->
-                <!--                        android:lineSpacingExtra="4sp"-->
-                <!--                        android:maxLines="2"-->
-                <!--                        android:text="@string/user_form_agreement"-->
-                <!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-                <!--                        app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                        app:layout_constraintStart_toStartOf="@+id/checked_agreement"-->
-                <!--                        app:layout_constraintTop_toTopOf="parent" />-->
-
                 <TextView
                     android:id="@+id/text_agree"
                     style="@style/LargeSecondaryRegularText"
@@ -350,10 +335,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="0dp"
                     android:lineSpacingExtra="4sp"
-
                     android:maxLines="2"
                     android:text="@string/user_form_agreement_link"
-
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/checked_agreement"
@@ -361,24 +344,22 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-            <ru.wb.go.views.ProgressButtonView
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/next"
+                style="@style/AppButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/auth_button_height"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="44dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="20dp"
-                app:progress_button_background="@drawable/progress_image_button_round_default"
-                app:progress_button_name="@string/auth_number_phone_phone_next"
-                app:progress_button_state="disable"
-                app:progress_button_text_color_disable="@color/tertiary"
-                app:progress_button_text_color_enable="@color/lvl_1"
-                app:progress_button_text_color_progress="@color/lvl_1" />
+                android:enabled="false"
+                android:text="@string/auth_number_phone_phone_next"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/center_vertical" />
 
         </LinearLayout>
-
 
     </ScrollView>
 

@@ -28,7 +28,6 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
 
 class CourierLoadingScanFragment : Fragment() {
 
@@ -177,11 +176,8 @@ class CourierLoadingScanFragment : Fragment() {
             binding.totalBoxes.text = state.totalBoxes
         }
 
-        viewModel.completeButtonState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                true -> binding.completeButton.setState(ProgressButtonMode.ENABLE)
-                false -> binding.completeButton.setState(ProgressButtonMode.DISABLE)
-            }
+        viewModel.completeButtonState.observe(viewLifecycleOwner) {
+            binding.completeButton.isEnabled = it
         }
 
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->

@@ -149,22 +149,18 @@
 
     </LinearLayout>
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/complete_button"
-        android:layout_width="match_parent"
+        style="@style/AppButtonStyle"
+        android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
+        android:text="@string/courier_unloading_scanner_complete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="@string/courier_unloading_scanner_complete"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_center_horizontal"

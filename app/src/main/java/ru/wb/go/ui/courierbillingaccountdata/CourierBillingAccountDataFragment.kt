@@ -10,7 +10,8 @@ import android.text.InputType
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -33,6 +34,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierBillingDataFragmentBinding
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorAmountParameters
@@ -40,13 +42,10 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
-import java.util.*
 
 class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data_fragment) {
 
@@ -338,9 +337,9 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         viewModel.loaderState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierBillingAccountDataUILoaderState.Disable ->
-                    binding.saveAccountButton.setState(ProgressButtonMode.DISABLE)
+                    binding.saveAccountButton.isEnabled = false
                 CourierBillingAccountDataUILoaderState.Enable ->
-                    binding.saveAccountButton.setState(ProgressButtonMode.ENABLE)
+                    binding.saveAccountButton.isEnabled = true
 
             }
         }
@@ -351,7 +350,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         binding.bikLayout.endIconMode = TextInputLayout.END_ICON_NONE
         binding.account.isEnabled = true
         binding.bik.isEnabled = true
-        binding.saveAccountButton.setState(ProgressButtonMode.ENABLE)
+        binding.saveAccountButton.isEnabled = true
         binding.removeAccountButton.isEnabled = true
     }
 
@@ -362,7 +361,7 @@ class CourierBillingAccountDataFragment : Fragment(R.layout.courier_billing_data
         binding.bikLayout.endIconDrawable = endIcon
         binding.account.isEnabled = false
         binding.bik.isEnabled = false
-        binding.saveAccountButton.setState(ProgressButtonMode.DISABLE)
+        binding.saveAccountButton.isEnabled = false
         binding.removeAccountButton.isEnabled = false
     }
 

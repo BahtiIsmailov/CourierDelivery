@@ -42,14 +42,12 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/back_full"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        style="@style/AppMapButtonStyle"
+        android:layout_width="@dimen/map_button"
+        android:layout_height="@dimen/map_button"
         android:layout_marginStart="10dp"
         android:layout_marginTop="36dp"
-        android:background="@drawable/button_rounded_corner"
-        android:padding="6dp"
         android:src="@drawable/ic_back_arrow"
-        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

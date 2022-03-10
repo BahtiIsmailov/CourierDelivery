@@ -35,7 +35,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
 
 
 class CourierBillingAccountSelectorFragment :
@@ -184,15 +183,15 @@ class CourierBillingAccountSelectorFragment :
         viewModel.balanceChangeState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierBillingAccountSelectorBalanceAction.Init -> {
-                    binding.next.setState(ProgressButtonMode.DISABLE)
-                    binding.next.setText(it.text)
+                    binding.next.isEnabled = false
+                    binding.next.text = it.text
                 }
                 is CourierBillingAccountSelectorBalanceAction.Complete -> {
-                    binding.next.setState(ProgressButtonMode.ENABLE)
-                    binding.next.setText(it.text)
+                    binding.next.isEnabled = true
+                    binding.next.text = it.text
                 }
                 is CourierBillingAccountSelectorBalanceAction.Error -> {
-                    binding.next.setState(ProgressButtonMode.DISABLE)
+                    binding.next.isEnabled = false
                     binding.next.setText(it.text)
                 }
             }
@@ -338,10 +337,10 @@ class CourierBillingAccountSelectorFragment :
         viewModel.loaderState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierBillingAccountSelectorUILoaderState.Disable -> {
-                    binding.next.setState(ProgressButtonMode.DISABLE)
+                    binding.next.isEnabled = false
                 }
                 CourierBillingAccountSelectorUILoaderState.Enable -> {
-                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.next.isEnabled = true
                 }
                 CourierBillingAccountSelectorUILoaderState.Progress -> {
                     hideKeyboard()

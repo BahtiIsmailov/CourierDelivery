@@ -32,13 +32,13 @@
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:letterSpacing="0.2"
-        tools:text="Начните сканирование"
         android:textAllCaps="true"
         android:textColor="@color/lvl_1"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_center_horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/guideline_center_horizontal"
+        tools:text="Начните сканирование" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/box_info_layout"
@@ -66,10 +66,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            tools:text="0000000000"
             app:layout_constraintBottom_toBottomOf="@id/counter_layout"
             app:layout_constraintStart_toEndOf="@id/prefix_qr_code"
-            app:layout_constraintTop_toTopOf="@id/counter_layout" />
+            app:layout_constraintTop_toTopOf="@id/counter_layout"
+            tools:text="0000000000" />
 
         <View
             android:id="@+id/divider2"
@@ -148,22 +148,19 @@
 
         </LinearLayout>
 
-        <ru.wb.go.views.ProgressButtonView
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/complete_button"
-            android:layout_width="match_parent"
+            style="@style/AppButtonStyle"
+            android:layout_width="0dp"
             android:layout_height="@dimen/auth_button_height"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="20dp"
+            android:enabled="false"
+            android:text="@string/courier_order_scanner_complete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:progress_button_background="@drawable/progress_image_button_round_default"
-            app:progress_button_name="@string/courier_order_scanner_complete"
-            app:progress_button_state="disable"
-            app:progress_button_text_color_disable="@color/tertiary"
-            app:progress_button_text_color_enable="@color/lvl_1"
-            app:progress_button_text_color_progress="@color/lvl_1" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

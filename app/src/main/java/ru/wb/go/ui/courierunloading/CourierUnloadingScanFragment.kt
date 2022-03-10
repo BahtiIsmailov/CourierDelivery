@@ -28,7 +28,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
 
 class CourierUnloadingScanFragment : Fragment() {
 
@@ -167,10 +166,7 @@ class CourierUnloadingScanFragment : Fragment() {
         }
 
         viewModel.completeButtonEnable.observe(viewLifecycleOwner) { progress ->
-            when (progress) {
-                true -> binding.completeButton.setState(ProgressButtonMode.ENABLE)
-                false -> binding.completeButton.setState(ProgressButtonMode.DISABLE)
-            }
+            binding.completeButton.isEnabled = progress
         }
 
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
@@ -182,7 +178,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.totalBoxes.text = state.data.accepted
                     binding.counterLayout.isEnabled = false
                     binding.boxAddress.text = state.data.address
-                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                    binding.completeButton.isEnabled = true
                 }
                 is UnloadingFragmentState.BoxInit -> {
                     binding.ribbonStatus.text = state.data.status
@@ -192,7 +188,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.totalBoxes.text = state.data.accepted
                     binding.counterLayout.isEnabled = false
                     binding.boxAddress.text = state.data.address
-                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                    binding.completeButton.isEnabled = true
                 }
                 is UnloadingFragmentState.BoxAdded -> {
                     binding.ribbonStatus.text = state.data.status
@@ -202,7 +198,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.totalBoxes.text = state.data.accepted
                     binding.boxAddress.text = state.data.address
                     binding.boxAddress.setTextColor(colorBlack())
-                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                    binding.completeButton.isEnabled = true
                 }
                 is UnloadingFragmentState.UnknownQr -> {
                     binding.ribbonStatus.text = state.data.status
@@ -221,7 +217,7 @@ class CourierUnloadingScanFragment : Fragment() {
                     binding.totalBoxes.text = state.data.accepted
                     binding.boxAddress.text = state.data.address
                     binding.boxAddress.setTextColor(colorBlack())
-                    binding.completeButton.setState(ProgressButtonMode.ENABLE)
+                    binding.completeButton.isEnabled = true
                 }
                 is UnloadingFragmentState.ForbiddenBox -> {
                     binding.ribbonStatus.text = state.data.status

@@ -187,31 +187,27 @@
 
     <ImageButton
         android:id="@+id/refuse_order"
+        style="@style/AppTransparentButtonStyle"
         android:layout_width="64dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/progress_image_button_round_default_background"
         android:src="@drawable/ic_stop_timer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="ContentDescription" />
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/i_arrived"
+        style="@style/AppButtonStyle"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
+        android:text="@string/courier_timer_start_delivery"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/refuse_order"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="Начать погрузку"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
+        app:layout_constraintStart_toEndOf="@+id/refuse_order" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

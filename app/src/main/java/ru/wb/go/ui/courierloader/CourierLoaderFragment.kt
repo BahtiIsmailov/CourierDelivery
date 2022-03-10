@@ -9,10 +9,9 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoaderFragmentBinding
-import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnUserInfo
-import ru.wb.go.views.ProgressImageButtonMode
+import ru.wb.go.ui.courierexpects.CourierExpectsParameters
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
@@ -103,20 +102,20 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                     binding.errorMessage.visibility = View.VISIBLE
                     binding.errorMessage.text = state.message
                     binding.update.visibility = View.VISIBLE
-                    binding.update.setState(ProgressImageButtonMode.ENABLED)
+                    binding.update.isEnabled = true
                 }
                 CourierLoaderUIState.Progress -> {
                     binding.progress.visibility = View.VISIBLE
                     binding.errorMessage.visibility = View.GONE
                     binding.update.visibility = View.GONE
-                    binding.update.setState(ProgressImageButtonMode.DISABLED)
+                    binding.update.isEnabled = false
                 }
                 CourierLoaderUIState.Complete -> {
                     binding.logo.visibility = View.INVISIBLE
                     binding.progress.visibility = View.INVISIBLE
                     binding.errorMessage.visibility = View.INVISIBLE
                     binding.update.visibility = View.INVISIBLE
-                    binding.update.setState(ProgressImageButtonMode.ENABLED)
+                    binding.update.isEnabled = true
                 }
             }
         }

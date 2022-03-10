@@ -107,21 +107,17 @@
         app:layout_constraintTop_toTopOf="@+id/delivered"
         tools:text="66 шт." />
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/complete_delivery_button"
+        style="@style/AppButtonStyle"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
+        android:text="@string/start_delivery"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="@string/start_delivery"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

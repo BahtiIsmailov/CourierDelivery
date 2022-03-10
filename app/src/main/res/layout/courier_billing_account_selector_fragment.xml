@@ -125,20 +125,17 @@
 
     </ScrollView>
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/next"
+        style="@style/AppButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
+        android:enabled="false"
+        android:text="@string/courier_billing_account_selector_amount_button_init"
         app:layout_constraintBottom_toBottomOf="@+id/scroll_view"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="@string/courier_billing_account_selector_amount_button_init"
-        app:progress_button_state="disable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/tertiary"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

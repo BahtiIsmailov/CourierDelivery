@@ -196,33 +196,29 @@
 
         <ImageButton
             android:id="@+id/remove_account_button"
+            style="@style/AppTransparentButtonStyle"
             android:layout_width="64dp"
             android:layout_height="@dimen/auth_button_height"
             android:layout_marginStart="@dimen/pad16"
-            android:background="@drawable/progress_image_button_round_refuse"
             android:src="@drawable/ic_billing_account_remove"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="ContentDescription"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
-        <ru.wb.go.views.ProgressButtonView
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_account_button"
+            style="@style/AppButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/auth_button_height"
             android:layout_marginStart="@dimen/pad16"
             android:layout_marginEnd="@dimen/pad16"
+            android:layout_marginBottom="20dp"
+            android:text="@string/save_title"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/refuse_order"
-            app:progress_button_background="@drawable/progress_image_button_round_default"
-            app:progress_button_name="@string/save_title"
-            app:progress_button_state="enable"
-            app:progress_button_text_color_disable="@color/tertiary"
-            app:progress_button_text_color_enable="@color/lvl_1"
-            app:progress_button_text_color_progress="@color/lvl_1"
-            tools:progress_button_name="Сохранить"/>
+            app:layout_constraintStart_toStartOf="@+id/center_vertical" />
 
     </LinearLayout>
 

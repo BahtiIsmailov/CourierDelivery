@@ -66,8 +66,6 @@
     <dimen name="reception_stroke_width">1dp</dimen>
     <dimen name="box_corner_radius">8dp</dimen>
 
-
-
     <dimen name="keyboard_height">380dp</dimen>
 
     <dimen name="scanner_zoom_button">30dp</dimen>
@@ -85,5 +83,8 @@
     <dimen name="pad48">48dp</dimen>
     <dimen name="pad56">56dp</dimen>
     <dimen name="pad64">64dp</dimen>
+
+    <dimen name="map_button">36dp</dimen>
+
 
 </resources>

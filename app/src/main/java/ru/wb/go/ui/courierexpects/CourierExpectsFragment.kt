@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -12,13 +14,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.AuthCourierExpectsFragmentBinding
+import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
-import ru.wb.go.views.ProgressButtonMode
 
 class CourierExpectsFragment : Fragment() {
 
@@ -86,10 +87,14 @@ class CourierExpectsFragment : Fragment() {
 
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierExpectsProgressState.Complete ->
-                    binding.updateStatus.setState(ProgressButtonMode.ENABLE)
-                CourierExpectsProgressState.Progress ->
-                    binding.updateStatus.setState(ProgressButtonMode.PROGRESS)
+                CourierExpectsProgressState.Complete -> {
+                    binding.progress.visibility = GONE
+                    binding.updateStatus.isEnabled = true
+                }
+                CourierExpectsProgressState.Progress -> {
+                    binding.progress.visibility = VISIBLE
+                    binding.updateStatus.isEnabled = false
+                }
             }
         }
     }

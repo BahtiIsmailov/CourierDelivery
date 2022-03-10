@@ -22,7 +22,6 @@ import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
-import ru.wb.go.views.ProgressButtonMode
 
 class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) {
 
@@ -96,12 +95,12 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         viewModel.stateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierCarNumberUIState.NumberFormatComplete -> {
-                    binding.confirm.setState(ProgressButtonMode.ENABLE)
+                    binding.confirm.isEnabled = true
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                 }
                 CourierCarNumberUIState.NumberNotFilled -> {
-                    binding.confirm.setState(ProgressButtonMode.DISABLE)
+                    binding.confirm.isEnabled = false
                     binding.numberNotFound.visibility = INVISIBLE
                 }
                 is CourierCarNumberUIState.NumberSpanFormat -> {

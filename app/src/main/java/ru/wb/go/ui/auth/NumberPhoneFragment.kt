@@ -6,8 +6,7 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.INVISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -24,7 +23,6 @@ import ru.wb.go.ui.app.StatusBarListener
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard
-import ru.wb.go.views.ProgressButtonMode
 
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
@@ -61,7 +59,7 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initViews() {
-        binding.next.setState(ProgressButtonMode.DISABLE)
+        binding.next.isEnabled = false
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
         (activity as StatusBarListener).showStatusBar()
@@ -126,15 +124,18 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                     binding.numberNotFound.visibility = GONE
                     binding.viewKeyboard.lock()
                     binding.viewKeyboard.inactive()
-                    binding.next.setState(ProgressButtonMode.PROGRESS)
+                    binding.next.isEnabled = false
+                    binding.progress.visibility = VISIBLE
                 }
                 NumberPhoneUIState.NumberFormatComplete -> {
-                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.next.isEnabled = true
+                    binding.progress.visibility = INVISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                 }
                 NumberPhoneUIState.NumberNotFilled -> {
-                    binding.next.setState(ProgressButtonMode.DISABLE)
+                    binding.next.isEnabled = false
+                    binding.progress.visibility = INVISIBLE
                     binding.numberNotFound.visibility = INVISIBLE
                 }
                 is NumberPhoneUIState.NumberNotFound -> {
@@ -144,7 +145,8 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                         state.message,
                         state.button
                     )
-                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.next.isEnabled = true
+                    binding.progress.visibility = INVISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                 }
@@ -154,7 +156,8 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
                         state.message,
                         state.button
                     )
-                    binding.next.setState(ProgressButtonMode.ENABLE)
+                    binding.next.isEnabled = true
+                    binding.progress.visibility = INVISIBLE
                     binding.viewKeyboard.unlock()
                     binding.viewKeyboard.active()
                 }

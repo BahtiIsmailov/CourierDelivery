@@ -63,21 +63,17 @@
 
         </LinearLayout>
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/show_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/AppMapButtonStyle"
+            android:layout_width="@dimen/map_button"
+            android:layout_height="@dimen/map_button"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="30dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:scaleType="center"
             android:src="@drawable/ic_warehouse_show_all"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -179,75 +175,45 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/scan_qr_pvz_button"
+        style="@style/AppButtonStyle"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
-        android:visibility="visible"
+        android:text="@string/courier_intransit_scan"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="Сканировать QR ПВЗ"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <ru.wb.go.views.ProgressImageButtonView
+    <ImageButton
         android:id="@+id/scan_qr_pvz_complete_button"
+        style="@style/AppButtonStyle"
         android:layout_width="64dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_qr"
         android:visibility="invisible"
-        app:app_background="@drawable/progress_image_button_round_default"
-        app:app_icon="@drawable/ic_qr"
-        app:app_state="enable"
-        app:app_text=""
-        app:app_text_color_disable="@color/lvl_1"
-        app:app_text_color_enable="@color/lvl_1"
-        app:app_text_color_progress="@color/lvl_1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
 
-    <ru.wb.go.views.ProgressButtonView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/complete_delivery_button"
+        style="@style/AppButtonStyle"
         android:layout_width="0dp"
         android:layout_height="@dimen/auth_button_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
+        android:background="@drawable/progress_image_button_round_complete"
+        android:text="@string/courier_intransit_complete"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete_button"
-        app:progress_button_background="@drawable/progress_image_button_round_complete"
-        app:progress_button_name="Завершить"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
-
-    <ru.wb.go.views.ProgressButtonView
-        android:id="@+id/forced_complete_button"
-        android:layout_width="70dp"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progress_button_background="@drawable/progress_image_button_round_default"
-        app:progress_button_name="Принудительно завершить"
-        app:progress_button_state="enable"
-        app:progress_button_text_color_disable="@color/tertiary"
-        app:progress_button_text_color_enable="@color/lvl_1"
-        app:progress_button_text_color_progress="@color/lvl_1" />
+        app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
