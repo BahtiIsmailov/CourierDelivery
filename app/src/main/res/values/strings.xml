@@ -123,7 +123,7 @@
     <string name="auth_check_sms_repeat"><u>Выслать CMC повторно</u></string>
 
 
-    <string name="auth_user_data_label">Регистрация</string>
+    <string name="auth_user_data_label">Основные данные</string>
 
     <string name="nav_default_count">0</string>
     <string name="nav_no_internet_dialog_title">У вас отсутствует интернет!</string>
