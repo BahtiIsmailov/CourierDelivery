@@ -15,9 +15,9 @@
         app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
         app:layout_constraintTop_toTopOf="parent">
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map"
-            class="ru.wb.go.ui.couriermap.CourierMapFragment"
+            android:name="ru.wb.go.ui.couriermap.CourierMapFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +82,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/currentOrderId"
         style="@style/LargePrimaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -104,7 +104,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintBottom_toBottomOf="@+id/currentOrderId"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal">
 
@@ -129,7 +129,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/colorDividerPale"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/currentOrderId" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/routes"

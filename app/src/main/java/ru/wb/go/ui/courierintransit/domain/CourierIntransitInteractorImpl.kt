@@ -2,7 +2,6 @@ package ru.wb.go.ui.courierintransit.domain
 
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -75,8 +74,9 @@ class CourierIntransitInteractorImpl(
         return locRepo.getOrder()!!
     }
 
-    override fun getOrderId(): Single<String> {
-        return locRepo.getOrderId()
+    override fun getOrderId(): String {
+        // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
+        return getOrder().orderId.toString()
     }
 
     override fun observeMapAction(): Observable<CourierMapAction> {

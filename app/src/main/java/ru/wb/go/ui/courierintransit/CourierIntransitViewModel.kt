@@ -81,6 +81,7 @@ class CourierIntransitViewModel(
     }
 
     init {
+        onTechEventLog("initIntransit")
         initTime()
         observeMapAction()
     }
@@ -91,12 +92,7 @@ class CourierIntransitViewModel(
     }
 
     private fun initTitle() {
-        addSubscription(
-            interactor.getOrderId()
-                .subscribe(
-                    { _toolbarLabelState.value = Label(resourceProvider.getLabelId(it)) },
-                    { _toolbarLabelState.value = Label(resourceProvider.getLabel()) })
-        )
+        _toolbarLabelState.value = Label(resourceProvider.getLabelId(interactor.getOrderId()))
     }
 
     private fun observeOffices() {

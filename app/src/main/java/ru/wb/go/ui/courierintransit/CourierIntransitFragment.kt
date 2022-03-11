@@ -83,7 +83,7 @@ class CourierIntransitFragment : Fragment() {
     private fun initObservable() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            binding.title.text = it.label
+            binding.currentOrderId.text = it.label
         }
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
