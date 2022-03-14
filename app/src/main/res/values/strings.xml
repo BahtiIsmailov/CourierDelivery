@@ -19,6 +19,11 @@
     <string name="auth_courier_expects_registration_24">Рассмотрение заявки на регистрацию занимает до 24 часов</string>
     <string name="auth_courier_expects_check_status">Проверить статус регистрации</string>
 
+    <string name="courier_data_type_title">Выберете форму\nсотрудничества</string>
+    <string name="courier_data_type_ip_label">ИП</string>
+    <string name="courier_data_type_self_employed_label">Самозанятый</string>
+    <string name="courier_data_type_confirm_status">Подтвердить</string>
+
     <string name="demo_registration">Войти или зарегистрироваться</string>
     <string name="demo_show_demo">Ознакомиться с приложением</string>
     <string name="demo_go_to_registration">Перейти к регистрации</string>

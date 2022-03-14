@@ -11,7 +11,8 @@ import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteResourceProvide
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResourceProvider
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryResourceProvider
 import ru.wb.go.ui.courierdata.CourierDataResourceProvider
-import ru.wb.go.ui.courierexpects.CourierExpectsResourceProvider
+import ru.wb.go.ui.courierdataexpects.CourierDataExpectsResourceProvider
+import ru.wb.go.ui.courierdatatype.CourierDataTypeResourceProvider
 import ru.wb.go.ui.courierintransit.CourierIntransitResourceProvider
 import ru.wb.go.ui.courierintransitofficescanner.CourierIntransitOfficeScannerResourceProvider
 import ru.wb.go.ui.courierloader.CourierLoaderResourceProvider
@@ -31,8 +32,12 @@ val resourceModule = module {
         return AppResourceProvider(application)
     }
 
-    fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CourierExpectsResourceProvider {
-        return CourierExpectsResourceProvider(application)
+    fun provideCourierDataTypeResourceProvider(application: Application): CourierDataTypeResourceProvider {
+        return CourierDataTypeResourceProvider(application)
+    }
+
+    fun provideCouriersCompleteRegistrationResourceProvider(application: Application): CourierDataExpectsResourceProvider {
+        return CourierDataExpectsResourceProvider(application)
     }
 
     fun provideCourierVersionControlResourceProvider(application: Application): CourierVersionControlResourceProvider {
@@ -119,6 +124,7 @@ val resourceModule = module {
     }
 
     single { provideAppResourceProvider(get()) }
+    single { provideCourierDataTypeResourceProvider(get()) }
     single { provideCouriersCompleteRegistrationResourceProvider(get()) }
     single { provideCourierVersionControlResourceProvider(get()) }
     single { provideCourierOrderDetailsResourceProvider(get()) }

@@ -33,7 +33,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.SplashActivityBinding
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.courierdata.CourierDataFragmentDirections
+import ru.wb.go.ui.courierdatatype.CourierDataTypeFragmentDirections
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
@@ -251,8 +251,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     override fun onBackPressed() {
         when (navController?.currentDestination?.id) {
-            R.id.userFormFragment -> findNavController(R.id.nav_host_app_fragment).navigate(
-                CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
+            R.id.courierDataTypeFragment -> findNavController(R.id.nav_host_app_fragment).navigate(
+                CourierDataTypeFragmentDirections.actionCourierDataTypeFragmentToAuthNavigation()
             )
             R.id.authNumberPhoneFragment,
             R.id.couriersCompleteRegistrationFragment, R.id.courierWarehousesFragment,

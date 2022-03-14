@@ -1,4 +1,4 @@
-package ru.wb.go.ui.courierexpects
+package ru.wb.go.ui.courierdataexpects
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -13,7 +13,7 @@ import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
-import ru.wb.go.databinding.AuthCourierExpectsFragmentBinding
+import ru.wb.go.databinding.CourierDataExpectsFragmentBinding
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -21,24 +21,24 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.SoftKeyboard
 import ru.wb.go.utils.managers.ErrorDialogData
 
-class CourierExpectsFragment : Fragment() {
+class CourierDataExpectsFragment : Fragment() {
 
     private val viewModel by viewModel<CouriersCompleteRegistrationViewModel> {
         parametersOf(
-            requireArguments().getParcelable<CourierExpectsParameters>(
+            requireArguments().getParcelable<CourierDataExpectsParameters>(
                 PHONE_KEY
             )
         )
     }
 
-    private var _binding: AuthCourierExpectsFragmentBinding? = null
+    private var _binding: CourierDataExpectsFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = AuthCourierExpectsFragmentBinding.inflate(inflater, container, false)
+        _binding = CourierDataExpectsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -66,15 +66,15 @@ class CourierExpectsFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierExpectsNavAction.NavigateToCouriers ->
+                CourierDataExpectsNavAction.NavigateToCouriers ->
                     findNavController().navigate(
-                        CourierExpectsFragmentDirections
+                        CourierDataExpectsFragmentDirections
                             .actionCouriersCompleteRegistrationFragmentToCourierWarehouseFragment()
                     )
-                is CourierExpectsNavAction.NavigateToRegistrationCouriers ->
+                is CourierDataExpectsNavAction.NavigateToDataType ->
                     findNavController().navigate(
-                        CourierExpectsFragmentDirections
-                            .actionCouriersCompleteRegistrationFragmentToUserFormFragment(
+                        CourierDataExpectsFragmentDirections
+                            .actionCouriersCompleteRegistrationFragmentToCourierDataTypeFragment(
                                 CourierDataParameters(
                                     phone = state.phone,
                                     docs = state.docs
@@ -85,13 +85,13 @@ class CourierExpectsFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(viewLifecycleOwner) {
+        viewModel.progressStateData.observe(viewLifecycleOwner) {
             when (it) {
-                CourierExpectsProgressState.Complete -> {
+                CourierDataExpectsProgressState.Complete -> {
                     binding.progress.visibility = GONE
                     binding.updateStatus.isEnabled = true
                 }
-                CourierExpectsProgressState.Progress -> {
+                CourierDataExpectsProgressState.ProgressData -> {
                     binding.progress.visibility = VISIBLE
                     binding.updateStatus.isEnabled = false
                 }
@@ -127,4 +127,4 @@ class CourierExpectsFragment : Fragment() {
 }
 
 @Parcelize
-data class CourierExpectsParameters(val phone: String) : Parcelable
+data class CourierDataExpectsParameters(val phone: String) : Parcelable
