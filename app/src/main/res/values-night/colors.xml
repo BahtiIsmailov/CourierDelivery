@@ -32,4 +32,7 @@
     <color name="colorBlueTransparentlySelectableLight">#007EA5E0</color>
     <color name="colorBlueTransparentlySelectableDark">#247EA5E0</color>
 
+    <color name="colorScannerHoldFrom">#B499D4</color>
+    <color name="colorScannerHoldTo">#9476B8</color>
+
 </resources>

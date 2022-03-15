@@ -105,7 +105,8 @@
         android:id="@+id/hold_splash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/lvl_1"
+        android:background="@drawable/scanner_hold_background_gradient"
+
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone">

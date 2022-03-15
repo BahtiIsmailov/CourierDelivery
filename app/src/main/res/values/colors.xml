@@ -40,4 +40,7 @@
 
     <color name="transparentKeyboardClick">#25A8A4AB</color>
 
+    <color name="colorScannerHoldFrom">#5E1DA9</color>
+    <color name="colorScannerHoldTo">#300A5A</color>
+
 </resources>
