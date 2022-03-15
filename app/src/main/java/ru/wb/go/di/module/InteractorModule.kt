@@ -33,8 +33,8 @@ import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInterac
 import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractorImpl
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractorImpl
-import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractor
-import ru.wb.go.ui.courierexpects.domain.CourierExpectsInteractorImpl
+import ru.wb.go.ui.courierdataexpects.domain.CourierDataExpectsInteractor
+import ru.wb.go.ui.courierdataexpects.domain.CourierDataExpectsInteractorImpl
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractorImpl
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScannerInteractor
@@ -128,8 +128,8 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         refreshTokenRepository: RefreshTokenRepository,
         tokenManager: TokenManager
-    ): CourierExpectsInteractor {
-        return CourierExpectsInteractorImpl(
+    ): CourierDataExpectsInteractor {
+        return CourierDataExpectsInteractorImpl(
             rxSchedulerFactory,
             refreshTokenRepository,
             tokenManager

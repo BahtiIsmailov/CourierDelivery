@@ -29,7 +29,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierdata.CourierDataFragment.ClickEventInterface
 import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
-import ru.wb.go.ui.courierexpects.CourierExpectsParameters
+import ru.wb.go.ui.courierdataexpects.CourierDataExpectsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
@@ -69,7 +69,6 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun initializeFields() {
-
         val params = viewModel.getParams()
         if (params.docs.errorAnnotate.isNullOrEmpty()) {
             SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
@@ -88,7 +87,6 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             binding.passportIssuedBy.setText(passportIssuedBy)
             binding.checkedAgreement.isChecked = false
         }
-
     }
 
     private fun updateChecked() {
@@ -106,26 +104,11 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun initListener() {
-        binding.toolbarLayout.back.setOnClickListener {
-            findNavController().navigate(
-                CourierDataFragmentDirections.actionUserFormFragmentToAuthNavigation()
-            )
-        }
+        binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         viewModel.onFormChanges(changeFieldObservables())
-
-        binding.overlayDate.setOnClickListener {
-            dateSelect(it, binding.passportDateOfIssue)
-        }
-
-
-        binding.checkedAgreement.setOnClickListener {
-            updateChecked()
-        }
-
-        binding.textAgree.setOnClickListener {
-            viewModel.onShowAgreementClick()
-        }
-
+        binding.overlayDate.setOnClickListener { dateSelect(it, binding.passportDateOfIssue) }
+        binding.checkedAgreement.setOnClickListener { updateChecked() }
+        binding.textAgree.setOnClickListener { viewModel.onShowAgreementClick() }
     }
 
     private val changeText = ArrayList<ViewChanges>()
@@ -367,14 +350,14 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             when (state) {
                 is CourierDataNavAction.NavigateToCouriersCompleteRegistration -> {
                     findNavController().navigate(
-                        CourierDataFragmentDirections.actionUserFormFragmentToCouriersCompleteRegistrationFragment(
-                            CourierExpectsParameters(state.phone)
+                        CourierDataFragmentDirections.actionCourierDataFragmentToCouriersCompleteRegistrationFragment(
+                            CourierDataExpectsParameters(state.phone)
                         )
                     )
                 }
                 CourierDataNavAction.NavigateToAgreement -> {
                     findNavController().navigate(
-                        CourierDataFragmentDirections.actionUserFormFragmentToCourierAgreementFragment()
+                        CourierDataFragmentDirections.actionCourierDataFragmentToCourierAgreementFragment()
                     )
                 }
             }

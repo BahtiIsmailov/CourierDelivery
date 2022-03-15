@@ -62,9 +62,7 @@ class CourierLoaderViewModel(
     }
 
     fun initVersion() {
-
         _state.value = CourierLoaderUIState.Progress
-
         addSubscription(
             remoteRepo.appVersion()
                 .compose(rxSchedulerFactory.applySingleSchedulers())
@@ -111,37 +109,32 @@ class CourierLoaderViewModel(
         }
 
         when {
-            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) -> {
-                if (!goToUpdate(version))
-                    toNewRegistration(phone)
-            }
-            tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) -> {
-                if (!goToUpdate(version))
-                    toUserForm(phone)
-            }
-            tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) -> {
-                if (!goToUpdate(version))
-                    toCouriersCompleteRegistration(phone)
-            }
-            tokenManager.isUserCourier() -> {
-                addSubscription(
-                    remoteRepo.tasksMy(order?.orderId)
-                        .flatMap { solveJobInitialState(it, order) }
-                        .compose(rxSchedulerFactory.applySingleSchedulers())
-                        .subscribe({
-//                            _state.value = CourierLoaderUIState.Complete
-                            _navigationDrawerState.postValue(it)
-                        }, {
-                            onTechErrorLog("getMyTask", it)
-                            onRxError(it)
-                        })
-                )
-            }
+            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) ->
+                if (!goToUpdate(version)) toNewRegistration(phone)
+            tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) ->
+                if (!goToUpdate(version)) toRegistration(phone)
+            tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
+                if (!goToUpdate(version)) toCourierDataExpects(phone)
+            tokenManager.isUserCourier() -> toApp(order)
             else -> {
                 assert(tokenManager.isDemo())
                 _navigationDrawerState.postValue(toCourierWarehouse())
             }
         }
+    }
+
+    private fun toApp(order: LocalOrderEntity?) {
+        addSubscription(
+            remoteRepo.tasksMy(order?.orderId)
+                .flatMap { solveJobInitialState(it, order) }
+                .compose(rxSchedulerFactory.applySingleSchedulers())
+                .subscribe({
+                    _navigationDrawerState.postValue(it)
+                }, {
+                    onTechErrorLog("getMyTask", it)
+                    onRxError(it)
+                })
+        )
     }
 
     private fun solveJobInitialState(
@@ -198,7 +191,6 @@ class CourierLoaderViewModel(
                 _state.value = CourierLoaderUIState.Complete
                 _navigationDrawerState.value = toCourierWarehouse()
             }
-
             is BadRequestException -> {
                 _state.value = CourierLoaderUIState.Error(throwable.message.toString())
             }
@@ -214,38 +206,27 @@ class CourierLoaderViewModel(
         locRepo.clearOrder()
     }
 
-    private fun toUserForm(phone: String) {
-        addSubscription(
-            remoteRepo.getCourierDocuments()
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .subscribe({
-//                    _state.value = CourierLoaderUIState.Complete
-                    _navigationDrawerState.value =
-                        CourierLoaderNavigationState.NavigateToCourierUserForm(
-                            CourierDataParameters(phone = phone, docs = it)
-                        )
-
-                }, {
-                    onTechErrorLog("getUserDocs", it)
-                    onRxError(it)
-                })
-        )
-    }
-
     private fun toNewRegistration(phone: String) {
-        val docs = CourierDocumentsEntity()
-//        _state.value = CourierLoaderUIState.Complete
         _navigationDrawerState.value =
-            CourierLoaderNavigationState.NavigateToCourierUserForm(
-                CourierDataParameters(
-                    phone = phone,
-                    docs = docs
-                )
+            CourierLoaderNavigationState.NavigateToCourierDataType(
+                CourierDataParameters(phone = phone, docs = CourierDocumentsEntity())
             )
     }
 
-    private fun toCouriersCompleteRegistration(phone: String) {
-//        _state.value = CourierLoaderUIState.Complete
+    private fun toRegistration(phone: String) {
+        addSubscription(
+            remoteRepo.getCourierDocuments()
+                .compose(rxSchedulerFactory.applySingleSchedulers())
+                .map { CourierDataParameters(phone = phone, docs = it) }
+                .map { CourierLoaderNavigationState.NavigateToCourierDataType(it) }
+                .doOnError { onTechErrorLog("getUserDocs", it) }
+                .subscribe(
+                    { _navigationDrawerState.value = it },
+                    { onRxError(it) })
+        )
+    }
+
+    private fun toCourierDataExpects(phone: String) {
         _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }

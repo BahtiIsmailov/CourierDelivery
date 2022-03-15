@@ -22,8 +22,9 @@ import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.ui.courierdata.UserFormViewModel
-import ru.wb.go.ui.courierexpects.CourierExpectsParameters
-import ru.wb.go.ui.courierexpects.CouriersCompleteRegistrationViewModel
+import ru.wb.go.ui.courierdataexpects.CourierDataExpectsParameters
+import ru.wb.go.ui.courierdataexpects.CouriersCompleteRegistrationViewModel
+import ru.wb.go.ui.courierdatatype.CourierDataTypeViewModel
 import ru.wb.go.ui.courierintransit.CourierIntransitViewModel
 import ru.wb.go.ui.courierintransitofficescanner.CourierIntransitOfficeScannerViewModel
 import ru.wb.go.ui.courierloader.CourierLoaderViewModel
@@ -83,12 +84,18 @@ val viewModelModule = module {
         CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
     }
 
+
+
+    viewModel { (parameters: CourierDataParameters) ->
+        CourierDataTypeViewModel(parameters, get(), get(), get())
+    }
+
     viewModel { (parameters: CourierDataParameters) ->
         UserFormViewModel(parameters, get(), get(), get(), get())
     }
-    viewModel { (parameters: CourierExpectsParameters) ->
+    viewModel { (parametersData: CourierDataExpectsParameters) ->
         CouriersCompleteRegistrationViewModel(
-            parameters,
+            parametersData,
             get(),
             get(),
             get(),

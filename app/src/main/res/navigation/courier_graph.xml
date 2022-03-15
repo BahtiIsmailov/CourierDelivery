@@ -18,8 +18,8 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_courierLoaderFragment_to_userFormFragment"
-            app:destination="@id/userFormFragment"
+            android:id="@+id/action_courierLoaderFragment_to_courierDataTypeFragment"
+            app:destination="@id/courierDataTypeFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
@@ -76,23 +76,20 @@
     </fragment>
 
     <fragment
-        android:id="@+id/userFormFragment"
+        android:id="@+id/courierDataFragment"
         android:name="ru.wb.go.ui.courierdata.CourierDataFragment"
         android:label="UserFormFragment"
         tools:layout="@layout/courier_data_fragment">
         <action
-            android:id="@+id/action_userFormFragment_to_couriersCompleteRegistrationFragment"
+            android:id="@+id/action_courierDataFragment_to_couriersCompleteRegistrationFragment"
             app:destination="@id/couriersCompleteRegistrationFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_userFormFragment_to_courierAgreementFragment"
+            android:id="@+id/action_courierDataFragment_to_courierAgreementFragment"
             app:destination="@id/courierAgreementFragment" />
-        <action
-            android:id="@+id/action_userFormFragment_to_auth_navigation"
-            app:destination="@id/auth_navigation" />
         <argument
             android:name="REGISTER_FORM_PARAMS"
             app:argType="ru.wb.go.ui.courierdata.CourierDataParameters" />
@@ -100,19 +97,19 @@
 
     <fragment
         android:id="@+id/couriersCompleteRegistrationFragment"
-        android:name="ru.wb.go.ui.courierexpects.CourierExpectsFragment"
+        android:name="ru.wb.go.ui.courierdataexpects.CourierDataExpectsFragment"
         android:label="CouriersCompleteRegistrationFragment"
-        tools:layout="@layout/auth_courier_expects_fragment">
+        tools:layout="@layout/courier_data_expects_fragment">
         <argument
             android:name="phone_key"
-            app:argType="ru.wb.go.ui.courierexpects.CourierExpectsParameters"
+            app:argType="ru.wb.go.ui.courierdataexpects.CourierDataExpectsParameters"
             app:nullable="false" />
         <action
             android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierWarehouseFragment"
             app:destination="@id/courierWarehousesFragment" />
         <action
-            android:id="@+id/action_couriersCompleteRegistrationFragment_to_userFormFragment"
-            app:destination="@id/userFormFragment" />
+            android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierDataTypeFragment"
+            app:destination="@id/courierDataTypeFragment" />
     </fragment>
 
     <fragment
@@ -443,6 +440,32 @@
             app:destination="@id/courierUnloadingScanFragment"
             app:popUpTo="@id/courierUnloadingScanFragment"
             app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/courierDataTypeFragment"
+        android:name="ru.wb.go.ui.courierdatatype.CourierDataTypeFragment"
+        android:label="CourierDataTypeFragment"
+        tools:layout="@layout/courier_data_type_fragment">
+
+        <action
+            android:id="@+id/action_courierDataTypeFragment_to_courierDataFormFragment"
+            app:destination="@id/courierDataFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/courierDataTypeFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_courierDataTypeFragment_to_auth_navigation"
+            app:destination="@id/auth_navigation" />
+
+        <argument
+            android:name="REGISTER_FORM_PARAMS"
+            app:argType="ru.wb.go.ui.courierdata.CourierDataParameters" />
 
     </fragment>
 

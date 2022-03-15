@@ -1,4 +1,4 @@
-package ru.wb.go.ui.courierexpects.domain
+package ru.wb.go.ui.courierdataexpects.domain
 
 import io.reactivex.Single
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
@@ -10,11 +10,11 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 
-class CourierExpectsInteractorImpl(
+class CourierDataExpectsInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val tokenManager: TokenManager
-) : CourierExpectsInteractor {
+) : CourierDataExpectsInteractor {
 
     override fun isRegisteredStatus(): Single<String> {
 

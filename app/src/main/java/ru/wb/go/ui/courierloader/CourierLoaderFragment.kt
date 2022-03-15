@@ -11,7 +11,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoaderFragmentBinding
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnUserInfo
-import ru.wb.go.ui.courierexpects.CourierExpectsParameters
+import ru.wb.go.ui.courierdataexpects.CourierDataExpectsParameters
 
 class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
@@ -57,12 +57,12 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
 
                 is CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration -> findNavController().navigate(
                     CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCouriersCompleteRegistrationFragment(
-                        CourierExpectsParameters(state.phone)
+                        CourierDataExpectsParameters(state.phone)
                     )
                 )
-                is CourierLoaderNavigationState.NavigateToCourierUserForm -> findNavController().navigate(
-                    CourierLoaderFragmentDirections.actionCourierLoaderFragmentToUserFormFragment(
-                        state.cdp
+                is CourierLoaderNavigationState.NavigateToCourierDataType -> findNavController().navigate(
+                    CourierLoaderFragmentDirections.actionCourierLoaderFragmentToCourierDataTypeFragment(
+                        state.courierDataParameters
                     )
                 )
                 CourierLoaderNavigationState.NavigateToCourierWarehouse -> findNavController().navigate(

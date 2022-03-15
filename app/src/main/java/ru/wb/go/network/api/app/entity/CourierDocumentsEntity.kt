@@ -15,4 +15,5 @@ data class CourierDocumentsEntity(
     val passportIssuedBy: String = "",
     val passportDepartmentCode: String = "",
     val errorAnnotate: String? = null,
-): Parcelable
+    var courierType: String = "",
+) : Parcelable
