@@ -12,11 +12,11 @@ class HttpPageNotFoundException (override val message: String) : Exception()
 
 class LockedException(override val message: String) : Exception()
 
+class InternalServerException(override val message: String) : Exception()
+
 class NoInternetException(override val message: String) : Exception()
 
 class TimeoutException(override val message: String) : Exception()
-
-class RefreshAccessTokenException(override val message: String) : Exception()
 
 class UnauthorizedException(override val message: String) : Exception()
 

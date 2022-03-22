@@ -3,12 +3,14 @@ package ru.wb.go.ui.courierdataexpects
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.app.INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.CustomException
+import ru.wb.go.network.exceptions.InternalServerException
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
@@ -49,25 +51,40 @@ class CouriersCompleteRegistrationViewModel(
 
     init {
         onTechEventLog("init")
+        _progressState.value = CourierDataExpectsProgressState.ProgressData
+        addSubscription(
+            interactorData.saveRepeatCourierDocuments()
+                .subscribe(
+                    { _progressState.value = CourierDataExpectsProgressState.Complete },
+                    { _progressState.value = CourierDataExpectsProgressState.Complete })
+        )
     }
 
     fun onUpdateStatusClick() {
         onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
         addSubscription(
-            interactorData.isRegisteredStatus()
+            interactorData.saveRepeatCourierDocuments()
+                .andThen(interactorData.isRegisteredStatus())
                 .subscribe(
                     { isRegisteredStatusComplete(it) },
-                    {
-                        errorDialogManager.showErrorDialog(it, _showDialogInfo)
-                        _progressState.value = CourierDataExpectsProgressState.Complete
-                    })
+                    { isRegisteredStatusError(it) }
+                )
         )
+    }
+
+    private fun isRegisteredStatusError(it: Throwable) {
+        if (it !is InternalServerException) {
+            errorDialogManager.showErrorDialog(it, _showDialogInfo)
+        }
+        _progressState.value = CourierDataExpectsProgressState.Complete
     }
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
         when (registerStatus) {
+            INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.value =
+                CourierDataExpectsProgressState.Complete
             INVALID_TOKEN -> appNavRepository.navigate(INVALID_TOKEN)
             NEED_SEND_COURIER_DOCUMENTS -> toDataType(CourierDocumentsEntity())
             NEED_CORRECT_COURIER_DOCUMENTS -> checkCorrectCourierDocuments()

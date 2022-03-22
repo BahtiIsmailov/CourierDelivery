@@ -19,6 +19,7 @@ import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
+import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -35,6 +36,7 @@ class CourierLoaderViewModel(
     private val deviceManager: DeviceManager,
     private val resourceProvider: CourierLoaderResourceProvider,
     private val settingsManager: SettingsManager,
+    private val userManager: UserManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -105,6 +107,11 @@ class CourierLoaderViewModel(
         val order = locRepo.getOrder()
 
         if (order == null && goToUpdate(version)) {
+            return
+        }
+
+        if (userManager.courierDocumentsEntity() != null) {
+            toCourierDataExpects(phone)
             return
         }
 

@@ -10,6 +10,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
+import ru.wb.go.app.AppConsts.HTTP_INTERNAL_SERVER_ERROR
 import ru.wb.go.app.AppConsts.HTTP_OBJECT_NOT_FOUND
 import ru.wb.go.app.AppConsts.HTTP_PAGE_NOT_FOUND
 import ru.wb.go.app.AppConsts.SERVICE_CODE_BAD_REQUEST
@@ -74,9 +75,11 @@ class ErrorResolutionStrategyImpl(
             SERVICE_CODE_UNAUTHORIZED -> UnauthorizedException(error.message)
             SERVICE_CODE_FORBIDDEN -> ForbiddenException(error.message)
             SERVICE_CODE_LOCKED -> LockedException(error.message)
-            HTTP_PAGE_NOT_FOUND -> if (error.code == HTTP_OBJECT_NOT_FOUND) {
-                HttpPageNotFoundException(error.message)
-            } else HttpObjectNotFoundException(error.message, error.code)
+            HTTP_PAGE_NOT_FOUND ->
+                if (error.code == HTTP_OBJECT_NOT_FOUND) {
+                    HttpPageNotFoundException(error.message)
+                } else HttpObjectNotFoundException(error.message, error.code)
+            HTTP_INTERNAL_SERVER_ERROR -> InternalServerException(error.message)
             else -> UnknownHttpException(exception.toString())
         }
     }

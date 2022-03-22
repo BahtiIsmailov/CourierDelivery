@@ -17,6 +17,7 @@ object AppPreffsKeys {
     const val OFFSET_LOCAL_DATE_TIME_KEY = "OFFSET_LOCAL_DATE_TIME_KEY"
 
     const val NEW_INSTALLATION = "NEW_INSTALLATIO"
+    const val COURIER_DOCUMENTS_KEY = "COURIER_DOCUMENTS_KEY"
 
     // App Settings
     const val SETTING_START_FLASH_ON = "SETTING_FLASH_ON"

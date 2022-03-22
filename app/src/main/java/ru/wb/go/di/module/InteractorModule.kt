@@ -86,11 +86,13 @@ val interactorModule = module {
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         appRemoteRepository: AppRemoteRepository,
+        userManager: UserManager
     ): CourierDataInteractor {
         return CourierDataInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
-            appRemoteRepository
+            appRemoteRepository,
+            userManager
         )
     }
 
@@ -127,12 +129,16 @@ val interactorModule = module {
     fun provideCouriersCompleteRegistrationInteractorImpl(
         rxSchedulerFactory: RxSchedulerFactory,
         refreshTokenRepository: RefreshTokenRepository,
-        tokenManager: TokenManager
+        appRemoteRepository: AppRemoteRepository,
+        tokenManager: TokenManager,
+        userManager: UserManager
     ): CourierDataExpectsInteractor {
         return CourierDataExpectsInteractorImpl(
             rxSchedulerFactory,
             refreshTokenRepository,
-            tokenManager
+            appRemoteRepository,
+            tokenManager,
+            userManager
         )
     }
 
@@ -392,8 +398,8 @@ val interactorModule = module {
     }
 
     single { provideNumberPhoneInteractor(get(), get(), get()) }
-    single { provideUserFormInteractorImpl(get(), get(), get()) }
-    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get()) }
+    single { provideUserFormInteractorImpl(get(), get(), get(), get()) }
+    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get(), get()) }
     single { provideNavigationInteractor(get(), get(), get(), get()) }
     single { provideScannerInteractor(get(), get(), get()) }

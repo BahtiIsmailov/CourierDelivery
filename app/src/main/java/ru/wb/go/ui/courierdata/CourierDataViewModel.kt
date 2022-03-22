@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.CustomException
+import ru.wb.go.network.exceptions.InternalServerException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -22,7 +23,7 @@ class UserFormViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
     private val errorDialogManager: ErrorDialogManager,
-    ) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigateToMessageInfo = SingleLiveEvent<ErrorDialogData>()
     val navigateToMessageInfo: LiveData<ErrorDialogData>
@@ -157,13 +158,10 @@ class UserFormViewModel(
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
         addSubscription(
-            interactor.saveCourierDocuments(courierDocumentsEntity).subscribe(
-                { couriersFormComplete() },
-                {
-                    onTechErrorLog("couriersFormError", it)
-                    _loaderState.value = CourierDataUILoaderState.Enable
-                    errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
-                })
+            interactor.saveCourierDocuments(courierDocumentsEntity)
+                .subscribe(
+                    { couriersFormComplete() },
+                    { couriersFormError(it) })
         )
     }
 
@@ -182,7 +180,17 @@ class UserFormViewModel(
             CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
     }
 
-     private fun observeNetworkState() {
+    private fun couriersFormError(it: Throwable) {
+        onTechErrorLog("couriersFormError", it)
+        _loaderState.value = CourierDataUILoaderState.Enable
+        if (it is InternalServerException) {
+            couriersFormComplete()
+        } else {
+            errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
+        }
+    }
+
+    private fun observeNetworkState() {
         addSubscription(
             interactor.observeNetworkConnected()
                 .subscribe({ _toolbarNetworkState.value = it }, {})
@@ -199,11 +207,11 @@ class UserFormViewModel(
         return parameters
     }
 
-    fun showAnnotation(){
-        if(!showAnnotationState.value!!){
+    fun showAnnotation() {
+        if (!showAnnotationState.value!!) {
             return
         }
-        assert(parameters.docs.errorAnnotate!=null)
+        assert(parameters.docs.errorAnnotate != null)
         val it = CustomException(parameters.docs.errorAnnotate!!)
         errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
     }

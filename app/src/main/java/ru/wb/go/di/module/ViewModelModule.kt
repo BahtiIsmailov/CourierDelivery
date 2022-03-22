@@ -72,7 +72,8 @@ val viewModelModule = module {
             remoteRepo = get(),
             deviceManager = get(),
             resourceProvider = get(),
-            settingsManager = get()
+            settingsManager = get(),
+            userManager = get(),
         )
     }
     viewModel { CourierVersionControlViewModel(get(), get(), get(), get()) }
