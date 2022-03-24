@@ -9,9 +9,9 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="104dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="92dp"
         android:src="@drawable/ic_self_employed_type"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,13 +20,13 @@
 
     <TextView
         android:id="@+id/self_employed_title"
-        style="@style/VeryLargePrimaryRegularText"
+        style="@style/VeryLargePrimaryMediumText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
+        android:letterSpacing="0.02"
         android:text="@string/courier_data_type_title"
-        android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <ProgressBar
@@ -45,21 +45,24 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/pad16"
         android:layout_marginEnd="@dimen/pad16"
-        android:layout_marginBottom="32dp"
-        android:checkedButton="@+id/radio_ip"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/complete_type">
 
         <RadioButton
-            android:id="@+id/radio_ip"
+            android:id="@+id/radio_self_employed"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/courier_data_type_ip_label" />
+            android:layout_height="56dp"
+            android:letterSpacing="0.05"
+            android:text="@string/courier_data_type_self_employed_label" />
 
         <RadioButton
-            android:id="@+id/radio_self_employed"
+            android:id="@+id/radio_ip"
+            style="@style/LargePrimaryRegularText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/courier_data_type_self_employed_label" />
+            android:layout_height="56dp"
+            android:letterSpacing="0.05"
+            android:text="@string/courier_data_type_ip_label" />
 
     </RadioGroup>
 
@@ -73,6 +76,7 @@
         android:layout_marginTop="44dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="20dp"
+        android:enabled="false"
         android:text="@string/courier_data_type_confirm_status"
         app:layout_constraintBottom_toBottomOf="parent" />
 

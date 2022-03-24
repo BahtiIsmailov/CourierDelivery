@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
-import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.InternalServerException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
@@ -50,15 +49,14 @@ class UserFormViewModel(
     val loaderState: LiveData<CourierDataUILoaderState>
         get() = _loaderState
 
-    private val _showAnnotationState = MutableLiveData<Boolean>()
-    val showAnnotationState: LiveData<Boolean>
-        get() = _showAnnotationState
+//    private val _showErrorAnnotationState = MutableLiveData<Boolean>()
+//    private val showAnnotationState: LiveData<Boolean>
+//        get() = _showErrorAnnotationState
 
     init {
-        _showAnnotationState.value = !parameters.docs.errorAnnotate.isNullOrEmpty()
+        //_showErrorAnnotationState.value = !parameters.docs.errorAnnotate.isNullOrEmpty()
         observeNetworkState()
     }
-
 
     private fun checkTextSurnameWrapper(focusChange: CourierDataUIAction.TextChange): CourierDataUIState =
         checkInputRequisite(focusChange)
@@ -183,11 +181,8 @@ class UserFormViewModel(
     private fun couriersFormError(it: Throwable) {
         onTechErrorLog("couriersFormError", it)
         _loaderState.value = CourierDataUILoaderState.Enable
-        if (it is InternalServerException) {
-            couriersFormComplete()
-        } else {
-            errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
-        }
+        if (it is InternalServerException) couriersFormComplete()
+        else errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
     }
 
     private fun observeNetworkState() {
@@ -199,7 +194,7 @@ class UserFormViewModel(
 
     fun onShowAgreementClick() {
         onTechEventLog("onShowAgreementClick")
-        _showAnnotationState.value = false
+//        _showErrorAnnotationState.value = false
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 
@@ -207,14 +202,14 @@ class UserFormViewModel(
         return parameters
     }
 
-    fun showAnnotation() {
-        if (!showAnnotationState.value!!) {
-            return
-        }
-        assert(parameters.docs.errorAnnotate != null)
-        val it = CustomException(parameters.docs.errorAnnotate!!)
-        errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
-    }
+//    fun showAnnotation() {
+//        if (!showAnnotationState.value!!) {
+//            return
+//        }
+//        assert(parameters.docs.errorAnnotate != null)
+//        val it = CustomException(parameters.docs.errorAnnotate!!)
+//        errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
+//    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

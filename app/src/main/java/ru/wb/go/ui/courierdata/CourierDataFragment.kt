@@ -74,7 +74,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             SoftKeyboard.showKeyboard(requireActivity(), binding.surname)
             return
         }
-        viewModel.showAnnotation()
+        //viewModel.showAnnotation()
         with(params.docs) {
             binding.surname.setText(surName)
             binding.firstName.setText(firstName)

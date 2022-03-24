@@ -27,8 +27,10 @@ class CourierDataTypeViewModel(
 
     init {
         onTechEventLog("init")
-        if (parameters.docs.courierType == resourceProviderData.getSelfEmployed())
-            _switchState.value = CourierDataTypeSwitchState.IsSelfEmployed
+        _switchState.value =
+            if (parameters.docs.courierType == resourceProviderData.getSelfEmployed())
+                CourierDataTypeSwitchState.IsSelfEmployed
+            else CourierDataTypeSwitchState.IsIP
     }
 
     fun onUpdateStatusClick(isSelfEmployed: Boolean) {

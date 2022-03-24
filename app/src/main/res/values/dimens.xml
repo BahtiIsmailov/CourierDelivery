@@ -3,7 +3,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
-    <dimen name="button_corner_radius">10dp</dimen>
+    <dimen name="button_corner_radius">8dp</dimen>
 
     <dimen name="button_progress_height">55dp</dimen>
     <dimen name="button_height">55dp</dimen>
@@ -85,6 +85,7 @@
     <dimen name="pad64">64dp</dimen>
 
     <dimen name="map_button">36dp</dimen>
+    <dimen name="icon52">52dp</dimen>
 
 
 </resources>

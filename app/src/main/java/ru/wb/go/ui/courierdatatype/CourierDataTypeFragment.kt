@@ -51,8 +51,11 @@ class CourierDataTypeFragment : Fragment() {
 
     private fun initObserver() {
 
-        viewModel.switchState.observe(viewLifecycleOwner) {
-            binding.radioSelfEmployed.isChecked = true
+        viewModel.switchState.observe(viewLifecycleOwner) {state ->
+            when (state) {
+                CourierDataTypeSwitchState.IsIP -> binding.radioIp.isChecked = true
+                CourierDataTypeSwitchState.IsSelfEmployed -> binding.radioSelfEmployed.isChecked = true
+            }
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
@@ -72,6 +75,7 @@ class CourierDataTypeFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.radioGroup.setOnCheckedChangeListener { compoundButton, b -> binding.completeType.isEnabled = true }
         binding.completeType.setOnClickListener { viewModel.onUpdateStatusClick(binding.radioSelfEmployed.isChecked) }
     }
 

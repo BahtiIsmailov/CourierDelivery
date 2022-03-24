@@ -8,6 +8,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -48,6 +49,15 @@ class CourierDataExpectsFragment : Fragment() {
         initObserver()
         initListener()
         initKeyboard()
+        initReturnDialogResult()
+    }
+
+    private fun initReturnDialogResult() {
+        setFragmentResultListener(DIALOG_EXPECTS_ERROR_RESULT_TAG) { _, bundle ->
+            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
+                viewModel.onErrorDialogConfirmClick()
+            }
+        }
     }
 
     private fun initKeyboard() {
@@ -62,6 +72,10 @@ class CourierDataExpectsFragment : Fragment() {
 
         viewModel.showDialogInfo.observe(viewLifecycleOwner) {
             showDialogInfo(it)
+        }
+
+        viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
+            showDialogError(it)
         }
 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
@@ -111,6 +125,18 @@ class CourierDataExpectsFragment : Fragment() {
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
+    private fun showDialogError(
+        errorDialogData: ErrorDialogData
+    ) {
+        DialogInfoFragment.newInstance(
+            resultTag = errorDialogData.dlgTag,
+            type = errorDialogData.type,
+            title = errorDialogData.title,
+            message = errorDialogData.message,
+            positiveButtonName = "Исправить"
+        ).show(parentFragmentManager, DIALOG_EXPECTS_ERROR_RESULT_TAG)
+    }
+
     private fun initListener() {
         binding.updateStatus.setOnClickListener { viewModel.onUpdateStatusClick() }
     }
@@ -122,6 +148,7 @@ class CourierDataExpectsFragment : Fragment() {
 
     companion object {
         const val PHONE_KEY = "phone_key"
+        const val DIALOG_EXPECTS_ERROR_RESULT_TAG = "DIALOG_EXPECTS_ERROR_RESULT_TAG"
     }
 
 }

@@ -26,8 +26,8 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:fontFamily">@font/regular</item>
-        <item name="fontFamily">@font/regular</item>
+        <item name="android:fontFamily">@font/roboto_regular_font</item>
+        <item name="fontFamily">@font/roboto_regular_font</item>
         <item name="android:textColorPrimary">@color/primary</item>
         <item name="android:windowSoftInputMode">adjustPan</item>
         <item name="android:textColorSecondary">@android:color/darker_gray</item>
@@ -49,8 +49,10 @@
 
     <style name="AppButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/button_app_round_corner</item>
+        <item name="android:fontFamily">@font/roboto_medium_font</item>
         <item name="android:textSize">@dimen/button_text_size</item>
-        <item name="android:textColor">@color/lvl_1</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/app_button</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
@@ -79,116 +81,215 @@
     </style>
 
 
-    <style name="RegularBaseFont" parent="@android:style/Widget.TextView">
-        <item name="android:fontFamily">@font/regular</item>
+    <style name="RobotoRegularBaseFont" parent="@android:style/Widget.TextView">
+        <item name="android:fontFamily">@font/roboto_regular_font</item>
         <item name="android:lineSpacingExtra">@dimen/line_spacing</item>
     </style>
 
-    <style name="MediumBaseFont" parent="@android:style/Widget.TextView">
-        <item name="android:fontFamily">@font/medium</item>
+    <style name="RobotoMediumBaseFont" parent="@android:style/Widget.TextView">
+        <item name="android:fontFamily">@font/roboto_medium_font</item>
     </style>
 
-
-    <style name="SmallPrimaryRegularText" parent="RegularBaseFont">
+    <!--==============================SmallRobotoRegular========================================-->
+    <style name="SmallPrimaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/primary</item>>
     </style>
 
-    <style name="SmallSecondaryRegularText" parent="RegularBaseFont">
+    <style name="SmallSecondaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/secondary</item>>
     </style>
 
-    <style name="SmallLvl2RegularText" parent="RegularBaseFont">
+    <style name="SmallLvl2RegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/lvl_2</item>>
     </style>
 
-    <style name="SmallBrightRegularText" parent="RegularBaseFont">
+    <style name="SmallBrightRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/lvl_1</item>
     </style>
 
+    <!--==============================SmallRobotoMedium========================================-->
+    <style name="SmallPrimaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/small_text</item>
+        <item name="android:textColor">@color/primary</item>>
+    </style>
 
-    <style name="MediumPrimaryRegularText" parent="RegularBaseFont">
+    <style name="SmallSecondaryMediumText" parent="RobotoRegularBaseFont">
+        <item name="android:textSize">@dimen/small_text</item>
+        <item name="android:textColor">@color/secondary</item>>
+    </style>
+
+    <style name="SmallLvl2MediumText" parent="RobotoRegularBaseFont">
+        <item name="android:textSize">@dimen/small_text</item>
+        <item name="android:textColor">@color/lvl_2</item>>
+    </style>
+
+    <style name="SmallBrightMediumText" parent="RobotoRegularBaseFont">
+        <item name="android:textSize">@dimen/small_text</item>
+        <item name="android:textColor">@color/lvl_1</item>
+    </style>
+
+    <!--==============================MediumRobotoRegular========================================-->
+    <style name="MediumPrimaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/medium_text</item>
         <item name="android:textColor">@color/primary</item>>
     </style>
 
-    <style name="MediumSecondaryRegularText" parent="RegularBaseFont">
+    <style name="MediumSecondaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/medium_text</item>
         <item name="android:textColor">@color/secondary</item>>
     </style>
 
-    <style name="MediumLvl2RegularText" parent="RegularBaseFont">
+    <style name="MediumLvl2RegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/medium_text</item>
         <item name="android:textColor">@color/lvl_2</item>>
     </style>
 
-    <style name="MediumLvl1SmallRegularText" parent="RegularBaseFont">
+    <style name="MediumLvl1SmallRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/medium_text</item>
         <item name="android:textColor">@color/lvl_1</item>
     </style>
 
+    <!--==============================MediumRobotoMedium========================================-->
+    <style name="MediumPrimaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/primary</item>>
+    </style>
 
-    <style name="LargePrimaryRegularText" parent="RegularBaseFont">
+    <style name="MediumSecondaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/secondary</item>>
+    </style>
+
+    <style name="MediumLvl2MediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/lvl_2</item>>
+    </style>
+
+    <style name="MediumLvl1SmallMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:textColor">@color/lvl_1</item>
+    </style>
+
+    <!--==============================LargeRobotoRegular========================================-->
+    <style name="LargePrimaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="LargeSecondaryRegularText" parent="RegularBaseFont">
+    <style name="LargeSecondaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/secondary</item>
     </style>
 
-    <style name="LargeLvl2RegularText" parent="RegularBaseFont">
+    <style name="LargeLvl2RegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/lvl_2</item>
     </style>
 
-    <style name="LargeLvl1RegularText" parent="RegularBaseFont">
+    <style name="LargeLvl1RegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/lvl_1</item>
     </style>
 
 
-    <style name="LargeRedRegularText" parent="RegularBaseFont">
+    <style name="LargeRedRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/large_text</item>
         <item name="android:textColor">@color/red</item>
     </style>
 
+    <!--==============================LargeRobotoMedium========================================-->
 
-    <style name="VeryLargePrimaryRegularText" parent="RegularBaseFont">
+    <style name="LargePrimaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <style name="LargeSecondaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/secondary</item>
+    </style>
+
+    <style name="LargeLvl2MediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/lvl_2</item>
+    </style>
+
+    <style name="LargeLvl1MediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/lvl_1</item>
+    </style>
+
+
+    <style name="LargeRedMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/large_text</item>
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <!--============================VeryLargeRobotoRegular=====================================-->
+    <style name="VeryLargePrimaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/very_large_text</item>
         <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="VeryLargeSecondaryRegularText" parent="RegularBaseFont">
+    <style name="VeryLargeSecondaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/very_large_text</item>
         <item name="android:textColor">@color/secondary</item>
     </style>
 
-    <style name="VeryLargeLvl2RegularText" parent="RegularBaseFont">
+    <style name="VeryLargeLvl2RegularText" parent="RobotoRegularBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/lvl_2</item>
+    </style>
+    <!--============================VeryLargeRobotoMedium======================================-->
+    <style name="VeryLargePrimaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <style name="VeryLargeSecondaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/secondary</item>
+    </style>
+
+    <style name="VeryLargeLvl2MediumText" parent="RobotoMediumBaseFont">
         <item name="android:textSize">@dimen/very_large_text</item>
         <item name="android:textColor">@color/lvl_2</item>
     </style>
 
-
-    <style name="ExtraLargePrimaryRegularText" parent="RegularBaseFont">
+    <!--============================ExtraLargeRobotoRegular====================================-->
+    <style name="ExtraLargePrimaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>
         <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="ExtraLargeSecondaryRegularText" parent="RegularBaseFont">
+    <style name="ExtraLargeSecondaryRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>
         <item name="android:textColor">@color/secondary</item>
     </style>
 
-    <style name="ExtraLightRegularText" parent="RegularBaseFont">
+    <style name="ExtraLightRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>
         <item name="android:textColor">@color/lvl_2</item>
     </style>
+    <!--============================ExtraLargeRobotoMedium=====================================-->
+    <style name="ExtraLargePrimaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
 
+    <style name="ExtraLargeSecondaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/secondary</item>
+    </style>
+
+    <style name="ExtraLightMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/lvl_2</item>
+    </style>
 
     <style name="InputPhoneOutlineBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:textSize">@dimen/very_large_text</item>
@@ -212,7 +313,7 @@
         <item name="boxBackgroundColor">@color/lvl_2</item>
     </style>
 
-    <style name="LargeRegularText" parent="RegularBaseFont">
+    <style name="LargeRegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>
         <item name="android:textColor">@color/primary</item>
     </style>

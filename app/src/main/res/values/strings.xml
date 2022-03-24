@@ -15,9 +15,9 @@
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
 
-    <string name="auth_courier_expects_registration">Завершение регистрации</string>
-    <string name="auth_courier_expects_registration_24">Рассмотрение заявки на регистрацию занимает до 24 часов</string>
-    <string name="auth_courier_expects_check_status">Проверить статус регистрации</string>
+    <string name="auth_courier_expects_registration">Ваша заявка находится на\nрассмотрении</string>
+    <string name="auth_courier_expects_registration_24">Срок рассмотрения завки до 24 часов</string>
+    <string name="auth_courier_expects_check_status">Проверить статус заявки</string>
 
     <string name="courier_data_type_title">Выберете форму\nсотрудничества</string>
     <string name="courier_data_type_ip_label">ИП</string>

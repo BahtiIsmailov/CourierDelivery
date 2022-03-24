@@ -5,7 +5,7 @@ import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 sealed class CourierDataExpectsNavAction {
 
     object NavigateToCouriers : CourierDataExpectsNavAction()
-//    object StartApp : CourierExpectsNavAction()
+
     data class NavigateToDataType(val phone: String, val docs: CourierDocumentsEntity) :
         CourierDataExpectsNavAction()
 
