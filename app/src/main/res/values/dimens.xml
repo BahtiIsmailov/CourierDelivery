@@ -41,12 +41,14 @@
     <dimen name="large_text">16sp</dimen>
     <dimen name="very_large_text">20sp</dimen>
     <dimen name="extra_large_text">24sp</dimen>
+
     <dimen name="line_spacing">4dp</dimen>
+    <dimen name="letter_spacing">0.02</dimen>
 
     <dimen name="card_view_elevation">2dp</dimen>
     <dimen name="card_view_corner_radius">8dp</dimen>
 
-    <dimen name="button_text_size">18sp</dimen>
+    <dimen name="button_text_size">16sp</dimen>
 
     <dimen name="floating_hint_vertical_margin">20dp</dimen>
     <dimen name="floating_hint_horizontal_margin">5dp</dimen>
@@ -73,7 +75,6 @@
     <dimen name="shadow_list">12dp</dimen>
 
     <!-- pin -->
-    <dimen name="pin_button_text_size">30sp</dimen>
     <dimen name="dp_0d2">2dp</dimen>
     <dimen name="code_keyboard_font_size">40sp</dimen>
     <dimen name="pad8">8dp</dimen>

@@ -15,13 +15,12 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/VeryLargePrimaryRegularText"
+        style="@style/VeryLargePrimaryMediumText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:textStyle="bold"
         tools:text="Title" />
 
     <TextView

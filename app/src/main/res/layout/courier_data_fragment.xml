@@ -31,7 +31,7 @@
 
             <TextView
                 android:id="@+id/reg_title"
-                style="@style/VeryLargePrimaryRegularText"
+                style="@style/VeryLargePrimaryMediumText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
@@ -137,7 +137,7 @@
 
             <TextView
                 android:id="@+id/reg_passport"
-                style="@style/LargePrimaryRegularText"
+                style="@style/VeryLargePrimaryMediumText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"

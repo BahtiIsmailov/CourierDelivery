@@ -33,12 +33,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:gravity="center"
-            android:textStyle="bold"
             tools:text="Заявка на вывод 3 000 ₽ создана" />
 
         <TextView
             android:id="@+id/info"
-            style="@style/LargeLvl2RegularText"
+            style="@style/LargeSecondaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

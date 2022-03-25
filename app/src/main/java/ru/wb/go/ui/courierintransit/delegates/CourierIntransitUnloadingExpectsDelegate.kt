@@ -5,7 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.adapters.BaseAdapterDelegate
-import ru.wb.go.databinding.CourierIntransitUnloadingExpectsLayoutBinding
+import ru.wb.go.databinding.CourierIntransitDelegateUnloadingExpectsLayoutBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitUnloadingExpectsItem
 
@@ -20,7 +20,7 @@ class CourierIntransitUnloadingExpectsDelegate(
     }
 
     override fun getLayoutId(): Int {
-        return R.layout.courier_intransit_unloading_expects_layout
+        return R.layout.courier_intransit_delegate_unloading_expects_layout
     }
 
     override fun createViewHolder(view: View): RouterViewHolder {
@@ -38,7 +38,7 @@ class CourierIntransitUnloadingExpectsDelegate(
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val binding = CourierIntransitUnloadingExpectsLayoutBinding.bind(itemView)
+        val binding = CourierIntransitDelegateUnloadingExpectsLayoutBinding.bind(itemView)
 
         private fun getTag(itemView: View): CourierIntransitUnloadingExpectsItem {
             return itemView.tag as CourierIntransitUnloadingExpectsItem

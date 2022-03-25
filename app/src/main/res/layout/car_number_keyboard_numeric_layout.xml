@@ -9,10 +9,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_1"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button1"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintLeft_toLeftOf="@+id/guideline12"
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
@@ -23,10 +23,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_2"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button2"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintLeft_toLeftOf="@+id/guideline4"
         app:layout_constraintRight_toLeftOf="@+id/guideline7"
@@ -37,10 +37,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_3"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button3"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintLeft_toLeftOf="@+id/guideline5"
         app:layout_constraintRight_toLeftOf="@+id/guideline6"
@@ -51,10 +51,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_4"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button4"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintLeft_toLeftOf="@+id/guideline12"
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
@@ -65,10 +65,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_5"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button5"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintLeft_toLeftOf="@+id/guideline4"
         app:layout_constraintRight_toLeftOf="@+id/guideline7"
@@ -79,10 +79,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_6"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button6"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintLeft_toLeftOf="@+id/guideline5"
         app:layout_constraintRight_toLeftOf="@+id/guideline6"
@@ -93,10 +93,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_7"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button7"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
         app:layout_constraintLeft_toLeftOf="@+id/guideline12"
         app:layout_constraintRight_toLeftOf="@+id/guideline13"
@@ -107,10 +107,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_8"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button8"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
         app:layout_constraintLeft_toLeftOf="@+id/guideline4"
         app:layout_constraintRight_toLeftOf="@+id/guideline7"
@@ -121,10 +121,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_9"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button9"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
         app:layout_constraintLeft_toLeftOf="@+id/guideline5"
         app:layout_constraintRight_toLeftOf="@+id/guideline6"
@@ -135,10 +135,10 @@
 
     <ru.wb.go.ui.auth.keyboard.KeyboardButtonView
         android:id="@+id/button_0"
+        style="@style/VeryLargePrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/keyboard_button0"
-        android:textSize="@dimen/pin_button_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/guideline4"
         app:layout_constraintRight_toLeftOf="@+id/guideline7"

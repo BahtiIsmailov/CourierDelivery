@@ -79,7 +79,7 @@
 
     <TextView
         android:id="@+id/currentOrderId"
-        style="@style/LargePrimaryRegularText"
+        style="@style/LargePrimaryMediumText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/lvl_2"
@@ -88,7 +88,6 @@
         android:maxLines="1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@+id/center_horizontal"
         tools:text="2000000251" />
 
@@ -139,7 +138,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_divider"
-        tools:listitem="@layout/courier_intransit_empty_layout" />
+        tools:listitem="@layout/courier_intransit_delegate_empty_layout" />
 
     <View
         android:id="@+id/view_divider_bottom"

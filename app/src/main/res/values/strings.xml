@@ -237,7 +237,7 @@
     <string name="courier_order_dialog_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
 
 
-    <string name="reserveTitle">резерв </string>
+    <string name="reserve_title">резерв </string>
     <string name="reserveCapTitle">Резерв </string>
     <string name="courier_orders_details_order">Заказ %1$d</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
@@ -304,6 +304,9 @@
     <string name="courier_intransit_label_id"># %1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
+    <string name="courier_intransit_delegate_divider">/</string>
+
+
 
     <string name="courier_intransit_office_scanner_title">Сканировать QR ПВЗ</string>
 

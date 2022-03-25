@@ -41,10 +41,10 @@
     <style name="TextToolbar">
         <item name="android:textColor">@color/primary</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:letterSpacing">0.01</item>
+        <item name="android:letterSpacing">0.02</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">@font/roboto_regular_font</item>
     </style>
 
     <style name="AppButtonStyle" parent="Widget.AppCompat.Button">
@@ -84,10 +84,13 @@
     <style name="RobotoRegularBaseFont" parent="@android:style/Widget.TextView">
         <item name="android:fontFamily">@font/roboto_regular_font</item>
         <item name="android:lineSpacingExtra">@dimen/line_spacing</item>
+        <item name="android:letterSpacing">@dimen/letter_spacing</item>
     </style>
 
     <style name="RobotoMediumBaseFont" parent="@android:style/Widget.TextView">
         <item name="android:fontFamily">@font/roboto_medium_font</item>
+        <item name="android:lineSpacingExtra">@dimen/line_spacing</item>
+        <item name="android:letterSpacing">@dimen/letter_spacing</item>
     </style>
 
     <!--==============================SmallRobotoRegular========================================-->
@@ -248,6 +251,11 @@
     <style name="VeryLargePrimaryMediumText" parent="RobotoMediumBaseFont">
         <item name="android:textSize">@dimen/very_large_text</item>
         <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <style name="VeryLargeTertiaryMediumText" parent="RobotoMediumBaseFont">
+        <item name="android:textSize">@dimen/very_large_text</item>
+        <item name="android:textColor">@color/tertiary</item>
     </style>
 
     <style name="VeryLargeSecondaryMediumText" parent="RobotoMediumBaseFont">

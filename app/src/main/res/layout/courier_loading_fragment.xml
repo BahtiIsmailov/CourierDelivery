@@ -31,7 +31,7 @@
         android:layout_height="48dp"
         android:background="@color/colorPrimary"
         android:gravity="center"
-        android:letterSpacing="0.2"
+        android:letterSpacing="0.16"
         android:textAllCaps="true"
         android:textColor="@color/lvl_1"
         android:textStyle="bold"
@@ -51,7 +51,7 @@
 
         <TextView
             android:id="@+id/prefix_qr_code"
-            style="@style/VeryLargeSecondaryRegularText"
+            style="@style/VeryLargeSecondaryMediumText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -62,10 +62,11 @@
 
         <TextView
             android:id="@+id/qr_code"
-            style="@style/VeryLargeLvl2RegularText"
+            style="@style/VeryLargeTertiaryMediumText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:letterSpacing="0.11"
             app:layout_constraintBottom_toBottomOf="@id/counter_layout"
             app:layout_constraintStart_toEndOf="@id/prefix_qr_code"
             app:layout_constraintTop_toTopOf="@id/counter_layout"

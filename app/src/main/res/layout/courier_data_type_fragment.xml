@@ -25,7 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:letterSpacing="0.02"
         android:text="@string/courier_data_type_title"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
@@ -53,7 +52,6 @@
             style="@style/LargePrimaryRegularText"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:letterSpacing="0.05"
             android:text="@string/courier_data_type_self_employed_label" />
 
         <RadioButton
@@ -61,7 +59,6 @@
             style="@style/LargePrimaryRegularText"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:letterSpacing="0.05"
             android:text="@string/courier_data_type_ip_label" />
 
     </RadioGroup>

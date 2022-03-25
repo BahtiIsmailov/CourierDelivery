@@ -33,13 +33,12 @@
 
             <TextView
                 android:id="@+id/recipient_title"
-                style="@style/LargePrimaryRegularText"
+                style="@style/LargePrimaryMediumText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
                 android:layout_marginTop="16dp"
-                android:text="@string/recipient_data_title"
-                android:textStyle="bold" />
+                android:text="@string/recipient_data_title" />
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -97,13 +96,12 @@
 
             <TextView
                 android:id="@+id/account_title"
-                style="@style/LargePrimaryRegularText"
+                style="@style/LargePrimaryMediumText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
                 android:layout_marginTop="18dp"
-                android:text="@string/bank_details_title"
-                android:textStyle="bold" />
+                android:text="@string/bank_details_title" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/account_layout"

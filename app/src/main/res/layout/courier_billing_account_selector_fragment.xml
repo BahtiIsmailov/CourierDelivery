@@ -37,14 +37,14 @@
 
                 <TextView
                     android:id="@+id/prefix_balance"
-                    style="@style/VeryLargeSecondaryRegularText"
+                    style="@style/LargeSecondaryRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/balance_title" />
 
                 <TextView
                     android:id="@+id/balance"
-                    style="@style/VeryLargePrimaryRegularText"
+                    style="@style/LargePrimaryMediumText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -79,13 +79,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                style="@style/VeryLargePrimaryRegularText"
+                style="@style/LargePrimaryMediumText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/courier_account_number_title"
-                android:textStyle="bold" />
+                android:text="@string/courier_account_number_title" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

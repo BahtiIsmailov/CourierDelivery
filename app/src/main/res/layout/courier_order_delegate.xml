@@ -44,7 +44,7 @@
 
     <TextView
         android:id="@+id/orderId"
-        style="@style/LargePrimaryRegularText"
+        style="@style/LargePrimaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -55,21 +55,21 @@
 
     <TextView
         android:id="@+id/countOffice"
-        style="@style/LargeSecondaryRegularText"
+        style="@style/MediumSecondaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/orderId"
         app:layout_constraintStart_toEndOf="@id/orderId"
         app:layout_constraintTop_toTopOf="@id/orderId"
         tools:text="@sample/orders.json/orders/num" />
 
     <TextView
         android:id="@+id/cost"
-        style="@style/LargePrimaryRegularText"
+        style="@style/LargePrimaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/orderId"
         tools:text="@sample/orders.json/orders/price" />
@@ -103,11 +103,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/pad8"
-        android:text="@string/reserveTitle"
+        android:text="@string/reserve_title"
         app:layout_constraintBottom_toBottomOf="@id/reserve"
         app:layout_constraintEnd_toStartOf="@id/reserve"
-        app:layout_constraintTop_toTopOf="@id/reserve"
-        tools:layout_editor_absoluteY="26dp" />
+        app:layout_constraintTop_toTopOf="@id/reserve" />
 
     <TextView
         android:id="@+id/reserve"
