@@ -11,4 +11,5 @@ data class CourierDocumentsResponse(
     val passportNumber: String,
     val passportSeries: String,
     val surName: String,
+    val courierType: String,
 )

@@ -5,5 +5,6 @@ sealed class CourierDataTypeSwitchState {
 
     object IsSelfEmployed : CourierDataTypeSwitchState()
     object IsIP : CourierDataTypeSwitchState()
+    object IsEmpty : CourierDataTypeSwitchState()
 
 }

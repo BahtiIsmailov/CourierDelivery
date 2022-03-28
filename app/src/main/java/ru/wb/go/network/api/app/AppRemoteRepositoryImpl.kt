@@ -65,6 +65,7 @@ class AppRemoteRepositoryImpl(
                         passportNumber = passportNumber,
                         passportSeries = passportSeries,
                         surName = surName,
+                        courierType = courierType
                     )
                 }
             }
