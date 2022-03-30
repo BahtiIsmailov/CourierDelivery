@@ -253,7 +253,7 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 true -> {
                     binding.toRegistration.visibility = VISIBLE
-                    carNumberTextColor(R.color.lvl_2)
+                    carNumberTextColor(R.color.red)
                     binding.carChangeImage.visibility = GONE
                 }
                 false -> {
