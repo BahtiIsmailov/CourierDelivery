@@ -27,6 +27,7 @@ import ru.wb.go.databinding.CourierOrdersFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsInfoUIState
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
@@ -102,12 +103,16 @@ class CourierOrderFragment : Fragment() {
 //        app:behavior_fitToContents="false"
 //        app:behavior_halfExpandedRatio="0.5"
 
-       val halfHeightDisplay = getHalfHeightDisplay()
+        val halfHeightDisplay = getHalfHeightDisplay()
 //        bottomSheetOrders.peekHeight = halfHeightDisplay
 //        bottomSheetOrders.isGestureInsetBottomIgnored = true
 //        bottomSheetOrders.isFitToContents = false
 
         viewModel.update(halfHeightDisplay)
+
+        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
 
 
 //        binding.ordersLayout.viewTreeObserver.addOnGlobalLayoutListener(
@@ -151,6 +156,8 @@ class CourierOrderFragment : Fragment() {
         //hideAllBottomSheet()
     }
 
+    private var isDetailsShowing: Boolean = false
+
     private fun initBottomSheet() {
         binding.orderAddresses.visibility = VISIBLE
 
@@ -158,7 +165,7 @@ class CourierOrderFragment : Fragment() {
         bottomSheetOrders.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                //if (newState == BottomSheetBehavior.STATE_HIDDEN) viewModel.onCloseOrdersClick()
+                if (newState == BottomSheetBehavior.STATE_HIDDEN && !isDetailsShowing) viewModel.onCloseOrdersClick()
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
@@ -167,6 +174,17 @@ class CourierOrderFragment : Fragment() {
 
 
         bottomSheetOrderDetails = BottomSheetBehavior.from(binding.orderDetailsLayout)
+        bottomSheetOrderDetails.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) viewModel.onCloseOrderDetailsClick(
+                    getHalfHeightDisplay()
+                ) //expandedOrders()
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
 
         bottomSheetOrderAddresses = BottomSheetBehavior.from(binding.orderAddresses)
         bottomSheetOrderAddresses.addBottomSheetCallback(object :
@@ -179,12 +197,18 @@ class CourierOrderFragment : Fragment() {
         })
     }
 
+    private fun expandedOrders() {
+        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
     private fun expandedDetails() {
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun hideAllBottomSheet() {
-        bottomSheetOrders.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
     }
@@ -201,7 +225,11 @@ class CourierOrderFragment : Fragment() {
         binding.addressClose.setOnClickListener { showDetails() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.confirmTakeOrderClick() }
-        binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick() }
+        binding.closeOrderDetails.setOnClickListener {
+            viewModel.onCloseOrderDetailsClick(
+                getHalfHeightDisplay()
+            )
+        }
 
     }
 
@@ -213,6 +241,14 @@ class CourierOrderFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initStateObserve() {
+
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
+            ?.observe(viewLifecycleOwner) { isEdit ->
+                if (isEdit) {
+                    findNavController().popBackStack()
+                } //добавить проверку и навигацию на детали
+            }
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.title.text = it.label
@@ -238,6 +274,8 @@ class CourierOrderFragment : Fragment() {
 //                        )
 //                    )
 
+                    isDetailsShowing = true
+
                     bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
                     bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
                     bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
@@ -246,15 +284,17 @@ class CourierOrderFragment : Fragment() {
                 is CourierOrdersNavigationState.NavigateToCarNumber ->
                     findNavController().navigate(
                         CourierOrderFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(
-                                it.title,
-                                it.orderNumber,
-                                it.order,
-                                it.warehouseLatitude,
-                                it.warehouseLongitude
-                            )
+                            CourierCarNumberParameters(it.isEdit)
                         )
                     )
+
+
+//                it.title,
+//                it.orderNumber,
+//                it.order,
+//                it.warehouseLatitude,
+//                it.warehouseLongitude
+
                 CourierOrdersNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierOrderFragmentDirections.actionCourierOrdersFragmentToAuthNavigation()
@@ -262,7 +302,7 @@ class CourierOrderFragment : Fragment() {
                 }
                 CourierOrdersNavigationState.NavigateToWarehouse -> findNavController().popBackStack()
                 CourierOrdersNavigationState.NavigateToOrders -> {
-                    bottomSheetOrders.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                    bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
                     bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
                     bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
                 }

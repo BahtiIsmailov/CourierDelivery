@@ -204,11 +204,12 @@ class CourierOrderDetailsFragment : Fragment() {
                     findNavController().navigate(
                         CourierOrderDetailsFragmentDirections.actionCourierOrderDetailsFragmentToCourierCarNumberFragment(
                             CourierCarNumberParameters(
-                                it.title,
-                                it.orderNumber,
-                                it.order,
-                                it.warehouseLatitude,
-                                it.warehouseLongitude
+                                false
+//                                it.title,
+//                                it.orderNumber,
+//                                it.order,
+//                                it.warehouseLatitude,
+//                                it.warehouseLongitude
                             )
                         )
                     )

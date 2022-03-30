@@ -1,15 +1,14 @@
 package ru.wb.go.ui.couriercarnumber
 
-import ru.wb.go.db.entity.courier.CourierOrderEntity
-
 sealed class CourierCarNumberNavigationState {
 
     data class NavigateToOrderDetails(
-        val title: String,
-        val orderNumber: String,
-        val order: CourierOrderEntity,
-        val warehouseLatitude: Double,
-        val warehouseLongitude: Double,
+        val isEdit: Boolean
+//        val title: String,
+//        val orderNumber: String,
+//        val order: CourierOrderEntity,
+//        val warehouseLatitude: Double,
+//        val warehouseLongitude: Double,
     ) : CourierCarNumberNavigationState()
 
 }

@@ -18,7 +18,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierCarNumberFragmentBinding
-import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters
@@ -27,6 +26,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 
     companion object {
         const val COURIER_CAR_NUMBER_ID_KEY = "courier_car_number_id_key"
+        const val COURIER_CAR_NUMBER_ID_EDIT_KEY = "courier_car_number_is_edit_key"
     }
 
     private val viewModel by viewModel<CourierCarNumberViewModel> {
@@ -70,17 +70,21 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierCarNumberNavigationState.NavigateToOrderDetails -> {
-                    findNavController().navigate(
-                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderDetailsFragment(
-                            CourierOrderDetailsParameters(
-                                state.title,
-                                state.orderNumber,
-                                state.order,
-                                state.warehouseLatitude,
-                                state.warehouseLongitude
-                            )
-                        )
+                    findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                        COURIER_CAR_NUMBER_ID_EDIT_KEY,
+                        state.isEdit
                     )
+//                    findNavController().navigate(
+//                        CourierCarNumberFragmentDirections.actionCourierCarNumberFragmentToCourierOrderDetailsFragment(
+//                            CourierOrderDetailsParameters(
+//                                state.title,
+//                                state.orderNumber,
+//                                state.order,
+//                                state.warehouseLatitude,
+//                                state.warehouseLongitude
+//                            )
+//                        )
+//                    )
                 }
             }
         }
@@ -136,10 +140,13 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 }
 
 @Parcelize
-data class CourierCarNumberParameters(
-    val title: String,
-    val orderNumber: String,
-    val order: CourierOrderEntity,
-    val warehouseLatitude: Double,
-    val warehouseLongitude: Double,
-) : Parcelable
+data class CourierCarNumberParameters(val isEdit: Boolean) : Parcelable
+
+//@Parcelize
+//data class CourierCarNumberParameters(
+//    val title: String,
+//    val orderNumber: String,
+//    val order: CourierOrderEntity,
+//    val warehouseLatitude: Double,
+//    val warehouseLongitude: Double,
+//) : Parcelable

@@ -1,7 +1,5 @@
 package ru.wb.go.ui.courierorders
 
-import ru.wb.go.db.entity.courier.CourierOrderEntity
-
 sealed class CourierOrdersNavigationState {
 
 //    data class NavigateToOrderDetails(
@@ -15,11 +13,12 @@ sealed class CourierOrdersNavigationState {
     object NavigateToOrderDetails : CourierOrdersNavigationState()
 
     data class NavigateToCarNumber(
-        val title: String,
-        val orderNumber: String,
-        val order: CourierOrderEntity,
-        val warehouseLatitude: Double,
-        val warehouseLongitude: Double
+        val isEdit: Boolean
+//        val title: String,
+//        val orderNumber: String,
+//        val order: CourierOrderEntity,
+//        val warehouseLatitude: Double,
+//        val warehouseLongitude: Double
     ) : CourierOrdersNavigationState()
 
     object NavigateToRegistration : CourierOrdersNavigationState()

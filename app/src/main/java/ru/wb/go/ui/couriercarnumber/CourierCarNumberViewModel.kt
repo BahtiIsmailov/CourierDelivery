@@ -102,11 +102,11 @@ class CourierCarNumberViewModel(
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-            title = parameters.title,
-            orderNumber = parameters.orderNumber,
-            order = parameters.order,
-            warehouseLatitude = parameters.warehouseLatitude,
-            warehouseLongitude = parameters.warehouseLongitude
+            isEdit = parameters.isEdit,
+//            orderNumber = parameters.orderNumber,
+//            order = parameters.order,
+//            warehouseLatitude = parameters.warehouseLatitude,
+//            warehouseLongitude = parameters.warehouseLongitude
         )
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
@@ -115,11 +115,12 @@ class CourierCarNumberViewModel(
         onTechErrorLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-            title = parameters.title,
-            orderNumber = parameters.orderNumber,
-            order = parameters.order,
-            warehouseLatitude = parameters.warehouseLatitude,
-            warehouseLongitude = parameters.warehouseLongitude
+            isEdit = parameters.isEdit
+//            title = parameters.title,
+//            orderNumber = parameters.orderNumber,
+//            order = parameters.order,
+//            warehouseLatitude = parameters.warehouseLatitude,
+//            warehouseLongitude = parameters.warehouseLongitude
         )
     }
 

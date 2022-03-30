@@ -125,11 +125,7 @@ class CourierOrdersViewModel(
 
     fun onChangeCarNumberClick() {
         onTechEventLog("onChangeCarNumberClick")
-//        with(parameters) {
-//            _navigationState.value = CourierOrdersNavigationState.NavigateToCarNumber(
-//                title, orderNumber, order, warehouseLatitude, warehouseLongitude
-//            )
-//        }
+        _navigationState.value = CourierOrdersNavigationState.NavigateToCarNumber(isEdit = true)
     }
 
     fun toRegistrationClick() {
@@ -194,11 +190,23 @@ class CourierOrdersViewModel(
             val idMapClick = mapPoint.id
             val indexItem = idMapClick.toInt() - 1
             changeSelectedMapPoint(mapPoint)
-            val isMapSelected = isMapSelected(idMapClick)
-            changeSelectedOrderItems(indexItem, isMapSelected)
-            updateAndScrollToItems(indexItem)
-            changeShowOrders(isMapSelected)
-            updateMarkers()
+//            val isMapSelected = isMapSelected(idMapClick)
+//            changeSelectedOrderItems(indexItem, isMapSelected)
+//            updateAndScrollToItems(indexItem)
+//            changeShowOrders(isMapSelected)
+//            updateMarkers()
+
+
+            //        val isSelected = !(orderItems[clickItemIndex] as CourierOrderItem).isSelected
+//        changeSelectedMapPoint(orderMapMarkers[clickItemIndex + 1].point)
+//        changeSelectedOrderItems(clickItemIndex, isSelected)
+//        updateItems()
+//        updateMarkers()
+//        if (isSelected) zoomAllGroupMarkersFromBoundingBox(clickItemIndex)
+//        else zoomAllGroupMarkersFromBoundingBox()
+//        changeShowOrders(isSelected)
+
+            checkAndNavigateToOrders(indexItem)
         }
     }
 
@@ -432,13 +440,7 @@ class CourierOrdersViewModel(
 //            )
                 initOrderDetails(idView)
                 CourierOrdersNavigationState.NavigateToOrderDetails
-            } else CourierOrdersNavigationState.NavigateToCarNumber(
-                title,
-                itemId,
-                order,
-                parameters.warehouseLatitude,
-                parameters.warehouseLongitude
-            )
+            } else CourierOrdersNavigationState.NavigateToCarNumber(isEdit = false)
     }
 
     private fun initOrderDetails(idView: Int) {
@@ -557,8 +559,8 @@ class CourierOrdersViewModel(
         _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
-    fun onCloseOrderDetailsClick() {
-        update(1200)
+    fun onCloseOrderDetailsClick(height: Int) {
+        update(height)
         _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
     }
 
