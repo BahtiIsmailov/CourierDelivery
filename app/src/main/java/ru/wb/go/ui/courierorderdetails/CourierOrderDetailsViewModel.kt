@@ -41,8 +41,8 @@ class CourierOrderDetailsViewModel(
     val orderInfo: LiveData<CourierOrderDetailsInfoUIState>
         get() = _orderInfo
 
-    private val _orderDetails = MutableLiveData<CourierOrderDetailsUIState>()
-    val orderDetails: LiveData<CourierOrderDetailsUIState>
+    private val _orderDetails = MutableLiveData<CourierOrderAddressesUIState>()
+    val orderAddresses: LiveData<CourierOrderAddressesUIState>
         get() = _orderDetails
 
     private val _navigationState = SingleLiveEvent<CourierOrderDetailsNavigationState>()
@@ -131,7 +131,7 @@ class CourierOrderDetailsViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderInfo(
-                lineNumber = parameters.orderNumber,
+                itemId = parameters.orderNumber,
                 orderId = resourceProvider.getOrder(id),
                 cost = resourceProvider.getCost(coast),
                 cargo = resourceProvider.getCargo(minBoxesCount, minVolume),
@@ -181,8 +181,8 @@ class CourierOrderDetailsViewModel(
     }
 
     private fun initItems(items: MutableList<CourierOrderDetailsItem>) {
-        _orderDetails.value = if (items.isEmpty()) CourierOrderDetailsUIState.Empty
-        else CourierOrderDetailsUIState.InitItems(items)
+        _orderDetails.value = if (items.isEmpty()) CourierOrderAddressesUIState.Empty
+        else CourierOrderAddressesUIState.InitItems(items)
     }
 
     fun onChangeCarNumberClick() {
@@ -233,8 +233,8 @@ class CourierOrderDetailsViewModel(
             courierOrderDetailsItems[index] = itemCheckSelected
         }
         _orderDetails.value =
-            if (courierOrderDetailsItems.isEmpty()) CourierOrderDetailsUIState.Empty
-            else CourierOrderDetailsUIState.UpdateItems(selectIndex, courierOrderDetailsItems)
+            if (courierOrderDetailsItems.isEmpty()) CourierOrderAddressesUIState.Empty
+            else CourierOrderAddressesUIState.UpdateItems(selectIndex, courierOrderDetailsItems)
     }
 
     private fun navigateToPoint(selectIndex: Int, isSelected: Boolean) {

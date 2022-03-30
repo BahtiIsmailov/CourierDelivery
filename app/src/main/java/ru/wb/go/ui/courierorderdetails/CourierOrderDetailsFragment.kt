@@ -143,7 +143,7 @@ class CourierOrderDetailsFragment : Fragment() {
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderInfo -> {
                     with(binding.selectedOrder) {
-                        linerNumber.text = it.lineNumber
+                        linerNumber.text = it.itemId
                         orderId.text = it.orderId
                         cost.text = it.cost
                         cargo.text = it.cargo
@@ -161,9 +161,9 @@ class CourierOrderDetailsFragment : Fragment() {
             }
         }
 
-        viewModel.orderDetails.observe(viewLifecycleOwner) {
+        viewModel.orderAddresses.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderDetailsUIState.InitItems -> {
+                is CourierOrderAddressesUIState.InitItems -> {
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
                     binding.takeOrder.isEnabled = true
@@ -175,12 +175,12 @@ class CourierOrderDetailsFragment : Fragment() {
                     adapter = CourierOrderDetailsAdapter(requireContext(), it.items, callback)
                     binding.routes.adapter = adapter
                 }
-                is CourierOrderDetailsUIState.Empty -> {
+                is CourierOrderAddressesUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.routes.visibility = GONE
                     binding.takeOrder.isEnabled = false
                 }
-                is CourierOrderDetailsUIState.UpdateItems -> {
+                is CourierOrderAddressesUIState.UpdateItems -> {
                     adapter.clear()
                     adapter.addItems(it.items)
                     adapter.notifyDataSetChanged()

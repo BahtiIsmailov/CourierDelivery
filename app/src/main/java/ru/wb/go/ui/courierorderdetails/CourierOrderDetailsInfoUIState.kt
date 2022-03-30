@@ -3,7 +3,7 @@ package ru.wb.go.ui.courierorderdetails
 sealed class CourierOrderDetailsInfoUIState {
 
     data class InitOrderInfo(
-        val lineNumber: String,
+        val itemId: String,
         val orderId: String,
         val cost: String,
         val cargo: String,

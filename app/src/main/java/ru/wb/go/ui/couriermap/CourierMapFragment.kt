@@ -8,11 +8,14 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.animation.LinearInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
@@ -267,8 +270,78 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 is CourierMapState.ZoomToBoundingBoxOffsetY ->
                     checkMapViewAndZoomToBoundingBoxOffsetY(it)
                 CourierMapState.UpdateMyLocation -> updateMyLocation()
+                is CourierMapState.UpdateMarkersWithAnimatePosition -> updateMarkersWithAnimatePosition(
+                    it
+                )
             }
         }
+    }
+
+    private fun updateMarkersWithAnimatePosition(it: CourierMapState.UpdateMarkersWithAnimatePosition) {
+        // binding.map.overlays.clear()
+
+//
+//        private fun addMapMarker(
+//            id: String,
+//            lat: Double,
+//            long: Double,
+//            icon: Drawable?
+//        ) {
+//            val markerMap = Marker(binding.map)
+//            markerMap.setOnMarkerClickListener(onMarkerClickListener)
+//            markerMap.id = id
+//            markerMap.icon = icon
+//            markerMap.position = GeoPoint(lat, long)
+//            markerMap.setAnchor(0.5f, 0.5f)
+//            binding.map.overlays.add(markerMap)
+//        }
+
+        val markers = mutableListOf<Marker>()
+
+        it.pointsTo.forEach { state ->
+
+            val markerMap = Marker(binding.map)
+            markerMap.id = state.point.id
+            markerMap.icon = getIcon(state.icon)
+            markerMap.position = GeoPoint(it.pointFrom.latitude, it.pointFrom.longitude)
+            markerMap.setAnchor(0.5f, 0.5f)
+            markers.add(markerMap)
+
+
+            binding.map.overlays.add(markerMap)
+
+            val handler = Handler()
+            val start = SystemClock.uptimeMillis()
+            val duration: Long = 500
+            val interpolator = LinearInterpolator()
+            handler.post(object : Runnable {
+                override fun run() {
+                    val elapsed: Long = SystemClock.uptimeMillis() - start
+                    val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
+                    val lng = t * state.point.long + (1 - t) * it.pointFrom.longitude
+                    val lat = t * state.point.lat + (1 - t) * it.pointFrom.latitude
+                    markerMap.position = GeoPoint(lat, lng)
+                    if (t < 1.0) {
+                        handler.postDelayed(this, 15)
+                    }
+                    binding.map.postInvalidate()
+                }
+            })
+
+//            addMapMarker(
+//                state.point.id,
+//                it.pointFrom.latitude,
+//                it.pointFrom.longitude,
+//                getIcon(state.icon)
+//            )
+        }
+
+        //binding.map.invalidate()
+
+//        with(item) { addMapMarker(point.id, point.lat, point.long, getIcon(icon)) }
+//        initMapMarkers(it.)
+
+
     }
 
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapState.ZoomToBoundingBoxOffsetY) {
@@ -500,7 +573,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             paint.style = Paint.Style.FILL
 
             paint.textAlign = Paint.Align.CENTER
-            paint.color =  ResourcesCompat.getColor(resources, R.color.lvl_1, null)
+            paint.color = ResourcesCompat.getColor(resources, R.color.lvl_1, null)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             paint.textSize = 40f
 

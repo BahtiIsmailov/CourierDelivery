@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierorders.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
@@ -12,7 +11,7 @@ interface CourierOrdersInteractor {
 
     fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
-    fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
+//    fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
 
     fun observeNetworkConnected(): Observable<NetworkState>
 
@@ -23,5 +22,10 @@ interface CourierOrdersInteractor {
     fun carNumberIsConfirm(): Boolean
 
     fun isDemoMode(): Boolean
+
+    //fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+
+    fun carNumber(): String
+
 
 }

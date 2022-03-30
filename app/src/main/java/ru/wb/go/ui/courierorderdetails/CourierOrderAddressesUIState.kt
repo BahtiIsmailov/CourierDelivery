@@ -1,13 +1,13 @@
 package ru.wb.go.ui.courierorderdetails
 
-sealed class CourierOrderDetailsUIState {
+sealed class CourierOrderAddressesUIState {
 
     data class InitItems(val items: MutableList<CourierOrderDetailsItem>) :
-        CourierOrderDetailsUIState()
+        CourierOrderAddressesUIState()
 
     data class UpdateItems(val index: Int, val items: MutableList<CourierOrderDetailsItem>) :
-        CourierOrderDetailsUIState()
+        CourierOrderAddressesUIState()
 
-    object Empty : CourierOrderDetailsUIState()
+    object Empty : CourierOrderAddressesUIState()
 
 }

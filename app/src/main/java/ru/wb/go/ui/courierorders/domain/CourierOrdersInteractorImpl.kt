@@ -1,12 +1,9 @@
 package ru.wb.go.ui.courierorders.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierOrderEntity
-import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
-import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -32,44 +29,44 @@ class CourierOrdersInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
-        courierLocalRepository.deleteAllOrder()
-        courierLocalRepository.deleteAllOrderOffices()
-
-        val courierOrderLocalEntity = with(courierOrderEntity) {
-            CourierOrderLocalEntity(
-                id = id,
-                routeID = routeID,
-                gate = gate,
-                minPrice = minPrice,
-                minVolume = minVolume,
-                minBoxesCount = minBoxesCount,
-                reservedDuration = reservedDuration,
-                reservedAt = reservedAt,
-            )
-        }
-        val courierOrderDstOfficesLocalEntity = mutableListOf<CourierOrderDstOfficeLocalEntity>()
-        courierOrderEntity.dstOffices.forEach {
-            with(it) {
-                courierOrderDstOfficesLocalEntity.add(
-                    CourierOrderDstOfficeLocalEntity(
-                        id = id,
-                        orderId = courierOrderEntity.id,
-                        name = name,
-                        fullAddress = fullAddress,
-                        longitude = long,
-                        latitude = lat,
-                        // TODO: 22.09.2021 вынести в отдельную таблицу
-                        visitedAt = ""
-                    )
-                )
-            }
-        }
-        return courierLocalRepository.saveOrderAndOffices(
-            courierOrderLocalEntity,
-            courierOrderDstOfficesLocalEntity
-        ).compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
+//    override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
+//        courierLocalRepository.deleteAllOrder()
+//        courierLocalRepository.deleteAllOrderOffices()
+//
+//        val courierOrderLocalEntity = with(courierOrderEntity) {
+//            CourierOrderLocalEntity(
+//                id = id,
+//                routeID = routeID,
+//                gate = gate,
+//                minPrice = minPrice,
+//                minVolume = minVolume,
+//                minBoxesCount = minBoxesCount,
+//                reservedDuration = reservedDuration,
+//                reservedAt = reservedAt,
+//            )
+//        }
+//        val courierOrderDstOfficesLocalEntity = mutableListOf<CourierOrderDstOfficeLocalEntity>()
+//        courierOrderEntity.dstOffices.forEach {
+//            with(it) {
+//                courierOrderDstOfficesLocalEntity.add(
+//                    CourierOrderDstOfficeLocalEntity(
+//                        id = id,
+//                        orderId = courierOrderEntity.id,
+//                        name = name,
+//                        fullAddress = fullAddress,
+//                        longitude = long,
+//                        latitude = lat,
+//                        // TODO: 22.09.2021 вынести в отдельную таблицу
+//                        visitedAt = ""
+//                    )
+//                )
+//            }
+//        }
+//        return courierLocalRepository.saveOrderAndOffices(
+//            courierOrderLocalEntity,
+//            courierOrderDstOfficesLocalEntity
+//        ).compose(rxSchedulerFactory.applyCompletableSchedulers())
+//    }
 
     override fun observeNetworkConnected(): Observable<NetworkState> {
         return networkMonitorRepository.networkConnected()
@@ -91,6 +88,15 @@ class CourierOrdersInteractorImpl(
 
     override fun isDemoMode(): Boolean {
         return tokenManager.isDemo()
+    }
+
+//    override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
+//        return courierLocalRepository.observeOrderData()
+//            .compose(rxSchedulerFactory.applyFlowableSchedulers())
+//    }
+
+    override fun carNumber(): String {
+        return userManager.carNumber()
     }
 
 }
