@@ -29,9 +29,10 @@ class CourierDataTypeViewModel(
         onTechEventLog("init")
         _switchState.value =
             when (parameters.docs.courierType.lowercase()) {
-                resourceProviderData.getSelfEmployed()
-                    .lowercase() -> CourierDataTypeSwitchState.IsSelfEmployed
-                resourceProviderData.getIp().lowercase() -> CourierDataTypeSwitchState.IsIP
+                resourceProviderData.getSelfEmployed().lowercase() ->
+                    CourierDataTypeSwitchState.IsSelfEmployed
+                resourceProviderData.getIp().lowercase() ->
+                    CourierDataTypeSwitchState.IsIP
                 else -> CourierDataTypeSwitchState.IsEmpty
             }
     }

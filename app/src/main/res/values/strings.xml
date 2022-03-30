@@ -22,6 +22,8 @@
     <string name="courier_data_type_title">Выберете форму\nсотрудничества</string>
     <string name="courier_data_type_ip_label">ИП</string>
     <string name="courier_data_type_self_employed_label">Самозанятый</string>
+    <string name="courier_data_type_ip">IP</string>
+    <string name="courier_data_type_self_employed">SE</string>
     <string name="courier_data_type_confirm_status">Подтвердить</string>
 
     <string name="demo_registration">Войти или зарегистрироваться</string>

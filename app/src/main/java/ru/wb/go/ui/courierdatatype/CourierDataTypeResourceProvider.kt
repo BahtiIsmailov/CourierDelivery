@@ -7,7 +7,8 @@ import ru.wb.go.mvvm.BaseMessageResourceProvider
 class CourierDataTypeResourceProvider(private val context: Context) :
     BaseMessageResourceProvider(context) {
 
-    fun getIp() = context.getString(R.string.courier_data_type_ip_label)
-    fun getSelfEmployed() = context.getString(R.string.courier_data_type_self_employed_label)
+    fun getIp() = context.getString(R.string.courier_data_type_ip)
+
+    fun getSelfEmployed() = context.getString(R.string.courier_data_type_self_employed)
 
 }
