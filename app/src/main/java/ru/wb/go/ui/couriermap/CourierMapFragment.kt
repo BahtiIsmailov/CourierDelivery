@@ -41,6 +41,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
+import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
@@ -63,6 +64,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         private const val DEFAULT_POINT_ZOOM = 13.0
         private const val SIZE_IN_PIXELS = 100
         private const val DEFAULT_ANIMATION_MS = 300L
+        private const val DURATION_POINTS_MS = 500L
+        private const val DELAY_ANIMATION_MS = 15L
+        private const val INTERPOLATOR_ANIMATION_MAX = 1.0
     }
 
     private var _binding: MapFragmentBinding? = null
@@ -80,6 +84,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         savedInstanceState: Bundle?,
     ): View {
         _binding = MapFragmentBinding.inflate(inflater, container, false)
+        //viewModel.subscribeState()
         return binding.root
     }
 
@@ -88,6 +93,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         initObservable()
         initListeners()
         initMapView()
+        LogUtils { logDebugApp("onViewCreated map subscribeState") }
+        //binding.map.onResume()
+        viewModel.subscribeState()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -252,99 +260,195 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-        viewModel.mapState.observe(viewLifecycleOwner) {
-            when (it) {
-                is CourierMapState.UpdateMarkers -> updateMarkers(it.points)
-                is CourierMapState.UpdateMarkersWithIndex -> {
-                    updateMarkersWithIndex(it.points)
-                }
-                is CourierMapState.NavigateToMarker -> navigateToMarker(it.id)
-                is CourierMapState.NavigateToPointZoom -> navigateToPointZoom(it.point)
-                is CourierMapState.NavigateToPoint -> navigateToPoint(it.point)
-                CourierMapState.NavigateToMyLocation -> navigateToMyLocation()
-                is CourierMapState.UpdateMyLocationPoint -> updateMyLocationPoint(it.point)
-                is CourierMapState.ZoomToBoundingBox -> zoomToCenterBoundingBox(
-                    it.boundingBox,
-                    it.animate
-                )
-                is CourierMapState.ZoomToBoundingBoxOffsetY ->
-                    checkMapViewAndZoomToBoundingBoxOffsetY(it)
-                CourierMapState.UpdateMyLocation -> updateMyLocation()
-                is CourierMapState.UpdateMarkersWithAnimatePosition -> updateMarkersWithAnimatePosition(
-                    it
-                )
-            }
+        viewModel.zoomToBoundingBoxOffsetY.observe(viewLifecycleOwner) {
+            LogUtils { logDebugApp("fragment map " + it.toString()) }
+            checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
-    }
 
-    private fun updateMarkersWithAnimatePosition(it: CourierMapState.UpdateMarkersWithAnimatePosition) {
-        // binding.map.overlays.clear()
+        viewModel.updateMarkersWithAnimateToPosition.observe(viewLifecycleOwner) {
+            LogUtils { logDebugApp("fragment map " + it.toString()) }
+            updateMarkersWithAnimateToPosition(it)
+        }
+
+        viewModel.navigateToPoint.observe(viewLifecycleOwner) {
+            LogUtils { logDebugApp("fragment map " + it.toString()) }
+            navigateToPoint(it.point)
+        }
+
+        viewModel.updateMarkers.observe(viewLifecycleOwner) {
+            updateMarkers(it.points)
+        }
+
+        viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
+            updateMarkersWithIndex(it.points)
+        }
+        viewModel.navigateToMarker.observe(viewLifecycleOwner) {
+            navigateToMarker(it.id)
+        }
+
+        viewModel.navigateToPointZoom.observe(viewLifecycleOwner) {
+            navigateToPointZoom(it.point)
+        }
+
+        viewModel.navigateToMyLocation.observe(viewLifecycleOwner) {
+            navigateToMyLocation()
+        }
+
+        viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
+            updateMyLocationPoint(it.point)
+        }
+
+        viewModel.zoomToBoundingBox.observe(viewLifecycleOwner) {
+            zoomToCenterBoundingBox(it.boundingBox, it.animate)
+        }
+
+        viewModel.updateMyLocation.observe(viewLifecycleOwner) {
+            updateMyLocation()
+        }
+
+        viewModel.hideMarker.observe(viewLifecycleOwner) {
+            hideMarker(it)
+        }
+
 
 //
-//        private fun addMapMarker(
-//            id: String,
-//            lat: Double,
-//            long: Double,
-//            icon: Drawable?
-//        ) {
-//            val markerMap = Marker(binding.map)
-//            markerMap.setOnMarkerClickListener(onMarkerClickListener)
-//            markerMap.id = id
-//            markerMap.icon = icon
-//            markerMap.position = GeoPoint(lat, long)
-//            markerMap.setAnchor(0.5f, 0.5f)
-//            binding.map.overlays.add(markerMap)
+//        viewModel.mapState.observe(viewLifecycleOwner) {
+//            LogUtils { logDebugApp("fragment map " + it.toString()) }
+//            when (it) {
+//
+//                CourierMapState.UpdateMyLocation -> updateMyLocation()
+////                is CourierMapState.UpdateMarkersWithAnimateToPosition ->
+////                    updateMarkersWithAnimateToPosition(it)
+//                is CourierMapState.HideMarker -> hideMarker(it)
+//            }
 //        }
+    }
 
-        val markers = mutableListOf<Marker>()
+    private fun hideMarker(it: CourierMapViewModel.HideMarker) {
+        binding.map.overlays
+            .filterIsInstance<Marker>()
+            .find { item -> item.id == it.point.point.id }
+            ?.apply {
 
-        it.pointsTo.forEach { state ->
+                LogUtils { logDebugApp("alpha: " + alpha) }
+                //alpha = 1.0f
 
-            val markerMap = Marker(binding.map)
-            markerMap.id = state.point.id
-            markerMap.icon = getIcon(state.icon)
-            markerMap.position = GeoPoint(it.pointFrom.latitude, it.pointFrom.longitude)
-            markerMap.setAnchor(0.5f, 0.5f)
-            markers.add(markerMap)
+                val handler = Handler()
+                val start = SystemClock.uptimeMillis()
+                val duration: Long = 500
+                val interpolator = LinearInterpolator()
+                handler.post(object : Runnable {
+                    override fun run() {
+                        val elapsed: Long = SystemClock.uptimeMillis() - start
+                        val t =
+                            interpolator.getInterpolation(elapsed.toFloat() / duration)
+                        val a = (1 - t) * 1.0f
+//                        LogUtils { logDebugApp("t: " + t + " a: " + a) }
+                        alpha = a
+                        if (t < 1.0) {
+                            handler.postDelayed(this, 15)
+                        } else {
+                            alpha = 0f
+                        }
+                        binding.map.postInvalidate()
+                    }
+                })
 
+            }
+    }
 
+    private fun generateFilters(findId: String) =
+        listOf<(CourierMapMarker) -> Boolean> { it.point.id == findId }
+
+    private fun <T> List<T>.filterAll(filters: List<(T) -> Boolean>) =
+        filter { item -> filters.all { filter -> filter(item) } }
+
+    private fun updateMarkersWithAnimateToPosition(it: CourierMapViewModel.UpdateMarkersWithAnimateToPosition) {
+
+        val markersHide = mutableListOf<Marker>()
+        binding.map.overlays
+            .filterIsInstance<Marker>()
+            .filter { item -> item.id.isNotEmpty() }
+            .apply { markersHide.addAll(this) }
+        //LogUtils { logDebugApp("add marker hide: " + this) }
+        val markersTo = mutableListOf<Marker>()
+
+        it.pointsTo.forEach { pointTo ->
+            val markerMap = Marker(binding.map).apply {
+                id = pointTo.point.id
+                icon = getIcon(pointTo.icon)
+                position = GeoPoint(it.pointFrom.latitude, it.pointFrom.longitude)
+                setAnchor(0.5f, 0.5f)
+            }
+            markersTo.add(markerMap)
             binding.map.overlays.add(markerMap)
 
-            val handler = Handler()
-            val start = SystemClock.uptimeMillis()
-            val duration: Long = 500
-            val interpolator = LinearInterpolator()
-            handler.post(object : Runnable {
-                override fun run() {
-                    val elapsed: Long = SystemClock.uptimeMillis() - start
-                    val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
-                    val lng = t * state.point.long + (1 - t) * it.pointFrom.longitude
-                    val lat = t * state.point.lat + (1 - t) * it.pointFrom.latitude
-                    markerMap.position = GeoPoint(lat, lng)
-                    if (t < 1.0) {
-                        handler.postDelayed(this, 15)
-                    }
-                    binding.map.postInvalidate()
-                }
-            })
-
-//            addMapMarker(
-//                state.point.id,
-//                it.pointFrom.latitude,
-//                it.pointFrom.longitude,
-//                getIcon(state.icon)
-//            )
+//            val handler = Handler()
+//            val start = SystemClock.uptimeMillis()
+//            val duration: Long = 500
+//            val interpolator = LinearInterpolator()
+//            handler.post(object : Runnable {
+//                override fun run() {
+//                    val elapsed: Long = SystemClock.uptimeMillis() - start
+//                    val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
+//                    val lng = t * state.point.long + (1 - t) * it.pointFrom.longitude
+//                    val lat = t * state.point.lat + (1 - t) * it.pointFrom.latitude
+//                    markerMap.position = GeoPoint(lat, lng)
+//                    if (t < 1.0) {
+//                        handler.postDelayed(this, 15)
+//                    }
+//                    binding.map.postInvalidate()
+//                }
+//            })
         }
+
+        val handler = Handler()
+        val start = SystemClock.uptimeMillis()
+        val interpolator = LinearInterpolator()
+        handler.post(object : Runnable {
+            override fun run() {
+                val elapsed = (SystemClock.uptimeMillis() - start).toFloat()
+                val t = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
+                val offsetAnimation = 1 - t
+                var lng: Double
+                var lat: Double
+                val alpha = offsetAnimation * 1.0f
+
+                markersTo.forEachIndexed { index, marker ->
+                    val pointTo = it.pointsTo[index].point
+                    if (t < INTERPOLATOR_ANIMATION_MAX) {
+                        lng = t * pointTo.long + offsetAnimation * it.pointFrom.longitude
+                        lat = t * pointTo.lat + offsetAnimation * it.pointFrom.latitude
+                    } else {
+                        lng = pointTo.long
+                        lat = pointTo.lat
+                    }
+                    marker.position = GeoPoint(lat, lng)
+                }
+
+                markersHide.forEachIndexed { index, marker ->
+//                    LogUtils { logDebugApp("t: " + t + " a: " + alpha) }
+                    if (t < 1.0) {
+                        marker.alpha = alpha
+                    } else {
+                        marker.alpha = 0f
+                    }
+                }
+                if (t < INTERPOLATOR_ANIMATION_MAX) {
+                    handler.postDelayed(this, DELAY_ANIMATION_MS)
+                }
+                binding.map.postInvalidate()
+            }
+        })
 
         //binding.map.invalidate()
 
 //        with(item) { addMapMarker(point.id, point.lat, point.long, getIcon(icon)) }
 //        initMapMarkers(it.)
 
-
     }
 
-    private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapState.ZoomToBoundingBoxOffsetY) {
+    private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {
         with(binding.map) {
             if (height > 0 && width > 0) {
                 zoomToCenterBoundingBoxOffsetY(
@@ -355,12 +459,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             } else {
                 viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
+                        viewTreeObserver.removeOnGlobalLayoutListener(this)
                         zoomToCenterBoundingBoxOffsetY(
                             zoomToBoundingBoxOffsetY.boundingBox,
                             zoomToBoundingBoxOffsetY.animate,
                             zoomToBoundingBoxOffsetY.offsetY
                         )
-                        viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }
                 })
             }
@@ -512,19 +616,25 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         initAccessLocationPermissions()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onResume() {
+        LogUtils { logDebugApp("onResume map") }
         super.onResume()
         binding.map.onResume()
     }
 
     override fun onPause() {
+        LogUtils { logDebugApp("onPause map") }
         super.onPause()
+//        viewModel.clearSubscription()
         binding.map.onPause()
+    }
+
+    override fun onDestroyView() {
+        LogUtils { logDebugApp("onDestroyView map") }
+//        binding.map.onPause()
+        viewModel.clearSubscription()
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onConnected(p0: Bundle?) {

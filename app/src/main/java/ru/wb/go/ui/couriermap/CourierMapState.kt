@@ -9,7 +9,10 @@ sealed class CourierMapState {
 
     data class UpdateMarkersWithIndex(val points: List<CourierMapMarker>) : CourierMapState()
 
-    data class UpdateMarkersWithAnimatePosition(
+    data class HideMarker(val point: CourierMapMarker) : CourierMapState()
+
+    data class UpdateMarkersWithAnimateToPosition(
+        val pointsHide: List<CourierMapMarker>,
         val pointFrom: CoordinatePoint,
         val pointsTo: List<CourierMapMarker>
     ) : CourierMapState()

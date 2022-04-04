@@ -2,24 +2,7 @@ package ru.wb.go.ui.courierorders
 
 sealed class CourierOrdersNavigationState {
 
-//    data class NavigateToOrderDetails(
-//        val title: String,
-//        val orderNumber: String,
-//        val order: CourierOrderEntity,
-//        val warehouseLatitude: Double,
-//        val warehouseLongitude: Double
-//    ) : CourierOrdersNavigationState()
-
-    object NavigateToOrderDetails : CourierOrdersNavigationState()
-
-    data class NavigateToCarNumber(
-        val isEdit: Boolean
-//        val title: String,
-//        val orderNumber: String,
-//        val order: CourierOrderEntity,
-//        val warehouseLatitude: Double,
-//        val warehouseLongitude: Double
-    ) : CourierOrdersNavigationState()
+    data class NavigateToCarNumber(val id: Int) : CourierOrdersNavigationState()
 
     object NavigateToRegistration : CourierOrdersNavigationState()
 
@@ -27,7 +10,14 @@ sealed class CourierOrdersNavigationState {
 
     object NavigateToOrders : CourierOrdersNavigationState()
 
-    object NavigateToRegistrationDialog: CourierOrdersNavigationState()
+    data class  NavigateToOrderDetails(val isDemo: Boolean) : CourierOrdersNavigationState()
 
+    object NavigateToAddresses : CourierOrdersNavigationState()
+
+    object NavigateToBack : CourierOrdersNavigationState()
+
+    object NavigateToRegistrationDialog : CourierOrdersNavigationState()
+
+    object NavigateToTimer : CourierOrdersNavigationState()
 
 }

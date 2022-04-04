@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
-import ru.wb.go.databinding.CourierOrderDetailsLayoutBinding
+import ru.wb.go.databinding.CourierOrdersAddressLayoutBinding
 
 class CourierOrderDetailsAddressAdapter(
     context: Context,
@@ -20,7 +20,7 @@ class CourierOrderDetailsAddressAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.courier_order_details_layout, parent, false)
+        val view = inflater.inflate(R.layout.courier_orders_address_layout, parent, false)
         return ViewHolder(view)
     }
 
@@ -40,7 +40,7 @@ class CourierOrderDetailsAddressAdapter(
     inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
 
         View.OnClickListener {
-        var binding = CourierOrderDetailsLayoutBinding.bind(rootView)
+        var binding = CourierOrdersAddressLayoutBinding.bind(rootView)
 
         override fun onClick(v: View) {
             onItemClickCallBack.onItemClick(adapterPosition)

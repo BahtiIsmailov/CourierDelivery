@@ -44,8 +44,6 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractor
-import ru.wb.go.ui.courierorderdetails.domain.CourierOrderDetailsInteractorImpl
 import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
 import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractorImpl
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
@@ -195,40 +193,24 @@ val interactorModule = module {
     fun provideCourierOrdersInteractor(
         rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
-        appRemoteRepository: AppTasksRepository,
+        appTasksRepository: AppTasksRepository,
+        appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         courierMapRepository: CourierMapRepository,
         userManager: UserManager,
-        tokenManager: TokenManager
+        tokenManager: TokenManager,
+        timeManager: TimeManager
     ): CourierOrdersInteractor {
         return CourierOrdersInteractorImpl(
             rxSchedulerFactory,
             networkMonitorRepository,
+            appTasksRepository,
             appRemoteRepository,
             courierLocalRepository,
             courierMapRepository,
             userManager,
-            tokenManager
-        )
-    }
-
-    fun provideCourierOrderDetailsInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
-        appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository,
-        userManager: UserManager,
-        courierMapRepository: CourierMapRepository,
-        timeManager: TimeManager,
-        tokenManager: TokenManager
-    ): CourierOrderDetailsInteractor {
-        return CourierOrderDetailsInteractorImpl(
-            rxSchedulerFactory,
-            appRemoteRepository,
-            courierLocalRepository,
-            userManager,
-            courierMapRepository,
-            timeManager,
-            tokenManager
+            tokenManager,
+            timeManager
         )
     }
 
@@ -417,8 +399,7 @@ val interactorModule = module {
     }
 
     factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get()) }
-    factory { provideCourierOrdersInteractor(get(), get(), get(), get(), get(), get(), get()) }
-    single { provideCourierOrderDetailsInteractor(get(), get(), get(), get(), get(), get(), get()) }
+    factory { provideCourierOrdersInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { provideCourierCarNumberInteractor(get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
     factory {

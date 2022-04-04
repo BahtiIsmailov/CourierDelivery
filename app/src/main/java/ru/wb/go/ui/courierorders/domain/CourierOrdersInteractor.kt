@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierorders.domain
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierOrderEntity
@@ -27,5 +28,6 @@ interface CourierOrdersInteractor {
 
     fun carNumber(): String
 
+    fun anchorTask(): Completable
 
 }

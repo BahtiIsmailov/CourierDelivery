@@ -1,8 +1,9 @@
-package ru.wb.go.ui.courierorderdetails
+package ru.wb.go.ui.courierorders
 
 sealed class CourierOrderDetailsInfoUIState {
 
     data class InitOrderInfo(
+        val carNumber: String,
         val itemId: String,
         val orderId: String,
         val cost: String,
@@ -10,7 +11,5 @@ sealed class CourierOrderDetailsInfoUIState {
         val countPvz: String,
         val reserve: String,
     ) : CourierOrderDetailsInfoUIState()
-
-    data class NumberSpanFormat(val numberFormat: String) : CourierOrderDetailsInfoUIState()
 
 }

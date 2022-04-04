@@ -63,7 +63,14 @@ class CourierWarehousesViewModel(
     private var whSelectedId: Int? = null
 
     init {
+        LogUtils { logDebugApp("CourierWarehousesViewModel init") }
+//        checkDemoMode()
+//        observeMapAction()
+    }
+
+    fun resumeInit() {
         checkDemoMode()
+        observeMapAction()
     }
 
     private fun checkDemoMode() {
@@ -92,12 +99,7 @@ class CourierWarehousesViewModel(
     }
 
     fun updateData() {
-        observeMapAction()
         getWarehouses()
-    }
-
-    fun onDestroy() {
-        clearSubscription()
     }
 
     fun toRegistrationClick() {

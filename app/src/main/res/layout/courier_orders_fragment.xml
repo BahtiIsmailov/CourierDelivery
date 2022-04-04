@@ -34,20 +34,32 @@
         android:text="@string/demo_go_to_registration"
         android:textColor="@color/lvl_1"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/back_full"
+        app:layout_constraintBottom_toBottomOf="@+id/nav_drawer_menu"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/back_full" />
+        app:layout_constraintTop_toTopOf="@+id/nav_drawer_menu" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/back_full"
+        android:id="@+id/nav_drawer_menu"
         style="@style/AppMapButtonStyle"
         android:layout_width="@dimen/map_button"
         android:layout_height="@dimen/map_button"
         android:layout_marginStart="10dp"
         android:layout_marginTop="36dp"
-        android:src="@drawable/ic_back_arrow"
+        android:src="@drawable/ic_nav_menu"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/show_all"
+        android:visibility="invisible"
+        style="@style/AppMapButtonStyle"
+        android:layout_width="@dimen/map_button"
+        android:layout_height="@dimen/map_button"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/ic_warehouse_show_all"
+        app:layout_constraintBottom_toTopOf="@+id/content_center"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main"
@@ -319,10 +331,27 @@
 
         </FrameLayout>
 
+        <View
+            android:id="@+id/hold_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="false"
+            android:focusable="false"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/addresses_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <FrameLayout
             android:id="@+id/order_addresses"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="@dimen/status_bar_height"
             android:visibility="visible"
             app:behavior_hideable="true"
@@ -333,7 +362,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/reception_bottom_sheet_info">
 
                 <ImageView
@@ -398,7 +427,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/title_address_divider"
                     tools:itemCount="20"
-                    tools:listitem="@layout/courier_order_details_layout" />
+                    tools:listitem="@layout/courier_orders_address_layout" />
 
                 <TextView
                     android:id="@+id/empty_address_list"
@@ -416,31 +445,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </FrameLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/show_orders_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:clickable="false"
-            android:focusable="false"
-            android:src="@drawable/ic_next"
-            android:visibility="gone"
-            app:backgroundTint="@color/tertiary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:tint="@color/lvl_1"
-            tools:ignore="ContentDescription" />
-
-        <View
-            android:id="@+id/hold_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
