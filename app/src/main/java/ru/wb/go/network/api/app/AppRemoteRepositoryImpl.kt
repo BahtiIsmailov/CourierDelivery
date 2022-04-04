@@ -43,7 +43,8 @@ class AppRemoteRepositoryImpl(
                 passportNumber = passportNumber,
                 passportDateOfIssue = passportDateOfIssue,
                 passportIssuedBy = passportIssuedBy,
-                passportDepartmentCode = passportDepartmentCode
+                passportDepartmentCode = passportDepartmentCode,
+                courierType = courierType
             )
         }
         return remoteRepo.saveCourierDocuments(tokenManager.apiVersion(), courierDocuments)

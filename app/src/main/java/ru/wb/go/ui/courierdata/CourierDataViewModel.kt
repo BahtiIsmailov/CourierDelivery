@@ -155,6 +155,7 @@ class UserFormViewModel(
 
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
+        courierDocumentsEntity.courierType = parameters.docs.courierType
         addSubscription(
             interactor.saveCourierDocuments(courierDocumentsEntity)
                 .subscribe(

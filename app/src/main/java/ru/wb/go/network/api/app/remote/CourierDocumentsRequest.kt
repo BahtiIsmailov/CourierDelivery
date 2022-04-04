@@ -10,4 +10,5 @@ data class CourierDocumentsRequest(
     val passportDateOfIssue: String,
     val passportIssuedBy: String,
     val passportDepartmentCode: String,
+    val courierType: String,
 )
