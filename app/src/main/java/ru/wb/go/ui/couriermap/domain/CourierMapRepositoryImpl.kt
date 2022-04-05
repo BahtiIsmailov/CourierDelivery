@@ -4,17 +4,12 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
-import ru.wb.go.utils.LogUtils
 
 class CourierMapRepositoryImpl : CourierMapRepository {
 
     private var mapActionSubject = PublishSubject.create<CourierMapAction>()
 
     private val mapStateSubject = PublishSubject.create<CourierMapState>()
-
-    init {
-        LogUtils { logDebugApp("create CourierMapRepositoryImpl") }
-    }
 
     override fun mapAction(action: CourierMapAction) {
         mapActionSubject.onNext(action)
@@ -25,7 +20,6 @@ class CourierMapRepositoryImpl : CourierMapRepository {
     }
 
     override fun mapState(state: CourierMapState) {
-        LogUtils { logDebugApp("CourierMapRepositoryImpl " + state) }
         mapStateSubject.onNext(state)
     }
 

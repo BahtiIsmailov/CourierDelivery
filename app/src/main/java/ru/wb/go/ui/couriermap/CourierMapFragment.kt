@@ -41,7 +41,6 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
@@ -84,7 +83,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         savedInstanceState: Bundle?,
     ): View {
         _binding = MapFragmentBinding.inflate(inflater, container, false)
-        //viewModel.subscribeState()
         return binding.root
     }
 
@@ -93,8 +91,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         initObservable()
         initListeners()
         initMapView()
-        LogUtils { logDebugApp("onViewCreated map subscribeState") }
-        //binding.map.onResume()
         viewModel.subscribeState()
     }
 
@@ -261,17 +257,14 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
         viewModel.zoomToBoundingBoxOffsetY.observe(viewLifecycleOwner) {
-            LogUtils { logDebugApp("fragment map " + it.toString()) }
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
         viewModel.updateMarkersWithAnimateToPosition.observe(viewLifecycleOwner) {
-            LogUtils { logDebugApp("fragment map " + it.toString()) }
             updateMarkersWithAnimateToPosition(it)
         }
 
         viewModel.navigateToPoint.observe(viewLifecycleOwner) {
-            LogUtils { logDebugApp("fragment map " + it.toString()) }
             navigateToPoint(it.point)
         }
 
@@ -309,19 +302,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         viewModel.hideMarker.observe(viewLifecycleOwner) {
             hideMarker(it)
         }
-
-
-//
-//        viewModel.mapState.observe(viewLifecycleOwner) {
-//            LogUtils { logDebugApp("fragment map " + it.toString()) }
-//            when (it) {
-//
-//                CourierMapState.UpdateMyLocation -> updateMyLocation()
-////                is CourierMapState.UpdateMarkersWithAnimateToPosition ->
-////                    updateMarkersWithAnimateToPosition(it)
-//                is CourierMapState.HideMarker -> hideMarker(it)
-//            }
-//        }
     }
 
     private fun hideMarker(it: CourierMapViewModel.HideMarker) {
@@ -329,10 +309,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             .filterIsInstance<Marker>()
             .find { item -> item.id == it.point.point.id }
             ?.apply {
-
-                LogUtils { logDebugApp("alpha: " + alpha) }
-                //alpha = 1.0f
-
                 val handler = Handler()
                 val start = SystemClock.uptimeMillis()
                 val duration: Long = 500
@@ -340,16 +316,11 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 handler.post(object : Runnable {
                     override fun run() {
                         val elapsed: Long = SystemClock.uptimeMillis() - start
-                        val t =
-                            interpolator.getInterpolation(elapsed.toFloat() / duration)
+                        val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
                         val a = (1 - t) * 1.0f
-//                        LogUtils { logDebugApp("t: " + t + " a: " + a) }
                         alpha = a
-                        if (t < 1.0) {
-                            handler.postDelayed(this, 15)
-                        } else {
-                            alpha = 0f
-                        }
+                        if (t < 1.0) handler.postDelayed(this, 15)
+                        else alpha = 0f
                         binding.map.postInvalidate()
                     }
                 })
@@ -370,9 +341,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             .filterIsInstance<Marker>()
             .filter { item -> item.id.isNotEmpty() }
             .apply { markersHide.addAll(this) }
-        //LogUtils { logDebugApp("add marker hide: " + this) }
         val markersTo = mutableListOf<Marker>()
-
         it.pointsTo.forEach { pointTo ->
             val markerMap = Marker(binding.map).apply {
                 id = pointTo.point.id
@@ -382,24 +351,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             }
             markersTo.add(markerMap)
             binding.map.overlays.add(markerMap)
-
-//            val handler = Handler()
-//            val start = SystemClock.uptimeMillis()
-//            val duration: Long = 500
-//            val interpolator = LinearInterpolator()
-//            handler.post(object : Runnable {
-//                override fun run() {
-//                    val elapsed: Long = SystemClock.uptimeMillis() - start
-//                    val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
-//                    val lng = t * state.point.long + (1 - t) * it.pointFrom.longitude
-//                    val lat = t * state.point.lat + (1 - t) * it.pointFrom.latitude
-//                    markerMap.position = GeoPoint(lat, lng)
-//                    if (t < 1.0) {
-//                        handler.postDelayed(this, 15)
-//                    }
-//                    binding.map.postInvalidate()
-//                }
-//            })
         }
 
         val handler = Handler()
@@ -427,7 +378,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 }
 
                 markersHide.forEachIndexed { index, marker ->
-//                    LogUtils { logDebugApp("t: " + t + " a: " + alpha) }
                     if (t < 1.0) {
                         marker.alpha = alpha
                     } else {
@@ -440,12 +390,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 binding.map.postInvalidate()
             }
         })
-
-        //binding.map.invalidate()
-
-//        with(item) { addMapMarker(point.id, point.lat, point.long, getIcon(icon)) }
-//        initMapMarkers(it.)
-
     }
 
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {
@@ -617,21 +561,16 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     override fun onResume() {
-        LogUtils { logDebugApp("onResume map") }
         super.onResume()
         binding.map.onResume()
     }
 
     override fun onPause() {
-        LogUtils { logDebugApp("onPause map") }
         super.onPause()
-//        viewModel.clearSubscription()
         binding.map.onPause()
     }
 
     override fun onDestroyView() {
-        LogUtils { logDebugApp("onDestroyView map") }
-//        binding.map.onPause()
         viewModel.clearSubscription()
         super.onDestroyView()
         _binding = null

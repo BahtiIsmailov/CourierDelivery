@@ -24,7 +24,6 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierorders.CourierOrderParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
@@ -211,21 +210,17 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        LogUtils { logDebugApp("onDestroyView warehouse") }
-        //viewModel.clearSubscription()
         super.onDestroyView()
         _binding = null
     }
 
     override fun onResume() {
-        LogUtils { logDebugApp("onResume warehouse") }
         super.onResume()
         viewModel.resumeInit()
         viewModel.updateData()
     }
 
     override fun onPause() {
-        LogUtils { logDebugApp("onPause warehouse") }
         super.onPause()
         viewModel.clearSubscription()
     }

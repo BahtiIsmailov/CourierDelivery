@@ -12,8 +12,6 @@ interface CourierOrdersInteractor {
 
     fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
-//    fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
-
     fun observeNetworkConnected(): Observable<NetworkState>
 
     fun mapState(state: CourierMapState)
@@ -23,8 +21,6 @@ interface CourierOrdersInteractor {
     fun carNumberIsConfirm(): Boolean
 
     fun isDemoMode(): Boolean
-
-    //fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
     fun carNumber(): String
 

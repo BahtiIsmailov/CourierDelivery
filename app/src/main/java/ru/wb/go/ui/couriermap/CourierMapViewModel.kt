@@ -1,10 +1,10 @@
 package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -23,7 +23,7 @@ class CourierMapViewModel(
         val offsetY: Int
     )
 
-    private val _zoomToBoundingBoxOffsetY = MutableLiveData<ZoomToBoundingBoxOffsetY>()
+    private val _zoomToBoundingBoxOffsetY = SingleLiveEvent<ZoomToBoundingBoxOffsetY>()
     val zoomToBoundingBoxOffsetY: LiveData<ZoomToBoundingBoxOffsetY>
         get() = _zoomToBoundingBoxOffsetY
 
@@ -34,73 +34,69 @@ class CourierMapViewModel(
     )
 
     private val _updateMarkersWithAnimateToPosition =
-        MutableLiveData<UpdateMarkersWithAnimateToPosition>()
+        SingleLiveEvent<UpdateMarkersWithAnimateToPosition>()
     val updateMarkersWithAnimateToPosition: LiveData<UpdateMarkersWithAnimateToPosition>
         get() = _updateMarkersWithAnimateToPosition
 
     data class NavigateToPoint(val point: CoordinatePoint)
 
-    private val _navigateToPoint = MutableLiveData<NavigateToPoint>()
+    private val _navigateToPoint = SingleLiveEvent<NavigateToPoint>()
     val navigateToPoint: LiveData<NavigateToPoint>
         get() = _navigateToPoint
 
     data class HideMarker(val point: CourierMapMarker)
 
-    private val _hideMarker = MutableLiveData<HideMarker>()
+    private val _hideMarker = SingleLiveEvent<HideMarker>()
     val hideMarker: LiveData<HideMarker>
         get() = _hideMarker
 
     data class NavigateToMarker(val id: String)
 
-    private val _navigateToMarker = MutableLiveData<NavigateToMarker>()
+    private val _navigateToMarker = SingleLiveEvent<NavigateToMarker>()
     val navigateToMarker: LiveData<NavigateToMarker>
         get() = _navigateToMarker
 
     data class NavigateToPointZoom(val point: CoordinatePoint)
 
-    private val _navigateToPointZoom = MutableLiveData<NavigateToPointZoom>()
+    private val _navigateToPointZoom = SingleLiveEvent<NavigateToPointZoom>()
     val navigateToPointZoom: LiveData<NavigateToPointZoom>
         get() = _navigateToPointZoom
 
     object NavigateToMyLocation
 
-    private val _navigateToMyLocation = MutableLiveData<NavigateToMyLocation>()
+    private val _navigateToMyLocation = SingleLiveEvent<NavigateToMyLocation>()
     val navigateToMyLocation: LiveData<NavigateToMyLocation>
         get() = _navigateToMyLocation
 
     data class UpdateMarkers(val points: List<CourierMapMarker>)
 
-    private val _updateMarkers = MutableLiveData<UpdateMarkers>()
+    private val _updateMarkers = SingleLiveEvent<UpdateMarkers>()
     val updateMarkers: LiveData<UpdateMarkers>
         get() = _updateMarkers
 
     data class UpdateMarkersWithIndex(val points: List<CourierMapMarker>)
 
-    private val _updateMarkersWithIndex = MutableLiveData<UpdateMarkersWithIndex>()
+    private val _updateMarkersWithIndex = SingleLiveEvent<UpdateMarkersWithIndex>()
     val updateMarkersWithIndex: LiveData<UpdateMarkersWithIndex>
         get() = _updateMarkersWithIndex
 
     object UpdateMyLocation
 
-    private val _updateMyLocation = MutableLiveData<UpdateMyLocation>()
+    private val _updateMyLocation = SingleLiveEvent<UpdateMyLocation>()
     val updateMyLocation: LiveData<UpdateMyLocation>
         get() = _updateMyLocation
 
     data class UpdateMyLocationPoint(val point: CoordinatePoint)
 
-    private val _updateMyLocationPoint = MutableLiveData<UpdateMyLocationPoint>()
+    private val _updateMyLocationPoint = SingleLiveEvent<UpdateMyLocationPoint>()
     val updateMyLocationPoint: LiveData<UpdateMyLocationPoint>
         get() = _updateMyLocationPoint
 
     data class ZoomToBoundingBox(val boundingBox: BoundingBox, val animate: Boolean)
 
-    private val _zoomToBoundingBox = MutableLiveData<ZoomToBoundingBox>()
+    private val _zoomToBoundingBox = SingleLiveEvent<ZoomToBoundingBox>()
     val zoomToBoundingBox: LiveData<ZoomToBoundingBox>
         get() = _zoomToBoundingBox
-
-    init {
-        LogUtils { logDebugApp("CourierMapViewModel init() " + this) }
-    }
 
     fun subscribeState() {
         subscribeMapState()
@@ -109,8 +105,7 @@ class CourierMapViewModel(
     private fun subscribeMapState() {
         addSubscription(
             interactor.subscribeMapState()
-                .doOnNext { LogUtils { logDebugApp("subscribeMapState doOnNext " + it.toString()) } }
-                .subscribe( //_mapState.value = it
+                .subscribe(
                     { subscribeMapStateComplete(it) },
                     { LogUtils { logDebugApp("subscribeMapState() error " + it) } }
                 )

@@ -14,8 +14,6 @@ sealed class CourierOrdersNavigationState {
 
     object NavigateToAddresses : CourierOrdersNavigationState()
 
-    object NavigateToBack : CourierOrdersNavigationState()
-
     object NavigateToRegistrationDialog : CourierOrdersNavigationState()
 
     object NavigateToTimer : CourierOrdersNavigationState()

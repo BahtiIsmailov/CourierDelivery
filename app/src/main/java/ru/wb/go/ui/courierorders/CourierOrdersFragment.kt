@@ -8,7 +8,6 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,7 +35,6 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
@@ -69,8 +67,42 @@ class CourierOrdersFragment : Fragment() {
     private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<FrameLayout>
     private lateinit var bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
 
-    private var isDetailsShowing: Boolean = false
-    private var isAddressShowing: Boolean = false
+    private val bottomSheetOrdersCallback = object :
+        BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                removeBottomSheetOrdersListener()
+                viewModel.onCloseOrdersClick()
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
+    private val bottomSheetCallbackOrderDetails = object :
+        BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                removeBottomSheetCallbackOrderDetailsListener()
+                viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
+    private val bottomSheetOrderAddressesCallback = object :
+        BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                removeBottomSheetCallbackOrderAddressesListener()
+                viewModel.onShowOrderDetailsClick()
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,54 +121,6 @@ class CourierOrdersFragment : Fragment() {
         initListeners()
         initStateObserve()
         initReturnDialogResult()
-
-//        val display: Display = getWindowManager().getDefaultDisplay()
-//        binding.ordersLayout
-
-//        val wm = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
-//        val display = wm.defaultDisplay
-
-
-        binding.ordersLayout.apply {
-            viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                        //behavior.peekHeight = findViewById<View>(targetViewId).bottom
-
-                    }
-                })
-        }
-
-//        app:behavior_fitToContents="false"
-//        app:behavior_halfExpandedRatio="0.5"
-
-        val halfHeightDisplay = getHalfHeightDisplay()
-//        bottomSheetOrders.peekHeight = halfHeightDisplay
-//        bottomSheetOrders.isGestureInsetBottomIgnored = true
-//        bottomSheetOrders.isFitToContents = false
-
-        viewModel.update(halfHeightDisplay)
-        viewModel.resumeInit()
-
-        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
-        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
-        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
-
-
-//        binding.ordersLayout.viewTreeObserver.addOnGlobalLayoutListener(
-//            object :
-//                ViewTreeObserver.OnGlobalLayoutListener {
-//                override fun onGlobalLayout() {
-//                    binding.ordersLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-//                    viewModel.update(getHalfHeightDisplay()) //binding.ordersLayout.height
-//                    //viewModel.onHeightInfoBottom(binding.orderDetails.height)
-//                }
-//            })
-
-
-        //viewModel.update()
     }
 
     private fun initReturnDialogResult() {
@@ -170,20 +154,17 @@ class CourierOrdersFragment : Fragment() {
     }
 
     override fun onResume() {
-        LogUtils { logDebugApp("onResume orders") }
         super.onResume()
-    }
-
-    override fun onPause() {
-        LogUtils { logDebugApp("onPause orders") }
-        super.onPause()
-
+        if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED) {
+            viewModel.update(getHalfHeightDisplay())
+        }
+        viewModel.resumeInit()
     }
 
     override fun onDestroyView() {
+        viewModel.clearSubscription()
         super.onDestroyView()
         _binding = null
-        viewModel.clearSubscription()
     }
 
     private fun getHalfHeightDisplay(): Int {
@@ -205,7 +186,7 @@ class CourierOrdersFragment : Fragment() {
         (activity as NavDrawerListener).lockNavDrawer()
         binding.selectedOrder.selectedBackground.visibility = INVISIBLE
         initBottomSheet()
-        hideAllBottomSheet()
+        showBottomSheetOrders()
     }
 
     private fun initBottomSheet() {
@@ -213,64 +194,51 @@ class CourierOrdersFragment : Fragment() {
 
         bottomSheetOrders = BottomSheetBehavior.from(binding.ordersLayout)
         bottomSheetOrders.skipCollapsed = true
-        bottomSheetOrders.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN && !isDetailsShowing) viewModel.onCloseOrdersClick()
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })
 
         bottomSheetOrderDetails = BottomSheetBehavior.from(binding.orderDetailsLayout)
         bottomSheetOrderDetails.skipCollapsed = true
-        bottomSheetOrderDetails.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN && !isAddressShowing)
-                    viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })
 
 
         bottomSheetOrderAddresses = BottomSheetBehavior.from(binding.orderAddresses)
         bottomSheetOrderAddresses.skipCollapsed = true
-        bottomSheetOrderAddresses.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    isAddressShowing = false
-                    viewModel.onShowOrderDetailsClick()
-                }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })
     }
 
-    private fun hideAllBottomSheet() {
-        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
-        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
-        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
+    private fun addBottomSheetOrdersListener() {
+        bottomSheetOrders.addBottomSheetCallback(bottomSheetOrdersCallback)
+    }
+
+    private fun removeBottomSheetOrdersListener() {
+        bottomSheetOrders.removeBottomSheetCallback(bottomSheetOrdersCallback)
+    }
+
+    private fun addBottomSheetCallbackOrderDetailsListener() {
+        bottomSheetOrderDetails.addBottomSheetCallback(bottomSheetCallbackOrderDetails)
+    }
+
+    private fun removeBottomSheetCallbackOrderDetailsListener() {
+        bottomSheetOrderDetails.removeBottomSheetCallback(bottomSheetCallbackOrderDetails)
+    }
+
+    private fun addBottomSheetCallbackOrderAddressesListener() {
+        bottomSheetOrderAddresses.addBottomSheetCallback(bottomSheetOrderAddressesCallback)
+    }
+
+    private fun removeBottomSheetCallbackOrderAddressesListener() {
+        bottomSheetOrderAddresses.removeBottomSheetCallback(bottomSheetOrderAddressesCallback)
     }
 
     private fun showAddresses() {
         binding.navDrawerMenu.visibility = INVISIBLE
         binding.toRegistration.visibility = INVISIBLE
         binding.showAll.visibility = INVISIBLE
-        isAddressShowing = true
-        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
-        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
-        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_EXPANDED
+        showBottomSheetOrderAddresses()
     }
 
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showAll.setOnClickListener {
             if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED)
-                viewModel.onShowAllOrdersClick()
+                viewModel.onShowAllOrdersClick(getHalfHeightDisplay())
             else if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED)
                 viewModel.onShowAllOrderDetailsClick()
         }
@@ -281,28 +249,20 @@ class CourierOrdersFragment : Fragment() {
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
-            viewModel.onCloseOrderDetailsClick(
-                getHalfHeightDisplay()
-            )
+            viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
         }
-        binding.addressesOrder.setOnClickListener { showAddresses() }
+        binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initStateObserve() {
-
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<Int>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
             ?.observe(viewLifecycleOwner) {
-                val courierOrdersInit =
-                    if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED) {
-                        CourierOrdersInit.Orders
-                    } else {
-                        CourierOrdersInit.Details
-                    }
-                viewModel.onChangeCarNumberComplete(courierOrdersInit, it)
+                if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED)
+                    viewModel.onChangeCarNumberOrders(it)
+                else viewModel.onChangeCarNumberDetails(it)
             }
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
@@ -315,55 +275,16 @@ class CourierOrdersFragment : Fragment() {
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-
-                CourierOrdersNavigationState.NavigateToBack -> findNavController().popBackStack()
-                is CourierOrdersNavigationState.NavigateToOrderDetails -> {
-                    isDetailsShowing = true
-                    binding.navDrawerMenu.visibility = if (it.isDemo) INVISIBLE else VISIBLE
-                    binding.toRegistration.visibility = VISIBLE
-                    binding.showAll.visibility = VISIBLE
-
-                    bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
-                    bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
-                    bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
-
-                }
-                is CourierOrdersNavigationState.NavigateToCarNumber ->
-                    findNavController().navigate(
-                        CourierOrdersFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
-                            CourierCarNumberParameters(it.id)
-                        )
-                    )
-
-                CourierOrdersNavigationState.NavigateToRegistration -> {
-                    findNavController().navigate(
-                        CourierOrdersFragmentDirections.actionCourierOrdersFragmentToAuthNavigation()
-                    )
-                }
+                is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
+                CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
                 CourierOrdersNavigationState.NavigateToWarehouse -> findNavController().popBackStack()
-                CourierOrdersNavigationState.NavigateToOrders -> {
-                    bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
-                    bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
-                    bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
-                }
-                CourierOrdersNavigationState.NavigateToAddresses -> {
-
-                }
-
-                CourierOrdersNavigationState.NavigateToRegistrationDialog -> {
-                    showRegistrationDialogConfirmInfo(
-                        DialogInfoStyle.INFO.ordinal,
-                        getString(R.string.demo_registration_title_dialog),
-                        getString(R.string.demo_registration_message_dialog),
-                        getString(R.string.demo_registration_positive_dialog),
-                        getString(R.string.demo_registration_negative_dialog)
-                    )
-                }
-                CourierOrdersNavigationState.NavigateToTimer -> {
-                    findNavController().navigate(
-                        CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierOrderTimerFragment()
-                    )
-                }
+                CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
+                is CourierOrdersNavigationState.NavigateToOrderDetails ->
+                    showBottomSheetOrderDetails(it.isDemo)
+                CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
+                CourierOrdersNavigationState.NavigateToRegistrationDialog ->
+                    showRegistrationDialogConfirmInfo()
+                CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
             }
         }
 
@@ -381,9 +302,6 @@ class CourierOrdersFragment : Fragment() {
                     binding.orderProgress.visibility = GONE
                     binding.orders.visibility = GONE
                     binding.emptyTitle.text = state.info
-                }
-                is CourierOrderItemState.ScrollTo -> {
-                    smoothScrollToPosition(state.position)
                 }
                 is CourierOrderItemState.UpdateItem -> {
                     adapter.setItem(state.position, state.item)
@@ -429,7 +347,7 @@ class CourierOrdersFragment : Fragment() {
 
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderDetailsInfoUIState.InitOrderInfo -> {
+                is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
                         binding.carNumber.text = it.carNumber
                         linerNumber.text = it.itemId
@@ -439,12 +357,7 @@ class CourierOrdersFragment : Fragment() {
                         countOffice.text = it.countPvz
                         reserve.text = it.reserve
                     }
-                    // showDetails()
-                    //updateHeightInfoPixels()
                 }
-//                is CourierOrderDetailsInfoUIState.NumberSpanFormat -> {
-//
-//                }
             }
         }
 
@@ -456,7 +369,7 @@ class CourierOrdersFragment : Fragment() {
                     binding.takeOrder.isEnabled = true
                     val callback = object : CourierOrderDetailsAddressAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
-                            //viewModel.onItemClick(index)
+                            //stub
                         }
                     }
                     addressAdapter =
@@ -482,6 +395,52 @@ class CourierOrdersFragment : Fragment() {
 
     }
 
+    private fun navigateToTimer() {
+        findNavController().navigate(
+            CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierOrderTimerFragment()
+        )
+    }
+
+    private fun navigateToRegistration() {
+        findNavController().navigate(
+            CourierOrdersFragmentDirections.actionCourierOrdersFragmentToAuthNavigation()
+        )
+    }
+
+    private fun navigateToCarNumber(it: CourierOrdersNavigationState.NavigateToCarNumber) {
+        findNavController().navigate(
+            CourierOrdersFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
+                CourierCarNumberParameters(it.id)
+            )
+        )
+    }
+
+    private fun showBottomSheetOrders() {
+        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
+        addBottomSheetOrdersListener()
+    }
+
+    private fun showBottomSheetOrderDetails(isDemo: Boolean) {
+        binding.navDrawerMenu.visibility = if (isDemo) INVISIBLE else VISIBLE
+        binding.toRegistration.visibility = if (isDemo) VISIBLE else INVISIBLE
+        binding.showAll.visibility = VISIBLE
+        removeBottomSheetOrdersListener()
+        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
+        addBottomSheetCallbackOrderDetailsListener()
+    }
+
+    private fun showBottomSheetOrderAddresses() {
+        removeBottomSheetCallbackOrderDetailsListener()
+        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_EXPANDED
+        addBottomSheetCallbackOrderAddressesListener()
+    }
+
     private fun carNumberTextColor(color: Int) {
         binding.carNumber.setTextColor(ContextCompat.getColor(requireContext(), color))
     }
@@ -499,11 +458,11 @@ class CourierOrdersFragment : Fragment() {
 //            })
     }
 
-    private fun smoothScrollToPosition(position: Int) {
-        val smoothScroller: SmoothScroller = createSmoothScroller()
-        smoothScroller.targetPosition = position
-        layoutManager.startSmoothScroll(smoothScroller)
-    }
+//    private fun smoothScrollToPosition(position: Int) {
+//        val smoothScroller: SmoothScroller = createSmoothScroller()
+//        smoothScroller.targetPosition = position
+//        layoutManager.startSmoothScroll(smoothScroller)
+//    }
 
     private fun createSmoothScroller(): SmoothScroller {
         return object : LinearSmoothScroller(context) {
@@ -580,7 +539,7 @@ class CourierOrdersFragment : Fragment() {
                 CourierOrderDelegate(requireContext(),
                     object : OnCourierOrderCallback {
                         override fun onOrderClick(idView: Int) {
-                            viewModel.onItemClick(idView)
+                            viewModel.onOrderClick(idView)
                         }
                     })
             )
@@ -588,20 +547,14 @@ class CourierOrdersFragment : Fragment() {
         binding.orders.adapter = adapter
     }
 
-    private fun showRegistrationDialogConfirmInfo(
-        style: Int,
-        title: String,
-        message: String,
-        positiveButtonName: String,
-        negativeButtonName: String
-    ) {
+    private fun showRegistrationDialogConfirmInfo() {
         DialogConfirmInfoFragment.newInstance(
             resultTag = DIALOG_REGISTRATION_RESULT_TAG,
-            type = style,
-            title = title,
-            message = message,
-            positiveButtonName = positiveButtonName,
-            negativeButtonName = negativeButtonName
+            type = DialogInfoStyle.INFO.ordinal,
+            title = getString(R.string.demo_registration_title_dialog),
+            message = getString(R.string.demo_registration_message_dialog),
+            positiveButtonName = getString(R.string.demo_registration_positive_dialog),
+            negativeButtonName = getString(R.string.demo_registration_negative_dialog)
         ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 

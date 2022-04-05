@@ -33,10 +33,6 @@ class CourierOrderDetailsAddressAdapter(
         return addressItems.size
     }
 
-    fun setItem(index: Int, addressItem: CourierOrderDetailsAddressItem) {
-        if (addressItems.size > index) addressItems[index] = addressItem
-    }
-
     inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
 
         View.OnClickListener {

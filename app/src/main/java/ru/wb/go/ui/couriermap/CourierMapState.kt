@@ -5,7 +5,7 @@ import ru.wb.go.utils.map.CoordinatePoint
 
 sealed class CourierMapState {
 
-    data class UpdateMarkers(val points: List<CourierMapMarker>) : CourierMapState()
+    data class UpdateMarkers(val points: MutableList<CourierMapMarker>) : CourierMapState()
 
     data class UpdateMarkersWithIndex(val points: List<CourierMapMarker>) : CourierMapState()
 
