@@ -1,8 +1,11 @@
 package ru.wb.go.ui.courierorders
 
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
+
 sealed class CourierOrdersNavigationState {
 
-    data class NavigateToCarNumber(val id: Int) : CourierOrdersNavigationState()
+    data class NavigateToCarNumber(val result: CourierCarNumberResult) :
+        CourierOrdersNavigationState()
 
     object NavigateToRegistration : CourierOrdersNavigationState()
 
@@ -10,7 +13,7 @@ sealed class CourierOrdersNavigationState {
 
     object NavigateToOrders : CourierOrdersNavigationState()
 
-    data class  NavigateToOrderDetails(val isDemo: Boolean) : CourierOrdersNavigationState()
+    data class NavigateToOrderDetails(val isDemo: Boolean) : CourierOrdersNavigationState()
 
     object NavigateToAddresses : CourierOrdersNavigationState()
 

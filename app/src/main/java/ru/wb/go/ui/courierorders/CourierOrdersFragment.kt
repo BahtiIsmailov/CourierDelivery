@@ -28,6 +28,7 @@ import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
 import ru.wb.go.ui.courierwarehouses.gethorizontalDividerDecoration
@@ -258,12 +259,8 @@ class CourierOrdersFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun initStateObserve() {
         findNavController().currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<Int>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
-            ?.observe(viewLifecycleOwner) {
-                if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED)
-                    viewModel.onChangeCarNumberOrders(it)
-                else viewModel.onChangeCarNumberDetails(it)
-            }
+            ?.getLiveData<CourierCarNumberResult>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
+            ?.observe(viewLifecycleOwner) { viewModel.onChangeCarNumberOrders(it) }
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.title.text = it.label
@@ -410,7 +407,7 @@ class CourierOrdersFragment : Fragment() {
     private fun navigateToCarNumber(it: CourierOrdersNavigationState.NavigateToCarNumber) {
         findNavController().navigate(
             CourierOrdersFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
-                CourierCarNumberParameters(it.id)
+                CourierCarNumberParameters(it.result)
             )
         )
     }
@@ -444,43 +441,6 @@ class CourierOrdersFragment : Fragment() {
     private fun carNumberTextColor(color: Int) {
         binding.carNumber.setTextColor(ContextCompat.getColor(requireContext(), color))
     }
-
-    private fun updateHeightInfoPixels() {
-//        binding.orderDetails.viewTreeObserver.addOnGlobalLayoutListener(
-//            object :
-//                ViewTreeObserver.OnGlobalLayoutListener {
-//                override fun onGlobalLayout() {
-//                    binding.orderDetails.viewTreeObserver.removeOnGlobalLayoutListener(
-//                        this
-//                    )
-//                    viewModel.onHeightInfoBottom(binding.orderDetails.height)
-//                }
-//            })
-    }
-
-//    private fun smoothScrollToPosition(position: Int) {
-//        val smoothScroller: SmoothScroller = createSmoothScroller()
-//        smoothScroller.targetPosition = position
-//        layoutManager.startSmoothScroll(smoothScroller)
-//    }
-
-    private fun createSmoothScroller(): SmoothScroller {
-        return object : LinearSmoothScroller(context) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
-            }
-        }
-    }
-
-//    private fun showOrdersDisable() {
-//        binding.showOrdersFab.isEnabled = false
-//        binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
-//            ContextCompat.getColor(
-//                requireContext(),
-//                R.color.tertiary
-//            )
-//        )
-//    }
 
     private fun showDialogInfo(
         errorDialogData: ErrorDialogData

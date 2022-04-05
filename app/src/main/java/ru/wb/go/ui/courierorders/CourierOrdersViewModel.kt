@@ -10,6 +10,7 @@ import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.HttpObjectNotFoundException
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.WAREHOUSE_ID
 import ru.wb.go.ui.couriermap.CourierMapMarker
@@ -86,7 +87,6 @@ class CourierOrdersViewModel(
     private var addressMapMarkers = mutableListOf<CourierMapMarker>()
 
     private var selectedOrderId: Int = -1
-//    private var height: Int = 0
 
     init {
         onTechEventLog("init")
@@ -126,7 +126,9 @@ class CourierOrdersViewModel(
     fun onChangeCarNumberClick() {
         onTechEventLog("onChangeCarNumberClick")
         _navigationState.value =
-            CourierOrdersNavigationState.NavigateToCarNumber(id = selectedOrderId)
+            CourierOrdersNavigationState.NavigateToCarNumber(
+                result = CourierCarNumberResult.Edit(selectedOrderId)
+            )
     }
 
     fun toRegistrationClick() {
@@ -134,23 +136,36 @@ class CourierOrdersViewModel(
     }
 
     fun onConfirmTakeOrderClick() {
-        if (interactor.isDemoMode())
-            _navigationState.value = CourierOrdersNavigationState.NavigateToRegistrationDialog
-        else
-            with(orderEntities[selectedOrderId]) {
-                _navigateToDialogConfirmScoreInfo.value =
-                    NavigateToDialogConfirmInfo(
-                        DialogInfoStyle.INFO.ordinal,
-                        resourceProvider.getConfirmTitleDialog(id),
-                        resourceProvider.getConfirmMessageDialog(
-                            CarNumberUtils.numberFormat(interactor.carNumber()),
-                            minVolume,
-                            reservedDuration
-                        ),
-                        resourceProvider.getConfirmPositiveDialog(),
-                        resourceProvider.getConfirmNegativeDialog()
-                    )
-            }
+        when {
+            interactor.isDemoMode() -> _navigationState.value =
+                CourierOrdersNavigationState.NavigateToRegistrationDialog
+            interactor.carNumberIsConfirm() -> navigateToDialogConfirmScoreInfo()
+            else -> navigateToCreateCarNumber()
+        }
+    }
+
+    private fun navigateToCreateCarNumber() {
+        _navigationState.value =
+            CourierOrdersNavigationState.NavigateToCarNumber(
+                result = CourierCarNumberResult.Create(selectedOrderId)
+            )
+    }
+
+    private fun navigateToDialogConfirmScoreInfo() {
+        with(orderEntities[selectedOrderId]) {
+            _navigateToDialogConfirmScoreInfo.value =
+                NavigateToDialogConfirmInfo(
+                    DialogInfoStyle.INFO.ordinal,
+                    resourceProvider.getConfirmTitleDialog(id),
+                    resourceProvider.getConfirmMessageDialog(
+                        CarNumberUtils.numberFormat(interactor.carNumber()),
+                        minVolume,
+                        reservedDuration
+                    ),
+                    resourceProvider.getConfirmPositiveDialog(),
+                    resourceProvider.getConfirmNegativeDialog()
+                )
+        }
     }
 
     private fun observeMapActionComplete(it: MapPoint) {
@@ -163,7 +178,7 @@ class CourierOrdersViewModel(
             val idMapClick = mapPoint.id
             val indexItem = idMapClick.toInt() - 1
             changeSelectedMapPoint(mapPoint)
-            checkCarNumberAndNavigateToOrderDetails(indexItem)
+            navigateToOrderDetails(indexItem)
         }
     }
 
@@ -289,12 +304,15 @@ class CourierOrdersViewModel(
         _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 
-    fun onChangeCarNumberOrders(clickItemIndex: Int) {
-        checkCarNumberAndNavigateToOrderDetails(clickItemIndex)
-    }
-
-    fun onChangeCarNumberDetails(clickItemIndex: Int) {
-        updateOrderDetailsWithCarNumberChecked(clickItemIndex)
+    fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
+        when (result) {
+            is CourierCarNumberResult.Create ->
+                if (interactor.carNumberIsConfirm()) {
+                    updateOrderDetailsWithCarNumberChecked(result.id)
+                    navigateToDialogConfirmScoreInfo()
+                }
+            is CourierCarNumberResult.Edit -> updateOrderDetailsWithCarNumberChecked(result.id)
+        }
     }
 
     private fun updateOrderDetailsWithCarNumberChecked(clickItemIndex: Int) {
@@ -302,13 +320,13 @@ class CourierOrdersViewModel(
         initOrderAddressMapMarkersAndItems(orderEntity.dstOffices)
         initOrderDetails(clickItemIndex, orderEntity, orderEntity.dstOffices.size)
         interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers.toMutableList()))
-        addressMapMarkers.removeAt(0)
+        removeWarehouseMapMarker()
         zoomAllOrderAddressPoints()
     }
 
     fun onOrderClick(clickItemIndex: Int) {
         onTechEventLog("onItemClick", "idView $clickItemIndex")
-        checkCarNumberAndNavigateToOrderDetails(clickItemIndex)
+        navigateToOrderDetails(clickItemIndex)
     }
 
     fun onAddressesClick() {
@@ -318,14 +336,16 @@ class CourierOrdersViewModel(
     private fun warehouseCoordinatePoint() =
         CoordinatePoint(parameters.warehouseLatitude, parameters.warehouseLongitude)
 
-    private fun checkCarNumberAndNavigateToOrderDetails(itemIndex: Int) {
+    private fun navigateToOrderDetails(itemIndex: Int) {
         onTechEventLog("onTakeOrderClick")
         changeSelectedOrderId(itemIndex)
+        initOrderDetails(itemIndex)
         _navigationState.value =
-            if (interactor.carNumberIsConfirm() || interactor.isDemoMode()) {
-                initOrderDetails(itemIndex)
-                CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-            } else CourierOrdersNavigationState.NavigateToCarNumber(id = itemIndex)
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+//        _navigationState.value =
+//            if (interactor.carNumberIsConfirm() || interactor.isDemoMode()) {
+//
+//            } else CourierOrdersNavigationState.NavigateToCarNumber(id = itemIndex)
     }
 
     private fun initOrderDetails(idView: Int) {
@@ -334,7 +354,7 @@ class CourierOrdersViewModel(
         initOrderDetails(idView, orderEntity, orderEntity.dstOffices.size)
         interactor.mapState(CourierMapState.NavigateToPoint(orderCenterGroupPoints[idView]))
         initOrderAddressMapMarkersAndItems(orderEntity.dstOffices)
-        addressMapMarkers.removeAt(0)
+        removeWarehouseMapMarker()
         zoomAllOrderAddressPoints()
 
         interactor.mapState(
@@ -344,6 +364,10 @@ class CourierOrdersViewModel(
                 addressMapMarkers
             )
         )
+    }
+
+    private fun removeWarehouseMapMarker() {
+        addressMapMarkers.removeAt(WAREHOUSE_FIRST_INDEX)
     }
 
     private fun zoomAllOrderAddressPoints() {
@@ -484,6 +508,7 @@ class CourierOrdersViewModel(
 
     companion object {
         const val SCREEN_TAG = "CourierOrders"
+        const val WAREHOUSE_FIRST_INDEX = 0
     }
 
     data class Label(val label: String)

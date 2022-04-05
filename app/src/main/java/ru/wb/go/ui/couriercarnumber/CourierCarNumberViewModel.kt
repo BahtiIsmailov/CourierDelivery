@@ -45,7 +45,6 @@ class CourierCarNumberViewModel(
         fetchCarNumberComplete()
     }
 
-
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
             event
@@ -109,7 +108,7 @@ class CourierCarNumberViewModel(
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-            id = parameters.id
+            result = parameters.result
         )
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
@@ -118,12 +117,7 @@ class CourierCarNumberViewModel(
         onTechErrorLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-            id = parameters.id
-//            title = parameters.title,
-//            orderNumber = parameters.orderNumber,
-//            order = parameters.order,
-//            warehouseLatitude = parameters.warehouseLatitude,
-//            warehouseLongitude = parameters.warehouseLongitude
+            result = parameters.result
         )
     }
 

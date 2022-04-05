@@ -61,7 +61,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 
     private fun initListeners() {
         binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick() }
-        binding.cancel.setOnClickListener { viewModel.onCancelCarNumberClick() } //findNavController().popBackStack()
+        binding.cancel.setOnClickListener { viewModel.onCancelCarNumberClick() }
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
     }
 
@@ -70,7 +70,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
             when (state) {
                 is CourierCarNumberNavigationState.NavigateToOrderDetails -> {
                     findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                        COURIER_CAR_NUMBER_ID_EDIT_KEY, state.id
+                        COURIER_CAR_NUMBER_ID_EDIT_KEY, state.result
                     )
                     findNavController().popBackStack()
                 }
@@ -128,4 +128,4 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 }
 
 @Parcelize
-data class CourierCarNumberParameters(val id: Int) : Parcelable
+data class CourierCarNumberParameters(val result: CourierCarNumberResult) : Parcelable
