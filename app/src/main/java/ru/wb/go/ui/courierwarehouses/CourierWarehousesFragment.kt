@@ -54,7 +54,7 @@ class CourierWarehousesFragment : Fragment() {
         initRecyclerView()
         initObservable()
         initListeners()
-        viewModel.updateData()
+//        viewModel.updateData()
     }
 
     private fun initView() {
@@ -210,9 +210,19 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.onDestroy()
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.resumeInit()
+        viewModel.updateData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.clearSubscription()
     }
 
     private fun showDialogInfo(

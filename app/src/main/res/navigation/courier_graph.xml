@@ -114,7 +114,7 @@
 
     <fragment
         android:id="@+id/courierOrdersFragment"
-        android:name="ru.wb.go.ui.courierorders.CourierOrderFragment"
+        android:name="ru.wb.go.ui.courierorders.CourierOrdersFragment"
         android:label=""
         tools:layout="@layout/courier_orders_fragment">
 
@@ -122,10 +122,6 @@
             android:name="courier_order_id_key"
             app:argType="ru.wb.go.ui.courierorders.CourierOrderParameters"
             app:nullable="false" />
-        <action
-            android:id="@+id/action_courierOrderFragment_to_courierOrderDetailsFragment"
-            app:destination="@id/courierOrderDetailsFragment"
-            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_courierOrderFragment_to_courierCarNumberFragment"
             app:destination="@id/courierCarNumberFragment" />
@@ -135,39 +131,14 @@
             app:popUpTo="@+id/courierOrdersFragment"
             app:popUpToInclusive="true" />
 
-    </fragment>
-
-    <fragment
-        android:id="@+id/courierOrderDetailsFragment"
-        android:name="ru.wb.go.ui.courierorderdetails.CourierOrderDetailsFragment"
-        android:label="CourierOrderDetailsFragment"
-        tools:layout="@layout/courier_order_details_fragment">
-
-        <argument
-            android:name="courier_order_details_id_key"
-            app:argType="ru.wb.go.ui.courierorderdetails.CourierOrderDetailsParameters"
-            app:nullable="false" />
-
         <action
-            android:id="@+id/action_courierOrderDetailsFragment_to_courierCarNumberFragment"
-            app:destination="@id/courierCarNumberFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_courierOrderDetailsFragment_to_courierOrderTimerFragment"
+            android:id="@+id/action_courierOrdersFragment_to_courierOrderTimerFragment"
             app:destination="@id/courierOrderTimerFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/courierOrderDetailsFragment" />
-        <action
-            android:id="@+id/action_courierOrderDetailsFragment_to_auth_navigation"
-            app:destination="@id/auth_navigation"
-            app:popUpTo="@+id/courierOrderDetailsFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@+id/courierOrdersFragment" />
 
     </fragment>
 
@@ -181,15 +152,6 @@
             android:name="courier_car_number_id_key"
             app:argType="ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters"
             app:nullable="false" />
-
-        <action
-            android:id="@+id/action_courierCarNumberFragment_to_courierOrderDetailsFragment"
-            app:destination="@id/courierOrderDetailsFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/courierOrdersFragment" />
 
     </fragment>
 

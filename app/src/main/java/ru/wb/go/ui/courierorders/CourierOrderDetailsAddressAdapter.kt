@@ -1,4 +1,4 @@
-package ru.wb.go.ui.courierorderdetails
+package ru.wb.go.ui.courierorders
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
-import ru.wb.go.databinding.CourierOrderDetailsLayoutBinding
+import ru.wb.go.databinding.CourierOrdersAddressLayoutBinding
 
-class CourierOrderDetailsAdapter(
+class CourierOrderDetailsAddressAdapter(
     context: Context,
-    private val items: MutableList<CourierOrderDetailsItem>,
+    private val addressItems: MutableList<CourierOrderDetailsAddressItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
-) : RecyclerView.Adapter<CourierOrderDetailsAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<CourierOrderDetailsAddressAdapter.ViewHolder>() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     interface OnItemClickCallBack {
@@ -20,27 +20,23 @@ class CourierOrderDetailsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.courier_order_details_layout, parent, false)
+        val view = inflater.inflate(R.layout.courier_orders_address_layout, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (fullAddress) = items[position]
+        val (fullAddress) = addressItems[position]
         holder.binding.fullAddressWarehouse.text = fullAddress
     }
 
     override fun getItemCount(): Int {
-        return items.size
-    }
-
-    fun setItem(index: Int, item: CourierOrderDetailsItem) {
-        if (items.size > index) items[index] = item
+        return addressItems.size
     }
 
     inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
 
         View.OnClickListener {
-        var binding = CourierOrderDetailsLayoutBinding.bind(rootView)
+        var binding = CourierOrdersAddressLayoutBinding.bind(rootView)
 
         override fun onClick(v: View) {
             onItemClickCallBack.onItemClick(adapterPosition)
@@ -53,11 +49,11 @@ class CourierOrderDetailsAdapter(
     }
 
     fun clear() {
-        items.clear()
+        addressItems.clear()
     }
 
-    fun addItems(items: List<CourierOrderDetailsItem>) {
-        this.items.addAll(items)
+    fun addItems(addressItems: List<CourierOrderDetailsAddressItem>) {
+        this.addressItems.addAll(addressItems)
     }
 
 }

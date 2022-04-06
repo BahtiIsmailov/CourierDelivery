@@ -41,10 +41,16 @@ class CourierCarNumberViewModel(
         putCarNumber(carNumber)
     }
 
+    fun onCancelCarNumberClick() {
+        fetchCarNumberComplete()
+    }
+
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
             event
-                .scan(interactor.getCarNumber()) { accumulator, item -> accumulateNumber(accumulator, item) }
+                .scan(interactor.getCarNumber()) { accumulator, item ->
+                    accumulateNumber(accumulator, item)
+                }
                 .doOnNext {
                     switchBackspace(it)
                     switchComplete(it)
@@ -91,22 +97,18 @@ class CourierCarNumberViewModel(
 
     private fun putCarNumber(carNumber: String) {
         _progressState.value = CourierCarNumberProgressState.Progress
-        val disposable = interactor.putCarNumber(carNumber.replace("\\s".toRegex(), ""))
+        addSubscription(interactor.putCarNumber(carNumber.replace("\\s".toRegex(), ""))
             .subscribe(
                 { fetchCarNumberComplete() },
                 { fetchCarNumberError(it) }
             )
-        addSubscription(disposable)
+        )
     }
 
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-            title = parameters.title,
-            orderNumber = parameters.orderNumber,
-            order = parameters.order,
-            warehouseLatitude = parameters.warehouseLatitude,
-            warehouseLongitude = parameters.warehouseLongitude
+            result = parameters.result
         )
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
@@ -115,11 +117,7 @@ class CourierCarNumberViewModel(
         onTechErrorLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-            title = parameters.title,
-            orderNumber = parameters.orderNumber,
-            order = parameters.order,
-            warehouseLatitude = parameters.warehouseLatitude,
-            warehouseLongitude = parameters.warehouseLongitude
+            result = parameters.result
         )
     }
 

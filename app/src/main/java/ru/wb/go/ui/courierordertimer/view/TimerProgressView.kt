@@ -15,7 +15,6 @@ import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import ru.wb.go.R
-import ru.wb.go.utils.LogUtils
 import java.util.concurrent.TimeUnit
 
 class TimerProgressView : View {
@@ -161,7 +160,6 @@ class TimerProgressView : View {
     }
 
     private fun drawArc(currentAngle: Float) {
-        LogUtils { logDebugApp("drawArc " + currentAngle) }
         val pRadiusScale = radiusBox * RADIUS_SCALE
         val scaleWidth = dpToPx(progressWidth).toFloat()
         val backgroundPaint = Paint()

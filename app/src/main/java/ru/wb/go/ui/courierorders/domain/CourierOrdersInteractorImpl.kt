@@ -4,9 +4,12 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
+import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
+import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
+import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -16,19 +19,22 @@ import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
+import ru.wb.go.utils.managers.TimeManager
 
 class CourierOrdersInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
-    private val appRemoteRepository: AppTasksRepository,
+    private val appTasksRepository: AppTasksRepository,
+    private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
     private val userManager: UserManager,
     private val tokenManager: TokenManager,
+    private val timeManager: TimeManager
 ) : CourierOrdersInteractor {
 
     override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
-        return appRemoteRepository.getFreeOrders(srcOfficeID)
+        return appTasksRepository.getFreeOrders(srcOfficeID)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
@@ -91,6 +97,51 @@ class CourierOrdersInteractorImpl(
 
     override fun isDemoMode(): Boolean {
         return tokenManager.isDemo()
+    }
+
+    override fun carNumber(): String {
+        return userManager.carNumber()
+    }
+
+    override fun anchorTask(orderEntity: CourierOrderEntity): Completable {
+
+        val reservedTime = timeManager.getLocalTime()
+
+        //val order = courierLocalRepository.orderData()!!
+
+        return appRemoteRepository.reserveTask(
+            orderEntity.id.toString(),
+            userManager.carNumber()
+        )
+            .doOnComplete {
+                val wh = courierLocalRepository.readCurrentWarehouse().blockingGet()
+                val ro =
+                    with(orderEntity) {
+                        LocalOrderEntity(
+                            orderId = id,
+                            routeID = routeID,
+                            gate = gate,
+                            minPrice = minPrice,
+                            minVolume = minVolume,
+                            minBoxes = minBoxesCount,
+                            countOffices = dstOffices.size,
+                            wbUserID = -1,
+                            carNumber = userManager.carNumber(),
+                            reservedAt = reservedTime,
+                            startedAt = "",
+                            reservedDuration = reservedDuration,
+                            status = TaskStatus.TIMER.status,
+                            cost = 0,
+                            srcId = wh.id,
+                            srcName = wh.name,
+                            srcAddress = wh.fullAddress,
+                            srcLongitude = wh.longitude,
+                            srcLatitude = wh.latitude,
+                        )
+                    }
+                courierLocalRepository.setOrderInReserve(ro)
+            }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
 }
