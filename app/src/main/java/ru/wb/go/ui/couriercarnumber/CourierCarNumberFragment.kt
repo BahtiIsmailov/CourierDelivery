@@ -108,8 +108,8 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
 
         viewModel.progressState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierCarNumberProgressState.Progress -> {} //showProgressDialog()
-                CourierCarNumberProgressState.ProgressComplete -> {}// closeProgressDialog()
+                CourierCarNumberProgressState.Progress -> {}
+                CourierCarNumberProgressState.ProgressComplete -> {}
             }
         }
     }

@@ -158,6 +158,8 @@ class CourierOrdersFragment : Fragment() {
         super.onResume()
         if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED) {
             viewModel.update(getHalfHeightDisplay())
+        } else if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED) {
+            addBottomSheetCallbackOrderDetailsListener()
         }
         viewModel.resumeInit()
     }
