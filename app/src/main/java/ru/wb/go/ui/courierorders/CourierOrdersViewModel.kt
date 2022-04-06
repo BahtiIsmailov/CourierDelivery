@@ -65,9 +65,9 @@ class CourierOrdersViewModel(
     val demoState: LiveData<Boolean>
         get() = _demoState
 
-    private val _orderInfo = MutableLiveData<CourierOrderDetailsInfoUIState>()
-    val orderInfo: LiveData<CourierOrderDetailsInfoUIState>
-        get() = _orderInfo
+    private val _orderDetails = MutableLiveData<CourierOrderDetailsInfoUIState>()
+    val orderDetails: LiveData<CourierOrderDetailsInfoUIState>
+        get() = _orderDetails
 
     private val _orderAddresses = MutableLiveData<CourierOrderAddressesUIState>()
     val orderAddresses: LiveData<CourierOrderAddressesUIState>
@@ -395,8 +395,9 @@ class CourierOrdersViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(minPrice)
             val carNumber = carNumberFormat(interactor.carNumber())
-            _orderInfo.value = CourierOrderDetailsInfoUIState.InitOrderDetails(
+            _orderDetails.value = CourierOrderDetailsInfoUIState.InitOrderDetails(
                 carNumber = carNumber,
+                isChangeCarNumber = interactor.carNumberIsConfirm(),
                 itemId = itemId,
                 orderId = resourceProvider.getOrder(id),
                 cost = resourceProvider.getCost(coast),

@@ -4,6 +4,7 @@ sealed class CourierOrderDetailsInfoUIState {
 
     data class InitOrderDetails(
         val carNumber: String,
+        val isChangeCarNumber: Boolean,
         val itemId: String,
         val orderId: String,
         val cost: String,

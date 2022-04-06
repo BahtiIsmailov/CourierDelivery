@@ -342,11 +342,13 @@ class CourierOrdersFragment : Fragment() {
             }
         }
 
-        viewModel.orderInfo.observe(viewLifecycleOwner) {
+        viewModel.orderDetails.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
                         binding.carNumber.text = it.carNumber
+                        binding.carChangeImage.visibility =
+                            if (it.isChangeCarNumber) VISIBLE else GONE
                         linerNumber.text = it.itemId
                         orderId.text = it.orderId
                         cost.text = it.cost
