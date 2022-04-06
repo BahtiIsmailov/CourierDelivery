@@ -52,10 +52,10 @@ class MapEnclosingCircle {
             val lat: Double = point.latitude
             val lon: Double = point.longitude
             if (i == 0) {
-                maxLat = lat
-                maxLong = lon
-                minLat = lat
-                minLong = lon
+                maxLat = lat + OFFSET_SINGLE_POINT
+                maxLong = lon + OFFSET_SINGLE_POINT
+                minLat = lat - OFFSET_SINGLE_POINT
+                minLong = lon - OFFSET_SINGLE_POINT
             }
             if (lat > maxLat) maxLat = lat
             if (lon > maxLong) maxLong = lon
@@ -108,6 +108,7 @@ class MapEnclosingCircle {
 
     companion object {
         const val EARTH_RADIUS_KM = 6371
+        const val OFFSET_SINGLE_POINT = 0.01
     }
 
 }
