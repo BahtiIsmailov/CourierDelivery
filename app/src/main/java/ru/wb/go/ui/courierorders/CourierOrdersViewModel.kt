@@ -178,7 +178,7 @@ class CourierOrdersViewModel(
             val idMapClick = mapPoint.id
             val indexItem = idMapClick.toInt() - 1
             changeSelectedMapPoint(mapPoint)
-            navigateToOrderDetails(indexItem)
+            clearAndSaveSelectedOrder(indexItem)
         }
     }
 
@@ -326,7 +326,17 @@ class CourierOrdersViewModel(
 
     fun onOrderClick(clickItemIndex: Int) {
         onTechEventLog("onItemClick", "idView $clickItemIndex")
-        navigateToOrderDetails(clickItemIndex)
+        clearAndSaveSelectedOrder(clickItemIndex)
+    }
+
+    private fun clearAndSaveSelectedOrder(index: Int) {
+        val courierOrderEntity = orderEntities[index]
+        addSubscription(
+            interactor.clearAndSaveSelectedOrder(courierOrderEntity)
+                .subscribe(
+                    { navigateToOrderDetails(index) },
+                    { onTechErrorLog("ordersError", it) })
+        )
     }
 
     fun onAddressesClick() {
@@ -342,10 +352,6 @@ class CourierOrdersViewModel(
         initOrderDetails(itemIndex)
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-//        _navigationState.value =
-//            if (interactor.carNumberIsConfirm() || interactor.isDemoMode()) {
-//
-//            } else CourierOrdersNavigationState.NavigateToCarNumber(id = itemIndex)
     }
 
     private fun initOrderDetails(idView: Int) {
@@ -467,7 +473,7 @@ class CourierOrdersViewModel(
         onTechEventLog("onConfirmOrderClick")
         setLoader(WaitLoader.Wait)
         addSubscription(
-            interactor.anchorTask()
+            interactor.anchorTask(orderEntities[selectedOrderId])
                 .subscribe(
                     {
                         setLoader(WaitLoader.Complete)

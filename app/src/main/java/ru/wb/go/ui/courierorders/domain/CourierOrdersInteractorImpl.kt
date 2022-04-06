@@ -4,7 +4,10 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
+import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierOrderEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppTasksRepository
@@ -35,6 +38,45 @@ class CourierOrdersInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable {
+        courierLocalRepository.deleteAllOrder()
+        courierLocalRepository.deleteAllOrderOffices()
+
+        val courierOrderLocalEntity = with(courierOrderEntity) {
+            CourierOrderLocalEntity(
+                id = id,
+                routeID = routeID,
+                gate = gate,
+                minPrice = minPrice,
+                minVolume = minVolume,
+                minBoxesCount = minBoxesCount,
+                reservedDuration = reservedDuration,
+                reservedAt = reservedAt,
+            )
+        }
+        val courierOrderDstOfficesLocalEntity = mutableListOf<CourierOrderDstOfficeLocalEntity>()
+        courierOrderEntity.dstOffices.forEach {
+            with(it) {
+                courierOrderDstOfficesLocalEntity.add(
+                    CourierOrderDstOfficeLocalEntity(
+                        id = id,
+                        orderId = courierOrderEntity.id,
+                        name = name,
+                        fullAddress = fullAddress,
+                        longitude = long,
+                        latitude = lat,
+                        // TODO: 22.09.2021 вынести в отдельную таблицу
+                        visitedAt = ""
+                    )
+                )
+            }
+        }
+        return courierLocalRepository.saveOrderAndOffices(
+            courierOrderLocalEntity,
+            courierOrderDstOfficesLocalEntity
+        ).compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
     override fun observeNetworkConnected(): Observable<NetworkState> {
         return networkMonitorRepository.networkConnected()
             .compose(rxSchedulerFactory.applyObservableSchedulers())
@@ -61,20 +103,20 @@ class CourierOrdersInteractorImpl(
         return userManager.carNumber()
     }
 
-    override fun anchorTask(): Completable {
+    override fun anchorTask(orderEntity: CourierOrderEntity): Completable {
 
         val reservedTime = timeManager.getLocalTime()
 
-        val order = courierLocalRepository.orderData()!!
+        //val order = courierLocalRepository.orderData()!!
 
         return appRemoteRepository.reserveTask(
-            order.courierOrderLocalEntity.id.toString(),
+            orderEntity.id.toString(),
             userManager.carNumber()
         )
             .doOnComplete {
                 val wh = courierLocalRepository.readCurrentWarehouse().blockingGet()
                 val ro =
-                    with(order.courierOrderLocalEntity) {
+                    with(orderEntity) {
                         LocalOrderEntity(
                             orderId = id,
                             routeID = routeID,
@@ -82,13 +124,13 @@ class CourierOrdersInteractorImpl(
                             minPrice = minPrice,
                             minVolume = minVolume,
                             minBoxes = minBoxesCount,
-                            countOffices = order.dstOffices.size,
+                            countOffices = dstOffices.size,
                             wbUserID = -1,
                             carNumber = userManager.carNumber(),
                             reservedAt = reservedTime,
                             startedAt = "",
                             reservedDuration = reservedDuration,
-                            status = ru.wb.go.db.entity.TaskStatus.TIMER.status,
+                            status = TaskStatus.TIMER.status,
                             cost = 0,
                             srcId = wh.id,
                             srcName = wh.name,
