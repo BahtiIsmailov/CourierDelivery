@@ -54,7 +54,7 @@ class NumberPhoneViewModel(
     }
 
     fun onCheckPhone(number: String) {
-        onTechEventLog("onCheckPhone")
+        onTechEventLog("onCheckPhone", number)
         fetchPhoneNumber(number)
     }
 
@@ -111,13 +111,13 @@ class NumberPhoneViewModel(
     }
 
     private fun fetchPhoneNumberComplete(phone: String) {
-        onTechEventLog("fetchPhoneNumberComplete", "NavigateToCheckPassword")
+        onTechEventLog("fetchPhoneNumberComplete", phone)
         _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)
         _stateUI.value = NumberFormatComplete
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
-        onTechErrorLog("fetchPhoneNumberError", throwable)
+        onTechErrorLog("fetchPhoneNumberError $phone", throwable)
         when (throwable) {
             is NoInternetException -> _stateUI.value = Error(
                 resourceProvider.getGenericInternetTitleError(),
