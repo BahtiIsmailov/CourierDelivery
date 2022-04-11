@@ -9,7 +9,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrdersAddressLayoutBinding
 
 class CourierOrderDetailsAddressAdapter(
-    context: Context,
+    private val context: Context,
     private val addressItems: MutableList<CourierOrderDetailsAddressItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
 ) : RecyclerView.Adapter<CourierOrderDetailsAddressAdapter.ViewHolder>() {
@@ -25,8 +25,11 @@ class CourierOrderDetailsAddressAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (fullAddress) = addressItems[position]
+        val (fullAddress, isSelected) = addressItems[position]
         holder.binding.fullAddressWarehouse.text = fullAddress
+        val selectable = if (isSelected) View.VISIBLE else View.INVISIBLE
+        holder.binding.selectedBackground.visibility = selectable
+        holder.binding.imageItemBorder.visibility = selectable
     }
 
     override fun getItemCount(): Int {

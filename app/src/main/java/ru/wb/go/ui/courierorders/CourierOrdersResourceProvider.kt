@@ -15,7 +15,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.orderCost, coast)
     }
 
-    fun getCargo(boxCount: Int, volume: Int): String {
+    fun getCargo(volume: Int, boxCount: Int): String {
         return context.getString(R.string.orderCargo, volume, boxCount)
     }
 
@@ -43,7 +43,9 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_confirm_car_number_empty)
     }
 
-    fun getOfficeMapIcon() = R.drawable.ic_order_details_office
+    fun getOfficeMapIcon() = R.drawable.ic_address_point_normal
+
+    fun getOfficeMapSelectedIcon() = R.drawable.ic_address_point_select
 
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)

@@ -188,7 +188,7 @@
 
         </FrameLayout>
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/order_details_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -200,9 +200,51 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/address_detail_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/reception_bottom_sheet_info">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/pad16"
+                android:layout_marginEnd="@dimen/pad16"
+                android:background="@drawable/spinner_account_rounded_corner"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/icon_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/pad16"
+                    android:src="@drawable/ic_address_point_detail"
+                    app:layout_constraintBottom_toBottomOf="@+id/address_detail"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/address_detail"
+                    tools:ignore="ContentDescription,MissingConstraints" />
+
+                <TextView
+                    android:id="@+id/address_detail"
+                    style="@style/MediumPrimaryRegularText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/pad16"
+                    android:layout_marginTop="@dimen/pad12"
+                    android:layout_marginBottom="@dimen/pad12"
+                    android:gravity="start"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/icon_address"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="RtlHardcoded"
+                    tools:text="ул. Нижнее Мячково, Нижнее Мячково, 140123" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/pad16"
+                android:background="@drawable/reception_bottom_sheet_info"
+                app:layout_constraintTop_toBottomOf="@+id/address_detail_layout">
 
                 <TextView
                     android:id="@+id/car_number_prefix"
@@ -328,7 +370,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/hold_layout"

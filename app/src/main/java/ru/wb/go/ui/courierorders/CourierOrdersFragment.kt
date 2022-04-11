@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -31,7 +32,7 @@ import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
 import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
-import ru.wb.go.ui.courierwarehouses.gethorizontalDividerDecoration
+import ru.wb.go.ui.courierwarehouses.getHorizontalDividerDecoration
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
@@ -65,7 +66,7 @@ class CourierOrdersFragment : Fragment() {
     private lateinit var addressSmoothScroller: SmoothScroller
 
     private lateinit var bottomSheetOrders: BottomSheetBehavior<FrameLayout>
-    private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<FrameLayout>
+    private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
     private lateinit var bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
 
     private val bottomSheetOrdersCallback = object :
@@ -122,6 +123,7 @@ class CourierOrdersFragment : Fragment() {
         initListeners()
         initStateObserve()
         initReturnDialogResult()
+        viewModel.resumeInit()
     }
 
     private fun initReturnDialogResult() {
@@ -156,12 +158,11 @@ class CourierOrdersFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED) {
-            viewModel.update(getHalfHeightDisplay())
-        } else if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED) {
+        if (isOrdersExpanded()) viewModel.updateOrders(getHalfHeightDisplay())
+        else if (isOrderDetailsExpanded()) {
+            viewModel.updateOrderDetails()
             addBottomSheetCallbackOrderDetailsListener()
         }
-        viewModel.resumeInit()
     }
 
     override fun onDestroyView() {
@@ -187,7 +188,6 @@ class CourierOrdersFragment : Fragment() {
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
-        binding.selectedOrder.selectedBackground.visibility = INVISIBLE
         initBottomSheet()
         showBottomSheetOrders()
     }
@@ -240,10 +240,8 @@ class CourierOrdersFragment : Fragment() {
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showAll.setOnClickListener {
-            if (bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED)
-                viewModel.onShowAllOrdersClick(getHalfHeightDisplay())
-            else if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED)
-                viewModel.onShowAllOrderDetailsClick()
+            if (isOrdersExpanded()) viewModel.onShowAllOrdersClick(getHalfHeightDisplay())
+            else if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
         }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
@@ -284,6 +282,14 @@ class CourierOrdersFragment : Fragment() {
                 CourierOrdersNavigationState.NavigateToRegistrationDialog ->
                     showRegistrationDialogConfirmInfo()
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
+                is CourierOrdersNavigationState.ShowAddressDetail -> {
+                    binding.addressDetailLayout.visibility = VISIBLE
+                    binding.addressDetail.text = it.address
+                }
+                CourierOrdersNavigationState.CloseAddressesDetail ->
+                    binding.addressDetailLayout.visibility = GONE
+                CourierOrdersNavigationState.OnMapClick ->
+                    if (isOrderDetailsExpanded()) viewModel.onMapClickWithDetail()
             }
         }
 
@@ -370,7 +376,7 @@ class CourierOrdersFragment : Fragment() {
                     binding.takeOrder.isEnabled = true
                     val callback = object : CourierOrderDetailsAddressAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
-                            //stub
+                            viewModel.onAddressItemClick(index)
                         }
                     }
                     addressAdapter =
@@ -395,6 +401,12 @@ class CourierOrdersFragment : Fragment() {
         }
 
     }
+
+    private fun isOrdersExpanded() =
+        bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED
+
+    private fun isOrderDetailsExpanded() =
+        bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED
 
     private fun navigateToTimer() {
         findNavController().navigate(
@@ -468,7 +480,7 @@ class CourierOrdersFragment : Fragment() {
     private fun initRecyclerViewOrders() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.orders.layoutManager = layoutManager
-        binding.orders.addItemDecoration(gethorizontalDividerDecoration())
+        binding.orders.addItemDecoration(getHorizontalDividerDecoration())
         binding.orders.setHasFixedSize(true)
         initSmoothScrollerOrders()
     }
@@ -495,7 +507,6 @@ class CourierOrdersFragment : Fragment() {
             }
         }
     }
-
 
     private fun initAdapter() {
         adapter = with(DefaultAdapterDelegate()) {

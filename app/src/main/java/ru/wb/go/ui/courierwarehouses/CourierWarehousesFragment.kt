@@ -196,7 +196,7 @@ class CourierWarehousesFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.layoutManager = layoutManager
-        binding.items.addItemDecoration(gethorizontalDividerDecoration())
+        binding.items.addItemDecoration(getHorizontalDividerDecoration())
         binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
@@ -253,7 +253,7 @@ class CourierWarehousesFragment : Fragment() {
 
 }
 
-fun Fragment.gethorizontalDividerDecoration(): DividerItemDecoration {
+fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
     val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
     ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
         ?.let { decoration.setDrawable(it) }

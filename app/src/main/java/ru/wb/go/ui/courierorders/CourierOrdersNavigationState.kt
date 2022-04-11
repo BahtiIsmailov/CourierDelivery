@@ -17,8 +17,14 @@ sealed class CourierOrdersNavigationState {
 
     object NavigateToAddresses : CourierOrdersNavigationState()
 
+    object CloseAddressesDetail : CourierOrdersNavigationState()
+
+    data class ShowAddressDetail(val address: String) : CourierOrdersNavigationState()
+
     object NavigateToRegistrationDialog : CourierOrdersNavigationState()
 
     object NavigateToTimer : CourierOrdersNavigationState()
+
+    object OnMapClick : CourierOrdersNavigationState()
 
 }

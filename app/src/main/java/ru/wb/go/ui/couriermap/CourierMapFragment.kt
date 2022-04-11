@@ -54,7 +54,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     companion object {
         const val MY_LOCATION_ID = "my_location_id"
         const val WAREHOUSE_ID = ""
-        private const val REQUEST_ERROR = 0
+        const val ADDRESS_MAP_PREFIX = "ADR_"
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
         private const val DEFAULT_ZOOM = 12.0
@@ -181,7 +181,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         config.osmdroidBasePath = createOsmdroidBasePath()
         config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
         // FIXME: ??? 
-        config.userAgentValue = context?.packageName //BuildConfig.APPLICATION_ID
+        config.userAgentValue = context?.packageName
         config.load(
             requireActivity(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -201,7 +201,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.setUseDataConnection(true)
 
         val colorMatrix = updateScaleMatrix(0.9f, 0.9f, 0.9f, 0.9f)
-        binding.map.overlayManager.tilesOverlay.setColorFilter(colorMatrix) //TilesOverlay.INVERT_COLORS
+        binding.map.overlayManager.tilesOverlay.setColorFilter(colorMatrix)
     }
 
     private fun updateScaleMatrix(
@@ -342,6 +342,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             .filter { item -> item.id.isNotEmpty() }
             .apply { markersHide.addAll(this) }
         val markersTo = mutableListOf<Marker>()
+
         it.pointsTo.forEach { pointTo ->
             val markerMap = Marker(binding.map).apply {
                 id = pointTo.point.id
@@ -373,6 +374,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                     } else {
                         lng = pointTo.long
                         lat = pointTo.lat
+                        marker.setOnMarkerClickListener(onMarkerClickListener)
                     }
                     marker.position = GeoPoint(lat, lng)
                 }
