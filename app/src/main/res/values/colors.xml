@@ -16,8 +16,8 @@
     <color name="yellow">#F09000</color>
     <color name="blue">#1C6FEB</color>
 
-    <color name="colorPrimaryTransparentlySelectableLight">#00B499D4</color>
-    <color name="colorPrimaryTransparentlySelectableDark">#16B499D4</color>
+    <color name="colorPrimaryTransparentlySelectableLight">#00642CA3</color>
+    <color name="colorPrimaryTransparentlySelectableDark">#16642CA3</color>
 
     <color name="colorGreenTransparentlySelectableLight">#0000B02C</color>
     <color name="colorGreenTransparentlySelectableDark">#1600B02C</color>
@@ -35,7 +35,7 @@
     <color name="colorSecondary">#642CA3</color>
 
     <color name="transparent">#00000000</color>
-    <color name="button_app_pressed">#88642CA3</color>
+    <color name="button_app_primary_pressed">#E2642CA3</color>
     <color name="button_app_transparent_pressed">#08000000</color>
 
     <color name="transparentKeyboardClick">#25A8A4AB</color>

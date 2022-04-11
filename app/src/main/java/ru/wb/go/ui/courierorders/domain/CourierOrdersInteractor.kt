@@ -24,4 +24,8 @@ interface CourierOrdersInteractor {
 
     fun isDemoMode(): Boolean
 
+    fun carNumber(): String
+
+    fun anchorTask(orderEntity: CourierOrderEntity): Completable
+
 }

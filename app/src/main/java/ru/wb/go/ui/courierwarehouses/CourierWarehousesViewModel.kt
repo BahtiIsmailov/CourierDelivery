@@ -12,7 +12,6 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -62,8 +61,9 @@ class CourierWarehousesViewModel(
 
     private var whSelectedId: Int? = null
 
-    init {
+    fun resumeInit() {
         checkDemoMode()
+        observeMapAction()
     }
 
     private fun checkDemoMode() {
@@ -92,12 +92,7 @@ class CourierWarehousesViewModel(
     }
 
     fun updateData() {
-        observeMapAction()
         getWarehouses()
-    }
-
-    fun onDestroy() {
-        clearSubscription()
     }
 
     fun toRegistrationClick() {
@@ -271,8 +266,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
-
-        LogUtils { logDebugApp("CourierWarehousesViewModel changeWarehouseItems") }
         changeSelectedWarehouseItemsByMap(selectIndex, isSelected)
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
@@ -280,7 +273,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
-//        clearSubscription()
         _navigationState.value = CourierWarehousesNavigationState.NavigateToCourierOrders(
             oldEntity.id,
             oldEntity.latitude,

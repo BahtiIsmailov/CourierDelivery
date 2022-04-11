@@ -13,7 +13,6 @@ class CourierOrdersDataBuilderImpl(
         lineNumber: String,
         index: Int,
         courierOrderEntity: CourierOrderEntity,
-        isSelected: Boolean
     ): BaseItem {
         val decim = DecimalFormat("#,###.##")
         val coast = decim.format(courierOrderEntity.minPrice)
@@ -22,12 +21,11 @@ class CourierOrdersDataBuilderImpl(
             orderId = resourceProvider.getOrder(courierOrderEntity.id),
             cost = resourceProvider.getCost(coast),
             cargo = resourceProvider.getCargo(
-                courierOrderEntity.minBoxesCount,
-                courierOrderEntity.minVolume
+                courierOrderEntity.minVolume,
+                courierOrderEntity.minBoxesCount
             ),
             countPvz = resourceProvider.getCountPvz(courierOrderEntity.dstOffices.size),
             arrive = resourceProvider.getArrive(courierOrderEntity.reservedDuration),
-            isSelected = isSelected,
             idView = index
         )
     }

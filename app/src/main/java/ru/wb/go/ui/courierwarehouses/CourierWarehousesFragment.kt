@@ -54,7 +54,7 @@ class CourierWarehousesFragment : Fragment() {
         initRecyclerView()
         initObservable()
         initListeners()
-        viewModel.updateData()
+//        viewModel.updateData()
     }
 
     private fun initView() {
@@ -196,7 +196,7 @@ class CourierWarehousesFragment : Fragment() {
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.layoutManager = layoutManager
-        binding.items.addItemDecoration(gethorizontalDividerDecoration())
+        binding.items.addItemDecoration(getHorizontalDividerDecoration())
         binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
@@ -210,9 +210,19 @@ class CourierWarehousesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.onDestroy()
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.resumeInit()
+        viewModel.updateData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.clearSubscription()
     }
 
     private fun showDialogInfo(
@@ -243,7 +253,7 @@ class CourierWarehousesFragment : Fragment() {
 
 }
 
-fun Fragment.gethorizontalDividerDecoration(): DividerItemDecoration {
+fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
     val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
     ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
         ?.let { decoration.setDrawable(it) }

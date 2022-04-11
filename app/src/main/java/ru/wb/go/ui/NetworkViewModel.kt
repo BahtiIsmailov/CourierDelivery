@@ -3,11 +3,6 @@ package ru.wb.go.ui
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import ru.wb.go.mvvm.BaseMessageResourceProvider
-import ru.wb.go.network.exceptions.BadRequestException
-import ru.wb.go.network.exceptions.NoInternetException
-import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 abstract class NetworkViewModel(

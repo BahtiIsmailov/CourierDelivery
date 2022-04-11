@@ -12,7 +12,6 @@ import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
 class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCourierOrderCallback) :
     BaseAdapterDelegate<CourierOrderItem, CourierOrderDelegate.RouterViewHolder>(context) {
 
-
     override fun isForViewType(item: BaseItem): Boolean {
         return item is CourierOrderItem
     }
@@ -36,10 +35,6 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
             cargo.text = item.cargo
             countOffice.text = item.countPvz
             reserve.text = item.arrive
-
-            val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
-            holder.binding.selectedBackground.visibility = selectable
-            holder.binding.imageItemBorder.visibility = selectable
         }
     }
 

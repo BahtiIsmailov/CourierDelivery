@@ -32,6 +32,9 @@
     <color name="colorBlueTransparentlySelectableLight">#007EA5E0</color>
     <color name="colorBlueTransparentlySelectableDark">#247EA5E0</color>
 
+    <color name="button_app_primary_pressed">#E2B499D4</color>
+    <color name="button_app_transparent_pressed">#08000000</color>
+
     <color name="colorScannerHoldFrom">#B499D4</color>
     <color name="colorScannerHoldTo">#9476B8</color>
 
