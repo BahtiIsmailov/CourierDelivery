@@ -466,7 +466,7 @@ class CourierOrdersViewModel(
                 itemId = itemId,
                 orderId = resourceProvider.getOrder(id),
                 cost = resourceProvider.getCost(coast),
-                cargo = resourceProvider.getCargo(minBoxesCount, minVolume),
+                cargo = resourceProvider.getCargo(minVolume, minBoxesCount),
                 countPvz = resourceProvider.getCountPvz(pvz),
                 reserve = resourceProvider.getArrive(reservedDuration)
             )
