@@ -13,6 +13,7 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.animation.LinearInterpolator
@@ -302,6 +303,11 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         viewModel.hideMarker.observe(viewLifecycleOwner) {
             hideMarker(it)
         }
+
+        viewModel.visibleShowAll.observe(viewLifecycleOwner) {
+            visibleShowAll()
+        }
+
     }
 
     private fun hideMarker(it: CourierMapViewModel.HideMarker) {
@@ -515,8 +521,18 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
+    private fun visibleShowAll() {
+        binding.showAll.visibility = VISIBLE
+    }
+
     private fun initListeners() {
-        binding.myLocation.setOnClickListener { navigateToMyLocation() }
+        binding.zoomIn.setOnClickListener {
+            binding.map.controller.zoomIn()
+        }
+        binding.zoomOut.setOnClickListener {
+            binding.map.controller.zoomOut()
+        }
+        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
     }
 
     private fun navigateToMyLocation() {

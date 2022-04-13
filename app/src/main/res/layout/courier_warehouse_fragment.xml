@@ -52,18 +52,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/show_all"
-        android:visibility="invisible"
-        style="@style/AppMapButtonStyle"
-        android:layout_width="@dimen/map_button"
-        android:layout_height="@dimen/map_button"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="30dp"
-        android:src="@drawable/ic_warehouse_show_all"
-        app:layout_constraintBottom_toTopOf="@+id/content_center"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <TextView
         android:id="@+id/title"
         style="@style/LargePrimaryMediumText"

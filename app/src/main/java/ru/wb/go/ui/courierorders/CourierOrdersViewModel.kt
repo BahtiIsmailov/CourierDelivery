@@ -78,6 +78,12 @@ class CourierOrdersViewModel(
     val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogConfirmScoreInfo
 
+    object VisibleShowAll
+
+    private val _visibleShowAll = SingleLiveEvent<VisibleShowAll>()
+    val visibleShowAll: LiveData<VisibleShowAll>
+        get() = _visibleShowAll
+
     private var orderEntities = mutableListOf<CourierOrderEntity>()
     private var orderItems = mutableListOf<BaseItem>()
 
@@ -104,13 +110,6 @@ class CourierOrdersViewModel(
         initToolbarLabel()
         initOrders(height)
     }
-
-    fun updateOrderDetails() {
-//        checkDemoMode()
-//        initToolbarLabel()
-//        initOrders(height)
-    }
-
 
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
@@ -176,8 +175,15 @@ class CourierOrdersViewModel(
     }
 
     private fun observeMapActionComplete(courierMapAction: CourierMapAction) {
-        if (courierMapAction is CourierMapAction.ItemClick) onMapPointClick(courierMapAction.point)
-        else if (courierMapAction is CourierMapAction.MapClick) onMapClick()
+        when (courierMapAction) {
+            is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
+            is CourierMapAction.MapClick -> onMapClick()
+            is CourierMapAction.ShowAll -> onShowAllClick()
+        }
+    }
+
+    private fun onShowAllClick() {
+        _visibleShowAll.value = VisibleShowAll
     }
 
     private fun onMapClick() {
@@ -360,6 +366,7 @@ class CourierOrdersViewModel(
     }
 
     private fun showItems() {
+        interactor.mapState(CourierMapState.VisibleShowAll)
         _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 

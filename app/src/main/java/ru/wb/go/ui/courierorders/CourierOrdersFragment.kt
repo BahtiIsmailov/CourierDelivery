@@ -160,7 +160,7 @@ class CourierOrdersFragment : Fragment() {
         super.onResume()
         if (isOrdersExpanded()) viewModel.updateOrders(getHalfHeightDisplay())
         else if (isOrderDetailsExpanded()) {
-            viewModel.updateOrderDetails()
+//            viewModel.updateOrderDetails()
             addBottomSheetCallbackOrderDetailsListener()
         }
     }
@@ -233,16 +233,12 @@ class CourierOrdersFragment : Fragment() {
     private fun showAddresses() {
         binding.navDrawerMenu.visibility = INVISIBLE
         binding.toRegistration.visibility = INVISIBLE
-        binding.showAll.visibility = INVISIBLE
+//        binding.showAll.visibility = INVISIBLE
         showBottomSheetOrderAddresses()
     }
 
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
-        binding.showAll.setOnClickListener {
-            if (isOrdersExpanded()) viewModel.onShowAllOrdersClick(getHalfHeightDisplay())
-            else if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
-        }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
 
@@ -296,7 +292,6 @@ class CourierOrdersFragment : Fragment() {
         viewModel.orders.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierOrderItemState.ShowItems -> {
-                    binding.showAll.visibility = VISIBLE
                     binding.emptyList.visibility = GONE
                     binding.orderProgress.visibility = GONE
                     binding.orders.visibility = VISIBLE
@@ -400,6 +395,11 @@ class CourierOrdersFragment : Fragment() {
             showDialogConfirmScoreInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
+        viewModel.visibleShowAll.observe(viewLifecycleOwner) {
+            if (isOrdersExpanded()) viewModel.onShowAllOrdersClick(getHalfHeightDisplay())
+            else if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
+        }
+
     }
 
     private fun isOrdersExpanded() =
@@ -438,7 +438,7 @@ class CourierOrdersFragment : Fragment() {
     private fun showBottomSheetOrderDetails(isDemo: Boolean) {
         binding.navDrawerMenu.visibility = if (isDemo) INVISIBLE else VISIBLE
         binding.toRegistration.visibility = if (isDemo) VISIBLE else INVISIBLE
-        binding.showAll.visibility = VISIBLE
+//        binding.showAll.visibility = VISIBLE
         removeBottomSheetOrdersListener()
         bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED

@@ -112,7 +112,6 @@ class CourierIntransitFragment : Fragment() {
         viewModel.intransitOrders.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierIntransitItemState.InitItems -> {
-                    binding.showAll.visibility = VISIBLE
                     binding.deliveryTotalCount.text = it.boxTotal
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
@@ -193,7 +192,6 @@ class CourierIntransitFragment : Fragment() {
     }
 
     private fun initListeners() {
-        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
         binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }

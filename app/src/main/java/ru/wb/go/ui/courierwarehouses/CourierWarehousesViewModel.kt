@@ -84,6 +84,7 @@ class CourierWarehousesViewModel(
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
             CourierMapAction.MapClick -> {}
+            CourierMapAction.ShowAll -> onShowAllClick()
         }
     }
 
@@ -151,7 +152,10 @@ class CourierWarehousesViewModel(
     private fun courierWarehouseComplete() {
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+            else {
+                interactor.mapState(CourierMapState.VisibleShowAll)
+                CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+            }
     }
 
     private fun updateMyLocation() {
@@ -210,7 +214,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeSelectedWarehouseItemsByMap(indexItemClick: Int, isMapSelected: Boolean) {
-
         warehouseItems[indexItemClick].isSelected = isMapSelected
         if (whSelectedId != null && whSelectedId != indexItemClick) {
             warehouseItems[whSelectedId!!].isSelected = false
@@ -291,7 +294,7 @@ class CourierWarehousesViewModel(
         clearSubscription()
     }
 
-    fun onShowAllClick() {
+    private fun onShowAllClick() {
         zoomMarkersFromBoundingBox(myLocation)
     }
 

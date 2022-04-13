@@ -79,7 +79,6 @@ class CourierWarehousesFragment : Fragment() {
         viewModel.warehouseState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
-                    binding.showAll.visibility = VISIBLE
                     binding.emptyList.visibility = GONE
                     binding.refresh.isRefreshing = false
                     binding.items.visibility = VISIBLE
@@ -188,7 +187,6 @@ class CourierWarehousesFragment : Fragment() {
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
         binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }

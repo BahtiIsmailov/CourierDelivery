@@ -9,10 +9,12 @@ interface CourierMapInteractor {
 
     fun subscribeMapState(): Observable<CourierMapState>
 
-    fun onItemClick(point: MapPoint)
+    fun markerClick(point: MapPoint)
 
-    fun onMapClick()
+    fun mapClick()
 
     fun onForcedLocationUpdate(point: CoordinatePoint)
+
+    fun showAll()
 
 }
