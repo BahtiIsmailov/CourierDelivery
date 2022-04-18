@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierversioncontrol
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierVersionControlResourceProvider(private val context: Context) :
-        BaseMessageResourceProvider(context) {
+        BaseServicesResourceProvider(context) {
 
     fun getAvailableVersion(version: String): String {
         return context.getString(R.string.app_update_version_available, version)

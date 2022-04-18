@@ -3,11 +3,11 @@ package ru.wb.go.ui.courierbilling
 import android.content.Context
 
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 import java.text.NumberFormat
 
 class CourierBillingResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getTitle(): String {
         return context.getString(R.string.courier_billing_title)

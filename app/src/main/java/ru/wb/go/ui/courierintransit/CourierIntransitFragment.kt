@@ -2,11 +2,8 @@ package ru.wb.go.ui.courierintransit
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,6 +15,7 @@ import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercompletedelivery.CourierCompleteDeliveryParameters
@@ -29,12 +27,12 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
-class CourierIntransitFragment : Fragment() {
+class CourierIntransitFragment :
+    BaseServiceFragment<CourierIntransitViewModel, CourierIntransitFragmentBinding>(
+        CourierIntransitFragmentBinding::inflate
+    ) {
 
-    private val viewModel by viewModel<CourierIntransitViewModel>()
-
-    private var _binding: CourierIntransitFragmentBinding? = null
-    private val binding get() = _binding!!
+    override val viewModel by viewModel<CourierIntransitViewModel>()
 
     private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
@@ -43,14 +41,6 @@ class CourierIntransitFragment : Fragment() {
         override fun onPickToPointClick(idItem: Int) {
             viewModel.onItemOfficeClick(idItem)
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = CourierIntransitFragmentBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -253,11 +243,6 @@ class CourierIntransitFragment : Fragment() {
             addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
         binding.routes.adapter = adapter
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun scanOfficeAccepted() {

@@ -12,18 +12,20 @@ import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
+import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierOrdersInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
+    rxSchedulerFactory: RxSchedulerFactory,
+    networkMonitorRepository: NetworkMonitorRepository,
+    deviceManager: DeviceManager,
     private val appTasksRepository: AppTasksRepository,
     private val appRemoteRepository: AppRemoteRepository,
     private val courierLocalRepository: CourierLocalRepository,
@@ -31,7 +33,8 @@ class CourierOrdersInteractorImpl(
     private val userManager: UserManager,
     private val tokenManager: TokenManager,
     private val timeManager: TimeManager
-) : CourierOrdersInteractor {
+) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+    CourierOrdersInteractor {
 
     override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
         return appTasksRepository.getFreeOrders(srcOfficeID)
@@ -77,11 +80,6 @@ class CourierOrdersInteractorImpl(
         ).compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
-
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
@@ -106,8 +104,6 @@ class CourierOrdersInteractorImpl(
     override fun anchorTask(orderEntity: CourierOrderEntity): Completable {
 
         val reservedTime = timeManager.getLocalTime()
-
-        //val order = courierLocalRepository.orderData()!!
 
         return appRemoteRepository.reserveTask(
             orderEntity.id.toString(),

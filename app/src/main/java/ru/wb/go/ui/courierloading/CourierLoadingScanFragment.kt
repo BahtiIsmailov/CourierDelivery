@@ -1,11 +1,8 @@
 package ru.wb.go.ui.courierloading
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -13,6 +10,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.OnCourierScanner
@@ -29,20 +27,12 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
-class CourierLoadingScanFragment : Fragment() {
+class CourierLoadingScanFragment :
+    BaseServiceFragment<CourierLoadingScanViewModel, CourierLoadingFragmentBinding>(
+        CourierLoadingFragmentBinding::inflate
+    ) {
 
-    private val viewModel by viewModel<CourierLoadingScanViewModel>()
-
-    private var _binding: CourierLoadingFragmentBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = CourierLoadingFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override val viewModel by viewModel<CourierLoadingScanViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,7 +89,7 @@ class CourierLoadingScanFragment : Fragment() {
             showDialogInfo(it)
         }
 
-        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
+        viewModel.networkState.observe(viewLifecycleOwner) {
             val ic = when (it) {
                 is NetworkState.Complete -> R.drawable.ic_inet_complete
                 else -> R.drawable.ic_inet_failed
@@ -110,7 +100,7 @@ class CourierLoadingScanFragment : Fragment() {
         }
 
         viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
+            binding.toolbarLayout.versionApp.text = it
         }
 
         viewModel.orderTimer.observe(viewLifecycleOwner) {
@@ -298,11 +288,6 @@ class CourierLoadingScanFragment : Fragment() {
     companion object {
         const val DIALOG_LOADING_CONFIRM_TAG = "DIALOG_LOADING_CONFIRM_TAG"
         const val DIALOG_TIME_IS_OUT_INFO_TAG = "DIALOG_TIME_IS_OUT_INFO_TAG"
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun beepFirstSuccess() {

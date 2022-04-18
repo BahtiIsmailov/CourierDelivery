@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierbillingaccountselector
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierBillingAccountSelectorResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getFormatAccount(bankName: String, account: String): String {
         return context.getString(

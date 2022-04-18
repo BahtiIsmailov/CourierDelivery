@@ -6,16 +6,14 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.token.TokenManager
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
@@ -26,9 +24,8 @@ class CourierBillingAccountDataViewModel(
     private val interactor: CourierBillingAccountDataInteractor,
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
     private val tokenManager: TokenManager,
-    private val deviceManager: DeviceManager,
     private val errorDialogManager: ErrorDialogManager
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     companion object {
         private const val ACCOUNT_LENGTH = 20
@@ -41,14 +38,6 @@ class CourierBillingAccountDataViewModel(
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
         get() = _toolbarLabelState
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
-
-    private val _versionApp = MutableLiveData<String>()
-    val versionApp: LiveData<String>
-        get() = _versionApp
 
     private val _initUIState = MutableLiveData<CourierBillingAccountDataInitUIState>()
     val initUIState: LiveData<CourierBillingAccountDataInitUIState>
@@ -94,8 +83,6 @@ class CourierBillingAccountDataViewModel(
 
     init {
         initToolbarLabel()
-        observeNetworkState()
-        fetchVersionApp()
         initStateField()
     }
 
@@ -307,17 +294,6 @@ class CourierBillingAccountDataViewModel(
             CourierBillingAccountDataNavAction.NavigateToAccountSelector(parameters.balance)
     }
 
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
-    }
-
     fun onRemoveAccountClick() {
         _navigationEvent.value =
             CourierBillingAccountDataNavAction.NavigateToConfirmDialog(parameters.account!!.account)
@@ -346,8 +322,8 @@ class CourierBillingAccountDataViewModel(
                 .subscribe(
                     { removeAccountComplete() },
                     {
-                    setButtonAndLoaderState(false)
-                        errorDialogManager.showErrorDialog(it,_navigateToMessageState)
+                        setButtonAndLoaderState(false)
+                        errorDialogManager.showErrorDialog(it, _navigateToMessageState)
                     }
                 )
         )

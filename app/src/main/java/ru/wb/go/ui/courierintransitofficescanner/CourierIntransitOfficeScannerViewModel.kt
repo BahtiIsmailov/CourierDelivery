@@ -3,8 +3,7 @@ package ru.wb.go.ui.courierintransitofficescanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
-import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScanData
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScannerInteractor
@@ -12,7 +11,6 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
@@ -24,16 +22,7 @@ class CourierIntransitOfficeScannerViewModel(
     private val resourceProvider: CourierIntransitOfficeScannerResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-    private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable, metric) {
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
-
-    private val _versionApp = MutableLiveData<String>()
-    val versionApp: LiveData<String>
-        get() = _versionApp
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -66,21 +55,8 @@ class CourierIntransitOfficeScannerViewModel(
         get() = _waitLoader
 
     init {
-        observeNetworkState()
-        fetchVersionApp()
         initTitle()
         initScanner()
-    }
-
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun initTitle() {

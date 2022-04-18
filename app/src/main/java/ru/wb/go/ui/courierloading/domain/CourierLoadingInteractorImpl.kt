@@ -11,32 +11,30 @@ import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierLoadingInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
+    rxSchedulerFactory: RxSchedulerFactory,
+    networkMonitorRepository: NetworkMonitorRepository,
+    deviceManager: DeviceManager,
     private val remoteRepo: AppRemoteRepository,
     private val scanRepo: ScannerRepository,
     private val timeManager: TimeManager,
     private val localRepo: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
-) : CourierLoadingInteractor {
+) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+    CourierLoadingInteractor {
 
     private val scanLoaderProgressSubject = PublishSubject.create<CourierLoadingProgressData>()
 
     companion object {
         const val DELAY_HOLD_SCANNER = 1500L
-    }
-
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override fun scannedBoxes(): Single<List<LocalBoxEntity>> {

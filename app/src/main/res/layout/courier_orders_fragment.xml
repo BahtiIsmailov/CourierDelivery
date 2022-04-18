@@ -38,6 +38,51 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/nav_drawer_menu" />
 
+    <ImageView
+        android:id="@+id/no_internet_image"
+        android:layout_width="?actionBarSize"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_inet_failed"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/version_app"
+        style="@style/SmallSecondaryRegularText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/no_internet_image"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textSize="11sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="10.22.3877" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/support_app"
+        style="@style/AppMapButtonStyle"
+        android:layout_width="@dimen/map_button"
+        android:layout_height="@dimen/map_button"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="@dimen/pad16"
+        android:layout_marginBottom="@dimen/pad24"
+        android:src="@drawable/ic_nav_support"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/nav_drawer_menu"
         style="@style/AppMapButtonStyle"

@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierorders
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierOrdersResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getOrder(order: Int): String {
         return order.toString()

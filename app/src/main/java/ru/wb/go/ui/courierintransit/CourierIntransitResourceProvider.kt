@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierintransit
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierIntransitResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getLabelId(id : String): String {
         return context.getString(R.string.courier_intransit_label_id, id)

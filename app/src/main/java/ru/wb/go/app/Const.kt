@@ -34,6 +34,9 @@ const val DEFAULT_ARRIVAL_TIME_COURIER_MIN = 20
 const val YANDEX_METRIC_KEY = "54c7eead-ce27-4d1b-96f9-eca8c638f86b"
 const val YANDEX_METRIC_DEBUG_KEY = "21b0a81e-cac2-4160-a81b-9d437c67450d"
 
+const val TELEGRAM_SUPPORT_LINK = "+n-lLgR0i-HxkZmMy"
+const val TELEGRAM_SUPPORT_ID = ""
+
 
 
 

@@ -3,7 +3,7 @@ package ru.wb.go.mvvm
 import android.content.Context
 import ru.wb.go.R
 
-abstract class BaseMessageResourceProvider(private val context: Context) {
+abstract class BaseServicesResourceProvider(private val context: Context) {
 
     fun getVersionApp(version: String) = context.getString(R.string.app_version, version)
 

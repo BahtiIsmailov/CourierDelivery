@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierloading
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierLoadingResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getUnknown(): String = context.getString(R.string.courier_order_scanner_unknown_qr)
 

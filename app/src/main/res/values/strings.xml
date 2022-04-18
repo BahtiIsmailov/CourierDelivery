@@ -3,6 +3,8 @@
 
     <string name="app_nav_delivery">Доставка</string>
     <string name="app_nav_billing">Баланс</string>
+    <string name="app_nav_setting">Настройки</string>
+    <string name="app_nav_support">Поддержка</string>
     <string name="app_nav_out_app">Выйти из аккаунта</string>
     <string name="app_version">%s</string>
     <string name="app_update_version">Новая версия %s</string>
@@ -11,6 +13,9 @@
     <string name="app_update_version_load_status">Загрузка…</string>
     <string name="app_update_version_error">Обновление не установлено. Повторите операцию позднее</string>
     <string name="app_update_version_up_to_date">Обновлений нет</string>
+    <string name="app_support_title">Наша служба поддержки\nнаходится в Telegram</string>
+    <string name="app_support_next">Перейти</string>
+    <string name="app_support_cancel">Отмена</string>
 
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
@@ -72,10 +77,6 @@
 
     <string name="auth_load" />
     <string name="unloading_empty_title" />
-
-
-    <string name="count_boxes">%d кор.</string>
-    <string name="delivery">Рейс №%s</string>
 
     <string name="inet_text">Интернет: </string>
     <string name="inet_ok">Есть</string>

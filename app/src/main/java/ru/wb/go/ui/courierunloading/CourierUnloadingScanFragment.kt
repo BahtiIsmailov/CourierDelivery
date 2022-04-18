@@ -2,11 +2,8 @@ package ru.wb.go.ui.courierunloading
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -15,7 +12,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierUnloadingFragmentBinding
-import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
@@ -29,7 +26,10 @@ import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
-class CourierUnloadingScanFragment : Fragment() {
+class CourierUnloadingScanFragment :
+    BaseServiceFragment<CourierUnloadingScanViewModel, CourierUnloadingFragmentBinding>(
+        CourierUnloadingFragmentBinding::inflate
+    ) {
 
     companion object {
         const val COURIER_UNLOADING_ID_KEY = "courier_unloading_id_key"
@@ -39,7 +39,7 @@ class CourierUnloadingScanFragment : Fragment() {
             "DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG"
     }
 
-    private val viewModel by viewModel<CourierUnloadingScanViewModel> {
+    override val viewModel by viewModel<CourierUnloadingScanViewModel> {
         parametersOf(
             requireArguments().getParcelable<CourierUnloadingScanParameters>(
                 COURIER_UNLOADING_ID_KEY
@@ -47,16 +47,13 @@ class CourierUnloadingScanFragment : Fragment() {
         )
     }
 
-    private var _binding: CourierUnloadingFragmentBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = CourierUnloadingFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+//    override fun onCreateView(
+//        inflater: LayoutInflater, container: ViewGroup?,
+//        savedInstanceState: Bundle?,
+//    ): View {
+//        _binding = CourierUnloadingFragmentBinding.inflate(inflater, container, false)
+//        return binding.root
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,20 +111,6 @@ class CourierUnloadingScanFragment : Fragment() {
 
         viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
             showDialogConfirmScoreInfo(it.type, it.title, it.message, it.positive, it.negative)
-        }
-
-        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
-                else -> R.drawable.ic_inet_failed
-            }
-            binding.toolbarLayout.noInternetImage.setImageDrawable(
-                ContextCompat.getDrawable(requireContext(), ic)
-            )
-        }
-
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
@@ -318,7 +301,6 @@ class CourierUnloadingScanFragment : Fragment() {
     override fun onDestroyView() {
         viewModel.onDestroy()
         super.onDestroyView()
-        _binding = null
     }
 
     private fun beepSuccess() {

@@ -2,7 +2,6 @@ package ru.wb.go.ui.courierbillingaccountdata.domain
 
 import io.reactivex.Completable
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
@@ -10,19 +9,17 @@ import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.BaseServiceInteractorImpl
+import ru.wb.go.utils.managers.DeviceManager
 
 class CourierBillingAccountDataInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
+    rxSchedulerFactory: RxSchedulerFactory,
+    networkMonitorRepository: NetworkMonitorRepository,
+    deviceManager: DeviceManager,
     private val appRemoteRepository: AppRemoteRepository,
-) : CourierBillingAccountDataInteractor {
-
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+    CourierBillingAccountDataInteractor {
 
     override fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>): Completable {
         return Single.just(accountsEntity)

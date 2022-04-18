@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
@@ -26,7 +26,7 @@ class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
     val warehouseState: LiveData<CourierWarehouseItemState>

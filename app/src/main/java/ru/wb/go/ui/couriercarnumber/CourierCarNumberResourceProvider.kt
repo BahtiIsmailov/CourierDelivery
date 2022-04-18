@@ -1,9 +1,6 @@
 package ru.wb.go.ui.couriercarnumber
 
 import android.content.Context
-import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
-import java.util.*
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
-class CourierCarNumberResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {}
+class CourierCarNumberResourceProvider(context: Context) : BaseServicesResourceProvider(context)

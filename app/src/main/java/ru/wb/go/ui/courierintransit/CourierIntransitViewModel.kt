@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransit.delegates.items.*
 import ru.wb.go.ui.courierintransit.domain.CompleteDeliveryResult
@@ -28,7 +28,7 @@ class CourierIntransitViewModel(
     private val resourceProvider: CourierIntransitResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>

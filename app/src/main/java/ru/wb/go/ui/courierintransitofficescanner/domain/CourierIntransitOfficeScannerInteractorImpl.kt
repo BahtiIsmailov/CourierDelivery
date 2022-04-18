@@ -5,23 +5,21 @@ import io.reactivex.Single
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.managers.DeviceManager
 
 class CourierIntransitOfficeScannerInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
+    rxSchedulerFactory: RxSchedulerFactory,
+    networkMonitorRepository: NetworkMonitorRepository,
+    deviceManager: DeviceManager,
     private val locRepo: CourierLocalRepository,
     private val scannerRepo: ScannerRepository,
-) : CourierIntransitOfficeScannerInteractor {
-
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+    CourierIntransitOfficeScannerInteractor {
 
     override fun getOffices(): Observable<List<LocalOfficeEntity>> {
         return locRepo.getOfficesFlowable()

@@ -5,13 +5,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +22,7 @@ import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierOrdersFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
@@ -40,8 +38,10 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
-
-class CourierOrdersFragment : Fragment() {
+class CourierOrdersFragment :
+    BaseServiceFragment<CourierOrdersViewModel, CourierOrdersFragmentBinding>(
+        CourierOrdersFragmentBinding::inflate
+    ) {
 
     companion object {
         const val COURIER_ORDER_ID_KEY = "courier_order_id_key"
@@ -49,13 +49,6 @@ class CourierOrdersFragment : Fragment() {
         const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
         const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
     }
-
-    private val viewModel by viewModel<CourierOrdersViewModel> {
-        parametersOf(requireArguments().getParcelable<CourierOrderParameters>(COURIER_ORDER_ID_KEY))
-    }
-
-    private var _binding: CourierOrdersFragmentBinding? = null
-    private val binding get() = _binding!!
 
     private lateinit var adapter: DefaultAdapterDelegate
     private lateinit var layoutManager: LinearLayoutManager
@@ -68,6 +61,10 @@ class CourierOrdersFragment : Fragment() {
     private lateinit var bottomSheetOrders: BottomSheetBehavior<FrameLayout>
     private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
     private lateinit var bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
+
+    override val viewModel by viewModel<CourierOrdersViewModel> {
+        parametersOf(requireArguments().getParcelable<CourierOrderParameters>(COURIER_ORDER_ID_KEY))
+    }
 
     private val bottomSheetOrdersCallback = object :
         BottomSheetBehavior.BottomSheetCallback() {
@@ -103,15 +100,6 @@ class CourierOrdersFragment : Fragment() {
         }
 
         override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-    }
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = CourierOrdersFragmentBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -160,7 +148,6 @@ class CourierOrdersFragment : Fragment() {
         super.onResume()
         if (isOrdersExpanded()) viewModel.updateOrders(getHalfHeightDisplay())
         else if (isOrderDetailsExpanded()) {
-//            viewModel.updateOrderDetails()
             addBottomSheetCallbackOrderDetailsListener()
         }
     }
@@ -168,7 +155,6 @@ class CourierOrdersFragment : Fragment() {
     override fun onDestroyView() {
         viewModel.clearSubscription()
         super.onDestroyView()
-        _binding = null
     }
 
     private fun getHalfHeightDisplay(): Int {
@@ -233,7 +219,6 @@ class CourierOrdersFragment : Fragment() {
     private fun showAddresses() {
         binding.navDrawerMenu.visibility = INVISIBLE
         binding.toRegistration.visibility = INVISIBLE
-//        binding.showAll.visibility = INVISIBLE
         showBottomSheetOrderAddresses()
     }
 
@@ -335,12 +320,14 @@ class CourierOrdersFragment : Fragment() {
                     binding.toRegistration.visibility = VISIBLE
                     carNumberTextColor(R.color.red)
                     binding.carChangeImage.visibility = GONE
+                    binding.supportApp.visibility = INVISIBLE
                 }
                 false -> {
                     binding.navDrawerMenu.visibility = VISIBLE
                     binding.toRegistration.visibility = GONE
                     carNumberTextColor(R.color.primary)
                     binding.carChangeImage.visibility = VISIBLE
+                    binding.supportApp.visibility = VISIBLE
                 }
             }
         }

@@ -56,7 +56,6 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
 
     private fun initObserver() {
 
-
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierAgreementNavigationState.Complete -> {

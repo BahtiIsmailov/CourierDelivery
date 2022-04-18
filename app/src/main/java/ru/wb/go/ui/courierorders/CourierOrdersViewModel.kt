@@ -8,7 +8,7 @@ import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.HttpObjectNotFoundException
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -40,7 +40,7 @@ class CourierOrdersViewModel(
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>

@@ -9,27 +9,25 @@ import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
+import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierIntransitInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
+    rxSchedulerFactory: RxSchedulerFactory,
+    networkMonitorRepository: NetworkMonitorRepository,
+    deviceManager: DeviceManager,
     private val remoteRepo: AppRemoteRepository,
     private val locRepo: CourierLocalRepository,
     private val intransitTimeRepository: IntransitTimeRepository,
     private val timeManager: TimeManager,
     private val courierMapRepository: CourierMapRepository,
-) : CourierIntransitInteractor {
-
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+    CourierIntransitInteractor {
 
     override fun getOffices(): Observable<List<LocalOfficeEntity>> {
         return locRepo.getOfficesFlowable()
