@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courieragreement
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,13 +41,18 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
         binding.confirm.setOnClickListener { viewModel.onCompleteClick() }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initAgreement() {
-        val input = requireContext().resources.openRawResource(R.raw.agreement_wbgo)
-        binding.pdfView
-            .fromStream(input)
-            .nightMode(viewModel.getDarkThemeSetting())
-            .load()
-        binding.pdfView.invalidate()
+//        val input = requireContext().resources.openRawResource(R.raw.agreement_wbgo)
+//        binding.pdfView
+//            .fromStream(input)
+//            .nightMode(viewModel.getDarkThemeSetting())
+//            .load()
+//        binding.pdfView.invalidate()
+        binding.webBrowser.settings.javaScriptEnabled = true
+        binding.webBrowser.settings.builtInZoomControls = true
+        binding.webBrowser.setInitialScale(1)
+        binding.webBrowser.loadUrl(URL_FOR_VEB_VIEW)
         binding.viewProgress.visibility = GONE
     }
 
@@ -64,6 +70,9 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
                 }
             }
         }
+    }
+    companion object{
+        const val URL_FOR_VEB_VIEW = "https://wbtrans-mobile-api.wildberries.ru/api/v1/oferta"
     }
 
     override fun onDestroyView() {
