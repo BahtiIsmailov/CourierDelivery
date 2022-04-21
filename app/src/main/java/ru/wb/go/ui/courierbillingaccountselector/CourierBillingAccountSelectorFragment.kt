@@ -4,16 +4,12 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.NOT_FOCUSABLE
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ScrollView
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
@@ -25,7 +21,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierBillingAccountSelectorFragmentBinding
-import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.courierbillingaccountdata.CourierBillingAccountDataAmountParameters
 import ru.wb.go.ui.courierbillingaccountselector.CourierBillingAccountSelectorFragment.ClickEventInterface
@@ -38,10 +34,10 @@ import ru.wb.go.utils.managers.ErrorDialogData
 
 
 class CourierBillingAccountSelectorFragment :
-    Fragment(R.layout.courier_billing_account_selector_fragment) {
+    BaseServiceFragment<CourierBillingAccountSelectorViewModel, CourierBillingAccountSelectorFragmentBinding>(
+        CourierBillingAccountSelectorFragmentBinding::inflate
+    ) {
 
-    private var _binding: CourierBillingAccountSelectorFragmentBinding? = null
-    private val binding get() = _binding!!
 
     private lateinit var inputMethod: InputMethodManager
 
@@ -50,20 +46,12 @@ class CourierBillingAccountSelectorFragment :
             "courier_billing_account_selector_amount_key"
     }
 
-    private val viewModel by viewModel<CourierBillingAccountSelectorViewModel> {
+    override val viewModel by viewModel<CourierBillingAccountSelectorViewModel> {
         parametersOf(
             requireArguments().getParcelable<CourierBillingAccountSelectorAmountParameters>(
                 COURIER_BILLING_ACCOUNT_SELECTOR_AMOUNT_KEY
             )
         )
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = CourierBillingAccountSelectorFragmentBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -199,20 +187,6 @@ class CourierBillingAccountSelectorFragment :
 
         viewModel.errorDialogState.observe(viewLifecycleOwner) {
             showDialogInfo(it)
-        }
-
-        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
-                else -> R.drawable.ic_inet_failed
-            }
-            binding.toolbarLayout.noInternetImage.setImageDrawable(
-                ContextCompat.getDrawable(requireContext(), ic)
-            )
-        }
-
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
         }
 
         viewModel.formUIState.observe(viewLifecycleOwner) { state ->
@@ -352,11 +326,6 @@ class CourierBillingAccountSelectorFragment :
     private fun scrollToViewTop(scrollView: ScrollView, childView: View) {
         val delay: Long = 100
         scrollView.postDelayed({ scrollView.smoothScrollTo(0, childView.top) }, delay)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun showDialogInfo(

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.fragment.app.Fragment
@@ -37,12 +38,14 @@ import ru.wb.go.ui.courierdatatype.CourierDataTypeFragmentDirections
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.support.SupportFragment
 import ru.wb.go.utils.SoftKeyboard
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
     OnUserInfo, OnCourierScanner, StatusBarListener,
-    NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener {
+    NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener,
+    SupportListener{
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -144,12 +147,19 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         }
 
         viewModel.navigation.observe(this) {
-            panMode()
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            val navHost =
-                supportFragmentManager.findFragmentById(R.id.nav_host_app_fragment) as NavHostFragment
-            navHost.navController.navigate(R.id.load_navigation)
-
+            when (it) {
+                AppViewModel.NavigationState.NavigateToRegistration -> {
+                    panMode()
+                    binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                    val navHost =
+                        supportFragmentManager.findFragmentById(R.id.nav_host_app_fragment) as NavHostFragment
+                    navHost.navController.navigate(R.id.load_navigation)
+                }
+                AppViewModel.NavigationState.NavigateToSupport -> {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    SupportFragment().show(supportFragmentManager, "support_tag")
+                }
+            }
         }
 
     }
@@ -161,13 +171,18 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
                 navController?.navigate(R.id.courierBalanceFragment)
             }
 
+            findViewById<View>(R.id.settings_layout).setOnClickListener {
+                navController?.navigate(R.id.settingsFragment)
+            }
+
+            findViewById<View>(R.id.support_layout).setOnClickListener {
+                viewModel.onSupportClick()
+            }
+
             findViewById<View>(R.id.logout_layout).setOnClickListener {
                 viewModel.onExitClick()
             }
 
-            findViewById<View>(R.id.settings_layout).setOnClickListener {
-                navController?.navigate(R.id.settingsFragment)
-            }
         }
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(
@@ -325,6 +340,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     }
 
+    override fun showSupportDialog() {
+        SupportFragment().show(supportFragmentManager, "support_tag")
+    }
+
 }
 
 interface NavToolbarListener {
@@ -359,6 +378,10 @@ interface OnUserInfo {
 
 interface OnCourierScanner {
     fun holdBackButtonOnScanBox()
+}
+
+interface SupportListener {
+    fun showSupportDialog()
 }
 
 fun Activity.makeStatusBarTransparent() {

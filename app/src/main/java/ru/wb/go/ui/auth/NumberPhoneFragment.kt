@@ -24,6 +24,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard
 
+
 class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
     private var _binding: AuthPhoneFragmentBinding? = null

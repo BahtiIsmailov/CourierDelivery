@@ -16,17 +16,21 @@ class CourierMapInteractorImpl(
         return courierMapRepository.observeMapState()
     }
 
-    override fun onItemClick(point: MapPoint) {
+    override fun markerClick(point: MapPoint) {
         courierMapRepository.mapAction(CourierMapAction.ItemClick(point))
     }
 
-    override fun onMapClick() {
+    override fun mapClick() {
         courierMapRepository.mapAction(CourierMapAction.MapClick)
     }
 
     override fun onForcedLocationUpdate(point: CoordinatePoint) {
         deviceManager.saveLocation("${point.latitude}:${point.longitude}")
         courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))
+    }
+
+    override fun showAll() {
+        courierMapRepository.mapAction(CourierMapAction.ShowAll)
     }
 
 }

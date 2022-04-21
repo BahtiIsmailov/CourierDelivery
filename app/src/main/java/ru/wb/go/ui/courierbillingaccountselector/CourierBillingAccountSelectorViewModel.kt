@@ -6,13 +6,11 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
-import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import java.text.DecimalFormat
@@ -23,9 +21,8 @@ class CourierBillingAccountSelectorViewModel(
     metric: YandexMetricManager,
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
-    private val deviceManager: DeviceManager,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -38,14 +35,6 @@ class CourierBillingAccountSelectorViewModel(
     private val _errorDialogState = SingleLiveEvent<ErrorDialogData>()
     val errorDialogState: LiveData<ErrorDialogData>
         get() = _errorDialogState
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
-
-    private val _versionApp = MutableLiveData<String>()
-    val versionApp: LiveData<String>
-        get() = _versionApp
 
     private val _navigationEvent =
         SingleLiveEvent<CourierBillingAccountSelectorNavAction>()
@@ -76,8 +65,6 @@ class CourierBillingAccountSelectorViewModel(
     fun init() {
         localBalance = parameters.balance
         initToolbarLabel()
-        observeNetworkState()
-        fetchVersionApp()
         initBalance()
         initAccounts()
     }
@@ -92,18 +79,7 @@ class CourierBillingAccountSelectorViewModel(
         _balanceState.value = resourceProvider.getBalance(balance)
     }
 
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
-    }
-
-    fun setLoader(state: CourierBillingAccountSelectorUILoaderState) {
+    private fun setLoader(state: CourierBillingAccountSelectorUILoaderState) {
         _loaderState.value = state
     }
 

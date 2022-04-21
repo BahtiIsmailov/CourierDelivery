@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
-import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingInteractor
 import ru.wb.go.ui.courierunloading.domain.CourierUnloadingProcessData
@@ -18,7 +17,6 @@ import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
@@ -29,10 +27,10 @@ class CourierUnloadingScanViewModel(
     metric: YandexMetricManager,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
-    private val deviceManager: DeviceManager,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
         get() = _toolbarLabelState
@@ -41,14 +39,6 @@ class CourierUnloadingScanViewModel(
         SingleLiveEvent<CourierUnloadingScanNavAction>()
     val navigationEvent: LiveData<CourierUnloadingScanNavAction>
         get() = _navigationEvent
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
-
-    private val _versionApp = MutableLiveData<String>()
-    val versionApp: LiveData<String>
-        get() = _versionApp
 
     private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
     val navigateToDialogInfo: LiveData<ErrorDialogData>
@@ -80,8 +70,6 @@ class CourierUnloadingScanViewModel(
 
     fun update() {
         initToolbar()
-        fetchVersionApp()
-        observeNetworkState()
         observeBoxInfoProcessInitState()
         observeScanProcess()
         observeScanProgress()
@@ -89,10 +77,6 @@ class CourierUnloadingScanViewModel(
 
     private fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun observeBoxInfoProcessInitState() {
@@ -127,13 +111,6 @@ class CourierUnloadingScanViewModel(
             interactor.getCurrentOffice(parameters.officeId)
                 .subscribe({ _toolbarLabelState.value = Label(it.officeName) },
                     {})
-        )
-    }
-
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
         )
     }
 

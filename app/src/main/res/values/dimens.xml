@@ -85,7 +85,7 @@
     <dimen name="pad56">56dp</dimen>
     <dimen name="pad64">64dp</dimen>
 
-    <dimen name="map_button">36dp</dimen>
+    <dimen name="map_button">32dp</dimen>
     <dimen name="icon52">52dp</dimen>
 
 

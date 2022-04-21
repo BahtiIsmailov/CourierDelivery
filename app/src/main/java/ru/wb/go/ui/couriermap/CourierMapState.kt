@@ -38,4 +38,6 @@ sealed class CourierMapState {
 
     object UpdateMyLocation : CourierMapState()
 
+    object VisibleShowAll : CourierMapState()
+
 }

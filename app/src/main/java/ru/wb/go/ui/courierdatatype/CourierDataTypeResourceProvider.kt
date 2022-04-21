@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierdatatype
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierDataTypeResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getIp() = context.getString(R.string.courier_data_type_ip)
 

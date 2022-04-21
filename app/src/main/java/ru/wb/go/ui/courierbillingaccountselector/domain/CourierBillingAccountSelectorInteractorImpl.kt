@@ -1,7 +1,6 @@
 package ru.wb.go.ui.courierbillingaccountselector.domain
 
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
@@ -9,25 +8,21 @@ import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
+import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierBillingAccountSelectorInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
-    private val networkMonitorRepository: NetworkMonitorRepository,
+    rxSchedulerFactory: RxSchedulerFactory,
+    networkMonitorRepository: NetworkMonitorRepository,
+    deviceManager: DeviceManager,
     private val appRemoteRepository: AppRemoteRepository,
-    private val deviceManager: DeviceManager,
     private val userManager: UserManager,
     private val tokenManager: TokenManager
-) : CourierBillingAccountSelectorInteractor {
-
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+    CourierBillingAccountSelectorInteractor {
 
     override fun payments(amount: Int, paymentEntity: PaymentEntity): Completable {
         return initGuid()
@@ -39,7 +34,7 @@ class CourierBillingAccountSelectorInteractorImpl(
                 )
             }
             .doOnError {
-                if(it !is TimeoutException){
+                if (it !is TimeoutException) {
                     userManager.clearPaymentGuid()
                 }
             }

@@ -3,11 +3,7 @@ package ru.wb.go.ui.courierunloading
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -17,36 +13,29 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.RemainBoxFragmentBinding
-import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 
-class RemainBoxFragment: Fragment() {
+class RemainBoxFragment :
+    BaseServiceFragment<RemainBoxViewModel, RemainBoxFragmentBinding>(
+        RemainBoxFragmentBinding::inflate
+    ) {
+
     companion object {
         const val BOX_REMAIN_KEY = "box_remain_id_key"
     }
-
-    private val viewModel by viewModel<RemainBoxViewModel> {
-        parametersOf(
-            requireArguments().getParcelable<RemainBoxParameters>(
-                BOX_REMAIN_KEY
-            )
-        )
-    }
-
-    private var _binding: RemainBoxFragmentBinding? = null
-    private val binding get() = _binding!!
 
     private lateinit var adapter: RemainBoxAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: RecyclerView.SmoothScroller
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = RemainBoxFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+    override val viewModel by viewModel<RemainBoxViewModel> {
+        parametersOf(
+            requireArguments().getParcelable<RemainBoxParameters>(
+                BOX_REMAIN_KEY
+            )
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,20 +71,6 @@ class RemainBoxFragment: Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObserver() {
-
-        viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
-            val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
-                else -> R.drawable.ic_inet_failed
-            }
-            binding.toolbarLayout.noInternetImage.setImageDrawable(
-                ContextCompat.getDrawable(requireContext(), ic)
-            )
-        }
-
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
-        }
 
         viewModel.boxes.observe(viewLifecycleOwner) {
             when (it) {

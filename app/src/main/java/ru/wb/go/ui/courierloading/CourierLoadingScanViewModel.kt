@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
-import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
@@ -19,7 +18,6 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
@@ -32,10 +30,10 @@ class CourierLoadingScanViewModel(
     private val resourceProvider: CourierLoadingResourceProvider,
     private val interactor: CourierLoadingInteractor,
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
-    private val deviceManager: DeviceManager,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
+) : TimerStateHandler,
+    ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
     val orderTimer: LiveData<CourierLoadingScanTimerState>
@@ -45,14 +43,6 @@ class CourierLoadingScanViewModel(
         SingleLiveEvent<CourierLoadingScanNavAction>()
     val navigationEvent: LiveData<CourierLoadingScanNavAction>
         get() = _navigationEvent
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
-
-    private val _versionApp = MutableLiveData<String>()
-    val versionApp: LiveData<String>
-        get() = _versionApp
 
     private val _navigateToDialogInfo = SingleLiveEvent<ErrorDialogData>()
     val navigateToDialogInfo: LiveData<ErrorDialogData>
@@ -88,8 +78,6 @@ class CourierLoadingScanViewModel(
         get() = _timeOut
 
     init {
-        observeNetworkState()
-        fetchVersionApp()
         observeInitScanProcess()
         observeScanProcess()
         getGate()
@@ -98,10 +86,6 @@ class CourierLoadingScanViewModel(
 
     private fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun getGate() {
@@ -129,13 +113,6 @@ class CourierLoadingScanViewModel(
 
     private fun observeTimerError(throwable: Throwable) {
         onTechErrorLog("observeTimerError", throwable)
-    }
-
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
     }
 
     private fun observeInitScanProcess() {

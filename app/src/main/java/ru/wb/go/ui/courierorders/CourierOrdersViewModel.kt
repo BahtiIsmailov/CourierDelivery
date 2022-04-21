@@ -8,7 +8,7 @@ import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.HttpObjectNotFoundException
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -40,7 +40,7 @@ class CourierOrdersViewModel(
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -78,6 +78,12 @@ class CourierOrdersViewModel(
     val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogConfirmScoreInfo
 
+    object VisibleShowAll
+
+    private val _visibleShowAll = SingleLiveEvent<VisibleShowAll>()
+    val visibleShowAll: LiveData<VisibleShowAll>
+        get() = _visibleShowAll
+
     private var orderEntities = mutableListOf<CourierOrderEntity>()
     private var orderItems = mutableListOf<BaseItem>()
 
@@ -104,13 +110,6 @@ class CourierOrdersViewModel(
         initToolbarLabel()
         initOrders(height)
     }
-
-    fun updateOrderDetails() {
-//        checkDemoMode()
-//        initToolbarLabel()
-//        initOrders(height)
-    }
-
 
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
@@ -176,8 +175,15 @@ class CourierOrdersViewModel(
     }
 
     private fun observeMapActionComplete(courierMapAction: CourierMapAction) {
-        if (courierMapAction is CourierMapAction.ItemClick) onMapPointClick(courierMapAction.point)
-        else if (courierMapAction is CourierMapAction.MapClick) onMapClick()
+        when (courierMapAction) {
+            is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
+            is CourierMapAction.MapClick -> onMapClick()
+            is CourierMapAction.ShowAll -> onShowAllClick()
+        }
+    }
+
+    private fun onShowAllClick() {
+        _visibleShowAll.value = VisibleShowAll
     }
 
     private fun onMapClick() {
@@ -360,6 +366,7 @@ class CourierOrdersViewModel(
     }
 
     private fun showItems() {
+        interactor.mapState(CourierMapState.VisibleShowAll)
         _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 

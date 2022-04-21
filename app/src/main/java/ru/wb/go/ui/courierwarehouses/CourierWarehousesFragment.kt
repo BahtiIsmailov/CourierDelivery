@@ -3,10 +3,8 @@ package ru.wb.go.ui.courierwarehouses
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
+import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.KeyboardListener
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
@@ -28,24 +27,16 @@ import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
 
-class CourierWarehousesFragment : Fragment() {
-
-    private val viewModel by viewModel<CourierWarehousesViewModel>()
-
-    private var _binding: CourierWarehouseFragmentBinding? = null
-    private val binding get() = _binding!!
+class CourierWarehousesFragment :
+    BaseServiceFragment<CourierWarehousesViewModel, CourierWarehouseFragmentBinding>(
+        CourierWarehouseFragmentBinding::inflate
+    ) {
 
     private lateinit var adapter: CourierWarehousesAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var smoothScroller: SmoothScroller
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = CourierWarehouseFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override val viewModel by viewModel<CourierWarehousesViewModel>()
 
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +45,6 @@ class CourierWarehousesFragment : Fragment() {
         initRecyclerView()
         initObservable()
         initListeners()
-//        viewModel.updateData()
     }
 
     private fun initView() {
@@ -79,7 +69,6 @@ class CourierWarehousesFragment : Fragment() {
         viewModel.warehouseState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
-                    binding.showAll.visibility = VISIBLE
                     binding.emptyList.visibility = GONE
                     binding.refresh.isRefreshing = false
                     binding.items.visibility = VISIBLE
@@ -153,10 +142,12 @@ class CourierWarehousesFragment : Fragment() {
                 true -> {
                     binding.navDrawerMenu.visibility = INVISIBLE
                     binding.toRegistration.visibility = VISIBLE
+                    binding.supportApp.visibility = INVISIBLE
                 }
                 false -> {
                     binding.navDrawerMenu.visibility = VISIBLE
                     binding.toRegistration.visibility = GONE
+                    binding.supportApp.visibility = VISIBLE
                 }
             }
         }
@@ -188,7 +179,6 @@ class CourierWarehousesFragment : Fragment() {
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
         binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
@@ -207,11 +197,6 @@ class CourierWarehousesFragment : Fragment() {
                 return SNAP_TO_START
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onResume() {

@@ -29,8 +29,8 @@ class AppViewModel(
     val versionApp: LiveData<String>
         get() = _versionApp
 
-    private val _navigation = MutableLiveData<NavigateToRegistration>()
-    val navigation: LiveData<NavigateToRegistration>
+    private val _navigation = MutableLiveData<NavigationState>()
+    val navigation: LiveData<NavigationState>
         get() = _navigation
 
     init {
@@ -42,7 +42,7 @@ class AppViewModel(
                 .subscribe({
                     if (it == INVALID_TOKEN) {
                         interactor.exitAuth()
-                        _navigation.value = NavigateToRegistration
+                        _navigation.value = NavigationState.NavigateToRegistration
                     } else
                         throw IllegalStateException("Wrong param $it")
                 }, {})
@@ -59,9 +59,13 @@ class AppViewModel(
         )
     }
 
+    fun onSupportClick() {
+        _navigation.value = NavigationState.NavigateToSupport
+    }
+
     fun onExitClick() {
         interactor.exitAuth()
-        _navigation.value = NavigateToRegistration
+        _navigation.value = NavigationState.NavigateToRegistration
     }
 
     fun getDarkThemeSetting(): Boolean {
@@ -79,6 +83,12 @@ class AppViewModel(
         const val SCREEN_TAG = "App"
     }
 
-    object NavigateToRegistration
+    sealed class NavigationState {
+
+        object NavigateToRegistration : NavigationState()
+
+        object NavigateToSupport : NavigationState()
+
+    }
 
 }

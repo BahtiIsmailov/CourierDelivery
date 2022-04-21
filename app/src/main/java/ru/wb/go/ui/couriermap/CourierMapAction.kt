@@ -11,4 +11,6 @@ sealed class CourierMapAction {
 
     data class LocationUpdate(val point: CoordinatePoint) : CourierMapAction()
 
+    object ShowAll : CourierMapAction()
+
 }

@@ -64,7 +64,7 @@ class SettingsFragment : Fragment() {
         }
 
         viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.toolbarLayout.toolbarVersion.text = it
+            binding.toolbarLayout.versionApp.text = it
         }
 
     }

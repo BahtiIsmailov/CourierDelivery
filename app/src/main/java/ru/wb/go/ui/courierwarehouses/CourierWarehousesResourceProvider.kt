@@ -2,10 +2,10 @@ package ru.wb.go.ui.courierwarehouses
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierWarehousesResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getEmptyList() =
         context.getString(R.string.courier_warehouse_empty_list)

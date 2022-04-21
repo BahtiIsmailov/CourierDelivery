@@ -98,6 +98,12 @@ class CourierMapViewModel(
     val zoomToBoundingBox: LiveData<ZoomToBoundingBox>
         get() = _zoomToBoundingBox
 
+    object VisibleShowAll
+
+    private val _visibleShowAll = SingleLiveEvent<VisibleShowAll>()
+    val visibleShowAll: LiveData<VisibleShowAll>
+        get() = _visibleShowAll
+
     fun subscribeState() {
         subscribeMapState()
     }
@@ -142,15 +148,16 @@ class CourierMapViewModel(
                 UpdateMyLocationPoint(it.point)
             is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
                 ZoomToBoundingBox(it.boundingBox, it.animate)
+            CourierMapState.VisibleShowAll -> _visibleShowAll.value = VisibleShowAll
         }
     }
 
     fun onItemClick(point: MapPoint) {
-        interactor.onItemClick(point)
+        interactor.markerClick(point)
     }
 
     fun onMapClick() {
-        interactor.onMapClick()
+        interactor.mapClick()
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
@@ -163,6 +170,10 @@ class CourierMapViewModel(
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
+    }
+
+    fun onShowAllClick() {
+        interactor.showAll()
     }
 
     companion object {

@@ -5,14 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
-import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.token.UserManager
-import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
@@ -22,10 +20,9 @@ class CourierBillingViewModel(
     private val interactor: CourierBillingInteractor,
     private val dataBuilder: CourierBillingDataBuilder,
     private val resourceProvider: CourierBillingResourceProvider,
-    private val deviceManager: DeviceManager,
     private val userManager: UserManager,
     private val errorDialogManager: ErrorDialogManager
-) : NetworkViewModel(compositeDisposable, metric) {
+) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
 
     private var balance = 0
 
@@ -40,14 +37,6 @@ class CourierBillingViewModel(
     private val _balanceInfo = MutableLiveData<String>()
     val balanceInfo: LiveData<String>
         get() = _balanceInfo
-
-    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
-    val toolbarNetworkState: LiveData<NetworkState>
-        get() = _toolbarNetworkState
-
-    private val _versionApp = MutableLiveData<String>()
-    val versionApp: LiveData<String>
-        get() = _versionApp
 
     private val _billingItems = MutableLiveData<CourierBillingState>()
     val billingItems: LiveData<CourierBillingState>
@@ -64,8 +53,6 @@ class CourierBillingViewModel(
 
     fun init() {
         clearPaymentGuid()
-        observeNetworkState()
-        fetchVersionApp()
         initToolbarLabel()
         initBalanceAndTransactions()
         initProgress()
@@ -73,17 +60,6 @@ class CourierBillingViewModel(
 
     private fun clearPaymentGuid() {
         userManager.clearPaymentGuid()
-    }
-
-    private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun initProgress() {

@@ -2,11 +2,11 @@ package ru.wb.go.ui.courierordertimer
 
 import android.content.Context
 import ru.wb.go.R
-import ru.wb.go.mvvm.BaseMessageResourceProvider
+import ru.wb.go.mvvm.BaseServicesResourceProvider
 import kotlin.math.abs
 
 class CourierOrderTimerResourceProvider(private val context: Context) :
-    BaseMessageResourceProvider(context) {
+    BaseServicesResourceProvider(context) {
 
     fun getOrder(id: Int): String {
         return context.getString(R.string.courier_orders_details_order, id)
