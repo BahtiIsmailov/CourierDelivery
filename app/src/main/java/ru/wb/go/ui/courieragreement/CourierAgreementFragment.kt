@@ -43,17 +43,13 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initAgreement() {
-//        val input = requireContext().resources.openRawResource(R.raw.agreement_wbgo)
-//        binding.pdfView
-//            .fromStream(input)
-//            .nightMode(viewModel.getDarkThemeSetting())
-//            .load()
-//        binding.pdfView.invalidate()
-        binding.webBrowser.settings.javaScriptEnabled = true
-        binding.webBrowser.settings.builtInZoomControls = true
-        binding.webBrowser.setInitialScale(1)
-        binding.webBrowser.loadUrl(URL_FOR_VEB_VIEW)
-        binding.viewProgress.visibility = GONE
+        with(binding.webBrowser){
+            settings.javaScriptEnabled = true
+            settings.builtInZoomControls = true
+            setInitialScale(1)
+            loadUrl(URL_FOR_VEB_VIEW)
+            binding.viewProgress.visibility = GONE
+        }
     }
 
     private fun initView() {
@@ -61,8 +57,6 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
     }
 
     private fun initObserver() {
-
-
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierAgreementNavigationState.Complete -> {

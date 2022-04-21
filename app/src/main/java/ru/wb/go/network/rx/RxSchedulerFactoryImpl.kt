@@ -1,5 +1,6 @@
 package ru.wb.go.network.rx
 
+import android.util.Log
 import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

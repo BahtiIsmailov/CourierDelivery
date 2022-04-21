@@ -4,14 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.app.AppPreffsKeys
+import ru.wb.go.mvvm.BaseMessageResourceProvider
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class CourierAgreementViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val settingsManager: SettingsManager,
+    private val settingsManager: SettingsManager
 ) :
     NetworkViewModel(compositeDisposable, metric) {
 

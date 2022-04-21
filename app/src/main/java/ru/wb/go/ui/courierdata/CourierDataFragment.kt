@@ -12,6 +12,7 @@ import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.englishapp.utils.CheckInternet
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.widget.textChanges
@@ -32,6 +33,7 @@ import ru.wb.go.ui.courierdata.CourierDataFragment.TextChangesInterface
 import ru.wb.go.ui.courierdataexpects.CourierDataExpectsParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
 import ru.wb.go.utils.SoftKeyboard
@@ -108,7 +110,18 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         viewModel.onFormChanges(changeFieldObservables())
         binding.overlayDate.setOnClickListener { dateSelect(it, binding.passportDateOfIssue) }
         binding.checkedAgreement.setOnClickListener { updateChecked() }
-        binding.textAgree.setOnClickListener { viewModel.onShowAgreementClick() }
+        binding.textAgree.setOnClickListener {
+            if (CheckInternet.checkConnection(requireContext())) {
+                viewModel.onShowAgreementClick()
+            } else {
+                DialogInfoFragment.newInstance(
+                    type = DialogInfoStyle.WARNING.ordinal,
+                    title = requireContext().getString(R.string.unknown_internet_title_error),
+                    message = requireContext().getString(R.string.unknown_internet_message_error),
+                    positiveButtonName = requireContext().getString(R.string.ok_button_title)
+                ).show(parentFragmentManager, DIALOG_INFO_TAG)
+            }
+        }
     }
 
     private val changeText = ArrayList<ViewChanges>()
