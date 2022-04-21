@@ -7,6 +7,7 @@ import android.os.Parcelable
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
@@ -100,6 +101,21 @@ class CourierOrdersFragment :
         }
 
         override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, onBackPressedCallback())
+    }
+
+    private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            when {
+                isOrdersExpanded() -> viewModel.onCloseOrdersClick()
+                isOrderDetailsExpanded() -> viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+                isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -234,7 +250,7 @@ class CourierOrdersFragment :
             viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
         }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
-        binding.addressClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
+        binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -394,6 +410,9 @@ class CourierOrdersFragment :
 
     private fun isOrderDetailsExpanded() =
         bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED
+
+    private fun isOrderAddressesExpanded() =
+        bottomSheetOrderAddresses.state == BottomSheetBehavior.STATE_EXPANDED
 
     private fun navigateToTimer() {
         findNavController().navigate(

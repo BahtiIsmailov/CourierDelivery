@@ -64,6 +64,10 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
+    <style name="AppTransparentSupportButtonStyle" parent="AppTransparentButtonStyle">
+        <item name="android:background">@drawable/button_app_transparent_round_corner_support</item>
+    </style>
+
 
     <style name="AppMapButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/button_map_round_corner</item>

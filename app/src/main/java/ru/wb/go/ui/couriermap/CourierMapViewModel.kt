@@ -27,10 +27,21 @@ class CourierMapViewModel(
     val zoomToBoundingBoxOffsetY: LiveData<ZoomToBoundingBoxOffsetY>
         get() = _zoomToBoundingBoxOffsetY
 
-    data class UpdateMarkersWithAnimateToPosition(
+    data class UpdateMarkersWithAnimateToPositions(
         val pointsHide: List<CourierMapMarker>,
-        val pointFrom: CoordinatePoint,
+        val pointFrom: CourierMapMarker,
         val pointsTo: List<CourierMapMarker>
+    )
+
+    private val _updateMarkersWithAnimateToPositions =
+        SingleLiveEvent<UpdateMarkersWithAnimateToPositions>()
+    val updateMarkersWithAnimateToPositions: LiveData<UpdateMarkersWithAnimateToPositions>
+        get() = _updateMarkersWithAnimateToPositions
+
+    data class UpdateMarkersWithAnimateToPosition(
+        val pointsShow: List<CourierMapMarker>,
+        val pointsFrom: List<CourierMapMarker>,
+        val pointTo: CourierMapMarker
     )
 
     private val _updateMarkersWithAnimateToPosition =
@@ -43,12 +54,6 @@ class CourierMapViewModel(
     private val _navigateToPoint = SingleLiveEvent<NavigateToPoint>()
     val navigateToPoint: LiveData<NavigateToPoint>
         get() = _navigateToPoint
-
-    data class HideMarker(val point: CourierMapMarker)
-
-    private val _hideMarker = SingleLiveEvent<HideMarker>()
-    val hideMarker: LiveData<HideMarker>
-        get() = _hideMarker
 
     data class NavigateToMarker(val id: String)
 
@@ -122,16 +127,14 @@ class CourierMapViewModel(
         when (it) {
             is CourierMapState.NavigateToPoint -> _navigateToPoint.value =
                 NavigateToPoint(it.point)
-            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
-                UpdateMarkersWithAnimateToPosition(
+            is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.value =
+                UpdateMarkersWithAnimateToPositions(
                     it.pointsHide,
                     it.pointFrom,
                     it.pointsTo
                 )
             is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.value =
                 ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
-            is CourierMapState.HideMarker -> _hideMarker.value =
-                HideMarker(it.point)
             is CourierMapState.NavigateToMarker -> _navigateToMarker.value =
                 NavigateToMarker(it.id)
             is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
@@ -149,6 +152,12 @@ class CourierMapViewModel(
             is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
                 ZoomToBoundingBox(it.boundingBox, it.animate)
             CourierMapState.VisibleShowAll -> _visibleShowAll.value = VisibleShowAll
+            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
+                UpdateMarkersWithAnimateToPosition(
+                    it.pointsShow,
+                    it.pointsFrom,
+                    it.pointTo
+                )
         }
     }
 
@@ -174,6 +183,10 @@ class CourierMapViewModel(
 
     fun onShowAllClick() {
         interactor.showAll()
+    }
+
+    fun onAnimateComplete() {
+        interactor.animateComplete()
     }
 
     companion object {

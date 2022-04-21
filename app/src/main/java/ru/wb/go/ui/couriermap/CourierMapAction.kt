@@ -13,4 +13,6 @@ sealed class CourierMapAction {
 
     object ShowAll : CourierMapAction()
 
+    object AnimateComplete : CourierMapAction()
+
 }

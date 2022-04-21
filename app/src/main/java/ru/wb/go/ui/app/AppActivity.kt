@@ -276,9 +276,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             R.id.courierScannerLoadingScanFragment -> {
                 if (isLoadingCourierBox) showExitDialog() else super.onBackPressed()
             }
-            else -> {
-                super.onBackPressed()
-            }
+            else -> super.onBackPressed()
         }
     }
 

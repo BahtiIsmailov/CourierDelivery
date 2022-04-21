@@ -33,4 +33,8 @@ class CourierMapInteractorImpl(
         courierMapRepository.mapAction(CourierMapAction.ShowAll)
     }
 
+    override fun animateComplete() {
+        courierMapRepository.mapAction(CourierMapAction.AnimateComplete)
+    }
+
 }
