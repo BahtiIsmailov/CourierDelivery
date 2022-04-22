@@ -6,10 +6,11 @@
     android:layout_height="match_parent"
     android:background="@color/lvl_1">
 
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/pdf_view"
+    <WebView
+        android:id="@+id/webBrowser"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:overScrollMode="never"
         android:layout_above="@+id/bottom_layout"
         android:layout_marginBottom="20dp" />
 

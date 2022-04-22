@@ -179,6 +179,35 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorDividerPale" />
+
+    <LinearLayout
+        android:id="@+id/documents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:paddingVertical="@dimen/pad16">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="24dp"
+            app:srcCompat="@drawable/ic_documents"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            style="@style/LargePrimaryRegularText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/documents" />
+
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

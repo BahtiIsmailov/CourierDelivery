@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
@@ -37,6 +38,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierdatatype.CourierDataTypeFragmentDirections
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.support.SupportFragment
 import ru.wb.go.utils.SoftKeyboard
@@ -173,6 +175,16 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
             findViewById<View>(R.id.settings_layout).setOnClickListener {
                 navController?.navigate(R.id.settingsFragment)
+            }
+
+            findViewById<View>(R.id.documents).setOnClickListener {
+                if (CheckInternet.checkConnection(this@AppActivity)) {
+                    navController?.navigate(R.id.courierAgreementFragment)
+                }
+                else {
+                    CheckInternet.showDialogHaveNotInternet(this@AppActivity)
+                        .show(supportFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
+                }
             }
 
             findViewById<View>(R.id.support_layout).setOnClickListener {

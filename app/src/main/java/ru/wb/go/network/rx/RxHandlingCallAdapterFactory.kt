@@ -26,5 +26,4 @@ class RxHandlingCallAdapterFactory private constructor(
             return RxHandlingCallAdapterFactory(callAdapterFactory, errorResolutionStrategy)
         }
     }
-
 }
