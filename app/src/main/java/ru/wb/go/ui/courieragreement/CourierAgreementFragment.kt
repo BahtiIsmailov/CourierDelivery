@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierAgreementFragmentBinding
+import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 
 
@@ -46,13 +47,13 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
         with(binding.webBrowser){
             settings.javaScriptEnabled = true
             settings.builtInZoomControls = true
-            setInitialScale(1)
-            loadUrl(URL_FOR_VEB_VIEW)
+            loadUrl(URL_FOR_VEB_VIEW,mutableMapOf("Authorization" to "Bearer test123123"))
             binding.viewProgress.visibility = GONE
         }
     }
 
     private fun initView() {
+        (activity as NavDrawerListener).lockNavDrawer()
         (activity as NavToolbarListener).hideBackButton()
     }
 
