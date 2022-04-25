@@ -51,7 +51,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     private val viewModel by viewModel<AppViewModel>()
 
-    private lateinit var binding: SplashActivityBinding
+    lateinit var binding: SplashActivityBinding
 
     private var navController: NavController? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -165,6 +165,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         }
 
     }
+    fun onExitClick(){
+        viewModel.onExitClick()
+    }
 
     private fun initListeners() {
 
@@ -189,10 +192,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
             findViewById<View>(R.id.support_layout).setOnClickListener {
                 viewModel.onSupportClick()
-            }
-
-            findViewById<View>(R.id.logout_layout).setOnClickListener {
-                viewModel.onExitClick()
             }
 
         }
