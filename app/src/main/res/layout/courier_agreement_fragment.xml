@@ -12,6 +12,8 @@
         android:layout_height="match_parent"
         android:overScrollMode="never"
         android:layout_marginTop="30dp"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginEnd="@dimen/pad16"
         android:layout_above="@+id/bottom_layout"
         android:layout_marginBottom="20dp" />
 
@@ -46,8 +48,8 @@
             style="@style/AppButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/auth_button_height"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/pad16"
+            android:layout_marginEnd="@dimen/pad16"
             android:layout_marginBottom="20dp"
             android:text="@string/ok_button_title" />
 
