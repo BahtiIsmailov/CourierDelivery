@@ -46,8 +46,15 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
     private fun initAgreement() {
         with(binding.webBrowser){
             settings.javaScriptEnabled = true
+            setInitialScale(1)
             settings.builtInZoomControls = true
             loadUrl(URL_FOR_VEB_VIEW,mutableMapOf("Authorization" to "Bearer test123123"))
+            clearCache(true)
+            clearFormData()
+            clearHistory()
+            clearSslPreferences()
+            context.deleteDatabase("webview.db")
+            context.deleteDatabase("webviewCache.db")
             binding.viewProgress.visibility = GONE
         }
     }
