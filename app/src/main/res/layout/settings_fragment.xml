@@ -147,4 +147,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/theme_title" />
 
+
+    <LinearLayout
+        android:id="@+id/logout_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:background="?android:selectableItemBackground"
+        android:paddingVertical="@dimen/pad16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical|center"
+            app:srcCompat="@drawable/ic_exit"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            style="@style/LargePrimaryRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center"
+            android:layout_marginStart="@dimen/pad16"
+            android:text="@string/app_nav_out_app"
+            android:textColor="@color/red" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

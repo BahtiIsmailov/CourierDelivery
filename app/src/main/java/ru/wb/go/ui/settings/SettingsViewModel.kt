@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
+import ru.wb.go.ui.app.AppViewModel
+import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.settings.domain.SettingsInteractor
 import ru.wb.go.ui.settings.domain.SettingsResourceProvider
 import ru.wb.go.utils.analytics.YandexMetricManager

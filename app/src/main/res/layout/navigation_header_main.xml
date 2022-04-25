@@ -154,37 +154,6 @@
         android:background="@color/colorDividerPale" />
 
     <LinearLayout
-        android:id="@+id/support_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:paddingVertical="@dimen/pad16">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="24dp"
-            app:srcCompat="@drawable/ic_nav_support"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            style="@style/LargePrimaryRegularText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="@string/app_nav_support" />
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorDividerPale" />
-
-    <LinearLayout
         android:id="@+id/documents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -239,28 +208,33 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/logout_layout"
+                android:id="@+id/support_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:paddingVertical="@dimen/pad16">
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/pad24"
-                    app:srcCompat="@drawable/ic_exit"
+                    android:layout_marginStart="24dp"
+                    app:srcCompat="@drawable/ic_nav_support"
                     tools:ignore="ContentDescription" />
 
                 <TextView
                     style="@style/LargePrimaryRegularText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/pad16"
-                    android:text="@string/app_nav_out_app" />
+                    android:layout_marginStart="16dp"
+                    android:text="@string/app_nav_support" />
 
             </LinearLayout>
+
+
 
         </LinearLayout>
 
