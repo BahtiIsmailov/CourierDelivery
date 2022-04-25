@@ -7,8 +7,8 @@ import kotlin.properties.Delegates
 open class NetworkState {
 
     var isNetworkConnected: Boolean by Delegates.observable(
-        false,
-        { _, _, newValue -> connect.onNext(if (newValue) Complete else Failed) })
+        false
+    ) { _, _, newValue -> connect.onNext(if (newValue) Complete else Failed) }
 
     object Failed : NetworkState()
 

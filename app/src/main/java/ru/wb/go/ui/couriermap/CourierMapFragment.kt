@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -261,6 +262,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
+        viewModel.updateMarkersWithAnimateToPositions.observe(viewLifecycleOwner) {
+            updateMarkersWithAnimateToPositions(it.pointsTo, it.pointFrom)
+        }
+
         viewModel.updateMarkersWithAnimateToPosition.observe(viewLifecycleOwner) {
             updateMarkersWithAnimateToPosition(it)
         }
@@ -300,104 +305,86 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             updateMyLocation()
         }
 
-        viewModel.hideMarker.observe(viewLifecycleOwner) {
-            hideMarker(it)
-        }
-
         viewModel.visibleShowAll.observe(viewLifecycleOwner) {
             visibleShowAll()
         }
 
     }
 
-    private fun hideMarker(it: CourierMapViewModel.HideMarker) {
-        binding.map.overlays
-            .filterIsInstance<Marker>()
-            .find { item -> item.id == it.point.point.id }
-            ?.apply {
-                val handler = Handler()
-                val start = SystemClock.uptimeMillis()
-                val duration: Long = 500
-                val interpolator = LinearInterpolator()
-                handler.post(object : Runnable {
-                    override fun run() {
-                        val elapsed: Long = SystemClock.uptimeMillis() - start
-                        val t = interpolator.getInterpolation(elapsed.toFloat() / duration)
-                        val a = (1 - t) * 1.0f
-                        alpha = a
-                        if (t < 1.0) handler.postDelayed(this, 15)
-                        else alpha = 0f
-                        binding.map.postInvalidate()
-                    }
-                })
-
-            }
-    }
-
-    private fun generateFilters(findId: String) =
-        listOf<(CourierMapMarker) -> Boolean> { it.point.id == findId }
+    private fun generateFilterMarker(findId: String): (Marker) -> Boolean = { it.id == findId }
 
     private fun <T> List<T>.filterAll(filters: List<(T) -> Boolean>) =
-        filter { item -> filters.all { filter -> filter(item) } }
-
-    private fun updateMarkersWithAnimateToPosition(it: CourierMapViewModel.UpdateMarkersWithAnimateToPosition) {
-
-        val markersHide = mutableListOf<Marker>()
-        binding.map.overlays
-            .filterIsInstance<Marker>()
-            .filter { item -> item.id.isNotEmpty() }
-            .apply { markersHide.addAll(this) }
-        val markersTo = mutableListOf<Marker>()
-
-        it.pointsTo.forEach { pointTo ->
-            val markerMap = Marker(binding.map).apply {
-                id = pointTo.point.id
-                icon = getIcon(pointTo.icon)
-                position = GeoPoint(it.pointFrom.latitude, it.pointFrom.longitude)
-                setAnchor(0.5f, 0.5f)
+        filter { item ->
+            var isFind = false
+            run find@{
+                filters.forEach { filter ->
+                    if (filter(item)) {
+                        isFind = true
+                        return@find
+                    }
+                }
             }
-            markersTo.add(markerMap)
-            binding.map.overlays.add(markerMap)
+            isFind
         }
 
-        val handler = Handler()
+    private fun updateMarkersWithAnimateToPosition(withAnimateToPosition: CourierMapViewModel.UpdateMarkersWithAnimateToPosition) {
+
+        val showMarkers = findMapMarkersByFilterId(withAnimateToPosition.pointsShow)
+        val animateMarkersTo = findMapMarkersByFilterId(withAnimateToPosition.pointsFrom)
+        val fromGeoPoints = mutableListOf<GeoPoint>()
+        animateMarkersTo.forEach {
+            fromGeoPoints.add(GeoPoint(it.position.latitude, it.position.longitude))
+        }
+
+        val pointTo = withAnimateToPosition.pointTo.point
+        val handler = Handler(Looper.getMainLooper())
         val start = SystemClock.uptimeMillis()
         val interpolator = LinearInterpolator()
+
         handler.post(object : Runnable {
             override fun run() {
                 val elapsed = (SystemClock.uptimeMillis() - start).toFloat()
-                val t = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
-                val offsetAnimation = 1 - t
+                val interpolation = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
+                val offsetAnimation = 1 - interpolation
                 var lng: Double
                 var lat: Double
-                val alpha = offsetAnimation * 1.0f
+                val alpha = 1 - offsetAnimation
 
-                markersTo.forEachIndexed { index, marker ->
-                    val pointTo = it.pointsTo[index].point
-                    if (t < INTERPOLATOR_ANIMATION_MAX) {
-                        lng = t * pointTo.long + offsetAnimation * it.pointFrom.longitude
-                        lat = t * pointTo.lat + offsetAnimation * it.pointFrom.latitude
+                animateMarkersTo.forEachIndexed { index, marker ->
+                    val pointFrom = fromGeoPoints[index]
+                    if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
+                        lng = interpolation * pointTo.long + offsetAnimation * pointFrom.longitude
+                        lat = interpolation * pointTo.lat + offsetAnimation * pointFrom.latitude
                     } else {
                         lng = pointTo.long
                         lat = pointTo.lat
-                        marker.setOnMarkerClickListener(onMarkerClickListener)
                     }
                     marker.position = GeoPoint(lat, lng)
                 }
 
-                markersHide.forEachIndexed { index, marker ->
-                    if (t < 1.0) {
-                        marker.alpha = alpha
-                    } else {
-                        marker.alpha = 0f
-                    }
+                showMarkers.forEach { marker ->
+                    if (interpolation < 1.0) marker.alpha = alpha
+                    else marker.alpha = 1f
                 }
-                if (t < INTERPOLATOR_ANIMATION_MAX) {
+
+                if (interpolation < INTERPOLATOR_ANIMATION_MAX)
                     handler.postDelayed(this, DELAY_ANIMATION_MS)
-                }
+                else viewModel.onAnimateComplete()
+
                 binding.map.postInvalidate()
             }
         })
+    }
+
+    private fun findMapMarkersByFilterId(showPoints: List<CourierMapMarker>): MutableList<Marker> {
+        val markerFilters = mutableListOf<(Marker) -> Boolean>()
+        showPoints.forEach { markerFilters.add(generateFilterMarker(it.point.id)) }
+        val findMapMarkers = mutableListOf<Marker>()
+        binding.map.overlays
+            .filterIsInstance<Marker>()
+            .filterAll(markerFilters)
+            .apply { findMapMarkers.addAll(this) }
+        return findMapMarkers
     }
 
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {
@@ -421,6 +408,67 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 })
             }
         }
+    }
+
+    private fun updateMarkersWithAnimateToPositions(
+        pointsTo: List<CourierMapMarker>,
+        pointFrom: CourierMapMarker
+    ) {
+        val markersHide = mutableListOf<Marker>()
+        binding.map.overlays
+            .filterIsInstance<Marker>()
+            .filter { item -> item.id.isNotEmpty() }
+            .apply { markersHide.addAll(this) }
+
+        binding.map.overlays.clear()
+        val markersTo = mutableListOf<Marker>()
+        pointsTo.forEach { pointTo ->
+            val markerMap = Marker(binding.map).apply {
+                id = pointTo.point.id
+                icon = getIcon(pointTo.icon)
+                position = GeoPoint(pointFrom.point.lat, pointFrom.point.long)
+                setAnchor(0.5f, 0.5f)
+            }
+            markersTo.add(markerMap)
+            binding.map.overlays.add(markerMap)
+        }
+        binding.map.overlays.addAll(markersHide)
+
+        val handler = Handler(Looper.getMainLooper())
+        val start = SystemClock.uptimeMillis()
+        val interpolator = LinearInterpolator()
+
+        handler.post(object : Runnable {
+            override fun run() {
+                val elapsed = (SystemClock.uptimeMillis() - start).toFloat()
+                val interpolation = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
+                val offsetAnimation = 1 - interpolation
+                val alpha = offsetAnimation * 1.0f
+                var lng: Double
+                var lat: Double
+                markersTo.forEachIndexed { index, marker ->
+                    val pointTo = pointsTo[index].point
+                    if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
+                        lng = interpolation * pointTo.long + offsetAnimation * pointFrom.point.long
+                        lat = interpolation * pointTo.lat + offsetAnimation * pointFrom.point.lat
+                    } else {
+                        lng = pointTo.long
+                        lat = pointTo.lat
+                        marker.setOnMarkerClickListener(onMarkerClickListener)
+                    }
+                    marker.position = GeoPoint(lat, lng)
+                }
+
+                markersHide.forEach { marker ->
+                    if (interpolation < 1.0) marker.alpha = alpha
+                    else marker.alpha = 0f
+                }
+                if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
+                    handler.postDelayed(this, DELAY_ANIMATION_MS)
+                }
+                binding.map.postInvalidate()
+            }
+        })
     }
 
     private fun navigateToPointZoom(it: CoordinatePoint) {

@@ -14,8 +14,6 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun clearAndSaveSelectedOrder(courierOrderEntity: CourierOrderEntity): Completable
 
-//    fun observeNetworkConnected(): Observable<NetworkState>
-
     fun mapState(state: CourierMapState)
 
     fun observeMapAction(): Observable<CourierMapAction>

@@ -95,6 +95,7 @@ class CourierOrdersViewModel(
     private var addressMapMarkers = mutableListOf<CourierMapMarker>()
 
     private var selectedOrderId: Int = -1
+    private var height = 0
 
     init {
         onTechEventLog("init")
@@ -179,6 +180,11 @@ class CourierOrdersViewModel(
             is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
             is CourierMapAction.MapClick -> onMapClick()
             is CourierMapAction.ShowAll -> onShowAllClick()
+            CourierMapAction.AnimateComplete -> {
+                updateOrders(height)
+                _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+            }
+            is CourierMapAction.LocationUpdate -> {}
         }
     }
 
@@ -432,9 +438,9 @@ class CourierOrdersViewModel(
             zoomAllOrderAddressPoints()
         }
         interactor.mapState(
-            CourierMapState.UpdateMarkersWithAnimateToPosition(
+            CourierMapState.UpdateMarkersWithAnimateToPositions(
                 orderMapMarkers,
-                orderCenterGroupPoints[itemIndex],
+                orderMapMarkers[selectedOrderId + 1],
                 addressMapMarkers
             )
         )
@@ -555,8 +561,14 @@ class CourierOrdersViewModel(
     }
 
     fun onCloseOrderDetailsClick(height: Int) {
-        updateOrders(height)
-        _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+        this.height = height
+        interactor.mapState(
+            CourierMapState.UpdateMarkersWithAnimateToPosition(
+                orderMapMarkers,
+                addressMapMarkers,
+                orderMapMarkers[selectedOrderId + 1]
+            )
+        )
     }
 
     fun onTaskNotExistConfirmClick() {

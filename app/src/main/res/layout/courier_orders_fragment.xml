@@ -463,7 +463,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/slider_addresses" />
 
                 <ImageView
-                    android:id="@+id/address_close"
+                    android:id="@+id/addresses_close"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?selectableItemBackgroundBorderless"

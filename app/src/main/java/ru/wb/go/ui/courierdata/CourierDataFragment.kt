@@ -108,7 +108,14 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         viewModel.onFormChanges(changeFieldObservables())
         binding.overlayDate.setOnClickListener { dateSelect(it, binding.passportDateOfIssue) }
         binding.checkedAgreement.setOnClickListener { updateChecked() }
-        binding.textAgree.setOnClickListener { viewModel.onShowAgreementClick() }
+        binding.textAgree.setOnClickListener {
+            if (CheckInternet.checkConnection(requireContext())) {
+                viewModel.onShowAgreementClick()
+            } else {
+                CheckInternet.showDialogHaveNotInternet(requireContext())
+                    .show(parentFragmentManager, DIALOG_INFO_TAG)
+            }
+        }
     }
 
     private val changeText = ArrayList<ViewChanges>()

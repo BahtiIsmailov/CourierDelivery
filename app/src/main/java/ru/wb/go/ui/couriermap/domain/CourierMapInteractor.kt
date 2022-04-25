@@ -17,4 +17,6 @@ interface CourierMapInteractor {
 
     fun showAll()
 
+    fun animateComplete()
+
 }

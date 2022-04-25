@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courieragreement
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierAgreementFragmentBinding
+import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 
 
@@ -40,22 +42,29 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
         binding.confirm.setOnClickListener { viewModel.onCompleteClick() }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initAgreement() {
-        val input = requireContext().resources.openRawResource(R.raw.agreement_wbgo)
-        binding.pdfView
-            .fromStream(input)
-            .nightMode(viewModel.getDarkThemeSetting())
-            .load()
-        binding.pdfView.invalidate()
-        binding.viewProgress.visibility = GONE
+        with(binding.webBrowser){
+            settings.javaScriptEnabled = true
+            setInitialScale(1)
+            settings.builtInZoomControls = true
+            loadUrl(URL_FOR_VEB_VIEW,mutableMapOf("Authorization" to "Bearer test123123"))
+            clearCache(true)
+            clearFormData()
+            clearHistory()
+            clearSslPreferences()
+            context.deleteDatabase("webview.db")
+            context.deleteDatabase("webviewCache.db")
+            binding.viewProgress.visibility = GONE
+        }
     }
 
     private fun initView() {
+        (activity as NavDrawerListener).lockNavDrawer()
         (activity as NavToolbarListener).hideBackButton()
     }
 
     private fun initObserver() {
-
         viewModel.navigationState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierAgreementNavigationState.Complete -> {
@@ -63,6 +72,9 @@ class CourierAgreementFragment : Fragment(R.layout.courier_agreement_fragment) {
                 }
             }
         }
+    }
+    companion object{
+        const val URL_FOR_VEB_VIEW = "https://wbtrans-mobile-api.wildberries.ru/api/v1/oferta"
     }
 
     override fun onDestroyView() {
