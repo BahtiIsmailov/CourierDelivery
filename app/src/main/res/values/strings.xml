@@ -594,6 +594,7 @@
     <string name="remain_box_title">Осталось выгрузить</string>
 
     <string name="settings_title">Настройки</string>
+    <string name="documents">Документы</string>
     <string name="settings_autoflash_hint">Автоматически включать подсветку при работе с камерой</string>
     <string name="settings_voice_help_hint">Голосовое сопровождение результата сканирования</string>
     <string name="settings_theme_help_hint">Включить темную тему</string>

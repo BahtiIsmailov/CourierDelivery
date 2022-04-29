@@ -64,17 +64,17 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     private fun initObserve() {
 
-        viewModel.stateTitleUI.observe(viewLifecycleOwner, { state ->
+        viewModel.stateTitleUI.observe(viewLifecycleOwner) { state ->
             binding.numberPhoneTitle.setText(phoneSpannable(state), TextView.BufferType.SPANNABLE)
             binding.numberPhoneTitle.visibility = VISIBLE
-        })
+        }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner, { state ->
+        viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CheckSmsNavigationState.NavigateToAppLoader ->
                     findNavController().navigate(R.id.load_navigation)
             }
-        })
+        }
 
         viewModel.stateBackspaceUI.observe(viewLifecycleOwner) {
             when (it) {
@@ -97,7 +97,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             binding.toolbarLayout.toolbarVersion.text = it
         }
 
-        viewModel.checkSmsUIState.observe(viewLifecycleOwner, { state ->
+        viewModel.checkSmsUIState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CheckSmsUIState.Progress -> {
                     binding.smsCodeProgress.visibility = VISIBLE
@@ -132,9 +132,9 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     binding.viewPinCode.setText(state.code)
                 }
             }
-        })
+        }
 
-        viewModel.repeatStateUI.observe(viewLifecycleOwner, { state ->
+        viewModel.repeatStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CheckSmsUIRepeatState.RepeatPasswordComplete -> {
                     binding.repeatSmsTimer.visibility = INVISIBLE
@@ -171,7 +171,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     )
                 }
             }
-        })
+        }
     }
 
     private fun timeSpannable(state: CheckSmsUIRepeatState.RepeatPasswordTimer): Spannable {

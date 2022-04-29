@@ -6,13 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.databinding.SettingsFragmentBinding
 import ru.wb.go.network.monitor.NetworkState
+import ru.wb.go.ui.app.AppActivity
+import ru.wb.go.ui.app.AppViewModel
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 
@@ -70,6 +74,9 @@ class SettingsFragment : Fragment() {
     }
 
     private fun initListeners() {
+        binding.logoutLayout.setOnClickListener {
+            (activity as AppActivity).onExitClick()
+        }
         binding.voiceSwitch.setOnCheckedChangeListener { _, b ->
             viewModel.settingClick(AppPreffsKeys.SETTING_VOICE_SCAN, b)
         }
