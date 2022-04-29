@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 33,
-    "identityHash": "098e584875bebc16d401df468e305722",
+    "version": 36,
+    "identityHash": "04878ff32572d92b43b30423ba431c7b",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -118,8 +118,14 @@
       },
       {
         "tableName": "CourierOrderDstOfficeLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dst_office_id` INTEGER NOT NULL, `dst_office_order_id` INTEGER NOT NULL, `dst_office_name` TEXT NOT NULL, `dst_office_full_address` TEXT NOT NULL, `dst_office_longitude` REAL NOT NULL, `dst_office_latitude` REAL NOT NULL, `dst_office_visited_at` TEXT NOT NULL, PRIMARY KEY(`dst_office_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dst_office_key` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dst_office_id` INTEGER NOT NULL, `dst_office_order_id` INTEGER NOT NULL, `dst_office_name` TEXT NOT NULL, `dst_office_full_address` TEXT NOT NULL, `dst_office_longitude` REAL NOT NULL, `dst_office_latitude` REAL NOT NULL, `dst_office_visited_at` TEXT NOT NULL)",
         "fields": [
+          {
+            "fieldPath": "key",
+            "columnName": "dst_office_key",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "id",
             "columnName": "dst_office_id",
@@ -165,9 +171,9 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "dst_office_id"
+            "dst_office_key"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -466,7 +472,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '098e584875bebc16d401df468e305722')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '04878ff32572d92b43b30423ba431c7b')"
     ]
   }
 }

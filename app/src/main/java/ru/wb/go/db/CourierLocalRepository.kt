@@ -5,7 +5,6 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-
 import ru.wb.go.db.entity.courierlocal.*
 
 interface CourierLocalRepository {
@@ -23,15 +22,11 @@ interface CourierLocalRepository {
     //order and offices
     //==============================================================================================
 
-    fun saveOrderAndOffices(
-        courierOrderLocalEntity: CourierOrderLocalEntity,
-        courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
-    ): Completable
+    fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>): Completable
 
-    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+    fun freeOrders(): Single<List<CourierOrderLocalDataEntity>>
 
-    fun orderData(): CourierOrderLocalDataEntity?
-
+    fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity>
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 

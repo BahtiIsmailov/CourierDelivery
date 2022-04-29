@@ -64,6 +64,7 @@ import ru.wb.go.ui.settings.domain.SettingsInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.managers.TimeManager
+import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.time.TimeFormatter
 
 val interactorModule = module {
@@ -206,7 +207,8 @@ val interactorModule = module {
         courierMapRepository: CourierMapRepository,
         userManager: UserManager,
         tokenManager: TokenManager,
-        timeManager: TimeManager
+        timeManager: TimeManager,
+        sharedWorker: SharedWorker
     ): CourierOrdersInteractor {
         return CourierOrdersInteractorImpl(
             rxSchedulerFactory,
@@ -218,7 +220,8 @@ val interactorModule = module {
             courierMapRepository,
             userManager,
             tokenManager,
-            timeManager
+            timeManager,
+            sharedWorker
         )
     }
 
@@ -419,6 +422,7 @@ val interactorModule = module {
     factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierOrdersInteractor(
+            get(),
             get(),
             get(),
             get(),

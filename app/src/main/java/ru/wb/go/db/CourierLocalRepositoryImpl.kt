@@ -1,15 +1,11 @@
 package ru.wb.go.db
 
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Single
+import io.reactivex.*
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
 import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-
 import ru.wb.go.db.entity.courierlocal.*
 
 class CourierLocalRepositoryImpl(
@@ -34,7 +30,16 @@ class CourierLocalRepositoryImpl(
         courierWarehouseDao.deleteAll()
     }
 
-    override fun saveOrderAndOffices(
+    override fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>): Completable {
+        return Observable.fromIterable(courierOrderLocalDataEntities)
+            .flatMapCompletable { saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices) }
+    }
+
+    override fun freeOrders(): Single<List<CourierOrderLocalDataEntity>> {
+        return courierOrderDao.orderAndOffices()
+    }
+
+    private fun saveOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>
     ): Completable {
@@ -42,12 +47,8 @@ class CourierLocalRepositoryImpl(
             .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
     }
 
-    override fun orderDataSync(): Single<CourierOrderLocalDataEntity> {
-        return courierOrderDao.orderDataSync()
-    }
-
-    override fun orderData(): CourierOrderLocalDataEntity? {
-        return courierOrderDao.orderData()
+    override fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity> {
+        return courierOrderDao.orderAndOffices(rowOrder)
     }
 
     override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
@@ -91,7 +92,7 @@ class CourierLocalRepositoryImpl(
             it.copy(countBoxes = cb, deliveredBoxes = db, isVisited = db > 0, isOnline = true)
         }
 
-        if(order.order.status==TaskStatus.INTRANSIT.status){
+        if (order.order.status == TaskStatus.INTRANSIT.status) {
             offices = offices.filter { o -> o.countBoxes > 0 }
         }
 

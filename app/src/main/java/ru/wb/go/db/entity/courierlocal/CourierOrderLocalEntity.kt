@@ -9,6 +9,7 @@ data class CourierOrderLocalEntity(
     @PrimaryKey
     @ColumnInfo(name = "order_id")
     val id: Int,
+    val rowId: Int,
     val routeID: Int,
     val gate: String,
     val minPrice: Int,

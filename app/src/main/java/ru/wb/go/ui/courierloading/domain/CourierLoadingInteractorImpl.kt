@@ -162,7 +162,6 @@ class CourierLoadingInteractorImpl(
     }
 
     private fun firstBoxLoaderComplete() {
-
         scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Complete)
     }
 
@@ -183,9 +182,7 @@ class CourierLoadingInteractorImpl(
         taskTimerRepository.stopTimer()
         return localRepo.getOrderId()
             .flatMapCompletable { remoteRepo.deleteTask(it) }
-            .doOnComplete {
-                localRepo.deleteOrder()
-            }
+            .doOnComplete { localRepo.deleteOrder() }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
 

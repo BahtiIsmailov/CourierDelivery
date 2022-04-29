@@ -17,11 +17,11 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun orderData(): CourierOrderLocalDataEntity?
+    fun orderAndOffices(): Single<List<CourierOrderLocalDataEntity>>
 
     @Transaction
-    @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun orderDataSync(): Single<CourierOrderLocalDataEntity>
+    @Query("SELECT * FROM CourierOrderLocalEntity WHERE rowId=:rowOrder")
+    fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity>
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
@@ -42,6 +42,12 @@ interface CourierOrderDao {
 
     // ====================================
     // True Local Order
+    @Transaction
+    fun addOrderFromReserve(order: LocalOrderEntity) {
+        addOrder(order)
+        addOfficesFromReserve(order.orderId)
+    }
+
     @Insert
     fun addOrder(localOrder: LocalOrderEntity)
 
@@ -49,16 +55,10 @@ interface CourierOrderDao {
         """
         INSERT INTO offices(office_id, office_name, address, latitude, longitude, delivered_boxes, count_boxes, is_visited, is_online)
         SELECT dst_office_id, dst_office_name, dst_office_full_address, dst_office_latitude, dst_office_longitude,0,0,0,1
-        FROM CourierOrderDstOfficeLocalEntity
+        FROM CourierOrderDstOfficeLocalEntity WHERE dst_office_order_id=:orderId
     """
     )
-    fun addOfficesFromReserve()
-
-    @Transaction
-    fun addOrderFromReserve(order: LocalOrderEntity) {
-        addOrder(order)
-        addOfficesFromReserve()
-    }
+    fun addOfficesFromReserve(orderId: Int)
 
     @Query("DELETE FROM courier_order")
     fun deleteOrder()

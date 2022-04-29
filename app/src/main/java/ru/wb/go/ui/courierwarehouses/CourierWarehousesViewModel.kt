@@ -83,9 +83,22 @@ class CourierWarehousesViewModel(
         when (it) {
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
-            CourierMapAction.MapClick -> {}
+            CourierMapAction.MapClick -> unselectedAddressMapMarkers()
             CourierMapAction.ShowAll -> onShowAllClick()
         }
+    }
+
+    private fun unselectedAddressMapMarkers() {
+        mapMarkers.forEach { it.icon = resourceProvider.getWarehouseMapIcon() }
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+        changeUnselectedWarehouseItems()
+        updateItems()
+        changeShowDetailsOrder(false)
+    }
+
+    private fun changeUnselectedWarehouseItems() {
+        warehouseItems.forEach { it.isSelected = false }
+        whSelectedId = null
     }
 
     private fun observeMapActionError(throwable: Throwable) {
@@ -198,7 +211,7 @@ class CourierWarehousesViewModel(
             val isMapSelected = isMapSelected(indexItemClick)
             changeSelectedWarehouseItemsByMap(indexItemClick, isMapSelected)
             updateAndScrollToItems(indexItemClick)
-            changeShowOrders(isMapSelected)
+            changeShowDetailsOrder(isMapSelected)
         }
     }
 
@@ -219,12 +232,10 @@ class CourierWarehousesViewModel(
             warehouseItems[whSelectedId!!].isSelected = false
         }
         whSelectedId = if (isMapSelected) indexItemClick else null
-
     }
 
     private fun updateAndScrollToItems(indexItemClick: Int) {
-        _warehouseState.value =
-            CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
+        updateItems()
         _warehouseState.value = CourierWarehouseItemState.ScrollTo(indexItemClick)
     }
 
@@ -241,7 +252,7 @@ class CourierWarehousesViewModel(
         val isSelected = !warehouseItems[index].isSelected
         changeMapMarkers(index, isSelected)
         changeWarehouseItems(index, isSelected)
-        changeShowOrders(isSelected)
+        changeShowDetailsOrder(isSelected)
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
@@ -262,7 +273,7 @@ class CourierWarehousesViewModel(
         }
     }
 
-    private fun changeShowOrders(selected: Boolean) {
+    private fun changeShowDetailsOrder(selected: Boolean) {
         _showOrdersState.value =
             if (selected) CourierWarehousesShowOrdersState.Enable
             else CourierWarehousesShowOrdersState.Disable
@@ -273,6 +284,11 @@ class CourierWarehousesViewModel(
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
             else CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
+    }
+
+    private fun updateItems() {
+        _warehouseState.value =
+            CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
     }
 
     private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
@@ -300,7 +316,7 @@ class CourierWarehousesViewModel(
 
     private fun clearFabAndWhList() {
         whSelectedId = null
-        changeShowOrders(false)
+        changeShowDetailsOrder(false)
     }
 
     override fun getScreenTag(): String {
