@@ -134,6 +134,7 @@ class CourierOrdersInteractorImpl(
                             srcAddress = wh.fullAddress,
                             srcLongitude = wh.longitude,
                             srcLatitude = wh.latitude,
+                            route = wh.route?:"не идентифицирован"
                         )
                     }
                 courierLocalRepository.setOrderInReserve(ro)

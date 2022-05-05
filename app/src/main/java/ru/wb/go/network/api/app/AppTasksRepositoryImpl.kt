@@ -77,7 +77,8 @@ class AppTasksRepositoryImpl(
                 minBoxesCount = minBoxesCount,
                 dstOffices = dstOffices,
                 reservedAt = "",
-                reservedDuration = reservedDuration
+                reservedDuration = reservedDuration,
+                route = route?:"не идентифицирован"
             )
         }
     }
