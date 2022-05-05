@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -74,10 +76,16 @@ class CourierOrderTimerFragment : Fragment() {
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
+        viewModel.getOrderId()
     }
 
     private fun initObservable() {
-
+        viewModel.getOrderId.observe(viewLifecycleOwner){
+            var textForRouteNumber = requireContext().getText(R.string.route).toString()
+            textForRouteNumber += " ${it.route}"
+            binding.routeTV.text = textForRouteNumber
+            setFragmentResult("routeId", bundleOf("bundleKey" to textForRouteNumber))
+        }
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderTimerInfoUIState.InitOrderInfo -> {

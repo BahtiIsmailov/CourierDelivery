@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class CourierOrderEntity(
     val id: Int,
     val routeID: Int,
+    val route:String,
     val gate: String,
     val minPrice: Int,
     val minVolume: Int,

@@ -93,6 +93,7 @@ class AppRemoteRepositoryImpl(
             srcAddress = "",
             srcLongitude = 0.0,
             srcLatitude = 0.0,
+            route = ""
         )
 
         return remoteRepo.tasksMy(apiVersion())
@@ -136,6 +137,7 @@ class AppRemoteRepositoryImpl(
                             srcAddress = task.srcOffice.fullAddress,
                             srcLongitude = task.srcOffice.long,
                             srcLatitude = task.srcOffice.lat,
+                            route = task.route?:"не указан"
                         ),
                         offices = remoteOffices
                     )

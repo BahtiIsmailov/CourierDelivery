@@ -14,6 +14,8 @@ data class LocalOrderEntity(
     val gate: String,
     @ColumnInfo(name = "min_price")
     val minPrice: Int,
+    @ColumnInfo(name = "route")
+    val route: String,
     @ColumnInfo(name = "min_volume")
     val minVolume: Int,
     @ColumnInfo(name = "min_boxes")
@@ -42,4 +44,5 @@ data class LocalOrderEntity(
     val srcLongitude: Double,
     @ColumnInfo(name = "src_lat")
     val srcLatitude: Double,
+
 )

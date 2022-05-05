@@ -2,8 +2,11 @@ package ru.wb.go.ui.courierordertimer
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
+import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
@@ -23,6 +26,7 @@ class CourierOrderTimerViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
+    val courierLocalRepository: CourierLocalRepository,
     private val resourceProvider: CourierOrderTimerResourceProvider,
     private val errorDialogManager: ErrorDialogManager
 ) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
@@ -39,6 +43,8 @@ class CourierOrderTimerViewModel(
     val navigateToDialogTimeIsOut: LiveData<NavigateToDialogInfo>
         get() = _navigateToDialogTimeIsOut
 
+    private val _getOrderId = MutableLiveData<LocalOrderEntity>()
+    val getOrderId: LiveData<LocalOrderEntity> = _getOrderId
 
     private val _navigateToDialogRefuseOrder = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
@@ -175,6 +181,10 @@ class CourierOrderTimerViewModel(
                     }
                 )
         )
+    }
+
+    fun getOrderId(){
+       _getOrderId.value = courierLocalRepository.getOrder()
     }
 
     override fun onTimerState(duration: Int, downTickSec: Int) {

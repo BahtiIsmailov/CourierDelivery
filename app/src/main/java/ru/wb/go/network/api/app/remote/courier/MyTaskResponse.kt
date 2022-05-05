@@ -3,6 +3,7 @@ package ru.wb.go.network.api.app.remote.courier
 data class MyTaskResponse(
     val id: Int,
     val routeID: Int?,
+    val route:String?,
     val gate: String?,
     val srcOffice: MySrcOfficeResponse,
     val minPrice: Int,
