@@ -81,6 +81,9 @@ class CourierLoadingScanFragment :
         (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
+        setFragmentResultListener("routeId") { key, bundle ->
+            binding.routeTV.text =  bundle.getString("bundleKey")
+        }
     }
 
     private fun initObserver() {

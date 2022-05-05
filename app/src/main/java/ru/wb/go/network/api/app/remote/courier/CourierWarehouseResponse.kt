@@ -6,4 +6,5 @@ data class CourierWarehouseResponse(
     val fullAddress: String,
     val long: Double,
     val lat: Double,
+    val route:String?
 )
