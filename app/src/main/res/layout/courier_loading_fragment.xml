@@ -104,6 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/dash_underline"
+                android:textColor="@color/colorPrimary"
                 tools:text="0 шт." />
 
         </LinearLayout>
