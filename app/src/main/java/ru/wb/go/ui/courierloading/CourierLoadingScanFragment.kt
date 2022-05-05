@@ -2,10 +2,15 @@ package ru.wb.go.ui.courierloading
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingFragmentBinding
@@ -32,7 +37,24 @@ class CourierLoadingScanFragment :
         CourierLoadingFragmentBinding::inflate
     ) {
 
+    private lateinit var addressAdapter: CourierLoadingDetailsAdapter
+    private lateinit var addressLayoutManager: LinearLayoutManager
+    private lateinit var addressSmoothScroller: RecyclerView.SmoothScroller
+
+    private lateinit var bottomSheetDetails: BottomSheetBehavior<FrameLayout>
+
     override val viewModel by viewModel<CourierLoadingScanViewModel>()
+
+    private val bottomSheetDetailsCallback = object :
+        BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                viewModel.onCloseDetailsClick()
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,6 +62,29 @@ class CourierLoadingScanFragment :
         initListener()
         initObserver()
         initReturnResult()
+        initRecyclerViewDetails()
+        initBottomSheet()
+    }
+
+    private fun initBottomSheet() {
+        binding.detailsLayout.visibility = RecyclerView.VISIBLE
+        bottomSheetDetails = BottomSheetBehavior.from(binding.detailsGoals)
+        bottomSheetDetails.skipCollapsed = true
+        bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
+        bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun initRecyclerViewDetails() {
+        addressLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.boxDetails.layoutManager = addressLayoutManager
+        binding.boxDetails.setHasFixedSize(true)
+        initSmoothScrollerAddress()
+    }
+
+    private fun initSmoothScrollerAddress() {
+        addressSmoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference() = SNAP_TO_START
+        }
     }
 
     private fun initReturnResult() {
@@ -140,6 +185,17 @@ class CourierLoadingScanFragment :
                             CourierStartDeliveryParameters(state.amount, state.count)
                         )
                     )
+                is CourierLoadingScanNavAction.InitAndShowLoadingItems -> {
+                    binding.pvzCountTitle.text = state.pvzCount
+                    binding.boxCountTitle.text = state.boxCount
+                    addressAdapter = CourierLoadingDetailsAdapter(requireContext(), state.items)
+                    binding.boxDetails.adapter = addressAdapter
+
+                    bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                CourierLoadingScanNavAction.HideLoadingItems -> {
+                    bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
+                }
             }
         }
         viewModel.navigationEvent.observe(viewLifecycleOwner, navigationObserver)
@@ -185,6 +241,7 @@ class CourierLoadingScanFragment :
                     binding.qrCode.setTextColor(getColor(R.color.primary))
                     binding.timerLayout.visibility = View.GONE
                     binding.boxInfoLayout.visibility = View.VISIBLE
+                    binding.counterLayout.isEnabled = true
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
                     binding.timerLayout.visibility = View.VISIBLE
@@ -283,6 +340,8 @@ class CourierLoadingScanFragment :
 
     private fun initListener() {
         binding.completeButton.setOnClickListener { viewModel.onCompleteLoaderClicked() }
+        binding.counterLayout.setOnClickListener { viewModel.onCounterBoxClicked() }
+        binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
     }
 
     companion object {

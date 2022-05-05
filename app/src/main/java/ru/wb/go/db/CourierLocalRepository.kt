@@ -73,6 +73,8 @@ interface CourierLocalRepository {
 
     fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>>
 
+    fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
+
     fun clearOrder()
 
     fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>

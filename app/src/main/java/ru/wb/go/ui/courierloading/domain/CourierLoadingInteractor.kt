@@ -27,4 +27,6 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     fun getGate(): Single<String>
 
+    fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals>
+
 }

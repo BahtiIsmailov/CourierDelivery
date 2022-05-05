@@ -288,6 +288,8 @@
     <string name="courier_order_scanner_unknown_qr">\?????????</string>
     <string name="courier_order_scanner_empty_address">-</string>
     <string name="courier_order_scanner_empty_qr">000000000</string>
+    <string name="courier_order_scanner_pvz_count_title">ПВЗ (%1$d шт.)</string>
+    <string name="courier_order_scanner_box_count_title">Коробки (%1$d шт.)</string>
     <string name="courier_order_scanner_accepted">%1$d шт.</string>
     <string name="courier_order_scanner_dialog_negative_button">Отмена</string>
     <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
@@ -556,6 +558,11 @@
     <string name="courier_loading_address">Адрес доставки</string>
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
+
+    <string name="courier_loading_details_title">Принято</string>
+    <string name="courier_loading_pvz_goals_title">ПВЗ (%1$s)</string>
+    <string name="courier_loading_box_goals_title">Коробки (%1$s)</string>
+
 
     <string name="courier_intransit_office_scanner_info">Наведите камеру на QR-код,\ncканирование произойдет автоматически</string>
 

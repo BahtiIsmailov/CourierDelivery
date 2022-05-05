@@ -131,6 +131,11 @@ class CourierLocalRepositoryImpl(
         return courierLoadingBoxDao.readAllBoxesSync()
     }
 
+    override fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>> {
+        return courierLoadingBoxDao.loadingBoxBoxesGroupByOffice()
+    }
+
+
     override fun getOffices(): List<LocalOfficeEntity> {
         return courierOrderDao.getOffices()
     }

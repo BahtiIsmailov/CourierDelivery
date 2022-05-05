@@ -9,6 +9,7 @@ import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
+import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -207,4 +208,26 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
+    override fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals> {
+        return localRepo.loadingBoxBoxesGroupByOffice()
+            .map {
+                var pvzCount = 0
+                var boxCount = 0
+                val localLoadingBoxEntities = mutableListOf<LocalLoadingBoxEntity>()
+                it.forEach { localLoadingBox ->
+                    pvzCount++
+                    boxCount += localLoadingBox.count
+                    localLoadingBoxEntities.add(localLoadingBox)
+                }
+                LoadingBoxGoals(pvzCount, boxCount, localLoadingBoxEntities)
+            }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
 }
+
+data class LoadingBoxGoals(
+    var pvzCount: Int,
+    var boxCount: Int,
+    var localLoadingBoxEntity: MutableList<LocalLoadingBoxEntity>
+)

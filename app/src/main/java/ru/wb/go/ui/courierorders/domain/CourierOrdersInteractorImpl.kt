@@ -23,7 +23,6 @@ import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.prefs.SharedWorker
@@ -172,44 +171,47 @@ class CourierOrdersInteractorImpl(
         return userManager.carNumber()
     }
 
-//    return appRemoteRepository.reserveTask(
-//    orderEntity.id.toString(),
-//    userManager.carNumber()
-//    )
-
     override fun anchorTask(): Completable {
         return Completable.fromSingle(Single.zip(
             selectedOrder(selectedRowOrder()),
             courierLocalRepository.readCurrentWarehouse()
-        ) { orderEntity: CourierOrderLocalDataEntity, warehouseLocalEntity: CourierWarehouseLocalEntity ->
-            val reservedTime = timeManager.getLocalTime()
-            with(orderEntity.courierOrderLocalEntity) {
-                LocalOrderEntity(
-                    orderId = id,
-                    routeID = routeID,
-                    gate = gate,
-                    minPrice = minPrice,
-                    minVolume = minVolume,
-                    minBoxes = minBoxesCount,
-                    countOffices = orderEntity.dstOffices.size,
-                    wbUserID = -1,
-                    carNumber = userManager.carNumber(),
-                    reservedAt = reservedTime,
-                    startedAt = "",
-                    reservedDuration = reservedDuration,
-                    status = TaskStatus.TIMER.status,
-                    cost = 0,
-                    srcId = warehouseLocalEntity.id,
-                    srcName = warehouseLocalEntity.name,
-                    srcAddress = warehouseLocalEntity.fullAddress,
-                    srcLongitude = warehouseLocalEntity.longitude,
-                    srcLatitude = warehouseLocalEntity.latitude,
-                )
-            }
+        ) { orderEntity, warehouseLocalEntity ->
+            convertToLocalOrderEntity(orderEntity, warehouseLocalEntity)
         }
-            .doOnSuccess { LogUtils { logDebugApp("anchorTask " + it) } }
-            .doOnError { LogUtils { logDebugApp("anchorTask " + it) } }
+            .flatMap { reserveTask(it) }
             .doOnSuccess { lo -> courierLocalRepository.setOrderInReserve(lo) })
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
     }
+
+    private fun reserveTask(it: LocalOrderEntity) =
+        appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())
+            .andThen(Single.just(it)).compose(rxSchedulerFactory.applySingleSchedulers())
+
+    private fun convertToLocalOrderEntity(
+        orderEntity: CourierOrderLocalDataEntity,
+        warehouseLocalEntity: CourierWarehouseLocalEntity
+    ) = with(orderEntity.courierOrderLocalEntity) {
+        LocalOrderEntity(
+            orderId = id,
+            routeID = routeID,
+            gate = gate,
+            minPrice = minPrice,
+            minVolume = minVolume,
+            minBoxes = minBoxesCount,
+            countOffices = orderEntity.dstOffices.size,
+            wbUserID = -1,
+            carNumber = userManager.carNumber(),
+            reservedAt = timeManager.getLocalTime(),
+            startedAt = "",
+            reservedDuration = reservedDuration,
+            status = TaskStatus.TIMER.status,
+            cost = 0,
+            srcId = warehouseLocalEntity.id,
+            srcName = warehouseLocalEntity.name,
+            srcAddress = warehouseLocalEntity.fullAddress,
+            srcLongitude = warehouseLocalEntity.longitude,
+            srcLatitude = warehouseLocalEntity.latitude,
+        )
+    }
+
 }

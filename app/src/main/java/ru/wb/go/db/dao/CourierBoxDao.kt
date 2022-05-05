@@ -8,6 +8,7 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
+import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 
 @Dao
 interface CourierBoxDao {
@@ -30,6 +31,9 @@ interface CourierBoxDao {
         """
     )
     fun updateOfficeCountersAfterLoadingBox(officeId: Int)
+
+    @Query("SELECT address AS address, count(*) AS count FROM boxes GROUP BY office_id")
+    fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
 
     @Query(
         """
@@ -89,7 +93,7 @@ interface CourierBoxDao {
     }
 
     @Query("UPDATE boxes SET delivered_at='' WHERE box_id=:boxId ")
-    fun clearDelivery(boxId:String)
+    fun clearDelivery(boxId: String)
 
     @Transaction
     fun takeBoxBack(box: LocalBoxEntity) {
