@@ -137,7 +137,7 @@ class AppRemoteRepositoryImpl(
                             srcAddress = task.srcOffice.fullAddress,
                             srcLongitude = task.srcOffice.long,
                             srcLatitude = task.srcOffice.lat,
-                            route = task.route?:"не идентифицирован"),
+                        ),
                         offices = remoteOffices
                     )
                 } else {
