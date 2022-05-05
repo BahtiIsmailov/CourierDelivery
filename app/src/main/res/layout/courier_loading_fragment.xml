@@ -171,13 +171,26 @@
         android:layout_height="0dp"
         android:background="@color/lvl_1"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ribbon_status">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/timer"
+            android:layout_marginTop="20dp"
+            android:id="@+id/routeTV"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto_medium"
+            />
         <ru.wb.go.ui.courierordertimer.view.TimerProgressView
             android:id="@+id/timer"
             android:layout_width="240dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:ap_is_divider="true"
             app:ap_progress="0"
             app:ap_progress_background_color="@color/lvl_1"
@@ -185,10 +198,11 @@
             app:ap_progress_scale_current_color="@color/colorPrimary"
             app:ap_progress_scale_wait_color="@color/lvl_2"
             app:ap_progress_width="5"
+            android:layout_marginTop="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/routeTV" />
 
         <TextView
             android:id="@+id/arrive"
@@ -259,6 +273,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_end="@dimen/auth_button_height_large" />
+        app:layout_constraintGuide_begin="659dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

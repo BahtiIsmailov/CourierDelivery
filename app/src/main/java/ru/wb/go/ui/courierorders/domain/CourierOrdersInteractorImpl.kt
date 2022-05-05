@@ -55,6 +55,7 @@ class CourierOrdersInteractorImpl(
                 minBoxesCount = minBoxesCount,
                 reservedDuration = reservedDuration,
                 reservedAt = reservedAt,
+                route = route
             )
         }
         val courierOrderDstOfficesLocalEntity = mutableListOf<CourierOrderDstOfficeLocalEntity>()
@@ -133,6 +134,7 @@ class CourierOrdersInteractorImpl(
                             srcAddress = wh.fullAddress,
                             srcLongitude = wh.longitude,
                             srcLatitude = wh.latitude,
+                            route = wh.route?:"не индентифицирован"
                         )
                     }
                 courierLocalRepository.setOrderInReserve(ro)

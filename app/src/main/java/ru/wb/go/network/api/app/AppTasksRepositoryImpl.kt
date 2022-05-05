@@ -34,7 +34,8 @@ class AppTasksRepositoryImpl(
                 name = name,
                 fullAddress = fullAddress,
                 longitude = long,
-                latitude = lat
+                latitude = lat,
+                route = route?:"не индентифицирован"
             )
         }
     }
@@ -76,7 +77,8 @@ class AppTasksRepositoryImpl(
                 minBoxesCount = minBoxesCount,
                 dstOffices = dstOffices,
                 reservedAt = "",
-                reservedDuration = reservedDuration
+                reservedDuration = reservedDuration,
+                route = route?:"не идентифицирован"
             )
         }
     }

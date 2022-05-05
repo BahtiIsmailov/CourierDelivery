@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 33,
-    "identityHash": "212cb1cce4c1a1719b3f42dfe4433876",
+    "version": 37,
+    "identityHash": "b7b9ab055d1178a65cd9c1f5278b98d4",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "CourierOrderLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT NOT NULL, `gate` TEXT NOT NULL, `minPrice` INTEGER NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `gate` TEXT NOT NULL, `minPrice` INTEGER NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -68,7 +68,7 @@
             "fieldPath": "route",
             "columnName": "route",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "gate",
@@ -466,7 +466,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '212cb1cce4c1a1719b3f42dfe4433876')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7b9ab055d1178a65cd9c1f5278b98d4')"
     ]
   }
 }
