@@ -35,7 +35,6 @@ class AppTasksRepositoryImpl(
                 fullAddress = fullAddress,
                 longitude = long,
                 latitude = lat,
-                route = route?:"не указан"
             )
         }
     }
