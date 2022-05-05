@@ -486,7 +486,7 @@
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
 
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39440e9601a5b816f5d2d214b99462fd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39440e9601a5b816f5d2d214b99462fd')",
 
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7b9ab055d1178a65cd9c1f5278b98d4')"
 
