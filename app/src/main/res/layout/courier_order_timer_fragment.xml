@@ -8,23 +8,21 @@
     android:background="@color/lvl_1">
 
     <TextView
+        android:id="@+id/routeTV"
+        style="@style/VeryLargePrimaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="80dp"
         app:layout_constraintBottom_toTopOf="@+id/timer"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/routeTV"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:fontFamily="@font/roboto_medium"
-        />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ru.wb.go.ui.courierordertimer.view.TimerProgressView
         android:id="@+id/timer"
         android:layout_width="250dp"
         android:layout_height="250dp"
+        android:layout_marginTop="20dp"
         app:ap_is_divider="true"
         app:ap_progress="90"
         app:ap_progress_background_color="@color/lvl_1"
@@ -32,7 +30,6 @@
         app:ap_progress_scale_current_color="@color/colorPrimary"
         app:ap_progress_scale_wait_color="@color/lvl_2"
         app:ap_progress_width="5"
-        android:layout_marginTop="80dp"
         app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

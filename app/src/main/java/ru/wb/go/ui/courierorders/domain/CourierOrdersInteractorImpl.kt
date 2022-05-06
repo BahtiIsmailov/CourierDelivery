@@ -85,24 +85,6 @@ class CourierOrdersInteractorImpl(
         return sharedWorker.load(SELECTED_ORDER_INDEX_KEY, 0)
     }
 
-
-//    override fun clearAndSaveSelectedOrder(
-//        courierOrderEntity: CourierOrderEntity,
-//        rowOrder: Int
-//    ): Completable {
-//        courierLocalRepository.deleteAllOrder()
-//        courierLocalRepository.deleteAllOrderOffices()
-//        val courierOrderLocalEntity = convertCourierOrderLocalEntity(courierOrderEntity) //rowOrder
-//        val courierOrderDstOfficesLocalEntity =
-//            convertCourierOrderDstOfficesLocalEntity(
-//                courierOrderEntity.dstOffices,
-//                courierOrderEntity.id
-//            )
-//        return courierLocalRepository.saveOrderAndOffices(
-//            courierOrderLocalEntity, courierOrderDstOfficesLocalEntity
-//        ).compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
-
     private fun convertCourierOrderDstOfficesLocalEntity(
         courierOrderDstOfficeEntities: List<CourierOrderDstOfficeEntity>,
         orderId: Int
@@ -141,6 +123,7 @@ class CourierOrdersInteractorImpl(
             minBoxesCount = minBoxesCount,
             reservedDuration = reservedDuration,
             reservedAt = reservedAt,
+            route = route
         )
     }
 
@@ -211,6 +194,7 @@ class CourierOrdersInteractorImpl(
             srcAddress = warehouseLocalEntity.fullAddress,
             srcLongitude = warehouseLocalEntity.longitude,
             srcLatitude = warehouseLocalEntity.latitude,
+            route = warehouseLocalEntity.route
         )
     }
 

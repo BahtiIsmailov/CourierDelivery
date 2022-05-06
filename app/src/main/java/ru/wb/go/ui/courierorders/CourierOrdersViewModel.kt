@@ -592,33 +592,6 @@ class CourierOrdersViewModel(
         _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
-//    fun onConfirmOrderClick() {
-//        onTechEventLog("onConfirmOrderClick")
-//        setLoader(WaitLoader.Wait)
-//        addSubscription(
-//            interactor.anchorTask(orderEntities[selectedOrderId])
-//                .subscribe(
-//                    {
-//                        setLoader(WaitLoader.Complete)
-//                        _navigationState.value = CourierOrdersNavigationState.NavigateToTimer
-//                    },
-//                    {
-//                        onTechErrorLog("anchorTaskError", it)
-//                        setLoader(WaitLoader.Complete)
-//                        if (it is HttpObjectNotFoundException) {
-//                            val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
-//                            errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
-//                        } else {
-//                            errorDialogManager.showErrorDialog(
-//                                it,
-//                                _navigateToDialogInfo,
-//                                DialogInfoFragment.DIALOG_INFO2_TAG
-//                            )
-//                        }
-//                    })
-//        )
-//    }
-
     fun onConfirmOrderClick() {
         onTechEventLog("onConfirmOrderClick")
         setLoader(WaitLoader.Wait)

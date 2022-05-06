@@ -611,8 +611,5 @@
     <string name="scannerAutoOffHint">Автоматическая блокировка сканера при неактивности (25 сек)</string>
     <string name="qrTitle">QR</string>
     <string name="route">Маршрут </string>
-    <!--    <string name="receiveTitle">Принято</string>-->
-<!--    <string name="addressTitle">Адрес доставки</string>-->
-<!--    <string name="gateTitle">Ворота</string>-->
 
 </resources>

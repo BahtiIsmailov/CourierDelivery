@@ -3,6 +3,7 @@ package ru.wb.go.network.api.app
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import ru.wb.go.app.ROUTE_EMPTY
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -137,7 +138,7 @@ class AppRemoteRepositoryImpl(
                             srcAddress = task.srcOffice.fullAddress,
                             srcLongitude = task.srcOffice.long,
                             srcLatitude = task.srcOffice.lat,
-                            route = task.route?:"не идентифицирован"
+                            route = task.route ?: ROUTE_EMPTY
                         ),
                         offices = remoteOffices
                     )
