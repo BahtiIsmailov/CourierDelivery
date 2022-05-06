@@ -8,6 +8,7 @@ import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.mvvm.model.base.BaseItem
+import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.HttpObjectNotFoundException
 import ru.wb.go.ui.ServicesViewModel
@@ -378,7 +379,6 @@ class CourierOrdersViewModel(
     }
 
 
-
     private fun ordersComplete(height: Int) {
         if (orderItems.isEmpty()) {
             _orderItems.value = CourierOrderItemState.Empty(resourceProvider.getDialogEmpty())
@@ -592,6 +592,33 @@ class CourierOrdersViewModel(
         _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
+//    fun onConfirmOrderClick() {
+//        onTechEventLog("onConfirmOrderClick")
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.anchorTask(orderEntities[selectedOrderId])
+//                .subscribe(
+//                    {
+//                        setLoader(WaitLoader.Complete)
+//                        _navigationState.value = CourierOrdersNavigationState.NavigateToTimer
+//                    },
+//                    {
+//                        onTechErrorLog("anchorTaskError", it)
+//                        setLoader(WaitLoader.Complete)
+//                        if (it is HttpObjectNotFoundException) {
+//                            val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
+//                            errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
+//                        } else {
+//                            errorDialogManager.showErrorDialog(
+//                                it,
+//                                _navigateToDialogInfo,
+//                                DialogInfoFragment.DIALOG_INFO2_TAG
+//                            )
+//                        }
+//                    })
+//        )
+//    }
+
     fun onConfirmOrderClick() {
         onTechEventLog("onConfirmOrderClick")
         setLoader(WaitLoader.Wait)
@@ -612,8 +639,8 @@ class CourierOrdersViewModel(
     private fun anchorTaskError(it: Throwable) {
         onTechErrorLog("anchorTaskError", it)
         setLoader(WaitLoader.Complete)
-        if (it is HttpObjectNotFoundException) {
-            val ex = CustomException("Заказ уже в работе. Выберите другой заказ.")
+        if (it is HttpObjectNotFoundException || it is BadRequestException) {
+            val ex = CustomException(resourceProvider.getTaskReject())
             errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
         } else {
             errorDialogManager.showErrorDialog(
