@@ -112,7 +112,10 @@ class CourierOrdersFragment :
         override fun handleOnBackPressed() {
             when {
                 isOrdersExpanded() -> viewModel.onCloseOrdersClick()
-                isOrderDetailsExpanded() -> viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+                isOrderDetailsExpanded() -> {
+                    removeBottomSheetCallbackOrderDetailsListener()
+                    viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+                }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
         }
@@ -127,7 +130,7 @@ class CourierOrdersFragment :
         initListeners()
         initStateObserve()
         initReturnDialogResult()
-        viewModel.resumeInit()
+        viewModel.init()
     }
 
     private fun initReturnDialogResult() {
@@ -164,6 +167,7 @@ class CourierOrdersFragment :
         super.onResume()
         if (isOrdersExpanded()) viewModel.updateOrders(getHalfHeightDisplay())
         else if (isOrderDetailsExpanded()) {
+            viewModel.restoreDetails()
             addBottomSheetCallbackOrderDetailsListener()
         }
     }
@@ -235,6 +239,7 @@ class CourierOrdersFragment :
     private fun showAddresses() {
         binding.navDrawerMenu.visibility = INVISIBLE
         binding.toRegistration.visibility = INVISIBLE
+        binding.supportApp.visibility = INVISIBLE
         showBottomSheetOrderAddresses()
     }
 
@@ -249,6 +254,7 @@ class CourierOrdersFragment :
             viewModel.onConfirmTakeOrderClick()
         }
         binding.closeOrderDetails.setOnClickListener {
+            removeBottomSheetCallbackOrderDetailsListener()
             viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
         }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
@@ -446,7 +452,7 @@ class CourierOrdersFragment :
     private fun showBottomSheetOrderDetails(isDemo: Boolean) {
         binding.navDrawerMenu.visibility = if (isDemo) INVISIBLE else VISIBLE
         binding.toRegistration.visibility = if (isDemo) VISIBLE else INVISIBLE
-//        binding.showAll.visibility = VISIBLE
+        binding.supportApp.visibility = if (isDemo) INVISIBLE else VISIBLE
         removeBottomSheetOrdersListener()
         bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
@@ -522,7 +528,7 @@ class CourierOrdersFragment :
                 CourierOrderDelegate(requireContext(),
                     object : OnCourierOrderCallback {
                         override fun onOrderClick(idView: Int) {
-                            viewModel.onOrderClick(idView)
+                            viewModel.onOrderItemClick(idView)
                         }
                     })
             )

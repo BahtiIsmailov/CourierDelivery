@@ -65,7 +65,6 @@ class CourierIntransitInteractorImpl(
     override fun clearLocalTaskData() {
         timeManager.clear()
         locRepo.clearOrder()
-
     }
 
     override fun getOrder(): LocalOrderEntity {

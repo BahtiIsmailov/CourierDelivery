@@ -260,7 +260,57 @@ class CourierLoadingScanViewModel(
         addSubscription(
             stop.subscribe()
         )
+    }
 
+    fun onCounterBoxClicked() {
+        stopScanner()
+        addSubscription(
+            interactor.loadingBoxBoxesGroupByOffice()
+                .map { loadingBoxes ->
+                    val items = mutableListOf<CourierLoadingDetailsItem>()
+                    loadingBoxes.localLoadingBoxEntity.forEach {
+                        items.add(
+                            CourierLoadingDetailsItem(
+                                it.address,
+                                resourceProvider.getAccepted(it.count)
+                            )
+                        )
+                    }
+                    CourierLoadingScanNavAction.InitAndShowLoadingItems(
+                        resourceProvider.getPvzCountTitle(loadingBoxes.pvzCount),
+                        resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
+                        items
+                    )
+                }.subscribe(
+                    {
+                        _navigationEvent.value = it
+                    }, {
+
+                    }
+                )
+        )
+    }
+
+
+//            event.scan(String(), { accumulator, item -> accumulateCode(accumulator, item) })
+//                .doOnNext { switchNext(it) }
+//                .subscribe(
+//                    { formatSmsComplete(it) },
+//                    { formatSmsError(it) })
+
+//    _navigationEvent.value = CourierLoadingScanNavAction.InitAndShowLoadingItems(
+//    "ПВЗ (4 шт.)", "Коробки (45 шт.)",
+//    mutableListOf(
+//    CourierLoadingDetailsItem("Test1", "39 шт."),
+//    CourierLoadingDetailsItem("Test2", "40 шт."),
+//    CourierLoadingDetailsItem("Test3", "41 шт.")
+//    )
+//    )
+//}
+
+    fun onCloseDetailsClick() {
+        onStartScanner()
+        _navigationEvent.value = CourierLoadingScanNavAction.HideLoadingItems
     }
 
     fun onStartScanner() {

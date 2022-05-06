@@ -1,6 +1,7 @@
 package ru.wb.go.utils.map
 
 import org.osmdroid.util.BoundingBox
+import org.osmdroid.util.TileSystemWebMercator
 import kotlin.math.*
 
 class MapEnclosingCircle {
@@ -43,46 +44,35 @@ class MapEnclosingCircle {
     }
 
     fun allCoordinatePointToBoundingBox(points: List<CoordinatePoint>): BoundingBox {
-        var maxLat = Double.MAX_VALUE
-        var maxLong = Double.MAX_VALUE
-        var minLat = Double.MIN_VALUE
-        var minLong = Double.MIN_VALUE
-        for (i in points.indices) {
-            val point = points[i]
-            val lat: Double = point.latitude
-            val lon: Double = point.longitude
-            if (i == 0) {
-                maxLat = lat + OFFSET_SINGLE_POINT
-                maxLong = lon + OFFSET_SINGLE_POINT
-                minLat = lat - OFFSET_SINGLE_POINT
-                minLong = lon - OFFSET_SINGLE_POINT
+        var maxLat = TileSystemWebMercator.MaxLatitude
+        var maxLong = TileSystemWebMercator.MaxLongitude
+        var minLat = TileSystemWebMercator.MinLatitude
+        var minLong = TileSystemWebMercator.MinLongitude
+
+        if (points.size == 1) {
+            with(points[0]) {
+                maxLat = latitude + OFFSET_SINGLE_POINT
+                maxLong = longitude + OFFSET_SINGLE_POINT
+                minLat = latitude - OFFSET_SINGLE_POINT
+                minLong = longitude - OFFSET_SINGLE_POINT
             }
-            if (lat > maxLat) maxLat = lat
-            if (lon > maxLong) maxLong = lon
-            if (lat < minLat) minLat = lat
-            if (lon < minLong) minLong = lon
+        } else {
+            for (i in points.indices) {
+                with(points[i]) {
+                    if (i == 0) {
+                        maxLat = latitude
+                        maxLong = longitude
+                        minLat = latitude
+                        minLong = longitude
+                    }
+                    if (latitude > maxLat) maxLat = latitude
+                    if (longitude > maxLong) maxLong = longitude
+                    if (latitude < minLat) minLat = latitude
+                    if (longitude < minLong) minLong = longitude
+                }
+            }
         }
         return BoundingBox(maxLat, maxLong, minLat, minLong)
-    }
-
-    private fun circleFrom(pointA: CoordinatePoint, pointB: CoordinatePoint): MapCircle {
-        val pointCenter = center(pointA, pointB)
-        val radius = distance(pointA, pointB) / 2.0
-        return MapCircle(pointCenter, radius)
-    }
-
-    private fun center(pointA: CoordinatePoint, pointB: CoordinatePoint): CoordinatePoint {
-        return CoordinatePoint(
-            (pointA.latitude + pointB.latitude) / 2.0,
-            (pointA.longitude + pointB.longitude) / 2.0
-        )
-    }
-
-    private fun isValidCircle(mapCircle: MapCircle, points: List<CoordinatePoint>): Boolean {
-        points.forEach {
-            if (!isInside(mapCircle, it)) return false
-        }
-        return true
     }
 
     fun distance(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {
@@ -91,10 +81,6 @@ class MapEnclosingCircle {
                 2.0
             )
         )
-    }
-
-    private fun isInside(mapCircle: MapCircle, point: CoordinatePoint): Boolean {
-        return distance(mapCircle.point, point) >= mapCircle.radius
     }
 
     private fun distanceKm(pointA: CoordinatePoint, pointB: CoordinatePoint): Double {

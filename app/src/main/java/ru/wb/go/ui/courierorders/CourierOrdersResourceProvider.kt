@@ -64,4 +64,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
     fun getConfirmNegativeDialog() =
         context.getString(R.string.courier_orders_details_dialog_negative_button)
 
+    fun getTaskReject() =
+        context.getString(R.string.courier_orders_details_dialog_task_reject)
+
 }

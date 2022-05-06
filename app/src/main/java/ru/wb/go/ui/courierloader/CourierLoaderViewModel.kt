@@ -131,8 +131,6 @@ class CourierLoaderViewModel(
     }
 
     private fun toApp(order: LocalOrderEntity?) {
-//        _navigationDrawerState.postValue(toCourierWarehouse())
-//        return
         addSubscription(
             remoteRepo.tasksMy(order?.orderId)
                 .flatMap { solveJobInitialState(it, order) }
