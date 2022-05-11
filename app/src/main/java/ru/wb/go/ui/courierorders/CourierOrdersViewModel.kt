@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import org.osmdroid.util.BoundingBox
+import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
+import ru.wb.go.app.COURIER_TASK_ALREADY_RESERVED_ERROR
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
@@ -612,9 +614,14 @@ class CourierOrdersViewModel(
     private fun anchorTaskError(it: Throwable) {
         onTechErrorLog("anchorTaskError", it)
         setLoader(WaitLoader.Complete)
-        if (it is HttpObjectNotFoundException || it is BadRequestException) {
-            val ex = CustomException(resourceProvider.getTaskReject())
-            errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
+        if (it is BadRequestException) {
+            if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
+                _navigationState.value = CourierOrdersNavigationState.ExitAuth
+            } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {
+                taskRejected()
+            }
+        } else if (it is HttpObjectNotFoundException) {
+            taskRejected()
         } else {
             errorDialogManager.showErrorDialog(
                 it,
@@ -622,6 +629,11 @@ class CourierOrdersViewModel(
                 DialogInfoFragment.DIALOG_INFO2_TAG
             )
         }
+    }
+
+    private fun taskRejected() {
+        val ex = CustomException(resourceProvider.getTaskReject())
+        errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
     }
 
     fun goBack() {

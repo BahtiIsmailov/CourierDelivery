@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -71,8 +72,21 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
         viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CheckSmsNavigationState.NavigateToAppLoader ->
-                    findNavController().navigate(R.id.load_navigation)
+                CheckSmsNavigationState.NavigateToAppLoader -> {
+                    val navBuilder = NavOptions.Builder()
+
+                    //val Dist
+                    val navOptions: NavOptions =
+                        navBuilder.setPopUpTo(R.id.load_navigation, true).build()
+                    //findNavController().clearBackStack()
+
+
+
+
+                    findNavController().navigate(R.id.load_navigation, null, navOptions)
+                }
+
+
             }
         }
 
