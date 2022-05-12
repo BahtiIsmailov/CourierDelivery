@@ -72,17 +72,6 @@
         app:layout_constraintTop_toTopOf="@+id/counter_layout"
         tools:text="@string/courier_unloading_scanner_empty_qr" />
 
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="1dip"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toBottomOf="@+id/counter_layout"
-        app:layout_constraintEnd_toStartOf="@+id/counter_layout"
-        app:layout_constraintTop_toTopOf="@+id/counter_layout" />
-
     <LinearLayout
         android:id="@+id/address_layout"
         android:layout_width="match_parent"
@@ -120,14 +109,16 @@
         android:id="@+id/counter_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
+        android:layout_marginTop="@dimen/pad16"
+        android:layout_marginEnd="@dimen/pad16"
+        android:background="@drawable/scanner_loading_box_corner"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
         android:paddingStart="20dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="50dp"
-        android:paddingBottom="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="30dp"
+        android:paddingBottom="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status_layout">
 
@@ -144,11 +135,112 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:background="@drawable/dash_underline"
             android:clickable="true"
             android:focusable="true"
+            android:textColor="@color/colorPrimary"
             tools:text="2/4 шт." />
 
     </LinearLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/details_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <FrameLayout
+            android:id="@+id/details_goals"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/status_bar_height"
+            android:visibility="visible"
+            app:behavior_hideable="true"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/reception_bottom_sheet_info">
+
+                <ImageView
+                    android:id="@+id/slider_addresses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_bottom_sheet_slider"
+                    tools:ignore="ContentDescription,MissingConstraints" />
+
+                <TextView
+                    android:id="@+id/details_title"
+                    style="@style/LargePrimaryRegularText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/courier_unloading_details_title"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/slider_addresses" />
+
+                <ImageView
+                    android:id="@+id/details_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/details_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/details_title"
+                    app:srcCompat="@drawable/ic_warehouse_detail_close"
+                    tools:ignore="ContentDescription" />
+
+                <View
+                    android:id="@+id/title_address_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/colorDividerPale"
+                    app:layout_constraintTop_toBottomOf="@+id/details_title" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@color/lvl_1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/title_address_divider" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/box_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/lvl_1"
+                    android:clipToPadding="true"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:nestedScrollingEnabled="true"
+                    android:visibility="visible"
+                    app:layout_behavior="@string/bottom_sheet_behavior"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/title_address_divider"
+                    tools:itemCount="20"
+                    tools:listitem="@layout/remain_box_item" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </FrameLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/complete_button"
