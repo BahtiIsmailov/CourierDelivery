@@ -616,7 +616,7 @@ class CourierOrdersViewModel(
         setLoader(WaitLoader.Complete)
         if (it is BadRequestException) {
             if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
-                _navigationState.value = CourierOrdersNavigationState.ExitAuth
+                _navigationState.value = CourierOrdersNavigationState.CourierLoader
             } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {
                 taskRejected()
             }

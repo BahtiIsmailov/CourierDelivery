@@ -24,7 +24,6 @@ import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierOrdersFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.BaseServiceFragment
-import ru.wb.go.ui.app.AppActivity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
@@ -296,7 +295,10 @@ class CourierOrdersFragment :
                     binding.addressDetailLayout.visibility = GONE
                 CourierOrdersNavigationState.OnMapClick ->
                     if (isOrderDetailsExpanded()) viewModel.onMapClickWithDetail()
-                CourierOrdersNavigationState.ExitAuth -> (activity as AppActivity).onExitAuth()
+                CourierOrdersNavigationState.CourierLoader ->
+                    findNavController().navigate(
+                        CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
+                    )
             }
         }
 

@@ -11,7 +11,7 @@ sealed class CourierOrdersNavigationState {
 
     object NavigateToWarehouse : CourierOrdersNavigationState()
 
-    object ExitAuth : CourierOrdersNavigationState()
+    object CourierLoader : CourierOrdersNavigationState()
 
     object NavigateToOrders : CourierOrdersNavigationState()
 
