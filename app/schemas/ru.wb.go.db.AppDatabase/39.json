@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 39,
-    "identityHash": "54035cb105fa3150ca76eed12d85ef93",
+    "identityHash": "c8b8c3d63fcd411104bbbe6f538ad307",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`warehouse_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `fullAddress` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `route` TEXT NOT NULL, PRIMARY KEY(`warehouse_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`warehouse_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `fullAddress` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, PRIMARY KEY(`warehouse_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -36,12 +36,6 @@
             "fieldPath": "latitude",
             "columnName": "latitude",
             "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "route",
-            "columnName": "route",
-            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -490,7 +484,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '54035cb105fa3150ca76eed12d85ef93')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c8b8c3d63fcd411104bbbe6f538ad307')"
     ]
   }
 }

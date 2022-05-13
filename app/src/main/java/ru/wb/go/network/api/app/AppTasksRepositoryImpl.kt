@@ -2,7 +2,6 @@ package ru.wb.go.network.api.app
 
 import io.reactivex.Observable
 import io.reactivex.Single
-import ru.wb.go.app.ROUTE_EMPTY
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -35,8 +34,7 @@ class AppTasksRepositoryImpl(
                 name = name,
                 fullAddress = fullAddress,
                 longitude = long,
-                latitude = lat,
-                route = route ?: ROUTE_EMPTY
+                latitude = lat
             )
         }
     }
@@ -79,7 +77,7 @@ class AppTasksRepositoryImpl(
                 dstOffices = dstOffices,
                 reservedAt = "",
                 reservedDuration = reservedDuration,
-                route = route ?: ROUTE_EMPTY
+                route = route ?: "не указан"
             )
         }
     }

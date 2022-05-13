@@ -12,7 +12,7 @@
         style="@style/VeryLargePrimaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintBottom_toTopOf="@+id/timer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,9 +22,9 @@
         android:id="@+id/timer"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_marginTop="20dp"
         app:ap_is_divider="true"
         app:ap_progress="90"
+        android:layout_marginTop="20dp"
         app:ap_progress_background_color="@color/lvl_1"
         app:ap_progress_foreground_color="@color/colorPrimary"
         app:ap_progress_scale_current_color="@color/colorPrimary"
@@ -33,7 +33,7 @@
         app:layout_constraintBottom_toTopOf="@+id/order"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/routeTV" />
 
     <TextView
         android:id="@+id/arrive"

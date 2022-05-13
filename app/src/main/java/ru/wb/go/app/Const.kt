@@ -7,7 +7,7 @@ const val APP_JSON = "application/json"
 const val VERSION_API = "/api/v1"
 const val VERSION_DEMO_API = "/api/v2"
 
-const val VERSION_DATABASE = 39
+const val VERSION_DATABASE = 40
 const val EXPORT_SCHEMA_DATABASE = true
 
 const val NEED_SEND_COURIER_DOCUMENTS = "NEED_SEND_COURIER_DOCUMENTS" //не заполнил данные
@@ -37,8 +37,6 @@ const val YANDEX_METRIC_DEBUG_KEY = "21b0a81e-cac2-4160-a81b-9d437c67450d"
 
 const val TELEGRAM_SUPPORT_LINK = "+n-lLgR0i-HxkZmMy"
 const val TELEGRAM_SUPPORT_ID = ""
-
-const val ROUTE_EMPTY = "не указан"
 
 const val COURIER_ONLY_ONE_TASK_ERROR = "ONLY_ONE_TASK"
 const val COURIER_TASK_ALREADY_RESERVED_ERROR = "TASK_ALREADY_RESERVED"

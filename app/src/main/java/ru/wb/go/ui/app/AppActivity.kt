@@ -3,7 +3,9 @@ package ru.wb.go.ui.app
 import CheckInternet
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity.LEFT
@@ -75,6 +77,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         )
         setTheme(R.style.AppTheme_NoActionBar)
     }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        val newOverride = Configuration(newBase?.resources?.configuration)
+        newOverride.fontScale = 1.1f
+        applyOverrideConfiguration(newOverride)
+    }
+
 
     private fun initToolbar() {
         val toolbar: Toolbar = binding.layoutHost.toolbarLayout.toolbar
