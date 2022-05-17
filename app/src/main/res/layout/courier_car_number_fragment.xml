@@ -161,6 +161,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:maxLength="12"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/number_divider"
             app:layout_constraintTop_toTopOf="parent"

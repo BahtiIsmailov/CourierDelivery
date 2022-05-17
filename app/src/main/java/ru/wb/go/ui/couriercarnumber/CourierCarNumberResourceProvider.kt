@@ -7,13 +7,8 @@ import ru.wb.go.mvvm.BaseServicesResourceProvider
 class CourierCarNumberResourceProvider(val context: Context) :
     BaseServicesResourceProvider(context) {
 
-    fun getGazeleIcon() = R.drawable.ic_type_gazele
-    fun getGazeleName(): String = context.getString(R.string.courier_car_gazele_name)
+    fun getTypeIcons() = context.resources.obtainTypedArray(R.array.car_type_icon)
 
-    fun getWagonIcon() = R.drawable.ic_type_wagon
-    fun getWagonName(): String = context.getString(R.string.courier_car_wagon_name)
-
-    fun getStationWagonIcon() = R.drawable.ic_type_station_wagon
-    fun getStationWagonName(): String = context.getString(R.string.courier_car_station_wagon_name)
+    fun getTypeNames() = context.resources.getStringArray(R.array.car_type_name)
 
 }

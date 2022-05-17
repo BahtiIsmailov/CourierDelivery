@@ -1,9 +1,13 @@
 package ru.wb.go.ui.courierorders
 
+import androidx.annotation.DrawableRes
+
 sealed class CourierOrderDetailsInfoUIState {
 
     data class InitOrderDetails(
         val carNumber: String,
+        @DrawableRes
+        val carTypeIcon: Int,
         val isChangeCarNumber: Boolean,
         val itemId: String,
         val orderId: String,

@@ -74,7 +74,9 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                binding.carTypesLayout.visibility = View.INVISIBLE
+                binding.carTypesLayout.visibility = INVISIBLE
+                binding.confirm.visibility = VISIBLE
+                binding.cancel.visibility = VISIBLE
             }
         }
 
@@ -150,7 +152,6 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                 }
                 CourierCarNumberUIState.NumberNotFilled -> {
                     binding.confirm.isEnabled = false
-                    //binding.numberNotFound.visibility = INVISIBLE
                 }
                 is CourierCarNumberUIState.NumberSpanFormat -> {
                     binding.carNumber.setText(
@@ -195,7 +196,9 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
     private fun showCarTypes() {
-        binding.carTypesLayout.visibility = View.VISIBLE
+        binding.confirm.visibility = INVISIBLE
+        binding.cancel.visibility = INVISIBLE
+        binding.carTypesLayout.visibility = VISIBLE
         bottomSheetCarTypes.state = BottomSheetBehavior.STATE_EXPANDED
     }
 

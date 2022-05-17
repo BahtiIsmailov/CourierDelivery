@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="car_type_name">
+        <item>Газель</item>
+        <item>Фургон</item>
+        <item>Универсал</item>
+    </string-array>
+
+    <integer-array name="car_type_icon">
+        <item>@drawable/ic_type_gazele</item>
+        <item>@drawable/ic_type_wagon</item>
+        <item>@drawable/ic_type_station_wagon</item>
+    </integer-array>
+
 </resources>

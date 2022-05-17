@@ -30,6 +30,8 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun carNumber(): String
 
+    fun carType(): Int
+
     fun anchorTask(): Completable
 
 }

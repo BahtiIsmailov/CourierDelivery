@@ -4,11 +4,14 @@ import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardMode
 
 class CarNumberUtils(number: String) {
 
+    private val fullNumber: String
     private val fullNumberWithMask: String
     private val fullNumberSpanLength: Int
 
     @CarNumberKeyboardMode
     private val numberKeyboardMode: Int
+
+    fun fullNumber() = fullNumber
 
     fun fullNumberWithMask() = fullNumberWithMask
 
@@ -26,9 +29,9 @@ class CarNumberUtils(number: String) {
     fun numberKeyboardMode() = numberKeyboardMode
 
     init {
-        val numberFormat = numberFormat(number)
-        fullNumberWithMask = numberFormatWithMask(numberFormat)
-        fullNumberSpanLength = numberFormat.length
+        fullNumber = numberFormat(number)
+        fullNumberWithMask = numberFormatWithMask(fullNumber)
+        fullNumberSpanLength = fullNumber.length
         numberKeyboardMode = numberKeyboardMode(number.length)
     }
 
