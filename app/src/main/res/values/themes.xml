@@ -285,9 +285,14 @@
         <item name="android:textColor">@color/secondary</item>
     </style>
 
-    <style name="ExtraLightRegularText" parent="RobotoRegularBaseFont">
+    <style name="ExtraLargeLvl2RegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>
         <item name="android:textColor">@color/lvl_2</item>
+    </style>
+
+    <style name="ExtraLargeTertiaryRegularText" parent="RobotoRegularBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/tertiary</item>
     </style>
     <!--============================ExtraLargeRobotoMedium=====================================-->
     <style name="ExtraLargePrimaryMediumText" parent="RobotoMediumBaseFont">

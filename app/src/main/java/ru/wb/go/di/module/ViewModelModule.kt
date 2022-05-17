@@ -106,7 +106,7 @@ val viewModelModule = module {
     }
 
     viewModel { (parameters: CourierCarNumberParameters) ->
-        CourierCarNumberViewModel(parameters, get(), get(), get())
+        CourierCarNumberViewModel(parameters, get(), get(), get(), get())
     }
 
     viewModel { CourierOrderTimerViewModel(get(), get(), get(), get(), get(), get()) }

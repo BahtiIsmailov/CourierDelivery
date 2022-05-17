@@ -16,6 +16,7 @@ class CourierCarNumberViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierCarNumberInteractor,
+    resourceProvider: CourierCarNumberResourceProvider,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigationState =
@@ -37,12 +38,29 @@ class CourierCarNumberViewModel(
 
     private var carNumber = ""
 
+    private val types: List<CourierCarTypeItem> = listOf(
+        CourierCarTypeItem(resourceProvider.getGazeleIcon(), resourceProvider.getGazeleName()),
+        CourierCarTypeItem(resourceProvider.getWagonIcon(), resourceProvider.getWagonName()),
+        CourierCarTypeItem(
+            resourceProvider.getStationWagonIcon(),
+            resourceProvider.getStationWagonName()
+        )
+    )
+
     fun onCheckCarNumberClick() {
         putCarNumber(carNumber)
     }
 
     fun onCancelCarNumberClick() {
         fetchCarNumberComplete()
+    }
+
+    fun onCarTypeSelectClick() {
+        _stateUI.value = CourierCarNumberUIState.InitTypeItems(types)
+    }
+
+    fun onCarTypeCloseClick() {
+        _stateUI.value = CourierCarNumberUIState.CloseTypeItems
     }
 
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
@@ -56,19 +74,28 @@ class CourierCarNumberViewModel(
                     switchComplete(it)
                 }
                 .doOnNext { carNumber = it }
-                .map { keyToNumberSpanFormat(it) }
+                .map { carNumberFormat(CarNumberUtils(it)).invoke() }
+                //{ if (it.length < 8) keyToNumberSpanFormat(it) else keyToRegionSpanFormat() }
                 .subscribe(
                     { _stateUI.value = it },
                     { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }
 
-    private fun keyToNumberSpanFormat(it: String) =
-        CourierCarNumberUIState.NumberSpanFormat(
-            CarNumberUtils.numberFormatter(it),
-            CarNumberUtils.numberFormatterSpanLength(it),
-            CarNumberUtils.numberKeyboardMode(it)
-        )
+    fun onAddressItemClick(index: Int) {
+        _stateUI.value = CourierCarNumberUIState.SelectedCarType(types[index])
+    }
+
+    private fun carNumberFormat(carNumberUtils: CarNumberUtils): () -> CourierCarNumberUIState =
+        {
+            CourierCarNumberUIState.NumberSpanFormat(
+                carNumberUtils.numberWithMask(),
+                carNumberUtils.numberSpanLength(),
+                carNumberUtils.regionWithMask(),
+                carNumberUtils.regionSpanLength(),
+                carNumberUtils.numberKeyboardMode()
+            )
+        }
 
     private fun switchBackspace(it: String) {
         _stateKeyboardBackspaceUI.value =

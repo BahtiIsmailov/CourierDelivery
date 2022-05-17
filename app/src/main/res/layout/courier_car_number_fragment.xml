@@ -2,55 +2,204 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lvl_1">
 
+    <View
+        android:id="@+id/status_bar_background"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"
+        android:background="@color/lvl_2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/title_background"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/lvl_2"
+        app:layout_constraintTop_toBottomOf="@+id/status_bar_background" />
+
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/title1"
         style="@style/LargePrimaryMediumText"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/pad16"
+        android:gravity="center"
+        android:text="@string/courier_car_number_title"
+        app:layout_constraintBottom_toBottomOf="@+id/title_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title_background" />
+
+    <ImageView
+        android:id="@+id/car_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/title1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title1"
+        app:srcCompat="@drawable/ic_warehouse_detail_close"
+        tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/divider_title"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:background="@color/colorDividerPale"
+        app:layout_constraintTop_toBottomOf="@+id/title_background" />
+
+    <ImageView
+        android:id="@+id/icon_car_type_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginTop="@dimen/pad8"
+        android:src="@drawable/ic_car_type_uncknown"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_background"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/car_type_selected_name"
+        style="@style/LargePrimaryMediumText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
-        android:layout_marginTop="96dp"
         android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
         android:gravity="center"
-        android:text="@string/courier_car_number_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="@string/courier_car_number_empty_selected_name"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_car_type_selected"
+        app:layout_constraintStart_toEndOf="@+id/icon_car_type_selected"
+        app:layout_constraintTop_toTopOf="@+id/icon_car_type_selected" />
 
-    <TextView
-        android:id="@+id/car_number"
-        style="@style/ExtraLightRegularText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="@dimen/auth_input_horizontal_patent_offset"
-        android:background="@android:color/transparent"
-        android:gravity="center"
-        android:letterSpacing="0.1"
-        android:maxLength="12"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
-
-    <TextView
-        android:id="@+id/number_not_found"
-        style="@style/LargePrimaryRegularText"
+    <ImageView
+        android:id="@+id/icon_car_type_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/auth_number_phone_phone_not_found"
-        android:textAppearance="@style/SmallPrimaryRegularText"
-        android:textColor="@color/red"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/car_number"
-        app:layout_constraintTop_toBottomOf="@+id/car_number" />
+        android:layout_marginEnd="@dimen/pad16"
+        android:src="@drawable/ic_car_type_select"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_car_type_selected"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_background"
+        app:layout_constraintTop_toTopOf="@+id/icon_car_type_selected"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/icon_car_type_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/pad16"
+        android:src="@drawable/ic_car_type_change_select_"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_car_type_selected"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_background"
+        app:layout_constraintTop_toTopOf="@+id/icon_car_type_selected"
+        tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorDividerPale"
+        app:layout_constraintTop_toBottomOf="@+id/icon_car_type_selected" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/car_number_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/car_number_rounded_corner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider">
+
+        <TextView
+            android:id="@+id/car_number"
+            style="@style/ExtraLargeTertiaryRegularText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pad12"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:letterSpacing="0.1"
+            android:maxLength="12"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="A 000 AA" />
+
+        <View
+            android:id="@+id/number_divider"
+            android:layout_width="@dimen/reception_stroke_width"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/pad16"
+            android:background="@color/primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/car_number"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/region"
+            style="@style/VeryLargeTertiaryMediumText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:maxLength="12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/number_divider"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="000" />
+
+        <TextView
+            android:id="@+id/country"
+            style="@style/VeryLargePrimaryMediumText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:text="@string/courier_car_number_country"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/flag"
+            app:layout_constraintEnd_toStartOf="@+id/flag"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@+id/number_divider"
+            app:layout_constraintTop_toTopOf="@+id/flag"
+            tools:ignore="SmallSp" />
+
+        <ImageView
+            android:id="@+id/flag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_flag_rus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@+id/country"
+            app:layout_constraintTop_toBottomOf="@+id/region"
+            tools:ignore="ContentDescription" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
         android:id="@+id/view_keyboard"
@@ -63,7 +212,7 @@
         app:layout_constraintBottom_toTopOf="@+id/cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/car_number"
+        app:layout_constraintTop_toBottomOf="@+id/car_number_layout"
         custom:carNumberKeyboardColor="@color/primary"
         custom:carNumberType="numeric"
         custom:layout_constraintLeft_toLeftOf="parent"
@@ -104,5 +253,68 @@
         app:layout_constraintEnd_toEndOf="@+id/center_vertical"
         app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/car_types_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/primary_hold"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/car_types"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/car_type_bottom_sheet_info"
+            app:behavior_hideable="true"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/types"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:background="@color/lvl_1"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:nestedScrollingEnabled="true"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:itemCount="3"
+                tools:listitem="@layout/courier_car_type_layout" />
+
+            <ImageView
+                android:id="@+id/slider_addresses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_bottom_sheet_slider"
+                tools:ignore="ContentDescription,MissingConstraints" />
+
+            <ImageView
+                android:id="@+id/types_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_warehouse_detail_close"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

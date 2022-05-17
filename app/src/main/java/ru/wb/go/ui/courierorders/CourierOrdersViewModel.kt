@@ -197,7 +197,7 @@ class CourierOrdersViewModel(
                     DialogInfoStyle.INFO.ordinal,
                     resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
                     resourceProvider.getConfirmMessageDialog(
-                        CarNumberUtils.numberFormat(interactor.carNumber()),
+                        CarNumberUtils(interactor.carNumber()).fullNumberWithMask(),
                         courierOrderLocalEntity.minVolume,
                         courierOrderLocalEntity.reservedDuration
                     ),
@@ -537,7 +537,7 @@ class CourierOrdersViewModel(
     private fun carNumberFormat(it: String) =
         it.let {
             if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
-            else resourceProvider.getCarNumber(CarNumberUtils.numberFormat(it))
+            else resourceProvider.getCarNumber(CarNumberUtils(it).fullNumberWithMask())
         }
 
     fun onCloseOrdersClick() {

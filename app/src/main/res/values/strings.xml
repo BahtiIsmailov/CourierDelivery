@@ -106,9 +106,18 @@
 
     <string name="empty_list">Список пуст</string>
 
-    <string name="courier_car_number_title">Введите номер машины</string>
+    <string name="courier_car_number_title">Авто</string>
+    <string name="courier_car_number_empty_selected_name">Выберите транспорт</string>
+    <string name="courier_car_number_country">RUS</string>
     <string name="courier_car_confirm">Подтвердить</string>
     <string name="courier_car_cancel">Отмена</string>
+    <string name="courier_car_gazele_name">Газель</string>
+    <string name="courier_car_wagon_name">Фургон</string>
+    <string name="courier_car_station_wagon_name">Универсал</string>
+
+
+
+
     <string name="courier_orders_addresses">Адреса доставки</string>
     <string name="courier_orders_take">Взять заказ</string>
     <string name="auth_phone_title">Введите номер телефона</string>

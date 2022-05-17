@@ -33,7 +33,7 @@
 
     <TextView
         android:id="@+id/phone_number_title"
-        style="@style/ExtraLightRegularText"
+        style="@style/ExtraLargeLvl2RegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/auth_input_horizontal_patent_offset"
