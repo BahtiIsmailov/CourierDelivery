@@ -1,9 +1,13 @@
 package ru.wb.go.ui.courierintransit
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.View.*
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -26,6 +30,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
+
 
 class CourierIntransitFragment :
     BaseServiceFragment<CourierIntransitViewModel, CourierIntransitFragmentBinding>(
@@ -67,6 +72,13 @@ class CourierIntransitFragment :
         (activity as NavDrawerListener).lockNavDrawer()
     }
 
+    private fun setColorNavigatorTint(@ColorRes colorRes: Int) {
+        binding.navigatorButton.setColorFilter(
+            ContextCompat.getColor(requireContext(), colorRes),
+            android.graphics.PorterDuff.Mode.SRC_IN
+        )
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
@@ -76,6 +88,19 @@ class CourierIntransitFragment :
 
         viewModel.navigateToErrorDialog.observe(viewLifecycleOwner) {
             showDialogInfo(it)
+        }
+
+        viewModel.navigatorState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                CourierIntransitNavigatorUIState.Disable -> {
+                    binding.navigatorButton.isEnabled = false
+                    setColorNavigatorTint(R.color.tertiary)
+                }
+                CourierIntransitNavigatorUIState.Enable -> {
+                    binding.navigatorButton.isEnabled = true
+                    setColorNavigatorTint(R.color.colorPrimary)
+                }
+            }
         }
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
@@ -113,6 +138,7 @@ class CourierIntransitFragment :
                 }
                 is CourierIntransitItemState.UpdateItems -> displayItems(it.items)
                 CourierIntransitItemState.CompleteDelivery -> {
+                    binding.navigatorButton.visibility = INVISIBLE
                     binding.scanQrPvzButton.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.visibility = VISIBLE
                     binding.completeDeliveryButton.visibility = VISIBLE
@@ -137,6 +163,7 @@ class CourierIntransitFragment :
             when (it) {
                 CourierIntransitNavigationState.NavigateToScanner -> {
                     binding.scanQrPvzButton.isEnabled = false
+                    binding.navigatorButton.isEnabled = false
                     binding.scanQrPvzCompleteButton.isEnabled = false
                     binding.completeDeliveryButton.isEnabled = false
 
@@ -155,6 +182,12 @@ class CourierIntransitFragment :
                             )
                         )
                     )
+                }
+                is CourierIntransitNavigationState.NavigateToNavigator -> {
+                    val geoLocation = Uri.parse("geo:${it.latitude},${it.longitude}")
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = geoLocation
+                    startActivity(intent)
                 }
             }
         }
@@ -182,6 +215,7 @@ class CourierIntransitFragment :
     }
 
     private fun initListeners() {
+        binding.navigatorButton.setOnClickListener { viewModel.onNavigatorClick() }
         binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
