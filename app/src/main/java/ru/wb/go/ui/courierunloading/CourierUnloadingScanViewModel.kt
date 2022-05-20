@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -167,6 +168,11 @@ class CourierUnloadingScanViewModel(
         )
     }
 
+    fun onCloseDetailsClick() {
+        onStartScanner()
+        _navigationEvent.value = CourierUnloadingScanNavAction.HideUnloadingItems
+    }
+
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
         onTechEventLog("observeScanProcessComplete", "scanProcess $scanProcess")
         val scanBoxData = scanProcess.scanBoxData
@@ -273,9 +279,27 @@ class CourierUnloadingScanViewModel(
 
     fun onListClicked() {
         onStopScanner()
-        _navigationEvent.value =
-            CourierUnloadingScanNavAction.NavigateToBoxes(officeId = parameters.officeId)
+        addSubscription(
+            interactor.getRemainBoxes(parameters.officeId)
+                .filter { it.isNotEmpty() }
+                .subscribe(
+                    { fillRemainBoxList(it) },
+                    { })
+        )
     }
+
+    private fun fillRemainBoxList(boxes: List<LocalBoxEntity>) {
+        val boxItems = boxes.mapIndexed(transformToRemainBoxItem).toMutableList()
+        _navigationEvent.value = CourierUnloadingScanNavAction.InitAndShowUnloadingItems(boxItems)
+    }
+
+    private val transformToRemainBoxItem = { index: Int, localBoxEntity: LocalBoxEntity ->
+        RemainBoxItem(boxName(index + 1, localBoxEntity.boxId))
+    }
+
+
+    private fun boxName(index: Int, boxId: String) =
+        resourceProvider.getUnloadingDetails(index, boxId.takeLast(3))
 
     fun onCompleteUnloadClick() {
         _completeButtonEnable.value = false

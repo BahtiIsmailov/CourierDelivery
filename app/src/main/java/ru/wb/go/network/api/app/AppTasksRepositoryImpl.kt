@@ -34,7 +34,7 @@ class AppTasksRepositoryImpl(
                 name = name,
                 fullAddress = fullAddress,
                 longitude = long,
-                latitude = lat,
+                latitude = lat
             )
         }
     }
@@ -77,7 +77,7 @@ class AppTasksRepositoryImpl(
                 dstOffices = dstOffices,
                 reservedAt = "",
                 reservedDuration = reservedDuration,
-                route = route?:"не указан"
+                route = route ?: "не указан"
             )
         }
     }

@@ -12,5 +12,5 @@ data class CourierWarehouseLocalEntity(
     val name: String,
     val fullAddress: String,
     val longitude: Double,
-    val latitude: Double,
+    val latitude: Double
 )

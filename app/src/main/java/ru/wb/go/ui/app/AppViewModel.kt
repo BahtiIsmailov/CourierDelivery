@@ -63,7 +63,7 @@ class AppViewModel(
         _navigation.value = NavigationState.NavigateToSupport
     }
 
-    fun onExitClick() {
+    fun onExitAuthClick() {
         interactor.exitAuth()
         _navigation.value = NavigationState.NavigateToRegistration
     }

@@ -1,5 +1,8 @@
 package ru.wb.go.ui.courierorders
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -39,6 +42,7 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
+
 class CourierOrdersFragment :
     BaseServiceFragment<CourierOrdersViewModel, CourierOrdersFragmentBinding>(
         CourierOrdersFragmentBinding::inflate
@@ -49,6 +53,7 @@ class CourierOrdersFragment :
         const val DIALOG_TASK_NOT_EXIST_RESULT_TAG = "DIALOG_TASK_NOT_EXIST_RESULT_TAG"
         const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
         const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
+        const val FADE_ADDRESS_DETAILS = 500L
     }
 
     private lateinit var adapter: DefaultAdapterDelegate
@@ -125,7 +130,7 @@ class CourierOrdersFragment :
         initRecyclerViewAddress()
         initAdapter()
         initListeners()
-        initStateObserve()
+        initStateObserves()
         initReturnDialogResult()
         viewModel.resumeInit()
     }
@@ -255,8 +260,38 @@ class CourierOrdersFragment :
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
     }
 
+    private fun animate(view: View, animator: (View) -> ObjectAnimator) {
+        animator(view).start()
+    }
+
+    private fun fadeOut(view: View): ObjectAnimator {
+        val fadeOut =
+            ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+        fadeOut.duration = FADE_ADDRESS_DETAILS
+        fadeOut.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.visibility = VISIBLE
+                view.alpha = 0f
+            }
+        })
+        return fadeOut
+    }
+
+    private fun fadeIn(view: View): ObjectAnimator {
+        val fadeIn =
+            ObjectAnimator.ofFloat(view, "alpha", 1f, 0f)
+        fadeIn.duration = FADE_ADDRESS_DETAILS
+        fadeIn.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.visibility = GONE
+                view.alpha = 0f
+            }
+        })
+        return fadeIn
+    }
+
     @SuppressLint("NotifyDataSetChanged")
-    private fun initStateObserve() {
+    private fun initStateObserves() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<CourierCarNumberResult>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
             ?.observe(viewLifecycleOwner) { viewModel.onChangeCarNumberOrders(it) }
@@ -282,15 +317,24 @@ class CourierOrdersFragment :
                     showRegistrationDialogConfirmInfo()
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
-                    binding.addressDetailLayout.visibility = VISIBLE
                     binding.addressDetail.text = it.address
+                    if (binding.addressDetailLayout.visibility != VISIBLE) {
+                        fadeOut(binding.addressDetailLayout).start()
+                    }
                 }
-                CourierOrdersNavigationState.CloseAddressesDetail ->
-                    binding.addressDetailLayout.visibility = GONE
+                CourierOrdersNavigationState.CloseAddressesDetail -> {
+                    fadeIn(binding.addressDetailLayout).start()
+                }
                 CourierOrdersNavigationState.OnMapClick ->
                     if (isOrderDetailsExpanded()) viewModel.onMapClickWithDetail()
+                CourierOrdersNavigationState.CourierLoader ->
+                    findNavController().navigate(
+                        CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
+                    )
             }
         }
+
+
 
         viewModel.orders.observe(viewLifecycleOwner) { state ->
             when (state) {

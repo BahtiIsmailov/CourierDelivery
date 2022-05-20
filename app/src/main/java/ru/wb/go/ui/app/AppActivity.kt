@@ -1,8 +1,11 @@
 package ru.wb.go.ui.app
 
+import CheckInternet
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity.LEFT
@@ -17,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
@@ -47,7 +49,7 @@ import ru.wb.go.utils.SoftKeyboard
 class AppActivity : AppCompatActivity(), NavToolbarListener,
     OnUserInfo, OnCourierScanner, StatusBarListener,
     NavDrawerListener, KeyboardListener, DialogConfirmInfoFragment.SimpleDialogListener,
-    SupportListener{
+    SupportListener {
 
     private val viewModel by viewModel<AppViewModel>()
 
@@ -75,6 +77,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         )
         setTheme(R.style.AppTheme_NoActionBar)
     }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        val newOverride = Configuration(newBase?.resources?.configuration)
+        newOverride.fontScale = 1.1f
+        applyOverrideConfiguration(newOverride)
+    }
+
 
     private fun initToolbar() {
         val toolbar: Toolbar = binding.layoutHost.toolbarLayout.toolbar
@@ -153,9 +163,12 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
                 AppViewModel.NavigationState.NavigateToRegistration -> {
                     panMode()
                     binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
                     val navHost =
                         supportFragmentManager.findFragmentById(R.id.nav_host_app_fragment) as NavHostFragment
-                    navHost.navController.navigate(R.id.load_navigation)
+                    val inflater = navHost.navController.navInflater
+                    val graph = inflater.inflate(R.navigation.load_graph)
+                    navHost.navController.graph = graph
                 }
                 AppViewModel.NavigationState.NavigateToSupport -> {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -165,8 +178,9 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         }
 
     }
-    fun onExitClick(){
-        viewModel.onExitClick()
+
+    fun onExitAuth() {
+        viewModel.onExitAuthClick()
     }
 
     private fun initListeners() {
@@ -183,8 +197,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             findViewById<View>(R.id.documents).setOnClickListener {
                 if (CheckInternet.checkConnection(this@AppActivity)) {
                     navController?.navigate(R.id.courierAgreementFragment)
-                }
-                else {
+                } else {
                     CheckInternet.showDialogHaveNotInternet(this@AppActivity)
                         .show(supportFragmentManager, DialogInfoFragment.DIALOG_INFO_TAG)
                 }

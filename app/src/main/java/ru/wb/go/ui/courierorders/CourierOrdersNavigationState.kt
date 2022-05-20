@@ -11,6 +11,8 @@ sealed class CourierOrdersNavigationState {
 
     object NavigateToWarehouse : CourierOrdersNavigationState()
 
+    object CourierLoader : CourierOrdersNavigationState()
+
     object NavigateToOrders : CourierOrdersNavigationState()
 
     data class NavigateToOrderDetails(val isDemo: Boolean) : CourierOrdersNavigationState()

@@ -125,6 +125,7 @@
         <action
             android:id="@+id/action_courierOrderFragment_to_courierCarNumberFragment"
             app:destination="@id/courierCarNumberFragment" />
+
         <action
             android:id="@+id/action_courierOrdersFragment_to_auth_navigation"
             app:destination="@id/auth_navigation"
@@ -139,6 +140,13 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/courierOrdersFragment" />
+
+        <action
+            android:id="@+id/action_courierOrdersFragment_to_courierLoaderFragment"
+            app:destination="@id/courierLoaderFragment"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/courierLoaderFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -232,13 +240,6 @@
             app:popUpTo="@id/courierIntransitFragment"
             app:popUpToInclusive="true" />
 
-        <action
-            android:id="@+id/action_courierUnloadingScanFragment_to_remainBoxFragment"
-            app:destination="@id/remainBoxFragment"
-            app:enterAnim="@anim/slide_in_top"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/slide_out_bottom"
-            app:popExitAnim="@anim/fade_out" />
     </fragment>
 
     <fragment
@@ -372,16 +373,6 @@
             app:popUpTo="@id/courierBalanceFragment"
             app:popUpToInclusive="true" />
 
-    </fragment>
-
-    <fragment
-        android:id="@+id/remainBoxFragment"
-        android:name="ru.wb.go.ui.courierunloading.RemainBoxFragment"
-        android:label="RemainBoxFragment"
-        tools:layout="@layout/remain_box_fragment">
-        <argument
-            android:name="box_remain_id_key"
-            app:argType="ru.wb.go.ui.courierunloading.RemainBoxParameters" />
     </fragment>
 
     <fragment

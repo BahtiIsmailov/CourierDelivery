@@ -3,10 +3,17 @@ package ru.wb.go.ui.courierunloading
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -39,6 +46,12 @@ class CourierUnloadingScanFragment :
             "DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG"
     }
 
+    private lateinit var addressAdapter: RemainBoxAdapter
+    private lateinit var addressLayoutManager: LinearLayoutManager
+    private lateinit var addressSmoothScroller: RecyclerView.SmoothScroller
+
+    private lateinit var bottomSheetDetails: BottomSheetBehavior<FrameLayout>
+
     override val viewModel by viewModel<CourierUnloadingScanViewModel> {
         parametersOf(
             requireArguments().getParcelable<CourierUnloadingScanParameters>(
@@ -47,21 +60,47 @@ class CourierUnloadingScanFragment :
         )
     }
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?,
-//    ): View {
-//        _binding = CourierUnloadingFragmentBinding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initListener()
         initObserver()
         initReturnDialogResult()
+        initBottomSheet()
+        initRecyclerViewDetails()
         viewModel.update()
+    }
+
+    private fun initRecyclerViewDetails() {
+        addressLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.boxDetails.layoutManager = addressLayoutManager
+        binding.boxDetails.setHasFixedSize(true)
+        initSmoothScrollerAddress()
+    }
+
+    private fun initSmoothScrollerAddress() {
+        addressSmoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference() = SNAP_TO_START
+        }
+    }
+
+    private val bottomSheetDetailsCallback = object :
+        BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                viewModel.onCloseDetailsClick()
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
+    private fun initBottomSheet() {
+        binding.detailsLayout.visibility = RecyclerView.VISIBLE
+        bottomSheetDetails = BottomSheetBehavior.from(binding.detailsGoals)
+        bottomSheetDetails.skipCollapsed = true
+        bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
+        bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun initReturnDialogResult() {
@@ -126,14 +165,15 @@ class CourierUnloadingScanFragment :
                     findNavController().navigate(
                         CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment()
                     )
-                is CourierUnloadingScanNavAction.NavigateToBoxes -> {
-                    findNavController().navigate(
-                        CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToRemainBoxFragment(
-                            RemainBoxParameters(
-                                officeId = state.officeId
-                            )
-                        )
-                    )
+                CourierUnloadingScanNavAction.HideUnloadingItems -> {
+                    bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
+                    binding.completeButton.visibility = VISIBLE
+                }
+                is CourierUnloadingScanNavAction.InitAndShowUnloadingItems -> {
+                    addressAdapter = RemainBoxAdapter(requireContext(), state.items)
+                    binding.boxDetails.adapter = addressAdapter
+                    bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
+                    binding.completeButton.visibility = GONE
                 }
             }
         }
@@ -296,6 +336,7 @@ class CourierUnloadingScanFragment :
         binding.counterLayout.setOnClickListener { viewModel.onListClicked() }
         binding.totalBoxes.setOnClickListener { viewModel.onListClicked() }
         binding.completeButton.setOnClickListener { viewModel.onCompleteUnloadClick() }
+        binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
     }
 
     override fun onDestroyView() {

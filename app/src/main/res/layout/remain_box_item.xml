@@ -7,11 +7,13 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/remain_box_code"
         style="@style/LargeSecondaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/pad16"
-        android:id="@+id/remain_box_code"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="@dimen/pad16"
         tools:text="1. **** 123" />
 
 </LinearLayout>

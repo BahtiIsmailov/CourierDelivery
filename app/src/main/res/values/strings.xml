@@ -266,6 +266,7 @@
     <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
+    <string name="courier_orders_details_dialog_task_reject">"Заказ уже в работе. Выберите другой заказ."</string>
 
     <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
     <string name="courier_orders_details_dialog_is_not_exist_message">Заказ уже взят в работу</string>
@@ -288,6 +289,8 @@
     <string name="courier_order_scanner_unknown_qr">\?????????</string>
     <string name="courier_order_scanner_empty_address">-</string>
     <string name="courier_order_scanner_empty_qr">000000000</string>
+    <string name="courier_order_scanner_pvz_count_title">ПВЗ (%1$d шт.)</string>
+    <string name="courier_order_scanner_box_count_title">Коробки (%1$d шт.)</string>
     <string name="courier_order_scanner_accepted">%1$d шт.</string>
     <string name="courier_order_scanner_dialog_negative_button">Отмена</string>
     <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
@@ -320,7 +323,7 @@
     <string name="courier_unloading_scanner_added_status">ВЫГРУЗИТЕ НА ПВЗ</string>
     <string name="courier_unloading_scanner_empty_qr">000000000</string>
     <string name="courier_unloading_scanner_empty_address">-</string>
-    <string name="courier_unloading_delivery">Доставил</string>
+    <string name="courier_unloading_delivery">Выгружено</string>
     <string name="courier_unloading_address">Адрес доставки</string>
     <string name="courier_unloading_qr">QR</string>
 
@@ -332,7 +335,7 @@
     <string name="courier_unloading_dialog_title_error">QR-код коробки не распознан</string>
     <string name="courier_unloading_dialog_message_error" />
     <string name="courier_unloading_dialog_button_error">Понятно</string>
-
+    <string name="courier_unloading_details">%1$d. ****** %2$s</string>
 
 
     <string name="courier_complete_delivery_title">Спасибо за проделанную работу!</string>
@@ -557,7 +560,13 @@
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
 
+    <string name="courier_loading_details_title">Принято</string>
+    <string name="courier_loading_pvz_goals_title">ПВЗ (%1$s)</string>
+    <string name="courier_loading_box_goals_title">Коробки (%1$s)</string>
+
     <string name="courier_intransit_office_scanner_info">Наведите камеру на QR-код,\ncканирование произойдет автоматически</string>
+
+    <string name="courier_unloading_details_title">Осталось выгрузить</string>
 
 
 
@@ -603,8 +612,5 @@
     <string name="scannerAutoOffHint">Автоматическая блокировка сканера при неактивности (25 сек)</string>
     <string name="qrTitle">QR</string>
     <string name="route">Маршрут </string>
-    <!--    <string name="receiveTitle">Принято</string>-->
-<!--    <string name="addressTitle">Адрес доставки</string>-->
-<!--    <string name="gateTitle">Ворота</string>-->
 
 </resources>
