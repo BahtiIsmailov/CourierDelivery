@@ -67,7 +67,7 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.getOfficeById(officeId)
     }
 
-    override fun getOrder(): LocalOrderEntity? {
+    override fun getOrder(): LocalOrderEntity {
         return courierOrderDao.getOrder()
     }
 

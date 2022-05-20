@@ -8,16 +8,8 @@ class CourierUnloadingResourceProvider(private val context: Context) :
     BaseServicesResourceProvider(context) {
 
     fun getScanDialogTitle() = context.getString(R.string.courier_unloading_dialog_title_error)
-//    fun getScanDialogMessage() = context.getString(R.string.courier_unloading_dialog_message_error)
-//    fun getScanDialogButton() = context.getString(R.string.courier_unloading_dialog_button_error)
-
     fun getReadyStatus(): String =
         context.getString(R.string.courier_unloading_scanner_ready_status)
-
-//    fun getForbiddenBoxMessage(): String =
-//        context.getString(R.string.receive_wrong_box)
-
-//    fun getReadyWrongBoxMessage():String="Коробка для другого ПВЗ"
 
     fun getReadyWrongBox(): String =
         context.getString(R.string.courier_unloading_scanner_unknown_status)
@@ -51,6 +43,8 @@ class CourierUnloadingResourceProvider(private val context: Context) :
     fun getUnloadingDialogNegative(): String =
         context.getString(R.string.courier_order_scanner_dialog_negative_button)
 
-
+    fun getOrderId(id : String): String {
+        return context.getString(R.string.courier_intransit_label_id, id)
+    }
 
 }

@@ -188,6 +188,10 @@ class CourierUnloadingScanFragment :
             }
         }
 
+        viewModel.orderState.observe(viewLifecycleOwner) {
+            binding.order.text = it
+        }
+
         viewModel.completeButtonEnable.observe(viewLifecycleOwner) { progress ->
             binding.completeButton.isEnabled = progress
         }

@@ -307,11 +307,10 @@
     <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
     <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
 
-    <string name="courier_intransit_label_id"># %1$s</string>
+    <string name="courier_intransit_label_id">#%1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
     <string name="courier_intransit_delegate_divider">/</string>
-
 
 
     <string name="courier_intransit_office_scanner_title">Сканировать QR ПВЗ</string>
@@ -323,6 +322,7 @@
     <string name="courier_unloading_scanner_added_status">ВЫГРУЗИТЕ НА ПВЗ</string>
     <string name="courier_unloading_scanner_empty_qr">000000000</string>
     <string name="courier_unloading_scanner_empty_address">-</string>
+    <string name="courier_unloading_scanner_order">Заказ</string>
     <string name="courier_unloading_delivery">Выгружено</string>
     <string name="courier_unloading_address">Адрес доставки</string>
     <string name="courier_unloading_qr">QR</string>
@@ -556,7 +556,7 @@
     <string name="courier_loading_not_recognized_qr">QR КОРОБКИ НЕ РАСПОЗНАН</string>
     <string name="courier_loading_qr">QR</string>
     <string name="courier_loading_receive">Принято</string>
-    <string name="courier_loading_address">Адрес доставки</string>
+    <string name="courier_loading_address">Адрес ПВЗ</string>
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
 
@@ -567,9 +567,6 @@
     <string name="courier_intransit_office_scanner_info">Наведите камеру на QR-код,\ncканирование произойдет автоматически</string>
 
     <string name="courier_unloading_details_title">Осталось выгрузить</string>
-
-
-
 
 
     <string name="auth_user_fio">Фамилия</string>
