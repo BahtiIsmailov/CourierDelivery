@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="car_type_name">
-        <item>Газель</item>
+        <item>Промтоварный фургон</item>
         <item>Фургон</item>
         <item>Универсал</item>
     </string-array>
