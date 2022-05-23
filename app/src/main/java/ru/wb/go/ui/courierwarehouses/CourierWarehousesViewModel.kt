@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -123,24 +124,29 @@ class CourierWarehousesViewModel(
             interactor.getWarehouses()
                 .doFinally { clearFabAndWhList() }
                 .subscribe(
-                    {
-                        sortedWarehouseEntities(it)
-                        convertAndSaveItemsPointsMarkers()
-                        updateMyLocation()
-                        courierWarehouseComplete()
-                        setLoader(WaitLoader.Complete)
-                    },
-                    {
-                        onTechErrorLog("courierWarehouseError", it)
-                        setLoader(WaitLoader.Complete)
-
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-                        if (warehouseItems.isEmpty()) {
-                            _warehouseState.value =
-                                CourierWarehouseItemState.Empty("Ошибка получения данных")
-                        }
-                    })
+                    { getWarehousesComplete(it) },
+                    { getWarehousesError(it) }
+                )
         )
+    }
+
+    private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
+        sortedWarehouseEntities(it)
+        convertAndSaveItemsPointsMarkers()
+        updateMyLocation()
+        courierWarehouseComplete()
+        setLoader(WaitLoader.Complete)
+    }
+
+    private fun getWarehousesError(it: Throwable) {
+        onTechErrorLog("courierWarehouseError", it)
+        setLoader(WaitLoader.Complete)
+        if (it is NoInternetException) {
+            _warehouseState.value = CourierWarehouseItemState.NoInternet
+        } else {
+            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+            _warehouseState.value = CourierWarehouseItemState.Empty("Ошибка получения данных")
+        }
     }
 
     private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
