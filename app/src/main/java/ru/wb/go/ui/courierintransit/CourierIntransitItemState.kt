@@ -6,8 +6,7 @@ sealed class CourierIntransitItemState {
 
     data class InitItems(
         val items: MutableList<BaseIntransitItem>, val boxTotal: String
-    ) :
-        CourierIntransitItemState()
+    ) : CourierIntransitItemState()
 
     data class UpdateItems(val items: MutableList<BaseIntransitItem>) :
         CourierIntransitItemState()
