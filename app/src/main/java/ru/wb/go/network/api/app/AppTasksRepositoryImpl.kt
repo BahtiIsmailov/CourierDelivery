@@ -2,6 +2,7 @@ package ru.wb.go.network.api.app
 
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -12,20 +13,38 @@ import ru.wb.go.network.token.TokenManager
 
 class AppTasksRepositoryImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
+    private val autentificatorIntercept: AutentificatorIntercept,
     private val remoteRepo: AppTasksApi,
     private val tokenManager: TokenManager
 ) : AppTasksRepository {
 
-    override fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
-        return remoteRepo.freeTasksOffices(apiVersion())
+
+override suspend fun courierWarehouses():  List<CourierWarehouseLocalEntity>  {
+    return with(Dispatchers.IO){
+        autentificatorIntercept.initNameOfMethod("courierWarehouses")
+        remoteRepo.freeTasksOffices(apiVersion())
+            .data
+
+    }
             .map { it.data }
             .flatMap {
                 Observable.fromIterable(it)
                     .map { office -> convertCourierWarehouseEntity(office) }
                     .toList()
             }
-            .compose(rxSchedulerFactory.applySingleMetrics("courierWarehouses"))
     }
+}
+
+//    override fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
+//        return remoteRepo.freeTasksOffices(apiVersion())
+//            .map { it.data }
+//            .flatMap {
+//                Observable.fromIterable(it)
+//                    .map { office -> convertCourierWarehouseEntity(office) }
+//                    .toList()
+//            }
+//            .compose(rxSchedulerFactory.applySingleMetrics("courierWarehouses"))
+//    }
 
     private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
         return with(courierOfficeResponse) {

@@ -98,7 +98,7 @@ class RxSchedulerFactoryImpl(private val metric: YandexMetricManager) : RxSchedu
         metric.onTechNetworkLog(method, "doOnNext")
     }
 
-    private fun doOnComplete(method: String) {
+    private fun doOnComplete(method: String) { //завершил
         metric.onTechNetworkLog(method, "doOnComplete")
     }
 
