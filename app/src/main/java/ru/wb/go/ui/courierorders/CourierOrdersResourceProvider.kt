@@ -1,7 +1,9 @@
 package ru.wb.go.ui.courierorders
 
 import android.content.Context
+import androidx.annotation.DrawableRes
 import ru.wb.go.R
+import ru.wb.go.app.DEFAULT_CAR_TYPE
 import ru.wb.go.mvvm.BaseServicesResourceProvider
 
 class CourierOrdersResourceProvider(private val context: Context) :
@@ -66,5 +68,11 @@ class CourierOrdersResourceProvider(private val context: Context) :
 
     fun getTaskReject() =
         context.getString(R.string.courier_orders_details_dialog_task_reject)
+
+    @DrawableRes
+    fun getTypeIcons(type: Int): Int {
+        return if (type == DEFAULT_CAR_TYPE) R.drawable.ic_car_type_uncknown
+        else context.resources.obtainTypedArray(R.array.car_type_icon).getResourceId(type, 0)
+    }
 
 }

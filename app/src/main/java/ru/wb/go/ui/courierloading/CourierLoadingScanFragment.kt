@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierloading
 
 import android.os.Bundle
 import android.view.View
+import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
@@ -67,7 +68,7 @@ class CourierLoadingScanFragment :
     }
 
     private fun initBottomSheet() {
-        binding.detailsLayout.visibility = RecyclerView.VISIBLE
+        binding.detailsLayout.visibility = VISIBLE
         bottomSheetDetails = BottomSheetBehavior.from(binding.detailsGoals)
         bottomSheetDetails.skipCollapsed = true
         bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
@@ -127,7 +128,7 @@ class CourierLoadingScanFragment :
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
         setFragmentResultListener("routeId") { key, bundle ->
-            binding.routeTV.text =  bundle.getString("bundleKey")
+            binding.routeTV.text = bundle.getString("bundleKey")
         }
     }
 

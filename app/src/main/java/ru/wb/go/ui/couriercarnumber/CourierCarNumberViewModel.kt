@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import ru.wb.go.app.DEFAULT_CAR_NUMBER
+import ru.wb.go.app.DEFAULT_CAR_TYPE
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
@@ -16,6 +18,7 @@ class CourierCarNumberViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierCarNumberInteractor,
+    resourceProvider: CourierCarNumberResourceProvider,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _navigationState =
@@ -35,40 +38,77 @@ class CourierCarNumberViewModel(
     val progressState: LiveData<CourierCarNumberProgressState>
         get() = _progressState
 
-    private var carNumber = ""
+    private var carNumber = DEFAULT_CAR_NUMBER
+    private var carType = interactor.getCarType()
+    private val types: List<CourierCarTypeItem> = run {
+        val names = resourceProvider.getTypeNames()
+        val icons = resourceProvider.getTypeIcons()
+        val count = names.size
+        val types = mutableListOf<CourierCarTypeItem>()
+        for (i in 0 until count) {
+            types.add(CourierCarTypeItem(icons.getResourceId(i, 0), names[i]))
+        }
+        types.toList()
+    }
+
+    init {
+        updateCarType()
+    }
 
     fun onCheckCarNumberClick() {
-        putCarNumber(carNumber)
+        putCarTypeAndNumber()
     }
 
     fun onCancelCarNumberClick() {
         fetchCarNumberComplete()
     }
 
+    fun onCarTypeSelectClick() {
+        _stateUI.value = CourierCarNumberUIState.InitTypeItems(types)
+    }
+
+    fun onCarTypeCloseClick() {
+        _stateUI.value = CourierCarNumberUIState.CloseTypeItems
+    }
+
     fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
         addSubscription(
-            event
-                .scan(interactor.getCarNumber()) { accumulator, item ->
-                    accumulateNumber(accumulator, item)
-                }
+            event.scan(interactor.getCarNumber()) { accumulator, item ->
+                accumulateNumber(accumulator, item)
+            }
+                .doOnNext { carNumber = it }
                 .doOnNext {
                     switchBackspace(it)
-                    switchComplete(it)
+                    switchComplete()
                 }
-                .doOnNext { carNumber = it }
-                .map { keyToNumberSpanFormat(it) }
+                .map { carNumberFormat(CarNumberUtils(it)).invoke() }
                 .subscribe(
                     { _stateUI.value = it },
                     { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }
 
-    private fun keyToNumberSpanFormat(it: String) =
-        CourierCarNumberUIState.NumberSpanFormat(
-            CarNumberUtils.numberFormatter(it),
-            CarNumberUtils.numberFormatterSpanLength(it),
-            CarNumberUtils.numberKeyboardMode(it)
-        )
+    fun onAddressItemClick(index: Int) {
+        carType = index
+        updateCarType()
+    }
+
+    private fun updateCarType() {
+        if (carType == DEFAULT_CAR_TYPE) return
+        switchComplete()
+        _stateUI.postValue(CourierCarNumberUIState.SelectedCarType(types[carType]))
+    }
+
+    private fun carNumberFormat(carNumberUtils: CarNumberUtils): () -> CourierCarNumberUIState =
+        {
+            CourierCarNumberUIState.NumberSpanFormat(
+                carNumberUtils.numberWithMask(),
+                carNumberUtils.numberSpanLength(),
+                carNumberUtils.regionWithMask(),
+                carNumberUtils.regionSpanLength(),
+                carNumberUtils.numberKeyboardMode()
+            )
+        }
 
     private fun switchBackspace(it: String) {
         _stateKeyboardBackspaceUI.value =
@@ -76,28 +116,27 @@ class CourierCarNumberViewModel(
             else CourierCarNumberBackspaceUIState.Active
     }
 
-    private fun switchComplete(it: String) {
+    private fun switchComplete() {
         _stateUI.value =
-            if (it.length < NUMBER_LENGTH_MAX - 1) CourierCarNumberUIState.NumberNotFilled
+            if (carNumber.length < NUMBER_LENGTH_MAX - 1 || carType == -1) CourierCarNumberUIState.NumberNotFilled
             else CourierCarNumberUIState.NumberFormatComplete
     }
 
     private fun accumulateNumber(
         accumulator: String,
         item: CarNumberKeyboardNumericView.ButtonAction
-    ) =
-        if (item == CarNumberKeyboardNumericView.ButtonAction.BUTTON_DELETE) {
-            accumulator.dropLast(NUMBER_DROP_COUNT_LAST)
-        } else if (item == CarNumberKeyboardNumericView.ButtonAction.BUTTON_DELETE_LONG) {
-            accumulator.drop(accumulator.length)
-        } else {
-            if (accumulator.length > NUMBER_LENGTH_MAX - 1) accumulator.take(NUMBER_LENGTH_MAX)
-            else accumulator.plus(item.symbol)
-        }
+    ) = if (item == CarNumberKeyboardNumericView.ButtonAction.BUTTON_DELETE) {
+        accumulator.dropLast(NUMBER_DROP_COUNT_LAST)
+    } else if (item == CarNumberKeyboardNumericView.ButtonAction.BUTTON_DELETE_LONG) {
+        accumulator.drop(accumulator.length)
+    } else {
+        if (accumulator.length > NUMBER_LENGTH_MAX - 1) accumulator.take(NUMBER_LENGTH_MAX)
+        else accumulator.plus(item.symbol)
+    }
 
-    private fun putCarNumber(carNumber: String) {
+    private fun putCarTypeAndNumber() {
         _progressState.value = CourierCarNumberProgressState.Progress
-        addSubscription(interactor.putCarNumber(carNumber.replace("\\s".toRegex(), ""))
+        addSubscription(interactor.putCarTypeAndNumber(carType, carNumber.replace("\\s".toRegex(), ""))
             .subscribe(
                 { fetchCarNumberComplete() },
                 { fetchCarNumberError(it) }

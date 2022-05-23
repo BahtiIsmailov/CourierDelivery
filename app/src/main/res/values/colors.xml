@@ -43,4 +43,6 @@
     <color name="colorScannerHoldFrom">#5E1DA9</color>
     <color name="colorScannerHoldTo">#300A5A</color>
 
+    <color name="primary_hold">#5C2C2731</color>
+
 </resources>

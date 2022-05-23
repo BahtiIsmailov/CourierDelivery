@@ -197,7 +197,7 @@ class CourierOrdersViewModel(
                     DialogInfoStyle.INFO.ordinal,
                     resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
                     resourceProvider.getConfirmMessageDialog(
-                        CarNumberUtils.numberFormat(interactor.carNumber()),
+                        CarNumberUtils(interactor.carNumber()).fullNumberWithMask(),
                         courierOrderLocalEntity.minVolume,
                         courierOrderLocalEntity.reservedDuration
                     ),
@@ -502,10 +502,12 @@ class CourierOrdersViewModel(
         with(courierOrderEntity) {
             onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
             val carNumber = carNumberFormat(interactor.carNumber())
+            val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
             val itemId = (idView + 1).toString()
             val coast = DecimalFormat("#,###.##").format(minPrice)
             _orderDetails.value = CourierOrderDetailsInfoUIState.InitOrderDetails(
                 carNumber = carNumber,
+                carTypeIcon = carTypeIcon,
                 isChangeCarNumber = interactor.carNumberIsConfirm(),
                 itemId = itemId,
                 orderId = resourceProvider.getOrder(id),
@@ -537,7 +539,7 @@ class CourierOrdersViewModel(
     private fun carNumberFormat(it: String) =
         it.let {
             if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
-            else resourceProvider.getCarNumber(CarNumberUtils.numberFormat(it))
+            else resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber())
         }
 
     fun onCloseOrdersClick() {

@@ -6,6 +6,8 @@ interface UserManager {
     fun isPhoneChanged(phone: String): Boolean
     fun savePhone(phone: String)
     fun phone(): String
+    fun saveCarType(type: Int)
+    fun carType(): Int
     fun saveCarNumber(number: String)
     fun carNumber(): String
     fun savePaymentGuid(number: String)

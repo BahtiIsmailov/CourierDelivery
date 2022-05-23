@@ -106,9 +106,16 @@
 
     <string name="empty_list">Список пуст</string>
 
-    <string name="courier_car_number_title">Введите номер машины</string>
+    <string name="courier_car_number_title">Авто</string>
+    <string name="courier_car_number_empty_selected_name">Выберите транспорт</string>
+    <string name="courier_car_number_country">RUS</string>
     <string name="courier_car_confirm">Подтвердить</string>
     <string name="courier_car_cancel">Отмена</string>
+    <string name="courier_car_gazele_name">Газель</string>
+    <string name="courier_car_wagon_name">Фургон</string>
+    <string name="courier_car_station_wagon_name">Универсал</string>
+
+
     <string name="courier_orders_addresses">Адреса доставки</string>
     <string name="courier_orders_take">Взять заказ</string>
     <string name="auth_phone_title">Введите номер телефона</string>
@@ -246,7 +253,7 @@
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_empty_address">Список пуст</string>
-    <string name="courier_orders_automobile">Машина </string>
+    <string name="courier_orders_automobile">ТС</string>
     <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
@@ -311,7 +318,6 @@
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
     <string name="courier_intransit_delegate_divider">/</string>
-
 
 
     <string name="courier_intransit_office_scanner_title">Сканировать QR ПВЗ</string>
@@ -567,9 +573,6 @@
     <string name="courier_intransit_office_scanner_info">Наведите камеру на QR-код,\ncканирование произойдет автоматически</string>
 
     <string name="courier_unloading_details_title">Осталось выгрузить</string>
-
-
-
 
 
     <string name="auth_user_fio">Фамилия</string>

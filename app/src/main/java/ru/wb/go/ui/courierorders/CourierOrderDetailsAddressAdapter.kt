@@ -9,7 +9,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrdersAddressLayoutBinding
 
 class CourierOrderDetailsAddressAdapter(
-    private val context: Context,
+    context: Context,
     private val addressItems: MutableList<CourierOrderDetailsAddressItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
 ) : RecyclerView.Adapter<CourierOrderDetailsAddressAdapter.ViewHolder>() {
@@ -37,8 +37,8 @@ class CourierOrderDetailsAddressAdapter(
     }
 
     inner class ViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView),
-
         View.OnClickListener {
+
         var binding = CourierOrdersAddressLayoutBinding.bind(rootView)
 
         override fun onClick(v: View) {

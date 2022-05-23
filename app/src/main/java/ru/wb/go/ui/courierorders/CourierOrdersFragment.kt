@@ -7,9 +7,13 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.RelativeSizeSpan
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -404,7 +408,21 @@ class CourierOrdersFragment :
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
-                        binding.carNumber.text = it.carNumber
+//                        binding.carNumber.text = it.carNumber
+                        binding.carNumber.setText(
+                            carNumberSpannable(it.carNumber),
+                            TextView.BufferType.SPANNABLE
+                        )
+
+                        binding.iconCarTypeSelected.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                it.carTypeIcon
+                            )
+                        )
+                        binding.iconCarTypeSelected.visibility =
+                            if (it.isChangeCarNumber) VISIBLE else GONE
+
                         binding.carChangeImage.visibility =
                             if (it.isChangeCarNumber) VISIBLE else GONE
                         linerNumber.text = it.itemId
@@ -455,6 +473,13 @@ class CourierOrdersFragment :
             else if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
         }
 
+    }
+
+    private fun carNumberSpannable(number: String): Spannable {
+        val spannable: Spannable = SpannableString(number)
+        spannable.setSpan(RelativeSizeSpan(0.8f), 3, 4, 0)
+        spannable.setSpan(RelativeSizeSpan(0.8f), 9, 11, 0)
+        return spannable
     }
 
     private fun isOrdersExpanded() =

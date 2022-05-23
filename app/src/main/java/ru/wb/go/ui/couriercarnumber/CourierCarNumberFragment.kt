@@ -5,14 +5,22 @@ import android.os.Parcelable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -39,6 +47,12 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     private lateinit var _binding: CourierCarNumberFragmentBinding
     private val binding get() = _binding
 
+    private lateinit var carTypeAdapter: CourierCarTypeAdapter
+    private lateinit var carTypeLayoutManager: LinearLayoutManager
+    private lateinit var carTypeSmoothScroller: RecyclerView.SmoothScroller
+
+    private lateinit var bottomSheetCarTypes: BottomSheetBehavior<ConstraintLayout>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -52,6 +66,41 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         initViews()
         initListeners()
         initStateObserve()
+        initBottomSheet()
+        initRecyclerViewDetails()
+    }
+
+    private val bottomSheetDetailsCallback = object :
+        BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                binding.carTypesLayout.visibility = INVISIBLE
+                binding.confirm.visibility = VISIBLE
+                binding.cancel.visibility = VISIBLE
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
+    private fun initBottomSheet() {
+        bottomSheetCarTypes = BottomSheetBehavior.from(binding.carTypes)
+        bottomSheetCarTypes.skipCollapsed = true
+        bottomSheetCarTypes.addBottomSheetCallback(bottomSheetDetailsCallback)
+        bottomSheetCarTypes.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun initRecyclerViewDetails() {
+        carTypeLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.types.layoutManager = carTypeLayoutManager
+        binding.types.setHasFixedSize(true)
+        initSmoothScrollerAddress()
+    }
+
+    private fun initSmoothScrollerAddress() {
+        carTypeSmoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference() = SNAP_TO_START
+        }
     }
 
     private fun initViews() {
@@ -60,9 +109,19 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
     private fun initListeners() {
+        binding.carClose.setOnClickListener { viewModel.onCancelCarNumberClick() }
         binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick() }
         binding.cancel.setOnClickListener { viewModel.onCancelCarNumberClick() }
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
+        binding.iconCarTypeSelect.setOnClickListener { viewModel.onCarTypeSelectClick() }
+        binding.iconCarTypeChange.setOnClickListener { viewModel.onCarTypeSelectClick() }
+        binding.typesClose.setOnClickListener { viewModel.onCarTypeCloseClick() }
+    }
+
+    private val callback = object : CourierCarTypeAdapter.OnItemClickCallBack {
+        override fun onItemClick(index: Int) {
+            viewModel.onAddressItemClick(index)
+        }
     }
 
     private fun initStateObserve() {
@@ -93,14 +152,36 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                 }
                 CourierCarNumberUIState.NumberNotFilled -> {
                     binding.confirm.isEnabled = false
-                    binding.numberNotFound.visibility = INVISIBLE
                 }
                 is CourierCarNumberUIState.NumberSpanFormat -> {
                     binding.carNumber.setText(
-                        carNumberSpannable(state),
+                        carNumberSpannable(state.numberFormat, state.numberSpanLength),
+                        TextView.BufferType.SPANNABLE
+                    )
+                    binding.region.setText(
+                        regionSpannable(state.regionFormat, state.regionSpanLength),
                         TextView.BufferType.SPANNABLE
                     )
                     binding.viewKeyboard.setKeyboardMode(state.mode)
+                }
+                is CourierCarNumberUIState.InitTypeItems -> {
+                    carTypeAdapter = CourierCarTypeAdapter(requireContext(), state.items, callback)
+                    binding.types.adapter = carTypeAdapter
+                    showCarTypes()
+                }
+                CourierCarNumberUIState.CloseTypeItems -> closeCarTypes()
+                is CourierCarNumberUIState.SelectedCarType -> {
+                    closeCarTypes()
+
+                    binding.iconCarTypeSelected.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            state.item.icon
+                        )
+                    )
+                    binding.carTypeSelectedName.text = state.item.name
+                    binding.iconCarTypeSelect.visibility = INVISIBLE
+                    binding.iconCarTypeChange.visibility = VISIBLE
                 }
             }
 
@@ -114,17 +195,37 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         }
     }
 
-    private fun carNumberSpannable(state: CourierCarNumberUIState.NumberSpanFormat): Spannable {
-        val phone = state.numberFormat
-        val spannable: Spannable = SpannableString(phone)
+    private fun showCarTypes() {
+        binding.confirm.visibility = INVISIBLE
+        binding.cancel.visibility = INVISIBLE
+        binding.carTypesLayout.visibility = VISIBLE
+        bottomSheetCarTypes.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    private fun closeCarTypes() {
+        bottomSheetCarTypes.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun carNumberSpannable(number: String, lenghtSpan: Int): Spannable {
+        val spannable: Spannable = SpannableString(number)
         val first = 0
-        val last = state.count
         val span = ForegroundColorSpan(
             ResourcesCompat.getColor(resources, R.color.primary, null)
         )
-        spannable.setSpan(span, first, last, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.setSpan(span, first, lenghtSpan, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.setSpan(RelativeSizeSpan(0.8f), 0, 1, 0)
+        spannable.setSpan(RelativeSizeSpan(0.8f), 6, 8, 0)
         return spannable
     }
+
+    private fun regionSpannable(region: String, lenghtSpan: Int): Spannable {
+        val spannable: Spannable = SpannableString(region)
+        val first = 0
+        val span = ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.primary, null))
+        spannable.setSpan(span, first, lenghtSpan, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannable
+    }
+
 }
 
 @Parcelize

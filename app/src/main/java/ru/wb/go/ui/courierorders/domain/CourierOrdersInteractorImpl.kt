@@ -154,6 +154,10 @@ class CourierOrdersInteractorImpl(
         return userManager.carNumber()
     }
 
+    override fun carType(): Int {
+        return userManager.carType()
+    }
+
     override fun anchorTask(): Completable {
         return Completable.fromSingle(Single.zip(
             selectedOrder(selectedRowOrder()),
@@ -194,7 +198,7 @@ class CourierOrdersInteractorImpl(
             srcAddress = warehouseLocalEntity.fullAddress,
             srcLongitude = warehouseLocalEntity.longitude,
             srcLatitude = warehouseLocalEntity.latitude,
-            route = route?:"не указан"
+            route = route ?: "не указан"
         )
     }
 
