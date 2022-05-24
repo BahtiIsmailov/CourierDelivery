@@ -160,7 +160,6 @@
         android:clickable="false"
         android:focusable="false"
         android:src="@drawable/ic_next"
-        android:visibility="gone"
         app:backgroundTint="@color/tertiary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
