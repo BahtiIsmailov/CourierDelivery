@@ -24,4 +24,6 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
     fun completeOfficeUnload(): Completable
 
     fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+
+    fun getOrderId(): String
 }

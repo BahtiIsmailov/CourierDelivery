@@ -68,6 +68,10 @@
         <item name="android:background">@drawable/button_app_transparent_round_corner_support</item>
     </style>
 
+    <style name="AppTransparentImageButtonStyle" parent="AppTransparentButtonStyle">
+        <item name="android:background">@drawable/button_app_transparent_round_corner_image</item>
+    </style>
+
 
     <style name="AppMapButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/button_map_round_corner</item>
@@ -285,9 +289,14 @@
         <item name="android:textColor">@color/secondary</item>
     </style>
 
-    <style name="ExtraLightRegularText" parent="RobotoRegularBaseFont">
+    <style name="ExtraLargeLvl2RegularText" parent="RobotoRegularBaseFont">
         <item name="android:textSize">@dimen/extra_large_text</item>
         <item name="android:textColor">@color/lvl_2</item>
+    </style>
+
+    <style name="ExtraLargeTertiaryRegularText" parent="RobotoRegularBaseFont">
+        <item name="android:textSize">@dimen/extra_large_text</item>
+        <item name="android:textColor">@color/tertiary</item>
     </style>
     <!--============================ExtraLargeRobotoMedium=====================================-->
     <style name="ExtraLargePrimaryMediumText" parent="RobotoMediumBaseFont">

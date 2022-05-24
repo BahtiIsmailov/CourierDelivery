@@ -38,6 +38,10 @@ class CourierIntransitViewModel(
     val navigateToErrorDialog: LiveData<ErrorDialogData>
         get() = _navigateToErrorDialog
 
+    private val _navigatorState = SingleLiveEvent<CourierIntransitNavigatorUIState>()
+    val navigatorState: LiveData<CourierIntransitNavigatorUIState>
+        get() = _navigatorState
+
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
         get() = _navigateToDialogConfirmInfo
@@ -289,8 +293,25 @@ class CourierIntransitViewModel(
         }
     }
 
-    fun onScanQrPvzClick() {
+    fun onNavigatorClick() {
+        onTechEventLog("Button navigate to navigator")
+        selectedItem()
+    }
 
+    private fun selectedItem() {
+        intransitItems.forEachIndexed { index, item ->
+            if (item.isSelected) {
+                val point = coordinatePoints[index]
+                _navigationState.value = CourierIntransitNavigationState.NavigateToNavigator(
+                    point.latitude,
+                    point.longitude
+                )
+                return
+            }
+        }
+    }
+
+    fun onScanQrPvzClick() {
         onTechEventLog("Button scan QR Office")
         changeSelectedMarkers("1", false)
         updateMarkers()
@@ -346,13 +367,19 @@ class CourierIntransitViewModel(
         _isEnableState.value = true
     }
 
-    fun onItemOfficeClick(selectIndex: Int) {
-        onTechEventLog("Select Office index=$selectIndex")
-        changeSelectedItems(selectIndex)
+    fun onItemOfficeClick(index: Int) {
+        onTechEventLog("Select Office index=$index")
+        changeSelectedItems(index)
         updateItems()
-        val isSelected = intransitItems[selectIndex].isSelected
-        changeSelectedMarkers(isSelected, selectIndex)
-        updateMarkers(isSelected, selectIndex)
+        val isSelected = intransitItems[index].isSelected
+        changeEnableNavigator(isSelected)
+        changeSelectedMarkers(isSelected, index)
+        updateMarkers(isSelected, index)
+    }
+
+    private fun changeEnableNavigator(isSelected: Boolean) {
+        _navigatorState.value =
+            if (isSelected) CourierIntransitNavigatorUIState.Enable else CourierIntransitNavigatorUIState.Disable
     }
 
     private fun changeSelectedItems(selectIndex: Int) {

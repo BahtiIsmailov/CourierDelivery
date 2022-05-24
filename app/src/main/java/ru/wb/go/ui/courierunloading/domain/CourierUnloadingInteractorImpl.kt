@@ -123,4 +123,10 @@ class CourierUnloadingInteractorImpl(
     override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
         return localRepo.getRemainBoxes(officeId)
     }
+
+    override fun getOrderId(): String {
+        // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
+        return localRepo.getOrder().orderId.toString()
+    }
+
 }

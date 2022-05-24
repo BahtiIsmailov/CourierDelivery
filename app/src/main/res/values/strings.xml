@@ -16,6 +16,8 @@
     <string name="app_support_title">Наша служба поддержки\nнаходится в Telegram</string>
     <string name="app_support_next">Перейти</string>
     <string name="app_support_cancel">Отмена</string>
+    <string name="app_no_internet_warehouse_title">Отсутствует интернет\nсоединение</string>
+    <string name="app_no_internet_warehouse_message">Мы не можем отобразить заказы =(</string>
 
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
@@ -106,9 +108,16 @@
 
     <string name="empty_list">Список пуст</string>
 
-    <string name="courier_car_number_title">Введите номер машины</string>
+    <string name="courier_car_number_title">Авто</string>
+    <string name="courier_car_number_empty_selected_name">Выберите транспорт</string>
+    <string name="courier_car_number_country">RUS</string>
     <string name="courier_car_confirm">Подтвердить</string>
     <string name="courier_car_cancel">Отмена</string>
+    <string name="courier_car_gazele_name">Газель</string>
+    <string name="courier_car_wagon_name">Фургон</string>
+    <string name="courier_car_station_wagon_name">Универсал</string>
+
+
     <string name="courier_orders_addresses">Адреса доставки</string>
     <string name="courier_orders_take">Взять заказ</string>
     <string name="auth_phone_title">Введите номер телефона</string>
@@ -246,7 +255,7 @@
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_empty_address">Список пуст</string>
-    <string name="courier_orders_automobile">Машина </string>
+    <string name="courier_orders_automobile">ТС</string>
     <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
@@ -307,11 +316,10 @@
     <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
     <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
 
-    <string name="courier_intransit_label_id"># %1$s</string>
+    <string name="courier_intransit_label_id">#%1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
     <string name="courier_intransit_delegate_divider">/</string>
-
 
 
     <string name="courier_intransit_office_scanner_title">Сканировать QR ПВЗ</string>
@@ -323,6 +331,7 @@
     <string name="courier_unloading_scanner_added_status">ВЫГРУЗИТЕ НА ПВЗ</string>
     <string name="courier_unloading_scanner_empty_qr">000000000</string>
     <string name="courier_unloading_scanner_empty_address">-</string>
+    <string name="courier_unloading_scanner_order">Заказ</string>
     <string name="courier_unloading_delivery">Выгружено</string>
     <string name="courier_unloading_address">Адрес доставки</string>
     <string name="courier_unloading_qr">QR</string>
@@ -550,13 +559,13 @@
     <string name="courier_billing_account_selector_withdraw_balance">Вывести %1$s ₽</string>
     <string name="courier_billing_account_selector_withdraw_balance_init">Вывести</string>
 
-    <string name="courier_loading_init_scanner">НАЧНИТЕ СКАНИРОВАНИЕ</string>
+    <string name="courier_loading_init_scanner">ОТСКАНИРУЙТЕ QR-КОД</string>
     <string name="courier_loading_load_in_car">ПОГРУЗИТЕ В МАШИНУ</string>
     <string name="courier_loading_forbidden_take">КОРОБКУ БРАТЬ ЗАПРЕЩЕНО</string>
     <string name="courier_loading_not_recognized_qr">QR КОРОБКИ НЕ РАСПОЗНАН</string>
     <string name="courier_loading_qr">QR</string>
     <string name="courier_loading_receive">Принято</string>
-    <string name="courier_loading_address">Адрес доставки</string>
+    <string name="courier_loading_address">Адрес ПВЗ</string>
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
 
@@ -567,9 +576,6 @@
     <string name="courier_intransit_office_scanner_info">Наведите камеру на QR-код,\ncканирование произойдет автоматически</string>
 
     <string name="courier_unloading_details_title">Осталось выгрузить</string>
-
-
-
 
 
     <string name="auth_user_fio">Фамилия</string>

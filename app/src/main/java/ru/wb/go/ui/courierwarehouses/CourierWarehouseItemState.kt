@@ -10,6 +10,8 @@ sealed class CourierWarehouseItemState {
 
     data class Empty(val info: String) : CourierWarehouseItemState()
 
+    object NoInternet : CourierWarehouseItemState()
+
     data class UpdateItem(val position: Int, val item: CourierWarehouseItem) :
         CourierWarehouseItemState()
 

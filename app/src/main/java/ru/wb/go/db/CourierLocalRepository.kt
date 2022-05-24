@@ -45,7 +45,7 @@ interface CourierLocalRepository {
     // True Order
     //==============================
 
-    fun getOrder(): LocalOrderEntity?
+    fun getOrder(): LocalOrderEntity
 
     fun deleteOrder()
 

@@ -65,15 +65,24 @@ class CourierUnloadingScanViewModel(
     val fragmentStateUI: LiveData<UnloadingFragmentState>
         get() = _fragmentStateUI
 
+    private val _orderState = MutableLiveData<String>()
+    val orderState: LiveData<String>
+        get() = _orderState
+
     private val _completeButtonEnable = SingleLiveEvent<Boolean>()
     val completeButtonEnable: LiveData<Boolean>
         get() = _completeButtonEnable
 
     fun update() {
+        initTitle()
         initToolbar()
         observeBoxInfoProcessInitState()
         observeScanProcess()
         observeScanProgress()
+    }
+
+    private fun initTitle() {
+        _orderState.value = resourceProvider.getOrderId(interactor.getOrderId())
     }
 
     private fun holdSplashScanner() {

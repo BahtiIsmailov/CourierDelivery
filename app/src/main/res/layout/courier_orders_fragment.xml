@@ -285,7 +285,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="22dp"
                     android:text="@string/courier_orders_automobile"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -324,15 +324,26 @@
                     tools:text=" • А111АА197" />
 
                 <ImageView
+                    android:id="@+id/icon_car_type_selected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/pad8"
+                    android:src="@drawable/ic_car_type_uncknown"
+                    app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
+                    app:layout_constraintStart_toEndOf="@+id/car_number"
+                    app:layout_constraintTop_toTopOf="@+id/car_number_prefix"
+                    tools:ignore="ContentDescription" />
+
+                <ImageView
                     android:id="@+id/car_change_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="@dimen/pad8"
                     android:background="?selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     app:layout_constraintBottom_toBottomOf="@+id/car_number"
-                    app:layout_constraintStart_toEndOf="@+id/car_number"
+                    app:layout_constraintStart_toEndOf="@+id/icon_car_type_selected"
                     app:layout_constraintTop_toTopOf="@+id/car_number"
                     app:srcCompat="@drawable/ic_change_car"
                     tools:ignore="ContentDescription" />

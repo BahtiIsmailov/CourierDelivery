@@ -211,6 +211,22 @@ class UserFormViewModel(
 //        val it = CustomException(parameters.docs.errorAnnotate!!)
 //        errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
 //    }
+    fun decodeToUTF8(data: String): String {
+        val resultWord = data.map {
+            println(it.code)
+            if (it.code == 235) {
+                it.toString().encodeToByteArray()
+                val buffer = it.toString().toByteArray(charset("ASCII"))
+                val letter = String(buffer, charset("ASCII"))
+                letter
+
+            } else {
+                it
+            }
+        }.joinToString(",").replace(",", "").replace("?", "ё")
+        print("$resultWord ")
+        return resultWord
+    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
