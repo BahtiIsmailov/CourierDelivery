@@ -98,6 +98,7 @@
         android:layout_width="fill_parent"
         android:layout_height="1dip"
         android:layout_below="@+id/content"
-        android:background="@color/colorDividerPale" />
+        android:background="@color/colorDividerPale"
+        android:visibility="gone" />
 
 </RelativeLayout>
