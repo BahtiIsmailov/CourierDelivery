@@ -239,7 +239,7 @@
                 android:layout_marginStart="@dimen/pad16"
                 android:layout_marginEnd="@dimen/pad16"
                 android:background="@drawable/spinner_account_rounded_corner"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
