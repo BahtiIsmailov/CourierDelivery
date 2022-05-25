@@ -234,7 +234,10 @@ class CourierOrdersViewModel(
     }
 
     private fun unselectedAddressMapMarkers() {
-        addressMapMarkers.forEach { it.icon = resourceProvider.getOfficeMapIcon() }
+        addressMapMarkers.forEachIndexed { index, courierMapMarker ->
+            courierMapMarker.icon = if (orderAddressItems[index].isUnspentTimeWork)
+                resourceProvider.getOfficeMapIcon() else resourceProvider.getOfficeMapTimeIcon()
+        }
     }
 
     private fun unselectedAddressItems() {
@@ -265,7 +268,11 @@ class CourierOrdersViewModel(
     private fun updateShowingAddressDetail(idMapClick: Int) {
         val address = orderAddressItems[idMapClick]
         _navigationState.value = if (address.isSelected)
-            CourierOrdersNavigationState.ShowAddressDetail(address.fullAddress)
+            CourierOrdersNavigationState.ShowAddressDetail(
+                if (address.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon(),
+                address.fullAddress,
+                if (address.isUnspentTimeWork) address.timeWork else resourceProvider.getWorkTimeEmpty(),
+            )
         else CourierOrdersNavigationState.CloseAddressesDetail
     }
 
@@ -278,12 +285,12 @@ class CourierOrdersViewModel(
         addressMapMarkers.forEachIndexed { index, item ->
             val addressItem = orderAddressItems[index]
             item.icon =
-                if (item.point.id == mapPointId && item.icon == resourceProvider.getOfficeMapIcon()) {
+                if (item.point.id == mapPointId && (item.icon == resourceProvider.getOfficeMapIcon() || item.icon == resourceProvider.getOfficeMapTimeIcon())) {
                     addressItem.isSelected = true
-                    resourceProvider.getOfficeMapSelectedIcon()
+                    if (addressItem.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon()
                 } else {
                     addressItem.isSelected = false
-                    resourceProvider.getOfficeMapIcon()
+                    if (addressItem.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
                 }
         }
     }
@@ -336,10 +343,20 @@ class CourierOrdersViewModel(
             Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
         addressMapMarkers.add(warehouseMapMarker)
         dstOffices.forEachIndexed { index, item ->
-            addressItems.add(CourierOrderDetailsAddressItem(item.name, false))
+            addressItems.add(
+                CourierOrderDetailsAddressItem(
+                    item.name,
+                    false,
+                    item.isUnusualTime,
+                    item.workTimes
+                )
+            )
             addressCoordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
             val mapPoint = MapPoint("$ADDRESS_MAP_PREFIX$index", item.latitude, item.longitude)
-            val mapMarker = Empty(mapPoint, resourceProvider.getOfficeMapIcon())
+            val mapMarker = Empty(
+                mapPoint,
+                if (item.isUnusualTime) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+            )
             addressMapMarkers.add(mapMarker)
         }
         saveAddressItems(addressItems)
@@ -558,12 +575,14 @@ class CourierOrdersViewModel(
         orderAddressItems.forEachIndexed { addressIndex, item ->
             val addressMapMarker = addressMapMarkers[addressIndex]
             if (index == addressIndex) {
-                addressMapMarker.icon = if (isSelected)
-                    resourceProvider.getOfficeMapSelectedIcon()
-                else resourceProvider.getOfficeMapIcon()
+                addressMapMarker.icon = if (isSelected) {
+                    if (item.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon()
+                } else {
+                    if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+                }
                 item.isSelected = isSelected
             } else {
-                addressMapMarker.icon = resourceProvider.getOfficeMapIcon()
+                if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
                 item.isSelected = false
             }
 

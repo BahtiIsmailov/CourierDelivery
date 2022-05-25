@@ -26,6 +26,7 @@ import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.prefs.SharedWorker
+import ru.wb.go.utils.time.TimeFormatter
 
 class CourierOrdersInteractorImpl(
     rxSchedulerFactory: RxSchedulerFactory,
@@ -38,6 +39,7 @@ class CourierOrdersInteractorImpl(
     private val userManager: UserManager,
     private val tokenManager: TokenManager,
     private val timeManager: TimeManager,
+    private val timeFormatter: TimeFormatter,
     private val sharedWorker: SharedWorker
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierOrdersInteractor {
@@ -101,7 +103,9 @@ class CourierOrdersInteractorImpl(
                         fullAddress = fullAddress,
                         longitude = long,
                         latitude = lat,
-                        visitedAt = ""
+                        visitedAt = "",
+                        workTimes = workTimes,
+                        isUnusualTime = isUnusualTime
                     )
                 )
             }

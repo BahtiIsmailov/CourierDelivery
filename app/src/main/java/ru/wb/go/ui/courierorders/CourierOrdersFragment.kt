@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -327,7 +328,11 @@ class CourierOrdersFragment :
                     showRegistrationDialogConfirmInfo()
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
+                    ResourcesCompat.getDrawable(resources, it.icon, null)
+                        ?.let { binding.iconAddress.setImageDrawable(it) }
                     binding.addressDetail.text = it.address
+                    binding.timeWorkDetail.visibility = if (it.workTime.isEmpty()) GONE else VISIBLE
+                    binding.timeWorkDetail.text = it.workTime
                     if (binding.addressDetailLayout.visibility != VISIBLE) {
                         fadeOut(binding.addressDetailLayout).start()
                     }

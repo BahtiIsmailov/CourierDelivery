@@ -49,6 +49,10 @@ class CourierOrdersResourceProvider(private val context: Context) :
 
     fun getOfficeMapSelectedIcon() = R.drawable.ic_address_point_select
 
+    fun getOfficeMapTimeIcon() = R.drawable.ic_address_point_time_normal
+
+    fun getOfficeMapSelectedTimeIcon() = R.drawable.ic_address_point_time_select
+
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)
 
@@ -75,4 +79,6 @@ class CourierOrdersResourceProvider(private val context: Context) :
         else context.resources.obtainTypedArray(R.array.car_type_icon).getResourceId(type, 0)
     }
 
+    fun getWorkTimeEmpty() =
+        context.getString(R.string.courier_orders_details_work_time_empty)
 }

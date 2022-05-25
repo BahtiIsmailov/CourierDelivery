@@ -6,4 +6,6 @@ data class CourierOrderDstOfficeResponse(
     val fullAddress: String?,
     val long: Double,
     val lat: Double,
+    val wrkTime: String?,
+    val unusualTime: Boolean
 )

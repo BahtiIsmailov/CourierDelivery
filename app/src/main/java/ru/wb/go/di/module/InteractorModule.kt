@@ -208,6 +208,7 @@ val interactorModule = module {
         userManager: UserManager,
         tokenManager: TokenManager,
         timeManager: TimeManager,
+        timeFormatter: TimeFormatter,
         sharedWorker: SharedWorker
     ): CourierOrdersInteractor {
         return CourierOrdersInteractorImpl(
@@ -221,6 +222,7 @@ val interactorModule = module {
             userManager,
             tokenManager,
             timeManager,
+            timeFormatter,
             sharedWorker
         )
     }
@@ -422,6 +424,7 @@ val interactorModule = module {
     factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierOrdersInteractor(
+            get(),
             get(),
             get(),
             get(),

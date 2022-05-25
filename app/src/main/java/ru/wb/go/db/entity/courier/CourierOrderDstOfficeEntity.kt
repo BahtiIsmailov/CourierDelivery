@@ -10,4 +10,6 @@ data class CourierOrderDstOfficeEntity(
     val fullAddress: String,
     val long: Double,
     val lat: Double,
+    val workTimes: String,
+    val isUnusualTime: Boolean
 ) : Parcelable
