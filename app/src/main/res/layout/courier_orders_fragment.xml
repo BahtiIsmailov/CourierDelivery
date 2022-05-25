@@ -239,7 +239,7 @@
                 android:layout_marginStart="@dimen/pad16"
                 android:layout_marginEnd="@dimen/pad16"
                 android:background="@drawable/spinner_account_rounded_corner"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -248,9 +248,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad16"
                     android:src="@drawable/ic_address_point_detail"
-                    app:layout_constraintBottom_toBottomOf="@+id/address_detail"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/address_detail"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="ContentDescription,MissingConstraints" />
 
                 <TextView
@@ -260,14 +260,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad16"
                     android:layout_marginTop="@dimen/pad12"
+                    android:layout_marginEnd="@dimen/pad16"
                     android:layout_marginBottom="@dimen/pad12"
                     android:gravity="start"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/time_work_detail"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/icon_address"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="RtlHardcoded"
                     tools:text="ул. Нижнее Мячково, Нижнее Мячково, 140123" />
+
+                <TextView
+                    android:id="@+id/time_work_detail"
+                    style="@style/MediumPrimaryRegularText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="@dimen/pad16"
+                    android:layout_marginBottom="@dimen/pad12"
+                    android:gravity="start"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/address_detail"
+                    tools:text="11:00 - 16:00" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -362,7 +377,6 @@
                     layout="@layout/courier_order_delegate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="38dp"
                     android:clickable="false"
                     android:focusable="false"
                     app:layout_constraintBottom_toTopOf="@id/addresses_order"
