@@ -16,6 +16,8 @@
     <string name="app_support_title">Наша служба поддержки\nнаходится в Telegram</string>
     <string name="app_support_next">Перейти</string>
     <string name="app_support_cancel">Отмена</string>
+    <string name="app_no_internet_warehouse_title">Отсутствует интернет\nсоединение</string>
+    <string name="app_no_internet_warehouse_message">Мы не можем отобразить заказы =(</string>
 
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>
     <string name="app_duration_time_span">через</string>
@@ -557,7 +559,7 @@
     <string name="courier_billing_account_selector_withdraw_balance">Вывести %1$s ₽</string>
     <string name="courier_billing_account_selector_withdraw_balance_init">Вывести</string>
 
-    <string name="courier_loading_init_scanner">НАЧНИТЕ СКАНИРОВАНИЕ</string>
+    <string name="courier_loading_init_scanner">ОТСКАНИРУЙТЕ QR-КОД</string>
     <string name="courier_loading_load_in_car">ПОГРУЗИТЕ В МАШИНУ</string>
     <string name="courier_loading_forbidden_take">КОРОБКУ БРАТЬ ЗАПРЕЩЕНО</string>
     <string name="courier_loading_not_recognized_qr">QR КОРОБКИ НЕ РАСПОЗНАН</string>

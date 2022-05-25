@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline_center_horizontal"
-        tools:text="Начните сканирование" />
+        tools:text="Отсканируйте QR-код" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/box_info_layout"

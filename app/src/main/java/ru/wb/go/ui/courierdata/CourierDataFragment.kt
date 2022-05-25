@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -202,35 +203,38 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun getFormUserData() = mutableListOf(
-        CourierData(binding.surname.text.toString(), CourierDataQueryType.SURNAME),
-        CourierData(binding.firstName.text.toString(), CourierDataQueryType.NAME),
-        CourierData(binding.inn.text.toString(), CourierDataQueryType.INN),
-        CourierData(binding.passportSeries.text.toString(), CourierDataQueryType.PASSPORT_SERIES),
-        CourierData(binding.passportNumber.text.toString(), CourierDataQueryType.PASSPORT_NUMBER),
-        CourierData(
-            binding.passportDateOfIssue.text.toString(),
-            CourierDataQueryType.PASSPORT_DATE
-        ),
-        CourierData(
-            binding.passportDepartmentCode.text.toString(),
-            CourierDataQueryType.PASSPORT_DEPARTMENT_CODE
-        ),
-        CourierData(
-            binding.passportIssuedBy.text.toString(),
-            CourierDataQueryType.PASSPORT_ISSUED_BY
-        ),
+        with(viewModel){
+            CourierData(decodeToUTF8(binding.surname.text.toString()), CourierDataQueryType.SURNAME)
+            CourierData(decodeToUTF8(binding.firstName.text.toString()), CourierDataQueryType.NAME)
+            CourierData(binding.inn.text.toString(), CourierDataQueryType.INN)
+            CourierData(binding.passportSeries.text.toString(), CourierDataQueryType.PASSPORT_SERIES)
+            CourierData(binding.passportNumber.text.toString(), CourierDataQueryType.PASSPORT_NUMBER)
+            CourierData(
+                binding.passportDateOfIssue.text.toString(),
+                CourierDataQueryType.PASSPORT_DATE
+            )
+            CourierData(
+                binding.passportDepartmentCode.text.toString(),
+                CourierDataQueryType.PASSPORT_DEPARTMENT_CODE
+            )
+            CourierData(
+                decodeToUTF8(binding.passportIssuedBy.text.toString()),
+                CourierDataQueryType.PASSPORT_ISSUED_BY
+            )
+        }
+
     )
 
     private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
-        surName = binding.surname.text.toString().trim(),
-        firstName = binding.firstName.text.toString().trim(),
-        middleName = binding.middleName.text.toString().trim(),
+        surName =  binding.surname.text.toString().trim() ,
+        firstName =  binding.firstName.text.toString().trim() ,
+        middleName =  binding.middleName.text.toString().trim() ,
         inn = binding.inn.text.toString().trim(),
         passportSeries = binding.passportSeries.text.toString().trim(),
         passportNumber = binding.passportNumber.text.toString().trim(),
         passportDateOfIssue = binding.passportDateOfIssue.text.toString().trim(),
         passportDepartmentCode = binding.passportDepartmentCode.text.toString().trim(),
-        passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
+        passportIssuedBy =  binding.passportIssuedBy.text.toString().trim() ,
         errorAnnotate = null,
     )
 

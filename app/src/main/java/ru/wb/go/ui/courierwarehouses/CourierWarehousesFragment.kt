@@ -98,6 +98,10 @@ class CourierWarehousesFragment :
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
+                CourierWarehouseItemState.NoInternet -> {
+                    binding.noInternetLayout.visibility = VISIBLE
+                    binding.items.visibility = GONE
+                }
             }
         }
 
@@ -106,6 +110,7 @@ class CourierWarehousesFragment :
                 WaitLoader.Wait -> {
                     binding.refresh.isRefreshing = true
                     binding.holdLayout.visibility = VISIBLE
+                    binding.noInternetLayout.visibility = INVISIBLE
                 }
                 WaitLoader.Complete -> {
                     binding.refresh.isRefreshing = false
@@ -180,6 +185,7 @@ class CourierWarehousesFragment :
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
         binding.refresh.setOnRefreshListener { viewModel.updateData() }
+        binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 

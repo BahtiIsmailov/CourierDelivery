@@ -236,7 +236,7 @@ class CourierLoadingScanFragment :
                     binding.timerLayout.visibility = View.VISIBLE
                     binding.boxInfoLayout.visibility = View.GONE
                     binding.ribbonStatus.setText(R.string.courier_loading_init_scanner)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.lvl_2))
+                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.colorPrimary))
                 }
                 is CourierLoadingScanBoxState.LoadInCar -> {
                     holdBackButtonOnScanBox()
