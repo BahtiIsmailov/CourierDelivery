@@ -348,7 +348,7 @@ class CourierOrdersViewModel(
                     item.name,
                     false,
                     item.isUnusualTime,
-                    item.workTimes
+                    item.workTimes.splitTimes()
                 )
             )
             addressCoordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
@@ -363,6 +363,18 @@ class CourierOrdersViewModel(
         initAddressItems(addressItems)
         saveAddressCoordinatePoints(addressCoordinatePoints)
         saveAddressMapMarkers(addressMapMarkers)
+    }
+
+    private fun String.splitTimes(): String {
+        val sb = StringBuffer()
+        this.split(TIME_DIVIDER)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .forEachIndexed { index, item ->
+                if (index > 0) sb.append("\n")
+                sb.append(item)
+            }
+        return sb.toString()
     }
 
     private fun convertAndSaveOrderPointMarkers(orders: List<CourierOrderLocalDataEntity>) {
@@ -677,6 +689,7 @@ class CourierOrdersViewModel(
         const val SCREEN_TAG = "CourierOrders"
         const val WAREHOUSE_FIRST_INDEX = 0
         const val DETAILS_HEIGHT = -400
+        const val TIME_DIVIDER = ";"
     }
 
     data class Label(val label: String)

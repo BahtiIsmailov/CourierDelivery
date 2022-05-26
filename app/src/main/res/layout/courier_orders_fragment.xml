@@ -239,6 +239,8 @@
                 android:layout_marginStart="@dimen/pad16"
                 android:layout_marginEnd="@dimen/pad16"
                 android:background="@drawable/spinner_account_rounded_corner"
+                android:paddingTop="@dimen/pad16"
+                android:paddingBottom="@dimen/pad16"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -259,11 +261,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad16"
-                    android:layout_marginTop="@dimen/pad12"
                     android:layout_marginEnd="@dimen/pad16"
-                    android:layout_marginBottom="@dimen/pad12"
                     android:gravity="start"
-                    app:layout_constraintBottom_toTopOf="@+id/time_work_detail"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/icon_address"
                     app:layout_constraintTop_toTopOf="parent"
@@ -275,13 +274,13 @@
                     style="@style/MediumPrimaryRegularText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="@dimen/pad16"
-                    android:layout_marginBottom="@dimen/pad12"
                     android:gravity="start"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/address_detail"
+                    app:layout_constraintTop_toBottomOf="@+id/address_detail"
                     tools:text="11:00 - 16:00" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
