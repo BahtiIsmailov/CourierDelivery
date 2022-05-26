@@ -337,6 +337,19 @@
                     app:layout_constraintTop_toTopOf="@+id/car_number_prefix"
                     tools:text=" • А111АА197" />
 
+                <TextView
+                    android:id="@+id/car_number_empty"
+                    style="@style/LargePrimaryRegularText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/dash_underline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/courier_orders_confirm_car_number_empty"
+                    app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
+                    app:layout_constraintStart_toEndOf="@+id/car_number_prefix"
+                    app:layout_constraintTop_toTopOf="@+id/car_number_prefix" />
+
                 <ImageView
                     android:id="@+id/icon_car_type_selected"
                     android:layout_width="wrap_content"

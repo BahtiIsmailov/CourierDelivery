@@ -236,7 +236,7 @@ class CourierOrdersViewModel(
     private fun unselectedAddressMapMarkers() {
         addressMapMarkers.forEachIndexed { index, courierMapMarker ->
             courierMapMarker.icon = if (orderAddressItems[index].isUnspentTimeWork)
-                resourceProvider.getOfficeMapIcon() else resourceProvider.getOfficeMapTimeIcon()
+                resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
         }
     }
 
@@ -567,8 +567,8 @@ class CourierOrdersViewModel(
 
     private fun carNumberFormat(it: String) =
         it.let {
-            if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
-            else resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber())
+            if (it.isEmpty()) CarNumberState.Empty
+            else CarNumberState.Indicated(resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber()))
         }
 
     fun onCloseOrdersClick() {

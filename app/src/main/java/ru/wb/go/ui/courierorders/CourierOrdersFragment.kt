@@ -269,10 +269,7 @@ class CourierOrdersFragment :
         }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
-    }
-
-    private fun animate(view: View, animator: (View) -> ObjectAnimator) {
-        animator(view).start()
+        binding.carNumberEmpty.setOnClickListener { viewModel.onChangeCarNumberClick() }
     }
 
     private fun fadeOut(view: View): ObjectAnimator {
@@ -413,11 +410,21 @@ class CourierOrdersFragment :
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
-//                        binding.carNumber.text = it.carNumber
-                        binding.carNumber.setText(
-                            carNumberSpannable(it.carNumber),
-                            TextView.BufferType.SPANNABLE
-                        )
+
+                        when (it.carNumber) {
+                            CarNumberState.Empty -> {
+                                binding.carNumber.visibility = GONE
+                                binding.carNumberEmpty.visibility = VISIBLE
+                            }
+                            is CarNumberState.Indicated -> {
+                                binding.carNumber.visibility = VISIBLE
+                                binding.carNumberEmpty.visibility = GONE
+                                binding.carNumber.setText(
+                                    carNumberSpannable(it.carNumber.carNumber),
+                                    TextView.BufferType.SPANNABLE
+                                )
+                            }
+                        }
 
                         binding.iconCarTypeSelected.setImageDrawable(
                             ContextCompat.getDrawable(

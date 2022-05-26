@@ -41,10 +41,6 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_confirm_car_number, carNumber)
     }
 
-    fun getCarNumberEmpty(): String {
-        return context.getString(R.string.courier_orders_confirm_car_number_empty)
-    }
-
     fun getOfficeMapIcon() = R.drawable.ic_address_point_normal
 
     fun getOfficeMapSelectedIcon() = R.drawable.ic_address_point_select
