@@ -489,8 +489,8 @@ class CourierOrdersFragment :
 
     private fun carNumberSpannable(number: String): Spannable {
         val spannable: Spannable = SpannableString(number)
-        spannable.setSpan(RelativeSizeSpan(0.8f), 3, 4, 0)
-        spannable.setSpan(RelativeSizeSpan(0.8f), 9, 11, 0)
+        spannable.setSpan(RelativeSizeSpan(0.8f), 0, 1, 0)
+        spannable.setSpan(RelativeSizeSpan(0.8f), 6, 8, 0)
         return spannable
     }
 
