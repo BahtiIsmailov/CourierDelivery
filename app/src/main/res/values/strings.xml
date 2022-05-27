@@ -269,7 +269,7 @@
 
     <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
 
-    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
+    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>%2$s</b>\nРезерв • <b>%3$s мин</b></string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
     <string name="courier_orders_details_dialog_task_reject">"Заказ уже в работе. Выберите другой заказ."</string>

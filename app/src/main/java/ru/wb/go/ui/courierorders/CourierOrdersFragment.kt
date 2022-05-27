@@ -260,9 +260,7 @@ class CourierOrdersFragment :
 
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.takeOrder.setOnClickListener {
-            viewModel.onConfirmTakeOrderClick()
-        }
+        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
             removeBottomSheetCallbackOrderDetailsListener()
             viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
