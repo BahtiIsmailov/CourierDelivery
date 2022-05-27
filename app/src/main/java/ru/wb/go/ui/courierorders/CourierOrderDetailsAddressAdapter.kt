@@ -29,10 +29,7 @@ class CourierOrderDetailsAddressAdapter(
         val (icon, fullAddress, isSelected, isUnspentTimeWork, timeWork) = addressItems[position]
         holder.binding.icon.setImageDrawable(ContextCompat.getDrawable(context, icon))
         holder.binding.fullAddressWarehouse.text = fullAddress
-        holder.binding.timeWorkDetail.visibility = if (isUnspentTimeWork) {
-            holder.binding.timeWorkDetail.text = timeWork
-            View.VISIBLE
-        } else View.GONE
+        holder.binding.timeWorkDetail.text = timeWork
         val selectable = if (isSelected) View.VISIBLE else View.INVISIBLE
         holder.binding.selectedBackground.visibility = selectable
         holder.binding.imageItemBorder.visibility = selectable

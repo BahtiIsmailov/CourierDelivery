@@ -326,7 +326,6 @@ class CourierOrdersFragment :
                     ResourcesCompat.getDrawable(resources, it.icon, null)
                         ?.let { binding.iconAddress.setImageDrawable(it) }
                     binding.addressDetail.text = it.address
-                    binding.timeWorkDetail.visibility = if (it.workTime.isEmpty()) GONE else VISIBLE
                     binding.timeWorkDetail.text = it.workTime
                     if (binding.addressDetailLayout.visibility != VISIBLE) {
                         fadeOut(binding.addressDetailLayout).start()

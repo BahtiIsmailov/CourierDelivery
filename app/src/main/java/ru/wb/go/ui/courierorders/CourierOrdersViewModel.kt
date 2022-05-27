@@ -274,7 +274,7 @@ class CourierOrdersViewModel(
             CourierOrdersNavigationState.ShowAddressDetail(
                 if (address.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon(),
                 address.fullAddress,
-                if (address.isUnspentTimeWork) address.timeWork else resourceProvider.getWorkTimeEmpty(),
+                address.timeWork,
             )
         else CourierOrdersNavigationState.CloseAddressesDetail
     }
