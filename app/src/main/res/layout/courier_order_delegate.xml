@@ -64,10 +64,10 @@
 
     <TextView
         android:id="@+id/cargo"
-        style="@style/SmallSecondaryRegularText"
+        style="@style/MediumSecondaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/orderId"
@@ -75,21 +75,22 @@
         tools:text="@sample/orders.json/orders/val" />
 
     <TextView
-        style="@style/LargeSecondaryRegularText"
+        style="@style/MediumSecondaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/pad8"
+        android:layout_marginEnd="4dp"
         android:text="@string/reserve_title"
-        app:layout_constraintBottom_toBottomOf="@id/reserve"
+        app:layout_constraintBottom_toBottomOf="@id/cargo"
         app:layout_constraintEnd_toStartOf="@id/reserve"
-        app:layout_constraintTop_toTopOf="@id/reserve" />
+        app:layout_constraintTop_toTopOf="@id/cargo" />
 
     <TextView
         android:id="@+id/reserve"
-        style="@style/LargeRedRegularText"
+        style="@style/MediumSecondaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/pad16"
+        android:textColor="@color/red"
         app:layout_constraintBottom_toBottomOf="@id/cargo"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="RtlSymmetry"

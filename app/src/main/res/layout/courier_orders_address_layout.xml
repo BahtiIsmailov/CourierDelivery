@@ -22,9 +22,9 @@
         tools:ignore="ContentDescription" />
 
     <ImageView
-        android:id="@+id/image_dot"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="@+id/fullAddressWarehouse"
@@ -43,7 +43,7 @@
         android:paddingTop="22dp"
         android:paddingBottom="22dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/image_dot"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20" />
 

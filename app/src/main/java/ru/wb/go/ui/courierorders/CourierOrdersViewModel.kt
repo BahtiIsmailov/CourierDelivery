@@ -343,8 +343,11 @@ class CourierOrdersViewModel(
             Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
         addressMapMarkers.add(warehouseMapMarker)
         dstOffices.forEachIndexed { index, item ->
+
+
             addressItems.add(
                 CourierOrderDetailsAddressItem(
+                    if (item.isUnusualTime) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon(),
                     item.name,
                     false,
                     item.isUnusualTime,
@@ -587,17 +590,21 @@ class CourierOrdersViewModel(
         orderAddressItems.forEachIndexed { addressIndex, item ->
             val addressMapMarker = addressMapMarkers[addressIndex]
             if (index == addressIndex) {
-                addressMapMarker.icon = if (isSelected) {
+                val icon = if (isSelected) {
                     if (item.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon()
                 } else {
                     if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
                 }
+                addressMapMarker.icon = icon
+                item.icon = icon
                 item.isSelected = isSelected
             } else {
-                if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+                val icon =
+                    if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+                addressMapMarker.icon = icon
+                item.icon = icon
                 item.isSelected = false
             }
-
         }
     }
 
