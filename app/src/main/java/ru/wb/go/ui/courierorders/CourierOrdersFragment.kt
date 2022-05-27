@@ -423,15 +423,15 @@ class CourierOrdersFragment :
                                 )
                             }
                         }
-
-                        binding.iconCarTypeSelected.setImageDrawable(
-                            ContextCompat.getDrawable(
-                                requireContext(),
-                                it.carTypeIcon
-                            )
-                        )
-                        binding.iconCarTypeSelected.visibility =
-                            if (it.isChangeCarNumber) VISIBLE else GONE
+//выключено  до реализации на сервере
+//                        binding.iconCarTypeSelected.setImageDrawable(
+//                            ContextCompat.getDrawable(
+//                                requireContext(),
+//                                it.carTypeIcon
+//                            )
+//                        )
+//                        binding.iconCarTypeSelected.visibility =
+//                            if (it.isChangeCarNumber) VISIBLE else GONE
 
                         binding.carChangeImage.visibility =
                             if (it.isChangeCarNumber) VISIBLE else GONE

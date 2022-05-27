@@ -181,7 +181,8 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                     )
                     binding.carTypeSelectedName.text = state.item.name
                     binding.iconCarTypeSelect.visibility = INVISIBLE
-                    binding.iconCarTypeChange.visibility = VISIBLE
+                    //выключено до реализации на сервере
+//                    binding.iconCarTypeChange.visibility = VISIBLE
                 }
             }
 

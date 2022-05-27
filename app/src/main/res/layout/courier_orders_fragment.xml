@@ -355,6 +355,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad8"
+                    android:visibility="gone"
                     android:src="@drawable/ic_car_type_uncknown"
                     app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
                     app:layout_constraintStart_toEndOf="@+id/car_number"
