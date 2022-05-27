@@ -127,15 +127,15 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="РЦ Петрозаводск" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/pad8"
-                    android:src="@drawable/ic_bottom_sheet_slider"
-                    app:layout_constraintEnd_toEndOf="@+id/title"
-                    app:layout_constraintStart_toStartOf="@+id/title"
-                    app:layout_constraintTop_toTopOf="@+id/title"
-                    tools:ignore="ContentDescription" />
+<!--                <ImageView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/pad8"-->
+<!--                    android:src="@drawable/ic_bottom_sheet_slider"-->
+<!--                    app:layout_constraintEnd_toEndOf="@+id/title"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/title"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/title"-->
+<!--                    tools:ignore="ContentDescription" />-->
 
                 <ImageView
                     android:id="@+id/close_orders"
@@ -305,15 +305,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/pad8"
-                    android:src="@drawable/ic_bottom_sheet_slider"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ContentDescription" />
+<!--                <ImageView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/pad8"-->
+<!--                    android:src="@drawable/ic_bottom_sheet_slider"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    tools:ignore="ContentDescription" />-->
 
                 <ImageView
                     android:id="@+id/close_order_details"
@@ -546,5 +546,19 @@
         </FrameLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/show_order_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:src="@drawable/ic_next"
+        app:backgroundTint="@color/tertiary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/lvl_1"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

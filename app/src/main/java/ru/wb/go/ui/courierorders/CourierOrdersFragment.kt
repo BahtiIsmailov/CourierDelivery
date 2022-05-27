@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -15,6 +16,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -213,6 +215,7 @@ class CourierOrdersFragment :
 
         bottomSheetOrders = BottomSheetBehavior.from(binding.ordersLayout)
         bottomSheetOrders.skipCollapsed = true
+        bottomSheetOrders.peekHeight = getHalfHeightDisplay()
 
         bottomSheetOrderDetails = BottomSheetBehavior.from(binding.orderDetailsLayout)
         bottomSheetOrderDetails.skipCollapsed = true
@@ -223,7 +226,7 @@ class CourierOrdersFragment :
     }
 
     private fun addBottomSheetOrdersListener() {
-        bottomSheetOrders.addBottomSheetCallback(bottomSheetOrdersCallback)
+        //bottomSheetOrders.addBottomSheetCallback(bottomSheetOrdersCallback)
     }
 
     private fun removeBottomSheetOrdersListener() {
@@ -269,10 +272,7 @@ class CourierOrdersFragment :
         }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
-    }
-
-    private fun animate(view: View, animator: (View) -> ObjectAnimator) {
-        animator(view).start()
+        binding.showOrderFab.setOnClickListener { viewModel.onNextFab() }
     }
 
     private fun fadeOut(view: View): ObjectAnimator {
@@ -349,8 +349,6 @@ class CourierOrdersFragment :
             }
         }
 
-
-
         viewModel.orders.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierOrderItemState.ShowItems -> {
@@ -373,6 +371,9 @@ class CourierOrdersFragment :
                     adapter.clear()
                     adapter.addItems(state.items)
                     adapter.notifyDataSetChanged()
+                }
+                is CourierOrderItemState.ScrollTo -> {
+                    smoothScrollToPosition(state.position)
                 }
             }
         }
@@ -413,7 +414,6 @@ class CourierOrdersFragment :
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
-//                        binding.carNumber.text = it.carNumber
                         binding.carNumber.setText(
                             carNumberSpannable(it.carNumber),
                             TextView.BufferType.SPANNABLE
@@ -438,6 +438,21 @@ class CourierOrdersFragment :
                         reserve.text = it.reserve
                     }
                 }
+            }
+        }
+
+        viewModel.showOrderState.observe(viewLifecycleOwner) {
+            when (it) {
+                CourierOrderShowOrdersState.Disable -> {
+                    binding.showOrderFab.isEnabled = false
+                    binding.showOrderFab.backgroundTintList = colorFab(R.color.tertiary)
+                }
+                CourierOrderShowOrdersState.Enable -> {
+                    binding.showOrderFab.isEnabled = true
+                    binding.showOrderFab.backgroundTintList = colorFab(R.color.colorPrimary)
+                }
+                CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
+                CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
             }
         }
 
@@ -479,6 +494,22 @@ class CourierOrdersFragment :
         }
 
     }
+
+    private fun smoothScrollToPosition(position: Int) {
+        val smoothScroller: SmoothScroller = createSmoothScroller()
+        smoothScroller.targetPosition = position
+        layoutManager.startSmoothScroll(smoothScroller)
+    }
+
+    private fun createSmoothScroller(): SmoothScroller {
+        return object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference() = SNAP_TO_START
+        }
+    }
+
+    private fun colorFab(@ColorRes color: Int) = ColorStateList.valueOf(
+        ContextCompat.getColor(requireContext(), color)
+    )
 
     private fun carNumberSpannable(number: String): Spannable {
         val spannable: Spannable = SpannableString(number)
