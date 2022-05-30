@@ -81,6 +81,8 @@ override suspend fun courierWarehouses():  List<CourierWarehouseLocalEntity>  {
                         fullAddress = dstOffice.fullAddress ?: "",
                         long = dstOffice.long,
                         lat = dstOffice.lat,
+                        workTimes = dstOffice.wrkTime ?: "",
+                        isUnusualTime = dstOffice.unusualTime
                     )
                 )
             }

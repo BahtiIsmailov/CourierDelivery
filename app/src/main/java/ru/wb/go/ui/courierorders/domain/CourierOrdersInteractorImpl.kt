@@ -26,6 +26,8 @@ import ru.wb.go.ui.couriermap.domain.CourierMapRepository
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.prefs.SharedWorker
+import ru.wb.go.utils.time.TimeFormatter
+import java.util.*
 
 class CourierOrdersInteractorImpl(
     rxSchedulerFactory: RxSchedulerFactory,
@@ -38,13 +40,26 @@ class CourierOrdersInteractorImpl(
     private val userManager: UserManager,
     private val tokenManager: TokenManager,
     private val timeManager: TimeManager,
+    private val timeFormatter: TimeFormatter,
     private val sharedWorker: SharedWorker
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierOrdersInteractor {
 
+    private fun List<CourierOrderDstOfficeEntity>.sortByUnusualTimeAndAddress(): List<CourierOrderDstOfficeEntity> {
+        return this.sortedWith(
+            compareBy({ !it.isUnusualTime }, { it.fullAddress.lowercase(Locale.ROOT) })
+        )
+    }
+
     override fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>> {
         return appTasksRepository.getFreeOrders(srcOfficeID)
-            .map { freeOrders -> freeOrders.sortedBy { it.id }.toMutableList() }
+            .map { freeOrders ->
+                val sortedFreeOrders = freeOrders.sortedBy { it.id }
+                sortedFreeOrders.forEach {
+                    it.dstOffices = it.dstOffices.sortByUnusualTimeAndAddress()
+                }
+                sortedFreeOrders
+            }
             .flatMap {
                 courierLocalRepository.deleteAllOrder()
                 courierLocalRepository.deleteAllOrderOffices()
@@ -61,7 +76,7 @@ class CourierOrdersInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun toCourierOrderLocalDataEntities(it: MutableList<CourierOrderEntity>): MutableList<CourierOrderLocalDataEntity> {
+    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): MutableList<CourierOrderLocalDataEntity> {
         val courierOrderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
         it.forEachIndexed { index, order ->
             val courierOrderLocalEntity = convertCourierOrderLocalEntity(order, index)
@@ -101,7 +116,9 @@ class CourierOrdersInteractorImpl(
                         fullAddress = fullAddress,
                         longitude = long,
                         latitude = lat,
-                        visitedAt = ""
+                        visitedAt = "",
+                        workTimes = workTimes,
+                        isUnusualTime = isUnusualTime
                     )
                 )
             }

@@ -41,18 +41,18 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_confirm_car_number, carNumber)
     }
 
-    fun getCarNumberEmpty(): String {
-        return context.getString(R.string.courier_orders_confirm_car_number_empty)
-    }
-
     fun getOfficeMapIcon() = R.drawable.ic_address_point_normal
 
     fun getOfficeMapSelectedIcon() = R.drawable.ic_address_point_select
 
+    fun getOfficeMapTimeIcon() = R.drawable.ic_address_point_time_normal
+
+    fun getOfficeMapSelectedTimeIcon() = R.drawable.ic_address_point_time_select
+
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)
 
-    fun getConfirmMessageDialog(carNumber: String, volume: Int, reserve: String) =
+    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String) =
         context.getString(
             R.string.courier_orders_details_dialog_message,
             carNumber,
@@ -75,4 +75,6 @@ class CourierOrdersResourceProvider(private val context: Context) :
         else context.resources.obtainTypedArray(R.array.car_type_icon).getResourceId(type, 0)
     }
 
+    fun getWorkTimeEmpty() =
+        context.getString(R.string.courier_orders_details_work_time_empty)
 }

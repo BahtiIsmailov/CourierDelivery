@@ -208,12 +208,6 @@
         <item name="android:textColor">@color/lvl_1</item>
     </style>
 
-
-    <style name="LargeRedRegularText" parent="RobotoRegularBaseFont">
-        <item name="android:textSize">@dimen/large_text</item>
-        <item name="android:textColor">@color/red</item>
-    </style>
-
     <!--==============================LargeRobotoMedium========================================-->
 
     <style name="LargePrimaryMediumText" parent="RobotoMediumBaseFont">

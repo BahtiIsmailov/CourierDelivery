@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierorders
 
+import androidx.annotation.DrawableRes
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 
 sealed class CourierOrdersNavigationState {
@@ -21,7 +22,12 @@ sealed class CourierOrdersNavigationState {
 
     object CloseAddressesDetail : CourierOrdersNavigationState()
 
-    data class ShowAddressDetail(val address: String) : CourierOrdersNavigationState()
+    data class ShowAddressDetail(
+        @DrawableRes val icon: Int,
+        val address: String,
+        val workTime: String
+    ) :
+        CourierOrdersNavigationState()
 
     object NavigateToRegistrationDialog : CourierOrdersNavigationState()
 

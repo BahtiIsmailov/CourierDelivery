@@ -109,17 +109,16 @@
     <string name="empty_list">Список пуст</string>
 
     <string name="courier_car_number_title">Авто</string>
-    <string name="courier_car_number_empty_selected_name">Выберите транспорт</string>
+    <string name="courier_car_number_empty_selected_name">Выберите категорию</string>
     <string name="courier_car_number_country">RUS</string>
     <string name="courier_car_confirm">Подтвердить</string>
     <string name="courier_car_cancel">Отмена</string>
-    <string name="courier_car_gazele_name">Газель</string>
-    <string name="courier_car_wagon_name">Фургон</string>
-    <string name="courier_car_station_wagon_name">Универсал</string>
-
+    <string name="courier_orders_confirm_car_number">%1$s</string>
+    <string name="courier_orders_confirm_car_number_empty">Не указано</string>
 
     <string name="courier_orders_addresses">Адреса доставки</string>
     <string name="courier_orders_take">Взять заказ</string>
+    <string name="courier_orders_work_time">Время работы: </string>
     <string name="auth_phone_title">Введите номер телефона</string>
     <string name="auth_billing_confirm">Понятно</string>
 
@@ -255,13 +254,11 @@
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_empty_address">Список пуст</string>
-    <string name="courier_orders_automobile">ТС</string>
+    <string name="courier_orders_automobile">ТС • \u0020</string>
     <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
     <string name="courier_orders_confirm_coast">%1$s ₽</string>
-    <string name="courier_orders_confirm_car_number">\u0020• %1$s</string>
-    <string name="courier_orders_confirm_car_number_empty">\u0020• Номер не указан</string>
     <string name="courier_orders_confirm_arrive">• за %1$s мин</string>
     <string name="courier_orders_confirm_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_confirm_volume">от %1$d шт. / %2$d кубов</string>
@@ -272,10 +269,11 @@
 
     <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
 
-    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>от %2$d</b> кубов\nРезерв • <b>%3$s мин</b></string>
+    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>%2$s</b>\nРезерв • <b>%3$s мин</b></string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>
     <string name="courier_orders_details_dialog_task_reject">"Заказ уже в работе. Выберите другой заказ."</string>
+    <string name="courier_orders_details_work_time_empty">""</string>
 
     <string name="courier_orders_details_dialog_is_not_exist_title">Заказ забрали</string>
     <string name="courier_orders_details_dialog_is_not_exist_message">Заказ уже взят в работу</string>

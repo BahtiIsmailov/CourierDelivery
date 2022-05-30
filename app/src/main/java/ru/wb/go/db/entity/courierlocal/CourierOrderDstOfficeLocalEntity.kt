@@ -24,4 +24,8 @@ data class CourierOrderDstOfficeLocalEntity(
     @Deprecated("use CourierOrderVisitedOfficeLocalEntity")
     @ColumnInfo(name = "dst_office_visited_at")
     val visitedAt: String,
+    @ColumnInfo(name = "dst_office_work_times")
+    val workTimes: String,
+    @ColumnInfo(name = "dst_office_is_unusual_time")
+    val isUnusualTime: Boolean
 )

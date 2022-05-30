@@ -198,7 +198,10 @@ class CourierOrdersViewModel(
                     resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
                     resourceProvider.getConfirmMessageDialog(
                         CarNumberUtils(interactor.carNumber()).fullNumberWithMask(),
-                        courierOrderLocalEntity.minVolume,
+                        resourceProvider.getCargo(
+                            courierOrderLocalEntity.minVolume,
+                            courierOrderLocalEntity.minBoxesCount
+                        ),
                         courierOrderLocalEntity.reservedDuration
                     ),
                     resourceProvider.getConfirmPositiveDialog(),
@@ -234,7 +237,10 @@ class CourierOrdersViewModel(
     }
 
     private fun unselectedAddressMapMarkers() {
-        addressMapMarkers.forEach { it.icon = resourceProvider.getOfficeMapIcon() }
+        addressMapMarkers.forEachIndexed { index, courierMapMarker ->
+            courierMapMarker.icon = if (orderAddressItems[index].isUnspentTimeWork)
+                resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+        }
     }
 
     private fun unselectedAddressItems() {
@@ -265,7 +271,11 @@ class CourierOrdersViewModel(
     private fun updateShowingAddressDetail(idMapClick: Int) {
         val address = orderAddressItems[idMapClick]
         _navigationState.value = if (address.isSelected)
-            CourierOrdersNavigationState.ShowAddressDetail(address.fullAddress)
+            CourierOrdersNavigationState.ShowAddressDetail(
+                if (address.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon(),
+                address.fullAddress,
+                address.timeWork,
+            )
         else CourierOrdersNavigationState.CloseAddressesDetail
     }
 
@@ -278,12 +288,12 @@ class CourierOrdersViewModel(
         addressMapMarkers.forEachIndexed { index, item ->
             val addressItem = orderAddressItems[index]
             item.icon =
-                if (item.point.id == mapPointId && item.icon == resourceProvider.getOfficeMapIcon()) {
+                if (item.point.id == mapPointId && (item.icon == resourceProvider.getOfficeMapIcon() || item.icon == resourceProvider.getOfficeMapTimeIcon())) {
                     addressItem.isSelected = true
-                    resourceProvider.getOfficeMapSelectedIcon()
+                    if (addressItem.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon()
                 } else {
                     addressItem.isSelected = false
-                    resourceProvider.getOfficeMapIcon()
+                    if (addressItem.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
                 }
         }
     }
@@ -336,16 +346,41 @@ class CourierOrdersViewModel(
             Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
         addressMapMarkers.add(warehouseMapMarker)
         dstOffices.forEachIndexed { index, item ->
-            addressItems.add(CourierOrderDetailsAddressItem(item.name, false))
+
+
+            addressItems.add(
+                CourierOrderDetailsAddressItem(
+                    if (item.isUnusualTime) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon(),
+                    item.name,
+                    false,
+                    item.isUnusualTime,
+                    item.workTimes.splitTimes()
+                )
+            )
             addressCoordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
             val mapPoint = MapPoint("$ADDRESS_MAP_PREFIX$index", item.latitude, item.longitude)
-            val mapMarker = Empty(mapPoint, resourceProvider.getOfficeMapIcon())
+            val mapMarker = Empty(
+                mapPoint,
+                if (item.isUnusualTime) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+            )
             addressMapMarkers.add(mapMarker)
         }
         saveAddressItems(addressItems)
         initAddressItems(addressItems)
         saveAddressCoordinatePoints(addressCoordinatePoints)
         saveAddressMapMarkers(addressMapMarkers)
+    }
+
+    private fun String.splitTimes(): String {
+        val sb = StringBuffer()
+        this.split(TIME_DIVIDER)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .forEachIndexed { index, item ->
+                if (index > 0) sb.append("\n")
+                sb.append(item)
+            }
+        return sb.toString()
     }
 
     private fun convertAndSaveOrderPointMarkers(orders: List<CourierOrderLocalDataEntity>) {
@@ -538,8 +573,8 @@ class CourierOrdersViewModel(
 
     private fun carNumberFormat(it: String) =
         it.let {
-            if (it.isEmpty()) resourceProvider.getCarNumberEmpty()
-            else resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber())
+            if (it.isEmpty()) CarNumberState.Empty
+            else CarNumberState.Indicated(resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber()))
         }
 
     fun onCloseOrdersClick() {
@@ -558,15 +593,21 @@ class CourierOrdersViewModel(
         orderAddressItems.forEachIndexed { addressIndex, item ->
             val addressMapMarker = addressMapMarkers[addressIndex]
             if (index == addressIndex) {
-                addressMapMarker.icon = if (isSelected)
-                    resourceProvider.getOfficeMapSelectedIcon()
-                else resourceProvider.getOfficeMapIcon()
+                val icon = if (isSelected) {
+                    if (item.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon()
+                } else {
+                    if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+                }
+                addressMapMarker.icon = icon
+                item.icon = icon
                 item.isSelected = isSelected
             } else {
-                addressMapMarker.icon = resourceProvider.getOfficeMapIcon()
+                val icon =
+                    if (item.isUnspentTimeWork) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
+                addressMapMarker.icon = icon
+                item.icon = icon
                 item.isSelected = false
             }
-
         }
     }
 
@@ -658,6 +699,7 @@ class CourierOrdersViewModel(
         const val SCREEN_TAG = "CourierOrders"
         const val WAREHOUSE_FIRST_INDEX = 0
         const val DETAILS_HEIGHT = -400
+        const val TIME_DIVIDER = ";"
     }
 
     data class Label(val label: String)

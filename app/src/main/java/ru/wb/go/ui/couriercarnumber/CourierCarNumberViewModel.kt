@@ -118,7 +118,9 @@ class CourierCarNumberViewModel(
 
     private fun switchComplete() {
         _stateUI.value =
-            if (carNumber.length < NUMBER_LENGTH_MAX - 1 || carType == -1) CourierCarNumberUIState.NumberNotFilled
+                //выключено до реализации на сервере
+//            if (carNumber.length < NUMBER_LENGTH_MAX - 1 || carType == -1) CourierCarNumberUIState.NumberNotFilled
+            if (carNumber.length < NUMBER_LENGTH_MAX - 1) CourierCarNumberUIState.NumberNotFilled
             else CourierCarNumberUIState.NumberFormatComplete
     }
 

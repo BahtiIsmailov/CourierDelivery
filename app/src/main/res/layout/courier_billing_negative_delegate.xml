@@ -13,7 +13,7 @@
         android:id="@+id/ic_billing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginStart="26dp"
         android:src="@drawable/ic_billing_negative"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,10 +63,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        tools:text="Вывод средств"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ic_billing"
         app:layout_constraintTop_toBottomOf="@+id/date"
+        tools:text="Вывод средств"
 
         />
 
@@ -75,18 +75,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        tools:src ="@drawable/ic_billing_is_processing"
         app:layout_constraintBottom_toBottomOf="@+id/status_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/status_description"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_billing_is_processing" />
 
     <View
         android:id="@+id/view_divider"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="24dp"
-        android:background="#EDEEF0"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:background="@color/colorDividerPale"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/ic_billing" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
