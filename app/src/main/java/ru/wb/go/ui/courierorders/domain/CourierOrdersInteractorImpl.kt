@@ -21,6 +21,7 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
+import ru.wb.go.ui.couriercarnumber.replaceCarNumberY
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
@@ -167,7 +168,7 @@ class CourierOrdersInteractorImpl(
     }
 
     override fun carNumber(): String {
-        return userManager.carNumber()
+        return userManager.carNumber().replaceCarNumberY()
     }
 
     override fun carType(): Int {
