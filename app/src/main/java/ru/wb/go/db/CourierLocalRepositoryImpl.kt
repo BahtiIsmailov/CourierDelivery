@@ -30,21 +30,22 @@ class CourierLocalRepositoryImpl(
         courierWarehouseDao.deleteAll()
     }
 
-    override fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>): Completable {
-        return Observable.fromIterable(courierOrderLocalDataEntities)
-            .flatMapCompletable { saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices) }
+    override suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>) {
+        courierOrderLocalDataEntities.map {
+            saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices)
+        }
     }
+
 
     override fun freeOrders(): Single<List<CourierOrderLocalDataEntity>> {
         return courierOrderDao.orderAndOffices()
     }
-
-    private fun saveOrderAndOffices(
+    private suspend fun saveOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>
-    ): Completable {
-        return courierOrderDao.insertOrder(courierOrderLocalEntity)
-            .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
+    )  {
+          courierOrderDao.insertOrder(courierOrderLocalEntity)
+          courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity)
     }
 
     override fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity> {

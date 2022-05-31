@@ -138,7 +138,9 @@ class CourierCarNumberViewModel(
 
     private fun putCarTypeAndNumber() {
         _progressState.value = CourierCarNumberProgressState.Progress
-        addSubscription(interactor.putCarTypeAndNumber(carType, carNumber.replace("\\s".toRegex(), ""))
+        addSubscription(
+            interactor.putCarTypeAndNumber(carType, carNumber.replace("\\s".toRegex(), "")
+            )
             .subscribe(
                 { fetchCarNumberComplete() },
                 { fetchCarNumberError(it) }

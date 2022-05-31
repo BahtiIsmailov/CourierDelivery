@@ -198,8 +198,12 @@ dependencies {
     kapt "androidx.room:room-compiler:$version_room"
     kapt "android.arch.persistence.room:compiler:1.1.1"
     implementation "android.arch.persistence.room:runtime:1.1.1"
+
 //    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
     annotationProcessor 'androidx.room:room-compiler:2.4.2'
+
+    //coroutine suspend fun
+    implementation "androidx.room:room-ktx:2.4.2"
 
     // navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

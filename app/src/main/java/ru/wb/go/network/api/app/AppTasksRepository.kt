@@ -8,6 +8,6 @@ interface AppTasksRepository {
 
     suspend fun courierWarehouses():  List<CourierWarehouseLocalEntity>
 
-    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
+    suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity>
 
 }
