@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierorders
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
 import ru.wb.go.app.COURIER_TASK_ALREADY_RESERVED_ERROR
@@ -88,7 +90,7 @@ class CourierOrdersViewModel(
     val visibleShowAll: LiveData<VisibleShowAll>
         get() = _visibleShowAll
 
-    private var orderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
+    private var orderLocalDataEntities = listOf<CourierOrderLocalDataEntity>()
     private var orderItems = mutableListOf<BaseItem>()
 
     private var orderMapMarkers = mutableListOf<CourierMapMarker>()
@@ -312,13 +314,14 @@ class CourierOrdersViewModel(
 
     private fun initOrders(height: Int) {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
-                .doOnSuccess { this.orderLocalDataEntities = it }
-                .subscribe(
-                    { initOrdersComplete(height) },
-                    { initOrdersError(it) })
-        )
+        viewModelScope.launch {
+            try {
+                orderLocalDataEntities  = interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
+                initOrdersComplete(height)
+            }catch (e:Exception){
+                initOrdersError(e)
+            }
+        }
     }
 
     private fun initOrdersComplete(height: Int) {
