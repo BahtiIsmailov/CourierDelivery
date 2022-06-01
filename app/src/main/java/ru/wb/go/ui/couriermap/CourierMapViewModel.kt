@@ -83,12 +83,6 @@ class CourierMapViewModel(
     val navigateToMyLocation: LiveData<NavigateToMyLocation>
         get() = _navigateToMyLocation
 
-//    data class AddMarkers(val points: List<CourierMapMarker>)
-//
-//    private val _addMarkers = SingleLiveEvent<AddMarkers>()
-//    val addMarkers: LiveData<AddMarkers>
-//        get() = _addMarkers
-
     data class UpdateMarkers(val points: List<CourierMapMarker>)
 
     private val _updateMarkers = SingleLiveEvent<UpdateMarkers>()
@@ -179,7 +173,6 @@ class CourierMapViewModel(
                     it.offsetY
                 )
             CourierMapState.ClearMap -> _clearMap.value = ClearMap
-//            is CourierMapState.AddMarkers -> _addMarkers.value = AddMarkers(it.points)
         }
     }
 

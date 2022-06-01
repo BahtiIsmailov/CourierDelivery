@@ -13,4 +13,6 @@ sealed class CourierOrderItemState {
 
     data class UpdateItem(val position: Int, val item: CourierOrderItem) : CourierOrderItemState()
 
+    data class ScrollTo(val position: Int) : CourierOrderItemState()
+
 }
