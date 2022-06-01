@@ -12,7 +12,7 @@ data class CourierOrderEntity(
     val minPrice: Int,
     val minVolume: Int,
     val minBoxesCount: Int,
-    val dstOffices: List<CourierOrderDstOfficeEntity>,
+    var dstOffices: List<CourierOrderDstOfficeEntity>,
     val reservedDuration: String,
     val reservedAt: String,
 ) : Parcelable

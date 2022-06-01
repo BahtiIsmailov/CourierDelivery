@@ -1,8 +1,5 @@
 package ru.wb.go.network.api.app
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.VersionAppResponse
@@ -13,121 +10,112 @@ import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 
-
-interface AppApi {
+interface AppApiCoroutine {
 
     @POST("{version}/me/courier-documents")
-    fun saveCourierDocuments(
+    suspend fun saveCourierDocuments(
         @Path(value = "version", encoded = true) version: String,
         @Body courierDocuments: CourierDocumentsRequest,
-    ): Completable
+    )
 
     @GET("{version}/me/courier-documents")
-    fun getCourierDocuments(
+    suspend fun getCourierDocuments(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<CourierDocumentsResponse>
+    ): CourierDocumentsResponse
 
-    //==============================================================================================
-    //tasks
-    //==============================================================================================
-//    @GET("{version}/free-tasks/offices")
-//    fun freeTasksOffices(
-//        @Path(value = "version", encoded = true) version: String
-//    ): Single<CourierWarehousesResponse>
-//
-//    @GET("{version}/free-tasks")
-//    fun freeTasks(
-//        @Path(value = "version", encoded = true) version: String,
-//        @Query("srcOfficeID") srcOfficeID: Int
-//    ): Single<CourierOrdersResponse>
+    @GET("{version}/free-tasks/offices")
+    suspend fun freeTasksOffices(
+        @Path(value = "version", encoded = true) version: String
+    ): CourierWarehousesResponse
+
+    @GET("{version}/free-tasks")
+    suspend fun freeTasks(
+        @Path(value = "version", encoded = true) version: String,
+        @Query("srcOfficeID") srcOfficeID: Int
+    ): CourierOrdersResponse
 
     @GET("{version}/tasks/my")
-    fun tasksMy(
+    suspend fun tasksMy(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<MyTaskResponse>
+    ): MyTaskResponse
 
     @POST("{version}/tasks/{taskID}/courier")
-    fun reserveTask(
+    suspend fun reserveTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body courierAnchorResponse: CourierAnchorResponse
-    ): Completable
+    )
 
     @HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
-    fun deleteTask(
+    suspend fun deleteTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Completable
+    )
 
     @GET("{version}/tasks/{taskID}/boxes")
-    fun taskBoxes(
+    suspend fun taskBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Single<CourierTaskBoxesResponse>
+    ): CourierTaskBoxesResponse
 
     @POST("{version}/tasks/{taskID}/statuses/start")
-    fun setStartTask(
+    suspend fun setStartTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
-    ): Single<StartTaskResponse>
+    ): StartTaskResponse
 
     @POST("{version}/tasks/{taskID}/statuses/ready")
-    fun taskStatusesReady(
+    suspend fun taskStatusesReady(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
-    ): Single<TaskCostResponse>
+    ): TaskCostResponse
 
     @POST("{version}/tasks/{taskID}/statuses/intransit")
-    fun taskStatusesIntransit(
+    suspend fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
-    ): Completable
+    )
 
     @POST("{version}/tasks/{taskID}/statuses/end")
-    fun taskStatusesEnd(
+    suspend fun taskStatusesEnd(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Completable
-
-    //==============================================================================================
-    //billing
-    //==============================================================================================
+    )
 
     @GET("{version}/billing/account")
-    fun getBilling(
+    suspend fun getBilling(
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
-    ): Single<BillingCommonResponse>
+    ): BillingCommonResponse
 
     @POST("{version}/payments")
-    fun doTransaction(
+    suspend fun doTransaction(
         @Path(value = "version", encoded = true) version: String,
         @Body paymentsRequest: PaymentsRequest
-    ): Completable
+    )
 
     @GET("{version}/banks")
-    fun getBank(
+    suspend fun getBank(
         @Path(value = "version", encoded = true) version: String,
         @Query("bic") bic: String
-    ): Maybe<BankResponse>
+    ): BankResponse
 
     @GET("{version}/me/bank-accounts")
-    fun getBankAccounts(
+    suspend fun getBankAccounts(
         @Path(value = "version", encoded = true) version: String
-    ): Single<AccountsResponse>
+    ): AccountsResponse
 
     @PUT("{version}/me/bank-accounts")
-    fun setBankAccounts(
+    suspend fun setBankAccounts(
         @Path(value = "version", encoded = true) version: String,
         @Body accountRequest: List<AccountRequest>
-    ): Completable
+    )
 
     @GET("{version}/settings/mobile-version")
-    fun getAppActualVersion(
+    suspend fun getAppActualVersion(
         @Path(value = "version", encoded = true) version: String
-    ): Single<VersionAppResponse>
-
+    ): VersionAppResponse
 }

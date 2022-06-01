@@ -12,22 +12,26 @@ class CourierOrdersDataBuilderImpl(
     override fun buildOrderItem(
         lineNumber: String,
         index: Int,
-        courierOrderEntity: CourierOrderEntity,
+        courierOrderLocalDataEntity: CourierOrderLocalDataEntity,
+        isSelected: Boolean
     ): BaseItem {
-        val decim = DecimalFormat("#,###.##")
-        val coast = decim.format(courierOrderEntity.minPrice)
-        return CourierOrderItem(
-            lineNumber = lineNumber,
-            orderId = resourceProvider.getOrder(courierOrderEntity.id),
-            cost = resourceProvider.getCost(coast),
-            cargo = resourceProvider.getCargo(
-                courierOrderEntity.minVolume,
-                courierOrderEntity.minBoxesCount
-            ),
-            countPvz = resourceProvider.getCountPvz(courierOrderEntity.dstOffices.size),
-            arrive = resourceProvider.getArrive(courierOrderEntity.reservedDuration),
-            idView = index
-        )
+        with(courierOrderLocalDataEntity) {
+            val decim = DecimalFormat("#,###.##")
+            val coast = decim.format(courierOrderLocalEntity.minPrice)
+            return CourierOrderItem(
+                lineNumber = lineNumber,
+                orderId = resourceProvider.getOrder(courierOrderLocalEntity.id),
+                cost = resourceProvider.getCost(coast),
+                cargo = resourceProvider.getCargo(
+                    courierOrderLocalEntity.minVolume,
+                    courierOrderLocalEntity.minBoxesCount
+                ),
+                countPvz = resourceProvider.getCountPvz(dstOffices.size),
+                arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration),
+                idView = index,
+                isSelected = isSelected
+            )
+        }
     }
 
 }

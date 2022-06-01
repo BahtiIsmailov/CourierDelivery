@@ -23,10 +23,7 @@ interface CourierLocalRepository {
     //order and offices
     //==============================================================================================
 
-    fun saveOrderAndOffices(
-        courierOrderLocalEntity: CourierOrderLocalEntity,
-        courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>,
-    ): Completable
+    suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>)
 
     fun orderDataSync(): Single<CourierOrderLocalDataEntity>
 

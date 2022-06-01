@@ -158,6 +158,7 @@ class CourierMapViewModel(
                     it.pointsFrom,
                     it.pointTo
                 )
+            CourierMapState.ClearMap -> _clearMap.value = ClearMap
         }
     }
 

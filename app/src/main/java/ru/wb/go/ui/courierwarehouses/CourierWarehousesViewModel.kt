@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierwarehouses
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.ServicesViewModel
@@ -20,6 +22,7 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import java.lang.Exception
 
 class CourierWarehousesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -93,7 +96,7 @@ class CourierWarehousesViewModel(
         onTechErrorLog("observeMapActionError", throwable)
     }
 
-    fun updateData() {
+    suspend fun updateData() {
         getWarehouses()
     }
 
@@ -105,17 +108,31 @@ class CourierWarehousesViewModel(
         _waitLoader.postValue(state)
     }
 
-    private fun getWarehouses() {
+    private suspend fun getWarehouses() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.getWarehouses()
-                .doFinally { clearFabAndWhList() }
-                .subscribe(
-                    { getWarehousesComplete(it) },
-                    { getWarehousesError(it) }
-                )
-        )
+        val job = viewModelScope.launch {
+            try {
+                val response = interactor.getWarehouses()
+                getWarehousesComplete(response)
+            }catch (e:Exception){
+                getWarehousesError(e)
+            }
+        }
+        job.join()
+        clearFabAndWhList()
     }
+
+//    private fun getWarehouses() {
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.getWarehouses()
+//                .doFinally { clearFabAndWhList() }
+//                .subscribe(
+//                    { getWarehousesComplete(it) },
+//                    { getWarehousesError(it) }
+//                )
+//        )
+//    }
 
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
         sortedWarehouseEntities(it)

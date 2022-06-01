@@ -68,6 +68,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         private const val DURATION_POINTS_MS = 500L
         private const val DELAY_ANIMATION_MS = 15L
         private const val INTERPOLATOR_ANIMATION_MAX = 1.0
+        private const val TEXT_SIZE_INDEX_MARKER = 40f
     }
 
     private var _binding: MapFragmentBinding? = null
@@ -690,7 +691,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             paint.textAlign = Paint.Align.CENTER
             paint.color = ResourcesCompat.getColor(resources, R.color.lvl_1, null)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            paint.textSize = 40f
+            paint.textSize = TEXT_SIZE_INDEX_MARKER
 
             val xPos = (canvas.width / 2).toFloat()
             val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2)

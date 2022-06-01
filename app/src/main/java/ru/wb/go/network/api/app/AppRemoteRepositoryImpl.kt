@@ -29,7 +29,7 @@ class AppRemoteRepositoryImpl(
 ) : AppRemoteRepository {
 
     companion object {
-        private const val COST_DIVIDER = 100
+        const val COST_DIVIDER = 100
     }
 
     override fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {

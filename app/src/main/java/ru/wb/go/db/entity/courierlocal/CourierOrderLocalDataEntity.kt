@@ -13,5 +13,5 @@ data class CourierOrderLocalDataEntity(
         parentColumn = "order_id",
         entityColumn = "dst_office_order_id"
     )
-    val dstOffices: List<CourierOrderDstOfficeLocalEntity>,
+    var dstOffices: List<CourierOrderDstOfficeLocalEntity>,
 )
