@@ -113,11 +113,9 @@ class CourierMapViewModel(
     val zoomToBoundingBox: LiveData<ZoomToBoundingBox>
         get() = _zoomToBoundingBox
 
-    object VisibleShowAll
-
-    private val _visibleShowAll = SingleLiveEvent<VisibleShowAll>()
-    val visibleShowAll: LiveData<VisibleShowAll>
-        get() = _visibleShowAll
+    private val _visibleManagerBar = SingleLiveEvent<CourierVisibilityManagerBar>()
+    val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
+        get() = _visibleManagerBar
 
     fun subscribeState() {
         subscribeMapState()
@@ -163,7 +161,6 @@ class CourierMapViewModel(
                 UpdateMyLocationPoint(it.point)
             is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
                 ZoomToBoundingBox(it.boundingBox, it.animate)
-            CourierMapState.VisibleShowAll -> _visibleShowAll.value = VisibleShowAll
             is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
                 UpdateMarkersWithAnimateToPosition(
                     it.pointsShow,
@@ -173,6 +170,12 @@ class CourierMapViewModel(
                     it.offsetY
                 )
             CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            CourierMapState.ShowManagerBar -> _visibleManagerBar.postValue(
+                CourierVisibilityManagerBar.Visible
+            )
+            CourierMapState.HideManagerBar -> _visibleManagerBar.postValue(
+                CourierVisibilityManagerBar.Hide
+            )
         }
     }
 
@@ -196,7 +199,12 @@ class CourierMapViewModel(
         return SCREEN_TAG
     }
 
+    fun onZoomClick() {
+        interactor.prolongTimeHideManager()
+    }
+
     fun onShowAllClick() {
+        interactor.prolongTimeHideManager()
         interactor.showAll()
     }
 

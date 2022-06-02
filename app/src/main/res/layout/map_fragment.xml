@@ -17,47 +17,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/zoom_in"
-        style="@style/AppMapButtonStyle"
-        android:layout_width="@dimen/map_button"
-        android:layout_height="@dimen/map_button"
+    <LinearLayout
+        android:id="@+id/manager_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
         android:layout_marginEnd="@dimen/pad16"
-        android:layout_marginBottom="@dimen/pad24"
-        android:src="@drawable/ic_map_zoom_in"
-        app:layout_constraintBottom_toTopOf="@+id/zoom_out"
+        android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/zoom_out"
-        style="@style/AppMapButtonStyle"
-        android:layout_width="@dimen/map_button"
-        android:layout_height="@dimen/map_button"
-        android:layout_marginEnd="@dimen/pad16"
-        android:layout_marginBottom="@dimen/pad24"
-        android:src="@drawable/ic_map_zoom_out"
-        app:layout_constraintBottom_toTopOf="@+id/show_all"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription" />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/zoom_in"
+            style="@style/AppMapButtonStyle"
+            android:layout_width="@dimen/map_button"
+            android:layout_height="@dimen/map_button"
+            android:layout_marginBottom="@dimen/pad24"
+            android:src="@drawable/ic_map_zoom_in"
+            tools:ignore="ContentDescription" />
 
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/show_all"
-        style="@style/AppMapButtonStyle"
-        android:layout_width="@dimen/map_button"
-        android:layout_height="@dimen/map_button"
-        android:layout_marginTop="264dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_map_show_all"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/zoom_out"
+            style="@style/AppMapButtonStyle"
+            android:layout_width="@dimen/map_button"
+            android:layout_height="@dimen/map_button"
+            android:layout_marginBottom="@dimen/pad24"
+            android:src="@drawable/ic_map_zoom_out"
+            tools:ignore="ContentDescription" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/show_all"
+            style="@style/AppMapButtonStyle"
+            android:layout_width="@dimen/map_button"
+            android:layout_height="@dimen/map_button"
+            android:src="@drawable/ic_map_show_all" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

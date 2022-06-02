@@ -18,7 +18,7 @@ class ScannerInteractorImpl(
 
     private val holdSplashSubject = PublishSubject.create<Action>()
     private val prolongHoldSubject = PublishSubject.create<Action>()
-    private var timerDisposable: Disposable? = null
+    private var holdSplashDisposable: Disposable? = null
 
     init {
         startTimer()
@@ -54,8 +54,8 @@ class ScannerInteractorImpl(
         if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
             return
         }
-        if (timerDisposable == null) {
-            timerDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
+        if (holdSplashDisposable == null) {
+            holdSplashDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
                 .repeatWhen { repeatHandler -> repeatHandler.flatMap { prolongHoldSubject } }
                 .subscribe({
                     scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
@@ -65,9 +65,9 @@ class ScannerInteractorImpl(
     }
 
     private fun stopTimer() {
-        if (timerDisposable != null) {
-            timerDisposable!!.dispose()
-            timerDisposable = null
+        if (holdSplashDisposable != null) {
+            holdSplashDisposable!!.dispose()
+            holdSplashDisposable = null
         }
     }
 

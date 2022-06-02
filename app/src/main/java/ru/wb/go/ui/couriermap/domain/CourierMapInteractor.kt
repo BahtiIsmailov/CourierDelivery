@@ -19,4 +19,6 @@ interface CourierMapInteractor {
 
     fun animateComplete()
 
+    fun prolongTimeHideManager()
+
 }

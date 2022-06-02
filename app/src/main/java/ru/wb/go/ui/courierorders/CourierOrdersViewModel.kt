@@ -220,7 +220,7 @@ class CourierOrdersViewModel(
     private fun observeMapActionComplete(courierMapAction: CourierMapAction) {
         when (courierMapAction) {
             is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
-            is CourierMapAction.MapClick -> onMapClick()
+            is CourierMapAction.MapClick -> showManagerBar()
             is CourierMapAction.ShowAll -> onShowAllClick()
             CourierMapAction.AnimateComplete -> {}
             is CourierMapAction.LocationUpdate -> {}
@@ -231,8 +231,8 @@ class CourierOrdersViewModel(
         _visibleShowAll.value = VisibleShowAll
     }
 
-    private fun onMapClick() {
-        _navigationState.value = CourierOrdersNavigationState.OnMapClick
+    private fun showManagerBar() {
+        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     fun onMapClickWithDetail() {
@@ -327,9 +327,10 @@ class CourierOrdersViewModel(
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
-                orderLocalDataEntities  = interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
+                orderLocalDataEntities =
+                    interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 initOrdersError(e)
             }
         }
@@ -479,7 +480,6 @@ class CourierOrdersViewModel(
     }
 
     private fun showAllAndOrderItems() {
-        interactor.mapState(CourierMapState.VisibleShowAll)
         _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 
