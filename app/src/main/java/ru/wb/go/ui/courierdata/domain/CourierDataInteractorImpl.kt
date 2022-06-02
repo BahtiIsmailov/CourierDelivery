@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierdata.domain
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
@@ -42,4 +43,20 @@ class CourierDataInteractorImpl(
             appRemoteRepository.getCourierDocuments()
         }
     }
+//    override fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
+//        return appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
+//            .doOnError {
+//                if (it is InternalServerException) {
+//                    userManager.saveCourierDocumentsEntity(courierDocumentsEntity)
+//                }
+//            }
+//          .compose(rxSchedulerFactory.applyCompletableSchedulers())
+//    }
+//
+//    override fun getCourierDocuments(): Single<CourierDocumentsEntity> {
+//        return appRemoteRepository.getCourierDocuments()
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//
+//
+//    }
 }

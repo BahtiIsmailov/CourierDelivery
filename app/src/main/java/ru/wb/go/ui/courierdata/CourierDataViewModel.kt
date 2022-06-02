@@ -167,9 +167,19 @@ class UserFormViewModel(
             }catch (e:Exception){
                 couriersFormError(e)
             }
-
         }
     }
+
+//    fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
+//        _loaderState.value = CourierDataUILoaderState.Progress
+//        courierDocumentsEntity.courierType = parameters.docs.courierType
+//        addSubscription(
+//            interactor.saveCourierDocuments(courierDocumentsEntity)
+//                .subscribe(
+//                    { couriersFormComplete() },
+//                    { couriersFormError(it) })
+//        )
+//    }
 
     fun onCheckedClick(isAgreement: Boolean) {
         _loaderState.value = if (isAgreement) {

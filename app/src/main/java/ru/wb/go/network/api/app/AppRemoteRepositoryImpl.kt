@@ -35,12 +35,12 @@ class AppRemoteRepositoryImpl(
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
-        autentificatorIntercept.initNameOfMethod("courierDocuments")
         return  with(Dispatchers.IO) {
             remoteRepo.saveCourierDocuments(
                 tokenManager.apiVersion(),
                 toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
             )
+            autentificatorIntercept.initNameOfMethod("courierDocuments")
         }
     }
 

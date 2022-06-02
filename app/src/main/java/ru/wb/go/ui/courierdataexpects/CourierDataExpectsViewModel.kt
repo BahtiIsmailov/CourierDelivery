@@ -143,7 +143,7 @@ class CouriersCompleteRegistrationViewModel(
 
     private fun checkCorrectCourierDocumentsComplete(it: CourierDocumentsEntity) {
         courierDocumentsEntityDialog = it
-        val errorAnnotate = CustomException(it.errorAnnotate?:"")
+        val errorAnnotate = CustomException(it.errorAnnotate!!)
         errorDialogManager.showErrorDialog(
             errorAnnotate,
             _showErrorDialog,
