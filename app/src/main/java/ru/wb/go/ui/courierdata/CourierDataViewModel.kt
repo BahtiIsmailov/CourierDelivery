@@ -3,8 +3,10 @@ package ru.wb.go.ui.courierdata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.InternalServerException
 import ru.wb.go.network.monitor.NetworkState
@@ -15,6 +17,7 @@ import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import java.lang.Exception
 
 class UserFormViewModel(
     private val parameters: CourierDataParameters,
@@ -153,15 +156,19 @@ class UserFormViewModel(
 
     private fun isNotCheck(state: CourierDataUIState) = state !is CourierDataUIState.Complete
 
+
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
         courierDocumentsEntity.courierType = parameters.docs.courierType
-        addSubscription(
-            interactor.saveCourierDocuments(courierDocumentsEntity)
-                .subscribe(
-                    { couriersFormComplete() },
-                    { couriersFormError(it) })
-        )
+        viewModelScope.launch {
+            try {
+                interactor.saveCourierDocuments(courierDocumentsEntity)
+                couriersFormComplete()
+            }catch (e:Exception){
+                couriersFormError(e)
+            }
+
+        }
     }
 
     fun onCheckedClick(isAgreement: Boolean) {

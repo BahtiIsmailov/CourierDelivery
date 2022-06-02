@@ -22,16 +22,5 @@ interface AppTasksApi {
         @Path(value = "version", encoded = true) version: String,
         @Query("srcOfficeID") srcOfficeID: Int
     ):  CourierOrdersResponse
-//
-//    @GET("{version}/free-tasks/offices")
-//    fun freeTasksOffices(
-//        @Path(value = "version", encoded = true) version: String
-//    ): Single<CourierWarehousesResponse>
-//
-//    @GET("{version}/free-tasks")
-//    fun freeTasks(
-//        @Path(value = "version", encoded = true) version: String,
-//        @Query("srcOfficeID") srcOfficeID: Int
-//    ): Single<CourierOrdersResponse>
 
 }

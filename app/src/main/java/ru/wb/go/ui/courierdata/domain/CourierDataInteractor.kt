@@ -8,6 +8,6 @@ import ru.wb.go.network.monitor.NetworkState
 
 interface CourierDataInteractor {
     fun observeNetworkConnected(): Observable<NetworkState>
-    fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
-    fun getCourierDocuments(): Single<CourierDocumentsEntity>
+    suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity)
+    suspend fun getCourierDocuments():  CourierDocumentsEntity
 }

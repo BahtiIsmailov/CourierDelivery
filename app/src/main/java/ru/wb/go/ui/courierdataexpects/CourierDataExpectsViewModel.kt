@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierdataexpects
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.app.INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
@@ -21,6 +23,7 @@ import ru.wb.go.ui.courierdataexpects.domain.CourierDataExpectsInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
+import java.lang.Exception
 
 class CouriersCompleteRegistrationViewModel(
     private val parametersData: CourierDataExpectsParameters,
@@ -56,25 +59,28 @@ class CouriersCompleteRegistrationViewModel(
     init {
         onTechEventLog("init")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
-        addSubscription(
-            interactorData.saveRepeatCourierDocuments()
-                .subscribe(
-                    { _progressState.value = CourierDataExpectsProgressState.Complete },
-                    { _progressState.value = CourierDataExpectsProgressState.Complete })
-        )
+        viewModelScope.launch {
+            try{
+                interactorData.saveRepeatCourierDocuments()
+                _progressState.value = CourierDataExpectsProgressState.Complete
+            }catch (e:Exception){
+                _progressState.value = CourierDataExpectsProgressState.Complete
+            }
+        }
     }
 
     fun onUpdateStatusClick() {
         onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
-        addSubscription(
-            interactorData.saveRepeatCourierDocuments()
-                .andThen(interactorData.isRegisteredStatus())
-                .subscribe(
-                    { isRegisteredStatusComplete(it) },
-                    { isRegisteredStatusError(it) }
-                )
-        )
+        viewModelScope.launch {
+            try{
+                interactorData.saveRepeatCourierDocuments()
+                val  result = interactorData.isRegisteredStatus()
+                isRegisteredStatusComplete(result)
+            }catch (e:Exception){
+                isRegisteredStatusError(e)
+            }
+        }
     }
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
@@ -112,23 +118,32 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun checkCorrectCourierDocuments() {
-        addSubscription(
-            appRemoteRepository.getCourierDocuments()
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .subscribe(
-                    { checkCorrectCourierDocumentsComplete(it) },
-                    {
-                        errorDialogManager.showErrorDialog(it, _showDialogInfo)
-                        _progressState.value = CourierDataExpectsProgressState.Complete
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                val response = appRemoteRepository.getCourierDocuments()
+                checkCorrectCourierDocumentsComplete(response)
+            }catch (e:Exception){
+                errorDialogManager.showErrorDialog(e, _showDialogInfo)
+                _progressState.value = CourierDataExpectsProgressState.Complete
+            }
+        }
+//        addSubscription(
+//            appRemoteRepository.getCourierDocuments()
+//                .compose(rxSchedulerFactory.applySingleSchedulers())
+//                .subscribe(
+//                    { checkCorrectCourierDocumentsComplete(it) },
+//                    {
+//                        errorDialogManager.showErrorDialog(it, _showDialogInfo)
+//                        _progressState.value = CourierDataExpectsProgressState.Complete
+//                    })
+//        )
     }
 
     private lateinit var courierDocumentsEntityDialog: CourierDocumentsEntity
 
     private fun checkCorrectCourierDocumentsComplete(it: CourierDocumentsEntity) {
         courierDocumentsEntityDialog = it
-        val errorAnnotate = CustomException(it.errorAnnotate!!)
+        val errorAnnotate = CustomException(it.errorAnnotate?:"")
         errorDialogManager.showErrorDialog(
             errorAnnotate,
             _showErrorDialog,

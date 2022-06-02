@@ -135,7 +135,6 @@ val interactorModule = module {
         userManager: UserManager
     ): CourierDataExpectsInteractor {
         return CourierDataExpectsInteractorImpl(
-            rxSchedulerFactory,
             refreshTokenRepository,
             appRemoteRepository,
             tokenManager,

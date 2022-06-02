@@ -5,8 +5,8 @@ import io.reactivex.Single
 
 interface CourierDataExpectsInteractor {
 
-    fun saveRepeatCourierDocuments(): Completable
+    suspend fun saveRepeatCourierDocuments()
 
-    fun isRegisteredStatus(): Single<String>
+    fun isRegisteredStatus():  String
 
 }
