@@ -68,6 +68,17 @@ class CouriersCompleteRegistrationViewModel(
             }
         }
     }
+//    init {
+//        onTechEventLog("init")
+//        _progressState.value = CourierDataExpectsProgressState.ProgressData
+//        addSubscription(
+//            interactorData.saveRepeatCourierDocuments()
+//                .subscribe(
+//                    { _progressState.value = CourierDataExpectsProgressState.Complete },
+//                    { _progressState.value = CourierDataExpectsProgressState.Complete })
+//        )
+//    }
+
 
     fun onUpdateStatusClick() {
         onTechEventLog("onUpdateStatusClick")
@@ -82,6 +93,18 @@ class CouriersCompleteRegistrationViewModel(
             }
         }
     }
+//    fun onUpdateStatusClick() {
+//        onTechEventLog("onUpdateStatusClick")
+//        _progressState.value = CourierDataExpectsProgressState.ProgressData
+//        addSubscription(
+//            interactorData.saveRepeatCourierDocuments()
+//                .andThen(interactorData.isRegisteredStatus())
+//                .subscribe(
+//                    { isRegisteredStatusComplete(it) },
+//                    { isRegisteredStatusError(it) }
+//                )
+//        )
+//    }
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
