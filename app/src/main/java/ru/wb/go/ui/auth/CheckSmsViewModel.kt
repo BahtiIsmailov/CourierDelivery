@@ -2,8 +2,10 @@ package ru.wb.go.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -14,6 +16,7 @@ import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.utils.analytics.YandexMetricManager
+import java.lang.Exception
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
@@ -81,7 +84,7 @@ class CheckSmsViewModel(
 
     fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
         addSubscription(
-            event.scan(String(), { accumulator, item -> accumulateCode(accumulator, item) })
+            event.scan(String()) { accumulator, item -> accumulateCode(accumulator, item) }
                 .doOnNext { switchNext(it) }
                 .subscribe(
                     { formatSmsComplete(it) },
@@ -125,13 +128,25 @@ class CheckSmsViewModel(
 
     fun onRepeatPassword() {
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
-        addSubscription(
-            interactor.couriersExistAndSavePhone(formatPhone()).subscribe(
-                { fetchingPasswordComplete() },
-                { fetchingPasswordError(it) }
-            )
-        )
+        viewModelScope.launch {
+            try {
+                interactor.couriersExistAndSavePhone(formatPhone())
+                fetchingPasswordComplete()
+            }catch (e:Exception){
+                fetchingPasswordError(e)
+            }
+
+        }
     }
+//    fun onRepeatPassword() {
+//        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
+//        addSubscription(
+//            interactor.couriersExistAndSavePhone(formatPhone()).subscribe(
+//                { fetchingPasswordComplete() },
+//                { fetchingPasswordError(it) }
+//            )
+//        )
+
 
     private fun fetchingPasswordComplete() {
         onTechEventLog("fetchingPasswordComplete")
@@ -174,13 +189,25 @@ class CheckSmsViewModel(
     private fun fetchAuth(password: String) {
         _checkSmsUIState.value = CheckSmsUIState.Progress
         val phone = formatPhone()
-        addSubscription(interactor.auth(phone, password)
-            .subscribe(
-                { authComplete() },
-                { authError(it) }
-            )
-        )
+        viewModelScope.launch {
+            try {
+                interactor.auth(phone, password)
+                authComplete()
+            }catch (e:Exception){
+                authError(e)
+            }
+        }
     }
+//    private fun fetchAuth(password: String) {
+//        _checkSmsUIState.value = CheckSmsUIState.Progress
+//        val phone = formatPhone()
+//        addSubscription(interactor.auth(phone, password)
+//            .subscribe(
+//                { authComplete() },
+//                { authError(it) }
+//            )
+//        )
+//    }
 
     private fun authComplete() {
         onTechEventLog("authComplete", "NavigateToAppLoader")

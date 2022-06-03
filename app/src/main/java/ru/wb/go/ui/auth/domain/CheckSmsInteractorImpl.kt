@@ -4,6 +4,7 @@ import com.jakewharton.rxbinding3.InitialValueObservable
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.Dispatchers
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.auth.AuthRemoteRepository
@@ -75,14 +76,16 @@ class CheckSmsInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun auth(phone: String, password: String): Completable {
-        val auth = authRepository.auth(phone, password, true)
-        return auth.compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override suspend fun auth(phone: String, password: String)  {
+        with(Dispatchers.IO) {
+            authRepository.auth(phone, password, true)
+        }
     }
 
-    override fun couriersExistAndSavePhone(phone: String): Completable {
-        return authRepository.couriersExistAndSavePhone(phone)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override suspend fun couriersExistAndSavePhone(phone: String) {
+        return with(Dispatchers.IO){
+            authRepository.couriersExistAndSavePhone(phone)
+        }
     }
 
     companion object {

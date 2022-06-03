@@ -11,16 +11,16 @@ import ru.wb.go.network.api.auth.response.StatisticsResponse
 interface AuthApi {
 
     @POST("{version}/auth")
-    fun auth(
+    suspend fun auth(
         @Path(value = "version", encoded = true) version: String,
         @Body authByPhoneOrPasswordQuery: AuthBySmsOrPasswordQuery,
-    ): Single<AuthResponse>
+    ): AuthResponse
 
     @GET("{version}/couriers-auth/{phone}/password")
-    fun couriersAuth(
+    suspend fun couriersAuth(
         @Path(value = "version", encoded = true) version: String,
         @Path("phone") phone: String,
-    ): Single<CheckCouriersPhoneResponse>
+    ):  CheckCouriersPhoneResponse
 
     @PUT("{version}/auth")
     fun refreshToken(

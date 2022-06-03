@@ -2,8 +2,10 @@ package ru.wb.go.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -14,6 +16,7 @@ import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.PhoneUtils
+import java.lang.Exception
 
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
@@ -102,13 +105,25 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumber(phone: String) {
         _stateUI.value = NumberCheckProgress
-        val disposable = interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
-            .subscribe(
-                { fetchPhoneNumberComplete(phone) },
-                { fetchPhoneNumberError(it, phone) }
-            )
-        addSubscription(disposable)
+        viewModelScope.launch {
+            try {
+                interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
+                fetchPhoneNumberComplete(phone)
+            }catch (e:Exception){
+                fetchPhoneNumberError(e, phone)
+            }
+        }
     }
+
+//    private fun fetchPhoneNumber(phone: String) {
+//        _stateUI.value = NumberCheckProgress
+//        val disposable = interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
+//            .subscribe(
+//                { fetchPhoneNumberComplete(phone) },
+//                { fetchPhoneNumberError(it, phone) }
+//            )
+//        addSubscription(disposable)
+//    }
 
     private fun fetchPhoneNumberComplete(phone: String) {
         onTechEventLog("fetchPhoneNumberComplete", phone)
