@@ -327,8 +327,7 @@ class CourierOrdersViewModel(
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
-                orderLocalDataEntities =
-                    interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
+                orderLocalDataEntities = interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)
             } catch (e: Exception) {
                 initOrdersError(e)

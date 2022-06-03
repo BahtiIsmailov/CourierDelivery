@@ -15,14 +15,14 @@ interface AppTasksApi {
     @GET("{version}/free-tasks/offices")
     suspend fun freeTasksOffices(
         @Path(value = "version", encoded = true) version: String
-    ):  CourierWarehousesResponse
+    ): CourierWarehousesResponse
 
     @GET("{version}/free-tasks")
     suspend fun freeTasks(
         @Path(value = "version", encoded = true) version: String,
         @Query("srcOfficeID") srcOfficeID: Int
-    ):  CourierOrdersResponse
-//
+    ): CourierOrdersResponse
+
 //    @GET("{version}/free-tasks/offices")
 //    fun freeTasksOffices(
 //        @Path(value = "version", encoded = true) version: String

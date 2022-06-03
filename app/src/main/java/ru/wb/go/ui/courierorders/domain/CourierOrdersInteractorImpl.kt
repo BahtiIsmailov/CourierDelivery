@@ -60,13 +60,11 @@ class CourierOrdersInteractorImpl(
         response.forEach { freeOrders ->
             freeOrders.dstOffices = freeOrders.dstOffices.sortByUnusualTimeAndAddress()
         }
-        return response.flatMap {
-            courierLocalRepository.deleteAllOrder()
-            courierLocalRepository.deleteAllOrderOffices()
-            val localEntity = toCourierOrderLocalDataEntities(response)
-            courierLocalRepository.saveFreeOrders(localEntity)
-            localEntity
-        }
+        courierLocalRepository.deleteAllOrder()
+        courierLocalRepository.deleteAllOrderOffices()
+        val localEntity = toCourierOrderLocalDataEntities(response)
+        courierLocalRepository.saveFreeOrders(localEntity) // здесь попробовать сделать так чтоб один раз сработал сохранил и всё
+        return localEntity
     }
 
 
@@ -76,7 +74,7 @@ class CourierOrdersInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>):  List<CourierOrderLocalDataEntity> {
+    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): List<CourierOrderLocalDataEntity> {
         val courierOrderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
         it.forEachIndexed { index, order ->
             val courierOrderLocalEntity = convertCourierOrderLocalEntity(order, index)
