@@ -34,7 +34,6 @@ class CouriersCompleteRegistrationViewModel(
     private val resourceProviderData: CourierDataExpectsResourceProvider,
     private val interactorData: CourierDataExpectsInteractor,
     private val appRemoteRepository: AppRemoteRepository,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val errorDialogManager: ErrorDialogManager,
     private val tokenManager: TokenManager,
     private val appNavRepository: AppNavRepository

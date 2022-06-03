@@ -30,7 +30,7 @@ class CourierDataExpectsInteractorImpl(
     }
 
     override suspend fun isRegisteredStatus(): String {
-        return with(Dispatchers.IO) {
+        return  with(Dispatchers.IO){
             if (userManager.courierDocumentsEntity() == null) {
                 val refreshResult = refreshTokenRepository.doRefreshToken()
                 val resource = tokenManager.resources()
@@ -43,6 +43,7 @@ class CourierDataExpectsInteractorImpl(
                 }
             } else INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
         }
+
     }
 }
 
