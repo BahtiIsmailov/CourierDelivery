@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
@@ -314,7 +315,7 @@ class CourierOrdersViewModel(
 
     private fun initOrders(height: Int) {
         setLoader(WaitLoader.Wait)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 orderLocalDataEntities  = interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)

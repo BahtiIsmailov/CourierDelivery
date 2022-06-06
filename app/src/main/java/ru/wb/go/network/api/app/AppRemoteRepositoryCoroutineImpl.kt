@@ -1,6 +1,7 @@
 package ru.wb.go.network.api.app
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
@@ -29,7 +30,7 @@ class AppRemoteRepositoryCoroutineImpl(
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
         autentificatorIntercept.initNameOfMethod("courierDocuments")
-        return  with(Dispatchers.IO) {
+        return  withContext(Dispatchers.IO) {
             remoteRepo.saveCourierDocuments(
                 tokenManager.apiVersion(),
                 toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
@@ -38,14 +39,14 @@ class AppRemoteRepositoryCoroutineImpl(
     }
 
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        val response = with(Dispatchers.IO) { remoteRepo.getCourierDocuments(apiVersion()) }
+        val response = withContext(Dispatchers.IO) { remoteRepo.getCourierDocuments(apiVersion()) }
         return toCourierDocumentsEntity(response)
     }
 
     override suspend fun tasksMy(orderId: Int?): LocalComplexOrderEntity  {
         val badOrder = initLocalOrderEntity()
         return try {
-            val response = with(Dispatchers.IO){remoteRepo.tasksMy(apiVersion())}
+            val response = withContext(Dispatchers.IO){remoteRepo.tasksMy(apiVersion())}
             if (response.id > 0) {
                 val remoteOffices = toMyTaskResponse(response)
                 toLocalComplexOrderEntity(remoteOffices, response)

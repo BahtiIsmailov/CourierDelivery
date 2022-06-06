@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -35,7 +36,7 @@ class AppRemoteRepositoryImpl(
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
-        return  with(Dispatchers.IO) {
+        return  withContext(Dispatchers.IO) {
             remoteRepo.saveCourierDocuments(
                 tokenManager.apiVersion(),
                 toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
@@ -64,7 +65,7 @@ class AppRemoteRepositoryImpl(
 //    }
 
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        val response = with(Dispatchers.IO) {
+        val response = withContext(Dispatchers.IO) {
             remoteRepo.getCourierDocuments(apiVersion())
         }
         return toCourierDocumentsEntity(response)

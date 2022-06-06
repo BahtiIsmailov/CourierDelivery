@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -20,7 +21,7 @@ class NumberPhoneInteractorImpl(
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String)  {
-        return with(Dispatchers.IO){
+        return withContext(Dispatchers.IO){
             authRepository.couriersExistAndSavePhone(phone)
         }
     }

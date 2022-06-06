@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.api.app.toCourierDocumentsEntity
@@ -27,7 +28,7 @@ class CourierDataInteractorImpl(
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity)  {
-        return with(Dispatchers.IO){
+        return withContext(Dispatchers.IO){
             try{
                 appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
             }catch (e:Exception){
@@ -39,7 +40,7 @@ class CourierDataInteractorImpl(
     }
 
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        return with(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             appRemoteRepository.getCourierDocuments()
         }
     }

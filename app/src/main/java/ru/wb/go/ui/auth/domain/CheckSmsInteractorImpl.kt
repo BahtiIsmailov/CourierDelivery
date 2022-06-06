@@ -5,6 +5,7 @@ import io.reactivex.*
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.auth.AuthRemoteRepository
@@ -77,13 +78,13 @@ class CheckSmsInteractorImpl(
     }
 
     override suspend fun auth(phone: String, password: String)  {
-        with(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             authRepository.auth(phone, password, true)
         }
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String) {
-        return with(Dispatchers.IO){
+        return withContext(Dispatchers.IO){
             authRepository.couriersExistAndSavePhone(phone)
         }
     }

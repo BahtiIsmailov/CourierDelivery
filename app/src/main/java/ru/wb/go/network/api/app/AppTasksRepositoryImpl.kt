@@ -1,6 +1,7 @@
 package ru.wb.go.network.api.app
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -17,7 +18,7 @@ class AppTasksRepositoryImpl(
 
 
 override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
-    return with(Dispatchers.IO){
+    return withContext(Dispatchers.IO){
         autentificatorIntercept.initNameOfMethod("courierWarehouses")
          remoteRepo.freeTasksOffices(apiVersion()).data
          .map {

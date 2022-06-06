@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.app.AppPreffsKeys.SELECTED_ORDER_INDEX_KEY
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
@@ -54,7 +55,7 @@ class CourierOrdersInteractorImpl(
     }
 
     override suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity> {
-        val response = with(Dispatchers.IO) {
+        val response = withContext(Dispatchers.IO) {
             appTasksRepository.getFreeOrders(srcOfficeID).sortedBy { it.id }
         }
         response.forEach { freeOrders ->

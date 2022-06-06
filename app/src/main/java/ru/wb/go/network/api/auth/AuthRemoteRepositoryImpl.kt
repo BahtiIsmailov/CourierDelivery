@@ -4,6 +4,7 @@ import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.api.auth.query.AuthBySmsOrPasswordQuery
@@ -31,7 +32,7 @@ class AuthRemoteRepositoryImpl(
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String) {
-        return with(Dispatchers.IO){
+        return withContext(Dispatchers.IO){
             try {
                 authApi.couriersAuth(tokenManager.apiVersion(), phone)
                 userManager.savePhone(phone)

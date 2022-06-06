@@ -39,7 +39,6 @@ class RefreshTokenInterceptor(
             return response
         }
 
-
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             if (isRefreshing.compareAndSet(false, true)) {
                 try {
