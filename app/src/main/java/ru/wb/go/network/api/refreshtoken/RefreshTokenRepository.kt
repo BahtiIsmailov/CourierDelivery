@@ -4,6 +4,6 @@ import io.reactivex.Single
 
 interface RefreshTokenRepository {
 
-     suspend fun doRefreshToken():RefreshResult
+       fun doRefreshToken():RefreshResult
 
 }

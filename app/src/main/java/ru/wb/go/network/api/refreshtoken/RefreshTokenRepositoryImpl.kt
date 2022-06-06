@@ -21,7 +21,7 @@ class RefreshTokenRepositoryImpl(
     private val metric: YandexMetricManager
 ) : RefreshTokenRepository {
 
-    override suspend fun doRefreshToken(): RefreshResult {
+    override fun doRefreshToken(): RefreshResult {
         var retry = 0
         var result: RefreshResult
 
@@ -33,12 +33,12 @@ class RefreshTokenRepositoryImpl(
         return result
     }
 
-    private suspend fun refreshAccessTokenSync(): RefreshResult {
+    private fun refreshAccessTokenSync(): RefreshResult {
         return try {
             val response = server.refreshAccessTokens(
                 tokenManager.bearerToken(),
                 RefreshTokenQuery(tokenManager.refreshToken())
-            )
+            ).execute()
             if (response.isSuccessful) {
                 val refreshResponse = response.body()
                 if (refreshResponse != null) {
@@ -49,8 +49,7 @@ class RefreshTokenRepositoryImpl(
                     metric.onTechErrorLog("RefreshToken", "refreshSuccessResponse", "emptyBody")
                     RefreshResult.Failed(ex)
                 }
-            }
-        else {
+            } else {
                 val gson = Gson()
                 val type = object : TypeToken<ErrorResponse>() {}.type
                 val errorResponse: ErrorResponse? =
