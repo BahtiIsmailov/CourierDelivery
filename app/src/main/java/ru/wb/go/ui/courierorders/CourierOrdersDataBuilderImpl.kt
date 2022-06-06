@@ -13,6 +13,7 @@ class CourierOrdersDataBuilderImpl(
         lineNumber: String,
         index: Int,
         courierOrderLocalDataEntity: CourierOrderLocalDataEntity,
+        isSelected: Boolean
     ): BaseItem {
         with(courierOrderLocalDataEntity) {
             val decim = DecimalFormat("#,###.##")
@@ -27,7 +28,8 @@ class CourierOrdersDataBuilderImpl(
                 ),
                 countPvz = resourceProvider.getCountPvz(dstOffices.size),
                 arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration),
-                idView = index
+                idView = index,
+                isSelected = isSelected
             )
         }
     }

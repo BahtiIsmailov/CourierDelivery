@@ -10,6 +10,18 @@
     android:focusable="true"
     app:layout_constraintTop_toTopOf="parent">
 
+    <ImageView
+        android:id="@+id/selected_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/courier_background_select_order"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/linerNumber"
         style="@style/MediumLvl1SmallRegularText"
@@ -64,7 +76,7 @@
 
     <TextView
         android:id="@+id/cargo"
-        style="@style/MediumSecondaryMediumText"
+        style="@style/MediumSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -75,25 +87,39 @@
         tools:text="@sample/orders.json/orders/val" />
 
     <TextView
-        style="@style/MediumSecondaryMediumText"
+        android:id="@+id/textView"
+        style="@style/MediumSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:text="@string/reserve_title"
-        app:layout_constraintBottom_toBottomOf="@id/cargo"
+        app:layout_constraintBottom_toBottomOf="@+id/cargo"
         app:layout_constraintEnd_toStartOf="@id/reserve"
-        app:layout_constraintTop_toTopOf="@id/cargo" />
+        app:layout_constraintTop_toTopOf="@+id/cargo" />
 
     <TextView
         android:id="@+id/reserve"
-        style="@style/MediumSecondaryMediumText"
+        style="@style/MediumSecondaryRegularText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/pad16"
         android:textColor="@color/red"
-        app:layout_constraintBottom_toBottomOf="@id/cargo"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView"
         tools:ignore="RtlSymmetry"
         tools:text="@sample/orders.json/orders/reserve" />
+
+    <ImageView
+        android:id="@+id/image_item_border"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_courier_orders_item_border"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

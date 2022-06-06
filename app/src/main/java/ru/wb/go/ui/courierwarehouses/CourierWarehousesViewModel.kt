@@ -22,7 +22,6 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
-import java.lang.Exception
 
 class CourierWarehousesViewModel(
     compositeDisposable: CompositeDisposable,
@@ -87,22 +86,10 @@ class CourierWarehousesViewModel(
         when (it) {
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
-            CourierMapAction.MapClick -> unselectedAddressMapMarkers()
+            CourierMapAction.MapClick -> showManagerBar()
             CourierMapAction.ShowAll -> onShowAllClick()
+            else -> {}
         }
-    }
-
-    private fun unselectedAddressMapMarkers() {
-        mapMarkers.forEach { it.icon = resourceProvider.getWarehouseMapIcon() }
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        changeUnselectedWarehouseItems()
-        updateItems()
-        changeShowDetailsOrder(false)
-    }
-
-    private fun changeUnselectedWarehouseItems() {
-        warehouseItems.forEach { it.isSelected = false }
-        whSelectedId = null
     }
 
     private fun observeMapActionError(throwable: Throwable) {
@@ -127,25 +114,13 @@ class CourierWarehousesViewModel(
             try {
                 val response = interactor.getWarehouses()
                 getWarehousesComplete(response)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 getWarehousesError(e)
             }
         }
         job.join()
         clearFabAndWhList()
     }
-
-//    private fun getWarehouses() {
-//        setLoader(WaitLoader.Wait)
-//        addSubscription(
-//            interactor.getWarehouses()
-//                .doFinally { clearFabAndWhList() }
-//                .subscribe(
-//                    { getWarehousesComplete(it) },
-//                    { getWarehousesError(it) }
-//                )
-//        )
-//    }
 
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
         sortedWarehouseEntities(it)
@@ -188,10 +163,11 @@ class CourierWarehousesViewModel(
     private fun courierWarehouseComplete() {
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else {
-                interactor.mapState(CourierMapState.VisibleShowAll)
-                CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
-            }
+            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+    }
+
+    private fun showManagerBar() {
+        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     private fun updateMyLocation() {
