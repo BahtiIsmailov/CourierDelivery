@@ -134,10 +134,10 @@ class CourierWarehousesViewModel(
         onTechErrorLog("courierWarehouseError", it)
         setLoader(WaitLoader.Complete)
         if (it is NoInternetException) {
-            _warehouseState.value = CourierWarehouseItemState.NoInternet
+            _warehouseState.postValue(CourierWarehouseItemState.NoInternet)
         } else {
             errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-            _warehouseState.value = CourierWarehouseItemState.Empty("Ошибка получения данных")
+            _warehouseState.postValue(CourierWarehouseItemState.Empty("Ошибка получения данных"))
         }
     }
 
@@ -161,9 +161,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete() {
-        _warehouseState.value =
+        _warehouseState.postValue(
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList()))
     }
 
     private fun showManagerBar() {
@@ -273,9 +273,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeShowDetailsOrder(selected: Boolean) {
-        _showOrdersState.value =
+        _showOrdersState.postValue(
             if (selected) CourierWarehousesShowOrdersState.Enable
-            else CourierWarehousesShowOrdersState.Disable
+            else CourierWarehousesShowOrdersState.Disable)
     }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {

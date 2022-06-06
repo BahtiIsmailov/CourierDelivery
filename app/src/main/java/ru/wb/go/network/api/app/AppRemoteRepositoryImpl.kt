@@ -45,25 +45,6 @@ class AppRemoteRepositoryImpl(
         }
     }
 
-//    override fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
-//        val courierDocuments = with(courierDocumentsEntity) {
-//            CourierDocumentsRequest(
-//                firstName = firstName,
-//                surName = surName,
-//                middleName = middleName,
-//                inn = inn,
-//                passportSeries = passportSeries,
-//                passportNumber = passportNumber,
-//                passportDateOfIssue = passportDateOfIssue,
-//                passportIssuedBy = passportIssuedBy,
-//                passportDepartmentCode = passportDepartmentCode,
-//                courierType = courierType
-//            )
-//        }
-//        return remoteRepo.saveCourierDocuments(tokenManager.apiVersion(), courierDocuments)
-//            .compose(rxSchedulerFactory.applyCompletableMetrics("courierDocuments"))
-//    }
-
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
         val response = withContext(Dispatchers.IO) {
             remoteRepo.getCourierDocuments(apiVersion())
@@ -71,26 +52,6 @@ class AppRemoteRepositoryImpl(
         return toCourierDocumentsEntity(response)
     }
 
-//    override suspend fun getCourierDocuments(): Single<CourierDocumentsEntity> {
-//        return remoteRepo.getCourierDocuments(apiVersion())
-//            .map { response ->
-//                with(response) {
-//                    CourierDocumentsEntity(
-//                        errorAnnotate = errorAnnotate,
-//                        firstName = firstName,
-//                        inn = inn,
-//                        middleName = middleName,
-//                        passportDateOfIssue = passportDateOfIssue,
-//                        passportDepartmentCode = passportDepartmentCode,
-//                        passportIssuedBy = passportIssuedBy,
-//                        passportNumber = passportNumber,
-//                        passportSeries = passportSeries,
-//                        surName = surName,
-//                        courierType = courierType
-//                    )
-//                }
-//            }
-//    }
 
     override fun tasksMy(orderId: Int?): Single<LocalComplexOrderEntity> {
         val badOrder = LocalOrderEntity(

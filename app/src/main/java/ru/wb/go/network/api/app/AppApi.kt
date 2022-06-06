@@ -30,16 +30,6 @@ interface AppApi {
     //==============================================================================================
     //tasks
     //==============================================================================================
-//    @GET("{version}/free-tasks/offices")
-//    fun freeTasksOffices(
-//        @Path(value = "version", encoded = true) version: String
-//    ): Single<CourierWarehousesResponse>
-//
-//    @GET("{version}/free-tasks")
-//    fun freeTasks(
-//        @Path(value = "version", encoded = true) version: String,
-//        @Query("srcOfficeID") srcOfficeID: Int
-//    ): Single<CourierOrdersResponse>
 
     @GET("{version}/tasks/my")
     fun tasksMy(

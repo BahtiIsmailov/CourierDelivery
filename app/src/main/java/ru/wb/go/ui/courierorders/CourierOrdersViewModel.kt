@@ -317,7 +317,7 @@ class CourierOrdersViewModel(
     }
 
     private fun addressLabel() {
-        _toolbarLabelState.value = Label(parameters.address)
+        _toolbarLabelState.postValue(Label(parameters.address))
     }
 
     private fun setLoader(state: WaitLoader) {
@@ -346,7 +346,7 @@ class CourierOrdersViewModel(
     private fun initOrdersError(it: Throwable) {
         onTechErrorLog("ordersError", it)
         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-        _orderItems.value = CourierOrderItemState.Empty("Ошибка получения данных")
+        _orderItems.postValue(CourierOrderItemState.Empty("Ошибка получения данных"))
         setLoader(WaitLoader.Complete)
     }
 
@@ -435,7 +435,7 @@ class CourierOrdersViewModel(
 
     private fun ordersComplete(height: Int) {
         if (orderItems.isEmpty()) {
-            _orderItems.value = CourierOrderItemState.Empty(resourceProvider.getDialogEmpty())
+            _orderItems.postValue(CourierOrderItemState.Empty(resourceProvider.getDialogEmpty()))
         } else {
             updateOrderAndWarehouseMarkers()
             zoomAllGroupMarkersFromBoundingBox(height)
@@ -480,7 +480,7 @@ class CourierOrdersViewModel(
     }
 
     private fun showAllAndOrderItems() {
-        _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
+        _orderItems.postValue(CourierOrderItemState.ShowItems(orderItems))
     }
 
     fun onChangeCarNumberOrders(result: CourierCarNumberResult) {

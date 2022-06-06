@@ -20,7 +20,7 @@ class AppTasksRepositoryImpl(
 override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
     return withContext(Dispatchers.IO){
         autentificatorIntercept.initNameOfMethod("courierWarehouses")
-         remoteRepo.freeTasksOffices(apiVersion()).data
+        remoteRepo.freeTasksOffices(apiVersion()).data
          .map {
             convertCourierWarehouseEntity(it)
         }.toList()

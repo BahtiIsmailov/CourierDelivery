@@ -191,14 +191,14 @@ class UserFormViewModel(
 
     private fun couriersFormComplete() {
         onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
-        _loaderState.value = CourierDataUILoaderState.Disable
-        _navigationEvent.value =
-            CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
+        _loaderState.postValue(CourierDataUILoaderState.Disable)
+        _navigationEvent.postValue(
+            CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone))
     }
 
     private fun couriersFormError(it: Throwable) {
         onTechErrorLog("couriersFormError", it)
-        _loaderState.value = CourierDataUILoaderState.Enable
+        _loaderState.postValue(CourierDataUILoaderState.Enable)
         if (it is InternalServerException) couriersFormComplete()
         else errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
     }

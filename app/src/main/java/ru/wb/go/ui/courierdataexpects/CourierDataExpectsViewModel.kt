@@ -61,27 +61,16 @@ class CouriersCompleteRegistrationViewModel(
         viewModelScope.launch {
             try{
                 interactorData.saveRepeatCourierDocuments()
-                _progressState.value = CourierDataExpectsProgressState.Complete
+                _progressState.postValue(CourierDataExpectsProgressState.Complete)
             }catch (e:Exception){
-                _progressState.value = CourierDataExpectsProgressState.Complete
+                _progressState.postValue(CourierDataExpectsProgressState.Complete)
             }
         }
     }
-//    init {
-//        onTechEventLog("init")
-//        _progressState.value = CourierDataExpectsProgressState.ProgressData
-//        addSubscription(
-//            interactorData.saveRepeatCourierDocuments()
-//                .subscribe(
-//                    { _progressState.value = CourierDataExpectsProgressState.Complete },
-//                    { _progressState.value = CourierDataExpectsProgressState.Complete })
-//        )
-//    }
-
 
     fun onUpdateStatusClick() {
         onTechEventLog("onUpdateStatusClick")
-        _progressState.value = CourierDataExpectsProgressState.ProgressData
+        _progressState.postValue(CourierDataExpectsProgressState.ProgressData)
         viewModelScope.launch {
             try{
                 interactorData.saveRepeatCourierDocuments()
@@ -92,18 +81,6 @@ class CouriersCompleteRegistrationViewModel(
             }
         }
     }
-//    fun onUpdateStatusClick() {
-//        onTechEventLog("onUpdateStatusClick")
-//        _progressState.value = CourierDataExpectsProgressState.ProgressData
-//        addSubscription(
-//            interactorData.saveRepeatCourierDocuments()
-//                .andThen(interactorData.isRegisteredStatus())
-//                .subscribe(
-//                    { isRegisteredStatusComplete(it) },
-//                    { isRegisteredStatusError(it) }
-//                )
-//        )
-//    }
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
@@ -117,7 +94,7 @@ class CouriersCompleteRegistrationViewModel(
             else -> {
                 if (tokenManager.isUserCourier()) {
                     //TODO не отображается ФИО при этом переходе
-                    _navAction.value = CourierDataExpectsNavAction.NavigateToCouriers
+                    _navAction.postValue(CourierDataExpectsNavAction.NavigateToCouriers)
                 } else {
                     val ce = CustomException("Unknown error")
                     onTechErrorLog("CheckRegistrationStatus", ce)
@@ -130,13 +107,13 @@ class CouriersCompleteRegistrationViewModel(
 
     private fun isRegisteredStatusError(it: Throwable) {
         errorDialogManager.showErrorDialog(it, _showDialogInfo)
-        _progressState.value = CourierDataExpectsProgressState.Complete
+        _progressState.postValue(CourierDataExpectsProgressState.Complete)
     }
 
     private fun checkApproveCourierDocuments() {
         val th = CustomException(resourceProviderData.notConfirmDataMessage())
         errorDialogManager.showErrorDialog(th, _showDialogInfo)
-        _progressState.value = CourierDataExpectsProgressState.Complete
+        _progressState.postValue(CourierDataExpectsProgressState.Complete)
     }
 
     private fun checkCorrectCourierDocuments() {
@@ -146,7 +123,7 @@ class CouriersCompleteRegistrationViewModel(
                 checkCorrectCourierDocumentsComplete(response)
             }catch (e:Exception){
                 errorDialogManager.showErrorDialog(e, _showDialogInfo)
-                _progressState.value = CourierDataExpectsProgressState.Complete
+                _progressState.postValue(CourierDataExpectsProgressState.Complete)
             }
         }
 //        addSubscription(
