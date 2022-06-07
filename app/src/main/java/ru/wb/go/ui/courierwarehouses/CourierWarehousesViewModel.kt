@@ -70,7 +70,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun checkDemoMode() {
-        _demoState.value = interactor.isDemoMode()
+        _demoState.postValue(interactor.isDemoMode())
     }
 
     private fun observeMapAction() {
@@ -101,7 +101,7 @@ class CourierWarehousesViewModel(
     }
 
     fun toRegistrationClick() {
-        _navigationState.value = CourierWarehousesNavigationState.NavigateToRegistration
+        _navigationState.postValue(CourierWarehousesNavigationState.NavigateToRegistration)
     }
 
     private fun setLoader(state: WaitLoader) {
@@ -161,9 +161,11 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete() {
-        _warehouseState.postValue(
-            if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList()))
+        if (warehouseItems.isEmpty()){
+            _warehouseState.postValue(CourierWarehouseItemState.Empty(resourceProvider.getEmptyList()))
+        }else{
+            _warehouseState.postValue(CourierWarehouseItemState.InitItems(warehouseItems.toMutableList()))
+        }
     }
 
     private fun showManagerBar() {
@@ -235,7 +237,7 @@ class CourierWarehousesViewModel(
 
     private fun updateAndScrollToItems(indexItemClick: Int) {
         updateItems()
-        _warehouseState.value = CourierWarehouseItemState.ScrollTo(indexItemClick)
+        _warehouseState.postValue(CourierWarehouseItemState.ScrollTo(indexItemClick))
     }
 
     private fun isMapSelected(indexItemClick: Int) =
@@ -280,23 +282,25 @@ class CourierWarehousesViewModel(
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
         changeSelectedWarehouseItemsByMap(selectIndex, isSelected)
-        _warehouseState.value =
-            if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
+        if (warehouseItems.isEmpty()){
+            _warehouseState.postValue(CourierWarehouseItemState.Empty(resourceProvider.getEmptyList()))
+        }
+        else {
+            _warehouseState.postValue(CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList()))
+        }
     }
 
     private fun updateItems() {
-        _warehouseState.value =
-            CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
+        _warehouseState.postValue(CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList()))
     }
 
     private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
-        _navigationState.value = CourierWarehousesNavigationState.NavigateToCourierOrders(
+        _navigationState.postValue(CourierWarehousesNavigationState.NavigateToCourierOrders(
             oldEntity.id,
             oldEntity.latitude,
             oldEntity.longitude,
             oldEntity.name
-        )
+        ))
     }
 
     fun onNextFab() {

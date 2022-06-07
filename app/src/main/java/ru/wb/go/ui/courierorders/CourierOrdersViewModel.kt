@@ -154,8 +154,8 @@ class CourierOrdersViewModel(
     }
 
     fun onShowOrderDetailsClick() {
-        _navigationState.value =
-            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+        _navigationState.postValue(
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode()))
     }
 
     fun onChangeCarNumberClick() {
@@ -168,14 +168,14 @@ class CourierOrdersViewModel(
     }
 
     private fun navigateToEditCarNumber(): (rowOrder: Int) -> Unit = {
-        _navigationState.value =
+        _navigationState.postValue(
             CourierOrdersNavigationState.NavigateToCarNumber(
                 result = CourierCarNumberResult.Edit(it)
-            )
+            ))
     }
 
     fun toRegistrationClick() {
-        _navigationState.value = CourierOrdersNavigationState.NavigateToRegistration
+        _navigationState.postValue( CourierOrdersNavigationState.NavigateToRegistration)
     }
 
     fun onConfirmTakeOrderClick() {
@@ -187,15 +187,15 @@ class CourierOrdersViewModel(
     }
 
     private fun navigateToRegistrationDialog() {
-        _navigationState.value =
-            CourierOrdersNavigationState.NavigateToRegistrationDialog
+        _navigationState.postValue(
+            CourierOrdersNavigationState.NavigateToRegistrationDialog)
     }
 
     private fun navigateToCreateCarNumber(): (rowOrder: Int) -> Unit = {
-        _navigationState.value =
+        _navigationState.postValue(
             CourierOrdersNavigationState.NavigateToCarNumber(
                 result = CourierCarNumberResult.Create(it)
-            )
+            ))
     }
 
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
@@ -230,7 +230,7 @@ class CourierOrdersViewModel(
     }
 
     private fun onShowAllClick() {
-        _visibleShowAll.value = VisibleShowAll
+        _visibleShowAll.postValue( VisibleShowAll)
     }
 
     private fun showManagerBar() {
@@ -238,7 +238,7 @@ class CourierOrdersViewModel(
     }
 
     fun onMapClickWithDetail() {
-        _navigationState.value = CourierOrdersNavigationState.CloseAddressesDetail
+        _navigationState.postValue( CourierOrdersNavigationState.CloseAddressesDetail)
         unselectedAddressMapMarkers()
         updateAddressMarkers()
         unselectedAddressItems()
@@ -285,13 +285,13 @@ class CourierOrdersViewModel(
 
     private fun updateShowingAddressDetail(idMapClick: Int) {
         val address = orderAddressItems[idMapClick]
-        _navigationState.value = if (address.isSelected)
+        _navigationState.postValue( if (address.isSelected)
             CourierOrdersNavigationState.ShowAddressDetail(
                 if (address.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon(),
                 address.fullAddress,
                 address.timeWork,
             )
-        else CourierOrdersNavigationState.CloseAddressesDetail
+        else CourierOrdersNavigationState.CloseAddressesDetail)
     }
 
 
@@ -521,7 +521,7 @@ class CourierOrdersViewModel(
     }
 
     private fun scrollTo(index: Int) {
-        _orderItems.value = CourierOrderItemState.ScrollTo(index)
+        _orderItems.postValue( CourierOrderItemState.ScrollTo(index))
     }
 
     private fun clearMap() {
@@ -638,8 +638,11 @@ class CourierOrdersViewModel(
     }
 
     private fun initAddressItems(items: MutableList<CourierOrderDetailsAddressItem>) {
-        _orderAddresses.postValue(if (items.isEmpty()) CourierOrderAddressesUIState.Empty
-        else CourierOrderAddressesUIState.InitItems(items))
+        if (items.isEmpty()){
+            _orderAddresses.postValue(CourierOrderAddressesUIState.Empty)
+        }else{
+            _orderAddresses.postValue(CourierOrderAddressesUIState.InitItems(items))
+        }
     }
 
     private fun carNumberFormat(it: String) =
@@ -649,7 +652,7 @@ class CourierOrdersViewModel(
         }
 
     fun onCloseOrdersClick() {
-        _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
+        _navigationState.postValue(CourierOrdersNavigationState.NavigateToWarehouse)
     }
 
     fun onAddressItemClick(index: Int) {
@@ -690,7 +693,7 @@ class CourierOrdersViewModel(
     }
 
     private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
-        _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+        _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrders)
         interactor.mapState(
             CourierMapState.UpdateMarkersWithAnimateToPosition(
                 pointsShow = orderMapMarkers,
@@ -706,7 +709,7 @@ class CourierOrdersViewModel(
         orderMapMarkers[itemIndex + 1]
 
     fun onTaskNotExistConfirmClick() {
-        _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
+        _navigationState.postValue( CourierOrdersNavigationState.NavigateToWarehouse)
     }
 
     fun onConfirmOrderClick() {
@@ -723,7 +726,7 @@ class CourierOrdersViewModel(
 
     private fun anchorTaskComplete() {
         setLoader(WaitLoader.Complete)
-        _navigationState.value = CourierOrdersNavigationState.NavigateToTimer
+        _navigationState.postValue( CourierOrdersNavigationState.NavigateToTimer)
     }
 
     private fun anchorTaskError(it: Throwable) {
@@ -731,7 +734,7 @@ class CourierOrdersViewModel(
         setLoader(WaitLoader.Complete)
         if (it is BadRequestException) {
             if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
-                _navigationState.value = CourierOrdersNavigationState.CourierLoader
+                _navigationState.postValue( CourierOrdersNavigationState.CourierLoader)
             } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {
                 taskRejected()
             }
@@ -752,11 +755,11 @@ class CourierOrdersViewModel(
     }
 
     fun goBack() {
-        _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
+        _navigationState.postValue( CourierOrdersNavigationState.NavigateToWarehouse)
     }
 
     fun onRegistrationConfirmClick() {
-        _navigationState.value = CourierOrdersNavigationState.NavigateToRegistration
+        _navigationState.postValue( CourierOrdersNavigationState.NavigateToRegistration)
     }
 
     fun onRegistrationCancelClick() {
