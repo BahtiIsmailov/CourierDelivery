@@ -136,20 +136,21 @@ class AppRemoteRepositoryImpl(
 
     }
 
-    override fun reserveTask(
+    override suspend fun reserveTask(
         taskID: String,
         carNumber: String
-    ): Completable {
+    )  {
         return remoteRepo.reserveTask(
             apiVersion(),
             taskID,
             CourierAnchorResponse(carNumber)
-        ).compose(rxSchedulerFactory.applyCompletableMetrics("reserveTask"))
+        )
     }
 
-    override fun deleteTask(taskID: String): Completable {
-        return remoteRepo.deleteTask(apiVersion(), taskID)
-            .compose(rxSchedulerFactory.applyCompletableMetrics("deleteTask"))
+    override suspend fun deleteTask(taskID: String)  {
+        autentificatorIntercept.initNameOfMethod("deleteTask")
+        remoteRepo.deleteTask(apiVersion(), taskID)
+
     }
 
     override fun taskBoxes(taskID: String): Single<List<LocalBoxEntity>> {
@@ -183,7 +184,7 @@ class AppRemoteRepositoryImpl(
     override fun setReadyTask(
         taskID: String,
         boxes: List<LocalBoxEntity>
-    ): Single<TaskCostEntity> {
+    ):  TaskCostEntity  {
 
         val boxesRequest = boxes.map {
             assert(it.loadingAt != "")

@@ -176,12 +176,12 @@ class CourierOrdersViewModel(
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode()))
     }
 
-    fun onChangeCarNumberClick() {
+    suspend fun onChangeCarNumberClick() {
         onTechEventLog("onChangeCarNumberClick")
         withSelectedRowOrder(navigateToEditCarNumber())
     }
 
-    private fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
+    private suspend fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
         action(interactor.selectedRowOrder())
     }
 
@@ -196,7 +196,7 @@ class CourierOrdersViewModel(
         _navigationState.postValue( CourierOrdersNavigationState.NavigateToRegistration)
     }
 
-    fun onConfirmTakeOrderClick() {
+    suspend fun onConfirmTakeOrderClick() {
         when {
             interactor.isDemoMode() -> navigateToRegistrationDialog()
             interactor.carNumberIsConfirm() -> withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
@@ -500,7 +500,7 @@ class CourierOrdersViewModel(
         _orderItems.postValue(CourierOrderItemState.ShowItems(orderItems))
     }
 
-    fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
+    suspend fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
         when (result) {
             is CourierCarNumberResult.Create -> {
                 if (interactor.carNumberIsConfirm()) {
@@ -571,7 +571,7 @@ class CourierOrdersViewModel(
         return isSelected
     }
 
-    fun onNextFab() {
+    suspend fun onNextFab() {
         initOrderDetails(interactor.selectedRowOrder())
         _showOrderState.postValue(CourierOrderShowOrdersState.Invisible)
         _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode()))
@@ -701,7 +701,7 @@ class CourierOrdersViewModel(
         }
     }
 
-    fun onCloseOrderDetailsClick(height: Int) {
+    suspend fun onCloseOrderDetailsClick(height: Int) {
         this.height = height
         _showOrderState.postValue(CourierOrderShowOrdersState.Visible)
         _navigationState.postValue(CourierOrdersNavigationState.CloseAddressesDetail)
@@ -731,13 +731,14 @@ class CourierOrdersViewModel(
     fun onConfirmOrderClick() {
         onTechEventLog("onConfirmOrderClick")
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.anchorTask()
-                .subscribe(
-                    { anchorTaskComplete() },
-                    { anchorTaskError(it) }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                interactor.anchorTask()
+                anchorTaskComplete()
+            }catch (e:Exception){
+                anchorTaskError(e)
+            }
+        }
     }
 
     private fun anchorTaskComplete() {

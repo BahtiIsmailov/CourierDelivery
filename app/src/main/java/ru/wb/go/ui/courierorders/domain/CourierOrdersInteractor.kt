@@ -16,9 +16,9 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun saveRowOrder(rowOrder: Int)
 
-    fun selectedOrder(rowOrder: Int): Single<CourierOrderLocalDataEntity>
+    suspend fun selectedOrder(rowOrder: Int):  CourierOrderLocalDataEntity
 
-    fun selectedRowOrder(): Int
+    suspend fun selectedRowOrder(): Int
 
     fun mapState(state: CourierMapState)
 
@@ -32,6 +32,6 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun carType(): Int
 
-    fun anchorTask(): Completable
+    suspend fun anchorTask()
 
 }

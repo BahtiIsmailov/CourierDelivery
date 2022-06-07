@@ -11,7 +11,6 @@ interface CourierMapRepository {
 
     fun observeMapState(): Observable<CourierMapState>
 
-
     fun observeMapAction(): Observable<CourierMapAction>
 
     fun mapState(state: CourierMapState)

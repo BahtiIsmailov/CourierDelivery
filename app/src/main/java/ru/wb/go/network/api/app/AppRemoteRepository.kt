@@ -19,9 +19,9 @@ interface AppRemoteRepository {
 
     fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 
-    fun reserveTask(taskID: String, carNumber: String): Completable
+    suspend fun reserveTask(taskID: String, carNumber: String)
 
-    fun deleteTask(taskID: String): Completable
+    suspend fun deleteTask(taskID: String)
 
     fun taskBoxes(taskID: String): Single<List<LocalBoxEntity>>
 
@@ -30,7 +30,7 @@ interface AppRemoteRepository {
     fun setReadyTask(
             taskID: String,
             boxes: List<LocalBoxEntity>
-    ): Single<TaskCostEntity>
+    ):  TaskCostEntity
 
     fun setIntransitTask(
         taskID: String,

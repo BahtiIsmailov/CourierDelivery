@@ -37,17 +37,17 @@ interface AppApi {
     ): Single<MyTaskResponse>
 
     @POST("{version}/tasks/{taskID}/courier")
-    fun reserveTask(
+    suspend fun reserveTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body courierAnchorResponse: CourierAnchorResponse
-    ): Completable
+    )
 
     @HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
-    fun deleteTask(
+    suspend fun deleteTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Completable
+    )
 
     @GET("{version}/tasks/{taskID}/boxes")
     fun taskBoxes(

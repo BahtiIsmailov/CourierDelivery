@@ -21,11 +21,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -97,10 +99,14 @@ class CourierOrdersFragment :
     }
 
     private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
+        override  fun handleOnBackPressed() {
             when {
                 isOrdersExpanded() -> viewModel.onCloseOrdersClick()
-                isOrderDetailsExpanded() -> viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+                isOrderDetailsExpanded() -> {
+                    lifecycleScope.launch {
+                        viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+                    }
+                }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
         }
@@ -208,16 +214,22 @@ class CourierOrdersFragment :
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
 
-        binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
+        binding.carChangeImage.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.onChangeCarNumberClick()
+            }
+        }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
+        binding.takeOrder.setOnClickListener { lifecycleScope.launch {viewModel.onConfirmTakeOrderClick()} }
         binding.closeOrderDetails.setOnClickListener {
-            viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+            lifecycleScope.launch {
+                viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+            }
         }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
-        binding.carNumberEmpty.setOnClickListener { viewModel.onChangeCarNumberClick() }
-        binding.showOrderFab.setOnClickListener { viewModel.onNextFab() }
+        binding.carNumberEmpty.setOnClickListener { lifecycleScope.launch {viewModel.onChangeCarNumberClick()} }
+        binding.showOrderFab.setOnClickListener { lifecycleScope.launch {viewModel.onNextFab()} }
     }
 
     private fun fadeOut(view: View): ObjectAnimator {
@@ -250,7 +262,7 @@ class CourierOrdersFragment :
     private fun initStateObserves() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<CourierCarNumberResult>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
-            ?.observe(viewLifecycleOwner) { viewModel.onChangeCarNumberOrders(it) }
+            ?.observe(viewLifecycleOwner) { lifecycleScope.launch {viewModel.onChangeCarNumberOrders(it)} }
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.title.text = it.label

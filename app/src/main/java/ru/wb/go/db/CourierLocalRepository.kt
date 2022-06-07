@@ -14,7 +14,7 @@ interface CourierLocalRepository {
     //==============================================================================================
     fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
 
-    fun readCurrentWarehouse(): Single<CourierWarehouseLocalEntity>
+    fun readCurrentWarehouse():  CourierWarehouseLocalEntity
 
     fun deleteAllWarehouse()
 
@@ -26,7 +26,7 @@ interface CourierLocalRepository {
 
     suspend fun freeOrders():  List<CourierOrderLocalDataEntity>
 
-    fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity>
+    suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
@@ -52,7 +52,7 @@ interface CourierLocalRepository {
 
     fun setOrderAfterLoadStatus(cost: Int)
 
-    fun getOrderId(): Single<String>
+    fun getOrderId():  String
     fun getOrderGate():  String
     fun getOffices(): List<LocalOfficeEntity>
     fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
@@ -71,7 +71,7 @@ interface CourierLocalRepository {
 
     fun takeBackBox(box: LocalBoxEntity)
 
-    fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>>
+    fun readAllLoadingBoxesSync():  List<LocalBoxEntity>
 
     fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
 

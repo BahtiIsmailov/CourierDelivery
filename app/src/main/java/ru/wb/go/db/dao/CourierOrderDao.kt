@@ -21,7 +21,7 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity WHERE rowId=:rowOrder")
-    fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity>
+    suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")

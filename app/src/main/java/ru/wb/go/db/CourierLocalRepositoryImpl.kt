@@ -18,7 +18,7 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.insert(courierWarehouseEntity)
     }
 
-    override fun readCurrentWarehouse(): Single<CourierWarehouseLocalEntity> {
+    override fun readCurrentWarehouse(): CourierWarehouseLocalEntity  {
         return courierWarehouseDao.read()
     }
 
@@ -48,7 +48,7 @@ class CourierLocalRepositoryImpl(
           courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity)
     }
 
-    override fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity> {
+    override suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity  {
         return courierOrderDao.orderAndOffices(rowOrder)
     }
 
@@ -108,8 +108,8 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
-    override fun getOrderId(): Single<String> {
-        return Single.just(getOrder()!!.orderId.toString())
+    override fun getOrderId():  String  {
+        return getOrder().orderId.toString()
     }
 
     override fun setOrderInReserve(order: LocalOrderEntity) {

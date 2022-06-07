@@ -15,7 +15,7 @@ interface CourierWarehouseDao {
     fun insert(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
 
     @Query("SELECT * FROM CourierWarehouseLocalEntity")
-    fun read(): Single<CourierWarehouseLocalEntity>
+    fun read():  CourierWarehouseLocalEntity
 
     @Query("DELETE FROM CourierWarehouseLocalEntity")
     fun deleteAll()
