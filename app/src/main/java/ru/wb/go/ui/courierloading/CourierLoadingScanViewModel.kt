@@ -24,6 +24,7 @@ import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.time.DateTimeFormatter
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class CourierLoadingScanViewModel(
@@ -129,28 +130,30 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeInitScanProcess() {
-        addSubscription(interactor.scannedBoxes()
-            .subscribe(
-                { initScanProcessComplete(it) },
-                { initScanProcessError(it) }
-            )
-        )
+        viewModelScope.launch {
+            try {
+                val response = interactor.scannedBoxes()
+                initScanProcessComplete(response)
+            }catch (e:Exception){
+                initScanProcessError(e)
+            }
+        }
     }
 
     private fun initScanProcessComplete(boxes: List<LocalBoxEntity>) {
         onTechEventLog("initScanProcessComplete", "countBox " + boxes.size)
         if (boxes.isEmpty()) {
             observeTimer()
-            _fragmentStateUI.value = CourierLoadingScanBoxState.InitScanner
+            _fragmentStateUI.postValue(CourierLoadingScanBoxState.InitScanner)
         } else {
             val lastBox = boxes.last()
-            _boxDataStateUI.value = BoxInfoDataState(
+            _boxDataStateUI.postValue(BoxInfoDataState(
                 lastBox.boxId,
                 lastBox.address,
                 resourceProvider.getAccepted(boxes.size),
-            )
-            _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
-            _completeButtonState.value = boxes.isNotEmpty()
+            ))
+            _fragmentStateUI.postValue(CourierLoadingScanBoxState.LoadInCar)
+            _completeButtonState.postValue(boxes.isNotEmpty())
         }
     }
 
@@ -162,16 +165,16 @@ class CourierLoadingScanViewModel(
 
         addSubscription(
             interactor.observeScanProcess()
-                .doOnError { scanProccessError(it) }
+                .doOnError { scanProcessError(it) }
                 .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
                 .subscribe(
                     { observeScanProcessComplete(it) },
-                    { scanProccessError(it) }
+                    { scanProcessError(it) }
                 )
         )
     }
 
-    private fun scanProccessError(throwable: Throwable) {
+    private fun scanProcessError(throwable: Throwable) {
         onTechErrorLog("observeScanProcessError", throwable)
         errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }

@@ -68,7 +68,7 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.getOfficeById(officeId)
     }
 
-    override fun getOrder(): LocalOrderEntity {
+    override suspend fun getOrder(): LocalOrderEntity {
         return courierOrderDao.getOrder()
     }
 
@@ -108,7 +108,7 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
-    override fun getOrderId():  String  {
+    override  fun getOrderId(): String  {
         return getOrder().orderId.toString()
     }
 
@@ -128,7 +128,7 @@ class CourierLocalRepositoryImpl(
         deleteOrder()
     }
 
-    override fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>> {
+    override suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity> {
         return courierLoadingBoxDao.readAllBoxesSync()
     }
 

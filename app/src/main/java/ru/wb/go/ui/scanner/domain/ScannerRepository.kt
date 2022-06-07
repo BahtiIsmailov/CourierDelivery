@@ -9,7 +9,7 @@ interface ScannerRepository {
 
     fun scannerAction(action: ScannerAction)
 
-    fun observeScannerAction(): Observable<ScannerAction>
+    fun observeScannerAction():  Observable<ScannerAction>
 
     fun scannerState(state: ScannerState)
 
@@ -19,5 +19,5 @@ interface ScannerRepository {
 
     fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity
 
-    fun holdStart(): Completable
+    fun holdStart() : Completable
 }

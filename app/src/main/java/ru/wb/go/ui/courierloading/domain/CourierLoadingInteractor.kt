@@ -11,9 +11,9 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 
 interface CourierLoadingInteractor : BaseServiceInteractor {
 
-    fun scannedBoxes(): Single<List<LocalBoxEntity>>
+    suspend fun scannedBoxes():  List<LocalBoxEntity>
 
-    fun observeScanProcess(): Observable<CourierLoadingProcessData>
+    suspend fun observeScanProcess():  CourierLoadingProcessData
 
     fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
 
@@ -21,7 +21,7 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
-    suspend fun deleteTask()
+    suspend fun deleteTask(): Completable
 
     suspend fun confirmLoadingBoxes():  CourierCompleteData
 

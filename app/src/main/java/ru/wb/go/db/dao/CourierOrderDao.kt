@@ -64,7 +64,7 @@ interface CourierOrderDao {
     fun deleteOrder()
 
     @Query("SELECT * FROM courier_order")
-    fun getOrder(): LocalOrderEntity
+    suspend fun getOrder(): LocalOrderEntity
 
     @Insert
     fun addOffices(offices: List<LocalOfficeEntity>)
