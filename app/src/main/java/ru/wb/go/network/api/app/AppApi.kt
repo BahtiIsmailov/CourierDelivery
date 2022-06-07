@@ -56,18 +56,19 @@ interface AppApi {
     ): Single<CourierTaskBoxesResponse>
 
     @POST("{version}/tasks/{taskID}/statuses/start")
-    fun setStartTask(
+    suspend fun setStartTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
-    ): Single<StartTaskResponse>
+    ):  StartTaskResponse
 
+    //TODO("Арсений")
     @POST("{version}/tasks/{taskID}/statuses/ready")
-    fun taskStatusesReady(
+    suspend fun taskStatusesReady(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
-    ): Single<TaskCostResponse>
+    ):  TaskCostResponse
 
     @POST("{version}/tasks/{taskID}/statuses/intransit")
     fun taskStatusesIntransit(

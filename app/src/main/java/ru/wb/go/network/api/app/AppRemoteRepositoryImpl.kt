@@ -13,7 +13,6 @@ import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
-import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.courier.CourierAnchorResponse
@@ -36,7 +35,7 @@ class AppRemoteRepositoryImpl(
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
-        return  withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             remoteRepo.saveCourierDocuments(
                 tokenManager.apiVersion(),
                 toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
@@ -118,7 +117,7 @@ class AppRemoteRepositoryImpl(
                             srcAddress = task.srcOffice.fullAddress,
                             srcLongitude = task.srcOffice.long,
                             srcLatitude = task.srcOffice.lat,
-                            route = task.route ?:"не указан"
+                            route = task.route ?: "не указан"
                         ),
                         offices = remoteOffices
                     )
@@ -170,33 +169,35 @@ class AppRemoteRepositoryImpl(
             .compose(rxSchedulerFactory.applySingleMetrics("taskBoxes"))
     }
 
-    override fun setStartTask(
+    override suspend fun setStartTask(
         taskID: String,
         box: LocalBoxEntity
-    ): Single<StartTaskResponse> {
+    ):  StartTaskResponse  {
         val apiBox = box.convertToApiBoxRequest()
         val boxes = listOf(apiBox)
+        autentificatorIntercept.initNameOfMethod("setStart")
         return remoteRepo.setStartTask(apiVersion(), taskID, boxes)
-            .compose(rxSchedulerFactory.applySingleMetrics("setStart"))
+
     }
 
-    override fun setReadyTask(
+    override suspend fun setReadyTask(
         taskID: String,
         boxes: List<LocalBoxEntity>
-    ): Single<TaskCostEntity> {
+    ): TaskCostEntity {
 
         val boxesRequest = boxes.map {
             assert(it.loadingAt != "")
             it.convertToApiBoxRequest()
         }
-
-        return remoteRepo.taskStatusesReady(
+        val response = remoteRepo.taskStatusesReady(
             apiVersion(),
             taskID,
             boxesRequest
-        ).map { TaskCostEntity(it.cost / COST_DIVIDER) }
-            .compose(rxSchedulerFactory.applySingleMetrics("setReady"))
+        )
+        autentificatorIntercept.initNameOfMethod("setReady")
+        return TaskCostEntity(response.cost / COST_DIVIDER)
     }
+
 
     override fun setIntransitTask(
         taskID: String,

@@ -40,7 +40,7 @@ interface CourierLocalRepository {
     // True Order
     //==============================
 
-    fun getOrder(): LocalOrderEntity
+    suspend fun getOrder(): LocalOrderEntity
 
     fun deleteOrder()
 
@@ -52,14 +52,14 @@ interface CourierLocalRepository {
 
     fun setOrderAfterLoadStatus(cost: Int)
 
-    fun getOrderId(): Single<String>
-    fun getOrderGate(): Single<String>
+    suspend fun getOrderId():  String
+    suspend fun getOrderGate():  String
     fun getOffices(): List<LocalOfficeEntity>
     fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
     fun getBoxes(): List<LocalBoxEntity>
     fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>>
 
-    fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean): Completable
+    fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
 
     fun visitOffice(officeId: Int)
 
@@ -71,7 +71,7 @@ interface CourierLocalRepository {
 
     fun takeBackBox(box: LocalBoxEntity)
 
-    fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>>
+    suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity>
 
     fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
 

@@ -13,7 +13,7 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     fun getOffices(): Observable<List<LocalOfficeEntity>>
 
-    fun observeOrderTimer(): Observable<Long>
+    suspend fun observeOrderTimer(): Observable<Long>
 
     fun completeDelivery(order: LocalOrderEntity): Completable
 
@@ -25,8 +25,8 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     fun mapState(state: CourierMapState)
 
-    fun getOrder(): LocalOrderEntity
-    fun getOrderId(): String
+    suspend fun getOrder(): LocalOrderEntity
+    suspend fun getOrderId(): String
     fun getOfflineBoxes(): List<LocalBoxEntity>
     fun getBoxes(): List<LocalBoxEntity>
 }

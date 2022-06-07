@@ -40,8 +40,8 @@ class CourierIntransitInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun observeOrderTimer(): Observable<Long> {
-        val order = locRepo.getOrder()!!
+    override suspend fun observeOrderTimer(): Observable<Long> {
+        val order = locRepo.getOrder()
         // TODO: 25.11.2021 переработать с учетом часового пояса
         val offsetSec = timeManager.getPassedTime(order.startedAt)
 
@@ -50,6 +50,19 @@ class CourierIntransitInteractorImpl(
             .map { it + offsetSec }
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
+
+//    override fun observeOrderTimer(): Observable<Long> {
+//        val order = locRepo.getOrder()!!
+//        // TODO: 25.11.2021 переработать с учетом часового пояса
+//        val offsetSec = timeManager.getPassedTime(order.startedAt)
+//
+//        return intransitTimeRepository.startTimer()
+//            .toObservable()
+//            .map { it + offsetSec }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
+
+
 
     override fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable {
         return remoteRepo.setIntransitTask(orderId, boxes)
@@ -67,11 +80,11 @@ class CourierIntransitInteractorImpl(
         locRepo.clearOrder()
     }
 
-    override fun getOrder(): LocalOrderEntity {
-        return locRepo.getOrder()!!
+    override suspend fun getOrder(): LocalOrderEntity {
+        return locRepo.getOrder()
     }
 
-    override fun getOrderId(): String {
+    override suspend fun getOrderId(): String {
         // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
         return getOrder().orderId.toString()
     }

@@ -22,8 +22,8 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.read()
     }
 
-    override fun getOrderGate(): Single<String> {
-        return Single.just(getOrder()!!.gate)
+    override suspend fun getOrderGate():  String  {
+        return getOrder().gate
     }
 
     override fun deleteAllWarehouse() {
@@ -68,7 +68,7 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.getOfficeById(officeId)
     }
 
-    override fun getOrder(): LocalOrderEntity {
+    override suspend fun getOrder(): LocalOrderEntity {
         return courierOrderDao.getOrder()
     }
 
@@ -108,8 +108,8 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
-    override fun getOrderId(): Single<String> {
-        return Single.just(getOrder()!!.orderId.toString())
+    override suspend fun getOrderId(): String  {
+        return getOrder().orderId.toString()
     }
 
     override fun setOrderInReserve(order: LocalOrderEntity) {
@@ -128,7 +128,7 @@ class CourierLocalRepositoryImpl(
         deleteOrder()
     }
 
-    override fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>> {
+    override suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity> {
         return courierLoadingBoxDao.readAllBoxesSync()
     }
 

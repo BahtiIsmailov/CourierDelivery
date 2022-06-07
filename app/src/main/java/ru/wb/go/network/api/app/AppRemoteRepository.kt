@@ -25,12 +25,12 @@ interface AppRemoteRepository {
 
     fun taskBoxes(taskID: String): Single<List<LocalBoxEntity>>
 
-    fun setStartTask(taskID: String, box: LocalBoxEntity): Single<StartTaskResponse>
+    suspend fun setStartTask(taskID: String, box: LocalBoxEntity):  StartTaskResponse
 
-    fun setReadyTask(
+    suspend fun setReadyTask(
             taskID: String,
             boxes: List<LocalBoxEntity>
-    ): Single<TaskCostEntity>
+    ):  TaskCostEntity
 
     fun setIntransitTask(
         taskID: String,

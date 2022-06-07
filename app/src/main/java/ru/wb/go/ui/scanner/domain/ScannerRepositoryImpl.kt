@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerRepository {
 
+//    private var scannerActionSubject = PublishSubject.create<ScannerAction>() //
     private var scannerActionSubject = PublishSubject.create<ScannerAction>()
     private val scannerStateSubject = PublishSubject.create<ScannerState>()
 
@@ -22,8 +23,8 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
         scannerActionSubject.onNext(action)
     }
 
-    override fun observeScannerAction(): Observable<ScannerAction> {
-        return scannerActionSubject
+    override fun observeScannerAction(): ScannerAction  {
+        return ScannerAction.
     }
 
     override fun scannerState(state: ScannerState) {
