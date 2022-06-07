@@ -1,5 +1,7 @@
 package ru.wb.go.network.api.app
 
+import io.reactivex.Observable
+import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
@@ -38,45 +40,32 @@ override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
         }
     }
 
-    override suspend fun getFreeOrders(srcOfficeID: Int):  List<CourierOrderEntity>  {
+    override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity>  {
         autentificatorIntercept.initNameOfMethod("courierOrders")
-        return remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
-                order -> convertCourierOrderEntity(order)
-        }.toList()
+           return remoteRepo.freeTasks(apiVersion(),srcOfficeID).data.map {
+               convertCourierOrderEntity(it)
+           }
     }
+//    override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
+//        return remoteRepo.freeTasks(apiVersion(), srcOfficeID)
+//            .map { it.data }
+//            .flatMap {
+//                Observable.fromIterable(it)
+//                    .map { order -> convertCourierOrderEntity(order) }
+//                    .toList()
+//            }
+//            .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
+//    }
 
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
         val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
         courierOrderResponse.dstOffices.forEach { dstOffice ->
-            // TODO: 05.10.2021 убрать после исправлениня на беке получение минусового id
             if (dstOffice.id != -1) {
-                dstOffices.add(
-                    CourierOrderDstOfficeEntity(
-                        id = dstOffice.id,
-                        name = dstOffice.name ?: "",
-                        fullAddress = dstOffice.fullAddress ?: "",
-                        long = dstOffice.long,
-                        lat = dstOffice.lat,
-                        workTimes = dstOffice.wrkTime ?: "",
-                        isUnusualTime = dstOffice.unusualTime
-                    )
-                )
-            }
+                dstOffices.add(toCourierOrderDstOfficeEntity(dstOffice))
+            }//широта долгота +
         }
-        return with(courierOrderResponse) {
-            CourierOrderEntity(
-                id = id,
-                routeID = routeID ?: 0,
-                gate = gate ?: "",
-                minPrice = minPrice,
-                minVolume = minVolume,
-                minBoxesCount = minBoxesCount,
-                dstOffices = dstOffices,
-                reservedAt = "",
-                reservedDuration = reservedDuration,
-                route = route ?: "не указан"
-            )
-        }
+        return toCourierOrderEntity(courierOrderResponse,dstOffices)
+
     }
 
     private fun apiVersion() =

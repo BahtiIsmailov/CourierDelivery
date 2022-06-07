@@ -124,21 +124,39 @@ class CourierOrdersViewModel(
 
     fun restoreDetails() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.freeOrdersLocal()
-                .doOnSuccess { this.orderLocalDataEntities = it }
-                .subscribe(
-                    {
-                        addressLabel()
-                        convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
-                        updateOrderAndWarehouseMarkers()
-                        showAllAndOrderItems()
-                        initOrderDetails(interactor.selectedRowOrder())
-                        setLoader(WaitLoader.Complete)
-                    },
-                    { initOrdersError(it) })
-        )
+        viewModelScope.launch {
+            try {
+                orderLocalDataEntities = interactor.freeOrdersLocal()
+                addressLabel()
+                convertAndSaveOrderPointMarkers(orderLocalDataEntities)
+                updateOrderAndWarehouseMarkers()
+                showAllAndOrderItems()
+                initOrderDetails(interactor.selectedRowOrder())
+                setLoader(WaitLoader.Complete)
+
+            }catch (e:Exception){
+                initOrdersError(e)
+            }
+        }
     }
+
+//    fun restoreDetails() {
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.freeOrdersLocal()
+//                .doOnSuccess { this.orderLocalDataEntities = it }
+//                .subscribe(
+//                    {
+//                        addressLabel()
+//                        convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
+//                        updateOrderAndWarehouseMarkers()
+//                        showAllAndOrderItems()
+//                        initOrderDetails(interactor.selectedRowOrder())
+//                        setLoader(WaitLoader.Complete)
+//                    },
+//                    { initOrdersError(it) })
+//        )
+//    }
 
     private fun checkDemoMode() {
         _demoState.postValue(interactor.isDemoMode())
@@ -339,7 +357,7 @@ class CourierOrdersViewModel(
 
     private fun initOrdersComplete(height: Int) {
         addressLabel()
-        convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
+        convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
         setLoader(WaitLoader.Complete)
         ordersComplete(height)
     }
@@ -405,10 +423,8 @@ class CourierOrdersViewModel(
         val orderMapMarkers = mutableListOf<CourierMapMarker>()
         val warehouseLatitude = parameters.warehouseLatitude
         val warehouseLongitude = parameters.warehouseLongitude
-        val warehouseMapPoint =
-            MapPoint(WAREHOUSE_ID, warehouseLatitude, warehouseLongitude)
-        val warehouseMapMarker =
-            Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
+        val warehouseMapPoint = MapPoint(WAREHOUSE_ID, warehouseLatitude, warehouseLongitude)
+        val warehouseMapMarker = Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
         orderMapMarkers.add(warehouseMapMarker)
         orders.forEachIndexed { index, item ->
             val idPoint = (index + 1).toString()

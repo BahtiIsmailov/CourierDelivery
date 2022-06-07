@@ -1,5 +1,7 @@
 package ru.wb.go.network.api.app
 
+import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
+import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -10,9 +12,7 @@ import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
-import ru.wb.go.network.api.app.remote.courier.CourierDocumentsResponse
-import ru.wb.go.network.api.app.remote.courier.CourierTaskBoxesResponse
-import ru.wb.go.network.api.app.remote.courier.MyTaskResponse
+import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 
@@ -194,6 +194,33 @@ fun toPaymentsRequest(id: String, amount: Int, paymentEntity: PaymentEntity) : P
             )
         )
     }
+}
+
+fun toCourierOrderDstOfficeEntity(courierOrderDstOfficeResponse: CourierOrderDstOfficeResponse): CourierOrderDstOfficeEntity{
+    return CourierOrderDstOfficeEntity(
+        id = courierOrderDstOfficeResponse.id,
+        name = courierOrderDstOfficeResponse.name ?: "",
+        fullAddress = courierOrderDstOfficeResponse.fullAddress ?: "",
+        long = courierOrderDstOfficeResponse.long,
+        lat = courierOrderDstOfficeResponse.lat,
+        workTimes = courierOrderDstOfficeResponse.wrkTime ?: "",
+        isUnusualTime = courierOrderDstOfficeResponse.unusualTime
+    )
+}
+
+fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:MutableList<CourierOrderDstOfficeEntity>): CourierOrderEntity{
+    return CourierOrderEntity (
+        id = courierOrderResponse.id,
+        routeID = courierOrderResponse.routeID ?: 0,
+        gate = courierOrderResponse.gate ?: "",
+        minPrice = courierOrderResponse.minPrice,
+        minVolume = courierOrderResponse.minVolume,
+        minBoxesCount = courierOrderResponse.minBoxesCount,
+        dstOffices =  dstOffices,
+        reservedAt = "",
+        reservedDuration = courierOrderResponse.reservedDuration,
+        route = courierOrderResponse.route ?: "не указан"
+    )
 }
 fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
     val accountsEntity = mutableListOf<AccountEntity>()

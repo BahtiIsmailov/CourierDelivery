@@ -22,8 +22,8 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.read()
     }
 
-    override fun getOrderGate(): Single<String> {
-        return Single.just(getOrder()!!.gate)
+    override fun getOrderGate():  String  {
+        return getOrder().gate
     }
 
     override fun deleteAllWarehouse() {
@@ -37,7 +37,7 @@ class CourierLocalRepositoryImpl(
     }
 
 
-    override fun freeOrders(): Single<List<CourierOrderLocalDataEntity>> {
+    override suspend fun freeOrders():  List<CourierOrderLocalDataEntity>  {
         return courierOrderDao.orderAndOffices()
     }
     private suspend fun saveOrderAndOffices(

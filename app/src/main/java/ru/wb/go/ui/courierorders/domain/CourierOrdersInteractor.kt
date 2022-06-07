@@ -12,7 +12,7 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity>
 
-    fun freeOrdersLocal(): Single<MutableList<CourierOrderLocalDataEntity>>
+    suspend fun freeOrdersLocal():  List<CourierOrderLocalDataEntity>
 
     fun saveRowOrder(rowOrder: Int)
 

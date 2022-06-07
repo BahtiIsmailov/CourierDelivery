@@ -221,7 +221,6 @@ val interactorModule = module {
             userManager,
             tokenManager,
             timeManager,
-            timeFormatter,
             sharedWorker
         )
     }
