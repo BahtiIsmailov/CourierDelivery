@@ -17,13 +17,13 @@ interface AppRemoteRepository {
 
     suspend fun getCourierDocuments(): CourierDocumentsEntity
 
-    fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
+    suspend fun tasksMy(orderId:Int?): LocalComplexOrderEntity
 
     suspend fun reserveTask(taskID: String, carNumber: String)
 
     suspend fun deleteTask(taskID: String)
 
-    fun taskBoxes(taskID: String): Single<List<LocalBoxEntity>>
+    suspend fun taskBoxes(taskID: String):  List<LocalBoxEntity>
 
     suspend fun setStartTask(taskID: String, box: LocalBoxEntity):  StartTaskResponse
 
@@ -32,23 +32,23 @@ interface AppRemoteRepository {
             boxes: List<LocalBoxEntity>
     ):  TaskCostEntity
 
-    fun setIntransitTask(
+    suspend fun setIntransitTask(
         taskID: String,
         boxes: List<LocalBoxEntity>
-    ): Completable
+    )
 
-    fun taskStatusesEnd(taskID: String): Completable
+     suspend fun taskStatusesEnd(taskID: String)
 
-    fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity>
+    suspend fun getBillingInfo(isShowTransaction: Boolean):  BillingCommonEntity
 
-    fun payments(id: String, amount: Int, paymentEntity: PaymentEntity): Completable
+    suspend fun payments(id: String, amount: Int, paymentEntity: PaymentEntity)
 
-    fun getBank(bic: String): Maybe<BankEntity>
+    suspend fun getBank(bic: String): BankEntity
 
-    fun getBankAccounts(): Single<BankAccountsEntity>
+    suspend fun getBankAccounts(): BankAccountsEntity
 
-    fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
+    suspend fun setBankAccounts(accountEntities: List<AccountEntity>)
 
-    fun appVersion(): Single<String>
+    suspend fun appVersion():  String
 
 }

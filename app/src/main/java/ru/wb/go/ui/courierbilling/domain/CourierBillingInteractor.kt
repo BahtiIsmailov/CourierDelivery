@@ -6,6 +6,6 @@ import ru.wb.go.ui.BaseServiceInteractor
 
 interface CourierBillingInteractor: BaseServiceInteractor {
 
-    fun getBillingInfo(): Single<BillingCommonEntity>
+    suspend fun getBillingInfo():  BillingCommonEntity
 
 }

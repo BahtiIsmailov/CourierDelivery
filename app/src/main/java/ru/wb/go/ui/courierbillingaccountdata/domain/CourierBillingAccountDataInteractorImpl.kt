@@ -3,6 +3,8 @@ package ru.wb.go.ui.courierbillingaccountdata.domain
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
@@ -21,17 +23,17 @@ class CourierBillingAccountDataInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierBillingAccountDataInteractor {
 
-    override fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>): Completable {
-        return Single.just(accountsEntity)
-            .map { it.convertToAccountEntity() }
-            .flatMapCompletable { appRemoteRepository.setBankAccounts(it) }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override suspend fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>)  {
+        return withContext(Dispatchers.IO){
+            appRemoteRepository.setBankAccounts(accountsEntity.convertToAccountEntity())
+        }
+
     }
 
-    override fun getBillingAccounts(): Single<List<CourierBillingAccountEntity>> {
-        return appRemoteRepository.getBankAccounts()
-            .map { it.converToCourierBillingAccountsEntity() }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+    override suspend fun getBillingAccounts():  List<CourierBillingAccountEntity>  {
+        return withContext(Dispatchers.IO){
+            appRemoteRepository.getBankAccounts().converToCourierBillingAccountsEntity()
+        }
     }
 
     private fun BankAccountsEntity.converToCourierBillingAccountsEntity(): List<CourierBillingAccountEntity> {
@@ -66,9 +68,10 @@ class CourierBillingAccountDataInteractorImpl(
         return accountEntity
     }
 
-    override fun getBank(bic: String): Maybe<BankEntity> {
-        return appRemoteRepository.getBank(bic)
-            .compose(rxSchedulerFactory.applyMaybeSchedulers())
+    override suspend fun getBank(bic: String): BankEntity {
+        return withContext(Dispatchers.IO){
+            appRemoteRepository.getBank(bic)
+        }
     }
 
 }

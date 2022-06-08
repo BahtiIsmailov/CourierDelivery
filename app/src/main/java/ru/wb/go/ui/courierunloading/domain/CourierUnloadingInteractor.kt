@@ -21,7 +21,7 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
-    fun completeOfficeUnload(): Completable
+    suspend fun completeOfficeUnload()
 
     fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
 

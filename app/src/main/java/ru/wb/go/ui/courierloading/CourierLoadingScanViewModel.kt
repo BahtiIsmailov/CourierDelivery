@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -24,8 +25,6 @@ import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.time.DateTimeFormatter
-import java.lang.Exception
-import java.util.concurrent.TimeUnit
 
 class CourierLoadingScanViewModel(
     compositeDisposable: CompositeDisposable,
@@ -162,16 +161,15 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-
-        addSubscription(
-            interactor.observeScanProcess()
-                .doOnError { scanProcessError(it) }
-                .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
-                .subscribe(
-                    { observeScanProcessComplete(it) },
-                    { scanProcessError(it) }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                val response = interactor.observeScanProcess()
+                observeScanProcessComplete(response)
+            }catch (e:Exception){
+                delay(1000)
+                scanProcessError(e)
+            }
+        }
     }
 
     private fun scanProcessError(throwable: Throwable) {
@@ -243,17 +241,17 @@ class CourierLoadingScanViewModel(
 
     fun onConfirmLoadingClick() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.confirmLoadingBoxes()
-                .subscribe({
-                    setLoader(WaitLoader.Complete)
-                    confirmLoadingBoxesComplete(it)
-                }, {
-                    setLoader(WaitLoader.Complete)
-                    onTechErrorLog("confirmLoadingBoxesError", it)
-                    errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-                })
-        )
+        viewModelScope.launch {
+            try {
+                val response = interactor.confirmLoadingBoxes()
+                setLoader(WaitLoader.Complete)
+                confirmLoadingBoxesComplete(response)
+            }catch (e:Exception){
+                setLoader(WaitLoader.Complete)
+                onTechErrorLog("confirmLoadingBoxesError", e)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
     }
 
     private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
@@ -351,22 +349,18 @@ class CourierLoadingScanViewModel(
 
     private fun deleteTask() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.deleteTask()
-                .subscribe(
-                    {
-                        setLoader(WaitLoader.Complete)
-                        onTechEventLog("toWarehouse")
-                        toWarehouse()
-                        _timeOut.postValue(false)
-                    },
-                    {
-                        setLoader(WaitLoader.Complete)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-
-                    }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                interactor.deleteTask()
+                setLoader(WaitLoader.Complete)
+                onTechEventLog("toWarehouse")
+                toWarehouse()
+                _timeOut.postValue(false)
+            }catch (e:Exception){
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
     }
 
     private fun toWarehouse() {

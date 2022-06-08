@@ -2,6 +2,8 @@ package ru.wb.go.ui.courierunloading.domain
 
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -107,17 +109,13 @@ class CourierUnloadingInteractorImpl(
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
-    override fun completeOfficeUnload(): Completable {
+    override suspend fun completeOfficeUnload() {
         val boxes = localRepo.getOfflineBoxes()
-        boxes.find { b -> b.deliveredAt != "" } ?: return Completable.complete()
-        return localRepo.getOrderId()
-            .flatMapCompletable {
-                remoteRepo.setIntransitTask(it, boxes)
-            }
-            .doOnComplete {
-                localRepo.setOnlineOffices()
-            }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        boxes.find { b -> b.deliveredAt != "" }
+        return withContext(Dispatchers.IO) {
+            remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes)
+            localRepo.setOnlineOffices()
+        }
     }
 
     override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {

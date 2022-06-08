@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierintransit
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -96,7 +98,10 @@ class CourierIntransitViewModel(
     }
 
     private fun initTitle() {
-        _toolbarLabelState.value = Label(resourceProvider.getLabelId(interactor.getOrderId()))
+        viewModelScope.launch {
+            _toolbarLabelState.postValue(Label(resourceProvider.getLabelId(interactor.getOrderId())))
+        }
+
     }
 
     private fun observeOffices() {
@@ -111,15 +116,21 @@ class CourierIntransitViewModel(
     }
 
     private fun initTime() {
-        addSubscription(
-            interactor.observeOrderTimer()
-                .subscribe({
-                    _intransitTime.value = CourierIntransitTimeState.Time(
-                        DateTimeFormatter.getDigitFullTime(it.toInt())
-                    )
-                }, {})
-        )
+        viewModelScope.launch {
+            _intransitTime.postValue(CourierIntransitTimeState.Time(
+                DateTimeFormatter.getDigitFullTime(interactor.observeOrderTimer().toInt())))
+        }
     }
+//    private fun initTime() {
+//        addSubscription(
+//            interactor.observeOrderTimer()
+//                .subscribe({
+//                    _intransitTime.value = CourierIntransitTimeState.Time(
+//                        DateTimeFormatter.getDigitFullTime(it.toInt())
+//                    )
+//                }, {})
+//        )
+//    }
 
     private fun setLoader(state: WaitLoader) {
         _waitLoader.postValue(state)
@@ -324,23 +335,22 @@ class CourierIntransitViewModel(
 
     fun onCompleteDeliveryClick() {
         onTechEventLog("Button CompleteDelivery")
-        _isEnableState.value = false
-        val boxes = interactor.getBoxes()
-        val order = interactor.getOrder()
-        val orderId = order.orderId.toString()
-
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.setIntransitTask(orderId, boxes)
-                .concatWith(interactor.completeDelivery(order))
-                .subscribe(
-                    { completeDeliveryComplete(order.cost) },
-                    {
-                        onTechErrorLog("CompleteDelivery", it)
-                        setLoader(WaitLoader.Complete)
-                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                _isEnableState.value = false
+                val boxes = interactor.getBoxes()
+                val order = interactor.getOrder()
+                val orderId = order.orderId.toString()
+                setLoader(WaitLoader.Wait)
+                interactor.setIntransitTask(orderId, boxes)
+                interactor.completeDelivery(order)
+                completeDeliveryComplete(order.cost)
+            }catch (e:Exception){
+                onTechErrorLog("CompleteDelivery", e)
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
+            }
+        }
     }
 
     private fun completeDeliveryComplete(cost: Int) {

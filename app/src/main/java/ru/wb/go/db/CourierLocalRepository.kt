@@ -52,8 +52,8 @@ interface CourierLocalRepository {
 
     fun setOrderAfterLoadStatus(cost: Int)
 
-    fun getOrderId():  String
-    fun getOrderGate():  String
+    suspend fun getOrderId():  String
+    suspend fun getOrderGate():  String
     fun getOffices(): List<LocalOfficeEntity>
     fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
     fun getBoxes(): List<LocalBoxEntity>
@@ -71,7 +71,7 @@ interface CourierLocalRepository {
 
     fun takeBackBox(box: LocalBoxEntity)
 
-    fun readAllLoadingBoxesSync():  List<LocalBoxEntity>
+    suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity>
 
     fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
 

@@ -1,6 +1,8 @@
 package ru.wb.go.ui.courierbilling.domain
 
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -16,9 +18,10 @@ class CourierBillingInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierBillingInteractor {
 
-    override fun getBillingInfo(): Single<BillingCommonEntity> {
-        return appRemoteRepository.getBillingInfo(true)
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+    override suspend fun getBillingInfo(): BillingCommonEntity {
+        return withContext(Dispatchers.IO){
+            appRemoteRepository.getBillingInfo(true)
+        }
     }
 
 }

@@ -32,9 +32,9 @@ interface AppApi {
     //==============================================================================================
 
     @GET("{version}/tasks/my")
-    fun tasksMy(
+    suspend fun tasksMy(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<MyTaskResponse>
+    ):  MyTaskResponse
 
     @POST("{version}/tasks/{taskID}/courier")
     suspend fun reserveTask(
@@ -50,10 +50,10 @@ interface AppApi {
     )
 
     @GET("{version}/tasks/{taskID}/boxes")
-    fun taskBoxes(
+    suspend fun taskBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Single<CourierTaskBoxesResponse>
+    ):  CourierTaskBoxesResponse
 
     @POST("{version}/tasks/{taskID}/statuses/start")
     suspend fun setStartTask(
@@ -71,54 +71,54 @@ interface AppApi {
     ):  TaskCostResponse
 
     @POST("{version}/tasks/{taskID}/statuses/intransit")
-    fun taskStatusesIntransit(
+    suspend fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
-    ): Completable
+    )
 
     @POST("{version}/tasks/{taskID}/statuses/end")
-    fun taskStatusesEnd(
+    suspend fun taskStatusesEnd(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
-    ): Completable
+    )
 
     //==============================================================================================
     //billing
     //==============================================================================================
 
     @GET("{version}/billing/account")
-    fun getBilling(
+    suspend fun getBilling(
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
-    ): Single<BillingCommonResponse>
+    ): BillingCommonResponse
 
     @POST("{version}/payments")
-    fun doTransaction(
+    suspend fun doTransaction(
         @Path(value = "version", encoded = true) version: String,
         @Body paymentsRequest: PaymentsRequest
-    ): Completable
+    )
 
     @GET("{version}/banks")
-    fun getBank(
+    suspend fun getBank(
         @Path(value = "version", encoded = true) version: String,
         @Query("bic") bic: String
-    ): Maybe<BankResponse>
+    ): BankResponse
 
     @GET("{version}/me/bank-accounts")
-    fun getBankAccounts(
+    suspend fun getBankAccounts(
         @Path(value = "version", encoded = true) version: String
-    ): Single<AccountsResponse>
+    ):  AccountsResponse
 
     @PUT("{version}/me/bank-accounts")
-    fun setBankAccounts(
+    suspend fun setBankAccounts(
         @Path(value = "version", encoded = true) version: String,
         @Body accountRequest: List<AccountRequest>
-    ): Completable
+    )
 
     @GET("{version}/settings/mobile-version")
-    fun getAppActualVersion(
+    suspend fun getAppActualVersion(
         @Path(value = "version", encoded = true) version: String
-    ): Single<VersionAppResponse>
+    ):  VersionAppResponse
 
 }

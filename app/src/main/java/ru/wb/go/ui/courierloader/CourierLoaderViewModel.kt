@@ -3,8 +3,6 @@ package ru.wb.go.ui.courierloader
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
@@ -27,12 +25,10 @@ import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
-import java.lang.Exception
 
 class CourierLoaderViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val tokenManager: TokenManager,
     private val locRepo: CourierLocalRepository,
     private val remoteRepo: AppRemoteRepository,
@@ -67,23 +63,24 @@ class CourierLoaderViewModel(
     }
 
     fun initVersion() {
-        _state.value = CourierLoaderUIState.Progress
-        addSubscription(
-            remoteRepo.appVersion()
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .subscribe(
-                    { appVersionUpdateComplete(it) },
-                    { appVersionUpdateError(it) })
-        )
+        _state.postValue(CourierLoaderUIState.Progress)
+        viewModelScope.launch {
+            try {
+                val response = remoteRepo.appVersion()
+                appVersionUpdateComplete(response)
+            }catch (e:Exception){
+                appVersionUpdateError(e)
+            }
+        }
     }
 
 
-    private fun appVersionUpdateComplete(version: String) {
+    private suspend fun appVersionUpdateComplete(version: String) {
         onTechEventLog("appVersionUpdateComplete", "appStart $version")
         checkUserState(version)
     }
 
-    private fun appVersionUpdateError(throwable: Throwable) {
+    private suspend fun appVersionUpdateError(throwable: Throwable) {
         onTechErrorLog("appVersionUpdateError", throwable)
         checkUserState("0.0.0")
     }
@@ -102,7 +99,7 @@ class CourierLoaderViewModel(
         }
     }
 
-    private fun checkUserState(version: String) {
+    private suspend fun checkUserState(version: String) {
         val phone = tokenManager.userPhone()
 
         checkNewInstallation()
@@ -134,57 +131,97 @@ class CourierLoaderViewModel(
     }
 
     private fun toApp(order: LocalOrderEntity?) {
-        addSubscription(
-            remoteRepo.tasksMy(order?.orderId)
-                .flatMap { solveJobInitialState(it, order) }
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .subscribe({
-                    _navigationDrawerState.postValue(it)
-                }, {
-                    onTechErrorLog("getMyTask", it)
-                    onRxError(it)
-                })
-        )
+        viewModelScope.launch {
+            try {
+                val res = solveJobInitialState(remoteRepo.tasksMy(order?.orderId), order)
+                _navigationDrawerState.postValue(res)
+            } catch (e: Exception) {
+                onTechErrorLog("getMyTask", e)
+                onRxError(e)
+            }
+        }
+
     }
+//    private fun toApp(order: LocalOrderEntity?) {
+//        addSubscription(
+//            remoteRepo.tasksMy(order?.orderId)
+//                .flatMap { solveJobInitialState(it, order) }
+//                .compose(rxSchedulerFactory.applySingleSchedulers())
+//                .subscribe({
+//                    _navigationDrawerState.postValue(it)
+//                }, {
+//                    onTechErrorLog("getMyTask", it)
+//                    onRxError(it)
+//                })
+//        )
+//    }
 
     private fun solveJobInitialState(
         remoteOrder: LocalComplexOrderEntity,
         order: LocalOrderEntity?
-    ): Single<CourierLoaderNavigationState> {
+    ): CourierLoaderNavigationState {
         val remoteTaskId = remoteOrder.order.orderId
         return when {
-            (order == null || remoteTaskId != order.orderId) && remoteTaskId != -2 -> {
+            (order == null || remoteTaskId != order.orderId) && (remoteTaskId != -2) -> {
                 onTechEventLog("OrderSynchronization", "Get from server")
-                syncFromServer(remoteOrder)
-                    .andThen(Single.just(getNavigationState(remoteOrder.order.status)))
+                getNavigationState(remoteOrder.order.status)
             }
             else -> {
                 val localStatus = order!!.status
                 onTechEventLog("OrderSynchronization", "Get local version")
-                Completable.complete()
-                    .andThen(Single.just(getNavigationState(localStatus)))
+                getNavigationState(localStatus)
             }
         }
-
     }
+
+//    private fun solveJobInitialState(
+//        remoteOrder: LocalComplexOrderEntity,
+//        order: LocalOrderEntity?
+//    ):  CourierLoaderNavigationState  {
+//        val remoteTaskId = remoteOrder.order.orderId
+//        return when {
+//            (order == null || remoteTaskId != order.orderId) && remoteTaskId != -2 -> {
+//                onTechEventLog("OrderSynchronization", "Get from server")
+//                syncFromServer(remoteOrder)
+//                    .andThen(Single.just(getNavigationState(remoteOrder.order.status)))
+//            }
+//            else -> {
+//                val localStatus = order!!.status
+//                onTechEventLog("OrderSynchronization", "Get local version")
+//                Completable.complete()
+//                    .andThen(Single.just(getNavigationState(localStatus)))
+//            }
+//        }
+//
+//    }
 
     private fun syncFromServer(
         remoteOrder: LocalComplexOrderEntity,
-    ): Completable {
+    ) {
         clearCurrentLocalData()
-
         assert(remoteOrder.order.orderId != -2)
-
-        if (remoteOrder.order.orderId < 0) {
-            return Completable.complete()
+        viewModelScope.launch {
+            locRepo.saveRemoteOrder(remoteOrder, remoteRepo.taskBoxes(remoteOrder.order.orderId.toString()))
         }
-
-        return remoteRepo.taskBoxes(remoteOrder.order.orderId.toString())
-            .flatMapCompletable {
-                locRepo.saveRemoteOrder(remoteOrder, it)
-            }
-
     }
+
+//    private fun syncFromServer(
+//        remoteOrder: LocalComplexOrderEntity,
+//    ) {
+//        clearCurrentLocalData()
+//
+//        assert(remoteOrder.order.orderId != -2)
+//
+//        if (remoteOrder.order.orderId < 0) {
+//            return Completable.complete()
+//        }
+//
+//        return remoteRepo.taskBoxes(remoteOrder.order.orderId.toString())
+//            .flatMapCompletable {
+//                locRepo.saveRemoteOrder(remoteOrder, it)
+//            }
+//
+//    }
 
     private fun getNavigationState(status: String) =
         when (status) {
@@ -225,13 +262,14 @@ class CourierLoaderViewModel(
 
     private fun toRegistration(phone: String) {
         viewModelScope.launch {
-            try{
+            try {
                 val response = remoteRepo.getCourierDocuments()
                 val courierDataParameters = CourierDataParameters(phone = phone, docs = response)
-                val responseState = CourierLoaderNavigationState.NavigateToCourierDataType(courierDataParameters)
+                val responseState =
+                    CourierLoaderNavigationState.NavigateToCourierDataType(courierDataParameters)
                 _navigationDrawerState.value = responseState
 
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 onTechErrorLog("getUserDocs", e)
                 onRxError(e)
             }

@@ -8,8 +8,8 @@ import ru.wb.go.ui.BaseServiceInteractor
 
 interface CourierBillingAccountSelectorInteractor: BaseServiceInteractor {
 
-    fun payments(amount: Int, paymentEntity: PaymentEntity): Completable
+    suspend fun payments(amount: Int, paymentEntity: PaymentEntity)
 
-    fun getBillingAccounts(): Single<List<CourierBillingAccountEntity>>
+    suspend fun getBillingAccounts():  List<CourierBillingAccountEntity>
 
 }

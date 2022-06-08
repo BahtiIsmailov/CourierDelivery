@@ -119,7 +119,7 @@ fun toLocalComplexOrderEntity(
             startedAt = myTaskResponse.startedAt ?: "",
             reservedDuration = myTaskResponse.reservedDuration,
             status = myTaskResponse.status ?: "",
-            cost = (myTaskResponse.cost ?: 0) / AppRemoteRepositoryCoroutineImpl.COST_DIVIDER,
+            cost = (myTaskResponse.cost ?: 0) / AppRemoteRepositoryImpl.COST_DIVIDER,
             srcId = myTaskResponse.srcOffice.id,
             srcName = myTaskResponse.srcOffice.name,
             srcAddress = myTaskResponse.srcOffice.fullAddress,
@@ -222,6 +222,47 @@ fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:M
         route = courierOrderResponse.route ?: "не указан"
     )
 }
+
+fun toLocalOrderEntity():LocalOrderEntity {
+    return LocalOrderEntity(
+        orderId = -1,
+        routeID = 0,
+        gate = "",
+        minPrice = 0,
+        minVolume = 0,
+        minBoxes = 0,
+        countOffices = 0,
+        wbUserID = 0,
+        carNumber = "",
+        reservedAt = "",
+        startedAt = "",
+        reservedDuration = "",
+        status = "",
+        cost = 0,
+        srcId = 0,
+        srcName = "",
+        srcAddress = "",
+        srcLongitude = 0.0,
+        srcLatitude = 0.0,
+        route = ""
+    )
+}
+
+fun toLocalOfficeEntity(myDstOfficeResponse: MyDstOfficeResponse):LocalOfficeEntity{
+    return LocalOfficeEntity(
+        officeId = myDstOfficeResponse.id,
+        officeName = myDstOfficeResponse.name ?: "",
+        address = myDstOfficeResponse.fullAddress ?: "",
+        longitude = myDstOfficeResponse.long,
+        latitude = myDstOfficeResponse.lat,
+        countBoxes = 0,
+        deliveredBoxes = 0,
+        isVisited = false,
+        isOnline = false
+    )
+}
+
+
 fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
     val accountsEntity = mutableListOf<AccountEntity>()
     forEach {

@@ -2,8 +2,10 @@ package ru.wb.go.ui.courierbillingaccountselector
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -85,24 +87,39 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun initAccounts() {
         setLoader(CourierBillingAccountSelectorUILoaderState.Progress)
-        addSubscription(
-            interactor.getBillingAccounts()
-                .map { sortedAccounts(it) }
-                .doOnSuccess {
-                    billingAccounts = it.toMutableList()
-                }
-                .map { convertToItems(it) }
-                .doOnSuccess {
-                    copyCourierBillingAccountSelectorAdapterItems = it.toMutableList()
-                }
-                .doFinally { setLoader(CourierBillingAccountSelectorUILoaderState.Complete) }
-                .subscribe({
-                    _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
-                }, {
-                    onTechErrorLog("getBillingAccounts", it)
-                    errorDialogManager.showErrorDialog(it, _errorDialogState)
-                })
-        )
+        viewModelScope.launch {
+            try {
+                billingAccounts = interactor.getBillingAccounts().toMutableList()
+                copyCourierBillingAccountSelectorAdapterItems = convertToItems(billingAccounts)
+                setLoader(CourierBillingAccountSelectorUILoaderState.Complete)
+                _dropAccountState.postValue(
+                    CourierBillingAccountSelectorDropAction.SetItems(
+                        copyCourierBillingAccountSelectorAdapterItems
+                    )
+                )
+            } catch (e: Exception) {
+                onTechErrorLog("getBillingAccounts", e)
+                errorDialogManager.showErrorDialog(e, _errorDialogState)
+            }
+        }
+//        addSubscription(
+//            interactor.getBillingAccounts()
+//                .map { sortedAccounts(it) }
+//                .doOnSuccess {
+//                    billingAccounts = it.toMutableList()
+//                }
+//                .map { convertToItems(it) }
+//                .doOnSuccess {
+//                    copyCourierBillingAccountSelectorAdapterItems = it.toMutableList()
+//                }
+//                .doFinally { setLoader(CourierBillingAccountSelectorUILoaderState.Complete) }
+//                .subscribe({
+//                    _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
+//                }, {
+//                    onTechErrorLog("getBillingAccounts", it)
+//                    errorDialogManager.showErrorDialog(it, _errorDialogState)
+//                })
+//        )
     }
 
     private fun convertToItems(it: List<CourierBillingAccountEntity>): MutableList<CourierBillingAccountSelectorAdapterItem> {
@@ -248,15 +265,15 @@ class CourierBillingAccountSelectorViewModel(
                 recipientInn = inn
             )
         }
-        addSubscription(
-            interactor.payments(amountFromText, paymentEntity)
-                .subscribe(
-                    { paymentsComplete(amountFromText) },
-                    {
-                        onTechErrorLog("requestPayout", it)
-                        errorDialogManager.showErrorDialog(it, _errorDialogState)
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                interactor.payments(amountFromText, paymentEntity)
+                paymentsComplete(amountFromText)
+            } catch (e: Exception) {
+                onTechErrorLog("requestPayout", e)
+                errorDialogManager.showErrorDialog(e, _errorDialogState)
+            }
+        }
     }
 
     fun onEditAccountClick(idView: Int) {

@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierbilling
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
 import ru.wb.go.network.token.UserManager
@@ -72,17 +74,16 @@ class CourierBillingViewModel(
 
     private fun initBalanceAndTransactions() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.getBillingInfo()
-                .subscribe(
-                    { billingComplete(it) },
-                    {
-                        onTechErrorLog("billingError", it)
-                        setLoader(WaitLoader.Complete)
-                        _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                billingComplete(interactor.getBillingInfo())
+            }catch (e:Exception){
+                onTechErrorLog("billingError", e)
+                setLoader(WaitLoader.Complete)
+                _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
     }
 
     private fun billingComplete(it: BillingCommonEntity) {

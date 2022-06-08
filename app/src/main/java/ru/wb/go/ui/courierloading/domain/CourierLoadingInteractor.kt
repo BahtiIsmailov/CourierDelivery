@@ -21,7 +21,7 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
-    suspend fun deleteTask(): Completable
+    suspend fun deleteTask()
 
     suspend fun confirmLoadingBoxes():  CourierCompleteData
 

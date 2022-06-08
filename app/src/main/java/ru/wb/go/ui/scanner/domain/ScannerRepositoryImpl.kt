@@ -22,7 +22,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
         scannerActionSubject.onNext(action)
     }
 
-    override fun observeScannerAction(): Observable<ScannerAction>  {
+    override fun observeScannerAction(): ScannerAction  {
         return scannerActionSubject
     }
 

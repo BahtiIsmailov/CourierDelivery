@@ -22,7 +22,7 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.read()
     }
 
-    override fun getOrderGate():  String  {
+    override suspend fun getOrderGate():  String  {
         return getOrder().gate
     }
 
@@ -108,7 +108,7 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
-    override  fun getOrderId(): String  {
+    override suspend fun getOrderId(): String  {
         return getOrder().orderId.toString()
     }
 
@@ -145,12 +145,11 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.getOfficesFlowable()
     }
 
-    override fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean): Completable {
+    override fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean) {
         when (isNew) {
             true -> courierLoadingBoxDao.addNewBox(box)
             false -> courierLoadingBoxDao.updateBoxLoadingAt(box.boxId, box.loadingAt)
         }
-        return Completable.complete()
     }
 
     override fun visitOffice(officeId: Int) {

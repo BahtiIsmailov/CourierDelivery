@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierloading.domain
 
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -83,9 +82,47 @@ class CourierLoadingInteractorImpl(
 //
 //    }
 
-    override suspend fun observeScanProcess():  CourierLoadingProcessData {
+    override suspend fun observeScanProcess(): CourierLoadingProcessData {
         withContext(Dispatchers.IO) {
-            scanRepo.observeScannerAction()
+            val response = scanRepo.observeScannerAction()
+            if (response is ScannerAction.ScanResult) {
+                val boxes = localRepo.getBoxes()
+                val scanTime = timeManager.getLocalTime()
+                val parsedScan = scanRepo.parseScanBoxQr(response.value)
+                try {
+                    scanResult(
+                        ScannerState.HoldScanUnknown,
+                        CourierLoadingScanBoxData.NotRecognizedQr,
+                        boxes.size
+                    )
+                } catch (e: Exception) {
+                    val offices = localRepo.getOffices()
+                    val office =
+                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
+                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
+                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
+                        scanResult(
+                            ScannerState.HoldScanError,
+                            CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
+                            boxes.size
+                        )
+                    } else {
+                        var isNewBox = false
+                        if (box == null) {
+                            isNewBox = true
+                            box = LocalBoxEntity(
+                                boxId = parsedScan.boxId, officeId = office.officeId,
+                                address = office.address, loadingAt = scanTime, deliveredAt = ""
+                            )
+                        } else {
+                            box = box.copy(loadingAt = scanTime)
+                        }
+
+                        qrComplete(box, boxes.size, isNewBox, scanTime)
+                    }
+                }
+
+            }
         }
     }
 
@@ -106,8 +143,7 @@ class CourierLoadingInteractorImpl(
 //                    )
 //                } else {
 //                    val offices = localRepo.getOffices()
-//                    val office =
-//                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
+//                    val office = offices.find { off -> off.officeId.toString() == parsedScan.officeId }
 //                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
 //                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
 //                        scanResult(
@@ -135,7 +171,7 @@ class CourierLoadingInteractorImpl(
 //            .compose(rxSchedulerFactory.applyObservableSchedulers())
 //    }
 
-    private suspend fun qrComplete(
+     suspend fun qrComplete(
         box: LocalBoxEntity,
         countBox: Int,
         isNewBox: Boolean,

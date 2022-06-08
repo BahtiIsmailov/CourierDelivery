@@ -9,10 +9,10 @@ import ru.wb.go.ui.BaseServiceInteractor
 
 interface CourierBillingAccountDataInteractor : BaseServiceInteractor {
 
-    fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>): Completable
+    suspend fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>)
 
-    fun getBillingAccounts(): Single<List<CourierBillingAccountEntity>>
+    suspend fun getBillingAccounts():  List<CourierBillingAccountEntity>
 
-    fun getBank(bic: String): Maybe<BankEntity>
+    suspend fun getBank(bic: String): BankEntity
 
 }

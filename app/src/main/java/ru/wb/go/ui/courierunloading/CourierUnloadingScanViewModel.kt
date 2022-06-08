@@ -2,8 +2,10 @@ package ru.wb.go.ui.courierunloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -146,22 +148,35 @@ class CourierUnloadingScanViewModel(
 
     private fun confirmUnloading() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.completeOfficeUnload()
-                .doFinally {
-                    _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
-                    setLoader(WaitLoader.Complete)
-                    clearSubscription()
-                }
-                .subscribe(
-                    {
-
-                    },
-                    {
-                        onTechErrorLog("confirmUnload", it)
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                interactor.completeOfficeUnload()
+                _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+                setLoader(WaitLoader.Complete)
+                clearSubscription()
+            }catch (e:Exception){
+                onTechErrorLog("confirmUnload", e)
+            }
+        }
     }
+//    private fun confirmUnloading() {
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.completeOfficeUnload()
+//                .doFinally {
+//                    _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+//                    setLoader(WaitLoader.Complete)
+//                    clearSubscription()
+//                }
+//                .subscribe(
+//                    {
+//
+//                    },
+//                    {
+//                        onTechErrorLog("confirmUnload", it)
+//                    })
+//        )
+//    }
 
     private fun observeScanProcess() {
         addSubscription(

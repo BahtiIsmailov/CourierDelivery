@@ -9,7 +9,7 @@ interface ScannerRepository {
 
     fun scannerAction(action: ScannerAction)
 
-    fun observeScannerAction():  Observable<ScannerAction>
+    fun observeScannerAction(): ScannerAction
 
     fun scannerState(state: ScannerState)
 

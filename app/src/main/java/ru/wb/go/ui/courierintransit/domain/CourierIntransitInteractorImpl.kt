@@ -2,6 +2,8 @@ package ru.wb.go.ui.courierintransit.domain
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -40,15 +42,13 @@ class CourierIntransitInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override suspend fun observeOrderTimer(): Observable<Long> {
-        val order = locRepo.getOrder()
-        // TODO: 25.11.2021 переработать с учетом часового пояса
-        val offsetSec = timeManager.getPassedTime(order.startedAt)
-
-        return intransitTimeRepository.startTimer()
-            .toObservable()
-            .map { it + offsetSec }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeOrderTimer(): Long  {
+        return withContext(Dispatchers.IO){
+            val order = locRepo.getOrder()
+            val offsetSec = timeManager.getPassedTime(order.startedAt)
+            intransitTimeRepository.startTimer()
+            offsetSec
+        }
     }
 
 //    override fun observeOrderTimer(): Observable<Long> {
@@ -63,16 +63,17 @@ class CourierIntransitInteractorImpl(
 //    }
 
 
-
-    override fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable {
-        return remoteRepo.setIntransitTask(orderId, boxes)
-            .doOnComplete { locRepo.setOnlineOffices() }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>) {
+        withContext(Dispatchers.IO) {
+            remoteRepo.setIntransitTask(orderId, boxes)
+            locRepo.setOnlineOffices()
+        }
     }
 
-    override fun completeDelivery(order: LocalOrderEntity): Completable {
-        return remoteRepo.taskStatusesEnd(order.orderId.toString())
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override suspend fun completeDelivery(order: LocalOrderEntity)  {
+        return withContext(Dispatchers.IO){
+            remoteRepo.taskStatusesEnd(order.orderId.toString())
+        }
     }
 
     override fun clearLocalTaskData() {

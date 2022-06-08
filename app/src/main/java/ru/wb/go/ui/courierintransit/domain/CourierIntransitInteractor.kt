@@ -13,11 +13,11 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     fun getOffices(): Observable<List<LocalOfficeEntity>>
 
-    suspend fun observeOrderTimer(): Observable<Long>
+    suspend fun observeOrderTimer():  Long
 
-    fun completeDelivery(order: LocalOrderEntity): Completable
+    suspend fun completeDelivery(order: LocalOrderEntity)
 
-    fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable
+    suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>)
 
     fun clearLocalTaskData()
 
