@@ -62,7 +62,6 @@ val viewModelModule = module {
         CourierLoaderViewModel(
             compositeDisposable = get(),
             metric = get(),
-            rxSchedulerFactory = get(),
             tokenManager = get(),
             locRepo = get(),
             remoteRepo = get(),

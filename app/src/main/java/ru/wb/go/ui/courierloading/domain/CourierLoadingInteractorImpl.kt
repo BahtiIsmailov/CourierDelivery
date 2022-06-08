@@ -58,8 +58,6 @@ class CourierLoadingInteractorImpl(
         )
         return CourierLoadingProcessData(data, boxCount)
 
-
-
     }
 //    private fun scanResult(
 //        scannerState: ScannerState,
@@ -83,6 +81,7 @@ class CourierLoadingInteractorImpl(
 //    }
 
     override suspend fun observeScanProcess(): CourierLoadingProcessData {
+        var courierLoadingProgressData:CourierLoadingProcessData? = null
         withContext(Dispatchers.IO) {
             val response = scanRepo.observeScannerAction()
             if (response is ScannerAction.ScanResult) {
@@ -90,7 +89,7 @@ class CourierLoadingInteractorImpl(
                 val scanTime = timeManager.getLocalTime()
                 val parsedScan = scanRepo.parseScanBoxQr(response.value)
                 try {
-                    scanResult(
+                    courierLoadingProgressData = scanResult(
                         ScannerState.HoldScanUnknown,
                         CourierLoadingScanBoxData.NotRecognizedQr,
                         boxes.size
@@ -101,7 +100,7 @@ class CourierLoadingInteractorImpl(
                         offices.find { off -> off.officeId.toString() == parsedScan.officeId }
                     var box = boxes.find { b -> b.boxId == parsedScan.boxId }
                     if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
-                        scanResult(
+                        courierLoadingProgressData = scanResult(
                             ScannerState.HoldScanError,
                             CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
                             boxes.size
@@ -124,6 +123,7 @@ class CourierLoadingInteractorImpl(
 
             }
         }
+        return courierLoadingProgressData!!
     }
 
 
