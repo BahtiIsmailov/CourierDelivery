@@ -22,8 +22,8 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
         scannerActionSubject.onNext(action)
     }
 
-    override fun observeScannerAction(): ScannerAction  {
-        return scannerActionSubject
+    override fun observeScannerAction(): ScannerAction   {
+           error("sdsddsd")
     }
 
     override fun scannerState(state: ScannerState) {

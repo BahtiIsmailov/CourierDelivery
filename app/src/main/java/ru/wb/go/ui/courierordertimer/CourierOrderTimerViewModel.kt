@@ -2,8 +2,10 @@ package ru.wb.go.ui.courierordertimer
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
@@ -70,21 +72,33 @@ class CourierOrderTimerViewModel(
     init {
         initOrder()
     }
-
     private fun initOrder() {
-        addSubscription(
-            interactor.timerEntity()
-                .subscribe(
-                    {
-                        initOrderInfo(it)
-                        initTimer(it.reservedDuration, it.reservedAt)
-                    },
-                    {
-                        onTechErrorLog("initOrder", it)
-                    }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                val it = interactor.timerEntity()
+                initOrderInfo(it)
+                initTimer(it.reservedDuration, it.reservedAt)
+            }catch (e:Exception){
+                onTechErrorLog("initOrder", e)
+            }
+        }
+
     }
+
+//    private fun initOrder() {
+//        addSubscription(
+//            interactor.timerEntity()
+//                .subscribe(
+//                    {
+//                        initOrderInfo(it)
+//                        initTimer(it.reservedDuration, it.reservedAt)
+//                    },
+//                    {
+//                        onTechErrorLog("initOrder", it)
+//                    }
+//                )
+//        )
+//    }
 
     private fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
@@ -164,27 +178,47 @@ class CourierOrderTimerViewModel(
     private fun deleteTask() {
 
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.deleteTask()
-                .subscribe(
-                    {
-                        setLoader(WaitLoader.Complete)
-                        onTechEventLog("toWarehouse")
-                        _navigationState.value =
-                            CourierOrderTimerNavigationState.NavigateToWarehouse
-                        _timeOut.postValue(false)
-                    },
-                    {
-                        setLoader(WaitLoader.Complete)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+        viewModelScope.launch {
+            try {
+                interactor.deleteTask()
+                setLoader(WaitLoader.Complete)
+                onTechEventLog("toWarehouse")
+                _navigationState.value =
+                    CourierOrderTimerNavigationState.NavigateToWarehouse
+                _timeOut.postValue(false)
+            }catch (e:Exception){
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
 
-                    }
-                )
-        )
     }
+//    private fun deleteTask() {
+//
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.deleteTask()
+//                .subscribe(
+//                    {
+//                        setLoader(WaitLoader.Complete)
+//                        onTechEventLog("toWarehouse")
+//                        _navigationState.value =
+//                            CourierOrderTimerNavigationState.NavigateToWarehouse
+//                        _timeOut.postValue(false)
+//                    },
+//                    {
+//                        setLoader(WaitLoader.Complete)
+//                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+//
+//                    }
+//                )
+//        )
+//    }
 
     fun getOrderId(){
-       _getOrderId.value = courierLocalRepository.getOrder()
+        viewModelScope.launch{
+            _getOrderId.postValue(courierLocalRepository.getOrder())
+        }
     }
 
     override fun onTimerState(duration: Int, downTickSec: Int) {

@@ -64,7 +64,7 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.deleteAllOffices()
     }
 
-    override fun findOfficeById(officeId: Int): Single<LocalOfficeEntity> {
+    override fun findOfficeById(officeId: Int): LocalOfficeEntity  {
         return courierOrderDao.getOfficeById(officeId)
     }
 

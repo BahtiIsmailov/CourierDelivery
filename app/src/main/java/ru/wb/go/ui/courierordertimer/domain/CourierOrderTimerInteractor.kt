@@ -9,7 +9,7 @@ import ru.wb.go.ui.auth.signup.TimerState
 
 interface CourierOrderTimerInteractor {
 
-    fun deleteTask(): Completable
+    suspend fun deleteTask()
 
     fun startTimer(reservedDuration: String, reservedAt: String)
     val timer: Flowable<TimerState>
@@ -17,6 +17,6 @@ interface CourierOrderTimerInteractor {
 
     fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
 
-    fun timerEntity(): Single<CourierTimerEntity>
+    suspend fun timerEntity():  CourierTimerEntity
 
 }

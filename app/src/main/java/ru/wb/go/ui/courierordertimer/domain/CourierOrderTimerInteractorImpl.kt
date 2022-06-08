@@ -1,8 +1,8 @@
 package ru.wb.go.ui.courierordertimer.domain
 
-import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
@@ -23,14 +23,12 @@ class CourierOrderTimerInteractorImpl(
     private val timeManager: TimeManager,
 ) : CourierOrderTimerInteractor {
 
-    override fun deleteTask(): Completable {
+    override suspend fun deleteTask() {
         taskTimerRepository.stopTimer()
-        return locRepo.getOrderId()
-            .flatMapCompletable { appRemoteRepository.deleteTask(it) }
-            .doOnComplete {
-                locRepo.deleteOrder()
-            }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        return withContext(Dispatchers.IO) {
+            appRemoteRepository.deleteTask(locRepo.getOrderId())
+            locRepo.deleteOrder()
+        }
     }
 
     override fun startTimer(reservedDuration: String, reservedAt: String) {
@@ -59,16 +57,14 @@ class CourierOrderTimerInteractorImpl(
             .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
-    override fun timerEntity(): Single<CourierTimerEntity> {
-
-        return Single.just(locRepo.getOrder())
-            .map {
-                CourierTimerEntity(
-                    it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
-                    it.countOffices, it.gate, it.reservedDuration, it.reservedAt
-                )
-            }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+    override suspend fun timerEntity(): CourierTimerEntity {
+        return withContext(Dispatchers.IO) {
+            val it = locRepo.getOrder()
+            CourierTimerEntity(
+                it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
+                it.countOffices, it.gate, it.reservedDuration, it.reservedAt
+            )
+        }
     }
 
 }

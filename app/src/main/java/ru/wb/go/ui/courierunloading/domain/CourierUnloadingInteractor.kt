@@ -9,9 +9,9 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 
 interface CourierUnloadingInteractor : BaseServiceInteractor {
 
-    fun getCurrentOffice(officeId: Int): Single<LocalOfficeEntity>
+    suspend fun getCurrentOffice(officeId: Int):  LocalOfficeEntity
 
-    fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData>
+    suspend fun observeScanProcess(officeId: Int):  CourierUnloadingProcessData
 
     fun removeScannedBoxes(checkedBoxes: List<String>): Completable
 
@@ -25,5 +25,5 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
 
     fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
 
-    fun getOrderId(): String
+    suspend fun getOrderId(): String
 }

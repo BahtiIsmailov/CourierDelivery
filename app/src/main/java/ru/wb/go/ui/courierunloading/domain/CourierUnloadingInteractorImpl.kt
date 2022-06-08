@@ -32,24 +32,16 @@ class CourierUnloadingInteractorImpl(
     companion object {
         const val EMPTY_ADDRESS = ""
     }
-
-    private val scanLoaderProgressSubject = PublishSubject.create<CourierUnloadingProgressData>()
-
-    override fun getCurrentOffice(officeId: Int): Single<LocalOfficeEntity> {
-        return localRepo.findOfficeById(officeId)
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-
-    override fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData> {
-        return scannerRepo.observeScannerAction()
-            .filter { it is ScannerAction.ScanResult }
-            .map { it as ScannerAction.ScanResult }
-            .map { scannerRepo.parseScanBoxQr(it.value) }
-            .flatMap { parsedScan ->
+    override suspend fun observeScanProcess(officeId: Int):  CourierUnloadingProcessData {
+        var result: CourierUnloadingScanBoxData? = null
+        return withContext(Dispatchers.IO) {
+            val response = scannerRepo.observeScannerAction()
+            if (scannerRepo.observeScannerAction() is ScannerAction.ScanResult) {
+                response as ScannerAction.ScanResult
+                val parsedScan = scannerRepo.parseScanBoxQr(response.value)
                 val boxes = localRepo.getBoxes()
                 val box = boxes.find { box -> box.boxId == parsedScan.boxId }
                 val scanTime = timeManager.getLocalTime()
-                val result: CourierUnloadingScanBoxData
                 when {
                     !parsedScan.isOk -> {
                         result = CourierUnloadingScanBoxData.UnknownQr
@@ -80,15 +72,72 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanComplete)
                     }
                 }
-
-                localRepo.findOfficeById(officeId)
-                    .flatMapObservable {
-                        Observable.just(
-                            CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes)
-                        ).mergeWith(scannerRepo.holdStart())
-                    }
-                    .compose(rxSchedulerFactory.applyObservableSchedulers())
             }
+            val res = localRepo.findOfficeById(officeId)
+            scannerRepo.holdStart()
+            CourierUnloadingProcessData(result!!, res.deliveredBoxes, res.countBoxes)
+        }
+    }
+
+
+
+//    override fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData> {
+//        return scannerRepo.observeScannerAction()
+//            .filter { it is ScannerAction.ScanResult }
+//            .map { it as ScannerAction.ScanResult }
+//            .map { scannerRepo.parseScanBoxQr(it.value) }
+//            .flatMap { parsedScan ->
+//                val boxes = localRepo.getBoxes()
+//                val box = boxes.find { box -> box.boxId == parsedScan.boxId }
+//                val scanTime = timeManager.getLocalTime()
+//                val result: CourierUnloadingScanBoxData
+//                when {
+//                    !parsedScan.isOk -> {
+//                        result = CourierUnloadingScanBoxData.UnknownQr
+//                        scannerRepo.scannerState(ScannerState.HoldScanUnknown)
+//                    }
+//                    box == null -> {
+//                        result = CourierUnloadingScanBoxData.ForbiddenBox(
+//                            parsedScan.boxId,
+//                            EMPTY_ADDRESS
+//                        )
+//                        scannerRepo.scannerState(ScannerState.HoldScanError)
+//                    }
+//                    parsedScan.officeId != officeId.toString() ||
+//                            // сложный случай. пикнули коробку с дублированием boxId но другим офисом
+//                            box.officeId.toString() != parsedScan.officeId -> {
+//                        result = CourierUnloadingScanBoxData.WrongBox(
+//                            parsedScan.boxId,
+//                            EMPTY_ADDRESS
+//                        )
+//                        localRepo.takeBackBox(box)
+//                        scannerRepo.scannerState(ScannerState.HoldScanError)
+//                    }
+//                    else -> {
+//                        val boxOut = box.copy(deliveredAt = scanTime)
+//                        result =
+//                            CourierUnloadingScanBoxData.BoxAdded(parsedScan.boxId, boxOut.address)
+//                        localRepo.unloadBox(boxOut)
+//                        scannerRepo.scannerState(ScannerState.HoldScanComplete)
+//                    }
+//                }
+//
+//                localRepo.findOfficeById(officeId)
+//                    .flatMapObservable {
+//                        Observable.just(
+//                            CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes)
+//                        ).mergeWith(scannerRepo.holdStart())
+//                    }
+//                    .compose(rxSchedulerFactory.applyObservableSchedulers())
+//            }
+//    }
+
+    private val scanLoaderProgressSubject = PublishSubject.create<CourierUnloadingProgressData>()
+
+    override suspend fun getCurrentOffice(officeId: Int):  LocalOfficeEntity  {
+        return withContext(Dispatchers.IO){
+            localRepo.findOfficeById(officeId)
+        }
     }
 
     override fun scanLoaderProgress(): Observable<CourierUnloadingProgressData> {
@@ -122,7 +171,7 @@ class CourierUnloadingInteractorImpl(
         return localRepo.getRemainBoxes(officeId)
     }
 
-    override fun getOrderId(): String {
+    override suspend fun getOrderId(): String {
         // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
         return localRepo.getOrder().orderId.toString()
     }

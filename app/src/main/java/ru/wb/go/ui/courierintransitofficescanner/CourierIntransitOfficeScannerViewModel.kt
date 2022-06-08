@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierintransitofficescanner
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScanData
@@ -64,13 +66,23 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun initScanner() {
-        addSubscription(
-            interactor.observeOfficeIdScanProcess()
-                .subscribe(
-                    { observeOfficeIdScanProcessComplete(it) },
-                    { observeOfficeIdScanProcessError(it) })
-        )
+        viewModelScope.launch{
+            try {
+                observeOfficeIdScanProcessComplete(interactor.observeOfficeIdScanProcess())
+            }catch (e:Exception){
+                observeOfficeIdScanProcessError(e)
+            }
+        }
+
     }
+//    private fun initScanner() {
+//        addSubscription(
+//            interactor.observeOfficeIdScanProcess()
+//                .subscribe(
+//                    { observeOfficeIdScanProcessComplete(it) },
+//                    { observeOfficeIdScanProcessError(it) })
+//        )
+//    }
 
     private fun observeOfficeIdScanProcessComplete(it: CourierIntransitOfficeScanData) {
         when (it) {

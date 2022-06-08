@@ -34,7 +34,7 @@ interface CourierLocalRepository {
 
     fun deleteAllOrderOffices()
 
-    fun findOfficeById(officeId: Int): Single<LocalOfficeEntity>
+    fun findOfficeById(officeId: Int): LocalOfficeEntity
 
     //==============================
     // True Order

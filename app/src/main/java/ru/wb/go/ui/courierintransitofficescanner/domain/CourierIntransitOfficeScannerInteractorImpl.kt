@@ -2,6 +2,8 @@ package ru.wb.go.ui.courierintransitofficescanner.domain
 
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -32,19 +34,19 @@ class CourierIntransitOfficeScannerInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    override fun observeOfficeIdScanProcess(): Observable<CourierIntransitOfficeScanData> {
-        return scannerRepo.observeScannerAction()
-            .flatMap { convertScannerAction(it) }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData  {
+         return withContext(Dispatchers.IO){
+             convertScannerAction(scannerRepo.observeScannerAction())
+         }
     }
 
-    private fun convertScannerAction(it: ScannerAction) = Single.just(
+    private fun convertScannerAction(it: ScannerAction) =
         when (it) {
             ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
             ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
             is ScannerAction.ScanResult -> scanResult(it)
         }
-    ).toObservable()
+
 
     private fun scanResult(it: ScannerAction.ScanResult): CourierIntransitOfficeScanData {
         val parse = scannerRepo.parseScanOfficeQr(it.value)

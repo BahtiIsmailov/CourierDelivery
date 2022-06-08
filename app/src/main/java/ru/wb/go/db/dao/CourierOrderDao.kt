@@ -76,7 +76,7 @@ interface CourierOrderDao {
     fun getOffices(): List<LocalOfficeEntity>
 
     @Query("SELECT * FROM offices WHERE office_id=:officeId")
-    fun getOfficeById(officeId: Int): Single<LocalOfficeEntity>
+    fun getOfficeById(officeId: Int):  LocalOfficeEntity
 
     @Query("SELECT * FROM offices")
     fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>

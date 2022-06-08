@@ -21,7 +21,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -158,12 +157,19 @@ class CourierBillingAccountDataFragment :
 
     private fun createClickObserver(): ClickEventInterface {
         return ClickEventInterface { view ->
-            view.clicks().map {
-                view.isEnabled = false
-                CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
-            }
+             view.clicks()
+            view.isEnabled = false
+            CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
         }
     }
+//    private fun createClickObserver(): ClickEventInterface {
+//        return ClickEventInterface { view ->
+//            view.clicks().map {
+//                view.isEnabled = false
+//                CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
+//            }
+//        }
+//    }
 
     fun interface TextChangesInterface {
         fun initListener(
@@ -174,8 +180,19 @@ class CourierBillingAccountDataFragment :
     }
 
     private fun createFieldChangesObserver(): TextChangesInterface {
+        return TextChangesInterface {
+            textInputLayout, editText, queryType ->
+            changeText.add(ViewChanges(textInputLayout, editText, queryType))
+            val textChanges = editText.textChanges().toString()
+            CourierBillingAccountDataUIAction.TextChange(textChanges, queryType)
+            val focusChanges = editText.focusChanges()
+            CourierBillingAccountDataUIAction.FocusChange(
+                       editText.text.toString(),
+                        queryType,
+                        focusChanges
+                    )
 
-        changeText.add(ViewChanges(textInputLayout, editText, queryType))
+        }
     }
 
 

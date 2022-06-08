@@ -9,7 +9,7 @@ interface CourierIntransitOfficeScannerInteractor: BaseServiceInteractor {
 
     fun getOffices(): Observable<List<LocalOfficeEntity>>
 
-    fun observeOfficeIdScanProcess(): Observable<CourierIntransitOfficeScanData>
+    suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData
 
     fun scannerAction(scannerAction: ScannerState)
 
