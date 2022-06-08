@@ -363,7 +363,6 @@ class CourierOrdersViewModel(
         addressMapMarkers.add(warehouseMapMarker)
         dstOffices.forEachIndexed { index, item ->
 
-
             addressItems.add(
                 CourierOrderDetailsAddressItem(
                     if (item.isUnusualTime) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon(),
