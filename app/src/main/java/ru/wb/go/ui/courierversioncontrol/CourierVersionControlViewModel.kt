@@ -27,16 +27,16 @@ class CourierVersionControlViewModel(
         get() = _updateFromGooglePlay
 
     init {
-        _versionTitleState.value = resourceProvider.getAvailableVersion(deviceManager.appAdminVersion)
+        _versionTitleState.postValue(resourceProvider.getAvailableVersion(deviceManager.appAdminVersion))
     }
 
     fun onUpdateClick() {
         onTechEventLog("onUpdateClick")
         val packageName: String = deviceManager.appPackageName
-        _updateFromGooglePlay.value = UpdateFromGooglePlay(
+        _updateFromGooglePlay.postValue(UpdateFromGooglePlay(
                 resourceProvider.getUriPlayMarket(packageName),
                 resourceProvider.getUriGoogle(packageName)
-        )
+        ))
     }
 
     object NavigateToWarehouse

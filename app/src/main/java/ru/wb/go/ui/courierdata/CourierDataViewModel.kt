@@ -57,7 +57,7 @@ class UserFormViewModel(
 //        get() = _showErrorAnnotationState
 
     init {
-        //_showErrorAnnotationState.value = !parameters.docs.errorAnnotate.isNullOrEmpty()
+        //_showErrorAnnotationState.postValue(!parameters.docs.errorAnnotate.isNullOrEmpty()
         observeNetworkState()
     }
 
@@ -113,7 +113,7 @@ class UserFormViewModel(
         addSubscription(Observable.merge(changeObservables)
             .map { mapAction(it) }
             .subscribe(
-                { _formUIState.value = it },
+                { _formUIState.postValue(it) },
                 { LogUtils { logDebugApp(it.toString()) } })
         )
     }
@@ -158,7 +158,7 @@ class UserFormViewModel(
 
 
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
-        _loaderState.value = CourierDataUILoaderState.Progress
+        _loaderState.postValue(CourierDataUILoaderState.Progress)
         courierDocumentsEntity.courierType = parameters.docs.courierType
         viewModelScope.launch {
             try {
@@ -171,7 +171,7 @@ class UserFormViewModel(
     }
 
 //    fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
-//        _loaderState.value = CourierDataUILoaderState.Progress
+//        _loaderState.postValue(CourierDataUILoaderState.Progress
 //        courierDocumentsEntity.courierType = parameters.docs.courierType
 //        addSubscription(
 //            interactor.saveCourierDocuments(courierDocumentsEntity)
@@ -182,11 +182,11 @@ class UserFormViewModel(
 //    }
 
     fun onCheckedClick(isAgreement: Boolean) {
-        _loaderState.value = if (isAgreement) {
+        _loaderState.postValue(if (isAgreement) {
             CourierDataUILoaderState.Enable
         } else {
             CourierDataUILoaderState.Disable
-        }
+        })
     }
 
     private fun couriersFormComplete() {
@@ -206,14 +206,14 @@ class UserFormViewModel(
     private fun observeNetworkState() {
         addSubscription(
             interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
+                .subscribe({ _toolbarNetworkState.postValue(it) }, {})
         )
     }
 
     fun onShowAgreementClick() {
         onTechEventLog("onShowAgreementClick")
-//        _showErrorAnnotationState.value = false
-        _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
+//        _showErrorAnnotationState.postValue(false
+        _navigationEvent.postValue(CourierDataNavAction.NavigateToAgreement)
     }
 
     fun getParams(): CourierDataParameters {

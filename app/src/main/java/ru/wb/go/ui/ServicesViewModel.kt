@@ -30,12 +30,12 @@ abstract class ServicesViewModel(
     private fun observeNetworkState() {
         addSubscription(
             serviceInteractor.observeNetworkConnected()
-                .subscribe({ _networkState.value = it }, {})
+                .subscribe({ _networkState.postValue(it) }, {})
         )
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(serviceInteractor.versionApp())
+        _versionApp.postValue(resourceProvider.getVersionApp(serviceInteractor.versionApp()))
     }
 
 }

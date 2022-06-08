@@ -40,13 +40,13 @@ class SettingsViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
+        _versionApp.postValue( resourcesProvider.getVersionApp(deviceManager.toolbarVersion))
     }
 
     private fun observeNetworkState() {
         addSubscription(
             interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
+                .subscribe({ _toolbarNetworkState.postValue( it )}, {})
         )
     }
 

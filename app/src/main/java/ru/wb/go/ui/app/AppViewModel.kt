@@ -42,7 +42,7 @@ class AppViewModel(
                 .subscribe({
                     if (it == INVALID_TOKEN) {
                         interactor.exitAuth()
-                        _navigation.value = NavigationState.NavigateToRegistration
+                        _navigation.postValue(NavigationState.NavigateToRegistration)
                     } else
                         throw IllegalStateException("Wrong param $it")
                 }, {})
@@ -50,22 +50,22 @@ class AppViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+        _versionApp.postValue(resourceProvider.getVersionApp(deviceManager.appVersion))
     }
 
     private fun fetchNetworkState() {
         addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {})
+            interactor.observeNetworkConnected().subscribe({ _networkState.postValue( it) }, {})
         )
     }
 
     fun onSupportClick() {
-        _navigation.value = NavigationState.NavigateToSupport
+        _navigation.postValue(NavigationState.NavigateToSupport)
     }
 
     fun onExitAuthClick() {
         interactor.exitAuth()
-        _navigation.value = NavigationState.NavigateToRegistration
+        _navigation.postValue(NavigationState.NavigateToRegistration)
     }
 
     fun getDarkThemeSetting(): Boolean {

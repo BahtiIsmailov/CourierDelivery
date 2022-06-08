@@ -59,7 +59,7 @@ class CourierLoaderViewModel(
     }
 
     private fun initDrawer() {
-        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+        _drawerHeader.postValue( UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
     }
 
     fun initVersion() {
@@ -235,16 +235,16 @@ class CourierLoaderViewModel(
         when (throwable) {
             is NullPointerException -> {
                 clearCurrentLocalData()
-                _state.value = CourierLoaderUIState.Complete
-                _navigationDrawerState.value = toCourierWarehouse()
+                _state.postValue( CourierLoaderUIState.Complete)
+                _navigationDrawerState.postValue( toCourierWarehouse())
             }
             is BadRequestException -> {
-                _state.value = CourierLoaderUIState.Error(throwable.message.toString())
+                _state.postValue( CourierLoaderUIState.Error(throwable.message.toString()))
             }
             is NoInternetException ->
-                _state.value = CourierLoaderUIState.Error(throwable.message)
+                _state.postValue( CourierLoaderUIState.Error(throwable.message))
             else -> {
-                _state.value = CourierLoaderUIState.Error(throwable.toString())
+                _state.postValue( CourierLoaderUIState.Error(throwable.toString()))
             }
         }
     }
@@ -254,10 +254,10 @@ class CourierLoaderViewModel(
     }
 
     private fun toNewRegistration(phone: String) {
-        _navigationDrawerState.value =
+        _navigationDrawerState.postValue(
             CourierLoaderNavigationState.NavigateToCourierDataType(
                 CourierDataParameters(phone = phone, docs = CourierDocumentsEntity())
-            )
+            ))
     }
 
     private fun toRegistration(phone: String) {
@@ -267,7 +267,7 @@ class CourierLoaderViewModel(
                 val courierDataParameters = CourierDataParameters(phone = phone, docs = response)
                 val responseState =
                     CourierLoaderNavigationState.NavigateToCourierDataType(courierDataParameters)
-                _navigationDrawerState.value = responseState
+                _navigationDrawerState.postValue( responseState)
 
             } catch (e: Exception) {
                 onTechErrorLog("getUserDocs", e)
@@ -284,14 +284,14 @@ class CourierLoaderViewModel(
 //                .map { CourierLoaderNavigationState.NavigateToCourierDataType(it) }
 //                .doOnError { onTechErrorLog("getUserDocs", it) }
 //                .subscribe(
-//                    { _navigationDrawerState.value = it },
+//                    { _navigationDrawerState.postValue( it },
 //                    { onRxError(it) })
 //        )
 //    }
 
     private fun toCourierDataExpects(phone: String) {
-        _navigationDrawerState.value =
-            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
+        _navigationDrawerState.postValue(
+            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone))
     }
 
     private fun toCourierWarehouse() = CourierLoaderNavigationState.NavigateToCourierWarehouse
@@ -303,7 +303,7 @@ class CourierLoaderViewModel(
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
 
     private fun toAppUpdate() {
-        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToAppUpdate
+        _navigationDrawerState.postValue( CourierLoaderNavigationState.NavigateToAppUpdate)
     }
 
     private fun checkNewInstallation() {

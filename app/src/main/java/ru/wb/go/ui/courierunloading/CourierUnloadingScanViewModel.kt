@@ -109,7 +109,7 @@ class CourierUnloadingScanViewModel(
 //            interactor.getCurrentOffice(parameters.officeId)
 //                .map { mapInitScanProcess(it) }
 //                .subscribe(
-//                    { _fragmentStateUI.value = it },
+//                    { _fragmentStateUI.postValue( it },
 //                    { onTechErrorLog("observeInitScanProcessError", it) }
 //                )
 //        )
@@ -133,7 +133,7 @@ class CourierUnloadingScanViewModel(
     private fun initToolbar() {
         viewModelScope.launch {
             try {
-                _toolbarLabelState.value = Label(interactor.getCurrentOffice(parameters.officeId).officeName)
+                _toolbarLabelState.postValue( Label(interactor.getCurrentOffice(parameters.officeId).officeName))
             }catch (e:Exception){
                 onTechErrorLog("initToolbar", e)
             }
@@ -143,14 +143,14 @@ class CourierUnloadingScanViewModel(
 //    private fun initToolbar() {
 //        addSubscription(
 //            interactor.getCurrentOffice(parameters.officeId)
-//                .subscribe({ _toolbarLabelState.value = Label(it.officeName) },
+//                .subscribe({ _toolbarLabelState.postValue( Label(it.officeName) },
 //                    {})
 //        )
 //    }
 
     fun onCancelScoreUnloadingClick() {
         onTechEventLog("onCancelScoreUnloadingClick")
-        _completeButtonEnable.value = true
+        _completeButtonEnable.postValue( true)
         setLoader(WaitLoader.Complete)
         onStartScanner()
     }
@@ -230,7 +230,7 @@ class CourierUnloadingScanViewModel(
 
     fun onCloseDetailsClick() {
         onStartScanner()
-        _navigationEvent.value = CourierUnloadingScanNavAction.HideUnloadingItems
+        _navigationEvent.postValue( CourierUnloadingScanNavAction.HideUnloadingItems)
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
@@ -240,7 +240,7 @@ class CourierUnloadingScanViewModel(
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
         when (scanBoxData) {
             is CourierUnloadingScanBoxData.ScannerReady -> {
-                _fragmentStateUI.value = with(scanBoxData) {
+                _fragmentStateUI.postValue( with(scanBoxData) {
                     UnloadingFragmentState.ScannerReady(
                         UnloadingFragmentData(
                             resourceProvider.getReadyStatus(),
@@ -249,10 +249,10 @@ class CourierUnloadingScanViewModel(
                             accepted
                         )
                     )
-                }
+                })
             }
             is CourierUnloadingScanBoxData.BoxAdded -> {
-                _fragmentStateUI.value = with(scanBoxData) {
+                _fragmentStateUI.postValue( with(scanBoxData) {
                     UnloadingFragmentState.BoxAdded(
                         UnloadingFragmentData(
                             resourceProvider.getReadyAddedBox(),
@@ -261,23 +261,23 @@ class CourierUnloadingScanViewModel(
                             accepted
                         )
                     )
-                }
-                _beepEvent.value = CourierUnloadingScanBeepState.BoxAdded
-                _completeButtonEnable.value = true
+                })
+                _beepEvent.postValue( CourierUnloadingScanBeepState.BoxAdded)
+                _completeButtonEnable.postValue( true)
             }
             CourierUnloadingScanBoxData.UnknownQr -> {
 
-                _fragmentStateUI.value = UnloadingFragmentState.UnknownQr(
+                _fragmentStateUI.postValue( UnloadingFragmentState.UnknownQr(
                     UnloadingFragmentData(
                         resourceProvider.getScanDialogTitle(),
                         resourceProvider.getUnknownQr(),
                         resourceProvider.getEmptyAddress(),
                         accepted
                     )
-                )
-                _beepEvent.value = CourierUnloadingScanBeepState.UnknownQR
+                ))
+                _beepEvent.postValue( CourierUnloadingScanBeepState.UnknownQR)
             }
-            CourierUnloadingScanBoxData.Empty -> _fragmentStateUI.value =
+            CourierUnloadingScanBoxData.Empty -> _fragmentStateUI.postValue(
                 UnloadingFragmentState.Empty(
                     UnloadingFragmentData(
                         resourceProvider.getReadyStatus(),
@@ -285,9 +285,9 @@ class CourierUnloadingScanViewModel(
                         resourceProvider.getEmptyAddress(),
                         accepted
                     )
-                )
+                ))
             is CourierUnloadingScanBoxData.UnloadingCompleted -> {
-                _fragmentStateUI.value = with(scanBoxData) {
+                _fragmentStateUI.postValue( with(scanBoxData) {
                     UnloadingFragmentState.BoxAdded(
                         UnloadingFragmentData(
                             resourceProvider.getReadyAddedBox(),
@@ -296,30 +296,30 @@ class CourierUnloadingScanViewModel(
                             accepted
                         )
                     )
-                }
-                _completeButtonEnable.value = true
+                })
+                _completeButtonEnable.postValue( true)
             }
             is CourierUnloadingScanBoxData.ForbiddenBox -> {
-                _fragmentStateUI.value = UnloadingFragmentState.ForbiddenBox(
+                _fragmentStateUI.postValue( UnloadingFragmentState.ForbiddenBox(
                     UnloadingFragmentData(
                         resourceProvider.getReadyForbiddenBox(),
                         scanBoxData.qrCode,
                         scanBoxData.address,
                         accepted
                     )
-                )
-                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
+                ))
+                _beepEvent.postValue( CourierUnloadingScanBeepState.UnknownBox)
             }
             is CourierUnloadingScanBoxData.WrongBox -> {
-                _fragmentStateUI.value = UnloadingFragmentState.WrongBox(
+                _fragmentStateUI.postValue( UnloadingFragmentState.WrongBox(
                     UnloadingFragmentData(
                         resourceProvider.getReadyWrongBox(),
                         scanBoxData.qrCode,
                         resourceProvider.getEmptyAddress(),
                         accepted
                     )
-                )
-                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
+                ))
+                _beepEvent.postValue( CourierUnloadingScanBeepState.UnknownBox)
             }
         }
     }
@@ -328,10 +328,10 @@ class CourierUnloadingScanViewModel(
         addSubscription(
             interactor.scanLoaderProgress()
                 .subscribe({
-                    _completeButtonEnable.value = when (it) {
+                    _completeButtonEnable.postValue( when (it) {
                         CourierUnloadingProgressData.Complete -> true
                         CourierUnloadingProgressData.Progress -> false
-                    }
+                    })
                 },
                     { onTechErrorLog("observeScanProcessError", it) })
         )
@@ -350,7 +350,7 @@ class CourierUnloadingScanViewModel(
 
     private fun fillRemainBoxList(boxes: List<LocalBoxEntity>) {
         val boxItems = boxes.mapIndexed(transformToRemainBoxItem).toMutableList()
-        _navigationEvent.value = CourierUnloadingScanNavAction.InitAndShowUnloadingItems(boxItems)
+        _navigationEvent.postValue( CourierUnloadingScanNavAction.InitAndShowUnloadingItems(boxItems))
     }
 
     private val transformToRemainBoxItem = { index: Int, localBoxEntity: LocalBoxEntity ->
@@ -362,7 +362,7 @@ class CourierUnloadingScanViewModel(
         resourceProvider.getUnloadingDetails(index, boxId.takeLast(3))
 
     fun onCompleteUnloadClick() {
-        _completeButtonEnable.value = false
+        _completeButtonEnable.postValue( false)
         onStopScanner()
         viewModelScope.launch {
             try {
@@ -380,7 +380,7 @@ class CourierUnloadingScanViewModel(
 
     }
 //    fun onCompleteUnloadClick() {
-//        _completeButtonEnable.value = false
+//        _completeButtonEnable.postValue( false
 //        onStopScanner()
 //        addSubscription(
 //            interactor.getCurrentOffice(parameters.officeId)
@@ -402,7 +402,7 @@ class CourierUnloadingScanViewModel(
 //    }
 
     private fun showUnloadingScoreDialog(office: LocalOfficeEntity) {
-        _navigateToDialogConfirmScoreInfo.value = NavigateToDialogConfirmInfo(
+        _navigateToDialogConfirmScoreInfo.postValue( NavigateToDialogConfirmInfo(
             DialogInfoStyle.ERROR.ordinal,
             resourceProvider.getUnloadingDialogTitle(),
             resourceProvider.getUnloadingDialogMessage(
@@ -411,7 +411,7 @@ class CourierUnloadingScanViewModel(
             ),
             resourceProvider.getUnloadingDialogPositive(),
             resourceProvider.getUnloadingDialogNegative()
-        )
+        ))
     }
 
     private fun onStopScanner() {
@@ -427,7 +427,7 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onScoreDialogConfirmClick() {
-        _completeButtonEnable.value = true
+        _completeButtonEnable.postValue( true)
         onStartScanner()
         setLoader(WaitLoader.Complete)
     }

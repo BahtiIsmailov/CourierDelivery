@@ -125,7 +125,7 @@ class CourierIntransitViewModel(
 //        addSubscription(
 //            interactor.observeOrderTimer()
 //                .subscribe({
-//                    _intransitTime.value = CourierIntransitTimeState.Time(
+//                    _intransitTime.postValue( CourierIntransitTimeState.Time(
 //                        DateTimeFormatter.getDigitFullTime(it.toInt())
 //                    )
 //                }, {})
@@ -201,9 +201,9 @@ class CourierIntransitViewModel(
     }
 
     private fun updateAndScrollToItems(indexItemClick: Int) {
-        _intransitOrders.value =
-            CourierIntransitItemState.UpdateItems(intransitItems.toMutableList())
-        _intransitOrders.value = CourierIntransitItemState.ScrollTo(indexItemClick)
+        _intransitOrders.postValue(
+            CourierIntransitItemState.UpdateItems(intransitItems.toMutableList()))
+        _intransitOrders.postValue( CourierIntransitItemState.ScrollTo(indexItemClick))
     }
 
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
@@ -285,12 +285,12 @@ class CourierIntransitViewModel(
         initMap(markers, coordinatePoints)
 
         if (deliveredCountTotal == fromCountTotal)
-            _intransitOrders.value = CourierIntransitItemState.CompleteDelivery
+            _intransitOrders.postValue( CourierIntransitItemState.CompleteDelivery)
     }
 
     private fun initItems(items: MutableList<BaseIntransitItem>, boxTotal: String) {
-        _intransitOrders.value = if (items.isEmpty()) CourierIntransitItemState.Empty
-        else CourierIntransitItemState.InitItems(items, boxTotal)
+        _intransitOrders.postValue( if (items.isEmpty()) CourierIntransitItemState.Empty
+        else CourierIntransitItemState.InitItems(items, boxTotal))
     }
 
     private fun initMap(
@@ -315,10 +315,10 @@ class CourierIntransitViewModel(
         intransitItems.forEachIndexed { index, item ->
             if (item.isSelected) {
                 val point = coordinatePoints[index]
-                _navigationState.value = CourierIntransitNavigationState.NavigateToNavigator(
+                _navigationState.postValue( CourierIntransitNavigationState.NavigateToNavigator(
                     point.latitude,
                     point.longitude
-                )
+                ))
                 return
             }
         }
@@ -330,14 +330,14 @@ class CourierIntransitViewModel(
         updateMarkers()
         changeSelectedItemsByMarker(0, false)
         updateAndScrollToItems(0)
-        _navigationState.value = CourierIntransitNavigationState.NavigateToScanner
+        _navigationState.postValue( CourierIntransitNavigationState.NavigateToScanner)
     }
 
     fun onCompleteDeliveryClick() {
         onTechEventLog("Button CompleteDelivery")
         viewModelScope.launch {
             try {
-                _isEnableState.value = false
+                _isEnableState.postValue( false)
                 val boxes = interactor.getBoxes()
                 val order = interactor.getOrder()
                 val orderId = order.orderId.toString()
@@ -367,16 +367,16 @@ class CourierIntransitViewModel(
         )
 
         interactor.clearLocalTaskData()
-        _navigationState.value = CourierIntransitNavigationState.NavigateToCompleteDelivery(
+        _navigationState.postValue( CourierIntransitNavigationState.NavigateToCompleteDelivery(
             cdr.cost,
             cdr.deliveredBoxes,
             cdr.countBoxes
-        )
+        ))
         clearSubscription()
     }
 
     fun onErrorDialogConfirmClick() {
-        _isEnableState.value = true
+        _isEnableState.postValue( true)
     }
 
     fun onItemOfficeClick(index: Int) {
@@ -390,8 +390,8 @@ class CourierIntransitViewModel(
     }
 
     private fun changeEnableNavigator(isSelected: Boolean) {
-        _navigatorState.value =
-            if (isSelected) CourierIntransitNavigatorUIState.Enable else CourierIntransitNavigatorUIState.Disable
+        _navigatorState.postValue(
+            if (isSelected) CourierIntransitNavigatorUIState.Enable else CourierIntransitNavigatorUIState.Disable)
     }
 
     private fun changeSelectedItems(selectIndex: Int) {
@@ -403,9 +403,9 @@ class CourierIntransitViewModel(
     }
 
     private fun updateItems() {
-        _intransitOrders.value =
+        _intransitOrders.postValue(
             if (intransitItems.isEmpty()) CourierIntransitItemState.Empty
-            else CourierIntransitItemState.UpdateItems(intransitItems)
+            else CourierIntransitItemState.UpdateItems(intransitItems))
     }
 
     private fun changeSelectedMarkers(isSelected: Boolean, selectIndex: Int) {

@@ -27,12 +27,12 @@ class CourierCompleteDeliveryViewModel(
         val amount = resourceProvider.getAmountInfo(parameters.amount)
         val score = resourceProvider.getDeliveredInfo(parameters.unloadedCount, parameters.fromCount)
         onTechEventLog("init", "score $amount")
-        _infoState.value = CourierCompleteDeliveryState.InfoDelivery(amount, score)
+        _infoState.postValue(CourierCompleteDeliveryState.InfoDelivery(amount, score))
     }
 
     fun onCompleteDeliveryClick() {
         onTechEventLog("onCompleteDeliveryClick", "NavigateToWarehouse")
-        _navigateToBack.value = NavigateToWarehouse
+        _navigateToBack.postValue(NavigateToWarehouse)
     }
 
     override fun getScreenTag(): String {

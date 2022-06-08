@@ -64,7 +64,7 @@ class CheckSmsViewModel(
 
     private fun observeNetworkState() {
         addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.postValue(it) }, {})
         )
     }
 
@@ -99,7 +99,7 @@ class CheckSmsViewModel(
 
     private fun formatSmsComplete(code: String) {
         onTechEventLog("formatSmsComplete", "code " + code.length)
-        _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)
+        _checkSmsUIState.postValue(CheckSmsUIState.CodeFormat(code))
         if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
     }
 
@@ -114,8 +114,8 @@ class CheckSmsViewModel(
         }
 
     private fun switchNext(code: String) {
-        _stateKeyboardBackspaceUI.value =
-            if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active
+        _stateKeyboardBackspaceUI.postValue(
+            if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active)
     }
 
     private fun onHandleSignUpTimerState(timerState: TimerState) {
@@ -127,7 +127,7 @@ class CheckSmsViewModel(
     }
 
     fun onRepeatPassword() {
-        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
+        _repeatStateUI.postValue(CheckSmsUIRepeatState.RepeatPasswordProgress)
         viewModelScope.launch {
             try {
                 interactor.couriersExistAndSavePhone(formatPhone())
@@ -139,7 +139,7 @@ class CheckSmsViewModel(
         }
     }
 //    fun onRepeatPassword() {
-//        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
+//        _repeatStateUI.postValue( CheckSmsUIRepeatState.RepeatPasswordProgress
 //        addSubscription(
 //            interactor.couriersExistAndSavePhone(formatPhone()).subscribe(
 //                { fetchingPasswordComplete() },
@@ -150,18 +150,18 @@ class CheckSmsViewModel(
 
     private fun fetchingPasswordComplete() {
         onTechEventLog("fetchingPasswordComplete")
-        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
+        _repeatStateUI.postValue(CheckSmsUIRepeatState.RepeatPasswordComplete)
     }
 
     private fun fetchingPasswordError(throwable: Throwable) {
         onTechErrorLog("fetchingPasswordError", throwable)
         when (throwable) {
-            is NoInternetException -> _repeatStateUI.value =
+            is NoInternetException -> _repeatStateUI.postValue(
                 CheckSmsUIRepeatState.ErrorPassword(
                     resourceProvider.getGenericInternetTitleError(),
                     resourceProvider.getGenericInternetMessageError(),
                     resourceProvider.getGenericInternetButtonError()
-                )
+                ))
             is BadRequestException -> {
                 with(throwable.error) {
                     restartTimer(
@@ -173,12 +173,12 @@ class CheckSmsViewModel(
                     )
                 }
             }
-            else -> _repeatStateUI.value =
+            else -> _repeatStateUI.postValue(
                 CheckSmsUIRepeatState.ErrorPassword(
                     resourceProvider.getGenericServiceTitleError(),
                     throwable.toString(),
                     resourceProvider.getGenericServiceButtonError()
-                )
+                ))
         }
     }
 
@@ -187,7 +187,7 @@ class CheckSmsViewModel(
     }
 
     private fun fetchAuth(password: String) {
-        _checkSmsUIState.value = CheckSmsUIState.Progress
+        _checkSmsUIState.postValue(CheckSmsUIState.Progress)
         val phone = formatPhone()
         viewModelScope.launch {
             try {
@@ -199,7 +199,7 @@ class CheckSmsViewModel(
         }
     }
 //    private fun fetchAuth(password: String) {
-//        _checkSmsUIState.value = CheckSmsUIState.Progress
+//        _checkSmsUIState.postValue( CheckSmsUIState.Progress
 //        val phone = formatPhone()
 //        addSubscription(interactor.auth(phone, password)
 //            .subscribe(
@@ -211,13 +211,13 @@ class CheckSmsViewModel(
 
     private fun authComplete() {
         onTechEventLog("authComplete", "NavigateToAppLoader")
-        _checkSmsUIState.value = CheckSmsUIState.Complete
-        _navigationEvent.value = CheckSmsNavigationState.NavigateToAppLoader
+        _checkSmsUIState.postValue(CheckSmsUIState.Complete)
+        _navigationEvent.postValue(CheckSmsNavigationState.NavigateToAppLoader)
     }
 
     private fun authError(throwable: Throwable) {
         onTechErrorLog("authError", throwable)
-        _checkSmsUIState.value = when (throwable) {
+        _checkSmsUIState.postValue(when (throwable) {
             is NoInternetException -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
@@ -243,7 +243,7 @@ class CheckSmsViewModel(
                 throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
             )
-        }
+        })
     }
 
     private fun formatPhone() = parameters.phone.filter { it.isDigit() }
@@ -251,10 +251,10 @@ class CheckSmsViewModel(
     override fun onTimerState(duration: Int, downTickSec: Int) {
         val time: String =
             resourceProvider.getSignUpTimeConfirmCode(getMin(downTickSec), getSec(downTickSec))
-        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordTimer(
+        _repeatStateUI.postValue(CheckSmsUIRepeatState.RepeatPasswordTimer(
             time,
             resourceProvider.getTitleInputTimerSpan()
-        )
+        ))
     }
 
     private fun getMin(duration: Int): Int {
@@ -267,7 +267,7 @@ class CheckSmsViewModel(
 
     override fun onTimeIsOverState() {
         onTechEventLog("onTimeIsOverState")
-        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
+        _repeatStateUI.postValue(CheckSmsUIRepeatState.RepeatPasswordComplete)
     }
 
     override fun onCleared() {

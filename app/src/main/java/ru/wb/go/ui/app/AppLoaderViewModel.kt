@@ -28,17 +28,17 @@ class AppLoaderViewModel(
     private fun selectStateApp() {
         if (tokenManager.isUserCourier()) toCourier()
         else {
-            if (tokenManager.isDemo()) _demoState.value = true
+            if (tokenManager.isDemo()) _demoState.postValue(true)
             else toAuth()
         }
     }
 
     private fun toCourier() {
-        _navState.value = AppLoaderNavigatioState.NavigateToCourier
+        _navState.postValue(AppLoaderNavigatioState.NavigateToCourier)
     }
 
     private fun toAuth() {
-        _navState.value = AppLoaderNavigatioState.NavigateToAuth
+        _navState.postValue(AppLoaderNavigatioState.NavigateToAuth)
     }
 
     override fun getScreenTag(): String {

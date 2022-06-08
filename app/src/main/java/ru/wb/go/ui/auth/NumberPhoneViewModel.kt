@@ -52,7 +52,7 @@ class NumberPhoneViewModel(
 
     private fun observeNetworkState() {
         addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
+            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.postValue(it) }, {})
         )
     }
 
@@ -75,7 +75,7 @@ class NumberPhoneViewModel(
                 .doOnNext { switchNext(it) }
                 .map { numberToPhoneSpanFormat(it) }
                 .subscribe(
-                    { _stateUI.value = it },
+                    { _stateUI.postValue(it) },
                     { onTechErrorLog("onNumberObservableClicked", it) })
         )
     }
@@ -86,10 +86,10 @@ class NumberPhoneViewModel(
     )
 
     private fun switchNext(it: String) {
-        _stateKeyboardBackspaceUI.value =
-            if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active
-        _stateUI.value =
-            if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete
+        _stateKeyboardBackspaceUI.postValue(
+            if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active)
+        _stateUI.postValue(
+            if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete)
     }
 
 
@@ -104,7 +104,7 @@ class NumberPhoneViewModel(
         }
 
     private fun fetchPhoneNumber(phone: String) {
-        _stateUI.value = NumberCheckProgress
+        _stateUI.postValue(NumberCheckProgress)
         viewModelScope.launch {
             try {
                 interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
@@ -116,7 +116,7 @@ class NumberPhoneViewModel(
     }
 
 //    private fun fetchPhoneNumber(phone: String) {
-//        _stateUI.value = NumberCheckProgress
+//        _stateUI.postValue( NumberCheckProgress
 //        val disposable = interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
 //            .subscribe(
 //                { fetchPhoneNumberComplete(phone) },
@@ -127,37 +127,37 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumberComplete(phone: String) {
         onTechEventLog("fetchPhoneNumberComplete", phone)
-        _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)
-        _stateUI.value = NumberFormatComplete
+        _navigationEvent.postValue(NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL))
+        _stateUI.postValue(NumberFormatComplete)
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
         onTechErrorLog("fetchPhoneNumberError $phone", throwable)
         when (throwable) {
-            is NoInternetException -> _stateUI.value = Error(
+            is NoInternetException -> _stateUI.postValue(Error(
                 resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
-            )
+            ))
             is BadRequestException -> {
                 if (throwable.error.code == CODE_SENT) {
                     val ttl = throwable.error.data?.ttl ?: DEFAULT_TTL
-                    _navigationEvent.value =
-                        NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
-                    _stateUI.value = NumberFormatComplete
+                    _navigationEvent.postValue(
+                        NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl))
+                    _stateUI.postValue(NumberFormatComplete)
                 } else {
-                    _stateUI.value = NumberNotFound(
+                    _stateUI.postValue(NumberNotFound(
                         resourceProvider.getGenericServiceTitleError(),
                         throwable.error.message,
                         resourceProvider.getGenericServiceButtonError()
-                    )
+                    ))
                 }
             }
-            else -> _stateUI.value = Error(
+            else -> _stateUI.postValue( Error(
                 resourceProvider.getGenericServiceTitleError(),
                 throwable.toString(),
                 resourceProvider.getGenericServiceButtonError()
-            )
+            ))
         }
     }
 

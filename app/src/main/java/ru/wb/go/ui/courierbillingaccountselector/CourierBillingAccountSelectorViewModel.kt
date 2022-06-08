@@ -72,17 +72,17 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     private fun initToolbarLabel() {
-        _toolbarLabelState.value = resourceProvider.getTitle()
+        _toolbarLabelState.postValue(resourceProvider.getTitle())
     }
 
     private fun initBalance() {
         val decimalFormat = DecimalFormat("#,###.##")
         val balance = decimalFormat.format(localBalance)
-        _balanceState.value = resourceProvider.getBalance(balance)
+        _balanceState.postValue(resourceProvider.getBalance(balance))
     }
 
     private fun setLoader(state: CourierBillingAccountSelectorUILoaderState) {
-        _loaderState.value = state
+        _loaderState.postValue(state)
     }
 
     private fun initAccounts() {
@@ -181,7 +181,7 @@ class CourierBillingAccountSelectorViewModel(
             .distinctUntilChanged()
             .map { mapAction(it) }
             .subscribe(
-                { _formUIState.value = it },
+                { _formUIState.postValue(it) },
                 { LogUtils { logDebugApp(it.toString()) } })
         )
     }
@@ -222,7 +222,7 @@ class CourierBillingAccountSelectorViewModel(
     private fun checkFieldText(action: CourierBillingAccountSelectorUIAction.TextChange) =
         when (action.type) {
             CourierBillingAccountSelectorQueryType.SURNAME -> {
-                _balanceChangeState.value = if (action.text.isEmpty()) {
+                _balanceChangeState.postValue(if (action.text.isEmpty()) {
                     CourierBillingAccountSelectorBalanceAction.Init(resourceProvider.getWithdrawBalanceInit())
                 } else {
                     val balanceFromText = amountFromString(action.text)
@@ -237,7 +237,7 @@ class CourierBillingAccountSelectorViewModel(
                         )
                         else -> CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
                     }
-                }
+                })
 
                 checkTextSurnameWrapper(action)
             }
@@ -252,7 +252,7 @@ class CourierBillingAccountSelectorViewModel(
         state is CourierBillingAccountSelectorUIState.Complete
 
     fun onNextCompleteClick(accountId: Long, amount: String) {
-        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
+        _loaderState.postValue(CourierBillingAccountSelectorUILoaderState.Progress)
         val amountFromText = amountFromString(amount)
         val courierBillingAccountEntity = billingAccounts[accountId.toInt()]
         val paymentEntity = with(courierBillingAccountEntity) {
@@ -277,11 +277,11 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     fun onEditAccountClick(idView: Int) {
-        _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
+        _navigationEvent.postValue(CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
             billingAccounts[idView],
             billingAccounts,
             parameters.balance
-        )
+        ))
     }
 
     fun onAddAccountClick() {
@@ -299,16 +299,16 @@ class CourierBillingAccountSelectorViewModel(
         } else {
             id
         }
-        _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(selected)
+        _dropAccountState.postValue(CourierBillingAccountSelectorDropAction.SetSelected(selected))
     }
 
     private fun paymentsComplete(amount: Int) {
         localBalance -= amount
         parameters.balance = localBalance
         initBalance()
-        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
-        _navigationEvent.value =
-            CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount)
+        _loaderState.postValue(CourierBillingAccountSelectorUILoaderState.Disable)
+        _navigationEvent.postValue(
+            CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount))
     }
 
     override fun getScreenTag(): String {

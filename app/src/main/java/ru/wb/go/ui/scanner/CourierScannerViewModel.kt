@@ -34,17 +34,17 @@ class CourierScannerViewModel(
     private fun observeScannerState() {
         addSubscription(
             interactor.observeScannerState()
-                .subscribe { _scannerAction.value = it }
+                .subscribe { _scannerAction.postValue( it) }
         )
     }
 
     private fun flashState() {
-        _flashState.value = settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
+        _flashState.postValue( settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false))
     }
 
     private fun observeHoldSplash() {
         addSubscription(interactor.observeHoldSplash().subscribe({
-            _scannerAction.value = ScannerState.StopScanWithHoldSplash
+            _scannerAction.postValue( ScannerState.StopScanWithHoldSplash)
         }, {}))
     }
 
@@ -56,7 +56,7 @@ class CourierScannerViewModel(
     fun onHoldSplashClick() {
         interactor.prolongHoldTimer()
         interactor.holdSplashUnlock()
-        _scannerAction.value = ScannerState.StartScan
+        _scannerAction.postValue( ScannerState.StartScan)
     }
 
     fun onDestroy() {

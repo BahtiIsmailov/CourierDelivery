@@ -106,10 +106,10 @@ class CourierLoadingScanViewModel(
 //            interactor.getGate()
 //                .subscribe(
 //                    {
-//                        _orderTimer.value =
+//                        _orderTimer.postValue(
 //                            CourierLoadingScanTimerState.Info(it.ifEmpty { "-" })
 //                    },
-//                    { _orderTimer.value = CourierLoadingScanTimerState.Info("-") })
+//                    { _orderTimer.postValue( CourierLoadingScanTimerState.Info("-") })
 //        )
 //    }
 
@@ -187,52 +187,52 @@ class CourierLoadingScanViewModel(
 
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
-                _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
-                _boxDataStateUI.value =
-                    with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) }
-                _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
-                _orderTimer.value = CourierLoadingScanTimerState.Stopped
-                _completeButtonState.value = true
+                _fragmentStateUI.postValue( CourierLoadingScanBoxState.LoadInCar)
+                _boxDataStateUI.postValue(
+                    with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) })
+                _beepEvent.postValue( CourierLoadingScanBeepState.BoxFirstAdded)
+                _orderTimer.postValue( CourierLoadingScanTimerState.Stopped)
+                _completeButtonState.postValue( true)
             }
             is CourierLoadingScanBoxData.SecondaryBoxAdded -> {
-                _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
-                _boxDataStateUI.value =
-                    with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) }
+                _fragmentStateUI.postValue( CourierLoadingScanBoxState.LoadInCar)
+                _boxDataStateUI.postValue(
+                    with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) })
             }
             is CourierLoadingScanBoxData.ForbiddenTakeBox -> {
                 if (scanResult.count == 0) {
-                    _fragmentStateUI.value = CourierLoadingScanBoxState.ForbiddenTakeWithTimer
+                    _fragmentStateUI.postValue( CourierLoadingScanBoxState.ForbiddenTakeWithTimer)
                 } else {
-                    _fragmentStateUI.value = CourierLoadingScanBoxState.ForbiddenTakeBox
-                    _boxDataStateUI.value = with(scanBoxData) {
+                    _fragmentStateUI.postValue( CourierLoadingScanBoxState.ForbiddenTakeBox)
+                    _boxDataStateUI.postValue( with(scanBoxData) {
                         BoxInfoDataState(
                             qrCode,
                             resourceProvider.getEmptyAddress(),
                             countBoxes
                         )
-                    }
+                    })
                 }
-                _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
+                _beepEvent.postValue( CourierLoadingScanBeepState.UnknownBox)
             }
             is CourierLoadingScanBoxData.NotRecognizedQr -> {
                 if (scanResult.count == 0) {
-                    _fragmentStateUI.value = CourierLoadingScanBoxState.NotRecognizedQrWithTimer
+                    _fragmentStateUI.postValue( CourierLoadingScanBoxState.NotRecognizedQrWithTimer)
                 } else {
-                    _fragmentStateUI.value = CourierLoadingScanBoxState.NotRecognizedQr
-                    _boxDataStateUI.value = BoxInfoDataState(
+                    _fragmentStateUI.postValue( CourierLoadingScanBoxState.NotRecognizedQr)
+                    _boxDataStateUI.postValue( BoxInfoDataState(
                         resourceProvider.getUnknown(),
                         resourceProvider.getEmptyAddress(),
                         countBoxes
-                    )
+                    ))
                 }
-                _beepEvent.value = CourierLoadingScanBeepState.UnknownQR
+                _beepEvent.postValue( CourierLoadingScanBeepState.UnknownQR)
             }
         }
     }
 
     fun onErrorDialogConfirmClick() {
         onStartScanner()
-        _completeButtonState.value = true
+        _completeButtonState.postValue( true)
     }
 
     private fun setLoader(state: WaitLoader) {
@@ -256,15 +256,15 @@ class CourierLoadingScanViewModel(
 
     private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
         onCleared()
-        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToStartDelivery(
+        _navigationEvent.postValue( CourierLoadingScanNavAction.NavigateToStartDelivery(
             courierCompleteData.amount,
             courierCompleteData.countBox
-        )
+        ))
     }
 
     fun onCancelLoadingClick() {
         onStartScanner()
-        _completeButtonState.value = true
+        _completeButtonState.postValue( true)
     }
 
     fun onCompleteLoaderClicked() {
@@ -297,7 +297,7 @@ class CourierLoadingScanViewModel(
                     )
                 }.subscribe(
                     {
-                        _navigationEvent.value = it
+                        _navigationEvent.postValue( it)
                     }, {
 
                     }
@@ -307,7 +307,7 @@ class CourierLoadingScanViewModel(
 
     fun onCloseDetailsClick() {
         onStartScanner()
-        _navigationEvent.value = CourierLoadingScanNavAction.HideLoadingItems
+        _navigationEvent.postValue( CourierLoadingScanNavAction.HideLoadingItems)
     }
 
     fun onStartScanner() {
@@ -323,23 +323,23 @@ class CourierLoadingScanViewModel(
     }
 
     private fun updateTimer(duration: Int, downTickSec: Int) {
-        _orderTimer.value =
+        _orderTimer.postValue(
             CourierLoadingScanTimerState.Timer(
                 DateTimeFormatter.getAnalogTime(duration, downTickSec),
                 DateTimeFormatter.getDigitTime(downTickSec)
-            )
+            ))
     }
 
     override fun onTimeIsOverState() {
         onTechEventLog("onTimeIsOverState")
         _timeOut.postValue(true)
         stopScanner()
-        _orderTimer.value = CourierLoadingScanTimerState.TimeIsOut(
+        _orderTimer.postValue( CourierLoadingScanTimerState.TimeIsOut(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getScanDialogTimeIsOutTitle(),
             resourceProvider.getScanDialogTimeIsOutMessage(),
             resourceProvider.getScanDialogTimeIsOutButton()
-        )
+        ))
     }
 
     fun returnToListOrderClick() {
@@ -364,7 +364,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun toWarehouse() {
-        _navigationEvent.value = CourierLoadingScanNavAction.NavigateToWarehouse
+        _navigationEvent.postValue( CourierLoadingScanNavAction.NavigateToWarehouse)
     }
 
     fun play(resId: Int) {
