@@ -325,12 +325,10 @@ class CourierOrdersFragment :
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
                 WaitLoader.Wait -> {
-                    binding.showOrderFab.isClickable = false
                     binding.holdLayout.visibility = VISIBLE
                     binding.orderProgress.visibility = VISIBLE
                 }
                 WaitLoader.Complete -> {
-                    binding.showOrderFab.isClickable = true
                     binding.holdLayout.visibility = GONE
                     binding.orderProgress.visibility = GONE
                 }
@@ -401,19 +399,12 @@ class CourierOrdersFragment :
         viewModel.showOrderState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierOrderShowOrdersState.Disable -> {
-                    with(binding.showOrderFab){
-                         isEnabled = false
-                         //isClickable = false
-                         backgroundTintList = colorFab(R.color.tertiary)
-                    }
-
+                    binding.showOrderFab.isEnabled = false
+                    binding.showOrderFab.backgroundTintList = colorFab(R.color.tertiary)
                 }
                 CourierOrderShowOrdersState.Enable -> {
-                    with(binding.showOrderFab) {
-                         isEnabled = true
-                         //isClickable = true
-                         backgroundTintList = colorFab(R.color.colorPrimary)
-                    }
+                    binding.showOrderFab.isEnabled = true
+                    binding.showOrderFab.backgroundTintList = colorFab(R.color.colorPrimary)
                 }
                 CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
                 CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE

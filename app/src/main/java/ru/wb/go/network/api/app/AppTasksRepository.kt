@@ -6,8 +6,8 @@ import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 
 interface AppTasksRepository {
 
-    suspend fun courierWarehouses():  List<CourierWarehouseLocalEntity>
+    fun courierWarehouses(): Single<List<CourierWarehouseLocalEntity>>
 
-    suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity>
+    fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>>
 
 }

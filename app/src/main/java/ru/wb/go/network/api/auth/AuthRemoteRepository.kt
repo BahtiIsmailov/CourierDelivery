@@ -7,9 +7,9 @@ import ru.wb.go.network.api.auth.response.StatisticsResponse
 
 interface AuthRemoteRepository {
 
-    suspend fun auth(password: String, phone: String, useSMS: Boolean)
+    fun auth(password: String, phone: String, useSMS: Boolean): Completable
 
-    suspend fun couriersExistAndSavePhone(phone: String)
+    fun couriersExistAndSavePhone(phone: String): Completable
 
     fun statistics(): Single<StatisticsResponse>
 

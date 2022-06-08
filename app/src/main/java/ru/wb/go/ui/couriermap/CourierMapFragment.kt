@@ -699,7 +699,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             CourierVisibilityManagerBar.Visible -> {
                 if (binding.managerLayout.visibility == View.VISIBLE) return
                 binding.managerLayout.visibility = View.VISIBLE
-                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right) // анимация с скрыванием кнопок боковых
+                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right)
                 binding.managerLayout.startAnimation(animation)
             }
         }

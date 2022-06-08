@@ -2,9 +2,7 @@ package ru.wb.go.ui.courierwarehouses
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.ServicesViewModel
@@ -96,7 +94,7 @@ class CourierWarehousesViewModel(
         onTechErrorLog("observeMapActionError", throwable)
     }
 
-    suspend fun updateData() {
+    fun updateData() {
         getWarehouses()
     }
 
@@ -108,18 +106,16 @@ class CourierWarehousesViewModel(
         _waitLoader.postValue(state)
     }
 
-    private suspend fun getWarehouses() {
+    private fun getWarehouses() {
         setLoader(WaitLoader.Wait)
-        val job = viewModelScope.launch {
-            try {
-                val response = interactor.getWarehouses()
-                getWarehousesComplete(response)
-            } catch (e: Exception) {
-                getWarehousesError(e)
-            }
-        }
-        job.join()
-        clearFabAndWhList()
+        addSubscription(
+            interactor.getWarehouses()
+                .doFinally { clearFabAndWhList() }
+                .subscribe(
+                    { getWarehousesComplete(it) },
+                    { getWarehousesError(it) }
+                )
+        )
     }
 
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
@@ -134,10 +130,10 @@ class CourierWarehousesViewModel(
         onTechErrorLog("courierWarehouseError", it)
         setLoader(WaitLoader.Complete)
         if (it is NoInternetException) {
-            _warehouseState.postValue(CourierWarehouseItemState.NoInternet)
+            _warehouseState.value = CourierWarehouseItemState.NoInternet
         } else {
             errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-            _warehouseState.postValue(CourierWarehouseItemState.Empty("Ошибка получения данных"))
+            _warehouseState.value = CourierWarehouseItemState.Empty("Ошибка получения данных")
         }
     }
 
@@ -161,9 +157,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun courierWarehouseComplete() {
-        _warehouseState.postValue(
+        _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList()))
+            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
     }
 
     private fun showManagerBar() {
@@ -273,9 +269,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeShowDetailsOrder(selected: Boolean) {
-        _showOrdersState.postValue(
+        _showOrdersState.value =
             if (selected) CourierWarehousesShowOrdersState.Enable
-            else CourierWarehousesShowOrdersState.Disable)
+            else CourierWarehousesShowOrdersState.Disable
     }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {

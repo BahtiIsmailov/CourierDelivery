@@ -23,13 +23,13 @@ class CourierMapInteractorImpl(
         startVisibilityManagerTimer1()
     }
 
-    override fun subscribeMapState(): Observable<CourierMapState> { // слушает все события с картой
+    override fun subscribeMapState(): Observable<CourierMapState> {
         return courierMapRepository
             .observeMapState()
             .doOnNext {
                 when (it) {
-                    CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
-                    is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
+                    CourierMapState.ShowManagerBar -> prolongHideTimerManager()
+                    is CourierMapState.UpdateMarkers -> hideManagerBar()
                     else -> {}
                 }
             }
@@ -61,11 +61,11 @@ class CourierMapInteractorImpl(
     }
 
     private fun prolongHideTimerManager() {
-        prolongHideSubject.onNext(Action { }) // отправляет акшн в рх как стэйт флоу
+        prolongHideSubject.onNext(Action { })
     }
 
     private fun startVisibilityManagerTimer1() {
-        if (hideSplashDisposable == null) { // ссылка на слушателя если запущен то ничего ен делаем а если
+        if (hideSplashDisposable == null) {
             hideSplashDisposable = prolongHideSubject
                 .switchMap { Observable.timer(HIDE_DELAY, TimeUnit.SECONDS) }
                 .subscribe({ hideManagerBar() }, {})

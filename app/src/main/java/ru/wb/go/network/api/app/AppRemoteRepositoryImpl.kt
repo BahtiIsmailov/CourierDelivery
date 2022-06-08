@@ -3,8 +3,6 @@ package ru.wb.go.network.api.app
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -25,33 +23,54 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 
 class AppRemoteRepositoryImpl(
-    private val autentificatorIntercept: AutentificatorIntercept,
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val remoteRepo: AppApi,
     private val tokenManager: TokenManager,
 ) : AppRemoteRepository {
 
     companion object {
-        const val COST_DIVIDER = 100
+        private const val COST_DIVIDER = 100
     }
 
-    override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
-        return  withContext(Dispatchers.IO) {
-            remoteRepo.saveCourierDocuments(
-                tokenManager.apiVersion(),
-                toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
+    override fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
+        val courierDocuments = with(courierDocumentsEntity) {
+            CourierDocumentsRequest(
+                firstName = firstName,
+                surName = surName,
+                middleName = middleName,
+                inn = inn,
+                passportSeries = passportSeries,
+                passportNumber = passportNumber,
+                passportDateOfIssue = passportDateOfIssue,
+                passportIssuedBy = passportIssuedBy,
+                passportDepartmentCode = passportDepartmentCode,
+                courierType = courierType
             )
-            autentificatorIntercept.initNameOfMethod("courierDocuments")
         }
+        return remoteRepo.saveCourierDocuments(tokenManager.apiVersion(), courierDocuments)
+            .compose(rxSchedulerFactory.applyCompletableMetrics("courierDocuments"))
     }
 
-    override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        val response = withContext(Dispatchers.IO) {
-            remoteRepo.getCourierDocuments(apiVersion())
-        }
-        return toCourierDocumentsEntity(response)
+    override fun getCourierDocuments(): Single<CourierDocumentsEntity> {
+        return remoteRepo.getCourierDocuments(apiVersion())
+            .map { response ->
+                with(response) {
+                    CourierDocumentsEntity(
+                        errorAnnotate = errorAnnotate,
+                        firstName = firstName,
+                        inn = inn,
+                        middleName = middleName,
+                        passportDateOfIssue = passportDateOfIssue,
+                        passportDepartmentCode = passportDepartmentCode,
+                        passportIssuedBy = passportIssuedBy,
+                        passportNumber = passportNumber,
+                        passportSeries = passportSeries,
+                        surName = surName,
+                        courierType = courierType
+                    )
+                }
+            }
     }
-
 
     override fun tasksMy(orderId: Int?): Single<LocalComplexOrderEntity> {
         val badOrder = LocalOrderEntity(

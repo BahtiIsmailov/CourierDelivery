@@ -2,10 +2,7 @@ package ru.wb.go.ui.courierorders
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
 import ru.wb.go.app.COURIER_TASK_ALREADY_RESERVED_ERROR
@@ -141,7 +138,7 @@ class CourierOrdersViewModel(
     }
 
     private fun checkDemoMode() {
-        _demoState.postValue(interactor.isDemoMode())
+        _demoState.value = interactor.isDemoMode()
     }
 
     private fun observeMapAction() {
@@ -200,7 +197,7 @@ class CourierOrdersViewModel(
 
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
         with(orderLocalDataEntities[it]) {
-            _navigateToDialogConfirmScoreInfo.postValue(
+            _navigateToDialogConfirmScoreInfo.value =
                 NavigateToDialogConfirmInfo(
                     DialogInfoStyle.INFO.ordinal,
                     resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
@@ -215,7 +212,6 @@ class CourierOrdersViewModel(
                     resourceProvider.getConfirmPositiveDialog(),
                     resourceProvider.getConfirmNegativeDialog()
                 )
-            )
         }
     }
 
@@ -318,7 +314,7 @@ class CourierOrdersViewModel(
     }
 
     private fun addressLabel() {
-        _toolbarLabelState.postValue(Label(parameters.address))
+        _toolbarLabelState.value = Label(parameters.address)
     }
 
     private fun setLoader(state: WaitLoader) {
@@ -327,14 +323,13 @@ class CourierOrdersViewModel(
 
     private fun initOrders(height: Int) {
         setLoader(WaitLoader.Wait)
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                orderLocalDataEntities = interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
-                initOrdersComplete(height)
-            } catch (e: Exception) {
-                initOrdersError(e)
-            }
-        }
+        addSubscription(
+            interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
+                .doOnSuccess { this.orderLocalDataEntities = it }
+                .subscribe(
+                    { initOrdersComplete(height) },
+                    { initOrdersError(it) })
+        )
     }
 
     private fun initOrdersComplete(height: Int) {
@@ -347,7 +342,7 @@ class CourierOrdersViewModel(
     private fun initOrdersError(it: Throwable) {
         onTechErrorLog("ordersError", it)
         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-        _orderItems.postValue(CourierOrderItemState.Empty("Ошибка получения данных"))
+        _orderItems.value = CourierOrderItemState.Empty("Ошибка получения данных")
         setLoader(WaitLoader.Complete)
     }
 
@@ -435,7 +430,7 @@ class CourierOrdersViewModel(
 
     private fun ordersComplete(height: Int) {
         if (orderItems.isEmpty()) {
-            _orderItems.postValue(CourierOrderItemState.Empty(resourceProvider.getDialogEmpty()))
+            _orderItems.value = CourierOrderItemState.Empty(resourceProvider.getDialogEmpty())
         } else {
             updateOrderAndWarehouseMarkers()
             zoomAllGroupMarkersFromBoundingBox(height)
@@ -480,7 +475,7 @@ class CourierOrdersViewModel(
     }
 
     private fun showAllAndOrderItems() {
-        _orderItems.postValue(CourierOrderItemState.ShowItems(orderItems))
+        _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 
     fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
@@ -510,13 +505,13 @@ class CourierOrdersViewModel(
     }
 
     private fun changeShowDetailsOrder(selected: Boolean) {
-        _showOrderState.postValue(
+        _showOrderState.value =
             if (selected) CourierOrderShowOrdersState.Enable
-            else CourierOrderShowOrdersState.Disable)
+            else CourierOrderShowOrdersState.Disable
     }
 
     private fun changeOrderItems() {
-        _orderItems.postValue(CourierOrderItemState.UpdateItems(orderItems))
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
     }
 
     private fun scrollTo(index: Int) {
@@ -556,12 +551,13 @@ class CourierOrdersViewModel(
 
     fun onNextFab() {
         initOrderDetails(interactor.selectedRowOrder())
-        _showOrderState.postValue(CourierOrderShowOrdersState.Invisible)
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode()))
+        _showOrderState.value = CourierOrderShowOrdersState.Invisible
+        _navigationState.value =
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
     }
 
     fun onAddressesClick() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToAddresses)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToAddresses
     }
 
     private fun warehouseCoordinatePoint() =
@@ -610,7 +606,7 @@ class CourierOrdersViewModel(
             val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
             val itemId = (idView + 1).toString()
             val coast = DecimalFormat("#,###.##").format(minPrice)
-            _orderDetails.postValue(CourierOrderDetailsInfoUIState.InitOrderDetails(
+            _orderDetails.value = CourierOrderDetailsInfoUIState.InitOrderDetails(
                 carNumber = carNumber,
                 carTypeIcon = carTypeIcon,
                 isChangeCarNumber = interactor.carNumberIsConfirm(),
@@ -620,7 +616,7 @@ class CourierOrdersViewModel(
                 cargo = resourceProvider.getCargo(minVolume, minBoxesCount),
                 countPvz = resourceProvider.getCountPvz(pvz),
                 reserve = resourceProvider.getArrive(reservedDuration)
-            ))
+            )
         }
     }
 
@@ -637,8 +633,8 @@ class CourierOrdersViewModel(
     }
 
     private fun initAddressItems(items: MutableList<CourierOrderDetailsAddressItem>) {
-        _orderAddresses.postValue(if (items.isEmpty()) CourierOrderAddressesUIState.Empty
-        else CourierOrderAddressesUIState.InitItems(items))
+        _orderAddresses.value = if (items.isEmpty()) CourierOrderAddressesUIState.Empty
+        else CourierOrderAddressesUIState.InitItems(items)
     }
 
     private fun carNumberFormat(it: String) =
@@ -683,8 +679,8 @@ class CourierOrdersViewModel(
 
     fun onCloseOrderDetailsClick(height: Int) {
         this.height = height
-        _showOrderState.postValue(CourierOrderShowOrdersState.Visible)
-        _navigationState.postValue(CourierOrdersNavigationState.CloseAddressesDetail)
+        _showOrderState.value = CourierOrderShowOrdersState.Visible
+        _navigationState.value = CourierOrdersNavigationState.CloseAddressesDetail
         withSelectedRowOrder(makeOrderAddresses())
     }
 
