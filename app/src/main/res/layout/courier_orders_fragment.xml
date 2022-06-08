@@ -107,7 +107,7 @@
             android:layout_height="match_parent"
             android:visibility="visible"
             app:behavior_hideable="true"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+            app:layout_behavior="ru.wb.go.ui.courierorders.LockableBottomSheetBehavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -126,16 +126,6 @@
                     android:paddingEnd="16dp"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="РЦ Петрозаводск" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/pad8"
-                    android:src="@drawable/ic_bottom_sheet_slider"
-                    app:layout_constraintEnd_toEndOf="@+id/title"
-                    app:layout_constraintStart_toStartOf="@+id/title"
-                    app:layout_constraintTop_toTopOf="@+id/title"
-                    tools:ignore="ContentDescription" />
 
                 <ImageView
                     android:id="@+id/close_orders"
@@ -227,7 +217,7 @@
             android:layout_height="wrap_content"
             android:visibility="visible"
             app:behavior_hideable="true"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            app:layout_behavior="ru.wb.go.ui.courierorders.LockableBottomSheetBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -239,8 +229,6 @@
                 android:layout_marginStart="@dimen/pad16"
                 android:layout_marginEnd="@dimen/pad16"
                 android:background="@drawable/spinner_account_rounded_corner"
-                android:paddingTop="@dimen/pad16"
-                android:paddingBottom="@dimen/pad16"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -261,8 +249,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad16"
+                    android:layout_marginTop="@dimen/pad12"
                     android:layout_marginEnd="@dimen/pad16"
+                    android:layout_marginBottom="@dimen/pad12"
                     android:gravity="start"
+                    app:layout_constraintBottom_toTopOf="@+id/time_work_detail"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/icon_address"
                     app:layout_constraintTop_toTopOf="parent"
@@ -274,13 +265,13 @@
                     style="@style/MediumPrimaryRegularText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="@dimen/pad16"
+                    android:layout_marginBottom="@dimen/pad12"
                     android:gravity="start"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/address_detail"
-                    app:layout_constraintTop_toBottomOf="@+id/address_detail"
                     tools:text="11:00 - 16:00" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -305,16 +296,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/pad8"
-                    android:src="@drawable/ic_bottom_sheet_slider"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ContentDescription" />
-
-                <ImageView
                     android:id="@+id/close_order_details"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -337,25 +318,11 @@
                     app:layout_constraintTop_toTopOf="@+id/car_number_prefix"
                     tools:text=" • А111АА197" />
 
-                <TextView
-                    android:id="@+id/car_number_empty"
-                    style="@style/LargePrimaryRegularText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/dash_underline"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:text="@string/courier_orders_confirm_car_number_empty"
-                    app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
-                    app:layout_constraintStart_toEndOf="@+id/car_number_prefix"
-                    app:layout_constraintTop_toTopOf="@+id/car_number_prefix" />
-
                 <ImageView
                     android:id="@+id/icon_car_type_selected"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad8"
-                    android:visibility="gone"
                     android:src="@drawable/ic_car_type_uncknown"
                     app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
                     app:layout_constraintStart_toEndOf="@+id/car_number"
@@ -559,5 +526,19 @@
         </FrameLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/show_order_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:src="@drawable/ic_next"
+        app:backgroundTint="@color/tertiary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/lvl_1"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,13 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrdersAddressLayoutBinding
 
 class CourierOrderDetailsAddressAdapter(
-    private val context: Context,
+    context: Context,
     private val addressItems: MutableList<CourierOrderDetailsAddressItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
 ) : RecyclerView.Adapter<CourierOrderDetailsAddressAdapter.ViewHolder>() {
@@ -26,10 +25,8 @@ class CourierOrderDetailsAddressAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (icon, fullAddress, isSelected, isUnspentTimeWork, timeWork) = addressItems[position]
-        holder.binding.icon.setImageDrawable(ContextCompat.getDrawable(context, icon))
+        val (fullAddress, isSelected) = addressItems[position]
         holder.binding.fullAddressWarehouse.text = fullAddress
-        holder.binding.timeWorkDetail.text = timeWork
         val selectable = if (isSelected) View.VISIBLE else View.INVISIBLE
         holder.binding.selectedBackground.visibility = selectable
         holder.binding.imageItemBorder.visibility = selectable

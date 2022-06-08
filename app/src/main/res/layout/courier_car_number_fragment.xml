@@ -318,11 +318,4 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="icon_car_type_change, icon_car_type_selected,divider,icon_car_type_change,icon_car_type_select,car_type_selected_name" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

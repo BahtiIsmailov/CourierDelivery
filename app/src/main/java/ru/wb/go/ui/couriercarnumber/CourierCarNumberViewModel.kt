@@ -13,14 +13,6 @@ import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
-fun String.replaceCarNumberY(): String {
-    return this.replace("Y", "У")
-}
-
-fun String.revertCarNumberY(): String {
-    return this.replace("У", "Y")
-}
-
 class CourierCarNumberViewModel(
     private val parameters: CourierCarNumberParameters,
     compositeDisposable: CompositeDisposable,
@@ -84,7 +76,6 @@ class CourierCarNumberViewModel(
             event.scan(interactor.getCarNumber()) { accumulator, item ->
                 accumulateNumber(accumulator, item)
             }
-                .map { it.replaceCarNumberY() }
                 .doOnNext { carNumber = it }
                 .doOnNext {
                     switchBackspace(it)
@@ -127,9 +118,7 @@ class CourierCarNumberViewModel(
 
     private fun switchComplete() {
         _stateUI.value =
-                //выключено до реализации на сервере
-//            if (carNumber.length < NUMBER_LENGTH_MAX - 1 || carType == -1) CourierCarNumberUIState.NumberNotFilled
-            if (carNumber.length < NUMBER_LENGTH_MAX - 1) CourierCarNumberUIState.NumberNotFilled
+            if (carNumber.length < NUMBER_LENGTH_MAX - 1 || carType == -1) CourierCarNumberUIState.NumberNotFilled
             else CourierCarNumberUIState.NumberFormatComplete
     }
 
@@ -147,10 +136,7 @@ class CourierCarNumberViewModel(
 
     private fun putCarTypeAndNumber() {
         _progressState.value = CourierCarNumberProgressState.Progress
-        addSubscription(interactor.putCarTypeAndNumber(
-            carType,
-            carNumber.replace("\\s".toRegex(), "").revertCarNumberY()
-        )
+        addSubscription(interactor.putCarTypeAndNumber(carType, carNumber.replace("\\s".toRegex(), ""))
             .subscribe(
                 { fetchCarNumberComplete() },
                 { fetchCarNumberError(it) }

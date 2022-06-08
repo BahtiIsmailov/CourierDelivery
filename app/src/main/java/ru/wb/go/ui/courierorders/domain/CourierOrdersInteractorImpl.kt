@@ -20,7 +20,6 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
-import ru.wb.go.ui.couriercarnumber.replaceCarNumberY
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
@@ -28,7 +27,6 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.time.TimeFormatter
-import java.util.*
 
 class CourierOrdersInteractorImpl(
     rxSchedulerFactory: RxSchedulerFactory,
@@ -46,21 +44,9 @@ class CourierOrdersInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierOrdersInteractor {
 
-    private fun List<CourierOrderDstOfficeEntity>.sortByUnusualTimeAndAddress(): List<CourierOrderDstOfficeEntity> {
-        return this.sortedWith(
-            compareBy({ !it.isUnusualTime }, { it.fullAddress.lowercase(Locale.ROOT) })
-        )
-    }
-
     override fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>> {
         return appTasksRepository.getFreeOrders(srcOfficeID)
-            .map { freeOrders ->
-                val sortedFreeOrders = freeOrders.sortedBy { it.id }
-                sortedFreeOrders.forEach {
-                    it.dstOffices = it.dstOffices.sortByUnusualTimeAndAddress()
-                }
-                sortedFreeOrders
-            }
+            .map { freeOrders -> freeOrders.sortedBy { it.id }.toMutableList() }
             .flatMap {
                 courierLocalRepository.deleteAllOrder()
                 courierLocalRepository.deleteAllOrderOffices()
@@ -77,7 +63,7 @@ class CourierOrdersInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): MutableList<CourierOrderLocalDataEntity> {
+    private fun toCourierOrderLocalDataEntities(it: MutableList<CourierOrderEntity>): MutableList<CourierOrderLocalDataEntity> {
         val courierOrderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
         it.forEachIndexed { index, order ->
             val courierOrderLocalEntity = convertCourierOrderLocalEntity(order, index)
@@ -169,7 +155,7 @@ class CourierOrdersInteractorImpl(
     }
 
     override fun carNumber(): String {
-        return userManager.carNumber().replaceCarNumberY()
+        return userManager.carNumber()
     }
 
     override fun carType(): Int {

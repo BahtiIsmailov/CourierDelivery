@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 sealed class CourierOrderDetailsInfoUIState {
 
     data class InitOrderDetails(
-        val carNumber: CarNumberState,
+        val carNumber: String,
         @DrawableRes
         val carTypeIcon: Int,
         val isChangeCarNumber: Boolean,

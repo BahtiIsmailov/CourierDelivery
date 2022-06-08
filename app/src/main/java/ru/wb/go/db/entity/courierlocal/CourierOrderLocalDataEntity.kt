@@ -15,5 +15,5 @@ data class CourierOrderLocalDataEntity(
         entityColumn = "dst_office_order_id",
         entity = CourierOrderDstOfficeLocalEntity::class
     )
-    var dstOffices: List<CourierOrderDstOfficeLocalEntity>,
+    val dstOffices: List<CourierOrderDstOfficeLocalEntity>,
 )
