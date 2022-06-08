@@ -8,11 +8,13 @@ import android.view.View.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
@@ -37,6 +39,7 @@ class CourierWarehousesFragment :
     private lateinit var smoothScroller: SmoothScroller
 
     override val viewModel by viewModel<CourierWarehousesViewModel>()
+
 
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -184,8 +187,16 @@ class CourierWarehousesFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener { viewModel.updateData() }
-        binding.update.setOnClickListener { viewModel.updateData() }
+        binding.refresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                viewModel.updateData()
+            }
+        }
+        binding.update.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.updateData()
+            }
+        }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
@@ -208,7 +219,9 @@ class CourierWarehousesFragment :
     override fun onResume() {
         super.onResume()
         viewModel.resumeInit()
-        viewModel.updateData()
+        lifecycleScope.launch {
+            viewModel.updateData()
+        }
     }
 
     override fun onPause() {

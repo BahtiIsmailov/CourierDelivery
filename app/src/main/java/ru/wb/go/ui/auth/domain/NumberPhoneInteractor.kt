@@ -8,7 +8,7 @@ interface NumberPhoneInteractor {
 
     fun userPhone() : String
 
-    fun couriersExistAndSavePhone(phone: String) : Completable
+    suspend fun couriersExistAndSavePhone(phone: String)
 
     fun observeNetworkConnected(): Observable<NetworkState>
 }

@@ -13,9 +13,9 @@ import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
 
 interface AppRemoteRepository {
 
-    fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable
+    suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity)
 
-    fun getCourierDocuments():Single<CourierDocumentsEntity>
+    suspend fun getCourierDocuments(): CourierDocumentsEntity
 
     fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
 

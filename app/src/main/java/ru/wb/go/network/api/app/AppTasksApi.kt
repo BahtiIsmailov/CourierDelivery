@@ -1,6 +1,6 @@
 package ru.wb.go.network.api.app
 
-import io.reactivex.Single
+
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -13,14 +13,14 @@ interface AppTasksApi {
     //tasks
     //==============================================================================================
     @GET("{version}/free-tasks/offices")
-    fun freeTasksOffices(
+    suspend fun freeTasksOffices(
         @Path(value = "version", encoded = true) version: String
-    ): Single<CourierWarehousesResponse>
+    ):  CourierWarehousesResponse
 
     @GET("{version}/free-tasks")
-    fun freeTasks(
+    suspend fun freeTasks(
         @Path(value = "version", encoded = true) version: String,
         @Query("srcOfficeID") srcOfficeID: Int
-    ): Single<CourierOrdersResponse>
+    ):  CourierOrdersResponse
 
 }

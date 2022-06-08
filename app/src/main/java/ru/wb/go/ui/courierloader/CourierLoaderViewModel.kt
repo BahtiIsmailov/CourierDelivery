@@ -2,9 +2,11 @@ package ru.wb.go.ui.courierloader
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
@@ -25,6 +27,7 @@ import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
+import java.lang.Exception
 
 class CourierLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -221,17 +224,32 @@ class CourierLoaderViewModel(
     }
 
     private fun toRegistration(phone: String) {
-        addSubscription(
-            remoteRepo.getCourierDocuments()
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .map { CourierDataParameters(phone = phone, docs = it) }
-                .map { CourierLoaderNavigationState.NavigateToCourierDataType(it) }
-                .doOnError { onTechErrorLog("getUserDocs", it) }
-                .subscribe(
-                    { _navigationDrawerState.value = it },
-                    { onRxError(it) })
-        )
+        viewModelScope.launch {
+            try{
+                val response = remoteRepo.getCourierDocuments()
+                val courierDataParameters = CourierDataParameters(phone = phone, docs = response)
+                val responseState = CourierLoaderNavigationState.NavigateToCourierDataType(courierDataParameters)
+                _navigationDrawerState.value = responseState
+
+            }catch (e:Exception){
+                onTechErrorLog("getUserDocs", e)
+                onRxError(e)
+            }
+        }
     }
+
+//    private fun toRegistration(phone: String) {
+//        addSubscription(
+//            remoteRepo.getCourierDocuments()
+//                .compose(rxSchedulerFactory.applySingleSchedulers())
+//                .map { CourierDataParameters(phone = phone, docs = it) }
+//                .map { CourierLoaderNavigationState.NavigateToCourierDataType(it) }
+//                .doOnError { onTechErrorLog("getUserDocs", it) }
+//                .subscribe(
+//                    { _navigationDrawerState.value = it },
+//                    { onRxError(it) })
+//        )
+//    }
 
     private fun toCourierDataExpects(phone: String) {
         _navigationDrawerState.value =

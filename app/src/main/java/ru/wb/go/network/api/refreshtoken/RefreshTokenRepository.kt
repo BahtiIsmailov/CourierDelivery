@@ -4,6 +4,6 @@ import io.reactivex.Single
 
 interface RefreshTokenRepository {
 
-    fun doRefreshToken():RefreshResult
+       fun doRefreshToken():RefreshResult
 
 }
