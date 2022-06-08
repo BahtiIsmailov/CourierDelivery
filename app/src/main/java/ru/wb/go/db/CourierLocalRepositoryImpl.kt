@@ -22,30 +22,29 @@ class CourierLocalRepositoryImpl(
         return courierWarehouseDao.read()
     }
 
-    override fun getOrderGate():  String  {
-        return getOrder().gate
+    override fun getOrderGate(): Single<String> {
+        return Single.just(getOrder()!!.gate)
     }
 
     override fun deleteAllWarehouse() {
         courierWarehouseDao.deleteAll()
     }
 
-    override suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>) {
-        courierOrderLocalDataEntities.map {
-            saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices)
-        }
+    override fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>): Completable {
+        return Observable.fromIterable(courierOrderLocalDataEntities)
+            .flatMapCompletable { saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices) }
     }
 
-
-    override suspend fun freeOrders():  List<CourierOrderLocalDataEntity>  {
+    override fun freeOrders(): Single<List<CourierOrderLocalDataEntity>> {
         return courierOrderDao.orderAndOffices()
     }
-    private suspend fun saveOrderAndOffices(
+
+    private fun saveOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>
-    )  {
-          courierOrderDao.insertOrder(courierOrderLocalEntity)
-          courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity)
+    ): Completable {
+        return courierOrderDao.insertOrder(courierOrderLocalEntity)
+            .andThen(courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity))
     }
 
     override fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity> {

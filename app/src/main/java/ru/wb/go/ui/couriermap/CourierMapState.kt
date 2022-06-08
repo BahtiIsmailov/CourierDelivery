@@ -48,8 +48,6 @@ sealed class CourierMapState {
 
     object UpdateMyLocation : CourierMapState()
 
-    object ShowManagerBar : CourierMapState()
-
-    object HideManagerBar : CourierMapState()
+    object VisibleShowAll : CourierMapState()
 
 }

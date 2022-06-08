@@ -10,9 +10,9 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierOrdersInteractor : BaseServiceInteractor {
 
-    suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity>
+    fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>>
 
-    suspend fun freeOrdersLocal():  List<CourierOrderLocalDataEntity>
+    fun freeOrdersLocal(): Single<MutableList<CourierOrderLocalDataEntity>>
 
     fun saveRowOrder(rowOrder: Int)
 

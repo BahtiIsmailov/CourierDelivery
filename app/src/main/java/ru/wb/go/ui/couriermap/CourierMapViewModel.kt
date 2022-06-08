@@ -83,6 +83,12 @@ class CourierMapViewModel(
     val navigateToMyLocation: LiveData<NavigateToMyLocation>
         get() = _navigateToMyLocation
 
+//    data class AddMarkers(val points: List<CourierMapMarker>)
+//
+//    private val _addMarkers = SingleLiveEvent<AddMarkers>()
+//    val addMarkers: LiveData<AddMarkers>
+//        get() = _addMarkers
+
     data class UpdateMarkers(val points: List<CourierMapMarker>)
 
     private val _updateMarkers = SingleLiveEvent<UpdateMarkers>()
@@ -113,9 +119,11 @@ class CourierMapViewModel(
     val zoomToBoundingBox: LiveData<ZoomToBoundingBox>
         get() = _zoomToBoundingBox
 
-    private val _visibleManagerBar = SingleLiveEvent<CourierVisibilityManagerBar>()
-    val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
-        get() = _visibleManagerBar
+    object VisibleShowAll
+
+    private val _visibleShowAll = SingleLiveEvent<VisibleShowAll>()
+    val visibleShowAll: LiveData<VisibleShowAll>
+        get() = _visibleShowAll
 
     fun subscribeState() {
         subscribeMapState()
@@ -161,6 +169,7 @@ class CourierMapViewModel(
                 UpdateMyLocationPoint(it.point)
             is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
                 ZoomToBoundingBox(it.boundingBox, it.animate)
+            CourierMapState.VisibleShowAll -> _visibleShowAll.value = VisibleShowAll
             is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
                 UpdateMarkersWithAnimateToPosition(
                     it.pointsShow,
@@ -170,12 +179,7 @@ class CourierMapViewModel(
                     it.offsetY
                 )
             CourierMapState.ClearMap -> _clearMap.value = ClearMap
-            CourierMapState.ShowManagerBar -> _visibleManagerBar.postValue(
-                CourierVisibilityManagerBar.Visible
-            )
-            CourierMapState.HideManagerBar -> _visibleManagerBar.postValue(
-                CourierVisibilityManagerBar.Hide
-            )
+//            is CourierMapState.AddMarkers -> _addMarkers.value = AddMarkers(it.points)
         }
     }
 
@@ -199,12 +203,7 @@ class CourierMapViewModel(
         return SCREEN_TAG
     }
 
-    fun onZoomClick() {
-        interactor.prolongTimeHideManager()
-    }
-
     fun onShowAllClick() {
-        interactor.prolongTimeHideManager()
         interactor.showAll()
     }
 

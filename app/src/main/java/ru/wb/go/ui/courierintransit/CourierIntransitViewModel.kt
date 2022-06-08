@@ -136,14 +136,9 @@ class CourierIntransitViewModel(
     private fun observeMapActionComplete(it: CourierMapAction) {
         when (it) {
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-            is CourierMapAction.MapClick -> showManagerBar()
             CourierMapAction.ShowAll -> onShowAllClick()
             else -> {}
         }
-    }
-
-    private fun showManagerBar() {
-        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     private fun onShowAllClick() {
@@ -279,7 +274,10 @@ class CourierIntransitViewModel(
 
     private fun initItems(items: MutableList<BaseIntransitItem>, boxTotal: String) {
         _intransitOrders.value = if (items.isEmpty()) CourierIntransitItemState.Empty
-        else CourierIntransitItemState.InitItems(items, boxTotal)
+        else {
+            interactor.mapState(CourierMapState.VisibleShowAll)
+            CourierIntransitItemState.InitItems(items, boxTotal)
+        }
     }
 
     private fun initMap(

@@ -5,8 +5,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
@@ -205,10 +203,9 @@ class CourierLoadingInteractorImpl(
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
-    override suspend fun getGate(): String  {
-        return withContext(Dispatchers.IO){
-            localRepo.getOrderGate()
-        }
+    override fun getGate(): Single<String> {
+        return localRepo.getOrderGate()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals> {

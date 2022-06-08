@@ -17,19 +17,29 @@ import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 interface AppApi {
 
     @POST("{version}/me/courier-documents")
-    suspend fun saveCourierDocuments(
+    fun saveCourierDocuments(
         @Path(value = "version", encoded = true) version: String,
         @Body courierDocuments: CourierDocumentsRequest,
-    )
+    ): Completable
 
     @GET("{version}/me/courier-documents")
-    suspend fun getCourierDocuments(
+    fun getCourierDocuments(
         @Path(value = "version", encoded = true) version: String,
-    ):  CourierDocumentsResponse
+    ): Single<CourierDocumentsResponse>
 
     //==============================================================================================
     //tasks
     //==============================================================================================
+    @GET("{version}/free-tasks/offices")
+    fun freeTasksOffices(
+        @Path(value = "version", encoded = true) version: String
+    ): Single<CourierWarehousesResponse>
+
+    @GET("{version}/free-tasks")
+    fun freeTasks(
+        @Path(value = "version", encoded = true) version: String,
+        @Query("srcOfficeID") srcOfficeID: Int
+    ): Single<CourierOrdersResponse>
 
     @GET("{version}/tasks/my")
     fun tasksMy(

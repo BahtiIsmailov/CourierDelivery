@@ -26,7 +26,6 @@ import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.time.TimeFormatter
-import java.net.Authenticator
 
 val deliveryRepositoryModule = module {
 
@@ -40,20 +39,19 @@ val deliveryRepositoryModule = module {
     }
 
     fun provideAppRemoteRepository(
-        authenticator: AutentificatorIntercept,
         rxSchedulerFactory: RxSchedulerFactory,
         api: AppApi,
         tokenManager: TokenManager,
     ): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(authenticator,rxSchedulerFactory, api, tokenManager)
+        return AppRemoteRepositoryImpl(rxSchedulerFactory, api, tokenManager)
     }
 
     fun provideAppTasksRepository(
-        authenticator: AutentificatorIntercept,
+        rxSchedulerFactory: RxSchedulerFactory,
         apiTasks: AppTasksApi,
         tokenManager: TokenManager
     ): AppTasksRepository {
-        return AppTasksRepositoryImpl(authenticator, apiTasks, tokenManager)
+        return AppTasksRepositoryImpl(rxSchedulerFactory, apiTasks, tokenManager)
     }
 
     fun provideRefreshTokenRepository(
@@ -96,20 +94,14 @@ val deliveryRepositoryModule = module {
         return NetworkMonitorRepositoryImpl()
     }
 
-    fun provideAutentificatorIntercept(yandexMetricManager: YandexMetricManager):AutentificatorIntercept{
-        return AutentificatorIntercept(yandexMetricManager)
-    }
-
     fun provideAppNavRepository(): AppNavRepository {
         return AppNavRepositoryImpl()
     }
 
     single { provideAuthRemoteRepository(get(), get(), get(), get()) }
 
-    single { provideAppRemoteRepository(get(), get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get()) }
     factory { provideAppTasksRepository(get(), get(), get()) }
-
-    single { provideAutentificatorIntercept(get()) }
 
     single { provideRefreshTokenRepository(get(), get(), get()) }
     single { provideCourierLocalRepository(get(), get(), get()) }

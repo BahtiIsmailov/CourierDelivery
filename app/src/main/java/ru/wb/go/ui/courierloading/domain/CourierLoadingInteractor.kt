@@ -25,7 +25,7 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     fun confirmLoadingBoxes(): Single<CourierCompleteData>
 
-    suspend fun getGate():  String
+    fun getGate(): Single<String>
 
     fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals>
 

@@ -81,13 +81,12 @@
     <TextView
         android:id="@+id/gate_digit"
         style="@style/LargePrimaryRegularText"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="32sp"
+        android:textSize="40sp"
         android:textStyle="bold"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="@+id/timer"
-        app:layout_constraintStart_toStartOf="@+id/timer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gate"
         tools:text="303" />
 

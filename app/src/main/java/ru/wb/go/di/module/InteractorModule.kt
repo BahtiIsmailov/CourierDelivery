@@ -135,6 +135,7 @@ val interactorModule = module {
         userManager: UserManager
     ): CourierDataExpectsInteractor {
         return CourierDataExpectsInteractorImpl(
+            rxSchedulerFactory,
             refreshTokenRepository,
             appRemoteRepository,
             tokenManager,
@@ -221,6 +222,7 @@ val interactorModule = module {
             userManager,
             tokenManager,
             timeManager,
+            timeFormatter,
             sharedWorker
         )
     }
@@ -473,7 +475,9 @@ val interactorModule = module {
             get()
         )
     }
-    factory { provideCourierIntransitOfficeScannerInteractor(get(), get(), get(), get(), get()) }
+    factory {
+        provideCourierIntransitOfficeScannerInteractor(get(), get(), get(), get(), get())
+    }
     factory { provideCourierCompleteDeliveryInteractor(get(), get()) }
     factory { provideCourierVersionControlInteractor(get(), get()) }
     factory { provideCourierStartDeliveryInteractor(get(), get()) }

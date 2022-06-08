@@ -2,10 +2,8 @@ package ru.wb.go.ui.courierloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -91,27 +89,16 @@ class CourierLoadingScanViewModel(
     }
 
     private fun getGate() {
-        viewModelScope.launch {
-            try {
-                val response = interactor.getGate()
-                _orderTimer.postValue(
-                    CourierLoadingScanTimerState.Info(response.ifEmpty { "-" }))
-            }catch (e:Exception){
-                _orderTimer.postValue(CourierLoadingScanTimerState.Info("-"))
-            }
-        }
+        addSubscription(
+            interactor.getGate()
+                .subscribe(
+                    {
+                        _orderTimer.value =
+                            CourierLoadingScanTimerState.Info(it.ifEmpty { "-" })
+                    },
+                    { _orderTimer.value = CourierLoadingScanTimerState.Info("-") })
+        )
     }
-//    private fun getGate() {
-//        addSubscription(
-//            interactor.getGate()
-//                .subscribe(
-//                    {
-//                        _orderTimer.value =
-//                            CourierLoadingScanTimerState.Info(it.ifEmpty { "-" })
-//                    },
-//                    { _orderTimer.value = CourierLoadingScanTimerState.Info("-") })
-//        )
-//    }
 
     private fun observeTimer() {
         addSubscription(

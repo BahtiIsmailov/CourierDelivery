@@ -3,8 +3,6 @@ package ru.wb.go.ui.courierorders.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.wb.go.app.AppPreffsKeys.SELECTED_ORDER_INDEX_KEY
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
@@ -22,7 +20,6 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
-import ru.wb.go.ui.couriercarnumber.replaceCarNumberY
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
@@ -43,6 +40,7 @@ class CourierOrdersInteractorImpl(
     private val userManager: UserManager,
     private val tokenManager: TokenManager,
     private val timeManager: TimeManager,
+    private val timeFormatter: TimeFormatter,
     private val sharedWorker: SharedWorker
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierOrdersInteractor {
@@ -53,52 +51,32 @@ class CourierOrdersInteractorImpl(
         )
     }
 
-    override suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity> {
-        val response = withContext(Dispatchers.IO) {
-            appTasksRepository.getFreeOrders(srcOfficeID).sortedBy { it.id }
-        }
-        response.forEach { freeOrders ->
-            freeOrders.dstOffices = freeOrders.dstOffices.sortByUnusualTimeAndAddress()
-        }
-        courierLocalRepository.deleteAllOrder()
-        courierLocalRepository.deleteAllOrderOffices()
-        val localEntity = toCourierOrderLocalDataEntities(response)
-        courierLocalRepository.saveFreeOrders(localEntity)
-        return localEntity
+    override fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>> {
+        return appTasksRepository.getFreeOrders(srcOfficeID)
+            .map { freeOrders ->
+                val sortedFreeOrders = freeOrders.sortedBy { it.id }
+                sortedFreeOrders.forEach {
+                    it.dstOffices = it.dstOffices.sortByUnusualTimeAndAddress()
+                }
+                sortedFreeOrders
+            }
+            .flatMap {
+                courierLocalRepository.deleteAllOrder()
+                courierLocalRepository.deleteAllOrderOffices()
+                val localEntity = toCourierOrderLocalDataEntities(it)
+                courierLocalRepository.saveFreeOrders(localEntity)
+                    .andThen(Single.just(localEntity))
+            }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
-//    override fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>> {
-//        return appTasksRepository.getFreeOrders(srcOfficeID)
-//            .map { freeOrders ->
-//                val sortedFreeOrders = freeOrders.sortedBy { it.id }
-//                sortedFreeOrders.forEach {
-//                    it.dstOffices = it.dstOffices.sortByUnusualTimeAndAddress()
-//                }
-//                sortedFreeOrders
-//            }
-//            .flatMap {
-//                courierLocalRepository.deleteAllOrder()
-//                courierLocalRepository.deleteAllOrderOffices()
-//                val localEntity = toCourierOrderLocalDataEntities(it)
-//                courierLocalRepository.saveFreeOrders(localEntity)
-//                    .andThen(Single.just(localEntity))
-//            }
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
-
-    override suspend fun freeOrdersLocal(): List<CourierOrderLocalDataEntity>  {
-        return withContext(Dispatchers.IO){
-            courierLocalRepository.freeOrders()
-        }
-
+    override fun freeOrdersLocal(): Single<MutableList<CourierOrderLocalDataEntity>> {
+        return courierLocalRepository.freeOrders()
+            .map { it.toMutableList() }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
-//    override suspend fun freeOrdersLocal():  MutableList<CourierOrderLocalDataEntity>  {
-//        return courierLocalRepository.freeOrders()
-//            .map { it.toMutableList() }
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
-    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): List<CourierOrderLocalDataEntity> {
+    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): MutableList<CourierOrderLocalDataEntity> {
         val courierOrderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
         it.forEachIndexed { index, order ->
             val courierOrderLocalEntity = convertCourierOrderLocalEntity(order, index)
@@ -167,7 +145,7 @@ class CourierOrdersInteractorImpl(
     }
 
 
-    override fun selectedOrder(rowOrder: Int): Single<CourierOrderLocalDataEntity> { //сюда приходит 0
+    override fun selectedOrder(rowOrder: Int): Single<CourierOrderLocalDataEntity> {
         return courierLocalRepository.orderAndOffices(rowOrder)
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
@@ -190,7 +168,7 @@ class CourierOrdersInteractorImpl(
     }
 
     override fun carNumber(): String {
-        return userManager.carNumber().replaceCarNumberY()
+        return userManager.carNumber()
     }
 
     override fun carType(): Int {

@@ -13,11 +13,11 @@ interface CourierOrderDao {
     //order
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrder(orderEntity: CourierOrderLocalEntity)
+    fun insertOrder(orderEntity: CourierOrderLocalEntity): Completable
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
-    suspend fun orderAndOffices():  List<CourierOrderLocalDataEntity>
+    fun orderAndOffices(): Single<List<CourierOrderLocalDataEntity>>
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity WHERE rowId=:rowOrder")
@@ -35,7 +35,7 @@ interface CourierOrderDao {
     //order dst offices
     //==============================================================================================
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrderOffices(courierOrderDstOfficeLocalEntity: List<CourierOrderDstOfficeLocalEntity>)
+    fun insertOrderOffices(courierOrderDstOfficeLocalEntity: List<CourierOrderDstOfficeLocalEntity>): Completable
 
     @Query("DELETE FROM CourierOrderDstOfficeLocalEntity")
     fun deleteAllOffices()

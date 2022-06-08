@@ -28,8 +28,9 @@ class CourierWarehousesInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierWarehousesInteractor {
 
-    override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {
+    override fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
         return appRemoteRepository.courierWarehouses()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {

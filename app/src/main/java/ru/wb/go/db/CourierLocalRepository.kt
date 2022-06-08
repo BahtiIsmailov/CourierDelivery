@@ -22,9 +22,9 @@ interface CourierLocalRepository {
     //order and offices
     //==============================================================================================
 
-    suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>)
+    fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>): Completable
 
-    suspend fun freeOrders():  List<CourierOrderLocalDataEntity>
+    fun freeOrders(): Single<List<CourierOrderLocalDataEntity>>
 
     fun orderAndOffices(rowOrder: Int): Single<CourierOrderLocalDataEntity>
 
@@ -53,7 +53,7 @@ interface CourierLocalRepository {
     fun setOrderAfterLoadStatus(cost: Int)
 
     fun getOrderId(): Single<String>
-    fun getOrderGate():  String
+    fun getOrderGate(): Single<String>
     fun getOffices(): List<LocalOfficeEntity>
     fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
     fun getBoxes(): List<LocalBoxEntity>
