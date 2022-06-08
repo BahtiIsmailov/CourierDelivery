@@ -31,12 +31,10 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
             linerNumber.text = item.lineNumber
             orderId.text = item.orderId
             cost.text = item.cost
+
             cargo.text = item.cargo
             countOffice.text = item.countPvz
             reserve.text = item.arrive
-            val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
-            holder.binding.selectedBackground.visibility = selectable
-            holder.binding.imageItemBorder.visibility = selectable
         }
     }
 

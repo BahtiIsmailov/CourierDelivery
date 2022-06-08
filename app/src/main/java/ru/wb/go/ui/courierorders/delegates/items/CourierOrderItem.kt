@@ -9,6 +9,5 @@ data class CourierOrderItem(
     val cargo: String,
     val countPvz: String,
     val arrive: String,
-    var isSelected: Boolean,
     override var idView: Int,
 ) : BaseItem
