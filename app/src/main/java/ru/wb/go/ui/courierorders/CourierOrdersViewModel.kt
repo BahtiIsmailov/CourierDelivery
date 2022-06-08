@@ -197,7 +197,7 @@ class CourierOrdersViewModel(
                     DialogInfoStyle.INFO.ordinal,
                     resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
                     resourceProvider.getConfirmMessageDialog(
-                        CarNumberUtils(interactor.carNumber()).fullNumber(),
+                        CarNumberUtils(interactor.carNumber()).fullNumberWithMask(),
                         resourceProvider.getCargo(
                             courierOrderLocalEntity.minVolume,
                             courierOrderLocalEntity.minBoxesCount
