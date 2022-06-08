@@ -84,22 +84,10 @@ class CourierWarehousesViewModel(
         when (it) {
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
-            CourierMapAction.MapClick -> unselectedAddressMapMarkers()
+            CourierMapAction.MapClick -> showManagerBar()
             CourierMapAction.ShowAll -> onShowAllClick()
+            else -> {}
         }
-    }
-
-    private fun unselectedAddressMapMarkers() {
-        mapMarkers.forEach { it.icon = resourceProvider.getWarehouseMapIcon() }
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        changeUnselectedWarehouseItems()
-        updateItems()
-        changeShowDetailsOrder(false)
-    }
-
-    private fun changeUnselectedWarehouseItems() {
-        warehouseItems.forEach { it.isSelected = false }
-        whSelectedId = null
     }
 
     private fun observeMapActionError(throwable: Throwable) {
@@ -171,10 +159,11 @@ class CourierWarehousesViewModel(
     private fun courierWarehouseComplete() {
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else {
-                interactor.mapState(CourierMapState.VisibleShowAll)
-                CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
-            }
+            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+    }
+
+    private fun showManagerBar() {
+        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     private fun updateMyLocation() {

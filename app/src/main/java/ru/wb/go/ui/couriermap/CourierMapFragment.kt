@@ -14,9 +14,10 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DimenRes
@@ -68,6 +69,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         private const val DURATION_POINTS_MS = 500L
         private const val DELAY_ANIMATION_MS = 15L
         private const val INTERPOLATOR_ANIMATION_MAX = 1.0
+        private const val TEXT_SIZE_INDEX_MARKER = 40f
     }
 
     private var _binding: MapFragmentBinding? = null
@@ -296,8 +298,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             updateMyLocation()
         }
 
-        viewModel.visibleShowAll.observe(viewLifecycleOwner) {
-            visibleShowAll()
+        viewModel.visibleManagerBar.observe(viewLifecycleOwner) {
+            visibleManagerBar(it)
         }
 
     }
@@ -674,29 +676,47 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.overlays
             .filterIsInstance<Marker>()
             .find { it.id == id }
-    //?.apply { binding.map.overlays.remove(this) }
 
+    private fun visibleManagerBar(courierVisibilityManagerBar: CourierVisibilityManagerBar) {
+        when (courierVisibilityManagerBar) {
+            CourierVisibilityManagerBar.Hide -> {
+                if (binding.managerLayout.visibility == View.GONE) return
+                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_out_right)
+                animation.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationStart(animation: Animation?) {
+                    }
 
-//    , action: (
-//    mapMarker: Marker,
-//    id: String,
-//    lat: Double,
-//    long: Double,
-//    icon: Drawable?
-//    ) -> Unit
+                    override fun onAnimationEnd(animation: Animation?) {
+                        binding.managerLayout.visibility = View.GONE
+                    }
 
-    private fun visibleShowAll() {
-        binding.showAll.visibility = VISIBLE
+                    override fun onAnimationRepeat(animation: Animation?) {
+                    }
+
+                })
+                binding.managerLayout.startAnimation(animation)
+            }
+            CourierVisibilityManagerBar.Visible -> {
+                if (binding.managerLayout.visibility == View.VISIBLE) return
+                binding.managerLayout.visibility = View.VISIBLE
+                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right)
+                binding.managerLayout.startAnimation(animation)
+            }
+        }
     }
 
     private fun initListeners() {
         binding.zoomIn.setOnClickListener {
             binding.map.controller.zoomIn()
+            viewModel.onZoomClick()
         }
         binding.zoomOut.setOnClickListener {
             binding.map.controller.zoomOut()
+            viewModel.onZoomClick()
         }
-        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
+        binding.showAll.setOnClickListener {
+            viewModel.onShowAllClick()
+        }
     }
 
     private fun navigateToMyLocation() {
@@ -807,7 +827,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             paint.textAlign = Paint.Align.CENTER
             paint.color = ResourcesCompat.getColor(resources, R.color.lvl_1, null)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            paint.textSize = 40f
+            paint.textSize = TEXT_SIZE_INDEX_MARKER
 
             val xPos = (canvas.width / 2).toFloat()
             val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2)

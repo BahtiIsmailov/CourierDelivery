@@ -22,6 +22,7 @@ import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.WAREHOUSE_ID
 import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
+import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
 import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
@@ -88,7 +89,11 @@ class CourierOrdersViewModel(
     val visibleShowAll: LiveData<VisibleShowAll>
         get() = _visibleShowAll
 
-    private var orderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
+    private val _showOrderState = MutableLiveData<CourierOrderShowOrdersState>()
+    val showOrderState: LiveData<CourierOrderShowOrdersState>
+        get() = _showOrderState
+
+    private var orderLocalDataEntities = listOf<CourierOrderLocalDataEntity>()
     private var orderItems = mutableListOf<BaseItem>()
 
     private var orderMapMarkers = mutableListOf<CourierMapMarker>()
@@ -213,7 +218,7 @@ class CourierOrdersViewModel(
     private fun observeMapActionComplete(courierMapAction: CourierMapAction) {
         when (courierMapAction) {
             is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
-            is CourierMapAction.MapClick -> onMapClick()
+            is CourierMapAction.MapClick -> showManagerBar()
             is CourierMapAction.ShowAll -> onShowAllClick()
             CourierMapAction.AnimateComplete -> {}
             is CourierMapAction.LocationUpdate -> {}
@@ -224,8 +229,8 @@ class CourierOrdersViewModel(
         _visibleShowAll.value = VisibleShowAll
     }
 
-    private fun onMapClick() {
-        _navigationState.value = CourierOrdersNavigationState.OnMapClick
+    private fun showManagerBar() {
+        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     fun onMapClickWithDetail() {
@@ -254,8 +259,14 @@ class CourierOrdersViewModel(
     }
 
     private fun orderMapClick(mapPoint: MapPoint) {
-        val indexItem = mapPoint.id.toInt() - 1
-        onOrderClick(indexItem)
+        val itemIndex = mapPoint.id.toInt() - 1
+        saveRowOrder(itemIndex)
+        val isSelected = changeSelectedOrderItems(itemIndex)
+        changeMapMarkers(itemIndex, isSelected)
+        updateOrderAndWarehouseMarkers()
+        changeOrderItems()
+        scrollTo(itemIndex)
+        changeShowDetailsOrder(isSelected)
     }
 
     private fun addressMapClick(mapPoint: MapPoint) {
@@ -396,7 +407,9 @@ class CourierOrdersViewModel(
         orderMapMarkers.add(warehouseMapMarker)
         orders.forEachIndexed { index, item ->
             val idPoint = (index + 1).toString()
-            val orderItem = dataBuilder.buildOrderItem(idPoint, index, item)
+
+
+            val orderItem = dataBuilder.buildOrderItem(idPoint, index, item, false)
             orderItems.add(orderItem)
             val coordinatePoints = mutableListOf<CoordinatePoint>()
             item.dstOffices.forEach { dstOffices ->
@@ -427,6 +440,7 @@ class CourierOrdersViewModel(
     }
 
     private fun updateOrderAndWarehouseMarkers() {
+        clearMap()
         val warehouseMapMarker = mutableListOf(orderMapMarkers.first())
         val orders = orderMapMarkers.toMutableList().apply { removeFirst() }
         interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))
@@ -462,7 +476,6 @@ class CourierOrdersViewModel(
     }
 
     private fun showAllAndOrderItems() {
-        interactor.mapState(CourierMapState.VisibleShowAll)
         _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 
@@ -484,8 +497,62 @@ class CourierOrdersViewModel(
 
     private fun onOrderClick(itemIndex: Int) {
         onTechEventLog("onTakeOrderClick")
+        saveRowOrder(itemIndex)
+        val isSelected = changeSelectedOrderItems(itemIndex)
+        changeMapMarkers(itemIndex, isSelected)
+        updateOrderAndWarehouseMarkers()
+        changeOrderItems()
+        changeShowDetailsOrder(isSelected)
+    }
+
+    private fun changeShowDetailsOrder(selected: Boolean) {
+        _showOrderState.value =
+            if (selected) CourierOrderShowOrdersState.Enable
+            else CourierOrderShowOrdersState.Disable
+    }
+
+    private fun changeOrderItems() {
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
+    }
+
+    private fun scrollTo(index: Int) {
+        _orderItems.value = CourierOrderItemState.ScrollTo(index)
+    }
+
+    private fun clearMap() {
+        interactor.mapState(CourierMapState.ClearMap)
+    }
+
+    private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
+        orderMapMarkers.filter { it.point.id != WAREHOUSE_ID }.forEachIndexed { index, item ->
+            item.icon = if (index == clickItemIndex) {
+                if (isSelected) resourceProvider.getOrderMapSelectedIcon()
+                else resourceProvider.getOrderMapIcon()
+            } else {
+                resourceProvider.getOrderMapIcon()
+            }
+        }
+    }
+
+    private fun saveRowOrder(itemIndex: Int) {
         interactor.saveRowOrder(itemIndex)
-        initOrderDetails(itemIndex)
+    }
+
+    private fun changeSelectedOrderItems(itemIndex: Int): Boolean {
+        var isSelected = false
+        orderItems.forEachIndexed { index, item ->
+            val orderItem = (item as CourierOrderItem)
+            orderItem.isSelected = if (index == itemIndex) {
+                isSelected = !orderItem.isSelected
+                isSelected
+            } else false
+        }
+        return isSelected
+    }
+
+    fun onNextFab() {
+        initOrderDetails(interactor.selectedRowOrder())
+        _showOrderState.value = CourierOrderShowOrdersState.Invisible
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
     }
@@ -613,6 +680,7 @@ class CourierOrdersViewModel(
 
     fun onCloseOrderDetailsClick(height: Int) {
         this.height = height
+        _showOrderState.value = CourierOrderShowOrdersState.Visible
         _navigationState.value = CourierOrdersNavigationState.CloseAddressesDetail
         withSelectedRowOrder(makeOrderAddresses())
     }
