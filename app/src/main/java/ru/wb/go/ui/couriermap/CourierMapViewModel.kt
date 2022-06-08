@@ -133,35 +133,44 @@ class CourierMapViewModel(
 
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {
-            is CourierMapState.NavigateToPoint -> _navigateToPoint.value =
-                NavigateToPoint(it.point)
-            is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.value =
+            is CourierMapState.NavigateToPoint -> _navigateToPoint.postValue(
+                NavigateToPoint(it.point))
+            is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.postValue(
                 UpdateMarkersWithAnimateToPositions(
                     it.pointsHide,
                     it.pointFrom,
                     it.pointsTo,
                     it.animateTo,
                     it.offsetY
-                )
-            is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.value =
+                ))
+            is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.postValue(
                 ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
-            is CourierMapState.NavigateToMarker -> _navigateToMarker.value =
+            )
+            is CourierMapState.NavigateToMarker -> _navigateToMarker.postValue(
                 NavigateToMarker(it.id)
-            is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
+            )
+            is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.postValue(
                 NavigateToPointZoom(it.point)
-            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
+            )
+            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.postValue(
                 NavigateToMyLocation
-            is CourierMapState.UpdateMarkers -> _updateMarkers.value =
+            )
+            is CourierMapState.UpdateMarkers -> _updateMarkers.postValue(
                 UpdateMarkers(it.points)
-            is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
+            )
+            is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.postValue(
                 UpdateMarkersWithIndex(it.points)
-            CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
+            )
+            CourierMapState.UpdateMyLocation -> _updateMyLocation.postValue(
                 UpdateMyLocation
-            is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
+            )
+            is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.postValue(
                 UpdateMyLocationPoint(it.point)
-            is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
+            )
+            is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.postValue(
                 ZoomToBoundingBox(it.boundingBox, it.animate)
-            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
+            )
+            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.postValue(
                 UpdateMarkersWithAnimateToPosition(
                     it.pointsShow,
                     it.pointsFrom,
@@ -169,7 +178,8 @@ class CourierMapViewModel(
                     it.animateTo,
                     it.offsetY
                 )
-            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            )
+            CourierMapState.ClearMap -> _clearMap.postValue(ClearMap)
             CourierMapState.ShowManagerBar -> _visibleManagerBar.postValue(
                 CourierVisibilityManagerBar.Visible
             )

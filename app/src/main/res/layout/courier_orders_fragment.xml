@@ -309,7 +309,7 @@
 
                 <TextView
                     android:id="@+id/car_number"
-                    style="@style/LargePrimaryRegularText"
+                    style="@style/MediumPrimaryRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
@@ -319,7 +319,7 @@
 
                 <TextView
                     android:id="@+id/car_number_empty"
-                    style="@style/LargePrimaryRegularText"
+                    style="@style/MediumPrimaryRegularText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/dash_underline"
