@@ -327,7 +327,7 @@ class CourierOrdersViewModel(
 
     private fun initOrders(height: Int) {
         setLoader(WaitLoader.Wait)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 orderLocalDataEntities = interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)
