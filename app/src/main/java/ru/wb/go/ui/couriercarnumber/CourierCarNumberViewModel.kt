@@ -146,7 +146,7 @@ class CourierCarNumberViewModel(
     }
 
     private fun putCarTypeAndNumber() {
-        _progressState.value = CourierCarNumberProgressState.Progress
+        _progressState.postValue( CourierCarNumberProgressState.Progress)
         addSubscription(interactor.putCarTypeAndNumber(
             carType,
             carNumber.replace("\\s".toRegex(), "").revertCarNumberY()
@@ -160,18 +160,18 @@ class CourierCarNumberViewModel(
 
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+        _navigationState.postValue( CourierCarNumberNavigationState.NavigateToOrderDetails(
             result = parameters.result
-        )
-        _progressState.value = CourierCarNumberProgressState.ProgressComplete
+        ))
+        _progressState.postValue( CourierCarNumberProgressState.ProgressComplete)
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
         onTechErrorLog("fetchCarNumberError", throwable)
-        _progressState.value = CourierCarNumberProgressState.ProgressComplete
-        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+        _progressState.postValue( CourierCarNumberProgressState.ProgressComplete)
+        _navigationState.postValue( CourierCarNumberNavigationState.NavigateToOrderDetails(
             result = parameters.result
-        )
+        ))
     }
 
     override fun getScreenTag(): String {

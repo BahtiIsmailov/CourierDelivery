@@ -57,7 +57,7 @@ class CouriersCompleteRegistrationViewModel(
 
     init {
         onTechEventLog("init")
-        _progressState.value = CourierDataExpectsProgressState.ProgressData
+        _progressState.postValue( CourierDataExpectsProgressState.ProgressData)
         viewModelScope.launch {
             try{
                 interactorData.saveRepeatCourierDocuments()
@@ -85,8 +85,8 @@ class CouriersCompleteRegistrationViewModel(
     private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
         when (registerStatus) {
-            INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.value =
-                CourierDataExpectsProgressState.Complete
+            INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.postValue(
+                CourierDataExpectsProgressState.Complete)
             INVALID_TOKEN -> appNavRepository.navigate(INVALID_TOKEN)
             NEED_SEND_COURIER_DOCUMENTS -> toDataType(CourierDocumentsEntity())
             NEED_CORRECT_COURIER_DOCUMENTS -> checkCorrectCourierDocuments()
@@ -133,7 +133,7 @@ class CouriersCompleteRegistrationViewModel(
 //                    { checkCorrectCourierDocumentsComplete(it) },
 //                    {
 //                        errorDialogManager.showErrorDialog(it, _showDialogInfo)
-//                        _progressState.value = CourierDataExpectsProgressState.Complete
+//                        _progressState.postValue( CourierDataExpectsProgressState.Complete
 //                    })
 //        )
     }
@@ -155,7 +155,7 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun toDataType(it: CourierDocumentsEntity) {
-        _navAction.value = CourierDataExpectsNavAction.NavigateToDataType(parametersData.phone, it)
+        _navAction.postValue( CourierDataExpectsNavAction.NavigateToDataType(parametersData.phone, it))
     }
 
     override fun getScreenTag(): String {

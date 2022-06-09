@@ -16,7 +16,6 @@ import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.utils.analytics.YandexMetricManager
-import java.lang.Exception
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
@@ -82,6 +81,17 @@ class CheckSmsViewModel(
         )
     }
 
+//    fun onNumberObservableClicked(event: KeyboardNumericView.ButtonAction) {
+//        viewModelScope.launch {
+//            try {
+//                val it = accumulateCode(event.name, event)
+//                switchNext(it)
+//                formatSmsComplete(it)
+//            } catch (e: Exception) {
+//                formatSmsError(e)
+//            }
+//        }
+//    }
     fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
         addSubscription(
             event.scan(String()) { accumulator, item -> accumulateCode(accumulator, item) }

@@ -118,31 +118,31 @@ class CourierOrderTimerViewModel(
     }
 
     private fun timeIsOut() {
-        _orderTimer.value = CourierOrderTimerState.TimerIsOut(
+        _orderTimer.postValue( CourierOrderTimerState.TimerIsOut(
             DateTimeFormatter.getAnalogTime(0, 0),
             DateTimeFormatter.getDigitTime(0)
-        )
+        ))
         _timeOut.postValue(true)
-        _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
+        _navigateToDialogTimeIsOut.postValue( NavigateToDialogInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerTitle(),
             resourceProvider.getDialogTimerMessage(),
             resourceProvider.getDialogTimerButton()
-        )
+        ))
     }
 
     private fun initOrderInfo(courierTimerEntity: CourierTimerEntity) {
         with(courierTimerEntity) {
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(price)
-            _orderInfo.value = CourierOrderTimerInfoUIState.InitOrderInfo(
+            _orderInfo.postValue( CourierOrderTimerInfoUIState.InitOrderInfo(
                 resourceProvider.getOrder(orderId),
                 name,
                 resourceProvider.getCoast(coast),
                 resourceProvider.getBoxCountAndVolume(boxesCount, volume),
                 resourceProvider.getPvz(countPvz),
                 if (gate.isEmpty()) "-" else gate
-            )
+            ))
         }
     }
 
@@ -152,17 +152,17 @@ class CourierOrderTimerViewModel(
 
     fun onRefuseOrderClick() {
 
-        _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
+        _navigateToDialogRefuseOrder.postValue( NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
             resourceProvider.getDialogTimerSkipMessage(),
             resourceProvider.getDialogTimerPositiveButton(),
             resourceProvider.getDialogTimerNegativeButton()
-        )
+        ))
     }
 
     fun iArrivedClick() {
-        _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
+        _navigationState.postValue( CourierOrderTimerNavigationState.NavigateToScanner)
     }
 
     fun timeOutReturnToList() {
@@ -183,8 +183,8 @@ class CourierOrderTimerViewModel(
                 interactor.deleteTask()
                 setLoader(WaitLoader.Complete)
                 onTechEventLog("toWarehouse")
-                _navigationState.value =
-                    CourierOrderTimerNavigationState.NavigateToWarehouse
+                _navigationState.postValue(
+                    CourierOrderTimerNavigationState.NavigateToWarehouse)
                 _timeOut.postValue(false)
             }catch (e:Exception){
                 setLoader(WaitLoader.Complete)
@@ -202,7 +202,7 @@ class CourierOrderTimerViewModel(
 //                    {
 //                        setLoader(WaitLoader.Complete)
 //                        onTechEventLog("toWarehouse")
-//                        _navigationState.value =
+//                        _navigationState.postValue(
 //                            CourierOrderTimerNavigationState.NavigateToWarehouse
 //                        _timeOut.postValue(false)
 //                    },
@@ -226,10 +226,10 @@ class CourierOrderTimerViewModel(
     }
 
     private fun updateTimer(duration: Int, downTickSec: Int) {
-        _orderTimer.value = CourierOrderTimerState.Timer(
+        _orderTimer.postValue( CourierOrderTimerState.Timer(
             DateTimeFormatter.getAnalogTime(duration, downTickSec),
             DateTimeFormatter.getDigitTime(downTickSec)
-        )
+        ))
     }
 
     override fun onTimeIsOverState() {

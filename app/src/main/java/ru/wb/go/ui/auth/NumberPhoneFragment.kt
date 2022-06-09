@@ -25,7 +25,7 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard
 
 
-class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
+class NumberPhoneFragment : Fragment() {
 
     private var _binding: AuthPhoneFragmentBinding? = null
     private val binding get() = _binding!!
@@ -60,7 +60,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initViews() {
-        binding.next.isEnabled = false
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
         (activity as StatusBarListener).showStatusBar()
@@ -71,16 +70,16 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
 
     private fun initListeners() {
 
-        binding.loginLayout.setOnLongClickListener {
-            viewModel.onLongClick()
-            true
+//        binding.loginLayout.setOnLongClickListener {
+//            viewModel.onLongClick()
+//            true
+//        }
+
+        with(binding) {
+            next.setOnClickListener { viewModel.onCheckPhone(phoneNumberTitle.text.toString()) }
         }
 
-        with(binding.phoneNumberTitle) {
-            binding.next.setOnClickListener { viewModel.onCheckPhone(text.toString()) }
-        }
-
-        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener) // отображение номера телефона
 
     }
 

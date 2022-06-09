@@ -11,9 +11,9 @@ interface AuthRemoteRepository {
 
     suspend fun couriersExistAndSavePhone(phone: String)
 
-    fun statistics(): Single<StatisticsResponse>
+    suspend fun statistics(): StatisticsResponse
 
-    fun userInfo(): Single<UserInfoEntity>
+    suspend fun userInfo():  UserInfoEntity
 
     fun clearCurrentUser()
 

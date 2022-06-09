@@ -16,7 +16,6 @@ import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.PhoneUtils
-import java.lang.Exception
 
 class NumberPhoneViewModel(
     compositeDisposable: CompositeDisposable,
@@ -61,10 +60,20 @@ class NumberPhoneViewModel(
         fetchPhoneNumber(number)
     }
 
-    fun onLongClick() {
-        // TODO: 26.11.2021 turn off config
-        //navigateToConfig()
-    }
+//    fun onNumberObservableClicked(event:  KeyboardNumericView.ButtonAction ) {
+//        val accumulator = interactor.userPhone()
+//        val eventKeyboard = accumulateNumber(accumulator, event)
+//        viewModelScope.launch {
+//            try {
+//                switchNext(eventKeyboard)
+//                val it = numberToPhoneSpanFormat(eventKeyboard)
+//                _stateUI.postValue(it)
+//            }catch (e:Exception){
+//                onTechErrorLog("onNumberObservableClicked", e)
+//            }
+//        }
+//
+//    }
 
     fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
         val initPhone = Observable.just(interactor.userPhone())
@@ -88,8 +97,8 @@ class NumberPhoneViewModel(
     private fun switchNext(it: String) {
         _stateKeyboardBackspaceUI.postValue(
             if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active)
-        _stateUI.postValue(
-            if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete)
+        _stateUI.value =
+            if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete
     }
 
 
@@ -104,6 +113,7 @@ class NumberPhoneViewModel(
         }
 
     private fun fetchPhoneNumber(phone: String) {
+        onTechEventLog("onCheckPhone", phone)
         _stateUI.postValue(NumberCheckProgress)
         viewModelScope.launch {
             try {

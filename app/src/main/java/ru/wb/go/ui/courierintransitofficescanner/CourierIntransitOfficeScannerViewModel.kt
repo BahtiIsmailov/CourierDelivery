@@ -62,7 +62,7 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun initTitle() {
-        _toolbarLabelState.value = resourceProvider.getLabel()
+        _toolbarLabelState.postValue( resourceProvider.getLabel())
     }
 
     private fun initScanner() {
@@ -87,31 +87,31 @@ class CourierIntransitOfficeScannerViewModel(
     private fun observeOfficeIdScanProcessComplete(it: CourierIntransitOfficeScanData) {
         when (it) {
             is CourierIntransitOfficeScanData.NecessaryOfficeScan -> {
-                _beepEvent.value = CourierIntransitOfficeScannerBeepState.Office
-                _navigationState.value =
+                _beepEvent.postValue( CourierIntransitOfficeScannerBeepState.Office)
+                _navigationState.postValue(
                     CourierIntransitOfficeScannerNavigationState.NavigateToUnloadingScanner(
                         it.id
-                    )
+                    ))
                 onCleared()
             }
             CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
                 onStopScanner()
-                _beepEvent.value = CourierIntransitOfficeScannerBeepState.UnknownQrOffice
-                _navigationState.value =
+                _beepEvent.postValue( CourierIntransitOfficeScannerBeepState.UnknownQrOffice)
+                _navigationState.postValue(
                     CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
                         "QR код офиса не распознан", "Повторите сканирование"
-                    )
+                    ))
             }
             CourierIntransitOfficeScanData.WrongOfficeScan -> {
                 onStopScanner()
-                _beepEvent.value = CourierIntransitOfficeScannerBeepState.WrongOffice
-                _navigationState.value =
+                _beepEvent.postValue( CourierIntransitOfficeScannerBeepState.WrongOffice)
+                _navigationState.postValue(
                     CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
                         "Офис не принадлежит маршруту", "Повторите сканирование"
-                    )
+                    ))
             }
-            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
-            CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
+            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.postValue( true)
+            CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.postValue( false)
         }
     }
 
@@ -122,12 +122,12 @@ class CourierIntransitOfficeScannerViewModel(
 
     fun onCloseScannerClick() {
         onStopScanner()
-        _navigationState.value = CourierIntransitOfficeScannerNavigationState.NavigateToMap
+        _navigationState.postValue( CourierIntransitOfficeScannerNavigationState.NavigateToMap)
     }
 
     fun onAccessiblyClick() {
         onStartScanner()
-        _navigationState.value = CourierIntransitOfficeScannerNavigationState.NavigateToScanner
+        _navigationState.postValue( CourierIntransitOfficeScannerNavigationState.NavigateToScanner)
     }
 
     fun onDestroy() {

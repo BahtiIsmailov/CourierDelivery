@@ -50,12 +50,12 @@ class AuthRemoteRepositoryImpl(
         tokenManager.turnOffDemo()
     }
 
-    override fun statistics(): Single<StatisticsResponse> {
+    override suspend fun statistics(): StatisticsResponse {
         return authApi.statistics(tokenManager.apiVersion())
     }
 
-    override fun userInfo(): Single<UserInfoEntity> {
-        return Single.just(UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
+    override suspend fun userInfo(): UserInfoEntity {
+        return  UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
     }
 
     override fun clearCurrentUser() {

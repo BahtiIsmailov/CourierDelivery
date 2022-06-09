@@ -65,11 +65,11 @@ class CourierBillingViewModel(
     }
 
     private fun initProgress() {
-        _billingItems.value = CourierBillingState.Init
+        _billingItems.postValue( CourierBillingState.Init)
     }
 
     private fun initToolbarLabel() {
-        _toolbarLabelState.value = resourceProvider.getTitle()
+        _toolbarLabelState.postValue( resourceProvider.getTitle())
     }
 
     private fun initBalanceAndTransactions() {
@@ -80,7 +80,7 @@ class CourierBillingViewModel(
             }catch (e:Exception){
                 onTechErrorLog("billingError", e)
                 setLoader(WaitLoader.Complete)
-                _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
+                _billingItems.postValue( CourierBillingState.Empty("Ошибка получения данных"))
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
             }
         }
@@ -89,17 +89,17 @@ class CourierBillingViewModel(
     private fun billingComplete(it: BillingCommonEntity) {
         balance = it.balance
 
-        _balanceInfo.value = resourceProvider.formatMoney(balance, false)
+        _balanceInfo.postValue( resourceProvider.formatMoney(balance, false))
         val items = mutableListOf<BaseItem>()
         it.transactions.sortedByDescending { it.createdAt }
             .forEachIndexed { index, billingTransactionEntity ->
                 items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
             }
         if (items.isEmpty()) {
-            _billingItems.value =
-                CourierBillingState.Empty(resourceProvider.getEmptyList())
+            _billingItems.postValue(
+                CourierBillingState.Empty(resourceProvider.getEmptyList()))
         } else {
-            _billingItems.value = CourierBillingState.ShowBilling(items)
+            _billingItems.postValue( CourierBillingState.ShowBilling(items))
         }
         setLoader(WaitLoader.Complete)
     }
@@ -116,7 +116,7 @@ class CourierBillingViewModel(
     }
 
     fun gotoBillingAccountsClick() {
-        _navigationState.value = CourierBillingNavigationState.NavigateToAccountSelector(balance)
+        _navigationState.postValue( CourierBillingNavigationState.NavigateToAccountSelector(balance))
     }
 
     fun onCancelLoadClick() {

@@ -27,23 +27,23 @@ class CourierDataTypeViewModel(
 
     init {
         onTechEventLog("init")
-        _switchState.value =
+        _switchState.postValue(
             when (parameters.docs.courierType.lowercase()) {
                 resourceProviderData.getSelfEmployed().lowercase() ->
                     CourierDataTypeSwitchState.IsSelfEmployed
                 resourceProviderData.getIp().lowercase() ->
                     CourierDataTypeSwitchState.IsIP
                 else -> CourierDataTypeSwitchState.IsEmpty
-            }
+            })
     }
 
     fun onUpdateStatusClick(isSelfEmployed: Boolean) {
         parameters.docs.courierType =
             if (isSelfEmployed) resourceProviderData.getSelfEmployed() else resourceProviderData.getIp()
-        _navAction.value =
+        _navAction.postValue(
             CourierDataTypeNavAction.NavigateToCourierData(
                 parameters.phone, parameters.docs
-            )
+            ))
     }
 
     override fun getScreenTag(): String {

@@ -285,11 +285,11 @@ class CourierBillingAccountSelectorViewModel(
     }
 
     fun onAddAccountClick() {
-        _navigationEvent.value =
+        _navigationEvent.postValue(
             CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
                 billingAccounts,
                 parameters.balance
-            )
+            ))
     }
 
     fun onAccountSelectClick(id: Int) {

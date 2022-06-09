@@ -1,8 +1,6 @@
 package ru.wb.go.ui.auth.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
