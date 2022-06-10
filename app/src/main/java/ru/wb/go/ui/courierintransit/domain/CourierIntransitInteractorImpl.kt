@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierintransit.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,19 +30,28 @@ class CourierIntransitInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierIntransitInteractor {
 
-    override fun getOffices(): Observable<List<LocalOfficeEntity>> {
-        return locRepo.getOfficesFlowable()
-            .toObservable()
-            .map { office ->
-                office.toMutableList().sortedWith(
-                    compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
-                )
-            }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    override fun getOffices(): Observable<List<LocalOfficeEntity>> {
+//        return locRepo.getOfficesFlowable()
+//            .toObservable()
+//            .map { office ->
+//                office.toMutableList().sortedWith(
+//                    compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
+//                )
+//            }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
+
+    override suspend fun getOffices(): List<LocalOfficeEntity> {
+        return withContext(Dispatchers.IO) {
+            locRepo.getOfficesFlowable().toMutableList().sortedWith(
+                compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
+            )
+
+        }
     }
 
-    override suspend fun observeOrderTimer(): Long  {
-        return withContext(Dispatchers.IO){
+    override suspend fun observeOrderTimer(): Long {
+        return withContext(Dispatchers.IO) {
             val order = locRepo.getOrder()
             val offsetSec = timeManager.getPassedTime(order.startedAt)
             intransitTimeRepository.startTimer()
@@ -70,8 +78,8 @@ class CourierIntransitInteractorImpl(
         }
     }
 
-    override suspend fun completeDelivery(order: LocalOrderEntity)  {
-        return withContext(Dispatchers.IO){
+    override suspend fun completeDelivery(order: LocalOrderEntity) {
+        return withContext(Dispatchers.IO) {
             remoteRepo.taskStatusesEnd(order.orderId.toString())
         }
     }

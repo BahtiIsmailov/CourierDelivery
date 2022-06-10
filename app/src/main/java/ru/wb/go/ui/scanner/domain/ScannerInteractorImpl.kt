@@ -14,23 +14,32 @@ class ScannerInteractorImpl(
     private val rxSchedulerFactory: RxSchedulerFactory,
     private val scannerRepository: ScannerRepository,
     private val settingsManager: SettingsManager,
-) : ScannerInteractor {
+    override var scannerActionSubject: ScannerAction,
+) : ScannerInteractor,test {
 
     private val holdSplashSubject = PublishSubject.create<Action>()
     private val prolongHoldSubject = PublishSubject.create<Action>()
     private var holdSplashDisposable: Disposable? = null
+
+    companion object{
+        const val HOLD_SCANNER_DELAY = 25L
+    }
 
     init {
         startTimer()
     }
 
     override fun barcodeScanned(barcode: String) {
-        scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
+        scannerActionSubject = scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
     }
 
+
+
     override fun holdSplashUnlock() {
-        scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
+        scannerActionSubject = scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
     }
+
+
 
     override fun prolongHoldTimer() {
         startTimer()
@@ -58,7 +67,7 @@ class ScannerInteractorImpl(
             holdSplashDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
                 .repeatWhen { repeatHandler -> repeatHandler.flatMap { prolongHoldSubject } }
                 .subscribe({
-                    scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
+                    scannerActionSubject = scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
                     holdSplashSubject.onNext(Action { })
                 }, {})
         }
@@ -75,8 +84,5 @@ class ScannerInteractorImpl(
         return holdSplashSubject.compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
-    companion object {
-        const val HOLD_SCANNER_DELAY = 25L
-    }
 
 }

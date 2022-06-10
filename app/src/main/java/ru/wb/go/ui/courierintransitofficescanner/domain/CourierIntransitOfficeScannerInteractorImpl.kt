@@ -1,7 +1,5 @@
 package ru.wb.go.ui.courierintransitofficescanner.domain
 
-import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
@@ -23,16 +21,26 @@ class CourierIntransitOfficeScannerInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierIntransitOfficeScannerInteractor {
 
-    override fun getOffices(): Observable<List<LocalOfficeEntity>> {
-        return locRepo.getOfficesFlowable()
-            .toObservable()
-            .map { office ->
-                office.toMutableList().sortedWith(
-                    compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
-                )
-            }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+//    override suspend fun getOffices(): Observable<List<LocalOfficeEntity>> {
+//        return locRepo.getOfficesFlowable()
+//            .toObservable()
+//            .map { office ->
+//                office.toMutableList().sortedWith(
+//                    compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
+//                )
+//            }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
+
+    override suspend fun getOffices():  List<LocalOfficeEntity>  {
+        return withContext(Dispatchers.IO){
+            locRepo.getOfficesFlowable()
+                .toMutableList().sortedWith(
+                        compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
+                    )
+                }
+
+        }
 
     override suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData  {
          return withContext(Dispatchers.IO){

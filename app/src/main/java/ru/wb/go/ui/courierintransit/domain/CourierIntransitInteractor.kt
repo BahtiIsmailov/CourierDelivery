@@ -11,7 +11,7 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierIntransitInteractor : BaseServiceInteractor {
 
-    fun getOffices(): Observable<List<LocalOfficeEntity>>
+    suspend fun getOffices():  List<LocalOfficeEntity>
 
     suspend fun observeOrderTimer():  Long
 

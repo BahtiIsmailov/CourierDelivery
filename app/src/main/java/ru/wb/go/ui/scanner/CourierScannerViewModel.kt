@@ -50,7 +50,7 @@ class CourierScannerViewModel(
 
     fun onBarcodeScanned(barcode: String) {
         interactor.prolongHoldTimer()
-        interactor.barcodeScanned(barcode)
+        interactor.barcodeScanned(barcode) ////////////////ScanerAction
     }
 
     fun onHoldSplashClick() {

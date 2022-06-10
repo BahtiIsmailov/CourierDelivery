@@ -55,7 +55,7 @@ interface CourierLocalRepository {
     suspend fun getOrderId():  String
     suspend fun getOrderGate():  String
     fun getOffices(): List<LocalOfficeEntity>
-    fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
+    suspend fun getOfficesFlowable():  List<LocalOfficeEntity>
     fun getBoxes(): List<LocalBoxEntity>
     fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>>
 

@@ -7,13 +7,14 @@ import io.reactivex.Single
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.BaseServiceInteractor
+import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerState
 
 interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun scannedBoxes():  List<LocalBoxEntity>
 
-    suspend fun observeScanProcess():  CourierLoadingProcessData
+    suspend fun observeScanProcess( ):  CourierLoadingProcessData
 
     fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
 

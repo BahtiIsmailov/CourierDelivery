@@ -141,7 +141,7 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.getOffices()
     }
 
-    override fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>> {
+    override suspend fun getOfficesFlowable(): List<LocalOfficeEntity> {
         return courierOrderDao.getOfficesFlowable()
     }
 

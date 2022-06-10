@@ -103,17 +103,27 @@ class CourierIntransitViewModel(
         }
 
     }
-
     private fun observeOffices() {
-        addSubscription(
-            interactor.getOffices()
-                .subscribe({ initOfficesComplete(it) },
-                    {
-                        onTechErrorLog("Get Offices", it)
-                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                initOfficesComplete(interactor.getOffices())
+            }catch (e:Exception){
+                onTechErrorLog("Get Offices", e)
+                errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
+            }
+        }
     }
+
+//    private fun observeOffices() {
+//        addSubscription(
+//            interactor.getOffices()
+//                .subscribe({ initOfficesComplete(it) },
+//                    {
+//                        onTechErrorLog("Get Offices", it)
+//                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+//                    })
+//        )
+//    }
 
     private fun initTime() {
         viewModelScope.launch {

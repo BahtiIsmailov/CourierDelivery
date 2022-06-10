@@ -79,7 +79,7 @@ interface CourierOrderDao {
     fun getOfficeById(officeId: Int):  LocalOfficeEntity
 
     @Query("SELECT * FROM offices")
-    fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
+    suspend fun getOfficesFlowable(): List<LocalOfficeEntity>
 
     @Query("UPDATE courier_order SET status=:status, started_at=:startedAt")
     fun setOrderStart(status: String, startedAt: String)
