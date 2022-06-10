@@ -8,7 +8,7 @@ import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity
 
 interface ScannerRepository {
 
-    fun scannerAction(action: ScannerAction) : ScannerAction
+    fun scannerAction(action: ScannerAction)
 
     fun observeScannerAction(): ScannerAction
 
@@ -21,8 +21,4 @@ interface ScannerRepository {
     fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity
 
     fun holdStart() :Completable
-}
-interface test{
-
-    val scannerActionSubject:ScannerAction
 }
