@@ -16,10 +16,10 @@ object OkHttpClientSafe {
         loggerInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
+//            .sslSocketFactory(
+//                certificateStore.sslSocketFactory(),
+//                certificateStore.x509TrustManager()
+//            )
             .addInterceptor(refreshResponseInterceptor)
             .addInterceptor(loggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -33,10 +33,10 @@ object OkHttpClientSafe {
         loggerInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
+//            .sslSocketFactory(
+//                certificateStore.sslSocketFactory(),
+//                certificateStore.x509TrustManager()
+//            )
             .addInterceptor(loggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .readTimeout(AppConfig.HTTP_READ_TIMEOUT, TimeUnit.MILLISECONDS)

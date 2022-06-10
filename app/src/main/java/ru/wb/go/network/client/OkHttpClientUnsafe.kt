@@ -17,10 +17,10 @@ object OkHttpClientUnsafe {
         authMockResponseInterceptor: ru.wb.go.network.interceptors.AuthMockResponseInterceptor
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
+//            .sslSocketFactory(
+//                certificateStore.sslSocketFactory(),
+//                certificateStore.x509TrustManager()
+//            )
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(httpLoggerInterceptor)
             .addInterceptor(authMockResponseInterceptor)
@@ -38,10 +38,10 @@ object OkHttpClientUnsafe {
         appMetricResponseInterceptor: AppMetricResponseInterceptor
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
+//            .sslSocketFactory(
+//                certificateStore.sslSocketFactory(),
+//                certificateStore.x509TrustManager()
+//            )
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(refreshResponseInterceptor)
             .addInterceptor(httpLoggerInterceptor)
@@ -58,10 +58,10 @@ object OkHttpClientUnsafe {
         httpLoggerInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
+//            .sslSocketFactory(
+//                certificateStore.sslSocketFactory(),
+//                certificateStore.x509TrustManager()
+//            )
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(httpLoggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
