@@ -187,7 +187,7 @@ class CourierLoadingScanViewModel(
 
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
-                _fragmentStateUI.postValue( CourierLoadingScanBoxState.LoadInCar)
+                _fragmentStateUI.postValue(CourierLoadingScanBoxState.LoadInCar)
                 _boxDataStateUI.postValue(
                     with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) })
                 _beepEvent.postValue( CourierLoadingScanBeepState.BoxFirstAdded)

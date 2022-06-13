@@ -4,6 +4,8 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.utils.managers.SettingsManager
@@ -21,6 +23,7 @@ class ScannerInteractorImpl(
     private var holdSplashDisposable: Disposable? = null
 
     companion object{
+
         const val HOLD_SCANNER_DELAY = 25L
     }
 
@@ -29,13 +32,13 @@ class ScannerInteractorImpl(
     }
 
     override fun barcodeScanned(barcode: String) {
-       scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
+         scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
     }
 
 
 
     override fun holdSplashUnlock() {
-       scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
+         scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
     }
 
 
@@ -45,17 +48,25 @@ class ScannerInteractorImpl(
         prolongHoldSubject.onNext(Action { })
     }
 
-    override fun observeScannerState(): Observable<ScannerState> {
-        return scannerRepository.observeScannerState()
-            .doOnNext {
-                if (it is ScannerState.StartScan) startTimer()
-                else if (it is ScannerState.StopScan ||
-                    it is ScannerState.HoldScanComplete ||
-                    it is ScannerState.HoldScanError ||
-                    it is ScannerState.HoldScanUnknown
-                ) stopTimer()
-            }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeScannerState(): ScannerState  {
+          return withContext(Dispatchers.IO){
+              workWithScan(scannerRepository.observeScannerState())
+              scannerRepository.observeScannerState()
+        }
+    }
+
+    private fun workWithScan(it:ScannerState){
+        if (it is ScannerState.StartScan) {
+            startTimer()
+        }
+        else if (
+            it is ScannerState.StopScan ||
+            it is ScannerState.HoldScanComplete ||
+            it is ScannerState.HoldScanError ||
+            it is ScannerState.HoldScanUnknown
+        ) {
+            stopTimer()
+        }
     }
 
     private fun startTimer() {

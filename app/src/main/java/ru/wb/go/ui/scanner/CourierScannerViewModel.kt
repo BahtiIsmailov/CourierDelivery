@@ -1,7 +1,9 @@
 package ru.wb.go.ui.scanner
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -32,10 +34,9 @@ class CourierScannerViewModel(
     }
 
     private fun observeScannerState() {
-        addSubscription(
-            interactor.observeScannerState()
-                .subscribe { _scannerAction.postValue( it) }
-        )
+        viewModelScope.launch {
+            _scannerAction.postValue(interactor.observeScannerState())
+        }
     }
 
     private fun flashState() {

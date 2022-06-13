@@ -13,6 +13,6 @@ interface ScannerInteractor {
 
     fun prolongHoldTimer()
 
-    fun observeScannerState(): Observable<ScannerState>
+    suspend fun observeScannerState():  ScannerState
 
 }

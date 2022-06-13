@@ -14,7 +14,7 @@ interface ScannerRepository {
 
     fun scannerState(state: ScannerState)
 
-    fun observeScannerState(): Observable<ScannerState>
+    fun observeScannerState():  ScannerState
 
     fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity
 

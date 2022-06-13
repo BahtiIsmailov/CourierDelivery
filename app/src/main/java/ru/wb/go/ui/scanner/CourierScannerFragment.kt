@@ -94,15 +94,13 @@ open class CourierScannerFragment : Fragment() {
                 binding.requestPermissionSetting.visibility = GONE
                 onResume()
             } else {
-                binding.permissionInfo.visibility = View.VISIBLE
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                        binding.requestPermissionSetting.visibility = GONE
-                        binding.requestPermission.visibility = View.VISIBLE
-                    } else {
-                        binding.requestPermissionSetting.visibility = View.VISIBLE
-                        binding.requestPermission.visibility = GONE
-                    }
+                binding.permissionInfo.visibility = VISIBLE
+                if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    binding.requestPermissionSetting.visibility = GONE
+                    binding.requestPermission.visibility =  VISIBLE
+                } else {
+                    binding.requestPermissionSetting.visibility =  VISIBLE
+                    binding.requestPermission.visibility = GONE
                 }
                 onPause()
             }

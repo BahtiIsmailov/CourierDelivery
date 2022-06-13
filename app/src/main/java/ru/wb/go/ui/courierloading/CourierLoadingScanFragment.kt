@@ -233,47 +233,64 @@ class CourierLoadingScanFragment :
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierLoadingScanBoxState.InitScanner -> {
-                    binding.timerLayout.visibility = View.VISIBLE
-                    binding.boxInfoLayout.visibility = View.GONE
-                    binding.ribbonStatus.setText(R.string.courier_loading_init_scanner)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.colorPrimary))
+                    with(binding) {
+                        timerLayout.visibility = View.VISIBLE
+                        boxInfoLayout.visibility = View.GONE
+                        ribbonStatus.setText(R.string.courier_loading_init_scanner)
+                        ribbonStatus.setBackgroundColor(getColor(R.color.colorPrimary))
+                    }
+
                 }
                 is CourierLoadingScanBoxState.LoadInCar -> {
                     holdBackButtonOnScanBox()
-                    binding.ribbonStatus.setText(R.string.courier_loading_load_in_car)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.green))
-                    binding.qrCode.setTextColor(getColor(R.color.primary))
-                    binding.timerLayout.visibility = View.GONE
-                    binding.boxInfoLayout.visibility = View.VISIBLE
-                    binding.counterLayout.isEnabled = true
+                    with(binding) {
+                        ribbonStatus.setText(R.string.courier_loading_load_in_car)
+                        ribbonStatus.setBackgroundColor(getColor(R.color.green))
+                        qrCode.setTextColor(getColor(R.color.primary))
+                        timerLayout.visibility = View.GONE
+                        boxInfoLayout.visibility = View.VISIBLE
+                        counterLayout.isEnabled = true
+                    }
+
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
-                    binding.timerLayout.visibility = View.VISIBLE
-                    binding.boxInfoLayout.visibility = View.GONE
-                    binding.ribbonStatus.setText(R.string.courier_loading_forbidden_take)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.red))
+                    with(binding) {
+                        timerLayout.visibility = View.VISIBLE
+                        boxInfoLayout.visibility = View.GONE
+                        ribbonStatus.setText(R.string.courier_loading_forbidden_take)
+                        ribbonStatus.setBackgroundColor(getColor(R.color.red))
+                    }
+
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeBox -> {
                     holdBackButtonOnScanBox()
-                    binding.timerLayout.visibility = View.GONE
-                    binding.boxInfoLayout.visibility = View.VISIBLE
-                    binding.ribbonStatus.setText(R.string.courier_loading_forbidden_take)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.red))
-                    binding.qrCode.setTextColor(getColor(R.color.primary))
-                    binding.boxAddress.setTextColor(getColor(R.color.primary))
+                    with(binding) {
+                        timerLayout.visibility = View.GONE
+                        boxInfoLayout.visibility = View.VISIBLE
+                        ribbonStatus.setText(R.string.courier_loading_forbidden_take)
+                        ribbonStatus.setBackgroundColor(getColor(R.color.red))
+                        qrCode.setTextColor(getColor(R.color.primary))
+                        boxAddress.setTextColor(getColor(R.color.primary))
+                    }
+
                 }
                 CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
-                    binding.timerLayout.visibility = View.VISIBLE
-                    binding.boxInfoLayout.visibility = View.GONE
-                    binding.ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
+                    with(binding){
+                        timerLayout.visibility = View.VISIBLE
+                        boxInfoLayout.visibility = View.GONE
+                        ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
+                        ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
+                    }
+
                 }
                 is CourierLoadingScanBoxState.NotRecognizedQr -> {
                     holdBackButtonOnScanBox()
-                    binding.timerLayout.visibility = View.GONE
-                    binding.boxInfoLayout.visibility = View.VISIBLE
-                    binding.ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
-                    binding.ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
+                    with(binding){
+                        timerLayout.visibility = View.GONE
+                        boxInfoLayout.visibility = View.VISIBLE
+                        ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
+                        ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
+                    }
                 }
             }
         }

@@ -13,31 +13,27 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl.Companion.
 import ru.wb.go.utils.time.TimeFormatter
 import java.util.concurrent.TimeUnit
 
-class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerRepository {
+class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
+) : ScannerRepository {
 
-    //private var scannerActionSubject = PublishSubject.create<ScannerAction>()
+    private var scannerActionSubject = PublishSubject.create<ScannerAction>()
     private val scannerStateSubject = PublishSubject.create<ScannerState>()
-     var scannerActionSubject: ScannerAction ? = null
 
-     override fun scannerAction(action:ScannerAction)  {
-         scannerActionSubject =  action
-        //return scannerActionSubject.onNext(action)
+
+     override fun scannerAction(action:ScannerAction){
+         scannerActionSubject.onNext(action)
     }
 
     override fun observeScannerAction(): ScannerAction {
-        return if (scannerActionSubject == null){
 
-        }else{
-            scannerActionSubject!!
-        }
     }
 
     override fun scannerState(state: ScannerState) {
         scannerStateSubject.onNext(state)
     }
 
-    override fun observeScannerState(): Observable<ScannerState> {
-        return scannerStateSubject
+    override fun observeScannerState():  ScannerState {
+
     }
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {
