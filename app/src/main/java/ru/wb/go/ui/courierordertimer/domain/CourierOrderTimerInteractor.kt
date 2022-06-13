@@ -15,7 +15,7 @@ interface CourierOrderTimerInteractor {
     val timer: Flowable<TimerState>
     fun stopTimer()
 
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+    suspend fun observeOrderData(): CourierOrderLocalDataEntity
 
     suspend fun timerEntity():  CourierTimerEntity
 

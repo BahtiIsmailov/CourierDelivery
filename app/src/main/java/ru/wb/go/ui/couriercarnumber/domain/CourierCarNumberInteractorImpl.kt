@@ -7,10 +7,9 @@ class CourierCarNumberInteractorImpl(
     private val userManager: UserManager
 ) : CourierCarNumberInteractor {
 
-    override fun putCarTypeAndNumber(carType: Int, carNumber: String): Completable {
+    override fun putCarTypeAndNumber(carType: Int, carNumber: String) {
         userManager.saveCarType(carType)
         userManager.saveCarNumber(carNumber)
-        return Completable.complete()
     }
 
     override fun getCarNumber(): String {

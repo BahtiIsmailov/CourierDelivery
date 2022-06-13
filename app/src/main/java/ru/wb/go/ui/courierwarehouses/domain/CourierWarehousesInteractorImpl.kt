@@ -3,6 +3,8 @@ package ru.wb.go.ui.courierwarehouses.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -32,20 +34,23 @@ class CourierWarehousesInteractorImpl(
         return appRemoteRepository.courierWarehouses()
     }
 
-    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
+    override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)  {
         courierLocalRepository.deleteAllWarehouse()
-        return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        return withContext(Dispatchers.IO){
+            courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
+        }
     }
 
-    override fun loadProgress(): Completable {
-        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override suspend fun loadProgress()  {
+        return withContext(Dispatchers.IO){
+            Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
+        }
     }
 
-    override fun observeMapAction(): Observable<CourierMapAction> {
-        return courierMapRepository.observeMapAction()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeMapAction(): CourierMapAction {
+        return withContext(Dispatchers.IO){
+            courierMapRepository.observeMapAction()
+        }
     }
 
     override fun mapState(state: CourierMapState) {

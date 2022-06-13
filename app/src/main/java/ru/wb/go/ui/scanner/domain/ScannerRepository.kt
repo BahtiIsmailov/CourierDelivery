@@ -20,5 +20,5 @@ interface ScannerRepository {
 
     fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity
 
-    fun holdStart() :Completable
+    suspend fun holdStart()
 }

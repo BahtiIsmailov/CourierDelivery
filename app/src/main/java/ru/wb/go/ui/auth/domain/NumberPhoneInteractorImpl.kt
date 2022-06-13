@@ -24,9 +24,10 @@ class NumberPhoneInteractorImpl(
         }
     }
 
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeNetworkConnected(): NetworkState {
+        return withContext(Dispatchers.IO){
+            networkMonitorRepository.networkConnected()
+        }
     }
 
 

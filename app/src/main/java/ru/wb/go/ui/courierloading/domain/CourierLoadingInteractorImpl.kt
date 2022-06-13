@@ -33,7 +33,8 @@ class CourierLoadingInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierLoadingInteractor {
 
-    private val scanLoaderProgressSubject = PublishSubject.create<CourierLoadingProgressData>()
+//    private val scanLoaderProgressSubject = PublishSubject.create<CourierLoadingProgressData>()
+    lateinit var scanLoaderProgressSubject:CourierLoadingProgressData
 
     companion object {
         const val DELAY_HOLD_SCANNER = 1500L
@@ -45,7 +46,7 @@ class CourierLoadingInteractorImpl(
         }
     }
 
-    private fun scanResult(
+    private suspend fun scanResult(
         scannerState: ScannerState,
         data: CourierLoadingScanBoxData,
         boxCount: Int
@@ -261,7 +262,7 @@ class CourierLoadingInteractorImpl(
 //    }
 
     private fun firstBoxLoaderProgress() {
-        scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Progress)
+        scanLoaderProgressSubject = CourierLoadingProgressData.Progress
     }
 
 //    private fun firstBoxLoaderProgress() = Completable.fromAction {
@@ -269,10 +270,10 @@ class CourierLoadingInteractorImpl(
 //    }
 
     private fun firstBoxLoaderComplete() {
-        scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Complete)
+        scanLoaderProgressSubject = CourierLoadingProgressData.Complete
     }
 
-    override fun scanLoaderProgress(): Observable<CourierLoadingProgressData> {
+    override suspend fun scanLoaderProgress(): CourierLoadingProgressData {
         return scanLoaderProgressSubject
     }
 
@@ -280,9 +281,10 @@ class CourierLoadingInteractorImpl(
         scanRepo.scannerState(scannerAction)
     }
 
-    override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
-        return localRepo.observeOrderData()
-            .compose(rxSchedulerFactory.applyFlowableSchedulers())
+    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
+        return withContext(Dispatchers.IO){
+            localRepo.observeOrderData()
+        }
     }
 
     override suspend fun deleteTask()  {
@@ -326,23 +328,39 @@ class CourierLoadingInteractorImpl(
         }
     }
 
-    override fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals> {
-        return localRepo.loadingBoxBoxesGroupByOffice()
-            .map {
-                var pvzCount = 0
-                var boxCount = 0
-                val localLoadingBoxEntities = mutableListOf<LocalLoadingBoxEntity>()
-                it.forEach { localLoadingBox ->
-                    pvzCount++
-                    boxCount += localLoadingBox.count
-                    localLoadingBoxEntities.add(localLoadingBox)
+    override suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals {
+        return withContext(Dispatchers.IO){
+            val it = localRepo.loadingBoxBoxesGroupByOffice()
+            var pvzCount = 0
+            var boxCount = 0
+            val localLoadingBoxEntities = mutableListOf<LocalLoadingBoxEntity>()
+                    it.forEach { localLoadingBox ->
+                        pvzCount++
+                        boxCount += localLoadingBox.count
+                        localLoadingBoxEntities.add(localLoadingBox)
+                    }
+                    LoadingBoxGoals(pvzCount, boxCount, localLoadingBoxEntities)
                 }
-                LoadingBoxGoals(pvzCount, boxCount, localLoadingBoxEntities)
-            }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+        }
     }
 
-}
+//    override suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals {
+//        return localRepo.loadingBoxBoxesGroupByOffice()
+//            .map {
+//                var pvzCount = 0
+//                var boxCount = 0
+//                val localLoadingBoxEntities = mutableListOf<LocalLoadingBoxEntity>()
+//                it.forEach { localLoadingBox ->
+//                    pvzCount++
+//                    boxCount += localLoadingBox.count
+//                    localLoadingBoxEntities.add(localLoadingBox)
+//                }
+//                LoadingBoxGoals(pvzCount, boxCount, localLoadingBoxEntities)
+//            }
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+//
+//}
 
 data class LoadingBoxGoals(
     var pvzCount: Int,

@@ -50,9 +50,9 @@ class NumberPhoneViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.postValue(it) }, {})
-        )
+        viewModelScope.launch {
+            _toolbarNetworkState.postValue(interactor.observeNetworkConnected())
+        }
     }
 
     fun onCheckPhone(number: String) {
@@ -95,8 +95,8 @@ class NumberPhoneViewModel(
     )
 
     private fun switchNext(it: String) {
-        _stateKeyboardBackspaceUI.postValue(
-            if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active)
+        _stateKeyboardBackspaceUI.value =
+            if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active
         _stateUI.value =
             if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete
     }

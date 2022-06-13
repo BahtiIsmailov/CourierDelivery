@@ -29,12 +29,12 @@ class CourierAgreementViewModel(
         return SCREEN_TAG
     }
 
-    fun getDarkThemeSetting(): Boolean {
-        return settingsManager.getSetting(
-            AppPreffsKeys.SETTING_THEME,
-            false
-        )
-    }
+//    fun getDarkThemeSetting(): Boolean {
+//        return settingsManager.getSetting(
+//            AppPreffsKeys.SETTING_THEME,
+//            false
+//        )
+//    }
 
     companion object {
         const val SCREEN_TAG = "CourierAgreement"

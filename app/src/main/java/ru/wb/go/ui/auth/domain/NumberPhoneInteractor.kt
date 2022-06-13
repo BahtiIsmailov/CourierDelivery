@@ -10,5 +10,5 @@ interface NumberPhoneInteractor {
 
     suspend fun couriersExistAndSavePhone(phone: String)
 
-    fun observeNetworkConnected(): Observable<NetworkState>
+    suspend fun observeNetworkConnected():  NetworkState
 }

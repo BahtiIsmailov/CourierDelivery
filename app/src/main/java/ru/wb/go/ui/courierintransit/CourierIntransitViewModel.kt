@@ -145,14 +145,23 @@ class CourierIntransitViewModel(
     private fun setLoader(state: WaitLoader) {
         _waitLoader.postValue(state)
     }
-
     private fun observeMapAction() {
-        addSubscription(
-            interactor.observeMapAction().subscribe(
-                { observeMapActionComplete(it) },
-                { onTechErrorLog("observeMapAction", it) }
-            ))
+        viewModelScope.launch {
+            try {
+                observeMapActionComplete(interactor.observeMapAction())
+            }catch (e:Exception){
+                onTechErrorLog("observeMapAction", e)
+            }
+        }
     }
+
+//    private fun observeMapAction() {
+//        addSubscription(
+//            interactor.observeMapAction().subscribe(
+//                { observeMapActionComplete(it) },
+//                { onTechErrorLog("observeMapAction", it) }
+//            ))
+//    }
 
     private fun observeMapActionComplete(it: CourierMapAction) {
         when (it) {

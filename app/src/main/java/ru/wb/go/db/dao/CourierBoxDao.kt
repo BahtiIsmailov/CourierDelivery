@@ -33,7 +33,7 @@ interface CourierBoxDao {
     fun updateOfficeCountersAfterLoadingBox(officeId: Int)
 
     @Query("SELECT address AS address, count(*) AS count FROM boxes GROUP BY office_id")
-    fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
+    suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 
     @Query(
         """
@@ -69,7 +69,7 @@ interface CourierBoxDao {
     fun getBoxes(): List<LocalBoxEntity>
 
     @Query("SELECT * FROM boxes")
-    fun getBoxesLive(): Flowable<List<LocalBoxEntity>>
+    suspend fun getBoxesLive(): List<LocalBoxEntity>
 
     @Query(
         """
@@ -102,5 +102,5 @@ interface CourierBoxDao {
     }
 
     @Query("SELECT * FROM boxes WHERE office_id=:officeId AND delivered_at=''")
-    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+    suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 }

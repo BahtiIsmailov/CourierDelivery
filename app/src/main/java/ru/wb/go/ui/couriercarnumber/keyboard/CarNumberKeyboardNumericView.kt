@@ -14,8 +14,8 @@ import java.util.*
 
 class CarNumberKeyboardNumericView : RelativeLayout {
 
-    var observableListener = PublishSubject.create<ButtonAction>()
-
+    //var observableListener = PublishSubject.create<ButtonAction>()
+    lateinit var observableListener:ButtonAction
     private lateinit var _binding: CarNumberKeyboardLayoutBinding
     private val binding get() = _binding
     private lateinit var numberButtons: List<KeyboardButtonView>
@@ -92,18 +92,19 @@ class CarNumberKeyboardNumericView : RelativeLayout {
             button.setOnClickListener { view: View ->
                 val keyboardButtonView = view as KeyboardButtonView
                 val action = ButtonAction.valueOf(keyboardButtonView.customValue)
-                observableListener.onNext(action)
+                //observableListener.onNext(action)
+                observableListener = action
                 keyboardButtonView.startAnimation()
             }
         }
         binding.buttonBottomRight.setOnLongClickListener {
-            observableListener.onNext(ButtonAction.BUTTON_DELETE_LONG)
+            //observableListener.onNext(ButtonAction.BUTTON_DELETE_LONG)
+            observableListener = ButtonAction.BUTTON_DELETE_LONG
             true
         }
         binding.buttonBottomRight.setOnClickListener {
-            observableListener.onNext(
-                ButtonAction.BUTTON_DELETE
-            )
+            observableListener = ButtonAction.BUTTON_DELETE
+
         }
     }
 
@@ -144,7 +145,8 @@ class CarNumberKeyboardNumericView : RelativeLayout {
     }
 
     fun clear() {
-        observableListener.onNext(ButtonAction.BUTTON_DELETE_LONG)
+        observableListener = ButtonAction.BUTTON_DELETE_LONG
+            //observableListener.onNext()
     }
 
     fun inactive() {

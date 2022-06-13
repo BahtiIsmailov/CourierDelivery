@@ -177,9 +177,10 @@ class CourierOrdersInteractorImpl(
         courierMapRepository.mapState(state)
     }
 
-    override fun observeMapAction(): Observable<CourierMapAction> {
-        return courierMapRepository.observeMapAction()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeMapAction(): CourierMapAction {
+        return withContext(Dispatchers.IO){
+            courierMapRepository.observeMapAction()
+        }
     }
 
     override fun carNumberIsConfirm(): Boolean {

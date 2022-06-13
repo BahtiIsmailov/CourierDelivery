@@ -7,7 +7,7 @@ import ru.wb.go.utils.map.MapPoint
 
 interface CourierMapInteractor {
 
-    fun subscribeMapState(): Observable<CourierMapState>
+    suspend fun subscribeMapState(): CourierMapState
 
     fun markerClick(point: MapPoint)
 

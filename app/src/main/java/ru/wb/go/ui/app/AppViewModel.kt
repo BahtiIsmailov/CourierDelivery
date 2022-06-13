@@ -2,7 +2,9 @@ package ru.wb.go.ui.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
@@ -54,9 +56,9 @@ class AppViewModel(
     }
 
     private fun fetchNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _networkState.postValue( it) }, {})
-        )
+        viewModelScope.launch {
+            _networkState.postValue(interactor.observeNetworkConnected())
+        }
     }
 
     fun onSupportClick() {

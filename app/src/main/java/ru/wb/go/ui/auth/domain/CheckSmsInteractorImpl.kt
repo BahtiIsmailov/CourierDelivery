@@ -27,12 +27,17 @@ class CheckSmsInteractorImpl(
     private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
     private var timerDisposable: Disposable? = null
 
-    override fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
-        return observable.map { it.toString() }
-            .distinctUntilChanged()
-            .map { it.length >= LENGTH_PASSWORD_MIN }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+//    override suspend fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Boolean  {
+//        return withContext(Dispatchers.IO){
+//            observable.toString().length >= LENGTH_PASSWORD_MIN
+//        }
+//    }
+//    override suspend fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>):  Boolean  {
+//        return observable.map { it.toString() }
+//            .distinctUntilChanged()
+//            .map { it.length >= LENGTH_PASSWORD_MIN }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
 
     private var durationTime = 0
     override fun startTimer(durationTime: Int) {
@@ -72,9 +77,10 @@ class CheckSmsInteractorImpl(
         timeConfirmCodeDisposable()
     }
 
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeNetworkConnected():  NetworkState {
+        return withContext(Dispatchers.IO){
+            networkMonitorRepository.networkConnected()
+        }
     }
 
     override suspend fun auth(phone: String, password: String)  {

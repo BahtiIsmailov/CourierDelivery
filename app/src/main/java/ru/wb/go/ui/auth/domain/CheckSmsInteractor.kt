@@ -8,10 +8,12 @@ import io.reactivex.Observable
 import ru.wb.go.ui.auth.signup.TimerState
 
 interface CheckSmsInteractor {
-    fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean>
-    fun observeNetworkConnected(): Observable<NetworkState>
+    //suspend fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>):  Boolean
+    suspend fun observeNetworkConnected(): NetworkState
+
     suspend fun auth(phone: String, password: String)
     suspend fun couriersExistAndSavePhone(phone: String)
+
     fun startTimer(durationTime: Int)
     val timer: Flowable<TimerState>
     fun stopTimer()

@@ -72,15 +72,25 @@ class CourierWarehousesViewModel(
     private fun checkDemoMode() {
         _demoState.postValue(interactor.isDemoMode())
     }
-
     private fun observeMapAction() {
-        addSubscription(
-            interactor.observeMapAction()
-                .subscribe(
-                    { observeMapActionComplete(it) },
-                    { observeMapActionError(it) }
-                ))
+        viewModelScope.launch {
+            try {
+                observeMapActionComplete(interactor.observeMapAction())
+            }catch (e:Exception){
+                observeMapActionError(e)
+            }
+        }
+
     }
+
+//    private fun observeMapAction() {
+//        addSubscription(
+//            interactor.observeMapAction()
+//                .subscribe(
+//                    { observeMapActionComplete(it) },
+//                    { observeMapActionError(it) }
+//                ))
+//    }
 
     private fun observeMapActionComplete(it: CourierMapAction) {
         when (it) {
@@ -259,8 +269,12 @@ class CourierWarehousesViewModel(
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
         mapMarkers.forEachIndexed { index, item ->
             item.icon = if (index == clickItemIndex) {
-                if (isSelected) resourceProvider.getWarehouseMapSelectedIcon()
-                else resourceProvider.getWarehouseMapIcon()
+                if (isSelected) {
+                     resourceProvider.getWarehouseMapSelectedIcon()
+                }
+                else {
+                    resourceProvider.getWarehouseMapIcon()
+                }
             } else {
                 resourceProvider.getWarehouseMapIcon()
             }
@@ -304,13 +318,16 @@ class CourierWarehousesViewModel(
     }
 
     fun onNextFab() {
-        val index = warehouseItems.indexOfFirst { item -> item.isSelected }
-        assert(index != -1)
-        clearFabAndWhList()
-        val oldEntity = warehouseEntities[index].copy()
-        interactor.clearAndSaveCurrentWarehouses(oldEntity).subscribe()
-        navigateToCourierOrders(oldEntity)
-        clearSubscription()
+        viewModelScope.launch {
+            val index = warehouseItems.indexOfFirst { item -> item.isSelected }
+            assert(index != -1)
+            clearFabAndWhList()
+            val oldEntity = warehouseEntities[index].copy()
+            interactor.clearAndSaveCurrentWarehouses(oldEntity)
+            navigateToCourierOrders(oldEntity)
+            clearSubscription()
+        }
+
     }
 
     private fun onShowAllClick() {

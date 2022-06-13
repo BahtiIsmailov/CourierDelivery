@@ -1,7 +1,9 @@
 package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -122,13 +124,15 @@ class CourierMapViewModel(
     }
 
     private fun subscribeMapState() {
-        addSubscription(
-            interactor.subscribeMapState()
-                .subscribe(
-                    { subscribeMapStateComplete(it) },
-                    { LogUtils { logDebugApp("subscribeMapState() error " + it) } }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                subscribeMapStateComplete(interactor.subscribeMapState())
+            } catch (e: Exception) {
+                LogUtils {
+                    logDebugApp("subscribeMapState() error $e")
+                }
+            }
+        }
     }
 
     private fun subscribeMapStateComplete(it: CourierMapState) {

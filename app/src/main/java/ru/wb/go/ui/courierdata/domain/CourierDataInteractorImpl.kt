@@ -22,9 +22,10 @@ class CourierDataInteractorImpl(
     private val userManager: UserManager,
 ) : CourierDataInteractor {
 
-    override fun observeNetworkConnected(): Observable<NetworkState> {
-        return networkMonitorRepository.networkConnected()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeNetworkConnected(): NetworkState {
+        return withContext(Dispatchers.IO){
+            networkMonitorRepository.networkConnected()
+        }
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity)  {

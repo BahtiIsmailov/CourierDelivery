@@ -25,7 +25,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override fun observeScannerAction(): ScannerAction {
-
+error(" dffd ")
     }
 
     override fun scannerState(state: ScannerState) {
@@ -33,7 +33,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override fun observeScannerState():  ScannerState {
-
+error(" dffdf ")
     }
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {
@@ -46,10 +46,12 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
         return ParsedScanBoxQrEntity(parseParams[2], parseParams[3], isOk = true)
     }
 
-    override fun holdStart(): Completable =
+    override suspend fun holdStart(){
         Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.MILLISECONDS)
             .doOnNext { scannerState(ScannerState.StartScan) }
             .flatMapCompletable { Completable.complete() }
+    }
+
 
     override fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity {
 

@@ -14,8 +14,8 @@ class CourierLocalRepositoryImpl(
     private val courierLoadingBoxDao: CourierBoxDao
 ) : CourierLocalRepository {
 
-    override fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
-        return courierWarehouseDao.insert(courierWarehouseEntity)
+    override suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)  {
+          courierWarehouseDao.insert(courierWarehouseEntity)
     }
 
     override fun readCurrentWarehouse(): CourierWarehouseLocalEntity  {
@@ -52,7 +52,7 @@ class CourierLocalRepositoryImpl(
         return courierOrderDao.orderAndOffices(rowOrder)
     }
 
-    override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
+    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
         return courierOrderDao.observeOrderData()
     }
 
@@ -78,10 +78,10 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.deleteOrder()
     }
 
-    override fun saveRemoteOrder(
+    override suspend fun saveRemoteOrder(
         order: LocalComplexOrderEntity,
         boxes: List<LocalBoxEntity>
-    ): Completable {
+    )  {
         assert(order.order.status != "") { "Absent status" }
         val bg = boxes.groupingBy { it.officeId }.fold(Pair(0, 0)) { t, o ->
             Pair(t.first + 1, t.second + if (o.deliveredAt.isNotEmpty()) 1 else 0)
@@ -101,7 +101,6 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.addOrder(order.order)
         courierOrderDao.addOffices(offices)
         courierLoadingBoxDao.addBoxes(boxes)
-        return Completable.complete()
     }
 
     override fun setOrderOrderStart(scanTime: String) {
@@ -132,7 +131,7 @@ class CourierLocalRepositoryImpl(
         return courierLoadingBoxDao.readAllBoxesSync()
     }
 
-    override fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>> {
+    override suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity> {
         return courierLoadingBoxDao.loadingBoxBoxesGroupByOffice()
     }
 
@@ -172,7 +171,7 @@ class CourierLocalRepositoryImpl(
         courierLoadingBoxDao.takeBoxBack(box)
     }
 
-    override fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>> {
+    override suspend fun getBoxesLiveData():  List<LocalBoxEntity> {
         return courierLoadingBoxDao.getBoxesLive()
     }
 
@@ -180,7 +179,7 @@ class CourierLocalRepositoryImpl(
         return courierLoadingBoxDao.getBoxes()
     }
 
-    override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
+    override suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity> {
         return courierLoadingBoxDao.getRemainBoxes(officeId)
     }
 

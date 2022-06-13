@@ -22,18 +22,28 @@ class CourierMapInteractorImpl(
     init {
         startVisibilityManagerTimer1()
     }
+    override suspend fun subscribeMapState(): CourierMapState {
+        val it = courierMapRepository.observeMapState() // слушает все события с картой
+         when (it) {
+            CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
+            is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
+            else -> {}
+        }
+        return it
 
-    override fun subscribeMapState(): Observable<CourierMapState> { // слушает все события с картой
-        return courierMapRepository
-            .observeMapState()
-            .doOnNext {
-                when (it) {
-                    CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
-                    is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
-                    else -> {}
-                }
-            }
     }
+
+//    override fun subscribeMapState(): Observable<CourierMapState> { // слушает все события с картой
+//        return courierMapRepository
+//            .observeMapState()
+//            .doOnNext {
+//                when (it) {
+//                    CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
+//                    is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
+//                    else -> {}
+//                }
+//            }
+//    }
 
     override fun markerClick(point: MapPoint) {
         courierMapRepository.mapAction(CourierMapAction.ItemClick(point))

@@ -16,11 +16,11 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun observeScanProcess( ):  CourierLoadingProcessData
 
-    fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
+    suspend fun scanLoaderProgress(): CourierLoadingProgressData
 
     fun scannerAction(scannerAction: ScannerState)
 
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+    suspend fun observeOrderData(): CourierOrderLocalDataEntity
 
     suspend fun deleteTask()
 
@@ -28,6 +28,6 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun getGate():  String
 
-    fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals>
+    suspend fun loadingBoxBoxesGroupByOffice():LoadingBoxGoals
 
 }

@@ -98,9 +98,10 @@ class CourierIntransitInteractorImpl(
         return getOrder().orderId.toString()
     }
 
-    override fun observeMapAction(): Observable<CourierMapAction> {
-        return courierMapRepository.observeMapAction()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeMapAction(): CourierMapAction {
+        return withContext(Dispatchers.IO){
+            courierMapRepository.observeMapAction()
+        }
     }
 
     override fun mapState(state: CourierMapState) {

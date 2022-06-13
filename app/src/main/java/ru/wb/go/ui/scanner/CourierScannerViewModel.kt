@@ -43,10 +43,17 @@ class CourierScannerViewModel(
         _flashState.postValue( settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false))
     }
 
+//    private fun observeHoldSplash() {
+//        addSubscription(interactor.observeHoldSplash().subscribe({
+//            _scannerAction.postValue( ScannerState.StopScanWithHoldSplash)
+//        }, {}))
+//    }
+
     private fun observeHoldSplash() {
-        addSubscription(interactor.observeHoldSplash().subscribe({
+        viewModelScope.launch {
+            interactor.observeHoldSplash()
             _scannerAction.postValue( ScannerState.StopScanWithHoldSplash)
-        }, {}))
+        }
     }
 
     fun onBarcodeScanned(barcode: String) {

@@ -2,7 +2,9 @@ package ru.wb.go.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.app.AppViewModel
@@ -44,10 +46,9 @@ class SettingsViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.postValue( it )}, {})
-        )
+        viewModelScope.launch {
+            _toolbarNetworkState.postValue( interactor.observeNetworkConnected() )
+        }
     }
 
     fun settingClick(setting: String, state: Boolean) {

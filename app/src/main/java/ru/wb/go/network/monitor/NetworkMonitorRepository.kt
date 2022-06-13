@@ -4,6 +4,6 @@ import io.reactivex.Observable
 
 interface NetworkMonitorRepository {
 
-    fun networkConnected(): Observable<NetworkState>
+    fun networkConnected():  NetworkState
 
 }

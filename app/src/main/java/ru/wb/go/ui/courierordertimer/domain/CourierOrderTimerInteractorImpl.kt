@@ -52,9 +52,10 @@ class CourierOrderTimerInteractorImpl(
         taskTimerRepository.stopTimer()
     }
 
-    override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
-        return locRepo.observeOrderData()
-            .compose(rxSchedulerFactory.applyFlowableSchedulers())
+    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
+        return withContext(Dispatchers.IO){
+            locRepo.observeOrderData()
+        }
     }
 
     override suspend fun timerEntity(): CourierTimerEntity {

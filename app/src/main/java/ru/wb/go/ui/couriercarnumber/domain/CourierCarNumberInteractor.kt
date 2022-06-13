@@ -4,7 +4,7 @@ import io.reactivex.Completable
 
 interface CourierCarNumberInteractor {
 
-    fun putCarTypeAndNumber(carType: Int, carNumber: String): Completable
+    fun putCarTypeAndNumber(carType: Int, carNumber: String)
 
     fun getCarNumber(): String
 

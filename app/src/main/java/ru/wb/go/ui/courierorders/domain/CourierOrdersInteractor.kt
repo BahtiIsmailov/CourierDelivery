@@ -22,7 +22,7 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun mapState(state: CourierMapState)
 
-    fun observeMapAction(): Observable<CourierMapAction>
+    suspend fun observeMapAction(): CourierMapAction
 
     fun carNumberIsConfirm(): Boolean
 

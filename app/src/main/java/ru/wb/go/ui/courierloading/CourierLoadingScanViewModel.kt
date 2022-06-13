@@ -275,35 +275,60 @@ class CourierLoadingScanViewModel(
             stop.subscribe()
         )
     }
-
     fun onCounterBoxClicked() {
         stopScanner()
-        addSubscription(
-            interactor.loadingBoxBoxesGroupByOffice()
-                .map { loadingBoxes ->
-                    val items = mutableListOf<CourierLoadingDetailsItem>()
-                    loadingBoxes.localLoadingBoxEntity.forEach {
-                        items.add(
-                            CourierLoadingDetailsItem(
-                                it.address,
-                                resourceProvider.getAccepted(it.count)
-                            )
+        viewModelScope.launch {
+            try {
+                val loadingBoxes = interactor.loadingBoxBoxesGroupByOffice()
+                val items = mutableListOf<CourierLoadingDetailsItem>()
+                loadingBoxes.localLoadingBoxEntity.forEach {
+                    items.add(
+                        CourierLoadingDetailsItem(
+                            it.address,
+                            resourceProvider.getAccepted(it.count)
                         )
-                    }
-                    CourierLoadingScanNavAction.InitAndShowLoadingItems(
-                        resourceProvider.getPvzCountTitle(loadingBoxes.pvzCount),
-                        resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
-                        items
                     )
-                }.subscribe(
-                    {
-                        _navigationEvent.postValue( it)
-                    }, {
+                }
+                _navigationEvent.postValue(CourierLoadingScanNavAction.InitAndShowLoadingItems(
+                    resourceProvider.getPvzCountTitle(loadingBoxes.pvzCount),
+                    resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
+                    items
+                ))
+            }catch (e:Exception){
 
-                    }
-                )
-        )
+            }
+        }
+
     }
+
+//    fun onCounterBoxClicked() {
+//        stopScanner()
+//        addSubscription(
+//            interactor.loadingBoxBoxesGroupByOffice()
+//                .map { loadingBoxes ->
+//                    val items = mutableListOf<CourierLoadingDetailsItem>()
+//                    loadingBoxes.localLoadingBoxEntity.forEach {
+//                        items.add(
+//                            CourierLoadingDetailsItem(
+//                                it.address,
+//                                resourceProvider.getAccepted(it.count)
+//                            )
+//                        )
+//                    }
+//                    CourierLoadingScanNavAction.InitAndShowLoadingItems(
+//                        resourceProvider.getPvzCountTitle(loadingBoxes.pvzCount),
+//                        resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
+//                        items
+//                    )
+//                }.subscribe(
+//                    {
+//                        _navigationEvent.postValue( it)
+//                    }, {
+//
+//                    }
+//                )
+//        )
+//    }
 
     fun onCloseDetailsClick() {
         onStartScanner()

@@ -12,7 +12,7 @@ interface CourierLocalRepository {
     //==============================================================================================
     //warehouse
     //==============================================================================================
-    fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
+    suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
     fun readCurrentWarehouse():  CourierWarehouseLocalEntity
 
@@ -28,7 +28,7 @@ interface CourierLocalRepository {
 
     suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
 
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+    suspend fun observeOrderData(): CourierOrderLocalDataEntity
 
     fun deleteAllOrder()
 
@@ -44,7 +44,7 @@ interface CourierLocalRepository {
 
     fun deleteOrder()
 
-    fun saveRemoteOrder(order: LocalComplexOrderEntity, boxes: List<LocalBoxEntity>): Completable
+    suspend fun saveRemoteOrder(order: LocalComplexOrderEntity, boxes: List<LocalBoxEntity>)
 
     fun setOrderOrderStart(scanTime: String)
 
@@ -57,7 +57,7 @@ interface CourierLocalRepository {
     fun getOffices(): List<LocalOfficeEntity>
     suspend fun getOfficesFlowable():  List<LocalOfficeEntity>
     fun getBoxes(): List<LocalBoxEntity>
-    fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>>
+    suspend fun getBoxesLiveData():  List<LocalBoxEntity>
 
     fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
 
@@ -73,10 +73,10 @@ interface CourierLocalRepository {
 
     suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity>
 
-    fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
+    suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 
     fun clearOrder()
 
-    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+    suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 
 }

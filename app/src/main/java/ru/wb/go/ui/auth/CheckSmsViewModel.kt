@@ -62,9 +62,10 @@ class CheckSmsViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.postValue(it) }, {})
-        )
+        viewModelScope.launch {
+            _toolbarNetworkState.postValue(interactor.observeNetworkConnected())
+        }
+
     }
 
     private fun fetchTitle() {
@@ -73,6 +74,17 @@ class CheckSmsViewModel(
         )
     }
 
+//    private fun subscribeTimer() {
+//        viewModelScope.launch {
+//            try {
+//                onHandleSignUpTimerState(interactor.timer)
+//            }catch (e:Exception){
+//                onHandleSignUpTimerError(e)
+//            }
+//
+//        }
+//
+//    }
     private fun subscribeTimer() {
         addSubscription(
             interactor.timer.subscribe(

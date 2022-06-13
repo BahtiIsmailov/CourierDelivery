@@ -1,7 +1,5 @@
 package ru.wb.go.ui.courierunloading.domain
 
-import io.reactivex.*
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
@@ -32,7 +30,8 @@ class CourierUnloadingInteractorImpl(
     companion object {
         const val EMPTY_ADDRESS = ""
     }
-    override suspend fun observeScanProcess(officeId: Int):  CourierUnloadingProcessData {
+
+    override suspend fun observeScanProcess(officeId: Int): CourierUnloadingProcessData {
         var result: CourierUnloadingScanBoxData? = null
         return withContext(Dispatchers.IO) {
             val response = scannerRepo.observeScannerAction()
@@ -78,7 +77,6 @@ class CourierUnloadingInteractorImpl(
             CourierUnloadingProcessData(result!!, res.deliveredBoxes, res.countBoxes)
         }
     }
-
 
 
 //    override fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData> {
@@ -132,30 +130,36 @@ class CourierUnloadingInteractorImpl(
 //            }
 //    }
 
-    private val scanLoaderProgressSubject = PublishSubject.create<CourierUnloadingProgressData>()
+    lateinit var scanLoaderProgressSubject: CourierUnloadingProgressData //= PublishSubject.create<CourierUnloadingProgressData>()
 
-    override suspend fun getCurrentOffice(officeId: Int):  LocalOfficeEntity  {
-        return withContext(Dispatchers.IO){
+    override suspend fun getCurrentOffice(officeId: Int): LocalOfficeEntity {
+        return withContext(Dispatchers.IO) {
             localRepo.findOfficeById(officeId)
         }
     }
 
-    override fun scanLoaderProgress(): Observable<CourierUnloadingProgressData> {
+    override suspend fun scanLoaderProgress(): CourierUnloadingProgressData {
         return scanLoaderProgressSubject
     }
 
-    override fun removeScannedBoxes(checkedBoxes: List<String>): Completable {
-        return Completable.complete()
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    //    override suspend fun removeScannedBoxes(checkedBoxes: List<String>)  {
+//        return Completable.complete()
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+//    }
+    override suspend fun removeScannedBoxes(checkedBoxes: List<String>) {
+        return withContext(Dispatchers.IO) {
+
+        }
     }
 
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
     }
 
-    override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
-        return localRepo.observeOrderData()
-            .compose(rxSchedulerFactory.applyFlowableSchedulers())
+    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
+        return withContext(Dispatchers.IO) {
+            localRepo.observeOrderData()
+        }
     }
 
     override suspend fun completeOfficeUnload() {
@@ -167,7 +171,7 @@ class CourierUnloadingInteractorImpl(
         }
     }
 
-    override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
+    override suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity> {
         return localRepo.getRemainBoxes(officeId)
     }
 

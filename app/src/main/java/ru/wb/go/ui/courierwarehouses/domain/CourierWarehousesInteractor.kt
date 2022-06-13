@@ -12,11 +12,11 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     suspend fun getWarehouses():  List<CourierWarehouseLocalEntity>
 
-    fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
+    suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
-    fun loadProgress(): Completable
+    suspend fun loadProgress()
 
-    fun observeMapAction(): Observable<CourierMapAction>
+    suspend fun observeMapAction(): CourierMapAction
 
     fun mapState(state: CourierMapState)
 

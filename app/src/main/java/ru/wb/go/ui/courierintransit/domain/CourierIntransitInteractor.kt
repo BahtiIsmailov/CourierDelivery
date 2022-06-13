@@ -21,7 +21,7 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     fun clearLocalTaskData()
 
-    fun observeMapAction(): Observable<CourierMapAction>
+    suspend fun observeMapAction():  CourierMapAction
 
     fun mapState(state: CourierMapState)
 

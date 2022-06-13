@@ -13,17 +13,17 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
 
     suspend fun observeScanProcess(officeId: Int):  CourierUnloadingProcessData
 
-    fun removeScannedBoxes(checkedBoxes: List<String>): Completable
+    suspend fun removeScannedBoxes(checkedBoxes: List<String>)
 
-    fun scanLoaderProgress(): Observable<CourierUnloadingProgressData>
+    suspend fun scanLoaderProgress(): CourierUnloadingProgressData
 
     fun scannerAction(scannerAction: ScannerState)
 
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+    suspend fun observeOrderData():  CourierOrderLocalDataEntity
 
     suspend fun completeOfficeUnload()
 
-    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+    suspend fun getRemainBoxes(officeId: Int):  List<LocalBoxEntity>
 
     suspend fun getOrderId(): String
 }

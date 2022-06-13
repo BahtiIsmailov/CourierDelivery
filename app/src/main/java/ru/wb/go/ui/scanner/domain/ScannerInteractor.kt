@@ -5,7 +5,7 @@ import io.reactivex.functions.Action
 
 interface ScannerInteractor {
 
-    fun observeHoldSplash(): Observable<Action>
+    suspend fun observeHoldSplash():  Action
 
     fun barcodeScanned(barcode: String)
 

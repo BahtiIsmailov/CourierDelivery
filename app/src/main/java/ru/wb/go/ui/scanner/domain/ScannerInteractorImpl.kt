@@ -4,8 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.subjects.PublishSubject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.utils.managers.SettingsManager
@@ -18,8 +17,10 @@ class ScannerInteractorImpl(
     private val settingsManager: SettingsManager,
 ) : ScannerInteractor {
 
-    private val holdSplashSubject = PublishSubject.create<Action>()
-    private val prolongHoldSubject = PublishSubject.create<Action>()
+//    private val holdSplashSubject = PublishSubject.create<Action>()
+//    private val prolongHoldSubject = PublishSubject.create<Action>()
+    lateinit var holdSplashSubject:Action
+    lateinit var prolongHoldSubject:Action
     private var holdSplashDisposable: Disposable? = null
 
     companion object{
@@ -45,7 +46,7 @@ class ScannerInteractorImpl(
 
     override fun prolongHoldTimer() {
         startTimer()
-        prolongHoldSubject.onNext(Action { })
+        prolongHoldSubject = Action { }
     }
 
     override suspend fun observeScannerState(): ScannerState  {
@@ -55,7 +56,7 @@ class ScannerInteractorImpl(
         }
     }
 
-    private fun workWithScan(it:ScannerState){
+    private suspend fun workWithScan(it:ScannerState){
         if (it is ScannerState.StartScan) {
             startTimer()
         }
@@ -74,14 +75,25 @@ class ScannerInteractorImpl(
             return
         }
         if (holdSplashDisposable == null) {
-            holdSplashDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
-                .repeatWhen { repeatHandler -> repeatHandler.flatMap { prolongHoldSubject } }
-                .subscribe({
-                    scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
-                    holdSplashSubject.onNext(Action { })
-                }, {})
+            Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
+            scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
+            holdSplashSubject = Action { }
+
         }
     }
+//    private fun startTimer() {
+//        if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
+//            return
+//        }
+//        if (holdSplashDisposable == null) {
+//            holdSplashDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
+//                 repeatHandler -> repeatHandler.flatMap { prolongHoldSubject }
+//                .subscribe({
+//                    scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
+//                    holdSplashSubject.onNext(Action { })
+//                }, {})
+//        }
+//    }
 
     private fun stopTimer() {
         if (holdSplashDisposable != null) {
@@ -90,8 +102,10 @@ class ScannerInteractorImpl(
         }
     }
 
-    override fun observeHoldSplash(): Observable<Action> {
-        return holdSplashSubject.compose(rxSchedulerFactory.applyObservableSchedulers())
+    override suspend fun observeHoldSplash(): Action {
+        return withContext(Dispatchers.IO){
+            holdSplashSubject
+        }
     }
 
 

@@ -163,13 +163,22 @@ class CourierOrdersViewModel(
     }
 
     private fun observeMapAction() {
-        addSubscription(
-            interactor.observeMapAction()
-                .subscribe(
-                    { observeMapActionComplete(it) },
-                    { observeMapActionError(it) }
-                ))
+        viewModelScope.launch {
+            try {
+                observeMapActionComplete(interactor.observeMapAction())
+            }catch (e:Exception){
+                observeMapActionError(e)
+            }
+        }
     }
+//    private fun observeMapAction() {
+//        addSubscription(
+//            interactor.observeMapAction()
+//                .subscribe(
+//                    { observeMapActionComplete(it) },
+//                    { observeMapActionError(it) }
+//                ))
+//    }
 
     fun onShowOrderDetailsClick() {
         _navigationState.postValue(

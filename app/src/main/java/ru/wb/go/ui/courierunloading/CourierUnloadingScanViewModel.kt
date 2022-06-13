@@ -322,30 +322,55 @@ class CourierUnloadingScanViewModel(
             }
         }
     }
-
     private fun observeScanProgress() {
-        addSubscription(
-            interactor.scanLoaderProgress()
-                .subscribe({
-                    _completeButtonEnable.postValue( when (it) {
-                        CourierUnloadingProgressData.Complete -> true
-                        CourierUnloadingProgressData.Progress -> false
-                    })
-                },
-                    { onTechErrorLog("observeScanProcessError", it) })
-        )
+        viewModelScope.launch {
+            try {
+                _completeButtonEnable.postValue( when (interactor.scanLoaderProgress()) {
+                    CourierUnloadingProgressData.Complete -> true
+                    CourierUnloadingProgressData.Progress -> false
+                })
+            }catch (e:Exception){
+                onTechErrorLog("observeScanProcessError", e)
+            }
+        }
     }
+
+//    private fun observeScanProgress() {
+//        addSubscription(
+//            interactor.scanLoaderProgress()
+//                .subscribe({
+//                    _completeButtonEnable.postValue( when (it) {
+//                        CourierUnloadingProgressData.Complete -> true
+//                        CourierUnloadingProgressData.Progress -> false
+//                    })
+//                },
+//                    { onTechErrorLog("observeScanProcessError", it) })
+//        )
+//    }
 
     fun onListClicked() {
         onStopScanner()
-        addSubscription(
-            interactor.getRemainBoxes(parameters.officeId)
-                .filter { it.isNotEmpty() }
-                .subscribe(
-                    { fillRemainBoxList(it) },
-                    { })
-        )
+        viewModelScope.launch {
+            try {
+                val it = interactor.getRemainBoxes(parameters.officeId)
+                if (it.isNotEmpty()) {
+                    fillRemainBoxList(it)
+                }
+            }catch (e:Exception){
+
+            }
+        }
     }
+//    fun onListClicked() {
+//        onStopScanner()
+//        addSubscription(
+//            interactor.getRemainBoxes(parameters.officeId)
+//                .filter { it.isNotEmpty() }
+//                .subscribe(
+//                    { fillRemainBoxList(it) },
+//                    { })
+//        )
+//    }
 
     private fun fillRemainBoxList(boxes: List<LocalBoxEntity>) {
         val boxItems = boxes.mapIndexed(transformToRemainBoxItem).toMutableList()

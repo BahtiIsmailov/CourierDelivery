@@ -5,7 +5,7 @@ import ru.wb.go.network.monitor.NetworkState
 
 interface BaseServiceInteractor {
 
-    fun observeNetworkConnected(): Observable<NetworkState>
+    suspend fun observeNetworkConnected():  NetworkState
 
     fun versionApp(): String
 

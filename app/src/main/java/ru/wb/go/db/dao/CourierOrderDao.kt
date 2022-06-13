@@ -25,7 +25,7 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+    suspend fun observeOrderData(): CourierOrderLocalDataEntity
 
     @Query("DELETE FROM CourierOrderLocalEntity")
     fun deleteAllOrder()

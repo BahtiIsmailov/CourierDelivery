@@ -204,10 +204,9 @@ class UserFormViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.postValue(it) }, {})
-        )
+        viewModelScope.launch {
+            _toolbarNetworkState.postValue(interactor.observeNetworkConnected())
+        }
     }
 
     fun onShowAgreementClick() {
