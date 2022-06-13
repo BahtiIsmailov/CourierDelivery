@@ -267,7 +267,7 @@ class CourierLoaderViewModel(
                 val courierDataParameters = CourierDataParameters(phone = phone, docs = response)
                 val responseState =
                     CourierLoaderNavigationState.NavigateToCourierDataType(courierDataParameters)
-                _navigationDrawerState.postValue( responseState)
+                _navigationDrawerState.postValue(responseState)
 
             } catch (e: Exception) {
                 onTechErrorLog("getUserDocs", e)
@@ -303,7 +303,8 @@ class CourierLoaderViewModel(
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
 
     private fun toAppUpdate() {
-        _navigationDrawerState.postValue( CourierLoaderNavigationState.NavigateToAppUpdate)
+        _navigationDrawerState.postValue(CourierLoaderNavigationState.NavigateToCourierWarehouse)
+    //TODO(тут было на обновление состояние APPUPDATE)
     }
 
     private fun checkNewInstallation() {

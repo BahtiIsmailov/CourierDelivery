@@ -163,7 +163,7 @@ class CourierLoadingScanViewModel(
     private fun observeScanProcess() {
         viewModelScope.launch {
             try {
-                val response = interactor.observeScanProcess()
+                val response = interactor.observeScanProcess()//1
                 observeScanProcessComplete(response)
             }catch (e:Exception){
                 delay(1000)

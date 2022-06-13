@@ -83,7 +83,7 @@ class CourierLoadingInteractorImpl(
     override suspend fun observeScanProcess(): CourierLoadingProcessData {
         var courierLoadingProgressData:CourierLoadingProcessData? = null
         withContext(Dispatchers.IO) {
-            val response = scanRepo.observeScannerAction()// 1
+            val response = scanRepo.observeScannerAction()// 2
             if (response is ScannerAction.ScanResult) {
                 val boxes = localRepo.getBoxes()
                 val scanTime = timeManager.getLocalTime()
