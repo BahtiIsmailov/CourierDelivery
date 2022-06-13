@@ -15,16 +15,21 @@ import java.util.concurrent.TimeUnit
 
 class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerRepository {
 
-    private var scannerActionSubject = PublishSubject.create<ScannerAction>()
+    //private var scannerActionSubject = PublishSubject.create<ScannerAction>()
     private val scannerStateSubject = PublishSubject.create<ScannerState>()
-
+     var scannerActionSubject: ScannerAction ? = null
 
      override fun scannerAction(action:ScannerAction)  {
-        return scannerActionSubject.onNext(action)
+         scannerActionSubject =  action
+        //return scannerActionSubject.onNext(action)
     }
 
     override fun observeScannerAction(): ScannerAction {
-        error("zzz")
+        return if (scannerActionSubject == null){
+
+        }else{
+            scannerActionSubject!!
+        }
     }
 
     override fun scannerState(state: ScannerState) {
