@@ -24,7 +24,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
     }
 
     override fun observeScannerAction(): ScannerAction {
-        return scannerActionSubject
+        error("zzz")
     }
 
     override fun scannerState(state: ScannerState) {

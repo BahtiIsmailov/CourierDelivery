@@ -240,7 +240,7 @@ class CourierUnloadingScanViewModel(
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
         when (scanBoxData) {
             is CourierUnloadingScanBoxData.ScannerReady -> {
-                _fragmentStateUI.postValue( with(scanBoxData) {
+                _fragmentStateUI.postValue(with(scanBoxData) {
                     UnloadingFragmentState.ScannerReady(
                         UnloadingFragmentData(
                             resourceProvider.getReadyStatus(),
@@ -252,7 +252,7 @@ class CourierUnloadingScanViewModel(
                 })
             }
             is CourierUnloadingScanBoxData.BoxAdded -> {
-                _fragmentStateUI.postValue( with(scanBoxData) {
+                _fragmentStateUI.postValue(with(scanBoxData) {
                     UnloadingFragmentState.BoxAdded(
                         UnloadingFragmentData(
                             resourceProvider.getReadyAddedBox(),
@@ -262,12 +262,11 @@ class CourierUnloadingScanViewModel(
                         )
                     )
                 })
-                _beepEvent.postValue( CourierUnloadingScanBeepState.BoxAdded)
-                _completeButtonEnable.postValue( true)
+                _beepEvent.postValue(CourierUnloadingScanBeepState.BoxAdded)
+                _completeButtonEnable.postValue(true)
             }
             CourierUnloadingScanBoxData.UnknownQr -> {
-
-                _fragmentStateUI.postValue( UnloadingFragmentState.UnknownQr(
+                _fragmentStateUI.postValue(UnloadingFragmentState.UnknownQr(
                     UnloadingFragmentData(
                         resourceProvider.getScanDialogTitle(),
                         resourceProvider.getUnknownQr(),
