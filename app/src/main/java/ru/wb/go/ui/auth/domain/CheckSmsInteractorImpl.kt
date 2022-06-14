@@ -26,12 +26,11 @@ class CheckSmsInteractorImpl(
     private val timerStates = MutableSharedFlow<TimerState>()
 
 
-
     private var durationTime = 0
     override suspend fun startTimer(durationTime: Int) {
         this.durationTime = durationTime
         coroutineScope {
-             Observable.interval(PERIOD, TimeUnit.MILLISECONDS).subscribe{
+            Observable.interval(PERIOD, TimeUnit.MILLISECONDS).subscribe {
                 onTimeConfirmCode(it)
             }
         }
@@ -57,25 +56,25 @@ class CheckSmsInteractorImpl(
         get() = timerStates
 
     override suspend fun stopTimer() {
-          coroutineScope {
+        coroutineScope {
 
-          }
+        }
     }
 
-    override suspend fun observeNetworkConnected():  NetworkState {
-        return withContext(Dispatchers.IO){
+    override suspend fun observeNetworkConnected(): NetworkState {
+        return withContext(Dispatchers.IO) {
             networkMonitorRepository.networkConnected()
         }
     }
 
-    override suspend fun auth(phone: String, password: String)  {
+    override suspend fun auth(phone: String, password: String) {
         withContext(Dispatchers.IO) {
             authRepository.auth(phone, password, true)
         }
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String) {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             authRepository.couriersExistAndSavePhone(phone)
         }
     }
@@ -85,8 +84,6 @@ class CheckSmsInteractorImpl(
         private const val LENGTH_PASSWORD_MIN = 4
     }
 }
-
-
 
 
 /*

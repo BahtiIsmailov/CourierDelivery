@@ -1,10 +1,9 @@
 package ru.wb.go.db
 
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
@@ -12,29 +11,43 @@ import java.util.concurrent.TimeUnit
 
 class TaskTimerRepositoryImpl : TaskTimerRepository {
 
-    private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
-    private var timerDisposable: Disposable? = null
+    //private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+    private val timerStates = MutableSharedFlow<TimerState>()
+    //private var timerDisposable: Disposable? = null
     private var durationTime = 0
     private var arrivalTime = 0
 
-    override fun startTimer(durationTime: Int, arrivalTime: Int) {
+    override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {
         this.durationTime = durationTime
         this.arrivalTime = arrivalTime
-        if (timerDisposable == null) {
-            timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                .subscribe({ onTimeConfirmCode(it) }) { }
+        coroutineScope {
+            Observable.interval(1000L, TimeUnit.MILLISECONDS)
+            onTimeConfirmCode(it)
             publishCallState(TimerStateImpl(durationTime, arrivalTime))
         }
     }
+//    override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {
+//        this.durationTime = durationTime
+//        this.arrivalTime = arrivalTime
+//        if (timerDisposable == null) {
+//            timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
+//                .subscribe({ onTimeConfirmCode(it) }) { }
+//            publishCallState(TimerStateImpl(durationTime, arrivalTime))
+//        }
+//    }
 
-    override val timer: Flowable<TimerState>
-        get() = timerStates.toFlowable(BackpressureStrategy.BUFFER)
+//    override val timer: Flow<TimerState>
+//        get() = timerStates.toFlowable(BackpressureStrategy.BUFFER)
 
-    override fun stopTimer() {
+    override val timer: Flow<TimerState>
+        get() = timerStates
+
+
+    override suspend fun stopTimer() {
         timeConfirmCodeDisposable()
     }
 
-    private fun onTimeConfirmCode(tick: Long) {
+    private suspend fun onTimeConfirmCode(tick: Long) {
         if (tick >= arrivalTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
@@ -44,18 +57,18 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         }
     }
 
-    private fun publishCallState(timerState: TimerState) {
-        timerStates.onNext(timerState)
+    private suspend fun publishCallState(timerState: TimerState) {
+        timerStates.emit(timerState)
     }
 
-    private fun timeConfirmCodeDisposable() {
+    private suspend fun timeConfirmCodeDisposable() {
         durationTime = 0
         arrivalTime = 0
         publishCallState(TimerStateImpl(durationTime, 0))
-        if (timerDisposable != null) {
-            timerDisposable!!.dispose()
-            timerDisposable = null
-        }
+//        if (timerDisposable != null) {
+//            timerDisposable!!.dispose()
+//            timerDisposable = null
+//        }
     }
 
 

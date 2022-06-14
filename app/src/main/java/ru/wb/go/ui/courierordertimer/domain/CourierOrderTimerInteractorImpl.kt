@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierordertimer.domain
 
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.go.db.CourierLocalRepository
@@ -45,7 +46,7 @@ class CourierOrderTimerInteractorImpl(
         return taskTimerRepository.startTimer(durationSec.toInt(), arrivalSec.toInt())
     }
 
-    override val timer: Flowable<TimerState>
+    override val timer: Flow<TimerState>
         get() = taskTimerRepository.timer.compose(rxSchedulerFactory.applyFlowableSchedulers())
 
     override fun stopTimer() {
