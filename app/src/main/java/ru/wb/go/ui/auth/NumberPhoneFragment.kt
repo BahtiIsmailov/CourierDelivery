@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asFlow
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
@@ -72,9 +73,9 @@ class NumberPhoneFragment : Fragment() {
     private fun initListeners() {
         with(binding) {
             next.setOnClickListener { viewModel.onCheckPhone(phoneNumberTitle.text.toString()) }
-            viewKeyboard.observableListener.observe(viewLifecycleOwner){
-                viewModel.onNumberObservableClicked(it) // отображение номера телефона
-            }
+
+            viewModel.onNumberObservableClicked(viewKeyboard.observableListener.asFlow()) // отображение номера телефона
+
 
         }
     }

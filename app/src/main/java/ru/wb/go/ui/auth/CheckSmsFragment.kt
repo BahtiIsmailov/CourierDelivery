@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asFlow
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import kotlinx.parcelize.Parcelize
@@ -59,7 +60,8 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             findNavController().popBackStack()
         }
 
-        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.value!!)
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.asFlow())
+
         binding.repeatSms.setOnClickListener { viewModel.onRepeatPassword() }
     }
 

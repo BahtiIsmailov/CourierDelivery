@@ -207,7 +207,6 @@ class CourierWarehousesViewModel(
                 zoomMarkersFromBoundingBox(location)
             }
         }
-
     }
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {

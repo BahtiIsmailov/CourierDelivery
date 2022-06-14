@@ -3,8 +3,8 @@ package ru.wb.go.ui.auth
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
@@ -74,7 +74,7 @@ class CheckSmsViewModel(
         )
     }
 
-//    private fun subscribeTimer() {
+    //    private fun subscribeTimer() {
 //        viewModelScope.launch {
 //            try {
 //                onHandleSignUpTimerState(interactor.timer)
@@ -114,15 +114,21 @@ class CheckSmsViewModel(
 //        )
 //    }
 
-    fun onNumberObservableClicked(event: KeyboardNumericView.ButtonAction) {
+    fun onNumberObservableClicked(event: Flow<KeyboardNumericView.ButtonAction>) {
         viewModelScope.launch {
-            try {
-                val it = accumulateCode(event.name, event)
-                switchNext(it)
-                formatSmsComplete(it)
-            }catch (e:Exception){
-                formatSmsError(e)
+            event.scan("") { accumulator, item ->
+                accumulateCode(accumulator, item)
             }
+                .onEach {
+                    switchNext(it)
+                }
+                .onEach {
+                    formatSmsComplete(it)
+                }
+                .catch {
+                    formatSmsError(it)
+                }
+                .collect()
         }
     }
 
@@ -148,7 +154,8 @@ class CheckSmsViewModel(
 
     private fun switchNext(code: String) {
         _stateKeyboardBackspaceUI.postValue(
-            if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active)
+            if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active
+        )
     }
 
     private fun onHandleSignUpTimerState(timerState: TimerState) {
@@ -165,7 +172,7 @@ class CheckSmsViewModel(
             try {
                 interactor.couriersExistAndSavePhone(formatPhone())
                 fetchingPasswordComplete()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 fetchingPasswordError(e)
             }
 
@@ -194,7 +201,8 @@ class CheckSmsViewModel(
                     resourceProvider.getGenericInternetTitleError(),
                     resourceProvider.getGenericInternetMessageError(),
                     resourceProvider.getGenericInternetButtonError()
-                ))
+                )
+            )
             is BadRequestException -> {
                 with(throwable.error) {
                     restartTimer(
@@ -211,7 +219,8 @@ class CheckSmsViewModel(
                     resourceProvider.getGenericServiceTitleError(),
                     throwable.toString(),
                     resourceProvider.getGenericServiceButtonError()
-                ))
+                )
+            )
         }
     }
 
@@ -226,7 +235,7 @@ class CheckSmsViewModel(
             try {
                 interactor.auth(phone, password)
                 authComplete()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 authError(e)
             }
         }
@@ -284,10 +293,12 @@ class CheckSmsViewModel(
     override fun onTimerState(duration: Int, downTickSec: Int) {
         val time: String =
             resourceProvider.getSignUpTimeConfirmCode(getMin(downTickSec), getSec(downTickSec))
-        _repeatStateUI.postValue(CheckSmsUIRepeatState.RepeatPasswordTimer(
-            time,
-            resourceProvider.getTitleInputTimerSpan()
-        ))
+        _repeatStateUI.postValue(
+            CheckSmsUIRepeatState.RepeatPasswordTimer(
+                time,
+                resourceProvider.getTitleInputTimerSpan()
+            )
+        )
     }
 
     private fun getMin(duration: Int): Int {
