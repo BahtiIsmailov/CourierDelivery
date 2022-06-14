@@ -66,3 +66,50 @@ class SettingsViewModel(
     object NavigateToWarehouse
 
 }
+
+/*
+  private val _versionApp = MutableLiveData<String>()
+    val versionApp: LiveData<String>
+        get() = _versionApp
+
+    private val _toolbarNetworkState = MutableLiveData<NetworkState>()
+    val toolbarNetworkState: LiveData<NetworkState>
+        get() = _toolbarNetworkState
+
+    init {
+        observeNetworkState()
+        fetchVersionApp()
+    }
+
+    fun getSetting(setting: String, default: Boolean): Boolean {
+        return settingsManager.getSetting(setting, default)
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
+    }
+
+    private fun observeNetworkState() {
+        addSubscription(
+            interactor.observeNetworkConnected()
+                .subscribe({ _toolbarNetworkState.value = it }, {})
+        )
+    }
+
+    fun settingClick(setting: String, state: Boolean) {
+        settingsManager.setSetting(setting, state)
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "Settings"
+    }
+
+    object NavigateToWarehouse
+
+}
+
+ */

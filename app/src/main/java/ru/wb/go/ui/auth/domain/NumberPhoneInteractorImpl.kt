@@ -30,5 +30,22 @@ class NumberPhoneInteractorImpl(
         }
     }
 
+    /*override fun userPhone(): String {
+        return authRepository.userPhone()
+    }
+
+    override suspend fun couriersExistAndSavePhone(phone: String)  {
+        return withContext(Dispatchers.IO){
+            authRepository.couriersExistAndSavePhone(phone)
+        }
+    }
+
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+
+*/
 
 }

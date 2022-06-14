@@ -17,3 +17,11 @@ class SettingsInteractorImpl(
         }
     }
 }
+
+/*
+ override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+ */

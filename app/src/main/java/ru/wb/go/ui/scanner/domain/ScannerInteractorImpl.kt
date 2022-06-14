@@ -86,21 +86,7 @@ class ScannerInteractorImpl(
 
         }
     }
-//    private fun startTimer() {
-//        if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
-//            return
-//        }
-//        if (holdSplashDisposable == null) {
-//            holdSplashDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
-//                 repeatHandler -> repeatHandler.flatMap { prolongHoldSubject }
-//                .subscribe({
-//                    scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
-//                    holdSplashSubject.onNext(Action { })
-//                }, {})
-//        }
-//    }
-
-    private fun stopTimer() {
+     private fun stopTimer() {
         if (holdSplashDisposable != null) {
             holdSplashDisposable!!.dispose()
             holdSplashDisposable = null
@@ -115,3 +101,65 @@ class ScannerInteractorImpl(
 
 
 }
+
+/*
+ init {
+        startTimer()
+    }
+
+    override fun barcodeScanned(barcode: String) {
+        scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
+    }
+
+    override fun holdSplashUnlock() {
+        scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
+    }
+
+    override fun prolongHoldTimer() {
+        startTimer()
+        prolongHoldSubject.onNext(Action { })
+    }
+
+    override fun observeScannerState(): Observable<ScannerState> {
+        return scannerRepository.observeScannerState()
+            .doOnNext {
+                if (it is ScannerState.StartScan) startTimer()
+                else if (it is ScannerState.StopScan ||
+                    it is ScannerState.HoldScanComplete ||
+                    it is ScannerState.HoldScanError ||
+                    it is ScannerState.HoldScanUnknown
+                ) stopTimer()
+            }
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    private fun startTimer() {
+        if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
+            return
+        }
+        if (holdSplashDisposable == null) {
+            holdSplashDisposable = Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
+                .repeatWhen { repeatHandler -> repeatHandler.flatMap { prolongHoldSubject } }
+                .subscribe({
+                    scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
+                    holdSplashSubject.onNext(Action { })
+                }, {})
+        }
+    }
+
+    private fun stopTimer() {
+        if (holdSplashDisposable != null) {
+            holdSplashDisposable!!.dispose()
+            holdSplashDisposable = null
+        }
+    }
+
+    override fun observeHoldSplash(): Observable<Action> {
+        return holdSplashSubject.compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    companion object {
+        const val HOLD_SCANNER_DELAY = 25L
+    }
+
+ */

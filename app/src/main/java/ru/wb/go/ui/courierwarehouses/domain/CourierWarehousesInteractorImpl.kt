@@ -63,3 +63,40 @@ class CourierWarehousesInteractorImpl(
     }
 
 }
+
+/*
+ override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {
+        return appRemoteRepository.courierWarehouses()
+
+    }
+//    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
+//        return appRemoteRepository.courierWarehouses()
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+
+    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
+        courierLocalRepository.deleteAllWarehouse()
+        return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun loadProgress(): Completable {
+        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun observeMapAction(): Observable<CourierMapAction> {
+        return courierMapRepository.observeMapAction()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun mapState(state: CourierMapState) {
+        courierMapRepository.mapState(state)
+    }
+
+    override fun isDemoMode(): Boolean {
+        return tokenManager.isDemo()
+    }
+
+
+ */

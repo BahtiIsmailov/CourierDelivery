@@ -48,18 +48,29 @@ class CourierDataExpectsInteractorImpl(
     }
 }
 
-//override fun isRegisteredStatus(): Single<String> {
-//    return Single.fromCallable {
-//        if (userManager.courierDocumentsEntity() == null) {
-//            val refreshResult = refreshTokenRepository.doRefreshToken()
-//            val resource = tokenManager.resources()
-//            when {
-//                refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN
-//                resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> NEED_SEND_COURIER_DOCUMENTS
-//                resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> NEED_CORRECT_COURIER_DOCUMENTS
-//                resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> NEED_APPROVE_COURIER_DOCUMENTS
-//                else -> ""
-//            }
-//        } else INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
-//    }.compose(rxSchedulerFactory.applySingleSchedulers())
-//}
+ /*
+    override fun saveRepeatCourierDocuments(): Completable {
+        val courierDocumentsEntity = userManager.courierDocumentsEntity()
+        return if (courierDocumentsEntity == null) Completable.complete()
+        else appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
+            .doOnComplete { userManager.clearCourierDocumentsEntity() }
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    override fun isRegisteredStatus(): Single<String> {
+        return Single.fromCallable {
+            if (userManager.courierDocumentsEntity() == null) {
+                val refreshResult = refreshTokenRepository.doRefreshToken()
+                val resource = tokenManager.resources()
+                when {
+                    refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN
+                    resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> NEED_SEND_COURIER_DOCUMENTS
+                    resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> NEED_CORRECT_COURIER_DOCUMENTS
+                    resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> NEED_APPROVE_COURIER_DOCUMENTS
+                    else -> ""
+                }
+            } else INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
+        }.compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+  */

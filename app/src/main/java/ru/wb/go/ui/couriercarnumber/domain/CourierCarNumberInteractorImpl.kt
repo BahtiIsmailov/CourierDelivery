@@ -20,4 +20,20 @@ class CourierCarNumberInteractorImpl(
         return userManager.carType()
     }
 
+    /*
+    override fun putCarTypeAndNumber(carType: Int, carNumber: String): Completable {
+        userManager.saveCarType(carType)
+        userManager.saveCarNumber(carNumber)
+        return Completable.complete()
+    }
+
+    override fun getCarNumber(): String {
+       return userManager.carNumber()
+    }
+
+    override fun getCarType(): Int {
+        return userManager.carType()
+    }
+
+     */
 }

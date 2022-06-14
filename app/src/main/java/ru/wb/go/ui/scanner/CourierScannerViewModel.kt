@@ -46,13 +46,7 @@ class CourierScannerViewModel(
         _flashState.postValue( settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false))
     }
 
-//    private fun observeHoldSplash() {
-//        addSubscription(interactor.observeHoldSplash().subscribe({
-//            _scannerAction.postValue( ScannerState.StopScanWithHoldSplash)
-//        }, {}))
-//    }
-
-    private fun observeHoldSplash() {
+     private fun observeHoldSplash() {
         viewModelScope.launch {
             interactor.observeHoldSplash()
             _scannerAction.postValue( ScannerState.StopScanWithHoldSplash)
@@ -62,7 +56,7 @@ class CourierScannerViewModel(
     fun onBarcodeScanned(barcode: String) {
         viewModelScope.launch {
             interactor.prolongHoldTimer()
-            interactor.barcodeScanned(barcode) ////////////////ScanerAction
+            interactor.barcodeScanned(barcode)
         }
 
     }
@@ -93,3 +87,66 @@ class CourierScannerViewModel(
     }
 
 }
+
+/*
+  private val _scannerAction = SingleLiveEvent<ScannerState>()
+    val scannerAction: LiveData<ScannerState>
+        get() = _scannerAction
+
+    private val _flashState = SingleLiveEvent<Boolean>()
+    val flashState: LiveData<Boolean>
+        get() = _flashState
+
+    fun update() {
+        observeHoldSplash()
+        flashState()
+        observeScannerState()
+    }
+
+    private fun observeScannerState() {
+        addSubscription(
+            interactor.observeScannerState()
+                .subscribe { _scannerAction.value = it }
+        )
+    }
+
+    private fun flashState() {
+        _flashState.value = settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false)
+    }
+
+    private fun observeHoldSplash() {
+        addSubscription(interactor.observeHoldSplash().subscribe({
+            _scannerAction.value = ScannerState.StopScanWithHoldSplash
+        }, {}))
+    }
+
+    fun onBarcodeScanned(barcode: String) {
+        interactor.prolongHoldTimer()
+        interactor.barcodeScanned(barcode)
+    }
+
+    fun onHoldSplashClick() {
+        interactor.prolongHoldTimer()
+        interactor.holdSplashUnlock()
+        _scannerAction.value = ScannerState.StartScan
+    }
+
+    fun onDestroy() {
+        clearSubscription()
+    }
+
+    fun switchFlashlight() {
+        val state = !_flashState.value!!
+        _flashState.postValue(state)
+    }
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+
+    companion object {
+        const val SCREEN_TAG = "Scanner"
+    }
+
+
+ */

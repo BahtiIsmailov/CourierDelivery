@@ -1,18 +1,15 @@
 package ru.wb.go.ui.auth.domain
 
-import com.jakewharton.rxbinding3.InitialValueObservable
-import io.reactivex.*
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
-import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
-import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
-import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
@@ -24,20 +21,85 @@ class CheckSmsInteractorImpl(
     private val authRepository: AuthRemoteRepository,
 ) : CheckSmsInteractor {
 
-    private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+    //private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+
+    private val timerStates = MutableSharedFlow<TimerState>()
+
+
+
+    private var durationTime = 0
+    override suspend fun startTimer(durationTime: Int) {
+        this.durationTime = durationTime
+        coroutineScope {
+             Observable.interval(PERIOD, TimeUnit.MILLISECONDS).subscribe{
+                onTimeConfirmCode(it)
+            }
+        }
+
+    }
+
+    private suspend fun onTimeConfirmCode(tick: Long) {
+        coroutineScope {
+            if (tick > durationTime) {
+                publishCallState(TimerOverStateImpl())
+            } else {
+                val counterTick = durationTime - tick.toInt()
+                publishCallState(TimerStateImpl(durationTime, counterTick))
+            }
+        }
+    }
+
+    private suspend fun publishCallState(timerState: TimerState) {
+        timerStates.emit(timerState)
+    }
+
+    override val timer: Flow<TimerState>
+        get() = timerStates
+
+    override suspend fun stopTimer() {
+          coroutineScope {
+
+          }
+    }
+
+    override suspend fun observeNetworkConnected():  NetworkState {
+        return withContext(Dispatchers.IO){
+            networkMonitorRepository.networkConnected()
+        }
+    }
+
+    override suspend fun auth(phone: String, password: String)  {
+        withContext(Dispatchers.IO) {
+            authRepository.auth(phone, password, true)
+        }
+    }
+
+    override suspend fun couriersExistAndSavePhone(phone: String) {
+        return withContext(Dispatchers.IO){
+            authRepository.couriersExistAndSavePhone(phone)
+        }
+    }
+
+    companion object {
+        private const val PERIOD = 1000L
+        private const val LENGTH_PASSWORD_MIN = 4
+    }
+}
+
+
+
+
+/*
+private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+
     private var timerDisposable: Disposable? = null
 
-//    override suspend fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Boolean  {
-//        return withContext(Dispatchers.IO){
-//            observable.toString().length >= LENGTH_PASSWORD_MIN
-//        }
-//    }
-//    override suspend fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>):  Boolean  {
-//        return observable.map { it.toString() }
-//            .distinctUntilChanged()
-//            .map { it.length >= LENGTH_PASSWORD_MIN }
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
+    override fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
+        return observable.map { it.toString() }
+            .distinctUntilChanged()
+            .map { it.length >= LENGTH_PASSWORD_MIN }
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
 
     private var durationTime = 0
     override fun startTimer(durationTime: Int) {
@@ -77,10 +139,9 @@ class CheckSmsInteractorImpl(
         timeConfirmCodeDisposable()
     }
 
-    override suspend fun observeNetworkConnected():  NetworkState {
-        return withContext(Dispatchers.IO){
-            networkMonitorRepository.networkConnected()
-        }
+    override fun observeNetworkConnected(): Observable<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
     override suspend fun auth(phone: String, password: String)  {
@@ -100,3 +161,4 @@ class CheckSmsInteractorImpl(
         private const val LENGTH_PASSWORD_MIN = 4
     }
 }
+*/

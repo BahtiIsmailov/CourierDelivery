@@ -67,24 +67,6 @@ class CourierOrdersInteractorImpl(
         courierLocalRepository.saveFreeOrders(localEntity)
         return localEntity
     }
-//    override fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>> {
-//        return appTasksRepository.getFreeOrders(srcOfficeID)
-//            .map { freeOrders ->
-//                val sortedFreeOrders = freeOrders.sortedBy { it.id }
-//                sortedFreeOrders.forEach {
-//                    it.dstOffices = it.dstOffices.sortByUnusualTimeAndAddress()
-//                }
-//                sortedFreeOrders
-//            }
-//            .flatMap {
-//                courierLocalRepository.deleteAllOrder()
-//                courierLocalRepository.deleteAllOrderOffices()
-//                val localEntity = toCourierOrderLocalDataEntities(it)
-//                courierLocalRepository.saveFreeOrders(localEntity)
-//                    .andThen(Single.just(localEntity))
-//            }
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
 
     override suspend fun freeOrdersLocal(): List<CourierOrderLocalDataEntity>  {
@@ -93,11 +75,6 @@ class CourierOrdersInteractorImpl(
         }
 
     }
-//    override suspend fun freeOrdersLocal():  MutableList<CourierOrderLocalDataEntity>  {
-//        return courierLocalRepository.freeOrders()
-//            .map { it.toMutableList() }
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
     private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): List<CourierOrderLocalDataEntity> {
         val courierOrderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
@@ -210,25 +187,12 @@ class CourierOrdersInteractorImpl(
 
         }
     }
-//    override fun anchorTask() {
-//        return Completable.fromSingle(Single.zip(
-//            selectedOrder(selectedRowOrder()),
-//            courierLocalRepository.readCurrentWarehouse()
-//        ) { orderEntity, warehouseLocalEntity ->
-//            convertToLocalOrderEntity(orderEntity, warehouseLocalEntity)
-//        }
-//            .flatMap { reserveTask(it) }
-//            .doOnSuccess { lo -> courierLocalRepository.setOrderInReserve(lo) })
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
 
     private suspend fun reserveTask(it: LocalOrderEntity){
         withContext(Dispatchers.IO){
             appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())
         }
     }
-
-            //.andThen(Single.just(it)).compose(rxSchedulerFactory.applySingleSchedulers())
 
     private fun convertToLocalOrderEntity(
         orderEntity: CourierOrderLocalDataEntity,
@@ -259,3 +223,178 @@ class CourierOrdersInteractorImpl(
     }
 
 }
+
+/*
+ private fun List<CourierOrderDstOfficeEntity>.sortByUnusualTimeAndAddress(): List<CourierOrderDstOfficeEntity> {
+        return this.sortedWith(
+            compareBy({ !it.isUnusualTime }, { it.fullAddress.lowercase(Locale.ROOT) })
+        )
+    }
+
+    override suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity> {
+        val response = withContext(Dispatchers.IO) {
+            appTasksRepository.getFreeOrders(srcOfficeID).sortedBy { it.id }
+        }
+        response.forEach { freeOrders ->
+            freeOrders.dstOffices = freeOrders.dstOffices.sortByUnusualTimeAndAddress()
+        }
+        courierLocalRepository.deleteAllOrder()
+        courierLocalRepository.deleteAllOrderOffices()
+        val localEntity = toCourierOrderLocalDataEntities(response)
+        courierLocalRepository.saveFreeOrders(localEntity)
+        return localEntity
+    }
+
+
+    override fun freeOrdersLocal(): Single<MutableList<CourierOrderLocalDataEntity>> {
+        return courierLocalRepository.freeOrders()
+            .map { it.toMutableList() }
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): List<CourierOrderLocalDataEntity> {
+        val courierOrderLocalDataEntities = mutableListOf<CourierOrderLocalDataEntity>()
+        it.forEachIndexed { index, order ->
+            val courierOrderLocalEntity = convertCourierOrderLocalEntity(order, index)
+            val courierOrderDstOfficesLocalEntity =
+                convertCourierOrderDstOfficesLocalEntity(order.dstOffices, order.id)
+            courierOrderLocalDataEntities.add(
+                CourierOrderLocalDataEntity(
+                    courierOrderLocalEntity,
+                    courierOrderDstOfficesLocalEntity
+                )
+            )
+        }
+        return courierOrderLocalDataEntities
+    }
+
+    override fun saveRowOrder(rowOrder: Int) {
+        sharedWorker.save(SELECTED_ORDER_INDEX_KEY, rowOrder)
+    }
+
+    override fun selectedRowOrder(): Int {
+        return sharedWorker.load(SELECTED_ORDER_INDEX_KEY, 0)
+    }
+
+    private fun convertCourierOrderDstOfficesLocalEntity(
+        courierOrderDstOfficeEntities: List<CourierOrderDstOfficeEntity>,
+        orderId: Int
+    ): MutableList<CourierOrderDstOfficeLocalEntity> {
+        val courierOrderDstOfficesLocalEntity = mutableListOf<CourierOrderDstOfficeLocalEntity>()
+        courierOrderDstOfficeEntities.forEach {
+            with(it) {
+                courierOrderDstOfficesLocalEntity.add(
+                    CourierOrderDstOfficeLocalEntity(
+                        key = 0,
+                        id = id,
+                        orderId = orderId,
+                        name = name,
+                        fullAddress = fullAddress,
+                        longitude = long,
+                        latitude = lat,
+                        visitedAt = "",
+                        workTimes = workTimes,
+                        isUnusualTime = isUnusualTime
+                    )
+                )
+            }
+        }
+        return courierOrderDstOfficesLocalEntity
+    }
+
+    private fun convertCourierOrderLocalEntity(
+        courierOrderEntity: CourierOrderEntity,
+        rowId: Int
+    ) = with(courierOrderEntity) {
+        CourierOrderLocalEntity(
+            id = id,
+            rowId = rowId,
+            routeID = routeID,
+            gate = gate,
+            minPrice = minPrice,
+            minVolume = minVolume,
+            minBoxesCount = minBoxesCount,
+            reservedDuration = reservedDuration,
+            reservedAt = reservedAt,
+            route = route
+        )
+    }
+
+
+    override fun selectedOrder(rowOrder: Int): Single<CourierOrderLocalDataEntity> { //сюда приходит 0
+        return courierLocalRepository.orderAndOffices(rowOrder)
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+
+    override fun mapState(state: CourierMapState) {
+        courierMapRepository.mapState(state)
+    }
+
+    override fun observeMapAction(): Observable<CourierMapAction> {
+        return courierMapRepository.observeMapAction()
+            .compose(rxSchedulerFactory.applyObservableSchedulers())
+    }
+
+    override fun carNumberIsConfirm(): Boolean {
+        return userManager.carNumber().isNotEmpty()
+    }
+
+    override fun isDemoMode(): Boolean {
+        return tokenManager.isDemo()
+    }
+
+    override fun carNumber(): String {
+        return userManager.carNumber().replaceCarNumberY()
+    }
+
+    override fun carType(): Int {
+        return userManager.carType()
+    }
+
+    override fun anchorTask(): Completable {
+        return Completable.fromSingle(Single.zip(
+            selectedOrder(selectedRowOrder()),
+            courierLocalRepository.readCurrentWarehouse()
+        ) { orderEntity, warehouseLocalEntity ->
+            convertToLocalOrderEntity(orderEntity, warehouseLocalEntity)
+        }
+            .flatMap { reserveTask(it) }
+            .doOnSuccess { lo -> courierLocalRepository.setOrderInReserve(lo) })
+            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    }
+
+    private fun reserveTask(it: LocalOrderEntity) =
+        appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())
+            .andThen(Single.just(it)).compose(rxSchedulerFactory.applySingleSchedulers())
+
+    private fun convertToLocalOrderEntity(
+        orderEntity: CourierOrderLocalDataEntity,
+        warehouseLocalEntity: CourierWarehouseLocalEntity
+    ) = with(orderEntity.courierOrderLocalEntity) {
+        LocalOrderEntity(
+            orderId = id,
+            routeID = routeID,
+            gate = gate,
+            minPrice = minPrice,
+            minVolume = minVolume,
+            minBoxes = minBoxesCount,
+            countOffices = orderEntity.dstOffices.size,
+            wbUserID = -1,
+            carNumber = userManager.carNumber(),
+            reservedAt = timeManager.getLocalTime(),
+            startedAt = "",
+            reservedDuration = reservedDuration,
+            status = TaskStatus.TIMER.status,
+            cost = 0,
+            srcId = warehouseLocalEntity.id,
+            srcName = warehouseLocalEntity.name,
+            srcAddress = warehouseLocalEntity.fullAddress,
+            srcLongitude = warehouseLocalEntity.longitude,
+            srcLatitude = warehouseLocalEntity.latitude,
+            route = route ?: "не указан"
+        )
+    }
+
+}
+
+ */

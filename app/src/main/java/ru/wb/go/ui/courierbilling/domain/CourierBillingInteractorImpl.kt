@@ -24,4 +24,10 @@ class CourierBillingInteractorImpl(
         }
     }
 
+//    override fun getBillingInfo(): Single<BillingCommonEntity> {
+//        return appRemoteRepository.getBillingInfo(true)
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+
+
 }

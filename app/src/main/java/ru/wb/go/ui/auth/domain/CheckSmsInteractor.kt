@@ -5,6 +5,7 @@ import ru.wb.go.network.monitor.NetworkState
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.ui.auth.signup.TimerState
 
 interface CheckSmsInteractor {
@@ -14,7 +15,7 @@ interface CheckSmsInteractor {
     suspend fun auth(phone: String, password: String)
     suspend fun couriersExistAndSavePhone(phone: String)
 
-    fun startTimer(durationTime: Int)
-    val timer: Flowable<TimerState>
-    fun stopTimer()
+    suspend fun startTimer(durationTime: Int)
+    val timer: Flow<TimerState>
+    suspend fun stopTimer()
 }
