@@ -128,7 +128,6 @@ class CourierMapViewModel(
     private fun subscribeMapState() {
         viewModelScope.launch {
             try {
-                interactor.startVisibilityManagerTimer1()
                 interactor.subscribeMapState()
                     .onEach {
                         subscribeMapStateComplete(it)

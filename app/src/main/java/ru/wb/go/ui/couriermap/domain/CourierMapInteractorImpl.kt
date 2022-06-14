@@ -1,12 +1,9 @@
 package ru.wb.go.ui.couriermap.domain
 
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.utils.managers.DeviceManager
@@ -22,22 +19,18 @@ class CourierMapInteractorImpl(
 
     private val prolongHideSubject = MutableSharedFlow<Action>()
 
-    private var hideSplashDisposable: Disposable? = null
 
 //    init {
 //        startVisibilityManagerTimer1()
 //    }
     override suspend fun subscribeMapState(): Flow<CourierMapState> {
-       return courierMapRepository.observeMapState().onEach { // слушает все события с картой
+        return courierMapRepository.observeMapState().onEach { // слушает все события с картой
             when (it) {
                 CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
                 is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
                 else -> {}
             }
         }
-
-
-
     }
 
 //    override fun subscribeMapState(): Observable<CourierMapState> { // слушает все события с картой
@@ -78,18 +71,30 @@ class CourierMapInteractorImpl(
     }
 
     private suspend fun prolongHideTimerManager() {
-        prolongHideSubject.emit(Action{ }) // отправляет акшн в рх как стэйт флоу
+        prolongHideSubject.emit(Action { }) // отправляет акшн в рх как стэйт флоу
     }
 
     override suspend fun startVisibilityManagerTimer1() {
         coroutineScope {
-            if (hideSplashDisposable == null) { // ссылка на слушателя если запущен то ничего ен делаем а если
-                prolongHideSubject.launchIn(this)
-                Observable.timer(HIDE_DELAY, TimeUnit.SECONDS)
-                hideManagerBar()
-            }
+            // ссылка на слушателя если запущен то ничего ен делаем а если
+            prolongHideSubject
+                .map {
+                    Observable.timer(HIDE_DELAY, TimeUnit.SECONDS)
+                }
+                .onEach {
+                    hideManagerBar()
+                }
+                .collect()
         }
     }
+
+//    private fun startVisibilityManagerTimer1() {
+//        if (hideSplashDisposable == null) { // ссылка на слушателя если запущен то ничего ен делаем а если
+//            hideSplashDisposable = prolongHideSubject
+//                .switchMap { Observable.timer(HIDE_DELAY, TimeUnit.SECONDS) }
+//                .subscribe({ hideManagerBar() }, {})
+//        }
+//    }
 
     private suspend fun hideManagerBar() {
         courierMapRepository.mapState(CourierMapState.HideManagerBar)
