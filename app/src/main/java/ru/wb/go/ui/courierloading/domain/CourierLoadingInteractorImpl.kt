@@ -5,6 +5,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
@@ -33,8 +36,8 @@ class CourierLoadingInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierLoadingInteractor {
 
-//    private val scanLoaderProgressSubject = PublishSubject.create<CourierLoadingProgressData>()
-    lateinit var scanLoaderProgressSubject:CourierLoadingProgressData
+
+    private val scanLoaderProgressSubject = MutableSharedFlow<CourierLoadingProgressData>()
 
     companion object {
         const val DELAY_HOLD_SCANNER = 1500L
@@ -84,45 +87,46 @@ class CourierLoadingInteractorImpl(
     override suspend fun observeScanProcess(): CourierLoadingProcessData {
         var courierLoadingProgressData:CourierLoadingProcessData? = null
         withContext(Dispatchers.IO) {
-            val response = scanRepo.observeScannerAction()// 2
-            if (response is ScannerAction.ScanResult) {
-                val boxes = localRepo.getBoxes()
-                val scanTime = timeManager.getLocalTime()
-                val parsedScan = scanRepo.parseScanBoxQr(response.value)
-                try {
-                    courierLoadingProgressData = scanResult(
-                        ScannerState.HoldScanUnknown,
-                        CourierLoadingScanBoxData.NotRecognizedQr,
-                        boxes.size
-                    )
-                } catch (e: Exception) {
-                    val offices = localRepo.getOffices()
-                    val office =
-                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
-                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
-                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
+            scanRepo.observeScannerAction().onEach {
+                if (it is ScannerAction.ScanResult) {
+                    val boxes = localRepo.getBoxes()
+                    val scanTime = timeManager.getLocalTime()
+                    val parsedScan = scanRepo.parseScanBoxQr(it.value)
+                    try {
                         courierLoadingProgressData = scanResult(
-                            ScannerState.HoldScanError,
-                            CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
+                            ScannerState.HoldScanUnknown,
+                            CourierLoadingScanBoxData.NotRecognizedQr,
                             boxes.size
                         )
-                    } else {
-                        var isNewBox = false
-                        if (box == null) {
-                            isNewBox = true
-                            box = LocalBoxEntity(
-                                boxId = parsedScan.boxId, officeId = office.officeId,
-                                address = office.address, loadingAt = scanTime, deliveredAt = ""
+                    } catch (e: Exception) {
+                        val offices = localRepo.getOffices()
+                        val office =
+                            offices.find { off -> off.officeId.toString() == parsedScan.officeId }
+                        var box = boxes.find { b -> b.boxId == parsedScan.boxId }
+                        if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
+                            courierLoadingProgressData = scanResult(
+                                ScannerState.HoldScanError,
+                                CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
+                                boxes.size
                             )
                         } else {
-                            box = box.copy(loadingAt = scanTime)
+                            var isNewBox = false
+                            if (box == null) {
+                                isNewBox = true
+                                box = LocalBoxEntity(
+                                    boxId = parsedScan.boxId, officeId = office.officeId,
+                                    address = office.address, loadingAt = scanTime, deliveredAt = ""
+                                )
+                            } else {
+                                box = box.copy(loadingAt = scanTime)
+                            }
+
+                            qrComplete(box, boxes.size, isNewBox, scanTime)
                         }
-
-                        qrComplete(box, boxes.size, isNewBox, scanTime)
                     }
-                }
 
-            }
+                }
+            }// 2
         }
         return courierLoadingProgressData!!
     }
@@ -261,23 +265,23 @@ class CourierLoadingInteractorImpl(
 //            .compose(rxSchedulerFactory.applyObservableSchedulers())
 //    }
 
-    private fun firstBoxLoaderProgress() {
-        scanLoaderProgressSubject = CourierLoadingProgressData.Progress
+    private suspend fun firstBoxLoaderProgress() {
+        scanLoaderProgressSubject.emit(CourierLoadingProgressData.Progress)
     }
 
 //    private fun firstBoxLoaderProgress() = Completable.fromAction {
 //        scanLoaderProgressSubject.onNext(CourierLoadingProgressData.Progress)
 //    }
 
-    private fun firstBoxLoaderComplete() {
-        scanLoaderProgressSubject = CourierLoadingProgressData.Complete
+    private suspend fun firstBoxLoaderComplete() {
+        scanLoaderProgressSubject.emit(CourierLoadingProgressData.Complete)
     }
 
-    override suspend fun scanLoaderProgress(): CourierLoadingProgressData {
+    override suspend fun scanLoaderProgress(): Flow<CourierLoadingProgressData> {
         return scanLoaderProgressSubject
     }
 
-    override fun scannerAction(scannerAction: ScannerState) {
+    override suspend fun scannerAction(scannerAction: ScannerState) {
         scanRepo.scannerState(scannerAction)
     }
 

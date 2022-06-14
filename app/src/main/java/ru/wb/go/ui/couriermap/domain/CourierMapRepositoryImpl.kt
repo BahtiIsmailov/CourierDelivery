@@ -1,29 +1,32 @@
 package ru.wb.go.ui.couriermap.domain
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.onEmpty
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
 class CourierMapRepositoryImpl : CourierMapRepository {
 
-    lateinit var mapActionSubject:CourierMapAction
-    //private var mapActionSubject = PublishSubject.create<CourierMapAction>()
 
-    lateinit var mapStateSubject:CourierMapState
-    //private val mapStateSubject = PublishSubject.create<CourierMapState>()
 
-    override fun observeMapState(): CourierMapState {
+    private val mapStateSubject = MutableSharedFlow<CourierMapState>()
+    private val mapActionSubject = MutableSharedFlow<CourierMapAction>()
+
+    override suspend fun observeMapState(): Flow<CourierMapState> {
         return mapStateSubject
     }
 
-    override fun mapState(state: CourierMapState) {
-        mapStateSubject = state
+    override suspend fun mapState(state: CourierMapState) {
+        mapStateSubject.emit(state)
     }
 
-    override fun mapAction(action: CourierMapAction) {
-        mapActionSubject = action
+    override suspend fun mapAction(action: CourierMapAction) {
+        mapActionSubject.emit(action) // закинуть в поток
     }
 
-    override fun observeMapAction(): CourierMapAction {
+    override suspend fun observeMapAction(): Flow<CourierMapAction> {
         return mapActionSubject
     }
 

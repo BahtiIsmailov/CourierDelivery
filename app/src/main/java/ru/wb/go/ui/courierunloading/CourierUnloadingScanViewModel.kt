@@ -90,7 +90,9 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun holdSplashScanner() {
-        interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
+        viewModelScope.launch {
+            interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
+        }
     }
 
     private fun observeBoxInfoProcessInitState() {
@@ -439,11 +441,16 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun onStopScanner() {
-        interactor.scannerAction(ScannerState.StopScan)
+        viewModelScope.launch {
+            interactor.scannerAction(ScannerState.StopScan)
+        }
     }
 
     private fun onStartScanner() {
-        interactor.scannerAction(ScannerState.StartScan)
+        viewModelScope.launch {
+            interactor.scannerAction(ScannerState.StartScan)
+        }
+
     }
 
     fun onScoreDialogInfoClick() {

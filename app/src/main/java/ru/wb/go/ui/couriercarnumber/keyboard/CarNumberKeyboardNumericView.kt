@@ -6,7 +6,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.R
 import ru.wb.go.databinding.CarNumberKeyboardLayoutBinding
 import ru.wb.go.ui.auth.keyboard.KeyboardButtonView
@@ -14,8 +16,9 @@ import java.util.*
 
 class CarNumberKeyboardNumericView : RelativeLayout {
 
-    //var observableListener = PublishSubject.create<ButtonAction>()
-    lateinit var observableListener:ButtonAction
+
+
+    var observableListener = MutableLiveData<ButtonAction>()
     private lateinit var _binding: CarNumberKeyboardLayoutBinding
     private val binding get() = _binding
     private lateinit var numberButtons: List<KeyboardButtonView>
@@ -92,18 +95,17 @@ class CarNumberKeyboardNumericView : RelativeLayout {
             button.setOnClickListener { view: View ->
                 val keyboardButtonView = view as KeyboardButtonView
                 val action = ButtonAction.valueOf(keyboardButtonView.customValue)
-                //observableListener.onNext(action)
-                observableListener = action
+                observableListener.value = action
                 keyboardButtonView.startAnimation()
             }
         }
         binding.buttonBottomRight.setOnLongClickListener {
             //observableListener.onNext(ButtonAction.BUTTON_DELETE_LONG)
-            observableListener = ButtonAction.BUTTON_DELETE_LONG
+            observableListener.value = ButtonAction.BUTTON_DELETE_LONG
             true
         }
         binding.buttonBottomRight.setOnClickListener {
-            observableListener = ButtonAction.BUTTON_DELETE
+            observableListener.value = ButtonAction.BUTTON_DELETE
 
         }
     }
@@ -145,8 +147,7 @@ class CarNumberKeyboardNumericView : RelativeLayout {
     }
 
     fun clear() {
-        observableListener = ButtonAction.BUTTON_DELETE_LONG
-            //observableListener.onNext()
+        observableListener.value = ButtonAction.BUTTON_DELETE_LONG
     }
 
     fun inactive() {

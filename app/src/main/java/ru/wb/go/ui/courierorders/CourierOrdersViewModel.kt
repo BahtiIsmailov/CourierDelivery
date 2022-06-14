@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
@@ -165,7 +166,9 @@ class CourierOrdersViewModel(
     private fun observeMapAction() {
         viewModelScope.launch {
             try {
-                observeMapActionComplete(interactor.observeMapAction())
+                interactor.observeMapAction().onEach {
+                    observeMapActionComplete(it)
+                }
             }catch (e:Exception){
                 observeMapActionError(e)
             }
@@ -261,7 +264,9 @@ class CourierOrdersViewModel(
     }
 
     private fun showManagerBar() {
-        interactor.mapState(CourierMapState.ShowManagerBar)
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.ShowManagerBar)
+        }
     }
 
     fun onMapClickWithDetail() {
@@ -323,7 +328,10 @@ class CourierOrdersViewModel(
 
 
     private fun updateAddressMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
+        }
+
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
@@ -470,21 +478,26 @@ class CourierOrdersViewModel(
     }
 
     private fun updateOrderAndWarehouseMarkers() {
-        clearMap()
-        val warehouseMapMarker = mutableListOf(orderMapMarkers.first())
-        val orders = orderMapMarkers.toMutableList().apply { removeFirst() }
-        interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))
-        interactor.mapState(CourierMapState.UpdateMarkersWithIndex(orders))
+        viewModelScope.launch {
+            clearMap()
+            val warehouseMapMarker = mutableListOf(orderMapMarkers.first())
+            val orders = orderMapMarkers.toMutableList().apply { removeFirst() }
+            interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))
+            interactor.mapState(CourierMapState.UpdateMarkersWithIndex(orders))
+        }
     }
 
     private fun zoomAllGroupMarkersFromBoundingBox(height: Int) {
-        interactor.mapState(
-            CourierMapState.ZoomToBoundingBoxOffsetY(
-                boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
-                true,
-                offsetY(height)
+        viewModelScope.launch {
+            interactor.mapState(
+                CourierMapState.ZoomToBoundingBoxOffsetY(
+                    boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
+                    true,
+                    offsetY(height)
+                )
             )
-        )
+        }
+
     }
 
     private fun offsetY(height: Int) = (height / 2) * -1
@@ -550,7 +563,9 @@ class CourierOrdersViewModel(
     }
 
     private fun clearMap() {
-        interactor.mapState(CourierMapState.ClearMap)
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.ClearMap)
+        }
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
@@ -594,22 +609,25 @@ class CourierOrdersViewModel(
         CoordinatePoint(parameters.warehouseLatitude, parameters.warehouseLongitude)
 
     private fun initOrderDetails(itemIndex: Int) {
-        with(orderLocalDataEntities[itemIndex]) {
-            initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
-            convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
-            removeWarehouseFromAddressMapMarker()
-        }
-        val hideOrderMarkers = orderMapMarkers.toMutableList()
-        hideOrderMarkers.removeFirst()
-        interactor.mapState(
-            CourierMapState.UpdateMarkersWithAnimateToPositions(
-                pointsHide = hideOrderMarkers,
-                pointFrom = hideOrderMarkers[itemIndex],
-                pointsTo = addressMapMarkers,
-                animateTo = addressesBoundingBox(),
-                offsetY = DETAILS_HEIGHT
+        viewModelScope.launch {
+            with(orderLocalDataEntities[itemIndex]) {
+                initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
+                convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
+                removeWarehouseFromAddressMapMarker()
+            }
+            val hideOrderMarkers = orderMapMarkers.toMutableList()
+            hideOrderMarkers.removeFirst()
+            interactor.mapState(
+                CourierMapState.UpdateMarkersWithAnimateToPositions(
+                    pointsHide = hideOrderMarkers,
+                    pointFrom = hideOrderMarkers[itemIndex],
+                    pointsTo = addressMapMarkers,
+                    animateTo = addressesBoundingBox(),
+                    offsetY = DETAILS_HEIGHT
+                )
             )
-        )
+        }
+
     }
 
     private fun removeWarehouseFromAddressMapMarker() {
@@ -617,9 +635,12 @@ class CourierOrdersViewModel(
     }
 
     private fun zoomAllOrderAddressPoints() {
-        interactor.mapState(
-            CourierMapState.ZoomToBoundingBoxOffsetY(addressesBoundingBox(), true, DETAILS_HEIGHT)
-        )
+        viewModelScope.launch {
+            interactor.mapState(
+                CourierMapState.ZoomToBoundingBoxOffsetY(addressesBoundingBox(), true, DETAILS_HEIGHT)
+            )
+        }
+
     }
 
     private fun addressesBoundingBox() =
@@ -718,16 +739,18 @@ class CourierOrdersViewModel(
     }
 
     private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrders)
-        interactor.mapState(
-            CourierMapState.UpdateMarkersWithAnimateToPosition(
-                pointsShow = orderMapMarkers,
-                pointsFrom = addressMapMarkers,
-                pointTo = orderMapMarkerWithoutWarehouse(it),
-                animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
-                offsetY = offsetY(height)
+        viewModelScope.launch {
+            _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrders)
+            interactor.mapState(
+                CourierMapState.UpdateMarkersWithAnimateToPosition(
+                    pointsShow = orderMapMarkers,
+                    pointsFrom = addressMapMarkers,
+                    pointTo = orderMapMarkerWithoutWarehouse(it),
+                    animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
+                    offsetY = offsetY(height)
+                )
             )
-        )
+        }
     }
 
     private fun orderMapMarkerWithoutWarehouse(itemIndex: Int) =

@@ -1,6 +1,8 @@
 package ru.wb.go.ui.courierunloading.domain
 
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
@@ -34,44 +36,45 @@ class CourierUnloadingInteractorImpl(
     override suspend fun observeScanProcess(officeId: Int): CourierUnloadingProcessData {
         var result: CourierUnloadingScanBoxData? = null
         return withContext(Dispatchers.IO) {
-            val response = scannerRepo.observeScannerAction()
-            if (scannerRepo.observeScannerAction() is ScannerAction.ScanResult) {
-                response as ScannerAction.ScanResult
-                val parsedScan = scannerRepo.parseScanBoxQr(response.value)
-                val boxes = localRepo.getBoxes()
-                val box = boxes.find { box -> box.boxId == parsedScan.boxId }
-                val scanTime = timeManager.getLocalTime()
-                when {
-                    !parsedScan.isOk -> {
-                        result = CourierUnloadingScanBoxData.UnknownQr
-                        scannerRepo.scannerState(ScannerState.HoldScanUnknown)
-                    }
-                    box == null -> {
-                        result = CourierUnloadingScanBoxData.ForbiddenBox(
-                            parsedScan.boxId,
-                            EMPTY_ADDRESS
-                        )
-                        scannerRepo.scannerState(ScannerState.HoldScanError)
-                    }
-                    parsedScan.officeId != officeId.toString() ||
-                            // сложный случай. пикнули коробку с дублированием boxId но другим офисом
-                            box.officeId.toString() != parsedScan.officeId -> {
-                        result = CourierUnloadingScanBoxData.WrongBox(
-                            parsedScan.boxId,
-                            EMPTY_ADDRESS
-                        )
-                        localRepo.takeBackBox(box)
-                        scannerRepo.scannerState(ScannerState.HoldScanError)
-                    }
-                    else -> {
-                        val boxOut = box.copy(deliveredAt = scanTime)
-                        result =
-                            CourierUnloadingScanBoxData.BoxAdded(parsedScan.boxId, boxOut.address)
-                        localRepo.unloadBox(boxOut)
-                        scannerRepo.scannerState(ScannerState.HoldScanComplete)
+            scannerRepo.observeScannerAction().onEach {
+                if (it is ScannerAction.ScanResult) {
+                    val parsedScan = scannerRepo.parseScanBoxQr(it.value)
+                    val boxes = localRepo.getBoxes()
+                    val box = boxes.find { box -> box.boxId == parsedScan.boxId }
+                    val scanTime = timeManager.getLocalTime()
+                    when {
+                        !parsedScan.isOk -> {
+                            result = CourierUnloadingScanBoxData.UnknownQr
+                            scannerRepo.scannerState(ScannerState.HoldScanUnknown)
+                        }
+                        box == null -> {
+                            result = CourierUnloadingScanBoxData.ForbiddenBox(
+                                parsedScan.boxId,
+                                EMPTY_ADDRESS
+                            )
+                            scannerRepo.scannerState(ScannerState.HoldScanError)
+                        }
+                        parsedScan.officeId != officeId.toString() ||
+                                // сложный случай. пикнули коробку с дублированием boxId но другим офисом
+                                box.officeId.toString() != parsedScan.officeId -> {
+                            result = CourierUnloadingScanBoxData.WrongBox(
+                                parsedScan.boxId,
+                                EMPTY_ADDRESS
+                            )
+                            localRepo.takeBackBox(box)
+                            scannerRepo.scannerState(ScannerState.HoldScanError)
+                        }
+                        else -> {
+                            val boxOut = box.copy(deliveredAt = scanTime)
+                            result =
+                                CourierUnloadingScanBoxData.BoxAdded(parsedScan.boxId, boxOut.address)
+                            localRepo.unloadBox(boxOut)
+                            scannerRepo.scannerState(ScannerState.HoldScanComplete)
+                        }
                     }
                 }
             }
+
             val res = localRepo.findOfficeById(officeId)
             scannerRepo.holdStart()
             CourierUnloadingProcessData(result!!, res.deliveredBoxes, res.countBoxes)
@@ -130,8 +133,8 @@ class CourierUnloadingInteractorImpl(
 //            }
 //    }
 
-    lateinit var scanLoaderProgressSubject: CourierUnloadingProgressData //= PublishSubject.create<CourierUnloadingProgressData>()
 
+    var scanLoaderProgressSubject = MutableLiveData<CourierUnloadingProgressData>()
     override suspend fun getCurrentOffice(officeId: Int): LocalOfficeEntity {
         return withContext(Dispatchers.IO) {
             localRepo.findOfficeById(officeId)
@@ -139,7 +142,7 @@ class CourierUnloadingInteractorImpl(
     }
 
     override suspend fun scanLoaderProgress(): CourierUnloadingProgressData {
-        return scanLoaderProgressSubject
+        return scanLoaderProgressSubject.value!!
     }
 
     //    override suspend fun removeScannedBoxes(checkedBoxes: List<String>)  {
@@ -152,7 +155,7 @@ class CourierUnloadingInteractorImpl(
         }
     }
 
-    override fun scannerAction(scannerAction: ScannerState) {
+    override suspend fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
     }
 

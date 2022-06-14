@@ -3,6 +3,7 @@ package ru.wb.go.ui.scanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.ui.NetworkViewModel
@@ -35,7 +36,9 @@ class CourierScannerViewModel(
 
     private fun observeScannerState() {
         viewModelScope.launch {
-            _scannerAction.postValue(interactor.observeScannerState())
+            interactor.observeScannerState().onEach {
+                _scannerAction.postValue(it)
+            }
         }
     }
 
@@ -57,14 +60,19 @@ class CourierScannerViewModel(
     }
 
     fun onBarcodeScanned(barcode: String) {
-        interactor.prolongHoldTimer()
-        interactor.barcodeScanned(barcode) ////////////////ScanerAction
+        viewModelScope.launch {
+            interactor.prolongHoldTimer()
+            interactor.barcodeScanned(barcode) ////////////////ScanerAction
+        }
+
     }
 
     fun onHoldSplashClick() {
-        interactor.prolongHoldTimer()
-        interactor.holdSplashUnlock()
-        _scannerAction.postValue( ScannerState.StartScan)
+        viewModelScope.launch {
+            interactor.prolongHoldTimer()
+            interactor.holdSplashUnlock()
+            _scannerAction.postValue( ScannerState.StartScan)
+        }
     }
 
     fun onDestroy() {

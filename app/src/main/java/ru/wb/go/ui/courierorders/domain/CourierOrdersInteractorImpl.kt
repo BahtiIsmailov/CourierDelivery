@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.app.AppPreffsKeys.SELECTED_ORDER_INDEX_KEY
 import ru.wb.go.db.CourierLocalRepository
@@ -173,14 +174,14 @@ class CourierOrdersInteractorImpl(
         }
     }
 
-    override fun mapState(state: CourierMapState) {
+    override suspend fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
 
-    override suspend fun observeMapAction(): CourierMapAction {
-        return withContext(Dispatchers.IO){
-            courierMapRepository.observeMapAction()
-        }
+    override suspend fun observeMapAction(): Flow<CourierMapAction> {
+        return courierMapRepository.observeMapAction() //withContext(Dispatchers.IO){
+
+        //}
     }
 
     override fun carNumberIsConfirm(): Boolean {

@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierwarehouses.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.ui.BaseServiceInteractor
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -16,9 +17,9 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     suspend fun loadProgress()
 
-    suspend fun observeMapAction(): CourierMapAction
+    suspend fun observeMapAction(): Flow<CourierMapAction>
 
-    fun mapState(state: CourierMapState)
+    suspend fun mapState(state: CourierMapState)
 
     fun isDemoMode(): Boolean
 

@@ -3,6 +3,7 @@ package ru.wb.go.ui.couriermap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
@@ -126,7 +127,11 @@ class CourierMapViewModel(
     private fun subscribeMapState() {
         viewModelScope.launch {
             try {
-                subscribeMapStateComplete(interactor.subscribeMapState())
+                interactor.startVisibilityManagerTimer1()
+                interactor.subscribeMapState().onEach {
+                    subscribeMapStateComplete(it)
+                }
+
             } catch (e: Exception) {
                 LogUtils {
                     logDebugApp("subscribeMapState() error $e")
@@ -184,19 +189,30 @@ class CourierMapViewModel(
     }
 
     fun onItemClick(point: MapPoint) {
-        interactor.markerClick(point)
+        viewModelScope.launch {
+            interactor.markerClick(point)
+        }
     }
 
     fun onMapClick() {
-        interactor.mapClick()
+        viewModelScope.launch {
+            interactor.mapClick()
+        }
+
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-        interactor.onForcedLocationUpdate(point)
+        viewModelScope.launch {
+            interactor.onForcedLocationUpdate(point)
+        }
+
     }
 
     fun onForcedLocationUpdateDefault() {
-        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+        viewModelScope.launch {
+            interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+        }
+
     }
 
     override fun getScreenTag(): String {
@@ -204,16 +220,24 @@ class CourierMapViewModel(
     }
 
     fun onZoomClick() {
-        interactor.prolongTimeHideManager()
+        viewModelScope.launch {
+            interactor.prolongTimeHideManager()
+        }
+
     }
 
     fun onShowAllClick() {
-        interactor.prolongTimeHideManager()
-        interactor.showAll()
+        viewModelScope.launch {
+            interactor.prolongTimeHideManager()
+            interactor.showAll()
+        }
+
     }
 
     fun onAnimateComplete() {
-        interactor.animateComplete()
+        viewModelScope.launch {
+            interactor.animateComplete()
+        }
     }
 
     companion object {

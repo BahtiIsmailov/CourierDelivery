@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierorders.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.ui.BaseServiceInteractor
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -20,9 +21,9 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     suspend fun selectedRowOrder(): Int
 
-    fun mapState(state: CourierMapState)
+    suspend fun mapState(state: CourierMapState)
 
-    suspend fun observeMapAction(): CourierMapAction
+    suspend fun observeMapAction(): Flow<CourierMapAction>
 
     fun carNumberIsConfirm(): Boolean
 

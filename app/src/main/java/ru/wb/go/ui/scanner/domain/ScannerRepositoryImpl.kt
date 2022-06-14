@@ -3,6 +3,8 @@ package ru.wb.go.ui.scanner.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_V1
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_OLD
@@ -16,24 +18,24 @@ import java.util.concurrent.TimeUnit
 class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 ) : ScannerRepository {
 
-    private var scannerActionSubject = PublishSubject.create<ScannerAction>()
-    private val scannerStateSubject = PublishSubject.create<ScannerState>()
 
+    private var scannerActionSubject = MutableSharedFlow<ScannerAction>()
+    private var scannerStateSubject = MutableSharedFlow<ScannerState>()
 
-     override fun scannerAction(action:ScannerAction){
-         scannerActionSubject.onNext(action)
+     override suspend fun scannerAction(action:ScannerAction){
+         scannerActionSubject.emit(action)
     }
 
-    override fun observeScannerAction(): ScannerAction {
-error(" dffd ")
+    override suspend fun observeScannerAction(): Flow<ScannerAction> {
+       return scannerActionSubject
     }
 
-    override fun scannerState(state: ScannerState) {
-        scannerStateSubject.onNext(state)
+    override suspend fun scannerState(state: ScannerState) {
+        scannerStateSubject.emit(state)
     }
 
-    override fun observeScannerState():  ScannerState {
-error(" dffdf ")
+    override suspend  fun observeScannerState(): Flow<ScannerState> {
+        return scannerStateSubject
     }
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {
@@ -48,8 +50,7 @@ error(" dffdf ")
 
     override suspend fun holdStart(){
         Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.MILLISECONDS)
-            .doOnNext { scannerState(ScannerState.StartScan) }
-            .flatMapCompletable { Completable.complete() }
+        scannerState(ScannerState.StartScan)
     }
 
 

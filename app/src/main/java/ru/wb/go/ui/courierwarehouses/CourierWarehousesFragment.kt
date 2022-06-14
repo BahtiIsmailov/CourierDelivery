@@ -44,6 +44,7 @@ class CourierWarehousesFragment :
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.resumeInit()
         initView()
         initRecyclerView()
         initObservable()
@@ -219,9 +220,8 @@ class CourierWarehousesFragment :
     override fun onResume() {
         super.onResume()
         viewModel.resumeInit()
-        lifecycleScope.launch {
-            viewModel.updateData()
-        }
+        viewModel.updateData()
+
     }
 
     override fun onPause() {

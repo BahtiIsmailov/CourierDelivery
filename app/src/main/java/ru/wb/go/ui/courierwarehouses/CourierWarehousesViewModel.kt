@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.exceptions.NoInternetException
@@ -62,6 +63,8 @@ class CourierWarehousesViewModel(
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private lateinit var myLocation: CoordinatePoint
 
+
+
     private var whSelectedId: Int? = null
 
     fun resumeInit() {
@@ -75,7 +78,9 @@ class CourierWarehousesViewModel(
     private fun observeMapAction() {
         viewModelScope.launch {
             try {
-                observeMapActionComplete(interactor.observeMapAction())
+                interactor.observeMapAction().onEach {
+                    observeMapActionComplete(it)
+                }
             }catch (e:Exception){
                 observeMapActionError(e)
             }
@@ -96,8 +101,8 @@ class CourierWarehousesViewModel(
         when (it) {
             is CourierMapAction.ItemClick -> onMapPointClick(it.point)
             is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
-            CourierMapAction.MapClick -> showManagerBar()
-            CourierMapAction.ShowAll -> onShowAllClick()
+            is CourierMapAction.MapClick -> showManagerBar()
+            is CourierMapAction.ShowAll -> onShowAllClick()
             else -> {}
         }
     }
@@ -106,8 +111,10 @@ class CourierWarehousesViewModel(
         onTechErrorLog("observeMapActionError", throwable)
     }
 
-    suspend fun updateData() {
-        getWarehouses()
+     fun updateData() {
+         viewModelScope.launch {
+             getWarehouses()
+         }
     }
 
     fun toRegistrationClick() {
@@ -179,38 +186,52 @@ class CourierWarehousesViewModel(
     }
 
     private fun showManagerBar() {
-        interactor.mapState(CourierMapState.ShowManagerBar)
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.ShowManagerBar)
+        }
+
     }
 
     private fun updateMyLocation() {
-        interactor.mapState(CourierMapState.UpdateMyLocation)
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMyLocation)
+        }
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-        onTechEventLog("initMapByLocation")
-        myLocation = location
-        if (coordinatePoints.isEmpty()) {
-            interactor.mapState(CourierMapState.NavigateToMyLocation)
-        } else {
-            updateMarkersWithMyLocation(location)
-            zoomMarkersFromBoundingBox(location)
+        viewModelScope.launch {
+            onTechEventLog("initMapByLocation")
+            myLocation = location
+            if (coordinatePoints.isEmpty()) {
+                interactor.mapState(CourierMapState.NavigateToMyLocation)
+            } else {
+                updateMarkersWithMyLocation(location)
+                zoomMarkersFromBoundingBox(location)
+            }
         }
+
     }
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+            interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+        }
+
     }
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
-        if (coordinatePoints.isNotEmpty()) {
-            val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
-                coordinatePoints, myLocation, RADIUS_KM
-            )
-            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
-        } else {
-            interactor.mapState(CourierMapState.NavigateToPoint(myLocation))
+        viewModelScope.launch {
+            if (coordinatePoints.isNotEmpty()) {
+                val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
+                    coordinatePoints, myLocation, RADIUS_KM
+                )
+                interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+            } else {
+                interactor.mapState(CourierMapState.NavigateToPoint(myLocation))
+            }
         }
+
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
@@ -254,8 +275,11 @@ class CourierWarehousesViewModel(
         mapMarkers[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
 
     private fun updateMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+            interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+        }
+
     }
 
     fun onItemClick(index: Int) {
@@ -267,25 +291,28 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
-        mapMarkers.forEachIndexed { index, item ->
-            item.icon = if (index == clickItemIndex) {
-                if (isSelected) {
-                     resourceProvider.getWarehouseMapSelectedIcon()
-                }
-                else {
+        viewModelScope.launch {
+            mapMarkers.forEachIndexed { index, item ->
+                item.icon = if (index == clickItemIndex) {
+                    if (isSelected) {
+                        resourceProvider.getWarehouseMapSelectedIcon()
+                    }
+                    else {
+                        resourceProvider.getWarehouseMapIcon()
+                    }
+                } else {
                     resourceProvider.getWarehouseMapIcon()
                 }
-            } else {
-                resourceProvider.getWarehouseMapIcon()
+            }
+            updateMarkersWithMyLocation(myLocation)
+            if (isSelected) {
+                with(mapMarkers[clickItemIndex].point) {
+                    val coordinatePoint = CoordinatePoint(lat, long)
+                    interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
+                }
             }
         }
-        updateMarkersWithMyLocation(myLocation)
-        if (isSelected) {
-            with(mapMarkers[clickItemIndex].point) {
-                val coordinatePoint = CoordinatePoint(lat, long)
-                interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
-            }
-        }
+
     }
 
     private fun changeShowDetailsOrder(selected: Boolean) {

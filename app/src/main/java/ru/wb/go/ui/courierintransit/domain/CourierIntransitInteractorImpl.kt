@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierintransit.domain
 
 import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
@@ -98,13 +99,13 @@ class CourierIntransitInteractorImpl(
         return getOrder().orderId.toString()
     }
 
-    override suspend fun observeMapAction(): CourierMapAction {
-        return withContext(Dispatchers.IO){
-            courierMapRepository.observeMapAction()
-        }
+    override suspend fun observeMapAction(): Flow<CourierMapAction> {
+        return courierMapRepository.observeMapAction()//withContext(Dispatchers.IO){
+
+        //}
     }
 
-    override fun mapState(state: CourierMapState) {
+    override suspend fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
 

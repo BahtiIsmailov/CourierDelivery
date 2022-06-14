@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.BaseServiceInteractor
@@ -16,9 +17,9 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun observeScanProcess( ):  CourierLoadingProcessData
 
-    suspend fun scanLoaderProgress(): CourierLoadingProgressData
+    suspend fun scanLoaderProgress(): Flow<CourierLoadingProgressData>
 
-    fun scannerAction(scannerAction: ScannerState)
+    suspend fun scannerAction(scannerAction: ScannerState)
 
     suspend fun observeOrderData(): CourierOrderLocalDataEntity
 

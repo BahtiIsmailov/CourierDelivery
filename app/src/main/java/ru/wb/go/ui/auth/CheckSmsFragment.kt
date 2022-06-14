@@ -59,7 +59,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             findNavController().popBackStack()
         }
 
-        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.value!!)
         binding.repeatSms.setOnClickListener { viewModel.onRepeatPassword() }
     }
 

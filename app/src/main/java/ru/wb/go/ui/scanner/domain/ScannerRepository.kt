@@ -1,20 +1,18 @@
 package ru.wb.go.ui.scanner.domain
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity
 
 interface ScannerRepository {
 
-    fun scannerAction(action: ScannerAction)
+    suspend fun scannerAction(action: ScannerAction)
 
-    fun observeScannerAction(): ScannerAction
+    suspend fun observeScannerAction(): Flow<ScannerAction>
 
-    fun scannerState(state: ScannerState)
+    suspend fun scannerState(state: ScannerState)
 
-    fun observeScannerState():  ScannerState
+    suspend fun observeScannerState(): Flow<ScannerState>
 
     fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity
 

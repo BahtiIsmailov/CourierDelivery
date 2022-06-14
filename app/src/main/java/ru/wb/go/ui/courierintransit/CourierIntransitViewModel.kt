@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -148,7 +149,10 @@ class CourierIntransitViewModel(
     private fun observeMapAction() {
         viewModelScope.launch {
             try {
-                observeMapActionComplete(interactor.observeMapAction())
+                interactor.observeMapAction().onEach {
+                    observeMapActionComplete(it)
+                }
+
             }catch (e:Exception){
                 onTechErrorLog("observeMapAction", e)
             }
@@ -173,7 +177,10 @@ class CourierIntransitViewModel(
     }
 
     private fun showManagerBar() {
-        interactor.mapState(CourierMapState.ShowManagerBar)
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.ShowManagerBar)
+        }
+
     }
 
     private fun onShowAllClick() {
@@ -208,7 +215,10 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        }
+
     }
 
     private fun changeSelectedItemsByMarker(indexItemClick: Int, isMarkerSelected: Boolean) {
@@ -316,12 +326,14 @@ class CourierIntransitViewModel(
         mapMarkers: MutableList<IntransitMapMarker>,
         coordinatePoints: MutableList<CoordinatePoint>
     ) {
-        if (mapMarkers.isEmpty()) {
-            interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
-        } else {
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
-            val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
-            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+        viewModelScope.launch {
+            if (mapMarkers.isEmpty()) {
+                interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
+            } else {
+                interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+                val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+                interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+            }
         }
     }
 
@@ -440,9 +452,11 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers(isSelected: Boolean, selectIndex: Int) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
-        if (isSelected)
-            interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+            if (isSelected)
+                interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
+        }
     }
 
     private fun getNormalMapIcon(type: IntransitItemType) =
@@ -466,8 +480,10 @@ class CourierIntransitViewModel(
     }
 
     private fun zoomMarkersFromBoundingBox() {
-        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
-        interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+        viewModelScope.launch {
+            val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+        }
     }
 
     data class Label(val label: String)

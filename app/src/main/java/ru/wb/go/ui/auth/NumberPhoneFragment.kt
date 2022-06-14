@@ -79,7 +79,7 @@ class NumberPhoneFragment : Fragment() {
             next.setOnClickListener { viewModel.onCheckPhone(phoneNumberTitle.text.toString()) }
         }
 
-        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener) // отображение номера телефона
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.value!!) // отображение номера телефона
 
     }
 

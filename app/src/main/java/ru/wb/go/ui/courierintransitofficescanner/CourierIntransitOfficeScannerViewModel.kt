@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -139,11 +140,15 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun onStopScanner() {
-        interactor.scannerAction(ScannerState.StopScan)
+        viewModelScope.launch {
+            interactor.scannerAction(ScannerState.StopScan)
+        }
     }
 
     private fun onStartScanner() {
-        interactor.scannerAction(ScannerState.StartScan)
+        viewModelScope.launch {
+            interactor.scannerAction(ScannerState.StartScan)
+        }
     }
 
     fun play(resId: Int) {

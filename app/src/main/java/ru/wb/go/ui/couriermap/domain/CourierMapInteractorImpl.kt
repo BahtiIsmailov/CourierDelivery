@@ -4,6 +4,10 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.utils.managers.DeviceManager
@@ -16,20 +20,24 @@ class CourierMapInteractorImpl(
     private val deviceManager: DeviceManager
 ) : CourierMapInteractor {
 
-    private val prolongHideSubject = PublishSubject.create<Action>()
+
+    private val prolongHideSubject = MutableSharedFlow<Action>()
+
     private var hideSplashDisposable: Disposable? = null
 
-    init {
-        startVisibilityManagerTimer1()
-    }
-    override suspend fun subscribeMapState(): CourierMapState {
-        val it = courierMapRepository.observeMapState() // слушает все события с картой
-         when (it) {
-            CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
-            is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
-            else -> {}
+//    init {
+//        startVisibilityManagerTimer1()
+//    }
+    override suspend fun subscribeMapState(): Flow<CourierMapState> {
+       return courierMapRepository.observeMapState().onEach { // слушает все события с картой
+            when (it) {
+                CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
+                is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
+                else -> {}
+            }
         }
-        return it
+
+
 
     }
 
@@ -45,44 +53,44 @@ class CourierMapInteractorImpl(
 //            }
 //    }
 
-    override fun markerClick(point: MapPoint) {
+    override suspend fun markerClick(point: MapPoint) {
         courierMapRepository.mapAction(CourierMapAction.ItemClick(point))
     }
 
-    override fun mapClick() {
+    override suspend fun mapClick() {
         courierMapRepository.mapAction(CourierMapAction.MapClick)
     }
 
-    override fun onForcedLocationUpdate(point: CoordinatePoint) {
+    override suspend fun onForcedLocationUpdate(point: CoordinatePoint) {
         deviceManager.saveLocation("${point.latitude}:${point.longitude}")
         courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))
     }
 
-    override fun showAll() {
+    override suspend fun showAll() {
         courierMapRepository.mapAction(CourierMapAction.ShowAll)
     }
 
-    override fun animateComplete() {
+    override suspend fun animateComplete() {
         courierMapRepository.mapAction(CourierMapAction.AnimateComplete)
     }
 
-    override fun prolongTimeHideManager() {
+    override suspend fun prolongTimeHideManager() {
         prolongHideTimerManager()
     }
 
-    private fun prolongHideTimerManager() {
-        prolongHideSubject.onNext(Action { }) // отправляет акшн в рх как стэйт флоу
+    private suspend fun prolongHideTimerManager() {
+        prolongHideSubject.emit(Action{ }) // отправляет акшн в рх как стэйт флоу
     }
 
-    private fun startVisibilityManagerTimer1() {
+    override suspend fun startVisibilityManagerTimer1() {
         if (hideSplashDisposable == null) { // ссылка на слушателя если запущен то ничего ен делаем а если
-            hideSplashDisposable = prolongHideSubject
-                .switchMap { Observable.timer(HIDE_DELAY, TimeUnit.SECONDS) }
-                .subscribe({ hideManagerBar() }, {})
+            prolongHideSubject.collect()
+            Observable.timer(HIDE_DELAY, TimeUnit.SECONDS)
+            hideManagerBar()
         }
     }
 
-    private fun hideManagerBar() {
+    private suspend fun hideManagerBar() {
         courierMapRepository.mapState(CourierMapState.HideManagerBar)
     }
 

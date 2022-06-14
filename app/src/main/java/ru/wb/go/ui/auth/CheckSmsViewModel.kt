@@ -104,16 +104,27 @@ class CheckSmsViewModel(
 //            }
 //        }
 //    }
-    fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
-        addSubscription(
-            event.scan(String()) { accumulator, item -> accumulateCode(accumulator, item) }
-                .doOnNext { switchNext(it) }
-                .subscribe(
-                    { formatSmsComplete(it) },
-                    { formatSmsError(it) })
-        )
-    }
+//    fun onNumberObservableClicked(event: KeyboardNumericView.ButtonAction) {
+//        addSubscription(
+//            event.scan(String()) { accumulator, item -> accumulateCode(accumulator, item) }
+//                .doOnNext { switchNext(it) }
+//                .subscribe(
+//                    { formatSmsComplete(it) },
+//                    { formatSmsError(it) })
+//        )
+//    }
 
+    fun onNumberObservableClicked(event: KeyboardNumericView.ButtonAction) {
+        viewModelScope.launch {
+            try {
+                val it = accumulateCode(event.name, event)
+                switchNext(it)
+                formatSmsComplete(it)
+            }catch (e:Exception){
+                formatSmsError(e)
+            }
+        }
+    }
 
     private fun formatSmsError(throwable: Throwable) {
         onTechErrorLog("formatSmsError", throwable)
