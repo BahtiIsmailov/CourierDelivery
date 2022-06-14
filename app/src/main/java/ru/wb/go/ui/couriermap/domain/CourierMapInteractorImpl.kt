@@ -4,10 +4,9 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.subjects.PublishSubject
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.utils.managers.DeviceManager
@@ -83,10 +82,12 @@ class CourierMapInteractorImpl(
     }
 
     override suspend fun startVisibilityManagerTimer1() {
-        if (hideSplashDisposable == null) { // ссылка на слушателя если запущен то ничего ен делаем а если
-            prolongHideSubject.collect()
-            Observable.timer(HIDE_DELAY, TimeUnit.SECONDS)
-            hideManagerBar()
+        coroutineScope {
+            if (hideSplashDisposable == null) { // ссылка на слушателя если запущен то ничего ен делаем а если
+                prolongHideSubject.launchIn(this)
+                Observable.timer(HIDE_DELAY, TimeUnit.SECONDS)
+                hideManagerBar()
+            }
         }
     }
 

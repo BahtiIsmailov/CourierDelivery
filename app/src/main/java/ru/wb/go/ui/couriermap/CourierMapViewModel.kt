@@ -3,6 +3,7 @@ package ru.wb.go.ui.couriermap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
@@ -128,9 +129,11 @@ class CourierMapViewModel(
         viewModelScope.launch {
             try {
                 interactor.startVisibilityManagerTimer1()
-                interactor.subscribeMapState().onEach {
-                    subscribeMapStateComplete(it)
-                }
+                interactor.subscribeMapState()
+                    .onEach {
+                        subscribeMapStateComplete(it)
+                    }
+                    .collect()
 
             } catch (e: Exception) {
                 LogUtils {
