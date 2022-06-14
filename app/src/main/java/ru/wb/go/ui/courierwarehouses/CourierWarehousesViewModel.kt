@@ -61,7 +61,7 @@ class CourierWarehousesViewModel(
     private var warehouseItems = mutableListOf<CourierWarehouseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
-    private lateinit var myLocation: CoordinatePoint
+    private lateinit var myLocation: CoordinatePoint //TODO(FIXME не успевает инициализироваться)
 
 
 
@@ -78,9 +78,16 @@ class CourierWarehousesViewModel(
     private fun observeMapAction() {
         viewModelScope.launch {
             try {
-                interactor.observeMapAction().onEach {
-                    observeMapActionComplete(it)
+                interactor.observeMapAction().collect {
+                    when (it) {
+                        is CourierMapAction.ItemClick -> onMapPointClick(it.point)
+                        is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
+                        is CourierMapAction.MapClick -> showManagerBar()
+                        is CourierMapAction.ShowAll -> onShowAllClick()
+                        else -> {}
+                    }
                 }
+
             }catch (e:Exception){
                 observeMapActionError(e)
             }
@@ -97,15 +104,6 @@ class CourierWarehousesViewModel(
 //                ))
 //    }
 
-    private fun observeMapActionComplete(it: CourierMapAction) {
-        when (it) {
-            is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-            is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
-            is CourierMapAction.MapClick -> showManagerBar()
-            is CourierMapAction.ShowAll -> onShowAllClick()
-            else -> {}
-        }
-    }
 
     private fun observeMapActionError(throwable: Throwable) {
         onTechErrorLog("observeMapActionError", throwable)

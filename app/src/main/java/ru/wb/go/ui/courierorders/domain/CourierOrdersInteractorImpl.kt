@@ -179,9 +179,9 @@ class CourierOrdersInteractorImpl(
     }
 
     override suspend fun observeMapAction(): Flow<CourierMapAction> {
-        return courierMapRepository.observeMapAction() //withContext(Dispatchers.IO){
-
-        //}
+        return  withContext(Dispatchers.IO){
+            courierMapRepository.observeMapAction()
+        }
     }
 
     override fun carNumberIsConfirm(): Boolean {

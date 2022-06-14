@@ -20,6 +20,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.StatusBarListener
+import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard
@@ -69,18 +70,13 @@ class NumberPhoneFragment : Fragment() {
     }
 
     private fun initListeners() {
-
-//        binding.loginLayout.setOnLongClickListener {
-//            viewModel.onLongClick()
-//            true
-//        }
-
         with(binding) {
             next.setOnClickListener { viewModel.onCheckPhone(phoneNumberTitle.text.toString()) }
+            viewKeyboard.observableListener.observe(viewLifecycleOwner){
+                viewModel.onNumberObservableClicked(it) // отображение номера телефона
+            }
+
         }
-
-        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.value!!) // отображение номера телефона
-
     }
 
     private fun initStateObserve() {

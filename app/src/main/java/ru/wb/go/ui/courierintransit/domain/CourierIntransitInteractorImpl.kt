@@ -100,9 +100,9 @@ class CourierIntransitInteractorImpl(
     }
 
     override suspend fun observeMapAction(): Flow<CourierMapAction> {
-        return courierMapRepository.observeMapAction()//withContext(Dispatchers.IO){
-
-        //}
+        return withContext(Dispatchers.IO){
+            courierMapRepository.observeMapAction()
+        }
     }
 
     override suspend fun mapState(state: CourierMapState) {

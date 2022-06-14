@@ -44,7 +44,6 @@ class CourierWarehousesFragment :
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.resumeInit()
         initView()
         initRecyclerView()
         initObservable()

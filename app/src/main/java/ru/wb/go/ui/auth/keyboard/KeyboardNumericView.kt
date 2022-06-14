@@ -77,7 +77,6 @@ class KeyboardNumericView : RelativeLayout {
     }
 
     private fun initListeners() {
-
         for (button in numberButtons!!) {
             button.setOnClickListener { v: View ->
                 val keyboardButtonView = v as KeyboardButtonView

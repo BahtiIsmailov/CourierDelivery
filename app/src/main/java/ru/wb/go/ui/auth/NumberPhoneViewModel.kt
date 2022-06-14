@@ -75,7 +75,7 @@ class NumberPhoneViewModel(
 //
 //    }
 
-//    fun onNumberObservableClicked(event: KeyboardNumericView.ButtonAction) {
+//    fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
 //        val initPhone = Observable.just(interactor.userPhone())
 //        val eventKeyboard =
 //            event.scan(String()) { accumulator, item -> accumulateNumber(accumulator, item) }
@@ -96,7 +96,7 @@ class NumberPhoneViewModel(
                 val it = accumulateNumber(event.name, event)
                 switchNext(it)
                 numberToPhoneSpanFormat(it)
-                _stateUI.postValue(NumberFormatComplete) // это не точно
+                _stateUI.postValue() // это не точно
             }catch (e:Exception){
                 onTechErrorLog("onNumberObservableClicked", e)
             }
