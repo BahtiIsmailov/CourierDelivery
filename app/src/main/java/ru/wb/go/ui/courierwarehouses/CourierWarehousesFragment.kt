@@ -83,7 +83,7 @@ class CourierWarehousesFragment :
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     binding.items.adapter = adapter
                 }
-                is CourierWarehouseItemState.UpdateItems -> {
+                is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
                     adapter.clear()
                     adapter.addItems(it.items)
                     adapter.notifyDataSetChanged()
