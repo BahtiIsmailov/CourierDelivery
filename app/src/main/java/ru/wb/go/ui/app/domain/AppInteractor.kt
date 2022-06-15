@@ -8,6 +8,6 @@ interface AppInteractor {
 
     suspend fun observeNetworkConnected(): NetworkState
     fun exitAuth()
-    suspend fun observeNavigationApp(): Flow<String>
+    fun observeNavigationApp(): Flow<String>
 
 }

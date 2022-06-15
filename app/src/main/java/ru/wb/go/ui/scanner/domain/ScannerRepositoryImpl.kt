@@ -3,6 +3,7 @@ package ru.wb.go.ui.scanner.domain
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
@@ -19,22 +20,24 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 ) : ScannerRepository {
 
 
-    private var scannerActionSubject = MutableSharedFlow<ScannerAction>()
-    private var scannerStateSubject = MutableSharedFlow<ScannerState>()
+    private var scannerActionSubject = MutableSharedFlow<ScannerAction>(extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private var scannerStateSubject = MutableSharedFlow<ScannerState>(extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-     override suspend fun scannerAction(action:ScannerAction){
-         scannerActionSubject.emit(action)
+     override fun scannerAction(action:ScannerAction){
+         scannerActionSubject.tryEmit(action)
     }
 
     override suspend fun observeScannerAction(): Flow<ScannerAction> {
        return scannerActionSubject
     }
 
-    override suspend fun scannerState(state: ScannerState) {
-        scannerStateSubject.emit(state)
+    override fun scannerState(state: ScannerState) {
+        scannerStateSubject.tryEmit(state)
     }
 
-    override suspend  fun observeScannerState(): Flow<ScannerState> {
+    override fun observeScannerState(): Flow<ScannerState> {
         return scannerStateSubject
     }
 

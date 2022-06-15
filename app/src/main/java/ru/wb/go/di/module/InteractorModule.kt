@@ -165,11 +165,10 @@ val interactorModule = module {
     }
 
     fun provideScannerInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
         scannerRepository: ScannerRepository,
         settingsManager: SettingsManager
     ): ScannerInteractor {
-        return ScannerInteractorImpl(rxSchedulerFactory, scannerRepository, settingsManager)
+        return ScannerInteractorImpl(scannerRepository, settingsManager)
     }
 
     fun provideCourierWarehousesInteractor(
@@ -401,7 +400,7 @@ val interactorModule = module {
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
-    single { provideScannerInteractor(get(), get(), get()) }
+    single { provideScannerInteractor(get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get(), get()) }
     single {

@@ -1,11 +1,13 @@
 package ru.wb.go.ui.courierwarehouses
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.datatransport.cct.internal.LogEvent
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -75,7 +77,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun checkDemoMode() {
-        _demoState.postValue(interactor.isDemoMode())
+        _demoState.value = interactor.isDemoMode()
     }
 
 
@@ -101,23 +103,19 @@ class CourierWarehousesViewModel(
 
 
     private fun observeMapAction() {
-        viewModelScope.launch {
-            interactor.observeMapAction().onEach {
-                when (it) {
-                    is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-                    is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
-                    is CourierMapAction.MapClick -> showManagerBar()
-                    is CourierMapAction.ShowAll -> onShowAllClick()
-                    else -> {}
-                }
+        interactor.observeMapAction().onEach {
+            when (it) {
+                is CourierMapAction.ItemClick -> onMapPointClick(it.point)
+                is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
+                is CourierMapAction.MapClick -> showManagerBar()
+                is CourierMapAction.ShowAll -> onShowAllClick()
+                else -> {}
             }
-                .catch {
-                    observeMapActionError(it)
-                }
-                .collect()
-
-
         }
+            .catch {
+                observeMapActionError(it)
+            }
+            .launchIn(viewModelScope)
 
     }
 
@@ -127,9 +125,7 @@ class CourierWarehousesViewModel(
     }
 
     fun updateData() {
-        viewModelScope.launch {
-            getWarehouses()
-        }
+        getWarehouses()
     }
 
     fun toRegistrationClick() {
@@ -151,21 +147,11 @@ class CourierWarehousesViewModel(
         _waitLoader.value = state
     }
 
-    private suspend fun getWarehouses() {
+    private fun getWarehouses() {
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
                 val response = interactor.getWarehouses()
-
-//                interactor.mapAction(
-//                    CourierMapAction.LocationUpdate(
-//                        CoordinatePoint(
-//                            response.first().latitude,
-//                            response.first().longitude
-//                        )
-//                    )
-//                )
-
                 getWarehousesComplete(response) // сюда пришли данные размер массива
             } catch (e: Exception) {
                 getWarehousesError(e)
@@ -182,16 +168,19 @@ class CourierWarehousesViewModel(
 //
 //    private suspend fun getWarehouses() {
 //        setLoader(WaitLoader.Wait)
-//        val job = viewModelScope.launch {
-//            try {
-//                val response = interactor.getWarehouses()
-//                getWarehousesComplete(response)
+//         addsubsciption{
+//    interactor.getWarehouses()
+//              .dofinally{clearFabAndWhList()}
+    //           .subscribe{
+  //                   getWarehousesComplete(it)
+    //           }
+//
 //            } catch (e: Exception) {
 //                getWarehousesError(e)
 //            }
 //        }
 //        job.join()
-//        clearFabAndWhList()
+//
 //    }
 
 
@@ -259,6 +248,7 @@ class CourierWarehousesViewModel(
             val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
             mapMarkers.add(mapMarker)// arrive latitude b longitotude
         }
+        Log.e("test","convertAndSaveItemsPointsMarkers : $mapMarkers")
     }
 //    private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
 //        warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
@@ -282,9 +272,9 @@ class CourierWarehousesViewModel(
 
 
     private fun courierWarehouseComplete() {
-        _warehouseState.postValue(
+        _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList())
+            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList()
         )
     }
 
@@ -300,6 +290,13 @@ class CourierWarehousesViewModel(
             interactor.mapState(CourierMapState.UpdateMyLocation)
         }
     }
+    //    private fun showManagerBar() {
+//        interactor.mapState(CourierMapState.ShowManagerBar)
+//    }
+//
+//    private fun updateMyLocation() {
+//        interactor.mapState(CourierMapState.UpdateMyLocation)
+//    }
 
     private fun initMapByLocation(location: CoordinatePoint) {
         viewModelScope.launch {
@@ -320,13 +317,7 @@ class CourierWarehousesViewModel(
 //            else CourierWarehouseItemState.InitItems(warehouseItems.toMutableList()))
 //    }
 //
-//    private fun showManagerBar() {
-//        interactor.mapState(CourierMapState.ShowManagerBar)
-//    }
-//
-//    private fun updateMyLocation() {
-//        interactor.mapState(CourierMapState.UpdateMyLocation)
-//    }
+
 //
 //    private fun initMapByLocation(location: CoordinatePoint) {
 //        onTechEventLog("initMapByLocation")
@@ -343,10 +334,10 @@ class CourierWarehousesViewModel(
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
         viewModelScope.launch {
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))// here send for map state to update markers
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
+            Log.e("test","updateMarkersWithMyLocation : $mapMarkers")
             interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
         }
-
     }
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
@@ -362,6 +353,23 @@ class CourierWarehousesViewModel(
         }
 
     }
+
+//    private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
+//        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+//        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+//    }
+//
+//    private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
+//        if (coordinatePoints.isNotEmpty()) {
+//            val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
+//                coordinatePoints, myLocation, RADIUS_KM
+//            )
+//            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+//        } else {
+//            interactor.mapState(CourierMapState.NavigateToPoint(myLocation))
+//        }
+//    }
+
 
     private fun onMapPointClick(mapPoint: MapPoint) {
         onTechEventLog("onItemPointClick")
@@ -517,21 +525,6 @@ class CourierWarehousesViewModel(
 }
 
 /*
-    private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
-    }
-
-    private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
-        if (coordinatePoints.isNotEmpty()) {
-            val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
-                coordinatePoints, myLocation, RADIUS_KM
-            )
-            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
-        } else {
-            interactor.mapState(CourierMapState.NavigateToPoint(myLocation))
-        }
-    }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
         onTechEventLog("onItemPointClick")

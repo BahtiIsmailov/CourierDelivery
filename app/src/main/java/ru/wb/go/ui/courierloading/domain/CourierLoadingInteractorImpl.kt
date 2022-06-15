@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onEach
@@ -37,7 +38,8 @@ class CourierLoadingInteractorImpl(
     CourierLoadingInteractor {
 
 
-    private val scanLoaderProgressSubject = MutableSharedFlow<CourierLoadingProgressData>()
+    private val scanLoaderProgressSubject = MutableSharedFlow<CourierLoadingProgressData>(extraBufferCapacity = Int.MAX_VALUE,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     companion object {
         const val DELAY_HOLD_SCANNER = 1500L
@@ -153,12 +155,12 @@ class CourierLoadingInteractorImpl(
 
     }
 
-     private suspend fun firstBoxLoaderProgress() {
-        scanLoaderProgressSubject.emit(CourierLoadingProgressData.Progress)
+     private fun firstBoxLoaderProgress() {
+        scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Progress)
     }
 
-     private suspend fun firstBoxLoaderComplete() {
-        scanLoaderProgressSubject.emit(CourierLoadingProgressData.Complete)
+     private   fun firstBoxLoaderComplete() {
+        scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Complete)
     }
 
     override suspend fun scanLoaderProgress(): Flow<CourierLoadingProgressData> {

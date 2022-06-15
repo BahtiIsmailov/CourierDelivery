@@ -14,7 +14,7 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     suspend fun loadProgress()
 
-    suspend fun observeMapAction(): Flow<CourierMapAction>
+    fun observeMapAction(): Flow<CourierMapAction>
 
     suspend fun mapState(state: CourierMapState)
 

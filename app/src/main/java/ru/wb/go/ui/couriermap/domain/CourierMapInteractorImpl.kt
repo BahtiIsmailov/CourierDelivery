@@ -3,6 +3,7 @@ package ru.wb.go.ui.couriermap.domain
 import io.reactivex.functions.Action
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -19,7 +20,9 @@ class CourierMapInteractorImpl(
 ) : CourierMapInteractor {
 
 
-    private val prolongHideSubject = MutableSharedFlow<Action>()
+    private val prolongHideSubject = MutableSharedFlow<Action>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     val coroutineScope = CoroutineScope(SupervisorJob())
 
     init {
@@ -33,7 +36,7 @@ class CourierMapInteractorImpl(
 //        startVisibilityManagerTimer1()
 //    }
 
-    override suspend fun subscribeMapState(): Flow<CourierMapState> {
+    override fun subscribeMapState(): Flow<CourierMapState> {
         return courierMapRepository.observeMapState().onEach { // слушает все события с картой
             when (it) {
                 CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
@@ -56,7 +59,7 @@ class CourierMapInteractorImpl(
 //    }
 
 
-    override suspend fun markerClick(point: MapPoint) {
+    override fun markerClick(point: MapPoint) {
         courierMapRepository.mapAction(CourierMapAction.ItemClick(point))
     }
     //    override fun markerClick(point: MapPoint) {
@@ -65,7 +68,7 @@ class CourierMapInteractorImpl(
 
 
 
-    override suspend fun mapClick() {
+    override fun mapClick() {
         courierMapRepository.mapAction(CourierMapAction.MapClick)
     }
 
@@ -74,7 +77,7 @@ class CourierMapInteractorImpl(
 //        courierMapRepository.mapAction(CourierMapAction.MapClick)
 //    }
 
-    override suspend fun onForcedLocationUpdate(point: CoordinatePoint) {
+    override fun onForcedLocationUpdate(point: CoordinatePoint) {
         deviceManager.saveLocation("${point.latitude}:${point.longitude}")
         courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))
     }
@@ -84,7 +87,7 @@ class CourierMapInteractorImpl(
 //        courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))
 //    }
 
-    override suspend fun showAll() {
+    override fun showAll() {
         courierMapRepository.mapAction(CourierMapAction.ShowAll)
     }
 
@@ -92,7 +95,7 @@ class CourierMapInteractorImpl(
 //        courierMapRepository.mapAction(CourierMapAction.ShowAll)
 //    }
 
-    override suspend fun animateComplete() {
+    override fun animateComplete() {
         courierMapRepository.mapAction(CourierMapAction.AnimateComplete)
     }
 
@@ -100,7 +103,7 @@ class CourierMapInteractorImpl(
 //        courierMapRepository.mapAction(CourierMapAction.AnimateComplete)
 //    }
 
-    override suspend fun prolongTimeHideManager() {
+    override fun prolongTimeHideManager() {
         prolongHideTimerManager()
     }
 
@@ -108,8 +111,8 @@ class CourierMapInteractorImpl(
 //        prolongHideTimerManager()
 //    }
 
-    private suspend fun prolongHideTimerManager() {
-        prolongHideSubject.emit(Action { }) // отправляет акшн в рх как стэйт флоу
+    private fun prolongHideTimerManager() {
+        prolongHideSubject.tryEmit(Action { }) // отправляет акшн в рх как стэйт флоу
     }
 
 //    private fun prolongHideTimerManager() {
@@ -138,7 +141,7 @@ class CourierMapInteractorImpl(
 //    }
 
 
-    private suspend fun hideManagerBar() {
+    private fun hideManagerBar() {
         courierMapRepository.mapState(CourierMapState.HideManagerBar)
     }
 

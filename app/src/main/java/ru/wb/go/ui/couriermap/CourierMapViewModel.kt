@@ -4,9 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -122,19 +121,18 @@ class CourierMapViewModel(
     val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
         get() = _visibleManagerBar
 
-      fun subscribeMapState() {
-        viewModelScope.launch {
-            interactor.subscribeMapState()
-                .onEach {
-                    subscribeMapStateComplete(it)
+    fun subscribeMapState() {
+        interactor.subscribeMapState()
+            .onEach {
+                subscribeMapStateComplete(it)
+            }
+            .catch {
+                LogUtils {
+                    logDebugApp("subscribeMapState() error $it")
                 }
-                .catch {
-                    LogUtils {
-                        logDebugApp("subscribeMapState() error $it")
-                    }
-                }
-                .collect()
-        }
+            }
+            .launchIn(viewModelScope)
+
     }
 
     private fun subscribeMapStateComplete(it: CourierMapState) {
@@ -198,29 +196,22 @@ class CourierMapViewModel(
     }
 
     fun onItemClick(point: MapPoint) {
-        viewModelScope.launch {
-            interactor.markerClick(point)
-        }
+        interactor.markerClick(point)
     }
 
     fun onMapClick() {
-        viewModelScope.launch {
-            interactor.mapClick()
-        }
-
+        interactor.mapClick()
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-        viewModelScope.launch {
-            interactor.onForcedLocationUpdate(point)
-        }
+        interactor.onForcedLocationUpdate(point)
+
 
     }
 
     fun onForcedLocationUpdateDefault() {
-        viewModelScope.launch {
-            interactor.onForcedLocationUpdate(moscowCoordinatePoint())
-        }
+        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+
 
     }
 
@@ -229,24 +220,18 @@ class CourierMapViewModel(
     }
 
     fun onZoomClick() {
-        viewModelScope.launch {
-            interactor.prolongTimeHideManager()
-        }
+        interactor.prolongTimeHideManager()
+
 
     }
 
     fun onShowAllClick() {
-        viewModelScope.launch {
-            interactor.prolongTimeHideManager()
-            interactor.showAll()
-        }
-
+        interactor.prolongTimeHideManager()
+        interactor.showAll()
     }
 
     fun onAnimateComplete() {
-        viewModelScope.launch {
-            interactor.animateComplete()
-        }
+        interactor.animateComplete()
     }
 
     companion object {

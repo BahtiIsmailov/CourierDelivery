@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface AppNavRepository {
 
-    suspend fun navigate(request: String)
+    fun navigate(request: String)
 
-    suspend fun observeNavigation(): Flow<String>
+    fun observeNavigation(): Flow<String>
 
 }

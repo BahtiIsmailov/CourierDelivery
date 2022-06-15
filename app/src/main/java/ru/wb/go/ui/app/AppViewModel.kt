@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
@@ -41,18 +41,17 @@ class AppViewModel(
         fetchNetworkState()
         fetchVersionApp()
 
-        viewModelScope.launch {
-            interactor.observeNavigationApp()
-                .onEach {
-                    if (it == INVALID_TOKEN) {
-                      interactor.exitAuth()
-                        _navigation.postValue(NavigationState.NavigateToRegistration)
-                   } else
-                        throw IllegalStateException("Wrong param $it")
-                    }
-                .collect()
-                }
-        }
+        interactor.observeNavigationApp()
+            .onEach {
+                if (it == INVALID_TOKEN) {
+                    interactor.exitAuth()
+                    _navigation.postValue(NavigationState.NavigateToRegistration)
+                } else
+                    throw IllegalStateException("Wrong param $it")
+            }
+            .launchIn(viewModelScope)
+    }
+
 
     //
 //    init {
@@ -73,6 +72,7 @@ class AppViewModel(
     private fun fetchVersionApp() {
         _versionApp.postValue(resourceProvider.getVersionApp(deviceManager.appVersion))
     }
+
     //
 //    private fun fetchVersionApp() {
 //        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
@@ -134,6 +134,7 @@ class AppViewModel(
     companion object {
         const val SCREEN_TAG = "App"
     }
+
     //
 //    companion object {
 //        const val SCREEN_TAG = "App"

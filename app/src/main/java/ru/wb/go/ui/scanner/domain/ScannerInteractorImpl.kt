@@ -5,8 +5,10 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -15,13 +17,16 @@ import java.util.concurrent.TimeUnit
 
 
 class ScannerInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val scannerRepository: ScannerRepository,
     private val settingsManager: SettingsManager,
 ) : ScannerInteractor {
 
-    private val holdSplashSubject = MutableSharedFlow<Action>()
-    private val prolongHoldSubject = MutableSharedFlow<Action>()
+    private val holdSplashSubject = MutableSharedFlow<Action>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    private val prolongHoldSubject = MutableSharedFlow<Action>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     private var holdSplashDisposable: Disposable? = null
 
@@ -34,7 +39,7 @@ class ScannerInteractorImpl(
 
     }
 
-    override suspend fun barcodeScanned(barcode: String) {
+    override fun barcodeScanned(barcode: String) {
          startTimer()
          scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
     }
@@ -47,21 +52,19 @@ class ScannerInteractorImpl(
 
 
 
-    override suspend fun prolongHoldTimer() {
+    override  fun prolongHoldTimer() {
         startTimer()
-        prolongHoldSubject.emit(Action { })
+        prolongHoldSubject.tryEmit(Action { })
     }
 
-    override suspend fun observeScannerState(): Flow<ScannerState>  {
-          return withContext(Dispatchers.IO){
-              scannerRepository.observeScannerState().onEach {
+    override fun observeScannerState(): Flow<ScannerState>  {
+        return scannerRepository.observeScannerState().onEach {
                   workWithScan(it)
               }
-              scannerRepository.observeScannerState()
+                .flowOn(Dispatchers.IO)
         }
-    }
 
-    private suspend fun workWithScan(it:ScannerState){
+    private fun workWithScan(it:ScannerState){
         if (it is ScannerState.StartScan) {
             startTimer()
         }
@@ -75,14 +78,14 @@ class ScannerInteractorImpl(
         }
     }
 
-    private suspend fun startTimer() {
+    private fun startTimer() {
         if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
             return
         }
         if (holdSplashDisposable == null) {
             Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
             scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
-            holdSplashSubject.emit(Action { })
+            holdSplashSubject.tryEmit(Action { })
 
         }
     }

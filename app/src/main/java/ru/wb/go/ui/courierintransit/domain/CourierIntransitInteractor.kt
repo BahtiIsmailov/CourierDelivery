@@ -20,7 +20,7 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     fun clearLocalTaskData()
 
-    suspend fun observeMapAction(): Flow<CourierMapAction>
+    fun observeMapAction(): Flow<CourierMapAction>
 
     suspend fun mapState(state: CourierMapState)
 

@@ -1,6 +1,7 @@
 package ru.wb.go.ui.auth.domain
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +22,9 @@ class CheckSmsInteractorImpl(
     private val authRepository: AuthRemoteRepository,
 ) : CheckSmsInteractor {
 
-    private val timerStates = MutableSharedFlow<TimerState>()
+    private val timerStates = MutableSharedFlow<TimerState>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     private var durationTime = 0
     override suspend fun startTimer(durationTime: Int) {
@@ -46,8 +49,8 @@ class CheckSmsInteractorImpl(
         }
     }
 
-    private suspend fun publishCallState(timerState: TimerState) {
-        timerStates.emit(timerState)
+    private fun publishCallState(timerState: TimerState) {
+        timerStates.tryEmit(timerState)
     }
 
     override val timer: Flow<TimerState>

@@ -1,32 +1,34 @@
 package ru.wb.go.ui.couriermap.domain
 
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.onEmpty
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
 class CourierMapRepositoryImpl : CourierMapRepository {
 
 
+    private val mapStateSubject = MutableSharedFlow<CourierMapState>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    private val mapActionSubject = MutableSharedFlow<CourierMapAction>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-    private val mapStateSubject = MutableSharedFlow<CourierMapState>()
-    private val mapActionSubject = MutableSharedFlow<CourierMapAction>()
-
-    override suspend fun observeMapState(): Flow<CourierMapState> {
+    override fun observeMapState(): Flow<CourierMapState> {
         return mapStateSubject
     }
 
-    override suspend fun mapState(state: CourierMapState) {
-        mapStateSubject.emit(state)
+    override fun mapState(state: CourierMapState) {
+        mapStateSubject.tryEmit(state)
     }
 
-    override suspend fun mapAction(action: CourierMapAction) {
-        mapActionSubject.emit(action) // закинуть в поток
+    override fun mapAction(action: CourierMapAction) {
+        mapActionSubject.tryEmit(action) // закинуть в поток
     }
 
-    override suspend fun observeMapAction(): Flow<CourierMapAction> {
+    override fun observeMapAction(): Flow<CourierMapAction> {
         return mapActionSubject
     }
 

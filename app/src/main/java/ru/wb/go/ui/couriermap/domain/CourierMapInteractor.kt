@@ -7,19 +7,19 @@ import ru.wb.go.utils.map.MapPoint
 
 interface CourierMapInteractor {
 
-    suspend fun subscribeMapState(): Flow<CourierMapState>
+    fun subscribeMapState(): Flow<CourierMapState>
 
-    suspend fun markerClick(point: MapPoint)
+    fun markerClick(point: MapPoint)
 
-    suspend fun mapClick()
+    fun mapClick()
 
-    suspend fun onForcedLocationUpdate(point: CoordinatePoint)
+    fun onForcedLocationUpdate(point: CoordinatePoint)
 
-    suspend fun showAll()
+    fun showAll()
 
-    suspend fun animateComplete()
+    fun animateComplete()
 
-    suspend fun prolongTimeHideManager()
+    fun prolongTimeHideManager()
 
     fun startVisibilityManagerTimer1()
 

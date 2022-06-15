@@ -1,6 +1,7 @@
 package ru.wb.go.db
 
 import io.reactivex.Observable
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,9 @@ import java.util.concurrent.TimeUnit
 class TaskTimerRepositoryImpl : TaskTimerRepository {
 
     //private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
-    private val timerStates = MutableSharedFlow<TimerState>()
+    private val timerStates = MutableSharedFlow<TimerState>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     //private var timerDisposable: Disposable? = null
     private var durationTime = 0
     private var arrivalTime = 0
@@ -54,7 +57,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         timeConfirmCodeDisposable()
     }
 
-    private suspend fun onTimeConfirmCode(tick: Long) {
+    private fun onTimeConfirmCode(tick: Long) {
         if (tick >= arrivalTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
@@ -64,11 +67,11 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         }
     }
 
-    private suspend fun publishCallState(timerState: TimerState) {
-        timerStates.emit(timerState)
+    private fun publishCallState(timerState: TimerState) {
+        timerStates.tryEmit(timerState)
     }
 
-    private suspend fun timeConfirmCodeDisposable() {
+    private fun timeConfirmCodeDisposable() {
         durationTime = 0
         arrivalTime = 0
         publishCallState(TimerStateImpl(durationTime, 0))

@@ -8,12 +8,12 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierMapRepository {
 
-    suspend fun mapAction(action: CourierMapAction)
+      fun mapAction(action: CourierMapAction)
 
-    suspend fun observeMapState(): Flow<CourierMapState>
+     fun observeMapState(): Flow<CourierMapState>
 
-    suspend fun observeMapAction(): Flow<CourierMapAction>
+    fun observeMapAction(): Flow<CourierMapAction>
 
-    suspend fun mapState(state: CourierMapState)
+      fun mapState(state: CourierMapState)
 
 }

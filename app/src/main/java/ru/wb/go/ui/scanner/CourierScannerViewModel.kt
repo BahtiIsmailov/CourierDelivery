@@ -3,6 +3,7 @@ package ru.wb.go.ui.scanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
@@ -35,37 +36,40 @@ class CourierScannerViewModel(
     }
 
     private fun observeScannerState() {
-        viewModelScope.launch {
-            interactor.observeScannerState().onEach {
+        interactor.observeScannerState()
+            .onEach {
                 _scannerAction.postValue(it)
             }
-        }
+            .launchIn(viewModelScope)
+
     }
 
     private fun flashState() {
-        _flashState.postValue( settingsManager.getSetting(AppPreffsKeys.SETTING_START_FLASH_ON, false))
+        _flashState.postValue(
+            settingsManager.getSetting(
+                AppPreffsKeys.SETTING_START_FLASH_ON,
+                false
+            )
+        )
     }
 
-     private fun observeHoldSplash() {
+    private fun observeHoldSplash() {
         viewModelScope.launch {
             interactor.observeHoldSplash()
-            _scannerAction.postValue( ScannerState.StopScanWithHoldSplash)
+            _scannerAction.postValue(ScannerState.StopScanWithHoldSplash)
         }
     }
 
     fun onBarcodeScanned(barcode: String) {
-        viewModelScope.launch {
-            interactor.prolongHoldTimer()
-            interactor.barcodeScanned(barcode)
-        }
-
+        interactor.prolongHoldTimer()
+        interactor.barcodeScanned(barcode)
     }
 
     fun onHoldSplashClick() {
         viewModelScope.launch {
             interactor.prolongHoldTimer()
             interactor.holdSplashUnlock()
-            _scannerAction.postValue( ScannerState.StartScan)
+            _scannerAction.postValue(ScannerState.StartScan)
         }
     }
 

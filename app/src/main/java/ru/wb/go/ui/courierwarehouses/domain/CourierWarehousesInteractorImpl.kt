@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
@@ -66,10 +67,10 @@ class CourierWarehousesInteractorImpl(
 //    }
 
 
-    override suspend fun observeMapAction(): Flow<CourierMapAction> {
-        return  withContext(Dispatchers.IO){
-            courierMapRepository.observeMapAction()
-         }
+    override fun observeMapAction(): Flow<CourierMapAction> {
+        return courierMapRepository.observeMapAction()
+            .flowOn(Dispatchers.IO)
+
     }
 
 //    override fun observeMapAction(): Observable<CourierMapAction> {

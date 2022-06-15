@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -104,11 +106,12 @@ class CourierIntransitViewModel(
         }
 
     }
+
     private fun observeOffices() {
         viewModelScope.launch {
             try {
                 initOfficesComplete(interactor.getOffices())
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 onTechErrorLog("Get Offices", e)
                 errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
             }
@@ -118,25 +121,27 @@ class CourierIntransitViewModel(
 
     private fun initTime() {
         viewModelScope.launch {
-            _intransitTime.postValue(CourierIntransitTimeState.Time(
-                DateTimeFormatter.getDigitFullTime(interactor.observeOrderTimer().toInt())))
+            _intransitTime.postValue(
+                CourierIntransitTimeState.Time(
+                    DateTimeFormatter.getDigitFullTime(interactor.observeOrderTimer().toInt())
+                )
+            )
         }
     }
 
     private fun setLoader(state: WaitLoader) {
         _waitLoader.postValue(state)
     }
-    private fun observeMapAction() {
-        viewModelScope.launch {
-            try {
-                interactor.observeMapAction().onEach {
-                    observeMapActionComplete(it)
-                }
 
-            }catch (e:Exception){
-                onTechErrorLog("observeMapAction", e)
+    private fun observeMapAction() {
+        interactor.observeMapAction()
+            .onEach {
+                observeMapActionComplete(it)
             }
-        }
+            .catch {
+                onTechErrorLog("observeMapAction", it)
+            }
+            .launchIn(viewModelScope)
     }
 
 
@@ -204,8 +209,9 @@ class CourierIntransitViewModel(
 
     private fun updateAndScrollToItems(indexItemClick: Int) {
         _intransitOrders.postValue(
-            CourierIntransitItemState.UpdateItems(intransitItems.toMutableList()))
-        _intransitOrders.postValue( CourierIntransitItemState.ScrollTo(indexItemClick))
+            CourierIntransitItemState.UpdateItems(intransitItems.toMutableList())
+        )
+        _intransitOrders.postValue(CourierIntransitItemState.ScrollTo(indexItemClick))
     }
 
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
@@ -287,12 +293,14 @@ class CourierIntransitViewModel(
         initMap(markers, coordinatePoints)
 
         if (deliveredCountTotal == fromCountTotal)
-            _intransitOrders.postValue( CourierIntransitItemState.CompleteDelivery)
+            _intransitOrders.postValue(CourierIntransitItemState.CompleteDelivery)
     }
 
     private fun initItems(items: MutableList<BaseIntransitItem>, boxTotal: String) {
-        _intransitOrders.postValue( if (items.isEmpty()) CourierIntransitItemState.Empty
-        else CourierIntransitItemState.InitItems(items, boxTotal))
+        _intransitOrders.postValue(
+            if (items.isEmpty()) CourierIntransitItemState.Empty
+            else CourierIntransitItemState.InitItems(items, boxTotal)
+        )
     }
 
     private fun initMap(
@@ -304,7 +312,8 @@ class CourierIntransitViewModel(
                 interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
             } else {
                 interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
-                val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+                val boundingBox =
+                    MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
                 interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
             }
         }
@@ -319,10 +328,12 @@ class CourierIntransitViewModel(
         intransitItems.forEachIndexed { index, item ->
             if (item.isSelected) {
                 val point = coordinatePoints[index]
-                _navigationState.postValue( CourierIntransitNavigationState.NavigateToNavigator(
-                    point.latitude,
-                    point.longitude
-                ))
+                _navigationState.postValue(
+                    CourierIntransitNavigationState.NavigateToNavigator(
+                        point.latitude,
+                        point.longitude
+                    )
+                )
                 return
             }
         }
@@ -334,14 +345,14 @@ class CourierIntransitViewModel(
         updateMarkers()
         changeSelectedItemsByMarker(0, false)
         updateAndScrollToItems(0)
-        _navigationState.postValue( CourierIntransitNavigationState.NavigateToScanner)
+        _navigationState.postValue(CourierIntransitNavigationState.NavigateToScanner)
     }
 
     fun onCompleteDeliveryClick() {
         onTechEventLog("Button CompleteDelivery")
         viewModelScope.launch {
             try {
-                _isEnableState.postValue( false)
+                _isEnableState.postValue(false)
                 val boxes = interactor.getBoxes()
                 val order = interactor.getOrder()
                 val orderId = order.orderId.toString()
@@ -349,7 +360,7 @@ class CourierIntransitViewModel(
                 interactor.setIntransitTask(orderId, boxes)
                 interactor.completeDelivery(order)
                 completeDeliveryComplete(order.cost)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 onTechErrorLog("CompleteDelivery", e)
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
@@ -371,16 +382,18 @@ class CourierIntransitViewModel(
         )
 
         interactor.clearLocalTaskData()
-        _navigationState.postValue( CourierIntransitNavigationState.NavigateToCompleteDelivery(
-            cdr.cost,
-            cdr.deliveredBoxes,
-            cdr.countBoxes
-        ))
+        _navigationState.postValue(
+            CourierIntransitNavigationState.NavigateToCompleteDelivery(
+                cdr.cost,
+                cdr.deliveredBoxes,
+                cdr.countBoxes
+            )
+        )
         clearSubscription()
     }
 
     fun onErrorDialogConfirmClick() {
-        _isEnableState.postValue( true)
+        _isEnableState.postValue(true)
     }
 
     fun onItemOfficeClick(index: Int) {
@@ -395,7 +408,8 @@ class CourierIntransitViewModel(
 
     private fun changeEnableNavigator(isSelected: Boolean) {
         _navigatorState.postValue(
-            if (isSelected) CourierIntransitNavigatorUIState.Enable else CourierIntransitNavigatorUIState.Disable)
+            if (isSelected) CourierIntransitNavigatorUIState.Enable else CourierIntransitNavigatorUIState.Disable
+        )
     }
 
     private fun changeSelectedItems(selectIndex: Int) {
@@ -409,7 +423,8 @@ class CourierIntransitViewModel(
     private fun updateItems() {
         _intransitOrders.postValue(
             if (intransitItems.isEmpty()) CourierIntransitItemState.Empty
-            else CourierIntransitItemState.UpdateItems(intransitItems))
+            else CourierIntransitItemState.UpdateItems(intransitItems)
+        )
     }
 
     private fun changeSelectedMarkers(isSelected: Boolean, selectIndex: Int) {

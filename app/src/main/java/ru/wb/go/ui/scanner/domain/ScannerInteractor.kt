@@ -8,12 +8,12 @@ interface ScannerInteractor {
 
     suspend fun observeHoldSplash(): Flow<Action>
 
-    suspend fun barcodeScanned(barcode: String)
+     fun barcodeScanned(barcode: String)
 
     suspend fun holdSplashUnlock()
 
-    suspend fun prolongHoldTimer()
+      fun prolongHoldTimer()
 
-    suspend fun observeScannerState(): Flow<ScannerState>
+      fun observeScannerState(): Flow<ScannerState>
 
 }
