@@ -48,7 +48,7 @@ interface CourierLocalRepository {
 
     fun setOrderOrderStart(scanTime: String)
 
-    fun setOrderInReserve(order: LocalOrderEntity)
+    suspend fun setOrderInReserve(order: LocalOrderEntity)
 
     fun setOrderAfterLoadStatus(cost: Int)
 

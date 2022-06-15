@@ -43,7 +43,7 @@ interface CourierOrderDao {
     // ====================================
     // True Local Order
     @Transaction
-    fun addOrderFromReserve(order: LocalOrderEntity) {
+    suspend fun addOrderFromReserve(order: LocalOrderEntity) {
         addOrder(order)
         addOfficesFromReserve(order.orderId)
     }

@@ -31,7 +31,7 @@ interface AppApi {
     @GET("{version}/tasks/my")
     suspend fun tasksMy(
         @Path(value = "version", encoded = true) version: String,
-    ):  MyTaskResponse
+    ): MyTaskResponse
 
     @POST("{version}/tasks/{taskID}/courier")
     suspend fun reserveTask(

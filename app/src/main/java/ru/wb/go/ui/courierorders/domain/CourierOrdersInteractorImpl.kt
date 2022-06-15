@@ -182,7 +182,7 @@ class CourierOrdersInteractorImpl(
             val courierOrderLocalDataEntity = selectedOrder(selectedRowOrder())
             val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()
             val localOrderEntity = convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
-             reserveTask(localOrderEntity)
+            reserveTask(localOrderEntity)
             courierLocalRepository.setOrderInReserve(localOrderEntity)
 
         }

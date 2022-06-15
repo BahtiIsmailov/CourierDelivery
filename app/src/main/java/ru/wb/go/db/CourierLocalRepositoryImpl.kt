@@ -111,7 +111,7 @@ class CourierLocalRepositoryImpl(
         return getOrder().orderId.toString()
     }
 
-    override fun setOrderInReserve(order: LocalOrderEntity) {
+    override suspend fun setOrderInReserve(order: LocalOrderEntity) {
         courierOrderDao.addOrderFromReserve(order)
     }
 
