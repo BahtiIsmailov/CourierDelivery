@@ -85,6 +85,9 @@ class CourierWarehousesInteractorImpl(
 //        courierMapRepository.mapState(state)
 //    }
 
+    override suspend fun mapAction(action: CourierMapAction) {
+        courierMapRepository.mapAction(action)
+    }
 
     override fun isDemoMode(): Boolean {
         return tokenManager.isDemo()

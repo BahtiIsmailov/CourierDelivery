@@ -1,6 +1,5 @@
 package ru.wb.go.ui.couriermap.domain
 
-import io.reactivex.Observable
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.utils.map.CoordinatePoint

@@ -75,13 +75,14 @@ class CourierWarehousesFragment :
                     binding.emptyList.visibility = GONE
                     binding.refresh.isRefreshing = false
                     binding.items.visibility = VISIBLE
-                    val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {// тут падает
+                    val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
                             viewModel.onItemClick(index)
                         }
                     }
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     binding.items.adapter = adapter
+
                 }
                 is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
                     adapter.clear()
@@ -253,3 +254,4 @@ fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
         ?.let { decoration.setDrawable(it) }
     return decoration
 }
+

@@ -20,4 +20,6 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun isDemoMode(): Boolean
 
+    suspend fun mapAction(action: CourierMapAction)
+
 }
