@@ -33,9 +33,7 @@ class CourierWarehousesInteractorImpl(
     CourierWarehousesInteractor {
 
     override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {
-        return withContext(Dispatchers.IO){
-            appRemoteRepository.courierWarehouses()
-        }
+        return appRemoteRepository.courierWarehouses()
     }
 
 //    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
