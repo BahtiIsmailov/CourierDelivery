@@ -3,7 +3,6 @@ package ru.wb.go.ui.couriercarnumber
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import ru.wb.go.app.DEFAULT_CAR_NUMBER
@@ -14,7 +13,6 @@ import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
-import java.lang.Exception
 
 fun String.replaceCarNumberY(): String {
     return this.replace("Y", "У")
@@ -75,24 +73,21 @@ class CourierCarNumberViewModel(
     }
 
     fun onCarTypeSelectClick() {
-        _stateUI.postValue(CourierCarNumberUIState.InitTypeItems(types))
+        _stateUI.value = CourierCarNumberUIState.InitTypeItems(types)
     }
 
     fun onCarTypeCloseClick() {
-        _stateUI.postValue(CourierCarNumberUIState.CloseTypeItems)
+        _stateUI.value = CourierCarNumberUIState.CloseTypeItems
     }
 
     fun onNumberObservableClicked(event: CarNumberKeyboardNumericView.ButtonAction) {
-        viewModelScope.launch {
-            try {
-                carNumber = accumulateNumber(interactor.getCarNumber(), event).replaceCarNumberY()
-                switchBackspace(carNumber)
-                switchComplete()
-                _stateUI.postValue(carNumberFormat(CarNumberUtils(carNumber)).invoke())
-            }catch (e:Exception){
-                onTechErrorLog("onNumberObservableClicked", e)
-            }
-
+        try {
+            carNumber = accumulateNumber(interactor.getCarNumber(), event).replaceCarNumberY()
+            switchBackspace(carNumber)
+            switchComplete()
+            _stateUI.value = carNumberFormat(CarNumberUtils(carNumber)).invoke()
+        } catch (e: Exception) {
+            onTechErrorLog("onNumberObservableClicked", e)
         }
     }
 
@@ -104,7 +99,7 @@ class CourierCarNumberViewModel(
     private fun updateCarType() {
         if (carType == DEFAULT_CAR_TYPE) return
         switchComplete()
-        _stateUI.postValue(CourierCarNumberUIState.SelectedCarType(types[carType]))
+        _stateUI.value = CourierCarNumberUIState.SelectedCarType(types[carType])
     }
 
     private fun carNumberFormat(carNumberUtils: CarNumberUtils): () -> CourierCarNumberUIState =
@@ -119,15 +114,16 @@ class CourierCarNumberViewModel(
         }
 
     private fun switchBackspace(it: String) {
-        _stateKeyboardBackspaceUI.postValue(
+        _stateKeyboardBackspaceUI.value =
             if (it.isEmpty()) CourierCarNumberBackspaceUIState.Inactive
-            else CourierCarNumberBackspaceUIState.Active)
+            else CourierCarNumberBackspaceUIState.Active
+
     }
 
     private fun switchComplete() {
-        _stateUI.postValue(
-             if (carNumber.length < NUMBER_LENGTH_MAX - 1) CourierCarNumberUIState.NumberNotFilled
-            else CourierCarNumberUIState.NumberFormatComplete)
+        _stateUI.value =
+            if (carNumber.length < NUMBER_LENGTH_MAX - 1) CourierCarNumberUIState.NumberNotFilled
+            else CourierCarNumberUIState.NumberFormatComplete
     }
 
     private fun accumulateNumber(
@@ -143,34 +139,35 @@ class CourierCarNumberViewModel(
     }
 
     private fun putCarTypeAndNumber() {
-        _progressState.postValue( CourierCarNumberProgressState.Progress)
-        viewModelScope.launch {
-            try {
-                interactor.putCarTypeAndNumber(
-                    carType,
-                    carNumber.replace("\\s".toRegex(), "").revertCarNumberY()
-                )
-                fetchCarNumberComplete()
-            }catch (e:Exception){
-                fetchCarNumberError(e)
-            }
+        _progressState.value = CourierCarNumberProgressState.Progress
+        try {
+            interactor.putCarTypeAndNumber(
+                carType,
+                carNumber.replace("\\s".toRegex(), "").revertCarNumberY()
+            )
+            fetchCarNumberComplete()
+        } catch (e: Exception) {
+            fetchCarNumberError(e)
         }
+
     }
 
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
-        _navigationState.postValue( CourierCarNumberNavigationState.NavigateToOrderDetails(
-            result = parameters.result
-        ))
-        _progressState.postValue( CourierCarNumberProgressState.ProgressComplete)
+        _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
+                result = parameters.result
+            )
+        _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
         onTechErrorLog("fetchCarNumberError", throwable)
-        _progressState.postValue( CourierCarNumberProgressState.ProgressComplete)
-        _navigationState.postValue( CourierCarNumberNavigationState.NavigateToOrderDetails(
-            result = parameters.result
-        ))
+        _progressState.value = CourierCarNumberProgressState.ProgressComplete
+        _navigationState.value =
+            CourierCarNumberNavigationState.NavigateToOrderDetails(
+                result = parameters.result
+            )
+
     }
 
     override fun getScreenTag(): String {
