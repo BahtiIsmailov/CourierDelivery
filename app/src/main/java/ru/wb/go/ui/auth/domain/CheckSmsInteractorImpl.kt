@@ -1,40 +1,38 @@
 package ru.wb.go.ui.auth.domain
 
-import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
+import ru.wb.go.utils.CoroutineInterval
 import java.util.concurrent.TimeUnit
 
 class CheckSmsInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val authRepository: AuthRemoteRepository,
 ) : CheckSmsInteractor {
 
-    //private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
-
     private val timerStates = MutableSharedFlow<TimerState>()
-
 
     private var durationTime = 0
     override suspend fun startTimer(durationTime: Int) {
         this.durationTime = durationTime
         coroutineScope {
-            Observable.interval(PERIOD, TimeUnit.MILLISECONDS).subscribe {
-                onTimeConfirmCode(it)
-            }
+            CoroutineInterval.interval(PERIOD,TimeUnit.MILLISECONDS)
+                .onEach {
+                    onTimeConfirmCode(it)
+                }
+                .launchIn(this)
         }
-
     }
 
     private suspend fun onTimeConfirmCode(tick: Long) {
@@ -55,11 +53,11 @@ class CheckSmsInteractorImpl(
     override val timer: Flow<TimerState>
         get() = timerStates
 
-    override suspend fun stopTimer() {
-        coroutineScope {
-
-        }
-    }
+//    override suspend fun stopTimer() {
+//        coroutineScope {
+//
+//        }
+//    }
 
     override suspend fun observeNetworkConnected(): NetworkState {
         return withContext(Dispatchers.IO) {

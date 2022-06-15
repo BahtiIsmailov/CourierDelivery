@@ -1,6 +1,10 @@
 package ru.wb.go.network.interceptors
 
 import android.os.ConditionVariable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -24,7 +28,7 @@ class RefreshTokenInterceptor(
 
     private val lock = ConditionVariable(true)
     private val isRefreshing: AtomicBoolean = AtomicBoolean(false)
-
+    val coroutineScope = CoroutineScope(SupervisorJob())
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request = chain.request()
@@ -45,7 +49,9 @@ class RefreshTokenInterceptor(
                     lock.close()
                     when (refreshTokenRepository.doRefreshToken()) {
                         RefreshResult.TokenInvalid -> {
-                            appNavRepository.navigate(INVALID_TOKEN)
+                            coroutineScope.launch {
+                                appNavRepository.navigate(INVALID_TOKEN)
+                            }
                         }
                         RefreshResult.Success -> {
                             val newRequest = createRequest(request, tokenManager.bearerToken())

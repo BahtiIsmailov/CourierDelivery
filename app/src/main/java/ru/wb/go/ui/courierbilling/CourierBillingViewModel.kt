@@ -85,6 +85,20 @@ class CourierBillingViewModel(
             }
         }
     }
+//    private fun initBalanceAndTransactions() {
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.getBillingInfo()
+//                .subscribe(
+//                    { billingComplete(it) },
+//                    {
+//                        onTechErrorLog("billingError", it)
+//                        setLoader(WaitLoader.Complete)
+//                        _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
+//                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+//                    })
+//        )
+//    }
 
     private fun billingComplete(it: BillingCommonEntity) {
         balance = it.balance

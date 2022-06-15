@@ -22,6 +22,6 @@ interface CourierMapInteractor {
 
     suspend fun prolongTimeHideManager()
 
-    suspend fun startVisibilityManagerTimer1()
+    fun startVisibilityManagerTimer1()
 
 }

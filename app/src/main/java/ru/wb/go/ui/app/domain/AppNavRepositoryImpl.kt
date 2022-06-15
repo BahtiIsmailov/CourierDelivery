@@ -14,26 +14,24 @@ class AppNavRepositoryImpl : AppNavRepository {
     override suspend fun navigate(request: String) {
         searchSubject.emit(request)
     }
+    //    override fun navigate(request: String) {
+//        searchSubject.onNext(request)
+//    }
 
     override suspend fun observeNavigation(): Flow<String> {
         return searchSubject
     }
+    //
+//    override fun observeNavigation(): Observable<String> {
+//        return searchSubject
+//    }
+//
 
     companion object{
         const val INVALID_TOKEN = "INVALID_TOKEN"
     }
 
 
-//    private var searchSubject: PublishSubject<String> = PublishSubject.create()
-//
-//    override fun navigate(request: String) {
-//        searchSubject.onNext(request)
-//    }
-//
-//    override fun observeNavigation(): Observable<String> {
-//        return searchSubject
-//    }
-//
 //    companion object{
 //        const val INVALID_TOKEN = "INVALID_TOKEN"
 //    }

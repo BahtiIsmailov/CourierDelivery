@@ -75,7 +75,7 @@ class CourierWarehousesFragment :
                     binding.emptyList.visibility = GONE
                     binding.refresh.isRefreshing = false
                     binding.items.visibility = VISIBLE
-                    val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
+                    val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {// тут падает
                         override fun onItemClick(index: Int) {
                             viewModel.onItemClick(index)
                         }
@@ -187,16 +187,8 @@ class CourierWarehousesFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                viewModel.updateData()
-            }
-        }
-        binding.update.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.updateData()
-            }
-        }
+        binding.refresh.setOnRefreshListener { viewModel.updateData() }//1
+        binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
@@ -218,9 +210,8 @@ class CourierWarehousesFragment :
 
     override fun onResume() {
         super.onResume()
-        viewModel.resumeInit()
-        viewModel.updateData()
-
+        viewModel.resumeInit()// если убрать то показывается дэмо версию
+        viewModel.updateData()// если убрать то не отображается список складов
     }
 
     override fun onPause() {

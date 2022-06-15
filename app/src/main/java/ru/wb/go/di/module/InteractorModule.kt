@@ -143,25 +143,21 @@ val interactorModule = module {
     }
 
     fun provideCheckSmsInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         repository: AuthRemoteRepository,
     ): CheckSmsInteractor {
         return CheckSmsInteractorImpl(
-            rxSchedulerFactory,
             networkMonitorRepository,
             repository,
         )
     }
 
     fun provideNavigationInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository,
         authRemoteRepository: AuthRemoteRepository,
         appNavRepository: AppNavRepository
     ): AppInteractor {
         return AppInteractorImpl(
-            rxSchedulerFactory,
             networkMonitorRepository,
             authRemoteRepository,
             appNavRepository
@@ -403,8 +399,8 @@ val interactorModule = module {
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
-    single { provideCheckSmsInteractor(get(), get(), get()) }
-    single { provideNavigationInteractor(get(), get(), get(), get()) }
+    single { provideCheckSmsInteractor(get(), get()) }
+    single { provideNavigationInteractor(get(), get(), get()) }
     single { provideScannerInteractor(get(), get(), get()) }
 
     single { provideCourierBillingAccountDataInteractor(get(), get(), get(), get()) }

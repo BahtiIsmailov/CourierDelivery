@@ -17,5 +17,5 @@ interface CheckSmsInteractor {
 
     suspend fun startTimer(durationTime: Int)
     val timer: Flow<TimerState>
-    suspend fun stopTimer()
+    //suspend fun stopTimer()
 }

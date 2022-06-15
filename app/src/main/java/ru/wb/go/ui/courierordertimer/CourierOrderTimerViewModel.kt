@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
@@ -84,15 +87,29 @@ class CourierOrderTimerViewModel(
         }
 
     }
-
-     private fun initTimer(reservedDuration: String, reservedAt: String) {
+    private suspend fun initTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
         interactor.startTimer(reservedDuration, reservedAt)
-        addSubscription(
-            interactor.timer
-                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
-        )
+        viewModelScope.launch {
+            interactor.timer.onEach {
+                onHandleSignUpState(it)
+            }
+                .catch {
+                    onHandleSignUpError(it)
+                }
+                .collect()
+
+        }
     }
+
+//     private fun initTimer(reservedDuration: String, reservedAt: String) {
+//        updateTimer(0, 0)
+//        interactor.startTimer(reservedDuration, reservedAt)
+//        addSubscription(
+//            interactor.timer
+//                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
+//        )
+//    }
 
     private fun onHandleSignUpState(timerState: TimerState) {
         timerState.handle(this)

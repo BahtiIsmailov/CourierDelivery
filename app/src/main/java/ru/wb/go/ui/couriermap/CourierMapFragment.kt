@@ -95,7 +95,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         initObservable()
         initListeners()
         initMapView()
-        viewModel.subscribeState()
+        viewModel.subscribeMapState()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

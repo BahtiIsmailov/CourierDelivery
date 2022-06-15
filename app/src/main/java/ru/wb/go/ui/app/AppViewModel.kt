@@ -53,63 +53,8 @@ class AppViewModel(
                 .collect()
                 }
         }
-    private fun fetchVersionApp() {
-        _versionApp.postValue(resourceProvider.getVersionApp(deviceManager.appVersion))
-    }
 
-    private fun fetchNetworkState() {
-        viewModelScope.launch {
-            _networkState.postValue(interactor.observeNetworkConnected())
-        }
-    }
-
-    fun onSupportClick() {
-        _navigation.postValue(NavigationState.NavigateToSupport)
-    }
-
-    fun onExitAuthClick() {
-        interactor.exitAuth()
-        _navigation.postValue(NavigationState.NavigateToRegistration)
-    }
-
-    fun getDarkThemeSetting(): Boolean {
-        return settingsManager.getSetting(
-            AppPreffsKeys.SETTING_THEME,
-            false
-        )
-    }
-
-    override fun getScreenTag(): String {
-        return SCREEN_TAG
-    }
-
-    companion object {
-        const val SCREEN_TAG = "App"
-    }
-
-    sealed class NavigationState {
-
-        object NavigateToRegistration : NavigationState()
-
-        object NavigateToSupport : NavigationState()
-
-    }
-
-
-
-
-//    private val _networkState = MutableLiveData<NetworkState>()
-//    val networkState: LiveData<NetworkState>
-//        get() = _networkState
-//
-//    private val _versionApp = MutableLiveData<String>()
-//    val versionApp: LiveData<String>
-//        get() = _versionApp
-//
-//    private val _navigation = MutableLiveData<NavigationState>()
-//    val navigation: LiveData<NavigationState>
-//        get() = _navigation
-//
+    //
 //    init {
 //        fetchNetworkState()
 //        fetchVersionApp()
@@ -125,41 +70,82 @@ class AppViewModel(
 //                }, {})
 //        )
 //    }
-//
+    private fun fetchVersionApp() {
+        _versionApp.postValue(resourceProvider.getVersionApp(deviceManager.appVersion))
+    }
+    //
 //    private fun fetchVersionApp() {
 //        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
 //    }
-//
+    private fun fetchNetworkState() {
+        viewModelScope.launch {
+            _networkState.postValue(interactor.observeNetworkConnected())
+        }
+    }
+    //
 //    private fun fetchNetworkState() {
 //        addSubscription(
 //            interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {})
 //        )
 //    }
-//
+
+    fun onSupportClick() {
+        _navigation.postValue(NavigationState.NavigateToSupport)
+    }
+    //
 //    fun onSupportClick() {
 //        _navigation.value = NavigationState.NavigateToSupport
 //    }
-//
+
+    fun onExitAuthClick() {
+        interactor.exitAuth()
+        _navigation.postValue(NavigationState.NavigateToRegistration)
+    }
+
+    //
 //    fun onExitAuthClick() {
 //        interactor.exitAuth()
 //        _navigation.value = NavigationState.NavigateToRegistration
 //    }
-//
+
+    fun getDarkThemeSetting(): Boolean {
+        return settingsManager.getSetting(
+            AppPreffsKeys.SETTING_THEME,
+            false
+        )
+    }
+
+    //
 //    fun getDarkThemeSetting(): Boolean {
 //        return settingsManager.getSetting(
 //            AppPreffsKeys.SETTING_THEME,
 //            false
 //        )
 //    }
-//
+
+    override fun getScreenTag(): String {
+        return SCREEN_TAG
+    }
+    //
 //    override fun getScreenTag(): String {
 //        return SCREEN_TAG
 //    }
-//
+
+    companion object {
+        const val SCREEN_TAG = "App"
+    }
+    //
 //    companion object {
 //        const val SCREEN_TAG = "App"
 //    }
 //
+    sealed class NavigationState {
+
+        object NavigateToRegistration : NavigationState()
+
+        object NavigateToSupport : NavigationState()
+
+    }
 //    sealed class NavigationState {
 //
 //        object NavigateToRegistration : NavigationState()

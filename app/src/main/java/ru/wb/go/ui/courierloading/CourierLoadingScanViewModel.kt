@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -103,12 +106,24 @@ class CourierLoadingScanViewModel(
             }
         }
     }
-     private fun observeTimer() {
-        addSubscription(
+    private fun observeTimer() {
+        viewModelScope.launch {
             courierOrderTimerInteractor.timer
-                .subscribe({ observeTimerComplete(it) }, { observeTimerError(it) })
-        )
+                .onEach {
+                    observeTimerComplete(it)
+                }
+                .catch {
+                    observeTimerError(it)
+                }
+                .collect()
+        }
     }
+//     private fun observeTimer() {
+//        addSubscription(
+//            courierOrderTimerInteractor.timer
+//                .subscribe({ observeTimerComplete(it) }, { observeTimerError(it) })
+//        )
+//    }
 
     private fun observeTimerComplete(timerState: TimerState) {
         timerState.handle(this)

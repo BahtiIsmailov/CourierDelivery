@@ -4,9 +4,13 @@ import io.reactivex.Observable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
+import ru.wb.go.utils.CoroutineInterval
 import java.util.concurrent.TimeUnit
 
 class TaskTimerRepositoryImpl : TaskTimerRepository {
@@ -21,9 +25,12 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         this.durationTime = durationTime
         this.arrivalTime = arrivalTime
         coroutineScope {
-            Observable.interval(1000L, TimeUnit.MILLISECONDS)
-            onTimeConfirmCode(it)
-            publishCallState(TimerStateImpl(durationTime, arrivalTime))
+            CoroutineInterval.interval(1000L,TimeUnit.MILLISECONDS)
+                .onEach {
+                    onTimeConfirmCode(it)
+                }
+                .launchIn(this)
+            publishCallState(TimerStateImpl(durationTime,arrivalTime))
         }
     }
 //    override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {

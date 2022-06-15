@@ -192,7 +192,6 @@ class CheckSmsViewModel(
         viewModelScope.launch {
             interactor.startTimer(durationTime)
         }
-
     }
 
     private fun fetchAuth(password: String) {
@@ -271,12 +270,12 @@ class CheckSmsViewModel(
         _repeatStateUI.postValue(CheckSmsUIRepeatState.RepeatPasswordComplete)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
-            interactor.stopTimer()
-        }
-    }
+//    override fun onCleared() {
+//        super.onCleared()
+//        viewModelScope.launch {
+//            interactor.stopTimer()
+//        }
+//    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

@@ -32,7 +32,7 @@ class CourierOrderTimerInteractorImpl(
         }
     }
 
-    override fun startTimer(reservedDuration: String, reservedAt: String) {
+    override suspend fun startTimer(reservedDuration: String, reservedAt: String) {
         var arrivalSec: Long
         val durationSec = (reservedDuration.toIntOrNull() ?: DEFAULT_ARRIVAL_TIME_COURIER_MIN) * 60L
         arrivalSec = if (reservedAt.isEmpty()) {
@@ -46,10 +46,11 @@ class CourierOrderTimerInteractorImpl(
         return taskTimerRepository.startTimer(durationSec.toInt(), arrivalSec.toInt())
     }
 
-    override val timer: Flow<TimerState>
-        get() = taskTimerRepository.timer.compose(rxSchedulerFactory.applyFlowableSchedulers())
 
-    override fun stopTimer() {
+    override val timer: Flow<TimerState>
+        get() = taskTimerRepository.timer
+
+    override suspend fun stopTimer() {
         taskTimerRepository.stopTimer()
     }
 
