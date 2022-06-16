@@ -31,7 +31,7 @@ class AppLoaderViewModel(
         }
         else {
             if (tokenManager.isDemo()) {
-                _demoState.postValue(true)
+                _demoState.value = true
             }
             else {
                 toAuth()
@@ -40,19 +40,16 @@ class AppLoaderViewModel(
     }
 
      fun toCourier() {
-        _navState.postValue(AppLoaderNavigatioState.NavigateToCourier)
+        _navState.value = AppLoaderNavigatioState.NavigateToCourier
     }
 
       fun toAuth() {
-        _navState.postValue(AppLoaderNavigatioState.NavigateToAuth)
+        _navState.value = AppLoaderNavigatioState.NavigateToAuth
     }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
     }
-
-
-
 
     companion object {
         const val SCREEN_TAG = "AppLoader"

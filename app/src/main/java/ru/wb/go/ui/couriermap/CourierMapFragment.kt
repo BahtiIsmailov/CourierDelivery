@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -871,7 +872,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         @DimenRes left: Int,
         @DimenRes right: Int
     ): BoundingBox {
-        val offsetBottom = offsetY * -2
+        val offsetBottom = offsetY * -2 // отступ снизу
         val topPx = mapView.context.resources.getDimensionPixelSize(top)
         val bottomPx = mapView.context.resources.getDimensionPixelSize(bottom) + offsetBottom
         val leftPx = mapView.context.resources.getDimensionPixelSize(left)
@@ -880,7 +881,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val width = mapView.width
         val height = mapView.height
         val pScreenWidth = width - (leftPx + rightPx)
-        val pScreenHeight = height - (topPx + bottomPx)
+        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(2) // не даст значению стать меньше нуля
         val nextZoom = MapView.getTileSystem()
             .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
 
@@ -895,6 +896,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             mapView.mapCenterOffsetX,
             mapView.mapCenterOffsetY
         )
+
 
         val northWest = projection.fromPixels(0, 0)
         val southEast = projection.fromPixels(width, height)

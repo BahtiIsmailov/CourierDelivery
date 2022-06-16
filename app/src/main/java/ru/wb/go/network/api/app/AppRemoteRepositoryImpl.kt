@@ -31,20 +31,18 @@ class AppRemoteRepositoryImpl(
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
-        return withContext(Dispatchers.IO) {
-            remoteRepo.saveCourierDocuments(
-                tokenManager.apiVersion(),
-                toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
-            )
-            autentificatorIntercept.initNameOfMethod("courierDocuments")
-        }
+        remoteRepo.saveCourierDocuments(
+            tokenManager.apiVersion(),
+            toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
+        )
+        autentificatorIntercept.initNameOfMethod("courierDocuments")
+
     }
 
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        val response = withContext(Dispatchers.IO) {
-            remoteRepo.getCourierDocuments(apiVersion())
+        return withContext(Dispatchers.IO){
+            toCourierDocumentsEntity(remoteRepo.getCourierDocuments(apiVersion()))
         }
-        return toCourierDocumentsEntity(response)
     }
 
     override suspend fun tasksMy(orderId: Int?): LocalComplexOrderEntity {
@@ -290,8 +288,8 @@ class AppRemoteRepositoryImpl(
     }
 
     override suspend fun appVersion(): String  {
-        autentificatorIntercept.initNameOfMethod("appVersion")
         return withContext(Dispatchers.IO){
+            autentificatorIntercept.initNameOfMethod("appVersion")
             remoteRepo.getAppActualVersion(tokenManager.apiVersion()).version
         }
 

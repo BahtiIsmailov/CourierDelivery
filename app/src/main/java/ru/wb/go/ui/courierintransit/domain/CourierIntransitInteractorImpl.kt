@@ -56,8 +56,7 @@ class CourierIntransitInteractorImpl(
         return withContext(Dispatchers.IO) {
             val order = locRepo.getOrder()
             val offsetSec = timeManager.getPassedTime(order.startedAt)
-            intransitTimeRepository.startTimer()
-            offsetSec
+            intransitTimeRepository.startTimer() + offsetSec
         }
     }
 
@@ -86,36 +85,47 @@ class CourierIntransitInteractorImpl(
         }
     }
 
-    override fun clearLocalTaskData() {
-        timeManager.clear()
-        locRepo.clearOrder()
+    override suspend fun clearLocalTaskData() {
+        return withContext(Dispatchers.IO) {
+            timeManager.clear()
+            locRepo.clearOrder()
+        }
     }
 
     override suspend fun getOrder(): LocalOrderEntity {
-        return locRepo.getOrder()
+        return withContext(Dispatchers.IO) {
+              locRepo.getOrder()
+        }
     }
 
     override suspend fun getOrderId(): String {
-        // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
-        return getOrder().orderId.toString()
+        return withContext(Dispatchers.IO) {
+            // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
+              getOrder().orderId.toString()
+        }
     }
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-            .flowOn(Dispatchers.IO)
+
 
     }
 
-    override suspend fun mapState(state: CourierMapState) {
-        courierMapRepository.mapState(state)
+    override  fun mapState(state: CourierMapState) {
+        return courierMapRepository.mapState(state)
+
     }
 
-    override fun getOfflineBoxes(): List<LocalBoxEntity> {
-        return locRepo.getOfflineBoxes()
+    override suspend fun getOfflineBoxes(): List<LocalBoxEntity> {
+          return withContext(Dispatchers.IO) {
+            locRepo.getOfflineBoxes()
+        }
     }
 
-    override fun getBoxes(): List<LocalBoxEntity> {
-        return locRepo.getBoxes()
+    override suspend fun getBoxes(): List<LocalBoxEntity> {
+        return  withContext(Dispatchers.IO) {
+            locRepo.getBoxes()
+        }
     }
 }
 

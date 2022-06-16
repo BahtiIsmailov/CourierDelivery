@@ -22,7 +22,7 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity WHERE rowId=:rowOrder")
-    suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
+    fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
@@ -44,7 +44,7 @@ interface CourierOrderDao {
     // ====================================
     // True Local Order
     @Transaction
-    suspend fun addOrderFromReserve(order: LocalOrderEntity) {
+     fun addOrderFromReserve(order: LocalOrderEntity) {
         addOrder(order)
         addOfficesFromReserve(order.orderId)
     }
@@ -65,7 +65,7 @@ interface CourierOrderDao {
     fun deleteOrder()
 
     @Query("SELECT * FROM courier_order")
-    suspend fun getOrder(): LocalOrderEntity
+    fun getOrder(): LocalOrderEntity
 
     @Insert
     fun addOffices(offices: List<LocalOfficeEntity>)

@@ -38,25 +38,25 @@ class CourierScannerViewModel(
     private fun observeScannerState() {
         interactor.observeScannerState()
             .onEach {
-                _scannerAction.postValue(it)
+                _scannerAction.value = it
             }
             .launchIn(viewModelScope)
 
     }
 
     private fun flashState() {
-        _flashState.postValue(
+        _flashState.value =
             settingsManager.getSetting(
                 AppPreffsKeys.SETTING_START_FLASH_ON,
                 false
             )
-        )
+
     }
 
     private fun observeHoldSplash() {
         viewModelScope.launch {
             interactor.observeHoldSplash()
-            _scannerAction.postValue(ScannerState.StopScanWithHoldSplash)
+            _scannerAction.value = ScannerState.StopScanWithHoldSplash
         }
     }
 
@@ -69,7 +69,7 @@ class CourierScannerViewModel(
         viewModelScope.launch {
             interactor.prolongHoldTimer()
             interactor.holdSplashUnlock()
-            _scannerAction.postValue(ScannerState.StartScan)
+            _scannerAction.value = ScannerState.StartScan
         }
     }
 
@@ -79,7 +79,7 @@ class CourierScannerViewModel(
 
     fun switchFlashlight() {
         val state = !_flashState.value!!
-        _flashState.postValue(state)
+        _flashState.value = state
     }
 
     override fun getScreenTag(): String {

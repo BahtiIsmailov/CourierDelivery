@@ -24,7 +24,7 @@ class AuthLoaderViewModel(
     }
 
     private fun toNumberPhone() {
-        _navigationState.postValue(AuthLoaderNavigationState.NavigateToNumberPhone)
+        _navigationState.value = AuthLoaderNavigationState.NavigateToNumberPhone
     }
 
     override fun getScreenTag(): String {

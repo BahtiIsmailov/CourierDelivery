@@ -1,8 +1,5 @@
 package ru.wb.go.ui.courierwarehouses.domain
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -34,7 +31,9 @@ class CourierWarehousesInteractorImpl(
     CourierWarehousesInteractor {
 
     override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {
-        return appRemoteRepository.courierWarehouses()
+        return withContext(Dispatchers.IO) {
+            appRemoteRepository.courierWarehouses()
+        }
     }
 
 //    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
@@ -43,9 +42,9 @@ class CourierWarehousesInteractorImpl(
 //    }
 
 
-    override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)  {
-        courierLocalRepository.deleteAllWarehouse()
-        return withContext(Dispatchers.IO){
+    override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+        return withContext(Dispatchers.IO) {
+            courierLocalRepository.deleteAllWarehouse()
             courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
         }
     }
@@ -55,8 +54,8 @@ class CourierWarehousesInteractorImpl(
 //            .compose(rxSchedulerFactory.applyCompletableSchedulers())
 //    }
 
-    override suspend fun loadProgress()  {
-        return withContext(Dispatchers.IO){
+    override suspend fun loadProgress() {
+        return withContext(Dispatchers.IO) {
             CoroutineInterval.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
         }
     }
@@ -69,7 +68,7 @@ class CourierWarehousesInteractorImpl(
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-            .flowOn(Dispatchers.IO)
+
 
     }
 
@@ -78,7 +77,7 @@ class CourierWarehousesInteractorImpl(
 //            .compose(rxSchedulerFactory.applyObservableSchedulers())
 //    }
 
-    override suspend fun mapState(state: CourierMapState) {
+    override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
 
@@ -86,12 +85,14 @@ class CourierWarehousesInteractorImpl(
 //        courierMapRepository.mapState(state)
 //    }
 
-    override suspend fun mapAction(action: CourierMapAction) {
+    override fun mapAction(action: CourierMapAction) {
         courierMapRepository.mapAction(action)
     }
 
-    override fun isDemoMode(): Boolean {
-        return tokenManager.isDemo()
+    override suspend fun isDemoMode(): Boolean {
+        return withContext(Dispatchers.IO) {
+            tokenManager.isDemo()
+        }
     }
 
 }

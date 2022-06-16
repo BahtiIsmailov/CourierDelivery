@@ -11,8 +11,7 @@ class CourierBillingCompleteViewModel(
         parameters: CourierBillingCompleteParameters,
         compositeDisposable: CompositeDisposable,
         metric: YandexMetricManager,
-        resourceProvider: CourierBillingCompleteResourceProvider,
-        private val interactor: CourierCompleteDeliveryInteractor,
+        resourceProvider: CourierBillingCompleteResourceProvider
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _titleState = MutableLiveData<CourierBillingCompleteState>()
@@ -26,12 +25,12 @@ class CourierBillingCompleteViewModel(
     init {
         val amount = resourceProvider.getTitle(parameters.amount)
         onTechEventLog("init", "amount $amount")
-        _titleState.postValue( CourierBillingCompleteState.InfoDelivery(amount))
+        _titleState.value = CourierBillingCompleteState.InfoDelivery(amount)
     }
 
     fun onCompleteClick() {
         onTechEventLog("onCompleteClick", "NavigateToBilling")
-        _navigateToBack.postValue(NavigateToBilling)
+        _navigateToBack.value = NavigateToBilling
     }
 
     override fun getScreenTag(): String {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import ru.wb.go.app.DEFAULT_CAR_NUMBER
 import ru.wb.go.app.DEFAULT_CAR_TYPE
@@ -119,6 +120,7 @@ class CourierCarNumberViewModel(
             .catch {
                 onTechErrorLog("onNumberObservableClicked", it)
             }
+            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
 
     }

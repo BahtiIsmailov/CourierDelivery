@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
@@ -59,11 +60,11 @@ class CourierLoaderViewModel(
     }
 
     private fun initDrawer() {
-        _drawerHeader.postValue( UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
+        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
     }
 
     fun initVersion() {
-        _state.postValue(CourierLoaderUIState.Progress)
+        _state.value = CourierLoaderUIState.Progress
         viewModelScope.launch {
             try {
                 val response = remoteRepo.appVersion()
@@ -75,12 +76,12 @@ class CourierLoaderViewModel(
     }
 
 
-    private suspend fun appVersionUpdateComplete(version: String) {
+    private  fun appVersionUpdateComplete(version: String) {
         onTechEventLog("appVersionUpdateComplete", "appStart $version")
         checkUserState(version)
     }
 
-    private suspend fun appVersionUpdateError(throwable: Throwable) {
+    private  fun appVersionUpdateError(throwable: Throwable) {
         onTechErrorLog("appVersionUpdateError", throwable)
         checkUserState("0.0.0")
     }
@@ -99,7 +100,7 @@ class CourierLoaderViewModel(
         }
     }
 
-    private suspend fun checkUserState(version: String) {
+    private  fun checkUserState(version: String) {
         val phone = tokenManager.userPhone()
 
         checkNewInstallation()
@@ -125,7 +126,7 @@ class CourierLoaderViewModel(
             tokenManager.isUserCourier() -> toApp(order)
             else -> {
                 assert(tokenManager.isDemo())
-                _navigationDrawerState.postValue(toCourierWarehouse())
+                _navigationDrawerState.value = toCourierWarehouse()
             }
         }
     }
@@ -134,7 +135,7 @@ class CourierLoaderViewModel(
         viewModelScope.launch {
             try {
                 val res = solveJobInitialState(remoteRepo.tasksMy(order?.orderId), order)
-                _navigationDrawerState.postValue(res)
+                _navigationDrawerState.value = res
             } catch (e: Exception) {
                 onTechErrorLog("getMyTask", e)
                 onRxError(e)
@@ -184,16 +185,16 @@ class CourierLoaderViewModel(
         when (throwable) {
             is NullPointerException -> {
                 clearCurrentLocalData()
-                _state.postValue( CourierLoaderUIState.Complete)
-                _navigationDrawerState.postValue( toCourierWarehouse())
+                _state.value = CourierLoaderUIState.Complete
+                _navigationDrawerState.value =  toCourierWarehouse()
             }
             is BadRequestException -> {
-                _state.postValue( CourierLoaderUIState.Error(throwable.message.toString()))
+                _state.value = CourierLoaderUIState.Error(throwable.message.toString())
             }
             is NoInternetException ->
-                _state.postValue( CourierLoaderUIState.Error(throwable.message))
+                _state.value = CourierLoaderUIState.Error(throwable.message)
             else -> {
-                _state.postValue( CourierLoaderUIState.Error(throwable.toString()))
+                _state.value = CourierLoaderUIState.Error(throwable.toString())
             }
         }
     }
@@ -203,10 +204,10 @@ class CourierLoaderViewModel(
     }
 
     private fun toNewRegistration(phone: String) {
-        _navigationDrawerState.postValue(
+        _navigationDrawerState.value =
             CourierLoaderNavigationState.NavigateToCourierDataType(
                 CourierDataParameters(phone = phone, docs = CourierDocumentsEntity())
-            ))
+            )
     }
 
     private fun toRegistration(phone: String) {
@@ -216,7 +217,7 @@ class CourierLoaderViewModel(
                 val courierDataParameters = CourierDataParameters(phone = phone, docs = response)
                 val responseState =
                     CourierLoaderNavigationState.NavigateToCourierDataType(courierDataParameters)
-                _navigationDrawerState.postValue(responseState)
+                _navigationDrawerState.value = responseState
 
             } catch (e: Exception) {
                 onTechErrorLog("getUserDocs", e)
@@ -226,8 +227,8 @@ class CourierLoaderViewModel(
     }
 
      private fun toCourierDataExpects(phone: String) {
-        _navigationDrawerState.postValue(
-            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone))
+        _navigationDrawerState.value =
+            CourierLoaderNavigationState.NavigateToCouriersCompleteRegistration(phone)
     }
 
     private fun toCourierWarehouse() = CourierLoaderNavigationState.NavigateToCourierWarehouse
@@ -239,7 +240,7 @@ class CourierLoaderViewModel(
     private fun toIntransit() = CourierLoaderNavigationState.NavigateToIntransit
 
     private fun toAppUpdate() {
-        _navigationDrawerState.postValue(CourierLoaderNavigationState.NavigateToCourierWarehouse)
+        _navigationDrawerState.value = CourierLoaderNavigationState.NavigateToCourierWarehouse
     //TODO(тут было на обновление состояние APPUPDATE)
     }
 

@@ -8,7 +8,7 @@ interface ScannerRepository {
 
     fun scannerAction(action: ScannerAction)
 
-    suspend fun observeScannerAction(): Flow<ScannerAction>
+    fun observeScannerAction(): Flow<ScannerAction>
 
     fun scannerState(state: ScannerState)
 

@@ -28,7 +28,7 @@ class RefreshTokenInterceptor(
 
     private val lock = ConditionVariable(true)
     private val isRefreshing: AtomicBoolean = AtomicBoolean(false)
-    val coroutineScope = CoroutineScope(SupervisorJob())
+    private val coroutineScope = CoroutineScope(SupervisorJob())
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request = chain.request()

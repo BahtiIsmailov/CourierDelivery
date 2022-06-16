@@ -174,7 +174,7 @@ class CourierOrdersFragment :
             @Suppress("DEPRECATION")
             display.getMetrics(outMetrics)
         }
-        return outMetrics.heightPixels / 2
+        return outMetrics.heightPixels / 2//!!!!!!!!!!!!!
     }
 
     private fun initView() {
@@ -218,8 +218,8 @@ class CourierOrdersFragment :
         binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
-        binding.carNumberEmpty.setOnClickListener { lifecycleScope.launch {viewModel.onChangeCarNumberClick()} }
-        binding.showOrderFab.setOnClickListener { lifecycleScope.launch {viewModel.onNextFab()} }
+        binding.carNumberEmpty.setOnClickListener { viewModel.onChangeCarNumberClick() }
+        binding.showOrderFab.setOnClickListener { viewModel.onNextFab() }
     }
 
     private fun fadeOut(view: View): ObjectAnimator {
@@ -252,7 +252,7 @@ class CourierOrdersFragment :
     private fun initStateObserves() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<CourierCarNumberResult>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
-            ?.observe(viewLifecycleOwner) { lifecycleScope.launch {viewModel.onChangeCarNumberOrders(it)} }
+            ?.observe(viewLifecycleOwner) { viewModel.onChangeCarNumberOrders(it)}
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.title.text = it.label

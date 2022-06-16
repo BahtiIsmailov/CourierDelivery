@@ -1,9 +1,5 @@
 package ru.wb.go.db
 
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.*
@@ -15,7 +11,7 @@ interface CourierLocalRepository {
     //==============================================================================================
     suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
-    fun readCurrentWarehouse():  CourierWarehouseLocalEntity
+    fun readCurrentWarehouse(): CourierWarehouseLocalEntity
 
     fun deleteAllWarehouse()
 
@@ -27,7 +23,7 @@ interface CourierLocalRepository {
 
     fun freeOrders(): Flow<List<CourierOrderLocalDataEntity>>
 
-    suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
+    fun orderAndOffices(rowOrder: Int): CourierOrderLocalDataEntity
 
     suspend fun observeOrderData(): CourierOrderLocalDataEntity
 
@@ -41,7 +37,7 @@ interface CourierLocalRepository {
     // True Order
     //==============================
 
-    suspend fun getOrder(): LocalOrderEntity
+    fun getOrder(): LocalOrderEntity
 
     fun deleteOrder()
 
@@ -49,16 +45,21 @@ interface CourierLocalRepository {
 
     fun setOrderOrderStart(scanTime: String)
 
-    suspend fun setOrderInReserve(order: LocalOrderEntity)
+    fun setOrderInReserve(order: LocalOrderEntity)
 
     fun setOrderAfterLoadStatus(cost: Int)
 
-    suspend fun getOrderId():  String
-    suspend fun getOrderGate():  String
+    fun getOrderId(): String
+
+     fun getOrderGate(): String
+
     fun getOffices(): List<LocalOfficeEntity>
-    suspend fun getOfficesFlowable():  List<LocalOfficeEntity>
+
+    suspend fun getOfficesFlowable(): List<LocalOfficeEntity>
+
     fun getBoxes(): List<LocalBoxEntity>
-    suspend fun getBoxesLiveData():  List<LocalBoxEntity>
+
+    suspend fun getBoxesLiveData(): List<LocalBoxEntity>
 
     fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
 
@@ -72,7 +73,7 @@ interface CourierLocalRepository {
 
     fun takeBackBox(box: LocalBoxEntity)
 
-    suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity>
+    fun readAllLoadingBoxesSync(): List<LocalBoxEntity>
 
     suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 

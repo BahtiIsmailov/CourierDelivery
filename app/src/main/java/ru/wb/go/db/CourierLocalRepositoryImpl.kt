@@ -1,6 +1,7 @@
 package ru.wb.go.db
 
-import io.reactivex.*
+import android.util.Log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
@@ -15,15 +16,15 @@ class CourierLocalRepositoryImpl(
     private val courierLoadingBoxDao: CourierBoxDao
 ) : CourierLocalRepository {
 
-    override suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)  {
-          courierWarehouseDao.insert(courierWarehouseEntity)
+    override suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+        courierWarehouseDao.insert(courierWarehouseEntity)
     }
 
-    override fun readCurrentWarehouse(): CourierWarehouseLocalEntity  {
+    override fun readCurrentWarehouse(): CourierWarehouseLocalEntity {
         return courierWarehouseDao.read()
     }
 
-    override suspend fun getOrderGate():  String  {
+    override fun getOrderGate(): String {
         return getOrder().gate
     }
 
@@ -33,7 +34,9 @@ class CourierLocalRepositoryImpl(
 
     override suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>) {
         courierOrderLocalDataEntities.map {
+            Log.e("method.call()","saveFreeOrders start")
             saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices)
+            Log.e("method.call()","saveFreeOrders end")
         }
     }
 
@@ -41,15 +44,19 @@ class CourierLocalRepositoryImpl(
     override fun freeOrders(): Flow<List<CourierOrderLocalDataEntity>> {
         return courierOrderDao.orderAndOffices()
     }
+
     private suspend fun saveOrderAndOffices(
         courierOrderLocalEntity: CourierOrderLocalEntity,
         courierOrderDstOfficesLocalEntity: List<CourierOrderDstOfficeLocalEntity>
-    )  {
-          courierOrderDao.insertOrder(courierOrderLocalEntity)
-          courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity)
+    ) {
+        Log.e("method.call()","saveOrderAndOffices ")
+//        delay(500)
+        courierOrderDao.insertOrder(courierOrderLocalEntity)
+        courierOrderDao.insertOrderOffices(courierOrderDstOfficesLocalEntity)
     }
 
-    override suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity  {
+
+    override fun orderAndOffices(rowOrder: Int): CourierOrderLocalDataEntity {
         return courierOrderDao.orderAndOffices(rowOrder)
     }
 
@@ -65,11 +72,11 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.deleteAllOffices()
     }
 
-    override fun findOfficeById(officeId: Int): LocalOfficeEntity  {
+    override fun findOfficeById(officeId: Int): LocalOfficeEntity {
         return courierOrderDao.getOfficeById(officeId)
     }
 
-    override suspend fun getOrder(): LocalOrderEntity {
+    override fun getOrder(): LocalOrderEntity {
         return courierOrderDao.getOrder()
     }
 
@@ -82,7 +89,7 @@ class CourierLocalRepositoryImpl(
     override suspend fun saveRemoteOrder(
         order: LocalComplexOrderEntity,
         boxes: List<LocalBoxEntity>
-    )  {
+    ) {
         assert(order.order.status != "") { "Absent status" }
         val bg = boxes.groupingBy { it.officeId }.fold(Pair(0, 0)) { t, o ->
             Pair(t.first + 1, t.second + if (o.deliveredAt.isNotEmpty()) 1 else 0)
@@ -108,11 +115,11 @@ class CourierLocalRepositoryImpl(
         courierOrderDao.setOrderStart(TaskStatus.STARTED.status, scanTime)
     }
 
-    override suspend fun getOrderId(): String  {
+    override fun getOrderId(): String {
         return getOrder().orderId.toString()
     }
 
-    override suspend fun setOrderInReserve(order: LocalOrderEntity) {
+    override fun setOrderInReserve(order: LocalOrderEntity) {
         courierOrderDao.addOrderFromReserve(order)
     }
 
@@ -128,7 +135,7 @@ class CourierLocalRepositoryImpl(
         deleteOrder()
     }
 
-    override suspend fun readAllLoadingBoxesSync():  List<LocalBoxEntity> {
+    override fun readAllLoadingBoxesSync(): List<LocalBoxEntity> {
         return courierLoadingBoxDao.readAllBoxesSync()
     }
 
@@ -172,7 +179,7 @@ class CourierLocalRepositoryImpl(
         courierLoadingBoxDao.takeBoxBack(box)
     }
 
-    override suspend fun getBoxesLiveData():  List<LocalBoxEntity> {
+    override suspend fun getBoxesLiveData(): List<LocalBoxEntity> {
         return courierLoadingBoxDao.getBoxesLive()
     }
 

@@ -31,7 +31,7 @@ abstract class ServicesViewModel(
 
     private fun observeNetworkState() {
         viewModelScope.launch {
-            _networkState.postValue(serviceInteractor.observeNetworkConnected())
+            _networkState.value = serviceInteractor.observeNetworkConnected()
         }
     }
 
@@ -43,7 +43,7 @@ abstract class ServicesViewModel(
 //    }
 
     private fun fetchVersionApp() {
-        _versionApp.postValue(resourceProvider.getVersionApp(serviceInteractor.versionApp()))
+        _versionApp.value = resourceProvider.getVersionApp(serviceInteractor.versionApp())
     }
 
 }

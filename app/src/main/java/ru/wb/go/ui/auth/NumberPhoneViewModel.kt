@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.exceptions.BadRequestException
@@ -50,8 +51,8 @@ class NumberPhoneViewModel(
     }
 
     private fun observeNetworkState() {
-        viewModelScope.launch {
-            _toolbarNetworkState.postValue(interactor.observeNetworkConnected())
+        viewModelScope.launch  {
+            _toolbarNetworkState.value = interactor.observeNetworkConnected()
         }
     }
 
@@ -62,27 +63,27 @@ class NumberPhoneViewModel(
 
 
     fun onNumberObservableClicked(event: Flow<KeyboardNumericView.ButtonAction>) {
-        val initPhone = interactor.userPhone()
+        interactor.userPhone()
         val eventKeyboard = event.scan("") {// previous value concatenate to the next
                 accumulator, item ->
             accumulateNumber(accumulator, item)
         }
-        viewModelScope.launch {
-            eventKeyboard
-                .onEach {
-                    switchNext(it)
-                }
-                .map {
-                    numberToPhoneSpanFormat(it)
-                }
-                .onEach {
-                    _stateUI.postValue(it)
-                }
-                .catch {
-                    onTechErrorLog("onNumberObservableClicked", it)
-                }
-                .collect()
-        }
+        eventKeyboard
+            .onEach {
+                switchNext(it)
+            }
+            .map {
+                numberToPhoneSpanFormat(it)
+            }
+            .onEach {
+                _stateUI.value = it
+            }
+            .catch {
+                onTechErrorLog("onNumberObservableClicked", it)
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(viewModelScope)
+
     }
 
     private fun numberToPhoneSpanFormat(it: String) = PhoneSpanFormat(
@@ -92,11 +93,11 @@ class NumberPhoneViewModel(
 
     private fun switchNext(it: String) {
         if (it.isEmpty()) {
-            _stateKeyboardBackspaceUI.postValue(
+            _stateKeyboardBackspaceUI.value =
                 NumberPhoneBackspaceUIState.Inactive
-            )
+
         } else {
-            _stateKeyboardBackspaceUI.postValue(NumberPhoneBackspaceUIState.Active)
+            _stateKeyboardBackspaceUI.value = NumberPhoneBackspaceUIState.Active
         }
         _stateUI.value =
             if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete
@@ -115,7 +116,7 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumber(phone: String) {
         onTechEventLog("onCheckPhone", phone)
-        _stateUI.postValue(NumberCheckProgress)
+        _stateUI.value = NumberCheckProgress
         viewModelScope.launch {
             try {
                 interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
@@ -129,44 +130,43 @@ class NumberPhoneViewModel(
 
     private fun fetchPhoneNumberComplete(phone: String) {
         onTechEventLog("fetchPhoneNumberComplete", phone)
-        _navigationEvent.postValue(NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL))
-        _stateUI.postValue(NumberFormatComplete)
+        _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)
+        _stateUI.value = NumberFormatComplete
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
         onTechErrorLog("fetchPhoneNumberError $phone", throwable)
         when (throwable) {
-            is NoInternetException -> _stateUI.postValue(
+            is NoInternetException -> _stateUI.value =
                 Error(
                     resourceProvider.getGenericInternetTitleError(),
                     resourceProvider.getGenericInternetMessageError(),
                     resourceProvider.getGenericInternetButtonError()
                 )
-            )
+
             is BadRequestException -> {
                 if (throwable.error.code == CODE_SENT) {
                     val ttl = throwable.error.data?.ttl ?: DEFAULT_TTL
-                    _navigationEvent.postValue(
+                    _navigationEvent.value =
                         NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
-                    )
-                    _stateUI.postValue(NumberFormatComplete)
+
+                    _stateUI.value = NumberFormatComplete
                 } else {
-                    _stateUI.postValue(
+                    _stateUI.value =
                         NumberNotFound(
                             resourceProvider.getGenericServiceTitleError(),
                             throwable.error.message,
                             resourceProvider.getGenericServiceButtonError()
                         )
-                    )
+
                 }
             }
-            else -> _stateUI.postValue(
+            else -> _stateUI.value =
                 Error(
                     resourceProvider.getGenericServiceTitleError(),
                     throwable.toString(),
                     resourceProvider.getGenericServiceButtonError()
                 )
-            )
         }
     }
 

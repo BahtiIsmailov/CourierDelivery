@@ -22,7 +22,7 @@ class CourierAgreementViewModel(
 
     fun onCompleteClick() {
         onTechEventLog("onCompleteClick")
-        _navigationState.postValue( CourierAgreementNavigationState.Complete)
+        _navigationState.value = CourierAgreementNavigationState.Complete
     }
 
     override fun getScreenTag(): String {

@@ -18,14 +18,14 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>)
 
-    fun clearLocalTaskData()
+    suspend fun clearLocalTaskData()
 
-    fun observeMapAction(): Flow<CourierMapAction>
+     fun observeMapAction(): Flow<CourierMapAction>
 
-    suspend fun mapState(state: CourierMapState)
+      fun mapState(state: CourierMapState)
 
     suspend fun getOrder(): LocalOrderEntity
     suspend fun getOrderId(): String
-    fun getOfflineBoxes(): List<LocalBoxEntity>
-    fun getBoxes(): List<LocalBoxEntity>
+    suspend fun getOfflineBoxes(): List<LocalBoxEntity>
+    suspend fun getBoxes(): List<LocalBoxEntity>
 }

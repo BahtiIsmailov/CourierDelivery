@@ -42,12 +42,12 @@ class SettingsViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.postValue( resourcesProvider.getVersionApp(deviceManager.toolbarVersion))
+        _versionApp.value =  resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun observeNetworkState() {
         viewModelScope.launch {
-            _toolbarNetworkState.postValue( interactor.observeNetworkConnected() )
+            _toolbarNetworkState.value =  interactor.observeNetworkConnected()
         }
     }
 

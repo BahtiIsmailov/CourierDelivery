@@ -168,7 +168,9 @@ class CourierLoadingInteractorImpl(
     }
 
     override suspend fun scannerAction(scannerAction: ScannerState) {
-        scanRepo.scannerState(scannerAction)
+        withContext(Dispatchers.IO) {
+            scanRepo.scannerState(scannerAction)
+        }
     }
 
     override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
@@ -178,8 +180,8 @@ class CourierLoadingInteractorImpl(
     }
 
     override suspend fun deleteTask()  {
-        taskTimerRepository.stopTimer()
         return withContext(Dispatchers.IO){
+            taskTimerRepository.stopTimer()
             val it = localRepo.getOrderId()
             remoteRepo.deleteTask(it)
             localRepo.deleteOrder()
@@ -190,11 +192,28 @@ class CourierLoadingInteractorImpl(
             val one = localRepo.readAllLoadingBoxesSync()
             val two = localRepo.getOrderId()
             val res = remoteRepo.setReadyTask(two,one)
-
             localRepo.setOrderAfterLoadStatus(res.coast)
             CourierCompleteData(res.coast, one.size)
         }
     }
+    //
+//    override fun confirmLoadingBoxes(): Single<CourierCompleteData> {
+//        return localRepo.readAllLoadingBoxesSync()
+//            .flatMap { boxes ->
+//                localRepo.getOrderId()
+//                    .flatMap { taskId ->
+//                        remoteRepo.setReadyTask(taskId, boxes)
+//                            .map { it.coast }
+//                            .doOnSuccess {
+//                                localRepo.setOrderAfterLoadStatus(it)
+//                            }
+//                            .map { CourierCompleteData(it, boxes.size) }
+//                    }
+//            }
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+
+
 
 
     override suspend fun getGate(): String  {
@@ -380,22 +399,6 @@ data class LoadingBoxGoals(
             .flatMapCompletable { remoteRepo.deleteTask(it) }
             .doOnComplete { localRepo.deleteOrder() }
             .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
-
-    override fun confirmLoadingBoxes(): Single<CourierCompleteData> {
-        return localRepo.readAllLoadingBoxesSync()
-            .flatMap { boxes ->
-                localRepo.getOrderId()
-                    .flatMap { taskId ->
-                        remoteRepo.setReadyTask(taskId, boxes)
-                            .map { it.coast }
-                            .doOnSuccess {
-                                localRepo.setOrderAfterLoadStatus(it)
-                            }
-                            .map { CourierCompleteData(it, boxes.size) }
-                    }
-            }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
     }
 
     override fun getGate(): Single<String> {

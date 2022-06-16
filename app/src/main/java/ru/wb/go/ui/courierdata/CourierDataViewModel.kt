@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.InternalServerException
@@ -110,7 +111,7 @@ class UserFormViewModel(
         addSubscription(Observable.merge(changeObservables)
             .map { mapAction(it) }
             .subscribe(
-                { _formUIState.postValue(it) },
+                { _formUIState.value = it },
                 { LogUtils { logDebugApp(it.toString()) } })
         )
     }
@@ -155,7 +156,7 @@ class UserFormViewModel(
 
 
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
-        _loaderState.postValue(CourierDataUILoaderState.Progress)
+        _loaderState.value = CourierDataUILoaderState.Progress
         courierDocumentsEntity.courierType = parameters.docs.courierType
         viewModelScope.launch {
             try {
@@ -169,37 +170,37 @@ class UserFormViewModel(
 
 
     fun onCheckedClick(isAgreement: Boolean) {
-        _loaderState.postValue(if (isAgreement) {
+        _loaderState.value = if (isAgreement) {
             CourierDataUILoaderState.Enable
         } else {
             CourierDataUILoaderState.Disable
-        })
+        }
     }
 
     private fun couriersFormComplete() {
         onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
-        _loaderState.postValue(CourierDataUILoaderState.Disable)
-        _navigationEvent.postValue(
-            CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone))
+        _loaderState.value = CourierDataUILoaderState.Disable
+        _navigationEvent.value =
+            CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
     }
 
     private fun couriersFormError(it: Throwable) {
         onTechErrorLog("couriersFormError", it)
-        _loaderState.postValue(CourierDataUILoaderState.Enable)
+        _loaderState.value = CourierDataUILoaderState.Enable
         if (it is InternalServerException) couriersFormComplete()
         else errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
     }
 
     private fun observeNetworkState() {
         viewModelScope.launch {
-            _toolbarNetworkState.postValue(interactor.observeNetworkConnected())
+            _toolbarNetworkState.value = interactor.observeNetworkConnected()
         }
     }
 
     fun onShowAgreementClick() {
         onTechEventLog("onShowAgreementClick")
 //        _showErrorAnnotationState.postValue(false
-        _navigationEvent.postValue(CourierDataNavAction.NavigateToAgreement)
+        _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 
     fun getParams(): CourierDataParameters {

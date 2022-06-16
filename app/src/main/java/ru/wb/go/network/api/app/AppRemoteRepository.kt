@@ -30,7 +30,7 @@ interface AppRemoteRepository {
     suspend fun setReadyTask(
             taskID: String,
             boxes: List<LocalBoxEntity>
-    ):  TaskCostEntity
+    ): TaskCostEntity
 
     suspend fun setIntransitTask(
         taskID: String,

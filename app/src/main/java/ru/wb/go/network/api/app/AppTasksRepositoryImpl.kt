@@ -16,18 +16,17 @@ class AppTasksRepositoryImpl(
 ) : AppTasksRepository {
 
 
-override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
-    return withContext(Dispatchers.IO){
+    override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity> {
         autentificatorIntercept.initNameOfMethod("courierWarehouses")
-        remoteRepo.freeTasksOffices(apiVersion()).data
-         .map {
-            convertCourierWarehouseEntity(it) // сюда пришел ширина и долгота
-        }
+        return remoteRepo.freeTasksOffices(apiVersion()).data
+            .map {
+                convertCourierWarehouseEntity(it) // сюда пришел ширина и долгота
+
+            }
     }
-}
 
 
-//       override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
+    //       override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
 //    return with(Dispatchers.IO){
 //        autentificatorIntercept.initNameOfMethod("courierWarehouses")
 //         remoteRepo.freeTasksOffices(apiVersion()).data
@@ -61,11 +60,13 @@ override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
 //    }
 
 
-    override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity>  {
+    override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity> {
         autentificatorIntercept.initNameOfMethod("courierOrders")
-           return remoteRepo.freeTasks(apiVersion(),srcOfficeID).data.map {
-               convertCourierOrderEntity(it)
-           }.toList()
+        return withContext(Dispatchers.IO){
+            remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
+                convertCourierOrderEntity(it)
+            }.toList()
+        }
     }
 
 //    override suspend fun getFreeOrders(srcOfficeID: Int):  List<CourierOrderEntity>  {
@@ -76,7 +77,6 @@ override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
 //    }
 
 
-
     private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
         val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
         courierOrderResponse.dstOffices.forEach { dstOffice ->
@@ -84,7 +84,7 @@ override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
                 dstOffices.add(toCourierOrderDstOfficeEntity(dstOffice))
             }//широта долгота +
         }
-        return toCourierOrderEntity(courierOrderResponse,dstOffices)
+        return toCourierOrderEntity(courierOrderResponse, dstOffices)
 
     }
 

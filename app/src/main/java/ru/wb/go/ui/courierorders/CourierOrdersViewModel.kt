@@ -1,11 +1,13 @@
 package ru.wb.go.ui.courierorders
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -140,6 +142,7 @@ class CourierOrdersViewModel(
             .catch {
                 initOrdersError(it)
             }
+            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
     }
 
@@ -163,27 +166,39 @@ class CourierOrdersViewModel(
 //    }
 
 
-
     private fun checkDemoMode() {
-        _demoState.postValue(interactor.isDemoMode())
-    }
-
-    private fun observeMapAction() {
         viewModelScope.launch {
-            try {
-                interactor.observeMapAction().onEach {
-                    observeMapActionComplete(it)
-                }
-            } catch (e: Exception) {
-                observeMapActionError(e)
-            }
+            _demoState.value = interactor.isDemoMode()
         }
     }
 
+    private fun observeMapAction() {
+        interactor.observeMapAction()
+            .onEach {
+                observeMapActionComplete(it)
+            }
+            .catch {
+                observeMapActionError(it)
+            }
+
+            .launchIn(viewModelScope)
+    }
+
+
+//    private fun observeMapAction() {
+//        addSubscription(
+//            interactor.observeMapAction()
+//                .subscribe(
+//                    { observeMapActionComplete(it) },
+//                    { observeMapActionError(it) }
+//                ))
+//    }
+
     fun onShowOrderDetailsClick() {
-        _navigationState.postValue(
-            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-        )
+        viewModelScope.launch {
+            _navigationState.value =
+                CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+        }
     }
 
     fun onChangeCarNumberClick() {
@@ -192,61 +207,68 @@ class CourierOrdersViewModel(
     }
 
     private fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
-        action(interactor.selectedRowOrder())
+        viewModelScope.launch {
+            action(interactor.selectedRowOrder())
+        }
     }
 
     private fun navigateToEditCarNumber(): (rowOrder: Int) -> Unit = {
-        _navigationState.postValue(
+        _navigationState.value =
             CourierOrdersNavigationState.NavigateToCarNumber(
                 result = CourierCarNumberResult.Edit(it)
+
             )
-        )
     }
 
     fun toRegistrationClick() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToRegistration)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToRegistration
     }
 
     fun onConfirmTakeOrderClick() {
-        when {
-            interactor.isDemoMode() -> navigateToRegistrationDialog()
-            interactor.carNumberIsConfirm() -> withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
-            else -> withSelectedRowOrder(navigateToCreateCarNumber())
+        viewModelScope.launch {
+            when {
+                interactor.isDemoMode() -> navigateToRegistrationDialog()
+                interactor.carNumberIsConfirm() -> withSelectedRowOrder(
+                    navigateToDialogConfirmScoreInfo()
+                )
+                else -> withSelectedRowOrder(navigateToCreateCarNumber())
+            }
         }
     }
 
     private fun navigateToRegistrationDialog() {
-        _navigationState.postValue(
+        _navigationState.value =
             CourierOrdersNavigationState.NavigateToRegistrationDialog
-        )
+
     }
 
     private fun navigateToCreateCarNumber(): (rowOrder: Int) -> Unit = {
-        _navigationState.postValue(
+        _navigationState.value =
             CourierOrdersNavigationState.NavigateToCarNumber(
                 result = CourierCarNumberResult.Create(it)
             )
-        )
+
     }
 
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
-        with(orderLocalDataEntities[it]) {
-            _navigateToDialogConfirmScoreInfo.postValue(
-                NavigateToDialogConfirmInfo(
-                    DialogInfoStyle.INFO.ordinal,
-                    resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
-                    resourceProvider.getConfirmMessageDialog(
-                        CarNumberUtils(interactor.carNumber()).fullNumber(),
-                        resourceProvider.getCargo(
-                            courierOrderLocalEntity.minVolume,
-                            courierOrderLocalEntity.minBoxesCount
+        viewModelScope.launch {
+            with(orderLocalDataEntities[it]) {
+                _navigateToDialogConfirmScoreInfo.value =
+                    NavigateToDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
+                        resourceProvider.getConfirmMessageDialog(
+                            CarNumberUtils(interactor.carNumber()).fullNumber(),
+                            resourceProvider.getCargo(
+                                courierOrderLocalEntity.minVolume,
+                                courierOrderLocalEntity.minBoxesCount
+                            ),
+                            courierOrderLocalEntity.reservedDuration
                         ),
-                        courierOrderLocalEntity.reservedDuration
-                    ),
-                    resourceProvider.getConfirmPositiveDialog(),
-                    resourceProvider.getConfirmNegativeDialog()
-                )
-            )
+                        resourceProvider.getConfirmPositiveDialog(),
+                        resourceProvider.getConfirmNegativeDialog()
+                    )
+            }
         }
     }
 
@@ -261,15 +283,17 @@ class CourierOrdersViewModel(
     }
 
     private fun onShowAllClick() {
-        _visibleShowAll.postValue(VisibleShowAll)
+        _visibleShowAll.value = VisibleShowAll
     }
 
     private fun showManagerBar() {
-        interactor.mapState(CourierMapState.ShowManagerBar)
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.ShowManagerBar)
+        }
     }
 
     fun onMapClickWithDetail() {
-        _navigationState.postValue(CourierOrdersNavigationState.CloseAddressesDetail)
+        _navigationState.value = CourierOrdersNavigationState.CloseAddressesDetail
         unselectedAddressMapMarkers()
         updateAddressMarkers()
         unselectedAddressItems()
@@ -316,7 +340,7 @@ class CourierOrdersViewModel(
 
     private fun updateShowingAddressDetail(idMapClick: Int) {
         val address = orderAddressItems[idMapClick]
-        _navigationState.postValue(
+        _navigationState.value =
             if (address.isSelected)
                 CourierOrdersNavigationState.ShowAddressDetail(
                     if (address.isUnspentTimeWork) resourceProvider.getOfficeMapSelectedTimeIcon() else resourceProvider.getOfficeMapSelectedIcon(),
@@ -324,12 +348,14 @@ class CourierOrdersViewModel(
                     address.timeWork,
                 )
             else CourierOrdersNavigationState.CloseAddressesDetail
-        )
+
     }
 
 
     private fun updateAddressMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
+        viewModelScope.launch {
+            interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
+        }
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
@@ -351,11 +377,11 @@ class CourierOrdersViewModel(
     }
 
     private fun addressLabel() {
-        _toolbarLabelState.postValue(Label(parameters.address))
+        _toolbarLabelState.value = Label(parameters.address)
     }
 
     private fun setLoader(state: WaitLoader) {
-        _waitLoader.postValue(state)
+        _waitLoader.value = state
     }
 
     private fun initOrders(height: Int) {
@@ -364,6 +390,7 @@ class CourierOrdersViewModel(
             try {
                 orderLocalDataEntities =
                     interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
+                Log.e("method.call()", "initOrders: $orderLocalDataEntities")
                 initOrdersComplete(height)
             } catch (e: Exception) {
                 initOrdersError(e)
@@ -372,16 +399,24 @@ class CourierOrdersViewModel(
     }
 
     private fun initOrdersComplete(height: Int) {
+        Log.e("method.call()", "initOrdersComplete1:  ")
         addressLabel()
+        Log.e("method.call()", "initOrdersComplete2:  ")
         convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
+        Log.e("method.call()", "initOrdersComplete3:  ")
+
         setLoader(WaitLoader.Complete)
+        Log.e("method.call()", "initOrdersComplete4:  ")
+
         ordersComplete(height)
+        Log.e("method.call()", "initOrdersComplete5:  ")
+
     }
 
     private fun initOrdersError(it: Throwable) {
         onTechErrorLog("ordersError", it)
         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-        _orderItems.postValue(CourierOrderItemState.Empty("Ошибка получения данных"))
+        _orderItems.value = CourierOrderItemState.Empty("Ошибка получения данных")
         setLoader(WaitLoader.Complete)
     }
 
@@ -483,7 +518,6 @@ class CourierOrdersViewModel(
         val orders = orderMapMarkers.toMutableList().apply { removeFirst() }
         interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))
         interactor.mapState(CourierMapState.UpdateMarkersWithIndex(orders))
-
     }
 
     private fun zoomAllGroupMarkersFromBoundingBox(height: Int) {
@@ -516,17 +550,19 @@ class CourierOrdersViewModel(
     }
 
     private fun showAllAndOrderItems() {
-        _orderItems.postValue(CourierOrderItemState.ShowItems(orderItems))
+        _orderItems.value = CourierOrderItemState.ShowItems(orderItems)
     }
 
     fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
-        when (result) {
-            is CourierCarNumberResult.Create -> {
-                if (interactor.carNumberIsConfirm()) {
-                    withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
+        viewModelScope.launch {
+            when (result) {
+                is CourierCarNumberResult.Create -> {
+                    if (interactor.carNumberIsConfirm()) {
+                        withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
+                    }
                 }
+                is CourierCarNumberResult.Edit -> {}
             }
-            is CourierCarNumberResult.Edit -> {}
         }
     }
 
@@ -545,6 +581,17 @@ class CourierOrdersViewModel(
         changeShowDetailsOrder(isSelected)
     }
 
+//    private fun orderMapClick(mapPoint: MapPoint) {
+//        val itemIndex = mapPoint.id.toInt() - 1
+//        saveRowOrder(itemIndex)
+//        val isSelected = changeSelectedOrderItems(itemIndex)
+//        changeMapMarkers(itemIndex, isSelected)
+//        updateOrderAndWarehouseMarkers()
+//        changeOrderItems()
+//        scrollTo(itemIndex)
+//        changeShowDetailsOrder(isSelected)
+//    }
+
     private fun changeShowDetailsOrder(selected: Boolean) {
         _showOrderState.value =
             if (selected) CourierOrderShowOrdersState.Enable
@@ -560,7 +607,9 @@ class CourierOrdersViewModel(
     }
 
     private fun clearMap() {
+
         interactor.mapState(CourierMapState.ClearMap)
+
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
@@ -575,7 +624,9 @@ class CourierOrdersViewModel(
     }
 
     private fun saveRowOrder(itemIndex: Int) {
-        interactor.saveRowOrder(itemIndex)
+        viewModelScope.launch {
+            interactor.saveRowOrder(itemIndex)
+        }
     }
 
     private fun changeSelectedOrderItems(itemIndex: Int): Boolean {
@@ -590,14 +641,29 @@ class CourierOrdersViewModel(
         return isSelected
     }
 
+//    private fun changeSelectedOrderItems(itemIndex: Int): Boolean {
+//        var isSelected = false
+//        orderItems.forEachIndexed { index, item ->
+//            val orderItem = (item as CourierOrderItem)
+//            orderItem.isSelected = if (index == itemIndex) {
+//                isSelected = !orderItem.isSelected
+//                isSelected
+//            } else false
+//        }
+//        return isSelected
+//    }
+
     fun onNextFab() {
-        initOrderDetails(interactor.selectedRowOrder())
-        _showOrderState.postValue(CourierOrderShowOrdersState.Invisible)
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode()))
+        viewModelScope.launch {
+            initOrderDetails(interactor.selectedRowOrder())
+            _showOrderState.value = CourierOrderShowOrdersState.Invisible
+            _navigationState.value =
+                CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+        }
     }
 
     fun onAddressesClick() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToAddresses)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToAddresses
     }
 
     private fun warehouseCoordinatePoint() =
@@ -605,22 +671,22 @@ class CourierOrdersViewModel(
 
     private fun initOrderDetails(itemIndex: Int) {
 
-            with(orderLocalDataEntities[itemIndex]) {
-                initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
-                convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
-                removeWarehouseFromAddressMapMarker()
-            }
-            val hideOrderMarkers = orderMapMarkers.toMutableList()
-            hideOrderMarkers.removeFirst()
-            interactor.mapState(
-                CourierMapState.UpdateMarkersWithAnimateToPositions(
-                    pointsHide = hideOrderMarkers,
-                    pointFrom = hideOrderMarkers[itemIndex],
-                    pointsTo = addressMapMarkers,
-                    animateTo = addressesBoundingBox(),
-                    offsetY = DETAILS_HEIGHT
-                )
+        with(orderLocalDataEntities[itemIndex]) {
+            initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
+            convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
+            removeWarehouseFromAddressMapMarker()
+        }
+        val hideOrderMarkers = orderMapMarkers.toMutableList()
+        hideOrderMarkers.removeFirst()
+        interactor.mapState(
+            CourierMapState.UpdateMarkersWithAnimateToPositions(
+                pointsHide = hideOrderMarkers,
+                pointFrom = hideOrderMarkers[itemIndex],
+                pointsTo = addressMapMarkers,
+                animateTo = addressesBoundingBox(),
+                offsetY = DETAILS_HEIGHT
             )
+        )
 
 
     }
@@ -631,13 +697,13 @@ class CourierOrdersViewModel(
 
     private fun zoomAllOrderAddressPoints() {
 
-            interactor.mapState(
-                CourierMapState.ZoomToBoundingBoxOffsetY(
-                    addressesBoundingBox(),
-                    true,
-                    DETAILS_HEIGHT
-                )
+        interactor.mapState(
+            CourierMapState.ZoomToBoundingBoxOffsetY(
+                addressesBoundingBox(),
+                true,
+                DETAILS_HEIGHT
             )
+        )
 
 
     }
@@ -650,25 +716,26 @@ class CourierOrdersViewModel(
         courierOrderEntity: CourierOrderLocalEntity,
         pvz: Int
     ) {
-        with(courierOrderEntity) {
-            onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
-            val carNumber = carNumberFormat(interactor.carNumber())
-            val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
-            val itemId = (idView + 1).toString()
-            val coast = DecimalFormat("#,###.##").format(minPrice)
-            _orderDetails.postValue(
-                CourierOrderDetailsInfoUIState.InitOrderDetails(
-                    carNumber = carNumber,
-                    carTypeIcon = carTypeIcon,
-                    isChangeCarNumber = interactor.carNumberIsConfirm(),
-                    itemId = itemId,
-                    orderId = resourceProvider.getOrder(id),
-                    cost = resourceProvider.getCost(coast),
-                    cargo = resourceProvider.getCargo(minVolume, minBoxesCount),
-                    countPvz = resourceProvider.getCountPvz(pvz),
-                    reserve = resourceProvider.getArrive(reservedDuration)
-                )
-            )
+        viewModelScope.launch {
+            with(courierOrderEntity) {
+                onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
+                val carNumber = carNumberFormat(interactor.carNumber())
+                val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
+                val itemId = (idView + 1).toString()
+                val coast = DecimalFormat("#,###.##").format(minPrice)
+                _orderDetails.value =
+                    CourierOrderDetailsInfoUIState.InitOrderDetails(
+                        carNumber = carNumber,
+                        carTypeIcon = carTypeIcon,
+                        isChangeCarNumber = interactor.carNumberIsConfirm(),
+                        itemId = itemId,
+                        orderId = resourceProvider.getOrder(id),
+                        cost = resourceProvider.getCost(coast),
+                        cargo = resourceProvider.getCargo(minVolume, minBoxesCount),
+                        countPvz = resourceProvider.getCountPvz(pvz),
+                        reserve = resourceProvider.getArrive(reservedDuration)
+                    )
+            }
         }
     }
 
@@ -686,9 +753,9 @@ class CourierOrdersViewModel(
 
     private fun initAddressItems(items: MutableList<CourierOrderDetailsAddressItem>) {
         if (items.isEmpty()) {
-            _orderAddresses.postValue(CourierOrderAddressesUIState.Empty)
+            _orderAddresses.value = CourierOrderAddressesUIState.Empty
         } else {
-            _orderAddresses.postValue(CourierOrderAddressesUIState.InitItems(items))
+            _orderAddresses.value = CourierOrderAddressesUIState.InitItems(items)
         }
     }
 
@@ -699,7 +766,7 @@ class CourierOrdersViewModel(
         }
 
     fun onCloseOrdersClick() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToWarehouse)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
     fun onAddressItemClick(index: Int) {
@@ -740,17 +807,17 @@ class CourierOrdersViewModel(
     }
 
     private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
-
-            _navigationState.postValue(CourierOrdersNavigationState.NavigateToOrders)
-            interactor.mapState(
-                CourierMapState.UpdateMarkersWithAnimateToPosition(
-                    pointsShow = orderMapMarkers,
-                    pointsFrom = addressMapMarkers,
-                    pointTo = orderMapMarkerWithoutWarehouse(it),
-                    animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
-                    offsetY = offsetY(height)
-                )
+        _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+        interactor.mapState(
+            CourierMapState.UpdateMarkersWithAnimateToPosition(
+                pointsShow = orderMapMarkers,
+                pointsFrom = addressMapMarkers,
+                pointTo = orderMapMarkerWithoutWarehouse(it),
+                animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
+                offsetY = offsetY(height)
             )
+        )
+
 
     }
 
@@ -758,7 +825,7 @@ class CourierOrdersViewModel(
         orderMapMarkers[itemIndex + 1]
 
     fun onTaskNotExistConfirmClick() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToWarehouse)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
     fun onConfirmOrderClick() {
@@ -774,9 +841,23 @@ class CourierOrdersViewModel(
         }
     }
 
+    //
+//    fun onConfirmOrderClick() {
+//        onTechEventLog("onConfirmOrderClick")
+//        setLoader(WaitLoader.Wait)
+//        addSubscription(
+//            interactor.anchorTask()
+//                .subscribe(
+//                    { anchorTaskComplete() },
+//                    { anchorTaskError(it) }
+//                )
+//        )
+//    }
+
+
     private fun anchorTaskComplete() {
         setLoader(WaitLoader.Complete)
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToTimer)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToTimer
     }
 
     private fun anchorTaskError(it: Throwable) {
@@ -784,7 +865,7 @@ class CourierOrdersViewModel(
         setLoader(WaitLoader.Complete)
         if (it is BadRequestException) {
             if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
-                _navigationState.postValue(CourierOrdersNavigationState.CourierLoader)
+                _navigationState.value = CourierOrdersNavigationState.CourierLoader
             } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {
                 taskRejected()
             }
@@ -805,11 +886,11 @@ class CourierOrdersViewModel(
     }
 
     fun goBack() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToWarehouse)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
     fun onRegistrationConfirmClick() {
-        _navigationState.postValue(CourierOrdersNavigationState.NavigateToRegistration)
+        _navigationState.value = CourierOrdersNavigationState.NavigateToRegistration
     }
 
     fun onRegistrationCancelClick() {
@@ -907,15 +988,7 @@ class CourierOrdersViewModel(
     private fun checkDemoMode() {
         _demoState.postValue(interactor.isDemoMode())
     }
-
-    private fun observeMapAction() {
-        addSubscription(
-            interactor.observeMapAction()
-                .subscribe(
-                    { observeMapActionComplete(it) },
-                    { observeMapActionError(it) }
-                ))
-    }
+//
 
     fun onShowOrderDetailsClick() {
         _navigationState.value =
@@ -1025,17 +1098,7 @@ class CourierOrdersViewModel(
         if (mapPoint.id.startsWith(ADDRESS_MAP_PREFIX)) addressMapClick(mapPoint)
         else if (mapPoint.id != WAREHOUSE_ID) orderMapClick(mapPoint)
     }
-
-    private fun orderMapClick(mapPoint: MapPoint) {
-        val itemIndex = mapPoint.id.toInt() - 1
-        saveRowOrder(itemIndex)
-        val isSelected = changeSelectedOrderItems(itemIndex)
-        changeMapMarkers(itemIndex, isSelected)
-        updateOrderAndWarehouseMarkers()
-        changeOrderItems()
-        scrollTo(itemIndex)
-        changeShowDetailsOrder(isSelected)
-    }
+//
 
     private fun addressMapClick(mapPoint: MapPoint) {
         changeSelectedAddressMapPointAndItemByMap(mapPoint.id)
@@ -1306,17 +1369,6 @@ class CourierOrdersViewModel(
         interactor.saveRowOrder(itemIndex)
     }
 
-    private fun changeSelectedOrderItems(itemIndex: Int): Boolean {
-        var isSelected = false
-        orderItems.forEachIndexed { index, item ->
-            val orderItem = (item as CourierOrderItem)
-            orderItem.isSelected = if (index == itemIndex) {
-                isSelected = !orderItem.isSelected
-                isSelected
-            } else false
-        }
-        return isSelected
-    }
 
     fun onNextFab() {
         initOrderDetails(interactor.selectedRowOrder())
@@ -1470,18 +1522,6 @@ class CourierOrdersViewModel(
 
     fun onTaskNotExistConfirmClick() {
         _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
-    }
-
-    fun onConfirmOrderClick() {
-        onTechEventLog("onConfirmOrderClick")
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.anchorTask()
-                .subscribe(
-                    { anchorTaskComplete() },
-                    { anchorTaskError(it) }
-                )
-        )
     }
 
     private fun anchorTaskComplete() {

@@ -14,7 +14,7 @@ import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 interface CourierBoxDao {
 
     @Query("SELECT * FROM boxes")
-    suspend fun readAllBoxesSync(): List<LocalBoxEntity>
+     fun readAllBoxesSync(): List<LocalBoxEntity>
 
     @Insert
     fun addBox(box: LocalBoxEntity)

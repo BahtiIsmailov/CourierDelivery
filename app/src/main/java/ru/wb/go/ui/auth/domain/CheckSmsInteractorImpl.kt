@@ -3,10 +3,7 @@ package ru.wb.go.ui.auth.domain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -34,12 +31,13 @@ class CheckSmsInteractorImpl(
                 .onEach {
                     onTimeConfirmCode(it)
                 }
+                .flowOn(Dispatchers.IO)
                 .launchIn(this)
         }
     }
 
     private suspend fun onTimeConfirmCode(tick: Long) {
-        coroutineScope {
+        withContext(Dispatchers.IO){
             if (tick > durationTime) {
                 publishCallState(TimerOverStateImpl())
             } else {

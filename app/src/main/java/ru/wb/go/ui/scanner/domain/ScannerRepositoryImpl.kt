@@ -29,7 +29,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
          scannerActionSubject.tryEmit(action)
     }
 
-    override suspend fun observeScannerAction(): Flow<ScannerAction> {
+    override fun observeScannerAction(): Flow<ScannerAction> {
        return scannerActionSubject
     }
 

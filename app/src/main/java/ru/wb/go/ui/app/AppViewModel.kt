@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -45,68 +47,36 @@ class AppViewModel(
             .onEach {
                 if (it == INVALID_TOKEN) {
                     interactor.exitAuth()
-                    _navigation.postValue(NavigationState.NavigateToRegistration)
+                    _navigation.value = NavigationState.NavigateToRegistration
                 } else
                     throw IllegalStateException("Wrong param $it")
             }
+            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
     }
 
-
-    //
-//    init {
-//        fetchNetworkState()
-//        fetchVersionApp()
-//
-//        addSubscription(
-//            interactor.observeNavigationApp()
-//                .subscribe({
-//                    if (it == INVALID_TOKEN) {
-//                        interactor.exitAuth()
-//                        _navigation.value = NavigationState.NavigateToRegistration
-//                    } else
-//                        throw IllegalStateException("Wrong param $it")
-//                }, {})
-//        )
-//    }
     private fun fetchVersionApp() {
-        _versionApp.postValue(resourceProvider.getVersionApp(deviceManager.appVersion))
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
-    //
-//    private fun fetchVersionApp() {
-//        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
-//    }
+
     private fun fetchNetworkState() {
         viewModelScope.launch {
-            _networkState.postValue(interactor.observeNetworkConnected())
+            _networkState.value = interactor.observeNetworkConnected()
         }
     }
-    //
-//    private fun fetchNetworkState() {
-//        addSubscription(
-//            interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {})
-//        )
-//    }
 
     fun onSupportClick() {
-        _navigation.postValue(NavigationState.NavigateToSupport)
+        _navigation.value = NavigationState.NavigateToSupport
     }
-    //
-//    fun onSupportClick() {
-//        _navigation.value = NavigationState.NavigateToSupport
-//    }
 
     fun onExitAuthClick() {
-        interactor.exitAuth()
-        _navigation.postValue(NavigationState.NavigateToRegistration)
+        viewModelScope.launch {
+            interactor.exitAuth()
+            _navigation.value = NavigationState.NavigateToRegistration
+        }
     }
 
-    //
-//    fun onExitAuthClick() {
-//        interactor.exitAuth()
-//        _navigation.value = NavigationState.NavigateToRegistration
-//    }
 
     fun getDarkThemeSetting(): Boolean {
         return settingsManager.getSetting(
@@ -115,31 +85,16 @@ class AppViewModel(
         )
     }
 
-    //
-//    fun getDarkThemeSetting(): Boolean {
-//        return settingsManager.getSetting(
-//            AppPreffsKeys.SETTING_THEME,
-//            false
-//        )
-//    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
     }
-    //
-//    override fun getScreenTag(): String {
-//        return SCREEN_TAG
-//    }
 
     companion object {
         const val SCREEN_TAG = "App"
     }
 
-    //
-//    companion object {
-//        const val SCREEN_TAG = "App"
-//    }
-//
+
     sealed class NavigationState {
 
         object NavigateToRegistration : NavigationState()
@@ -147,15 +102,7 @@ class AppViewModel(
         object NavigateToSupport : NavigationState()
 
     }
-//    sealed class NavigationState {
-//
-//        object NavigateToRegistration : NavigationState()
-//
-//        object NavigateToSupport : NavigationState()
-//
-//    }
-//
-//}
+
 
 
 }

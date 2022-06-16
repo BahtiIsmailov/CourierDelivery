@@ -19,27 +19,18 @@ class AppInteractorImpl(
             networkMonitorRepository.networkConnected()
         }
     }
-    //    override fun observeNetworkConnected(): Observable<NetworkState> {
-//        return networkMonitorRepository.networkConnected()
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
-//
-    override fun exitAuth() {
-        authRemoteRepository.clearCurrentUser()
+
+    override suspend fun exitAuth() {
+        withContext(Dispatchers.IO){
+            authRemoteRepository.clearCurrentUser()
+        }
     }
-    //    override fun exitAuth() {
-//        authRemoteRepository.clearCurrentUser()
-//    }
 
     override fun observeNavigationApp(): Flow<String> {
         return appNavRepository.observeNavigation()
             .flowOn(Dispatchers.IO)
 
     }
-//    override fun observeNavigationApp(): Observable<String> {
-//        return appNavRepository.observeNavigation()
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
 
 
 

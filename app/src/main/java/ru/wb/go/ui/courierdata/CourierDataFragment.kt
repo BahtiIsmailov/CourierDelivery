@@ -91,9 +91,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun updateChecked() {
-        viewModel.onCheckedClick(
-            binding.checkedAgreement.isChecked
-        )
+        binding.checkedAgreement.isChecked
     }
 
     private fun initView() {

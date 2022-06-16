@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
@@ -65,22 +66,22 @@ class CourierBillingViewModel(
     }
 
     private fun initProgress() {
-        _billingItems.postValue( CourierBillingState.Init)
+        _billingItems.value = CourierBillingState.Init
     }
 
     private fun initToolbarLabel() {
-        _toolbarLabelState.postValue( resourceProvider.getTitle())
+        _toolbarLabelState.value = resourceProvider.getTitle()
     }
 
     private fun initBalanceAndTransactions() {
         setLoader(WaitLoader.Wait)
-        viewModelScope.launch {
+        viewModelScope.launch  {
             try {
                 billingComplete(interactor.getBillingInfo())
             }catch (e:Exception){
                 onTechErrorLog("billingError", e)
                 setLoader(WaitLoader.Complete)
-                _billingItems.postValue( CourierBillingState.Empty("Ошибка получения данных"))
+                _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
             }
         }
@@ -103,17 +104,17 @@ class CourierBillingViewModel(
     private fun billingComplete(it: BillingCommonEntity) {
         balance = it.balance
 
-        _balanceInfo.postValue( resourceProvider.formatMoney(balance, false))
+        _balanceInfo.value =  resourceProvider.formatMoney(balance, false)
         val items = mutableListOf<BaseItem>()
         it.transactions.sortedByDescending { it.createdAt }
             .forEachIndexed { index, billingTransactionEntity ->
                 items.add(dataBuilder.buildOrderItem(index, billingTransactionEntity))
             }
         if (items.isEmpty()) {
-            _billingItems.postValue(
-                CourierBillingState.Empty(resourceProvider.getEmptyList()))
+            _billingItems.value =
+                CourierBillingState.Empty(resourceProvider.getEmptyList())
         } else {
-            _billingItems.postValue( CourierBillingState.ShowBilling(items))
+            _billingItems.value = CourierBillingState.ShowBilling(items)
         }
         setLoader(WaitLoader.Complete)
     }
@@ -121,7 +122,7 @@ class CourierBillingViewModel(
     fun canCheckout() = balance > 0
 
     private fun setLoader(state: WaitLoader) {
-        _waitLoader.postValue(state)
+        _waitLoader.value = state
     }
 
     fun onUpdateClick() {
@@ -130,7 +131,7 @@ class CourierBillingViewModel(
     }
 
     fun gotoBillingAccountsClick() {
-        _navigationState.postValue( CourierBillingNavigationState.NavigateToAccountSelector(balance))
+        _navigationState.value = CourierBillingNavigationState.NavigateToAccountSelector(balance)
     }
 
     fun onCancelLoadClick() {

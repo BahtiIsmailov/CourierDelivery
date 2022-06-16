@@ -4,9 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.datatransport.cct.internal.LogEvent
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -77,7 +78,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun checkDemoMode() {
-        _demoState.value = interactor.isDemoMode()
+        viewModelScope.launch {
+            _demoState.value = interactor.isDemoMode()
+        }
     }
 
 
@@ -171,9 +174,9 @@ class CourierWarehousesViewModel(
 //         addsubsciption{
 //    interactor.getWarehouses()
 //              .dofinally{clearFabAndWhList()}
-    //           .subscribe{
-  //                   getWarehousesComplete(it)
-    //           }
+//           .subscribe{
+//                   getWarehousesComplete(it)
+//           }
 //
 //            } catch (e: Exception) {
 //                getWarehousesError(e)
@@ -196,10 +199,10 @@ class CourierWarehousesViewModel(
         onTechErrorLog("courierWarehouseError", it)
         setLoader(WaitLoader.Complete)
         if (it is NoInternetException) {
-            _warehouseState.postValue(CourierWarehouseItemState.NoInternet)
+            _warehouseState.value = CourierWarehouseItemState.NoInternet
         } else {
             errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-            _warehouseState.postValue(CourierWarehouseItemState.Empty("Ошибка получения данных"))
+            _warehouseState.value = CourierWarehouseItemState.Empty("Ошибка получения данных")
         }
     }
 
@@ -279,16 +282,15 @@ class CourierWarehousesViewModel(
     }
 
     private fun showManagerBar() {
-        viewModelScope.launch {
+
             interactor.mapState(CourierMapState.ShowManagerBar)
-        }
 
     }
 
     private fun updateMyLocation() {
-        viewModelScope.launch {
+
             interactor.mapState(CourierMapState.UpdateMyLocation)
-        }
+
     }
     //    private fun showManagerBar() {
 //        interactor.mapState(CourierMapState.ShowManagerBar)
@@ -299,7 +301,7 @@ class CourierWarehousesViewModel(
 //    }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-        viewModelScope.launch {
+
             onTechEventLog("initMapByLocation")
             myLocation = location
             if (coordinatePoints.isEmpty()) {
@@ -308,7 +310,7 @@ class CourierWarehousesViewModel(
                 updateMarkersWithMyLocation(location)
                 zoomMarkersFromBoundingBox(location)
             }
-        }
+
     }
 
     //    private fun courierWarehouseComplete() {
@@ -333,15 +335,15 @@ class CourierWarehousesViewModel(
 
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-        viewModelScope.launch {
+
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
-            Log.e("test","updateMarkersWithMyLocation : $mapMarkers")
+            Log.e("test", "updateMarkersWithMyLocation : $mapMarkers")
             interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
-        }
+
     }
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
-        viewModelScope.launch {
+
             if (coordinatePoints.isNotEmpty()) {
                 val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
                     coordinatePoints, myLocation, RADIUS_KM
@@ -350,7 +352,6 @@ class CourierWarehousesViewModel(
             } else {
                 interactor.mapState(CourierMapState.NavigateToPoint(myLocation))
             }
-        }
 
     }
 
@@ -405,19 +406,17 @@ class CourierWarehousesViewModel(
 
     private fun updateAndScrollToItems(indexItemClick: Int) {
         updateItems()
-        _warehouseState.postValue(CourierWarehouseItemState.ScrollTo(indexItemClick))
+        _warehouseState.value = CourierWarehouseItemState.ScrollTo(indexItemClick)
     }
 
     private fun isMapSelected(indexItemClick: Int) =
         mapMarkers[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
 
     private fun updateMarkers() {
-        viewModelScope.launch {
+
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
             interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
         }
-
-    }
 
     fun onItemClick(index: Int) {
         onTechEventLog("onItemClick", "index $index")
@@ -428,7 +427,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
-        viewModelScope.launch {
+
             mapMarkers.forEachIndexed { index, item ->
                 item.icon = if (index == clickItemIndex) {
                     if (isSelected) {
@@ -447,36 +446,36 @@ class CourierWarehousesViewModel(
                     interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
                 }
             }
-        }
+
 
     }
 
     private fun changeShowDetailsOrder(selected: Boolean) {
-        if (selected) _showOrdersState.postValue(CourierWarehousesShowOrdersState.Enable)
-        else _showOrdersState.postValue(CourierWarehousesShowOrdersState.Disable)
+        if (selected) _showOrdersState.value = CourierWarehousesShowOrdersState.Enable
+        else _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
     }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
         changeSelectedWarehouseItemsByMap(selectIndex, isSelected)
         if (warehouseItems.isEmpty()) {
-            _warehouseState.postValue(CourierWarehouseItemState.Empty(resourceProvider.getEmptyList()))
+            _warehouseState.value = CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
         } else {
-            _warehouseState.postValue(CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList()))
+            _warehouseState.value = CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
         }
     }
 
     private fun updateItems() {
-        _warehouseState.postValue(CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList()))
+        _warehouseState.value = CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
     }
 
     private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
-        _navigationState.postValue(
+        _navigationState.value =
             CourierWarehousesNavigationState.NavigateToCourierOrders(
                 oldEntity.id,
                 oldEntity.latitude,
                 oldEntity.longitude,
                 oldEntity.name
-            )
+
         )
     }
 

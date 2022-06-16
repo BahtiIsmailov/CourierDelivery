@@ -13,25 +13,25 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity>
 
-     fun freeOrdersLocal():  Flow<List<CourierOrderLocalDataEntity>>
+    fun freeOrdersLocal():  Flow<List<CourierOrderLocalDataEntity>>
 
-    fun saveRowOrder(rowOrder: Int)
+    suspend fun saveRowOrder(rowOrder: Int)
 
-    suspend fun selectedOrder(rowOrder: Int):  CourierOrderLocalDataEntity
+     fun selectedOrder(rowOrder: Int):  CourierOrderLocalDataEntity
 
-    fun selectedRowOrder(): Int
+    suspend fun selectedRowOrder(): Int
 
-    fun mapState(state: CourierMapState)
+      fun mapState(state: CourierMapState)
 
-    suspend fun observeMapAction(): Flow<CourierMapAction>
+    fun observeMapAction(): Flow<CourierMapAction>
 
-    fun carNumberIsConfirm(): Boolean
+    suspend fun carNumberIsConfirm(): Boolean
 
-    fun isDemoMode(): Boolean
+    suspend fun isDemoMode(): Boolean
 
-    fun carNumber(): String
+    suspend fun carNumber(): String
 
-    fun carType(): Int
+    suspend fun carType(): Int
 
     suspend fun anchorTask()
 

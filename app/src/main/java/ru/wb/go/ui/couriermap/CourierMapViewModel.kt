@@ -3,9 +3,11 @@ package ru.wb.go.ui.couriermap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -196,22 +198,28 @@ class CourierMapViewModel(
     }
 
     fun onItemClick(point: MapPoint) {
-        interactor.markerClick(point)
+
+            interactor.markerClick(point)
+
     }
 
     fun onMapClick() {
-        interactor.mapClick()
+
+            interactor.mapClick()
+
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-        interactor.onForcedLocationUpdate(point)
+
+            interactor.onForcedLocationUpdate(point)
+
 
 
     }
 
     fun onForcedLocationUpdateDefault() {
-        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
 
+            interactor.onForcedLocationUpdate(moscowCoordinatePoint())
 
     }
 
@@ -220,18 +228,23 @@ class CourierMapViewModel(
     }
 
     fun onZoomClick() {
-        interactor.prolongTimeHideManager()
-
+        viewModelScope.launch {
+            interactor.prolongTimeHideManager()
+        }
 
     }
 
     fun onShowAllClick() {
-        interactor.prolongTimeHideManager()
         interactor.showAll()
+        viewModelScope.launch {
+            interactor.prolongTimeHideManager()
+        }
     }
 
     fun onAnimateComplete() {
-        interactor.animateComplete()
+
+            interactor.animateComplete()
+
     }
 
     companion object {

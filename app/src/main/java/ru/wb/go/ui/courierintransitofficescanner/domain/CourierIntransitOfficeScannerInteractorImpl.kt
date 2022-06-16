@@ -1,9 +1,10 @@
 package ru.wb.go.ui.courierintransitofficescanner.domain
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -23,6 +24,8 @@ class CourierIntransitOfficeScannerInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierIntransitOfficeScannerInteractor {
 
+    private val coroutineScope = CoroutineScope(SupervisorJob())
+
      override suspend fun getOffices():  List<LocalOfficeEntity>  {
         return withContext(Dispatchers.IO){
             locRepo.getOfficesFlowable()
@@ -34,13 +37,14 @@ class CourierIntransitOfficeScannerInteractorImpl(
         }
 
     override suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData {
-        var result:ScannerAction? = null
-            scannerRepo.observeScannerAction().onEach {
-            result = it
-        }
-         return withContext(Dispatchers.IO){
-             convertScannerAction(result!!)
-         }
+          var result:ScannerAction? = null
+            scannerRepo.observeScannerAction()
+                .onEach {
+                    result = it
+                }
+                .flowOn(Dispatchers.IO)
+                .launchIn(coroutineScope)
+            return convertScannerAction(result!!)
     }
 
     private fun convertScannerAction(it: ScannerAction) =
@@ -67,9 +71,10 @@ class CourierIntransitOfficeScannerInteractorImpl(
     }
 
     override suspend fun scannerAction(scannerAction: ScannerState) {
-        scannerRepo.scannerState(scannerAction)
+        withContext(Dispatchers.IO){
+            scannerRepo.scannerState(scannerAction)
+        }
     }
-
 }
 
 /*

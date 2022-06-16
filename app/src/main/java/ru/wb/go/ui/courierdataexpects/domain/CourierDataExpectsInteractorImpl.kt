@@ -21,9 +21,9 @@ class CourierDataExpectsInteractorImpl(
 ) : CourierDataExpectsInteractor {
 
     override suspend fun saveRepeatCourierDocuments() {
-        val courierDocumentsEntity = userManager.courierDocumentsEntity()
-        if (courierDocumentsEntity != null) {
-            withContext(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
+            val courierDocumentsEntity = userManager.courierDocumentsEntity()
+            if (courierDocumentsEntity != null) {
                 appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
                 userManager.clearCourierDocumentsEntity()
             }
@@ -31,9 +31,10 @@ class CourierDataExpectsInteractorImpl(
     }
 
     override suspend fun isRegisteredStatus(): String {
-        return  withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             if (userManager.courierDocumentsEntity() == null) {
-                val refreshResult = refreshTokenRepository.doRefreshToken() // сюда приходит нетворк он майн срэд эксепшн
+                val refreshResult =
+                    refreshTokenRepository.doRefreshToken() // сюда приходит нетворк он майн срэд эксепшн
                 val resource = tokenManager.resources()// сюда приходит NEED_SEND_COURIER_DOCUMENTS
                 when {
                     refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN // сначало срабатывает тут и должно тут и оставваться
@@ -48,29 +49,29 @@ class CourierDataExpectsInteractorImpl(
     }
 }
 
- /*
-    override fun saveRepeatCourierDocuments(): Completable {
-        val courierDocumentsEntity = userManager.courierDocumentsEntity()
-        return if (courierDocumentsEntity == null) Completable.complete()
-        else appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
-            .doOnComplete { userManager.clearCourierDocumentsEntity() }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
+/*
+   override fun saveRepeatCourierDocuments(): Completable {
+       val courierDocumentsEntity = userManager.courierDocumentsEntity()
+       return if (courierDocumentsEntity == null) Completable.complete()
+       else appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
+           .doOnComplete { userManager.clearCourierDocumentsEntity() }
+           .compose(rxSchedulerFactory.applyCompletableSchedulers())
+   }
 
-    override fun isRegisteredStatus(): Single<String> {
-        return Single.fromCallable {
-            if (userManager.courierDocumentsEntity() == null) {
-                val refreshResult = refreshTokenRepository.doRefreshToken()
-                val resource = tokenManager.resources()
-                when {
-                    refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN
-                    resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> NEED_SEND_COURIER_DOCUMENTS
-                    resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> NEED_CORRECT_COURIER_DOCUMENTS
-                    resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> NEED_APPROVE_COURIER_DOCUMENTS
-                    else -> ""
-                }
-            } else INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
-        }.compose(rxSchedulerFactory.applySingleSchedulers())
-    }
+   override fun isRegisteredStatus(): Single<String> {
+       return Single.fromCallable {
+           if (userManager.courierDocumentsEntity() == null) {
+               val refreshResult = refreshTokenRepository.doRefreshToken()
+               val resource = tokenManager.resources()
+               when {
+                   refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN
+                   resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> NEED_SEND_COURIER_DOCUMENTS
+                   resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> NEED_CORRECT_COURIER_DOCUMENTS
+                   resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> NEED_APPROVE_COURIER_DOCUMENTS
+                   else -> ""
+               }
+           } else INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
+       }.compose(rxSchedulerFactory.applySingleSchedulers())
+   }
 
-  */
+ */

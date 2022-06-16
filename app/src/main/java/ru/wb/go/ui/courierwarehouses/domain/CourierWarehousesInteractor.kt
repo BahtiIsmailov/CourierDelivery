@@ -16,10 +16,10 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun observeMapAction(): Flow<CourierMapAction>
 
-    suspend fun mapState(state: CourierMapState)
+    fun mapState(state: CourierMapState)
 
-    fun isDemoMode(): Boolean
+    suspend fun isDemoMode(): Boolean
 
-    suspend fun mapAction(action: CourierMapAction)
+      fun mapAction(action: CourierMapAction)
 
 }

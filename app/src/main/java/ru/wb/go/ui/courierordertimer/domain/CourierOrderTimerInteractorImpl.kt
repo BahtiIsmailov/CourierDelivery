@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierordertimer.domain
 
-import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

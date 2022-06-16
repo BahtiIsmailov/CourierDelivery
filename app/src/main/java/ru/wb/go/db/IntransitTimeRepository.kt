@@ -4,7 +4,7 @@ import io.reactivex.Flowable
 
 interface IntransitTimeRepository {
 
-    fun startTimer(): Flowable<Long>
+    fun startTimer() :Long
     fun stopTimer()
 
 }

@@ -9,17 +9,17 @@ interface CourierMapInteractor {
 
     fun subscribeMapState(): Flow<CourierMapState>
 
-    fun markerClick(point: MapPoint)
+      fun markerClick(point: MapPoint)
 
-    fun mapClick()
+      fun mapClick()
 
-    fun onForcedLocationUpdate(point: CoordinatePoint)
+      fun onForcedLocationUpdate(point: CoordinatePoint)
 
-    fun showAll()
+      fun showAll()
 
-    fun animateComplete()
+      fun animateComplete()
 
-    fun prolongTimeHideManager()
+    suspend fun prolongTimeHideManager()
 
     fun startVisibilityManagerTimer1()
 
