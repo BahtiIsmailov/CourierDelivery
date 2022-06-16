@@ -51,7 +51,7 @@ class CourierLoadingInteractorImpl(
         }
     }
 
-    private suspend fun scanResult(
+    private   fun scanResult(
         scannerState: ScannerState,
         data: CourierLoadingScanBoxData,
         boxCount: Int
@@ -68,7 +68,7 @@ class CourierLoadingInteractorImpl(
 
     override suspend fun observeScanProcess(): CourierLoadingProcessData {
         var courierLoadingProgressData:CourierLoadingProcessData? = null
-        withContext(Dispatchers.IO) {
+
             scanRepo.observeScannerAction().onEach {
                 if (it is ScannerAction.ScanResult) {
                     val boxes = localRepo.getBoxes()
@@ -109,7 +109,7 @@ class CourierLoadingInteractorImpl(
 
                 }
             }// 2
-        }
+
         return courierLoadingProgressData!!
     }
 
@@ -167,10 +167,10 @@ class CourierLoadingInteractorImpl(
         return scanLoaderProgressSubject
     }
 
-    override suspend fun scannerAction(scannerAction: ScannerState) {
-        withContext(Dispatchers.IO) {
+    override   fun scannerAction(scannerAction: ScannerState) {
+
             scanRepo.scannerState(scannerAction)
-        }
+
     }
 
     override suspend fun observeOrderData(): CourierOrderLocalDataEntity {

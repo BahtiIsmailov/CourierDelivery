@@ -14,7 +14,7 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun scanLoaderProgress(): Flow<CourierLoadingProgressData>
 
-    suspend fun scannerAction(scannerAction: ScannerState)
+      fun scannerAction(scannerAction: ScannerState)
 
     suspend fun observeOrderData(): CourierOrderLocalDataEntity
 

@@ -33,9 +33,8 @@ class CourierUnloadingInteractorImpl(
         const val EMPTY_ADDRESS = ""
     }
 
-    override suspend fun observeScanProcess(officeId: Int): CourierUnloadingProcessData {
+    override fun observeScanProcess(officeId: Int): CourierUnloadingProcessData {
         var result: CourierUnloadingScanBoxData? = null
-        return withContext(Dispatchers.IO) {
             scannerRepo.observeScannerAction().onEach {
                 if (it is ScannerAction.ScanResult) {
                     val parsedScan = scannerRepo.parseScanBoxQr(it.value)
@@ -74,11 +73,9 @@ class CourierUnloadingInteractorImpl(
                     }
                 }
             }
-
             val res = localRepo.findOfficeById(officeId)
             scannerRepo.holdStart()
-            CourierUnloadingProcessData(result!!, res.deliveredBoxes, res.countBoxes)
-        }
+            return CourierUnloadingProcessData(result!!, res.deliveredBoxes, res.countBoxes)
     }
 
 
@@ -101,7 +98,7 @@ class CourierUnloadingInteractorImpl(
         }
     }
 
-    override suspend fun scannerAction(scannerAction: ScannerState) {
+    override   fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
     }
 

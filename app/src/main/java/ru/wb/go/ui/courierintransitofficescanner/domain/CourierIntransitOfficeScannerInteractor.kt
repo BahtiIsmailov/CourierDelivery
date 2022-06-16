@@ -13,6 +13,6 @@ interface CourierIntransitOfficeScannerInteractor: BaseServiceInteractor {
 
     suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData
 
-    suspend fun scannerAction(scannerAction: ScannerState)
+      fun scannerAction(scannerAction: ScannerState)
 
 }

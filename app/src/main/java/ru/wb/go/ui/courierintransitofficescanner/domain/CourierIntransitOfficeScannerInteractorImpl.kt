@@ -42,8 +42,6 @@ class CourierIntransitOfficeScannerInteractorImpl(
                 .onEach {
                     result = it
                 }
-                .flowOn(Dispatchers.IO)
-                .launchIn(coroutineScope)
             return convertScannerAction(result!!)
     }
 
@@ -70,10 +68,10 @@ class CourierIntransitOfficeScannerInteractorImpl(
         }
     }
 
-    override suspend fun scannerAction(scannerAction: ScannerState) {
-        withContext(Dispatchers.IO){
+    override   fun scannerAction(scannerAction: ScannerState) {
+
             scannerRepo.scannerState(scannerAction)
-        }
+
     }
 }
 

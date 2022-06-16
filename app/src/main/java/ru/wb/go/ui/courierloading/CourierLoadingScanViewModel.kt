@@ -89,9 +89,9 @@ class CourierLoadingScanViewModel(
     }
 
     private fun holdSplashScanner() {
-        viewModelScope.launch {
+
             interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
-        }
+
     }
 
     private fun getGate() {
@@ -321,15 +321,15 @@ class CourierLoadingScanViewModel(
     }
 
     fun onStartScanner() {
-        viewModelScope.launch {
+
             interactor.scannerAction(ScannerState.StartScan)
-        }
+
     }
 
     private fun stopScanner() {
-        viewModelScope.launch {
+
             interactor.scannerAction(ScannerState.StopScan)
-        }
+
     }
 
     override fun onTimerState(duration: Int, downTickSec: Int) {

@@ -1,8 +1,6 @@
 package ru.wb.go.ui.scanner.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -51,7 +49,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
         return ParsedScanBoxQrEntity(parseParams[2], parseParams[3], isOk = true)
     }
 
-    override suspend fun holdStart(){
+    override  fun holdStart(){
         Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.MILLISECONDS)
         scannerState(ScannerState.StartScan)
     }

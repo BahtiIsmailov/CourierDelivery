@@ -133,15 +133,15 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun onStopScanner() {
-        viewModelScope.launch {
+
             interactor.scannerAction(ScannerState.StopScan)
-        }
+
     }
 
     private fun onStartScanner() {
-        viewModelScope.launch {
+
             interactor.scannerAction(ScannerState.StartScan)
-        }
+
     }
 
     fun play(resId: Int) {
