@@ -167,9 +167,7 @@ class CourierOrdersViewModel(
 
 
     private fun checkDemoMode() {
-        viewModelScope.launch {
-            _demoState.value = interactor.isDemoMode()
-        }
+        _demoState.value = interactor.isDemoMode()
     }
 
     private fun observeMapAction() {
@@ -195,10 +193,10 @@ class CourierOrdersViewModel(
 //    }
 
     fun onShowOrderDetailsClick() {
-        viewModelScope.launch {
-            _navigationState.value =
-                CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-        }
+
+        _navigationState.value =
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+
     }
 
     fun onChangeCarNumberClick() {
@@ -207,9 +205,9 @@ class CourierOrdersViewModel(
     }
 
     private fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
-        viewModelScope.launch {
-            action(interactor.selectedRowOrder())
-        }
+
+        action(interactor.selectedRowOrder())
+
     }
 
     private fun navigateToEditCarNumber(): (rowOrder: Int) -> Unit = {
@@ -225,14 +223,12 @@ class CourierOrdersViewModel(
     }
 
     fun onConfirmTakeOrderClick() {
-        viewModelScope.launch {
-            when {
-                interactor.isDemoMode() -> navigateToRegistrationDialog()
-                interactor.carNumberIsConfirm() -> withSelectedRowOrder(
-                    navigateToDialogConfirmScoreInfo()
-                )
-                else -> withSelectedRowOrder(navigateToCreateCarNumber())
-            }
+        when {
+            interactor.isDemoMode() -> navigateToRegistrationDialog()
+            interactor.carNumberIsConfirm() -> withSelectedRowOrder(
+                navigateToDialogConfirmScoreInfo()
+            )
+            else -> withSelectedRowOrder(navigateToCreateCarNumber())
         }
     }
 
@@ -251,24 +247,22 @@ class CourierOrdersViewModel(
     }
 
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
-        viewModelScope.launch {
-            with(orderLocalDataEntities[it]) {
-                _navigateToDialogConfirmScoreInfo.value =
-                    NavigateToDialogConfirmInfo(
-                        DialogInfoStyle.INFO.ordinal,
-                        resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
-                        resourceProvider.getConfirmMessageDialog(
-                            CarNumberUtils(interactor.carNumber()).fullNumber(),
-                            resourceProvider.getCargo(
-                                courierOrderLocalEntity.minVolume,
-                                courierOrderLocalEntity.minBoxesCount
-                            ),
-                            courierOrderLocalEntity.reservedDuration
+        with(orderLocalDataEntities[it]) {
+            _navigateToDialogConfirmScoreInfo.value =
+                NavigateToDialogConfirmInfo(
+                    DialogInfoStyle.INFO.ordinal,
+                    resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
+                    resourceProvider.getConfirmMessageDialog(
+                        CarNumberUtils(interactor.carNumber()).fullNumber(),
+                        resourceProvider.getCargo(
+                            courierOrderLocalEntity.minVolume,
+                            courierOrderLocalEntity.minBoxesCount
                         ),
-                        resourceProvider.getConfirmPositiveDialog(),
-                        resourceProvider.getConfirmNegativeDialog()
-                    )
-            }
+                        courierOrderLocalEntity.reservedDuration
+                    ),
+                    resourceProvider.getConfirmPositiveDialog(),
+                    resourceProvider.getConfirmNegativeDialog()
+                )
         }
     }
 
@@ -654,12 +648,12 @@ class CourierOrdersViewModel(
 //    }
 
     fun onNextFab() {
-        viewModelScope.launch {
-            initOrderDetails(interactor.selectedRowOrder())
-            _showOrderState.value = CourierOrderShowOrdersState.Invisible
-            _navigationState.value =
-                CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-        }
+
+        initOrderDetails(interactor.selectedRowOrder())
+        _showOrderState.value = CourierOrderShowOrdersState.Invisible
+        _navigationState.value =
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+
     }
 
     fun onAddressesClick() {

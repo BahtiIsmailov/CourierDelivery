@@ -19,17 +19,17 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
      fun selectedOrder(rowOrder: Int):  CourierOrderLocalDataEntity
 
-    suspend fun selectedRowOrder(): Int
+      fun selectedRowOrder(): Int
 
       fun mapState(state: CourierMapState)
 
     fun observeMapAction(): Flow<CourierMapAction>
 
-    suspend fun carNumberIsConfirm(): Boolean
+      fun carNumberIsConfirm(): Boolean
 
-    suspend fun isDemoMode(): Boolean
+      fun isDemoMode(): Boolean
 
-    suspend fun carNumber(): String
+      fun carNumber(): String
 
     suspend fun carType(): Int
 

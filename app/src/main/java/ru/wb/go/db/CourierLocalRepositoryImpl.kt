@@ -16,7 +16,7 @@ class CourierLocalRepositoryImpl(
     private val courierLoadingBoxDao: CourierBoxDao
 ) : CourierLocalRepository {
 
-    override suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+    override fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         courierWarehouseDao.insert(courierWarehouseEntity)
     }
 

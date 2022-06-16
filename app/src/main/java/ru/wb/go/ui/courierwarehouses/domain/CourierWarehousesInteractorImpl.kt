@@ -2,7 +2,6 @@ package ru.wb.go.ui.courierwarehouses.domain
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
@@ -42,11 +41,9 @@ class CourierWarehousesInteractorImpl(
 //    }
 
 
-    override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
-        return withContext(Dispatchers.IO) {
-            courierLocalRepository.deleteAllWarehouse()
-            courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
-        }
+    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+        courierLocalRepository.deleteAllWarehouse()
+        courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
     }
 //    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
 //        courierLocalRepository.deleteAllWarehouse()

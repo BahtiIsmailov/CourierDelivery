@@ -105,10 +105,9 @@ class CourierOrdersInteractorImpl(
         }
     }
 
-    override suspend fun selectedRowOrder(): Int {
-        return withContext(Dispatchers.IO) {
-            sharedWorker.load(SELECTED_ORDER_INDEX_KEY, 0)
-        }
+    override fun selectedRowOrder(): Int {
+        return sharedWorker.load(SELECTED_ORDER_INDEX_KEY, 0)
+
     }
 
     private fun convertCourierOrderDstOfficesLocalEntity(
@@ -178,22 +177,18 @@ class CourierOrdersInteractorImpl(
 
     }
 
-    override suspend fun carNumberIsConfirm(): Boolean {
-        return withContext(Dispatchers.IO){
-            userManager.carNumber().isNotEmpty()
-        }
+    override fun carNumberIsConfirm(): Boolean {
+        return userManager.carNumber().isNotEmpty()
+
     }
 
-    override suspend fun isDemoMode(): Boolean {
-        return withContext(Dispatchers.IO){
-            tokenManager.isDemo()
-        }
+    override  fun isDemoMode(): Boolean {
+        return tokenManager.isDemo()
+
     }
 
-    override suspend fun carNumber(): String {
-        return withContext(Dispatchers.IO){
-            userManager.carNumber().replaceCarNumberY()
-        }
+    override  fun carNumber(): String {
+        return userManager.carNumber().replaceCarNumberY()
     }
 
     override suspend fun carType(): Int {
@@ -205,7 +200,7 @@ class CourierOrdersInteractorImpl(
     override suspend fun anchorTask() {
         return withContext(Dispatchers.IO) {
             val courierOrderLocalDataEntity = selectedOrder(selectedRowOrder())
-            val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()
+            val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()// null here
             val localOrderEntity =
                 convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
             reserveTask(localOrderEntity)

@@ -9,7 +9,7 @@ interface CourierLocalRepository {
     //==============================================================================================
     //warehouse
     //==============================================================================================
-    suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
+      fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
     fun readCurrentWarehouse(): CourierWarehouseLocalEntity
 

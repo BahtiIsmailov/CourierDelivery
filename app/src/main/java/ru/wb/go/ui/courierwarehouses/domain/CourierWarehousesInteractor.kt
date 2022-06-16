@@ -10,7 +10,7 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     suspend fun getWarehouses(): List<CourierWarehouseLocalEntity>
 
-    suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
+      fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
     suspend fun loadProgress()
 

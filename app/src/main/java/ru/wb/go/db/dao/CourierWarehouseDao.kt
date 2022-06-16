@@ -12,7 +12,7 @@ import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 interface CourierWarehouseDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
+    fun insert(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
     @Query("SELECT * FROM CourierWarehouseLocalEntity")
     fun read():  CourierWarehouseLocalEntity
