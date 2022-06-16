@@ -170,7 +170,6 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-
         try {
             val response = interactor.observeScanProcess(parameters.officeId)
             holdSplashScanner()
@@ -179,8 +178,6 @@ class CourierUnloadingScanViewModel(
             onTechErrorLog("observeScanProcessError", e)
             errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
         }
-
-
     }
 
     fun onCloseDetailsClick() {

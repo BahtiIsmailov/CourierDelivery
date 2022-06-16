@@ -66,7 +66,7 @@ class CourierLoadingInteractorImpl(
 
     }
 
-    override suspend fun observeScanProcess(): CourierLoadingProcessData {
+    override   fun observeScanProcess(): CourierLoadingProcessData {
         var courierLoadingProgressData:CourierLoadingProcessData? = null
 
             scanRepo.observeScannerAction().onEach {
@@ -115,30 +115,31 @@ class CourierLoadingInteractorImpl(
 
 
 
-     suspend fun qrComplete(
+     private suspend fun qrComplete(
         box: LocalBoxEntity,
         countBox: Int,
         isNewBox: Boolean,
         scanTime: String
     ): CourierLoadingProcessData {
-        return withContext(Dispatchers.IO) {
-            when (countBox) {
+        return when (countBox) {
                 0 -> {
                     firstBoxLoaderProgress()
-                    remoteRepo.setStartTask(localRepo.getOrderId(), box)
-                    firstBoxLoaderComplete()
-                    localRepo.loadBoxOnboard(box, true)
-                    taskTimerRepository.stopTimer()
-                    localRepo.setOrderOrderStart(scanTime)
-                    scanResult(
-                        ScannerState.HoldScanComplete,
-                        CourierLoadingScanBoxData.FirstBoxAdded(
-                            box.boxId,
-                            box.address
-                        ),
-                        1
-                    )
-                }
+                    withContext(Dispatchers.IO) {
+                        remoteRepo.setStartTask(localRepo.getOrderId(), box)
+                    }
+                        firstBoxLoaderComplete()
+                        localRepo.loadBoxOnboard(box, true)
+                        taskTimerRepository.stopTimer()
+                        localRepo.setOrderOrderStart(scanTime)
+                        scanResult(
+                            ScannerState.HoldScanComplete,
+                            CourierLoadingScanBoxData.FirstBoxAdded(
+                                box.boxId,
+                                box.address
+                            ),
+                            1
+                        )
+                    }
                 else -> {
                     localRepo.loadBoxOnboard(box, isNewBox)
                     scanResult(
@@ -153,24 +154,21 @@ class CourierLoadingInteractorImpl(
             }
         }
 
-    }
 
      private fun firstBoxLoaderProgress() {
         scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Progress)
     }
 
-     private   fun firstBoxLoaderComplete() {
+     private  fun firstBoxLoaderComplete() {
         scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Complete)
     }
 
-    override suspend fun scanLoaderProgress(): Flow<CourierLoadingProgressData> {
+    override fun scanLoaderProgress(): Flow<CourierLoadingProgressData> {
         return scanLoaderProgressSubject
     }
 
-    override   fun scannerAction(scannerAction: ScannerState) {
-
+    override fun scannerAction(scannerAction: ScannerState) {
             scanRepo.scannerState(scannerAction)
-
     }
 
     override suspend fun observeOrderData(): CourierOrderLocalDataEntity {

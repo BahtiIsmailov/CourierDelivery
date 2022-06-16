@@ -10,11 +10,11 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun scannedBoxes(): List<LocalBoxEntity>
 
-    suspend fun observeScanProcess(): CourierLoadingProcessData
+    fun observeScanProcess(): CourierLoadingProcessData
 
-    suspend fun scanLoaderProgress(): Flow<CourierLoadingProgressData>
+      fun scanLoaderProgress(): Flow<CourierLoadingProgressData>
 
-      fun scannerAction(scannerAction: ScannerState)
+    fun scannerAction(scannerAction: ScannerState)
 
     suspend fun observeOrderData(): CourierOrderLocalDataEntity
 

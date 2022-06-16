@@ -53,7 +53,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         get() = timerStates
 
 
-    override suspend fun stopTimer() {
+    override fun stopTimer() {
         timeConfirmCodeDisposable()
     }
 

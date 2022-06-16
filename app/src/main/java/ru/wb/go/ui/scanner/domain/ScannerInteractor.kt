@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface ScannerInteractor {
 
-    suspend fun observeHoldSplash(): Flow<Action>
+      fun observeHoldSplash(): Flow<Action>
 
      fun barcodeScanned(barcode: String)
 
-    suspend fun holdSplashUnlock()
+      fun holdSplashUnlock()
 
       fun prolongHoldTimer()
 

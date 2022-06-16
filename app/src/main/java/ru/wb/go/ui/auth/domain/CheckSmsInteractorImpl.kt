@@ -1,10 +1,8 @@
 package ru.wb.go.ui.auth.domain
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -22,6 +20,7 @@ class CheckSmsInteractorImpl(
     private val timerStates = MutableSharedFlow<TimerState>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+    val coroutineScope = CoroutineScope(SupervisorJob())
 
     private var durationTime = 0
     override suspend fun startTimer(durationTime: Int) {
@@ -47,6 +46,9 @@ class CheckSmsInteractorImpl(
         }
     }
 
+    private fun timeConfirmCodeDisposable() {
+         coroutineScope.cancel()
+    }
     private fun publishCallState(timerState: TimerState) {
         timerStates.tryEmit(timerState)
     }
@@ -54,16 +56,13 @@ class CheckSmsInteractorImpl(
     override val timer: Flow<TimerState>
         get() = timerStates
 
-//    override suspend fun stopTimer() {
-//        coroutineScope {
-//
-//        }
-//    }
+    override suspend fun stopTimer() {
+        timeConfirmCodeDisposable()
+    }
 
-    override suspend fun observeNetworkConnected(): NetworkState {
-        return withContext(Dispatchers.IO) {
-            networkMonitorRepository.networkConnected()
-        }
+    override fun observeNetworkConnected(): NetworkState {
+        return networkMonitorRepository.networkConnected()
+
     }
 
     override suspend fun auth(phone: String, password: String) {

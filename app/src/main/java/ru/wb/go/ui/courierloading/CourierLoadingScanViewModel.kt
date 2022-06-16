@@ -7,7 +7,10 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -90,7 +93,7 @@ class CourierLoadingScanViewModel(
 
     private fun holdSplashScanner() {
 
-            interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
+        interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
 
     }
 
@@ -169,11 +172,11 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        viewModelScope.launch {
-            try {
-                val response = interactor.observeScanProcess()//1
-                observeScanProcessComplete(response)
-            } catch (e: Exception) {
+        try {
+            val response = interactor.observeScanProcess()//1
+            observeScanProcessComplete(response)
+        } catch (e: Exception) {
+            viewModelScope.launch {
                 delay(1000)
                 scanProcessError(e)
             }
@@ -269,7 +272,7 @@ class CourierLoadingScanViewModel(
                 courierCompleteData.amount,
                 courierCompleteData.countBox
 
-        )
+            )
     }
 
     fun onCancelLoadingClick() {
@@ -322,13 +325,13 @@ class CourierLoadingScanViewModel(
 
     fun onStartScanner() {
 
-            interactor.scannerAction(ScannerState.StartScan)
+        interactor.scannerAction(ScannerState.StartScan)
 
     }
 
     private fun stopScanner() {
 
-            interactor.scannerAction(ScannerState.StopScan)
+        interactor.scannerAction(ScannerState.StopScan)
 
     }
 

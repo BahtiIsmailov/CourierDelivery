@@ -63,10 +63,7 @@ class CheckSmsViewModel(
     }
 
     private fun observeNetworkState() {
-        viewModelScope.launch {
-            _toolbarNetworkState.value = interactor.observeNetworkConnected()
-        }
-
+        _toolbarNetworkState.value = interactor.observeNetworkConnected()
     }
 
     private fun fetchTitle() {

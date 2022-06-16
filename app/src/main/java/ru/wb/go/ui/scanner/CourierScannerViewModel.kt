@@ -3,6 +3,7 @@ package ru.wb.go.ui.scanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -54,8 +55,7 @@ class CourierScannerViewModel(
     }
 
     private fun observeHoldSplash() {
-        viewModelScope.launch {
-            interactor.observeHoldSplash()
+        interactor.observeHoldSplash().onEach {
             _scannerAction.value = ScannerState.StopScanWithHoldSplash
         }
     }
@@ -66,11 +66,11 @@ class CourierScannerViewModel(
     }
 
     fun onHoldSplashClick() {
-        viewModelScope.launch {
+
             interactor.prolongHoldTimer()
             interactor.holdSplashUnlock()
             _scannerAction.value = ScannerState.StartScan
-        }
+
     }
 
     fun onDestroy() {

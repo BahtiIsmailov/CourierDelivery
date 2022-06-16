@@ -28,15 +28,13 @@ class ScannerInteractorImpl(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    private var holdSplashDisposable: Disposable? = null
-
+    val coroutineScope = CoroutineScope(SupervisorJob())
     companion object{
-
         const val HOLD_SCANNER_DELAY = 25L
     }
 
     init {
-
+        startTimer()
     }
 
     override fun barcodeScanned(barcode: String) {
@@ -44,13 +42,9 @@ class ScannerInteractorImpl(
          scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
     }
 
-
-
-    override suspend fun holdSplashUnlock() {
+    override fun holdSplashUnlock() {
          scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
     }
-
-
 
     override  fun prolongHoldTimer() {
         startTimer()
@@ -82,24 +76,19 @@ class ScannerInteractorImpl(
         if (!settingsManager.getSetting(AppPreffsKeys.SETTING_SANNER_OFF, false)) {
             return
         }
-        if (holdSplashDisposable == null) {
+        if (!coroutineScope.isActive) {
             Observable.timer(HOLD_SCANNER_DELAY, TimeUnit.SECONDS)
             scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
             holdSplashSubject.tryEmit(Action { })
-
         }
     }
      private fun stopTimer() {
-        if (holdSplashDisposable != null) {
-            holdSplashDisposable!!.dispose()
-            holdSplashDisposable = null
-        }
+        coroutineScope.cancel()
     }
 
-    override suspend fun observeHoldSplash(): Flow<Action> {
-        return withContext(Dispatchers.IO){
-            holdSplashSubject
-        }
+    override fun observeHoldSplash(): Flow<Action> {
+        return holdSplashSubject
+
     }
 
 
