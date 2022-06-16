@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import ru.wb.go.app.DEFAULT_CAR_NUMBER
 import ru.wb.go.app.DEFAULT_CAR_TYPE
 import ru.wb.go.ui.NetworkViewModel
@@ -80,21 +80,76 @@ class CourierCarNumberViewModel(
         _stateUI.value = CourierCarNumberUIState.CloseTypeItems
     }
 
-    fun onNumberObservableClicked(event: CarNumberKeyboardNumericView.ButtonAction) {
-        try {
-            carNumber = accumulateNumber(interactor.getCarNumber(), event).replaceCarNumberY()
-            switchBackspace(carNumber)
-            switchComplete()
-            _stateUI.value = carNumberFormat(CarNumberUtils(carNumber)).invoke()
-        } catch (e: Exception) {
-            onTechErrorLog("onNumberObservableClicked", e)
+
+//    init {
+//        updateCarType()
+//    }
+//
+//    fun onCheckCarNumberClick() {
+//        putCarTypeAndNumber()
+//    }
+//
+//    fun onCancelCarNumberClick() {
+//        fetchCarNumberComplete()
+//    }
+//
+//    fun onCarTypeSelectClick() {
+//        _stateUI.value = CourierCarNumberUIState.InitTypeItems(types)
+//    }
+
+    fun onNumberObservableClicked(event: Flow<CarNumberKeyboardNumericView.ButtonAction>) {
+        event.scan(interactor.getCarNumber()) { accumulator, item ->
+            accumulateNumber(accumulator, item)
         }
+            .map {
+                it.replaceCarNumberY()
+            }
+            .onEach {
+                carNumber = it
+                switchBackspace(it)
+                switchComplete()
+
+            }
+            .map {
+                carNumberFormat(CarNumberUtils(it)).invoke()
+            }
+            .onEach {
+                _stateUI.value = it
+            }
+            .catch {
+                onTechErrorLog("onNumberObservableClicked", it)
+            }
+            .launchIn(viewModelScope)
+
     }
+
+    //    fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
+//        addSubscription(
+//            event.scan(interactor.getCarNumber()) { accumulator, item ->
+//                accumulateNumber(accumulator, item)
+//            }
+//                .map { it.replaceCarNumberY() }
+//                .doOnNext { carNumber = it }
+//                .doOnNext {
+//                    switchBackspace(it)
+//                    switchComplete()
+//                }
+//                .map { carNumberFormat(CarNumberUtils(it)).invoke() }
+//                .subscribe(
+//                    { _stateUI.value = it },
+//                    { onTechErrorLog("onNumberObservableClicked", it) })
+//        )
+//    }
+
 
     fun onAddressItemClick(index: Int) {
         carType = index
         updateCarType()
     }
+//    fun onAddressItemClick(index: Int) {
+//        carType = index
+//        updateCarType()
+//    }
 
     private fun updateCarType() {
         if (carType == DEFAULT_CAR_TYPE) return
@@ -112,6 +167,13 @@ class CourierCarNumberViewModel(
                 carNumberUtils.numberKeyboardMode()
             )
         }
+
+
+    //    fun onCarTypeCloseClick() {
+//        _stateUI.value = CourierCarNumberUIState.CloseTypeItems
+//    }
+//
+//
 
     private fun switchBackspace(it: String) {
         _stateKeyboardBackspaceUI.value =
@@ -155,8 +217,8 @@ class CourierCarNumberViewModel(
     private fun fetchCarNumberComplete() {
         onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
-                result = parameters.result
-            )
+            result = parameters.result
+        )
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
     }
 
@@ -210,49 +272,8 @@ class CourierCarNumberViewModel(
         }
         types.toList()
     }
-
-    init {
-        updateCarType()
-    }
-
-    fun onCheckCarNumberClick() {
-        putCarTypeAndNumber()
-    }
-
-    fun onCancelCarNumberClick() {
-        fetchCarNumberComplete()
-    }
-
-    fun onCarTypeSelectClick() {
-        _stateUI.value = CourierCarNumberUIState.InitTypeItems(types)
-    }
-
-    fun onCarTypeCloseClick() {
-        _stateUI.value = CourierCarNumberUIState.CloseTypeItems
-    }
-
-    fun onNumberObservableClicked(event: Observable<CarNumberKeyboardNumericView.ButtonAction>) {
-        addSubscription(
-            event.scan(interactor.getCarNumber()) { accumulator, item ->
-                accumulateNumber(accumulator, item)
-            }
-                .map { it.replaceCarNumberY() }
-                .doOnNext { carNumber = it }
-                .doOnNext {
-                    switchBackspace(it)
-                    switchComplete()
-                }
-                .map { carNumberFormat(CarNumberUtils(it)).invoke() }
-                .subscribe(
-                    { _stateUI.value = it },
-                    { onTechErrorLog("onNumberObservableClicked", it) })
-        )
-    }
-
-    fun onAddressItemClick(index: Int) {
-        carType = index
-        updateCarType()
-    }
+//
+//
 
     private fun updateCarType() {
         if (carType == DEFAULT_CAR_TYPE) return

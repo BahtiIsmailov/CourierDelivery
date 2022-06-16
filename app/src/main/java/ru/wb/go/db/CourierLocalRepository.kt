@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.*
 
@@ -24,7 +25,7 @@ interface CourierLocalRepository {
 
     suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>)
 
-    suspend fun freeOrders():  List<CourierOrderLocalDataEntity>
+    fun freeOrders(): Flow<List<CourierOrderLocalDataEntity>>
 
     suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
 

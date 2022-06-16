@@ -112,7 +112,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         binding.carClose.setOnClickListener { viewModel.onCancelCarNumberClick() }
         binding.confirm.setOnClickListener { viewModel.onCheckCarNumberClick() }
         binding.cancel.setOnClickListener { viewModel.onCancelCarNumberClick() }
-        binding.viewKeyboard.observableListener.value?.let { viewModel.onNumberObservableClicked(it) }
+        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
         binding.iconCarTypeSelect.setOnClickListener { viewModel.onCarTypeSelectClick() }
         binding.iconCarTypeChange.setOnClickListener { viewModel.onCarTypeSelectClick() }
         binding.typesClose.setOnClickListener { viewModel.onCarTypeCloseClick() }

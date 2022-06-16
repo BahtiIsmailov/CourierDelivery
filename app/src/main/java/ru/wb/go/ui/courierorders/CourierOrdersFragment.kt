@@ -102,10 +102,8 @@ class CourierOrdersFragment :
         override  fun handleOnBackPressed() {
             when {
                 isOrdersExpanded() -> viewModel.onCloseOrdersClick()
-                isOrderDetailsExpanded() -> {
-                    lifecycleScope.launch {
-                        viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
-                    }
+                isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+
                 }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
@@ -214,18 +212,10 @@ class CourierOrdersFragment :
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
 
-        binding.carChangeImage.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.onChangeCarNumberClick()
-            }
-        }
+        binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.takeOrder.setOnClickListener { lifecycleScope.launch {viewModel.onConfirmTakeOrderClick()} }
-        binding.closeOrderDetails.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
-            }
-        }
+        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
+        binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
         binding.carNumberEmpty.setOnClickListener { lifecycleScope.launch {viewModel.onChangeCarNumberClick()} }

@@ -1,6 +1,7 @@
 package ru.wb.go.db
 
 import io.reactivex.*
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.dao.CourierBoxDao
 import ru.wb.go.db.dao.CourierOrderDao
 import ru.wb.go.db.dao.CourierWarehouseDao
@@ -37,7 +38,7 @@ class CourierLocalRepositoryImpl(
     }
 
 
-    override suspend fun freeOrders():  List<CourierOrderLocalDataEntity>  {
+    override fun freeOrders(): Flow<List<CourierOrderLocalDataEntity>> {
         return courierOrderDao.orderAndOffices()
     }
     private suspend fun saveOrderAndOffices(
