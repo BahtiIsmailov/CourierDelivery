@@ -98,7 +98,7 @@ class CourierUnloadingInteractorImpl(
         }
     }
 
-    override   fun scannerAction(scannerAction: ScannerState) {
+    override fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
     }
 

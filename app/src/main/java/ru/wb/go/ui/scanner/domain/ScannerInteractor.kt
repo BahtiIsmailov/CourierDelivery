@@ -8,7 +8,7 @@ interface ScannerInteractor {
 
       fun observeHoldSplash(): Flow<Action>
 
-     fun barcodeScanned(barcode: String)
+      fun barcodeScanned(barcode: String)
 
       fun holdSplashUnlock()
 

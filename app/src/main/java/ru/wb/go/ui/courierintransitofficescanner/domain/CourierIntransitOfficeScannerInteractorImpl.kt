@@ -36,7 +36,7 @@ class CourierIntransitOfficeScannerInteractorImpl(
 
         }
 
-    override suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData {
+    override  fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData {
           var result:ScannerAction? = null
             scannerRepo.observeScannerAction()
                 .onEach {

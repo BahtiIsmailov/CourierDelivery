@@ -2,11 +2,7 @@ package ru.wb.go.ui.courierintransitofficescanner
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScanData
@@ -68,13 +64,12 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun initScanner() {
-        viewModelScope.launch{
-            try {
-                observeOfficeIdScanProcessComplete(interactor.observeOfficeIdScanProcess())
-            }catch (e:Exception){
-                observeOfficeIdScanProcessError(e)
-            }
+        try {
+            observeOfficeIdScanProcessComplete(interactor.observeOfficeIdScanProcess())
+        } catch (e: Exception) {
+            observeOfficeIdScanProcessError(e)
         }
+
 
     }
 
@@ -104,7 +99,7 @@ class CourierIntransitOfficeScannerViewModel(
                         "Офис не принадлежит маршруту", "Повторите сканирование"
                     )
             }
-            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value =  true
+            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
             CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
         }
     }
@@ -134,13 +129,13 @@ class CourierIntransitOfficeScannerViewModel(
 
     private fun onStopScanner() {
 
-            interactor.scannerAction(ScannerState.StopScan)
+        interactor.scannerAction(ScannerState.StopScan)
 
     }
 
     private fun onStartScanner() {
 
-            interactor.scannerAction(ScannerState.StartScan)
+        interactor.scannerAction(ScannerState.StartScan)
 
     }
 

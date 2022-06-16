@@ -55,7 +55,6 @@ class ScannerInteractorImpl(
         return scannerRepository.observeScannerState().onEach {
                   workWithScan(it)
               }
-                .flowOn(Dispatchers.IO)
         }
 
     private fun workWithScan(it:ScannerState){

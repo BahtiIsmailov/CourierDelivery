@@ -41,8 +41,6 @@ class CourierScannerViewModel(
             .onEach {
                 _scannerAction.value = it
             }
-            .launchIn(viewModelScope)
-
     }
 
     private fun flashState() {
