@@ -1,6 +1,8 @@
 package ru.wb.go.network.api.auth
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.api.auth.query.AuthBySmsOrPasswordQuery
@@ -19,19 +21,23 @@ class AuthRemoteRepositoryImpl(
     override suspend fun auth(
         password: String, phone: String, useSMS: Boolean,
     ) {
-        val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
-        val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
-        val tokenEntity = TokenEntity(auth.accessToken, auth.expiresIn, auth.refreshToken)
-        saveToken(tokenEntity)
-        turnOffDemo()
+        withContext(Dispatchers.IO) {
+            val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
+            val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
+            val tokenEntity = TokenEntity(auth.accessToken, auth.expiresIn, auth.refreshToken)
+            saveToken(tokenEntity)
+            turnOffDemo()
+        }
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String) {
-        try {
-            authApi.couriersAuth(tokenManager.apiVersion(), phone)
-            userManager.savePhone(phone)
-        } catch (e: Exception) {
-            Log.e("TAG", "couriersExistAndSavePhone:${e.message}")
+        withContext(Dispatchers.IO) {
+            try {
+                authApi.couriersAuth(tokenManager.apiVersion(), phone)
+                userManager.savePhone(phone)
+            } catch (e: Exception) {
+                Log.e("TAG", "couriersExistAndSavePhone:${e.message}")
+            }
         }
     }
 
@@ -44,11 +50,15 @@ class AuthRemoteRepositoryImpl(
     }
 
     override suspend fun statistics(): StatisticsResponse {
-        return authApi.statistics(tokenManager.apiVersion())
+        return withContext(Dispatchers.IO){
+            authApi.statistics(tokenManager.apiVersion())
+        }
     }
 
     override suspend fun userInfo(): UserInfoEntity {
-        return UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+        return withContext(Dispatchers.IO){
+            UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+        }
     }
 
     override fun clearCurrentUser() {

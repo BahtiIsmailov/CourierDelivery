@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierunloading.domain
 
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Completable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
@@ -33,7 +34,7 @@ class CourierUnloadingInteractorImpl(
         const val EMPTY_ADDRESS = ""
     }
 
-    override fun observeScanProcess(officeId: Int): CourierUnloadingProcessData {
+    override suspend fun observeScanProcess(officeId: Int): CourierUnloadingProcessData {
         var result: CourierUnloadingScanBoxData? = null
             scannerRepo.observeScannerAction().onEach {
                 if (it is ScannerAction.ScanResult) {
@@ -83,9 +84,8 @@ class CourierUnloadingInteractorImpl(
 
     var scanLoaderProgressSubject = MutableLiveData<CourierUnloadingProgressData>()
     override suspend fun getCurrentOffice(officeId: Int): LocalOfficeEntity {
-        return withContext(Dispatchers.IO) {
-            localRepo.findOfficeById(officeId)
-        }
+        return localRepo.findOfficeById(officeId)
+
     }
 
     override suspend fun scanLoaderProgress(): CourierUnloadingProgressData {
@@ -93,9 +93,7 @@ class CourierUnloadingInteractorImpl(
     }
 
      override suspend fun removeScannedBoxes(checkedBoxes: List<String>) {
-        return withContext(Dispatchers.IO) {
-
-        }
+        return
     }
 
     override fun scannerAction(scannerAction: ScannerState) {
@@ -103,18 +101,14 @@ class CourierUnloadingInteractorImpl(
     }
 
     override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
-        return withContext(Dispatchers.IO) {
-            localRepo.observeOrderData()
-        }
+        return localRepo.observeOrderData()
     }
 
     override suspend fun completeOfficeUnload() {
         val boxes = localRepo.getOfflineBoxes()
         boxes.find { b -> b.deliveredAt != "" }
-        return withContext(Dispatchers.IO) {
-            remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes)
-            localRepo.setOnlineOffices()
-        }
+        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes)
+        localRepo.setOnlineOffices()
     }
 
     override suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity> {

@@ -1,7 +1,5 @@
 package ru.wb.go.network.api.app
 
-import io.reactivex.Completable
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -31,16 +29,17 @@ class AppRemoteRepositoryImpl(
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity) {
-        remoteRepo.saveCourierDocuments(
-            tokenManager.apiVersion(),
-            toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
-        )
-        autentificatorIntercept.initNameOfMethod("courierDocuments")
-
+        withContext(Dispatchers.IO) {
+            remoteRepo.saveCourierDocuments(
+                tokenManager.apiVersion(),
+                toCourierDocumentsDocumentsRequest(courierDocumentsEntity)
+            )
+            autentificatorIntercept.initNameOfMethod("courierDocuments")
+        }
     }
 
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             toCourierDocumentsEntity(remoteRepo.getCourierDocuments(apiVersion()))
         }
     }
@@ -138,31 +137,36 @@ class AppRemoteRepositoryImpl(
         taskID: String,
         carNumber: String
     ) {
-        return remoteRepo.reserveTask(
-            apiVersion(),
-            taskID,
-            CourierAnchorResponse(carNumber)
-        )
+        return withContext(Dispatchers.IO) {
+            remoteRepo.reserveTask(
+                apiVersion(),
+                taskID,
+                CourierAnchorResponse(carNumber)
+            )
+        }
     }
 
     override suspend fun deleteTask(taskID: String) {
-        autentificatorIntercept.initNameOfMethod("deleteTask")
-        remoteRepo.deleteTask(apiVersion(), taskID)
-
+        withContext(Dispatchers.IO) {
+            autentificatorIntercept.initNameOfMethod("deleteTask")
+            remoteRepo.deleteTask(apiVersion(), taskID)
+        }
     }
 
     override suspend fun taskBoxes(taskID: String): List<LocalBoxEntity> {
-        autentificatorIntercept.initNameOfMethod("taskBoxes")
-        val response = remoteRepo.taskBoxes(apiVersion(), taskID)
-        return response.data.map {
-            with(it) {
-                LocalBoxEntity(
-                    boxId = id,
-                    address = "",
-                    officeId = dstOfficeID,
-                    loadingAt = loadingAt,
-                    deliveredAt = deliveredAt ?: ""
-                )
+        return withContext(Dispatchers.IO) {
+            autentificatorIntercept.initNameOfMethod("taskBoxes")
+            val response = remoteRepo.taskBoxes(apiVersion(), taskID)
+            response.data.map {
+                with(it) {
+                    LocalBoxEntity(
+                        boxId = id,
+                        address = "",
+                        officeId = dstOfficeID,
+                        loadingAt = loadingAt,
+                        deliveredAt = deliveredAt ?: ""
+                    )
+                }
             }
         }
     }
@@ -171,124 +175,110 @@ class AppRemoteRepositoryImpl(
         taskID: String,
         box: LocalBoxEntity
     ): StartTaskResponse {
-        val apiBox = box.convertToApiBoxRequest()
-        val boxes = listOf(apiBox)
-        autentificatorIntercept.initNameOfMethod("setStart")
-        return remoteRepo.setStartTask(apiVersion(), taskID, boxes)
-
+        return withContext(Dispatchers.IO) {
+            val apiBox = box.convertToApiBoxRequest()
+            val boxes = listOf(apiBox)
+            autentificatorIntercept.initNameOfMethod("setStart")
+            remoteRepo.setStartTask(apiVersion(), taskID, boxes)
+        }
     }
 
     override suspend fun setReadyTask(
         taskID: String,
         boxes: List<LocalBoxEntity>
     ): TaskCostEntity {
-
-        val boxesRequest = boxes.map {
-            assert(it.loadingAt != "")
-            it.convertToApiBoxRequest()
+        return withContext(Dispatchers.IO) {
+            val boxesRequest = boxes.map {
+                assert(it.loadingAt != "")
+                it.convertToApiBoxRequest()
+            }
+            val response = remoteRepo.taskStatusesReady(
+                apiVersion(),
+                taskID,
+                boxesRequest
+            )
+            autentificatorIntercept.initNameOfMethod("setReady")
+            TaskCostEntity(response.cost / COST_DIVIDER)
         }
-        val response = remoteRepo.taskStatusesReady(
-            apiVersion(),
-            taskID,
-            boxesRequest
-        )
-        autentificatorIntercept.initNameOfMethod("setReady")
-        return TaskCostEntity(response.cost / COST_DIVIDER)
     }
-
 
     override suspend fun setIntransitTask(
         taskID: String,
         boxes: List<LocalBoxEntity>
     ) {
-        val boxesRequest = boxes.map { it.convertToApiBoxRequest() }
-        autentificatorIntercept.initNameOfMethod("setIntransit")
-        return remoteRepo.taskStatusesIntransit(apiVersion(), taskID, boxesRequest)
+        withContext(Dispatchers.IO) {
+            val boxesRequest = boxes.map { it.convertToApiBoxRequest() }
+            autentificatorIntercept.initNameOfMethod("setIntransit")
+            remoteRepo.taskStatusesIntransit(apiVersion(), taskID, boxesRequest)
+        }
     }
 
     override suspend fun taskStatusesEnd(taskID: String) {
-        autentificatorIntercept.initNameOfMethod("setEnd")
-        return remoteRepo.taskStatusesEnd(apiVersion(), taskID)
+        withContext(Dispatchers.IO) {
+            autentificatorIntercept.initNameOfMethod("setEnd")
+            remoteRepo.taskStatusesEnd(apiVersion(), taskID)
+        }
     }
 
     override suspend fun getBillingInfo(isShowTransaction: Boolean): BillingCommonEntity {
-        val response = remoteRepo.getBilling(apiVersion(), isShowTransaction)
-        val billingTransactions = mutableListOf<BillingTransactionEntity>()
-        response.transactions.forEach {
-            val statusOK = when (it.statusOK) {
-                null -> StatusOK.IsProcessing
-                true -> StatusOK.IsComplete
-                else -> StatusOK.IsRejected
+        return withContext(Dispatchers.IO) {
+            val response = remoteRepo.getBilling(apiVersion(), isShowTransaction)
+            val billingTransactions = mutableListOf<BillingTransactionEntity>()
+            response.transactions.forEach {
+                val statusOK = when (it.statusOK) {
+                    null -> StatusOK.IsProcessing
+                    true -> StatusOK.IsComplete
+                    else -> StatusOK.IsRejected
+                }
+                val billing = BillingTransactionEntity(
+                    statusDescription = it.statusDescription ?: "",
+                    status = it.status,
+                    statusOK = statusOK,
+                    uuid = it.uuid,
+                    value = it.value / COST_DIVIDER,
+                    createdAt = it.createdAt
+                )
+                billingTransactions.add(billing)
             }
-            val billing = BillingTransactionEntity(
-                statusDescription = it.statusDescription ?: "",
-                status = it.status,
-                statusOK = statusOK,
-                uuid = it.uuid,
-                value = it.value / COST_DIVIDER,
-                createdAt = it.createdAt
+            BillingCommonEntity(
+                id = response.id,
+                balance = response.balance / COST_DIVIDER,
+                entity = BillingEntity(id = response.entity.id, name = response.entity.name),
+                transactions = billingTransactions
             )
-            billingTransactions.add(billing)
         }
-        return BillingCommonEntity(
-            id = response.id,
-            balance = response.balance / COST_DIVIDER,
-            entity = BillingEntity(id = response.entity.id, name = response.entity.name),
-            transactions = billingTransactions
-        )
     }
 
     override suspend fun payments(id: String, amount: Int, paymentEntity: PaymentEntity) {
-
-        return remoteRepo.doTransaction(apiVersion(), toPaymentsRequest(id, amount, paymentEntity))
+        withContext(Dispatchers.IO) {
+            remoteRepo.doTransaction(apiVersion(), toPaymentsRequest(id, amount, paymentEntity))
+        }
     }
 
     override suspend fun getBank(bic: String): BankEntity {
-        val response = remoteRepo.getBank(apiVersion(), bic)
-        return with(response) { BankEntity(response.bic, name, correspondentAccount, isDeleted) }
-    }
-
-    override suspend fun getBankAccounts():  BankAccountsEntity  {
-        val response = remoteRepo.getBankAccounts(apiVersion())
-        return    BankAccountsEntity(response.inn, response.data.convertToEntity())
-    }
-
-    private fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
-        val accountsEntity = mutableListOf<AccountEntity>()
-        forEach {
-            accountsEntity.add(with(it) {
-                AccountEntity(
-                    bic,
-                    name,
-                    correspondentAccount,
-                    account
-                )
-            })
+        return withContext(Dispatchers.IO) {
+            val response = remoteRepo.getBank(apiVersion(), bic)
+            with(response) { BankEntity(response.bic, name, correspondentAccount, isDeleted) }
         }
-        return accountsEntity
     }
 
-    override suspend fun setBankAccounts(accountEntities: List<AccountEntity>){
-        return remoteRepo.setBankAccounts(apiVersion(), accountEntities.convertToRequest())
-    }
-
-    private fun List<AccountEntity>.convertToRequest(): List<AccountRequest> {
-        val accountsEntity = mutableListOf<AccountRequest>()
-        forEach {
-            accountsEntity.add(
-                AccountRequest(
-                    it.bic,
-                    it.name,
-                    it.correspondentAccount,
-                    it.account
-                )
-            )
+    override suspend fun getBankAccounts(): BankAccountsEntity {
+        return withContext(Dispatchers.IO) {
+            val response = remoteRepo.getBankAccounts(apiVersion())
+             BankAccountsEntity(response.inn, response.data.convertToEntity())
         }
-        return accountsEntity
     }
 
-    override suspend fun appVersion(): String  {
+
+    override suspend fun setBankAccounts(accountEntities: List<AccountEntity>) {
         return withContext(Dispatchers.IO){
+            remoteRepo.setBankAccounts(apiVersion(), accountEntities.convertToRequest())
+        }
+    }
+
+
+    override suspend fun appVersion(): String {
+        return withContext(Dispatchers.IO) {
             autentificatorIntercept.initNameOfMethod("appVersion")
             remoteRepo.getAppActualVersion(tokenManager.apiVersion()).version
         }

@@ -6,7 +6,7 @@ import ru.wb.go.network.monitor.NetworkState
 
 interface AppInteractor {
 
-    suspend fun observeNetworkConnected(): NetworkState
+      fun observeNetworkConnected(): NetworkState
     suspend fun exitAuth()
     fun observeNavigationApp(): Flow<String>
 

@@ -44,20 +44,15 @@ class CourierIntransitInteractorImpl(
 //    }
 
     override suspend fun getOffices(): List<LocalOfficeEntity> {
-        return withContext(Dispatchers.IO) {
-            locRepo.getOfficesFlowable().toMutableList().sortedWith(
-                compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
-            )
+        return locRepo.getOfficesFlowable().toMutableList().sortedWith(
+                compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes }))
 
-        }
     }
 
     override suspend fun observeOrderTimer(): Long {
-        return withContext(Dispatchers.IO) {
-            val order = locRepo.getOrder()
-            val offsetSec = timeManager.getPassedTime(order.startedAt)
-            intransitTimeRepository.startTimer() + offsetSec
-        }
+        val order = locRepo.getOrder()
+        val offsetSec = timeManager.getPassedTime(order.startedAt)
+        return  intransitTimeRepository.startTimer() + offsetSec
     }
 
 //    override fun observeOrderTimer(): Observable<Long> {
@@ -73,36 +68,29 @@ class CourierIntransitInteractorImpl(
 
 
     override suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>) {
-        withContext(Dispatchers.IO) {
-            remoteRepo.setIntransitTask(orderId, boxes)
-            locRepo.setOnlineOffices()
-        }
+        remoteRepo.setIntransitTask(orderId, boxes)
+        locRepo.setOnlineOffices()
     }
 
     override suspend fun completeDelivery(order: LocalOrderEntity) {
-        return withContext(Dispatchers.IO) {
-            remoteRepo.taskStatusesEnd(order.orderId.toString())
-        }
+        remoteRepo.taskStatusesEnd(order.orderId.toString())
     }
 
     override suspend fun clearLocalTaskData() {
-        return withContext(Dispatchers.IO) {
+
             timeManager.clear()
             locRepo.clearOrder()
-        }
+
     }
 
     override suspend fun getOrder(): LocalOrderEntity {
-        return withContext(Dispatchers.IO) {
-              locRepo.getOrder()
-        }
+        return locRepo.getOrder()
+
     }
 
     override suspend fun getOrderId(): String {
-        return withContext(Dispatchers.IO) {
-            // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
-              getOrder().orderId.toString()
-        }
+        return getOrder().orderId.toString()
+
     }
 
     override fun observeMapAction(): Flow<CourierMapAction> {
@@ -117,15 +105,12 @@ class CourierIntransitInteractorImpl(
     }
 
     override suspend fun getOfflineBoxes(): List<LocalBoxEntity> {
-          return withContext(Dispatchers.IO) {
-            locRepo.getOfflineBoxes()
-        }
+          return locRepo.getOfflineBoxes()
+
     }
 
     override suspend fun getBoxes(): List<LocalBoxEntity> {
-        return  withContext(Dispatchers.IO) {
-            locRepo.getBoxes()
-        }
+        return locRepo.getBoxes()
     }
 }
 

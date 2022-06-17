@@ -101,32 +101,35 @@ class CourierLoaderViewModel(
     }
 
     private  fun checkUserState(version: String) {
-        val phone = tokenManager.userPhone()
+        viewModelScope.launch {
 
-        checkNewInstallation()
+            val phone = tokenManager.userPhone()
 
-        val order = locRepo.getOrder()
+            checkNewInstallation()
 
-        if (order == null && goToUpdate(version)) {
-            return
-        }
+            val order = locRepo.getOrder()
 
-        if (userManager.courierDocumentsEntity() != null) {
-            toCourierDataExpects(phone)
-            return
-        }
+            if (order == null && goToUpdate(version)) {
+                return@launch
+            }
 
-        when {
-            tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) ->
-                if (!goToUpdate(version)) toNewRegistration(phone)
-            tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) ->
-                if (!goToUpdate(version)) toRegistration(phone)
-            tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
-                if (!goToUpdate(version)) toCourierDataExpects(phone)
-            tokenManager.isUserCourier() -> toApp(order)
-            else -> {
-                assert(tokenManager.isDemo())
-                _navigationDrawerState.value = toCourierWarehouse()
+            if (userManager.courierDocumentsEntity() != null) {
+                toCourierDataExpects(phone)
+                return@launch
+            }
+
+            when {
+                tokenManager.resources().contains(NEED_SEND_COURIER_DOCUMENTS) ->
+                    if (!goToUpdate(version)) toNewRegistration(phone)
+                tokenManager.resources().contains(NEED_CORRECT_COURIER_DOCUMENTS) ->
+                    if (!goToUpdate(version)) toRegistration(phone)
+                tokenManager.resources().contains(NEED_APPROVE_COURIER_DOCUMENTS) ->
+                    if (!goToUpdate(version)) toCourierDataExpects(phone)
+                tokenManager.isUserCourier() -> toApp(order)
+                else -> {
+                    assert(tokenManager.isDemo())
+                    _navigationDrawerState.value = toCourierWarehouse()
+                }
             }
         }
     }
@@ -200,7 +203,9 @@ class CourierLoaderViewModel(
     }
 
     private fun clearCurrentLocalData() {
-        locRepo.clearOrder()
+        viewModelScope.launch {
+            locRepo.clearOrder()
+        }
     }
 
     private fun toNewRegistration(phone: String) {

@@ -2,6 +2,7 @@ package ru.wb.go.network.api.app
 
 import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
 import ru.wb.go.db.entity.courier.CourierOrderEntity
+import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -219,7 +220,8 @@ fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:M
         dstOffices =  dstOffices,
         reservedAt = "",
         reservedDuration = courierOrderResponse.reservedDuration,
-        route = courierOrderResponse.route ?: "не указан"
+        route = courierOrderResponse.route ?: "не указан",
+        taskDistance = courierOrderResponse.taskDistance
     )
 }
 
@@ -260,6 +262,27 @@ fun toLocalOfficeEntity(myDstOfficeResponse: MyDstOfficeResponse):LocalOfficeEnt
         isVisited = false,
         isOnline = false
     )
+}
+fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
+    return with(courierOfficeResponse) {
+        CourierWarehouseLocalEntity(
+            id = id,
+            name = name,
+            fullAddress = fullAddress,
+            longitude = long,
+            latitude = lat
+        )
+    }
+}
+fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
+    val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
+    courierOrderResponse.dstOffices.forEach { dstOffice ->
+        if (dstOffice.id != -1) {
+            dstOffices.add(toCourierOrderDstOfficeEntity(dstOffice))
+        }//широта долгота +
+    }
+    return toCourierOrderEntity(courierOrderResponse, dstOffices)
+
 }
 
 

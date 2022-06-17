@@ -51,7 +51,6 @@ class AppViewModel(
                 } else
                     throw IllegalStateException("Wrong param $it")
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
     }
 

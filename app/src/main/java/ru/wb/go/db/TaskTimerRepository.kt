@@ -8,6 +8,6 @@ interface TaskTimerRepository {
 
     suspend fun startTimer(durationTime: Int, arrivalTime: Int)
     val timer: Flow<TimerState>
-      fun stopTimer()
+    fun stopTimer()
 
 }

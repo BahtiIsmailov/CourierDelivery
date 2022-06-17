@@ -10,5 +10,6 @@ data class CourierOrderItem(
     val countPvz: String,
     val arrive: String,
     var isSelected: Boolean,
+    var taskDistance : String,
     override var idView: Int,
 ) : BaseItem

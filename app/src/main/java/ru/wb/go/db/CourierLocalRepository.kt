@@ -9,11 +9,11 @@ interface CourierLocalRepository {
     //==============================================================================================
     //warehouse
     //==============================================================================================
-      fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
+    suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
-    fun readCurrentWarehouse(): CourierWarehouseLocalEntity
+    suspend fun readCurrentWarehouse(): CourierWarehouseLocalEntity
 
-    fun deleteAllWarehouse()
+    suspend fun deleteAllWarehouse()
 
     //==============================================================================================
     //order and offices
@@ -23,61 +23,61 @@ interface CourierLocalRepository {
 
     fun freeOrders(): Flow<List<CourierOrderLocalDataEntity>>
 
-    fun orderAndOffices(rowOrder: Int): CourierOrderLocalDataEntity
+    suspend fun orderAndOffices(rowOrder: Int): CourierOrderLocalDataEntity
 
     suspend fun observeOrderData(): CourierOrderLocalDataEntity
 
-    fun deleteAllOrder()
+    suspend fun deleteAllOrder()
 
-    fun deleteAllOrderOffices()
+    suspend fun deleteAllOrderOffices()
 
-    fun findOfficeById(officeId: Int): LocalOfficeEntity
+    suspend fun findOfficeById(officeId: Int): LocalOfficeEntity
 
     //==============================
     // True Order
     //==============================
 
-    fun getOrder(): LocalOrderEntity
+    suspend fun getOrder(): LocalOrderEntity
 
-    fun deleteOrder()
+    suspend fun deleteOrder()
 
     suspend fun saveRemoteOrder(order: LocalComplexOrderEntity, boxes: List<LocalBoxEntity>)
 
-    fun setOrderOrderStart(scanTime: String)
+    suspend fun setOrderOrderStart(scanTime: String)
 
-    fun setOrderInReserve(order: LocalOrderEntity)
+    suspend fun setOrderInReserve(order: LocalOrderEntity)
 
-    fun setOrderAfterLoadStatus(cost: Int)
+    suspend fun setOrderAfterLoadStatus(cost: Int)
 
-    fun getOrderId(): String
+    suspend fun getOrderId(): String
 
-     fun getOrderGate(): String
+    suspend fun getOrderGate(): String
 
-    fun getOffices(): List<LocalOfficeEntity>
+    suspend fun getOffices(): List<LocalOfficeEntity>
 
     suspend fun getOfficesFlowable(): List<LocalOfficeEntity>
 
-    fun getBoxes(): List<LocalBoxEntity>
+    suspend fun getBoxes(): List<LocalBoxEntity>
 
     suspend fun getBoxesLiveData(): List<LocalBoxEntity>
 
-    fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
+    suspend fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
 
-    fun visitOffice(officeId: Int)
+    suspend fun visitOffice(officeId: Int)
 
-    fun getOfflineBoxes(): List<LocalBoxEntity>
+    suspend fun getOfflineBoxes(): List<LocalBoxEntity>
 
-    fun setOnlineOffices()
+    suspend fun setOnlineOffices()
 
-    fun unloadBox(box: LocalBoxEntity)
+    suspend fun unloadBox(box: LocalBoxEntity)
 
-    fun takeBackBox(box: LocalBoxEntity)
+    suspend fun takeBackBox(box: LocalBoxEntity)
 
-    fun readAllLoadingBoxesSync(): List<LocalBoxEntity>
+    suspend fun readAllLoadingBoxesSync(): List<LocalBoxEntity>
 
     suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 
-    fun clearOrder()
+    suspend fun clearOrder()
 
     suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 

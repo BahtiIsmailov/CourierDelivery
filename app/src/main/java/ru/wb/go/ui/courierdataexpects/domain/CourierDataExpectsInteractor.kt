@@ -4,6 +4,6 @@ interface CourierDataExpectsInteractor {
 
     suspend fun saveRepeatCourierDocuments()
 
-    suspend fun isRegisteredStatus():String
+      fun isRegisteredStatus():String
 
 }

@@ -142,7 +142,6 @@ class CourierOrdersViewModel(
             .catch {
                 initOrdersError(it)
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
     }
 
@@ -618,9 +617,7 @@ class CourierOrdersViewModel(
     }
 
     private fun saveRowOrder(itemIndex: Int) {
-        viewModelScope.launch {
-            interactor.saveRowOrder(itemIndex)
-        }
+        interactor.saveRowOrder(itemIndex)
     }
 
     private fun changeSelectedOrderItems(itemIndex: Int): Boolean {
@@ -727,7 +724,8 @@ class CourierOrdersViewModel(
                         cost = resourceProvider.getCost(coast),
                         cargo = resourceProvider.getCargo(minVolume, minBoxesCount),
                         countPvz = resourceProvider.getCountPvz(pvz),
-                        reserve = resourceProvider.getArrive(reservedDuration)
+                        reserve = resourceProvider.getArrive(reservedDuration),
+                        taskDistance = taskDistance
                     )
             }
         }

@@ -17,16 +17,17 @@ class AppTasksRepositoryImpl(
 
 
     override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity> {
-        autentificatorIntercept.initNameOfMethod("courierWarehouses")
-        return remoteRepo.freeTasksOffices(apiVersion()).data
-            .map {
-                convertCourierWarehouseEntity(it) // сюда пришел ширина и долгота
-
-            }
+        return withContext(Dispatchers.IO) {
+            autentificatorIntercept.initNameOfMethod("courierWarehouses")
+            remoteRepo.freeTasksOffices(apiVersion()).data
+                .map {
+                    convertCourierWarehouseEntity(it) // сюда пришел ширина и долгота
+                }
+        }
     }
 
 
-    //       override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
+//       override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
 //    return with(Dispatchers.IO){
 //        autentificatorIntercept.initNameOfMethod("courierWarehouses")
 //         remoteRepo.freeTasksOffices(apiVersion()).data
@@ -35,17 +36,7 @@ class AppTasksRepositoryImpl(
 //        }.toList()
 //    }
 //}
-    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
-        return with(courierOfficeResponse) {
-            CourierWarehouseLocalEntity(
-                id = id,
-                name = name,
-                fullAddress = fullAddress,
-                longitude = long,
-                latitude = lat
-            )
-        }
-    }
+
 
 //    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
 //        return with(courierOfficeResponse) {
@@ -61,8 +52,8 @@ class AppTasksRepositoryImpl(
 
 
     override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity> {
-        autentificatorIntercept.initNameOfMethod("courierOrders")
         return withContext(Dispatchers.IO){
+            autentificatorIntercept.initNameOfMethod("courierOrders")
             remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
                 convertCourierOrderEntity(it)
             }.toList()
@@ -76,62 +67,7 @@ class AppTasksRepositoryImpl(
 //        }.toList()
 //    }
 
-
-    private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
-        val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
-        courierOrderResponse.dstOffices.forEach { dstOffice ->
-            if (dstOffice.id != -1) {
-                dstOffices.add(toCourierOrderDstOfficeEntity(dstOffice))
-            }//широта долгота +
-        }
-        return toCourierOrderEntity(courierOrderResponse, dstOffices)
-
-    }
-
     private fun apiVersion() =
         if (tokenManager.isContains()) tokenManager.apiVersion() else tokenManager.apiDemoVersion()
 
 }
-
-/*
-
-    private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
-        val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
-        courierOrderResponse.dstOffices.forEach { dstOffice ->
-            // TODO: 05.10.2021 убрать после исправлениня на беке получение минусового id
-            if (dstOffice.id != -1) {
-                dstOffices.add(
-                    CourierOrderDstOfficeEntity(
-                        id = dstOffice.id,
-                        name = dstOffice.name ?: "",
-                        fullAddress = dstOffice.fullAddress ?: "",
-                        long = dstOffice.long,
-                        lat = dstOffice.lat,
-                        workTimes = dstOffice.wrkTime ?: "",
-                        isUnusualTime = dstOffice.unusualTime
-                    )
-                )
-            }
-        }
-        return with(courierOrderResponse) {
-            CourierOrderEntity(
-                id = id,
-                routeID = routeID ?: 0,
-                gate = gate ?: "",
-                minPrice = minPrice,
-                minVolume = minVolume,
-                minBoxesCount = minBoxesCount,
-                dstOffices = dstOffices,
-                reservedAt = "",
-                reservedDuration = reservedDuration,
-                route = route ?: "не указан"
-            )
-        }
-    }
-
-    private fun apiVersion() =
-        if (tokenManager.isContains()) tokenManager.apiVersion() else tokenManager.apiDemoVersion()
-
-}
-
- */

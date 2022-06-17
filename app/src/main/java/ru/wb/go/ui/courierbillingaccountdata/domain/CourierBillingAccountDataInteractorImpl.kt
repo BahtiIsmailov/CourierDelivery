@@ -1,8 +1,5 @@
 package ru.wb.go.ui.courierbillingaccountdata.domain
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
@@ -23,17 +20,13 @@ class CourierBillingAccountDataInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierBillingAccountDataInteractor {
 
-    override suspend fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>)  {
-        return withContext(Dispatchers.IO){
-            appRemoteRepository.setBankAccounts(accountsEntity.convertToAccountEntity())
-        }
-
+    override suspend fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>) {
+        appRemoteRepository.setBankAccounts(accountsEntity.convertToAccountEntity())
     }
 
-    override suspend fun getBillingAccounts():  List<CourierBillingAccountEntity>  {
-        return withContext(Dispatchers.IO){
-            appRemoteRepository.getBankAccounts().converToCourierBillingAccountsEntity()
-        }
+    override suspend fun getBillingAccounts(): List<CourierBillingAccountEntity> {
+        return appRemoteRepository.getBankAccounts().converToCourierBillingAccountsEntity()
+
     }
 
     private fun BankAccountsEntity.converToCourierBillingAccountsEntity(): List<CourierBillingAccountEntity> {
@@ -69,9 +62,7 @@ class CourierBillingAccountDataInteractorImpl(
     }
 
     override suspend fun getBank(bic: String): BankEntity {
-        return withContext(Dispatchers.IO){
-            appRemoteRepository.getBank(bic)
-        }
+        return appRemoteRepository.getBank(bic)
     }
 
     /*

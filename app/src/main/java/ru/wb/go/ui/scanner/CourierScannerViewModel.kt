@@ -3,10 +3,8 @@ package ru.wb.go.ui.scanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -41,6 +39,7 @@ class CourierScannerViewModel(
             .onEach {
                 _scannerAction.value = it
             }
+            .launchIn(viewModelScope)
     }
 
     private fun flashState() {
@@ -64,11 +63,9 @@ class CourierScannerViewModel(
     }
 
     fun onHoldSplashClick() {
-
-            interactor.prolongHoldTimer()
-            interactor.holdSplashUnlock()
-            _scannerAction.value = ScannerState.StartScan
-
+        interactor.prolongHoldTimer()
+        interactor.holdSplashUnlock()
+        _scannerAction.value = ScannerState.StartScan
     }
 
     fun onDestroy() {

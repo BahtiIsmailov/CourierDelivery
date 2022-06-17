@@ -1,8 +1,5 @@
 package ru.wb.go.ui.courierbillingaccountselector.domain
 
-import io.reactivex.Single
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
@@ -26,14 +23,12 @@ class CourierBillingAccountSelectorInteractorImpl(
     CourierBillingAccountSelectorInteractor {
 
     override suspend fun payments(amount: Int, paymentEntity: PaymentEntity) {
-        withContext(Dispatchers.IO) {
-            try {
-                appRemoteRepository.payments(initGuid(), amount, paymentEntity)
-            } catch (e: Exception) {
-                if (e !is TimeoutException) {
-                    userManager.clearPaymentGuid()
-                    userManager.clearPaymentGuid()
-                }
+        try {
+            appRemoteRepository.payments(initGuid(), amount, paymentEntity)
+        } catch (e: Exception) {
+            if (e !is TimeoutException) {
+                userManager.clearPaymentGuid()
+                userManager.clearPaymentGuid()
             }
         }
     }
@@ -46,13 +41,10 @@ class CourierBillingAccountSelectorInteractorImpl(
     }
 
     override suspend fun getBillingAccounts(): List<CourierBillingAccountEntity> {
-        return withContext(Dispatchers.IO) {
-           val response = appRemoteRepository.getBankAccounts()
-            val userName = tokenManager.userName()
-            val inn = response.inn
-            val billingAccounts = response.data.convertToBillingAccounts(userName, inn)
-             billingAccounts
-        }
+        val response = appRemoteRepository.getBankAccounts()
+        val userName = tokenManager.userName()
+        val inn = response.inn
+        return response.data.convertToBillingAccounts(userName, inn)
     }
 
     private fun List<AccountEntity>.convertToBillingAccounts(

@@ -30,7 +30,6 @@ class CheckSmsInteractorImpl(
                 .onEach {
                     onTimeConfirmCode(it)
                 }
-                .flowOn(Dispatchers.IO)
                 .launchIn(this)
         }
     }
@@ -66,15 +65,11 @@ class CheckSmsInteractorImpl(
     }
 
     override suspend fun auth(phone: String, password: String) {
-        withContext(Dispatchers.IO) {
-            authRepository.auth(phone, password, true)
-        }
+        authRepository.auth(phone, password, true)
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String) {
-        return withContext(Dispatchers.IO) {
-            authRepository.couriersExistAndSavePhone(phone)
-        }
+        authRepository.couriersExistAndSavePhone(phone)
     }
 
     companion object {

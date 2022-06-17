@@ -170,13 +170,15 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        try {
-            val response = interactor.observeScanProcess(parameters.officeId)
-            holdSplashScanner()
-            observeScanProcessComplete(response)
-        } catch (e: Exception) {
-            onTechErrorLog("observeScanProcessError", e)
-            errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+        viewModelScope.launch {
+            try {
+                val response = interactor.observeScanProcess(parameters.officeId)
+                holdSplashScanner()
+                observeScanProcessComplete(response)
+            } catch (e: Exception) {
+                onTechErrorLog("observeScanProcessError", e)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
         }
     }
 

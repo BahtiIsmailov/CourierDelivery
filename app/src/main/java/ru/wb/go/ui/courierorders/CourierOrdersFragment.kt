@@ -12,6 +12,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -390,11 +391,12 @@ class CourierOrdersFragment :
                         binding.carChangeImage.visibility =
                             if (it.isChangeCarNumber) VISIBLE else GONE
                         linerNumber.text = it.itemId
-                        orderId.text = it.orderId
+                        taskDistance.text = it.taskDistance
                         cost.text = it.cost
                         cargo.text = it.cargo
                         countOffice.text = it.countPvz
                         reserve.text = it.reserve
+                        Log.e("itKelometrs","$it")
                     }
                 }
             }

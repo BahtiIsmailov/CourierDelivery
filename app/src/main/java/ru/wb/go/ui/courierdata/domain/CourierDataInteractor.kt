@@ -5,7 +5,7 @@ import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.monitor.NetworkState
 
 interface CourierDataInteractor {
-    suspend fun observeNetworkConnected(): NetworkState
+      fun observeNetworkConnected(): NetworkState
     suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity)
     suspend fun getCourierDocuments():  CourierDocumentsEntity
 }

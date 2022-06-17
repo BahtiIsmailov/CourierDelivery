@@ -11,6 +11,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -666,6 +669,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     ) {
         val markerMap = Marker(binding.map)
         markerMap.setOnMarkerClickListener(onMarkerClickListener)
+
         markerMap.id = id
         markerMap.icon = icon
         markerMap.position = GeoPoint(lat, long)
@@ -673,7 +677,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         binding.map.overlays.add(markerMap)
     }
 
-    private fun findMapPointById(id: String) =
+     private fun findMapPointById(id: String) =
         binding.map.overlays
             .filterIsInstance<Marker>()
             .find { it.id == id }
@@ -826,7 +830,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             paint.style = Paint.Style.FILL
 
             paint.textAlign = Paint.Align.CENTER
-            paint.color = ResourcesCompat.getColor(resources, R.color.lvl_1, null)
+            paint.color = ResourcesCompat.getColor(resources,
+                R.color.button_app_primary_pressed, null)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             paint.textSize = TEXT_SIZE_INDEX_MARKER
 

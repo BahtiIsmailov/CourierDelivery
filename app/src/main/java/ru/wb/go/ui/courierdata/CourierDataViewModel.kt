@@ -4,9 +4,11 @@ package ru.wb.go.ui.courierdata
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.InternalServerException
@@ -116,6 +118,22 @@ class UserFormViewModel(
         )
     }
 
+//    fun onFormChanges(changeObservables: ArrayList<Flow<CourierDataUIAction>>) {
+//        changeObservables.map {
+//            it
+//                .map {
+//                    mapAction(it)
+//                }
+//                .onEach {
+//                    _formUIState.value = it
+//                }
+//                .catch {
+//                    LogUtils { logDebugApp(it.toString())}
+//                }
+//                .launchIn(viewModelScope)
+//        }
+//    }
+
     private fun mapAction(action: CourierDataUIAction) = when (action) {
         is CourierDataUIAction.TextChange -> checkFieldText(action)
         is CourierDataUIAction.CompleteClick -> checkFieldAll(action)
@@ -192,9 +210,9 @@ class UserFormViewModel(
     }
 
     private fun observeNetworkState() {
-        viewModelScope.launch {
+
             _toolbarNetworkState.value = interactor.observeNetworkConnected()
-        }
+
     }
 
     fun onShowAgreementClick() {

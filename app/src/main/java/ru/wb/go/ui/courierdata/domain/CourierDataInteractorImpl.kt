@@ -22,28 +22,24 @@ class CourierDataInteractorImpl(
     private val userManager: UserManager,
 ) : CourierDataInteractor {
 
-    override suspend fun observeNetworkConnected(): NetworkState {
-        return withContext(Dispatchers.IO){
-            networkMonitorRepository.networkConnected()
-        }
+    override   fun observeNetworkConnected(): NetworkState {
+        return networkMonitorRepository.networkConnected()
+
     }
 
     override suspend fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity)  {
-        return withContext(Dispatchers.IO){
-            try{
-                appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
-            }catch (e:Exception){
-                if (e is InternalServerException){
-                    userManager.saveCourierDocumentsEntity(courierDocumentsEntity)
-                }
+        try{
+            appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)
+        }catch (e:Exception){
+            if (e is InternalServerException){
+                userManager.saveCourierDocumentsEntity(courierDocumentsEntity)
             }
         }
     }
 
     override suspend fun getCourierDocuments(): CourierDocumentsEntity {
-        return withContext(Dispatchers.IO) {
-            appRemoteRepository.getCourierDocuments()
-        }
+        return appRemoteRepository.getCourierDocuments()
+
     }
 //    override fun saveCourierDocuments(courierDocumentsEntity: CourierDocumentsEntity): Completable {
 //        return appRemoteRepository.saveCourierDocuments(courierDocumentsEntity)

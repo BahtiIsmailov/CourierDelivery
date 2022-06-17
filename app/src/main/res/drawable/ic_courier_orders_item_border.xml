@@ -5,5 +5,5 @@
     android:viewportHeight="68">
   <path
       android:pathData="M0,0C2.2091,0 4,1.7909 4,4V64C4,66.2091 2.2091,68 0,68V0Z"
-      android:fillColor="@color/blue"/>
+      android:fillColor="@color/button_app_primary_pressed"/>
 </vector>

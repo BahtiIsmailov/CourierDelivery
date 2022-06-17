@@ -30,9 +30,7 @@ class CourierWarehousesInteractorImpl(
     CourierWarehousesInteractor {
 
     override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {
-        return withContext(Dispatchers.IO) {
-            appRemoteRepository.courierWarehouses()
-        }
+        return appRemoteRepository.courierWarehouses()
     }
 
 //    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
@@ -41,7 +39,7 @@ class CourierWarehousesInteractorImpl(
 //    }
 
 
-    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+    override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         courierLocalRepository.deleteAllWarehouse()
         courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
     }
@@ -51,10 +49,8 @@ class CourierWarehousesInteractorImpl(
 //            .compose(rxSchedulerFactory.applyCompletableSchedulers())
 //    }
 
-    override suspend fun loadProgress() {
-        return withContext(Dispatchers.IO) {
-            CoroutineInterval.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
-        }
+    override fun loadProgress() {
+        CoroutineInterval.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
     }
     //
 //    override fun loadProgress(): Completable {
@@ -65,8 +61,6 @@ class CourierWarehousesInteractorImpl(
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-
-
     }
 
 //    override fun observeMapAction(): Observable<CourierMapAction> {
@@ -86,10 +80,7 @@ class CourierWarehousesInteractorImpl(
         courierMapRepository.mapAction(action)
     }
 
-    override suspend fun isDemoMode(): Boolean {
-        return withContext(Dispatchers.IO) {
-            tokenManager.isDemo()
-        }
+    override fun isDemoMode(): Boolean {
+        return tokenManager.isDemo()
     }
-
 }

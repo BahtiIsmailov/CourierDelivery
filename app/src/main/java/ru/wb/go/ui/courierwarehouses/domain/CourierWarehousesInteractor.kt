@@ -10,15 +10,15 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     suspend fun getWarehouses(): List<CourierWarehouseLocalEntity>
 
-      fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
+    suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
-    suspend fun loadProgress()
+    fun loadProgress()
 
     fun observeMapAction(): Flow<CourierMapAction>
 
     fun mapState(state: CourierMapState)
 
-    suspend fun isDemoMode(): Boolean
+      fun isDemoMode(): Boolean
 
       fun mapAction(action: CourierMapAction)
 

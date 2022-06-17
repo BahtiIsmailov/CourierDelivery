@@ -229,19 +229,15 @@ val interactorModule = module {
     }
 
     fun provideCourierOrderTimerInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
         appRemoteRepository: AppRemoteRepository,
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
-        timeFormatter: TimeFormatter,
         timeManager: TimeManager,
     ): CourierOrderTimerInteractor {
         return CourierOrderTimerInteractorImpl(
-            rxSchedulerFactory,
             appRemoteRepository,
             courierLocalRepository,
             taskTimerRepository,
-            timeFormatter,
             timeManager
         )
     }
@@ -389,10 +385,9 @@ val interactorModule = module {
     }
 
     fun provideSettingsInteractor(
-        rxSchedulerFactory: RxSchedulerFactory,
         networkMonitorRepository: NetworkMonitorRepository
     ): SettingsInteractor {
-        return SettingsInteractorImpl(rxSchedulerFactory, networkMonitorRepository)
+        return SettingsInteractorImpl(networkMonitorRepository)
     }
 
     single { provideNumberPhoneInteractor(get(), get(), get()) }
@@ -432,7 +427,7 @@ val interactorModule = module {
         )
     }
     single { provideCourierCarNumberInteractor(get()) }
-    single { provideCourierOrderTimerInteractor(get(), get(), get(), get(), get(), get()) }
+    single { provideCourierOrderTimerInteractor(get(), get(), get(), get()) }
     factory {
         provideCourierScannerLoadingInteractor(
             get(),
@@ -476,6 +471,6 @@ val interactorModule = module {
     factory { provideCourierBillingInteractor(get(), get(), get(), get()) }
     factory { provideCourierBillingCompleteInteractor(get(), get()) }
 
-    single { provideSettingsInteractor(get(), get()) }
+    single { provideSettingsInteractor(get()) }
 
 }

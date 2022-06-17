@@ -11,7 +11,7 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
 
     suspend fun getCurrentOffice(officeId: Int):  LocalOfficeEntity
 
-      fun observeScanProcess(officeId: Int):  CourierUnloadingProcessData
+    suspend fun observeScanProcess(officeId: Int):  CourierUnloadingProcessData
 
     suspend fun removeScannedBoxes(checkedBoxes: List<String>)
 

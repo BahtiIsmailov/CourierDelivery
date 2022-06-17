@@ -27,16 +27,15 @@ class CourierIntransitOfficeScannerInteractorImpl(
     private val coroutineScope = CoroutineScope(SupervisorJob())
 
      override suspend fun getOffices():  List<LocalOfficeEntity>  {
-        return withContext(Dispatchers.IO){
-            locRepo.getOfficesFlowable()
+        return locRepo.getOfficesFlowable()
                 .toMutableList().sortedWith(
                         compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
                     )
                 }
 
-        }
 
-    override  fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData {
+
+    override suspend fun observeOfficeIdScanProcess():  CourierIntransitOfficeScanData {
           var result:ScannerAction? = null
             scannerRepo.observeScannerAction()
                 .onEach {
@@ -45,7 +44,7 @@ class CourierIntransitOfficeScannerInteractorImpl(
             return convertScannerAction(result!!)
     }
 
-    private fun convertScannerAction(it: ScannerAction) =
+    private suspend fun convertScannerAction(it: ScannerAction) =
         when (it) {
             is ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
             is ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
@@ -53,7 +52,7 @@ class CourierIntransitOfficeScannerInteractorImpl(
         }
 
 
-    private fun scanResult(it: ScannerAction.ScanResult): CourierIntransitOfficeScanData {
+    private suspend fun scanResult(it: ScannerAction.ScanResult): CourierIntransitOfficeScanData {
         val parse = scannerRepo.parseScanOfficeQr(it.value)
         return when (parse.isOk) {
             true -> {

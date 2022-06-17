@@ -1,12 +1,15 @@
 package ru.wb.go.db
 
-import io.reactivex.Observable
-import kotlinx.coroutines.*
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
@@ -16,25 +19,35 @@ import java.util.concurrent.TimeUnit
 class TaskTimerRepositoryImpl : TaskTimerRepository {
 
     //private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+    //private var timerDisposable: Disposable? = null
+
     private val timerStates = MutableSharedFlow<TimerState>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private var coroutineScope = CoroutineScope(SupervisorJob())
-    //private var timerDisposable: Disposable? = null
+
     private var durationTime = 0
     private var arrivalTime = 0
+    private var job: Job? = null
 
     override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {
         this.durationTime = durationTime
         this.arrivalTime = arrivalTime
-        coroutineScope.launch {
-            CoroutineInterval.interval(1000L,TimeUnit.MILLISECONDS)
-                .onEach {
-                    onTimeConfirmCode(it)
-                }
-                .launchIn(this)
-            publishCallState(TimerStateImpl(durationTime,arrivalTime))
-        }
+        publishCallState(TimerStateImpl(durationTime, arrivalTime))
+
+            Log.e("Mlog", "startTimer1")
+            coroutineScope {
+                Log.e("Mlog", "startTimer2")
+                job?.cancel()
+                Log.e("Mlog", "startTimer3")
+                job = CoroutineInterval.interval(1000L, TimeUnit.MILLISECONDS)
+                    .onEach {
+                        onTimeConfirmCode(it)
+                    }
+                    .launchIn(this)
+                Log.e("Mlog", "startTimer4")
+            }
+            Log.e("Mlog", "startTimer7")
+
     }
 //    override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {
 //        this.durationTime = durationTime
@@ -75,7 +88,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         durationTime = 0
         arrivalTime = 0
         publishCallState(TimerStateImpl(durationTime, 0))
-        coroutineScope.cancel()
+        job?.cancel()
 
     }
 

@@ -19,7 +19,7 @@ interface CourierMapInteractor {
 
       fun animateComplete()
 
-    suspend fun prolongTimeHideManager()
+      fun prolongTimeHideManager()
 
     fun startVisibilityManagerTimer1()
 

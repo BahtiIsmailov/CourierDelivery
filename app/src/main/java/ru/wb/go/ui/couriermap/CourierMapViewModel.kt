@@ -198,23 +198,15 @@ class CourierMapViewModel(
     }
 
     fun onItemClick(point: MapPoint) {
-
-            interactor.markerClick(point)
-
+        interactor.markerClick(point)
     }
 
     fun onMapClick() {
-
-            interactor.mapClick()
-
+        interactor.mapClick()
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-
-            interactor.onForcedLocationUpdate(point)
-
-
-
+        interactor.onForcedLocationUpdate(point)
     }
 
     fun onForcedLocationUpdateDefault() {
@@ -228,17 +220,17 @@ class CourierMapViewModel(
     }
 
     fun onZoomClick() {
-        viewModelScope.launch {
+
             interactor.prolongTimeHideManager()
-        }
+
 
     }
 
     fun onShowAllClick() {
         interactor.showAll()
-        viewModelScope.launch {
+
             interactor.prolongTimeHideManager()
-        }
+
     }
 
     fun onAnimateComplete() {

@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import ru.wb.go.utils.CoroutineInterval
 import java.util.concurrent.TimeUnit
@@ -14,7 +15,9 @@ class IntransitTimeRepositoryImpl : IntransitTimeRepository {
 
 //    private val timerStates: BehaviorSubject<Long> = BehaviorSubject.create()
 //private var timerDisposable: Disposable? = null
-    private val timerState = MutableSharedFlow<Long>()
+    private val timerState = MutableSharedFlow<Long>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     private val coroutineScope = CoroutineScope(SupervisorJob())
 
 
@@ -31,16 +34,16 @@ class IntransitTimeRepositoryImpl : IntransitTimeRepository {
     override fun startTimer():Long {
     coroutineScope.launch {
         CoroutineInterval.interval(1000L, TimeUnit.MILLISECONDS)
-        timerState
+          timerState
             .scan(0L) { accumulator, _ -> accumulator + 1 }
-            .onEach { timerState.emit(it) }
+            .onEach { timerState.tryEmit(it) }
             .launchIn(this)
     }
     var long = 0L
     timerState.onEach {
         long = it
     }
-    return long
+     return long
 
 }
 

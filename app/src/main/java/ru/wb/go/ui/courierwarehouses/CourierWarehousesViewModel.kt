@@ -76,9 +76,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun checkDemoMode() {
-        viewModelScope.launch {
-            _demoState.value = interactor.isDemoMode()
-        }
+        _demoState.value = interactor.isDemoMode()
     }
 
 
@@ -481,13 +479,15 @@ class CourierWarehousesViewModel(
     }
 
     fun onNextFab() {
-        val index = warehouseItems.indexOfFirst { item -> item.isSelected }
-        assert(index != -1)
-        clearFabAndWhList()
-        val oldEntity = warehouseEntities[index].copy()
-        interactor.clearAndSaveCurrentWarehouses(oldEntity)
-        navigateToCourierOrders(oldEntity)
-        clearSubscription()
+        viewModelScope.launch {
+            val index = warehouseItems.indexOfFirst { item -> item.isSelected }
+            assert(index != -1)
+            clearFabAndWhList()
+            val oldEntity = warehouseEntities[index].copy()
+            interactor.clearAndSaveCurrentWarehouses(oldEntity)
+            navigateToCourierOrders(oldEntity)
+            clearSubscription()
+        }
     }
 
 //    fun onNextFab() {

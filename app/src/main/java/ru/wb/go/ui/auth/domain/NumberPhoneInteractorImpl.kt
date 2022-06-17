@@ -19,15 +19,13 @@ class NumberPhoneInteractorImpl(
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String)  {
-        return withContext(Dispatchers.IO){
-            authRepository.couriersExistAndSavePhone(phone)
-        }
+        return authRepository.couriersExistAndSavePhone(phone)
+
     }
 
-    override suspend fun observeNetworkConnected(): NetworkState {
-        return withContext(Dispatchers.IO){
-            networkMonitorRepository.networkConnected()
-        }
+    override fun observeNetworkConnected(): NetworkState {
+        return networkMonitorRepository.networkConnected()
+
     }
 
     /*override fun userPhone(): String {

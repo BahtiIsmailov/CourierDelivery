@@ -14,22 +14,17 @@ class AppInteractorImpl(
     private val appNavRepository: AppNavRepository,
 ) : AppInteractor {
 
-    override suspend fun observeNetworkConnected(): NetworkState {
-        return withContext(Dispatchers.IO) {
-            networkMonitorRepository.networkConnected()
-        }
+    override fun observeNetworkConnected(): NetworkState {
+        return networkMonitorRepository.networkConnected()
+
     }
 
     override suspend fun exitAuth() {
-        withContext(Dispatchers.IO){
-            authRemoteRepository.clearCurrentUser()
-        }
+        authRemoteRepository.clearCurrentUser()
     }
 
     override fun observeNavigationApp(): Flow<String> {
         return appNavRepository.observeNavigation()
-            .flowOn(Dispatchers.IO)
-
     }
 
 

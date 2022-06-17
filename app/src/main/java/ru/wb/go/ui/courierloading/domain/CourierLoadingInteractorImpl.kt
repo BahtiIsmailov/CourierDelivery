@@ -1,9 +1,5 @@
 package ru.wb.go.ui.courierloading.domain
 
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -38,24 +34,25 @@ class CourierLoadingInteractorImpl(
     CourierLoadingInteractor {
 
 
-    private val scanLoaderProgressSubject = MutableSharedFlow<CourierLoadingProgressData>(extraBufferCapacity = Int.MAX_VALUE,
-    onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val scanLoaderProgressSubject = MutableSharedFlow<CourierLoadingProgressData>(
+        extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     companion object {
         const val DELAY_HOLD_SCANNER = 1500L
     }
 
     override suspend fun scannedBoxes(): List<LocalBoxEntity> {
-        return withContext(Dispatchers.IO) {
-            localRepo.readAllLoadingBoxesSync()
-        }
+        return localRepo.readAllLoadingBoxesSync()
+
     }
 
-    private   fun scanResult(
+    private fun scanResult(
         scannerState: ScannerState,
         data: CourierLoadingScanBoxData,
         boxCount: Int
-    ):  CourierLoadingProcessData  {
+    ): CourierLoadingProcessData {
         scanRepo.scannerState(scannerState)
         scanRepo.holdStart()
         CourierLoadingProcessData(
@@ -66,100 +63,97 @@ class CourierLoadingInteractorImpl(
 
     }
 
-    override   fun observeScanProcess(): CourierLoadingProcessData {
-        var courierLoadingProgressData:CourierLoadingProcessData? = null
+    override fun observeScanProcess(): CourierLoadingProcessData {
+        var courierLoadingProgressData: CourierLoadingProcessData? = null
 
-            scanRepo.observeScannerAction().onEach {
-                if (it is ScannerAction.ScanResult) {
-                    val boxes = localRepo.getBoxes()
-                    val scanTime = timeManager.getLocalTime()
-                    val parsedScan = scanRepo.parseScanBoxQr(it.value)
-                    try {
+        scanRepo.observeScannerAction().onEach {
+            if (it is ScannerAction.ScanResult) {
+                val boxes = localRepo.getBoxes()
+                val scanTime = timeManager.getLocalTime()
+                val parsedScan = scanRepo.parseScanBoxQr(it.value)
+                try {
+                    courierLoadingProgressData = scanResult(
+                        ScannerState.HoldScanUnknown,
+                        CourierLoadingScanBoxData.NotRecognizedQr,
+                        boxes.size
+                    )
+                } catch (e: Exception) {
+                    val offices = localRepo.getOffices()
+                    val office =
+                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
+                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
+                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
                         courierLoadingProgressData = scanResult(
-                            ScannerState.HoldScanUnknown,
-                            CourierLoadingScanBoxData.NotRecognizedQr,
+                            ScannerState.HoldScanError,
+                            CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
                             boxes.size
                         )
-                    } catch (e: Exception) {
-                        val offices = localRepo.getOffices()
-                        val office =
-                            offices.find { off -> off.officeId.toString() == parsedScan.officeId }
-                        var box = boxes.find { b -> b.boxId == parsedScan.boxId }
-                        if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
-                            courierLoadingProgressData = scanResult(
-                                ScannerState.HoldScanError,
-                                CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
-                                boxes.size
+                    } else {
+                        var isNewBox = false
+                        if (box == null) {
+                            isNewBox = true
+                            box = LocalBoxEntity(
+                                boxId = parsedScan.boxId, officeId = office.officeId,
+                                address = office.address, loadingAt = scanTime, deliveredAt = ""
                             )
                         } else {
-                            var isNewBox = false
-                            if (box == null) {
-                                isNewBox = true
-                                box = LocalBoxEntity(
-                                    boxId = parsedScan.boxId, officeId = office.officeId,
-                                    address = office.address, loadingAt = scanTime, deliveredAt = ""
-                                )
-                            } else {
-                                box = box.copy(loadingAt = scanTime)
-                            }
-
-                            qrComplete(box, boxes.size, isNewBox, scanTime)
+                            box = box.copy(loadingAt = scanTime)
                         }
-                    }
 
+                        qrComplete(box, boxes.size, isNewBox, scanTime)
+                    }
                 }
-            }// 2
+
+            }
+        }// 2
 
         return courierLoadingProgressData!!
     }
 
 
-
-     private suspend fun qrComplete(
+    private suspend fun qrComplete(
         box: LocalBoxEntity,
         countBox: Int,
         isNewBox: Boolean,
         scanTime: String
     ): CourierLoadingProcessData {
         return when (countBox) {
-                0 -> {
-                    firstBoxLoaderProgress()
-                    withContext(Dispatchers.IO) {
-                        remoteRepo.setStartTask(localRepo.getOrderId(), box)
+            0 -> {
+                firstBoxLoaderProgress()
+                remoteRepo.setStartTask(localRepo.getOrderId(), box)
+                firstBoxLoaderComplete()
+                localRepo.loadBoxOnboard(box, true)
+                taskTimerRepository.stopTimer()
+                localRepo.setOrderOrderStart(scanTime)
+                scanResult(
+                    ScannerState.HoldScanComplete,
+                    CourierLoadingScanBoxData.FirstBoxAdded(
+                        box.boxId,
+                        box.address
+                    ),
+                    1
+                )
+            }
+            else -> {
+                localRepo.loadBoxOnboard(box, isNewBox)
+                scanResult(
+                    ScannerState.HoldScanComplete,
+                    CourierLoadingScanBoxData.SecondaryBoxAdded(box.boxId, box.address),
+                    when (isNewBox) {
+                        true -> countBox + 1
+                        else -> countBox
                     }
-                        firstBoxLoaderComplete()
-                        localRepo.loadBoxOnboard(box, true)
-                        taskTimerRepository.stopTimer()
-                        localRepo.setOrderOrderStart(scanTime)
-                        scanResult(
-                            ScannerState.HoldScanComplete,
-                            CourierLoadingScanBoxData.FirstBoxAdded(
-                                box.boxId,
-                                box.address
-                            ),
-                            1
-                        )
-                    }
-                else -> {
-                    localRepo.loadBoxOnboard(box, isNewBox)
-                    scanResult(
-                        ScannerState.HoldScanComplete,
-                        CourierLoadingScanBoxData.SecondaryBoxAdded(box.boxId, box.address),
-                        when (isNewBox) {
-                            true -> countBox + 1
-                            else -> countBox
-                        }
-                    )
-                }
+                )
             }
         }
+    }
 
 
-     private fun firstBoxLoaderProgress() {
+    private fun firstBoxLoaderProgress() {
         scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Progress)
     }
 
-     private  fun firstBoxLoaderComplete() {
+    private fun firstBoxLoaderComplete() {
         scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Complete)
     }
 
@@ -168,31 +162,29 @@ class CourierLoadingInteractorImpl(
     }
 
     override fun scannerAction(scannerAction: ScannerState) {
-            scanRepo.scannerState(scannerAction)
+        scanRepo.scannerState(scannerAction)
     }
 
     override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
-        return withContext(Dispatchers.IO){
-            localRepo.observeOrderData()
-        }
+        return localRepo.observeOrderData()
+
     }
 
-    override suspend fun deleteTask()  {
-        return withContext(Dispatchers.IO){
-            taskTimerRepository.stopTimer()
-            val it = localRepo.getOrderId()
-            remoteRepo.deleteTask(it)
-            localRepo.deleteOrder()
-        }
+    override suspend fun deleteTask() {
+        taskTimerRepository.stopTimer()
+        val it = localRepo.getOrderId()
+        remoteRepo.deleteTask(it)
+        localRepo.deleteOrder()
+
     }
-    override suspend fun confirmLoadingBoxes():  CourierCompleteData  {
-        return withContext(Dispatchers.IO){
-            val one = localRepo.readAllLoadingBoxesSync()
-            val two = localRepo.getOrderId()
-            val res = remoteRepo.setReadyTask(two,one)
-            localRepo.setOrderAfterLoadStatus(res.coast)
-            CourierCompleteData(res.coast, one.size)
-        }
+
+    override suspend fun confirmLoadingBoxes(): CourierCompleteData {
+        val one = localRepo.readAllLoadingBoxesSync()
+        val two = localRepo.getOrderId()
+        val res = remoteRepo.setReadyTask(two, one)
+        localRepo.setOrderAfterLoadStatus(res.coast)
+        return CourierCompleteData(res.coast, one.size)
+
     }
     //
 //    override fun confirmLoadingBoxes(): Single<CourierCompleteData> {
@@ -212,29 +204,25 @@ class CourierLoadingInteractorImpl(
 //    }
 
 
+    override suspend fun getGate(): String {
+        return localRepo.getOrderGate()
 
-
-    override suspend fun getGate(): String  {
-        return withContext(Dispatchers.IO){
-            localRepo.getOrderGate()
-        }
     }
 
     override suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals {
-        return withContext(Dispatchers.IO){
-            val it = localRepo.loadingBoxBoxesGroupByOffice()
-            var pvzCount = 0
-            var boxCount = 0
-            val localLoadingBoxEntities = mutableListOf<LocalLoadingBoxEntity>()
-                    it.forEach { localLoadingBox ->
-                        pvzCount++
-                        boxCount += localLoadingBox.count
-                        localLoadingBoxEntities.add(localLoadingBox)
-                    }
-                    LoadingBoxGoals(pvzCount, boxCount, localLoadingBoxEntities)
-                }
+        val it = localRepo.loadingBoxBoxesGroupByOffice()
+        var pvzCount = 0
+        var boxCount = 0
+        val localLoadingBoxEntities = mutableListOf<LocalLoadingBoxEntity>()
+        it.forEach { localLoadingBox ->
+            pvzCount++
+            boxCount += localLoadingBox.count
+            localLoadingBoxEntities.add(localLoadingBox)
         }
+        return LoadingBoxGoals(pvzCount, boxCount, localLoadingBoxEntities)
     }
+}
+
 
 
 data class LoadingBoxGoals(

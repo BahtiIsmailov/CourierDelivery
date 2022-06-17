@@ -18,9 +18,8 @@ class CourierBillingInteractorImpl(
     CourierBillingInteractor {
 
     override suspend fun getBillingInfo(): BillingCommonEntity {
-        return withContext(Dispatchers.IO){
-            appRemoteRepository.getBillingInfo(true)
-        }
+        return appRemoteRepository.getBillingInfo(true)
+
     }
 
 //    override fun getBillingInfo(): Single<BillingCommonEntity> {

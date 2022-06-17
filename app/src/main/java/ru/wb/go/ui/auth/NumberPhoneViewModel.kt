@@ -51,9 +51,7 @@ class NumberPhoneViewModel(
     }
 
     private fun observeNetworkState() {
-        viewModelScope.launch  {
-            _toolbarNetworkState.value = interactor.observeNetworkConnected()
-        }
+        _toolbarNetworkState.value = interactor.observeNetworkConnected()
     }
 
     fun onCheckPhone(number: String) {

@@ -1,8 +1,5 @@
 package ru.wb.go.ui.courierorders.domain
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.ui.BaseServiceInteractor
@@ -13,25 +10,25 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity>
 
-    fun freeOrdersLocal():  Flow<List<CourierOrderLocalDataEntity>>
+    fun freeOrdersLocal(): Flow<List<CourierOrderLocalDataEntity>>
 
-    suspend fun saveRowOrder(rowOrder: Int)
+    fun saveRowOrder(rowOrder: Int)
 
-     fun selectedOrder(rowOrder: Int):  CourierOrderLocalDataEntity
+    suspend fun selectedOrder(rowOrder: Int): CourierOrderLocalDataEntity
 
-      fun selectedRowOrder(): Int
+    fun selectedRowOrder(): Int
 
-      fun mapState(state: CourierMapState)
+    fun mapState(state: CourierMapState)
 
     fun observeMapAction(): Flow<CourierMapAction>
 
-      fun carNumberIsConfirm(): Boolean
+    fun carNumberIsConfirm(): Boolean
 
-      fun isDemoMode(): Boolean
+    fun isDemoMode(): Boolean
 
-      fun carNumber(): String
+    fun carNumber(): String
 
-    suspend fun carType(): Int
+      fun carType(): Int
 
     suspend fun anchorTask()
 

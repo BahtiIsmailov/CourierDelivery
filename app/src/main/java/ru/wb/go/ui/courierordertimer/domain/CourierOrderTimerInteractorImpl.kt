@@ -1,8 +1,6 @@
 package ru.wb.go.ui.courierordertimer.domain
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import ru.wb.go.app.DEFAULT_ARRIVAL_TIME_COURIER_MIN
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
@@ -15,20 +13,16 @@ import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.time.TimeFormatter
 
 class CourierOrderTimerInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val appRemoteRepository: AppRemoteRepository,
     private val locRepo: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
-    private val timeFormatter: TimeFormatter,
     private val timeManager: TimeManager,
 ) : CourierOrderTimerInteractor {
 
     override suspend fun deleteTask() {
         taskTimerRepository.stopTimer()
-        return withContext(Dispatchers.IO) {
-            appRemoteRepository.deleteTask(locRepo.getOrderId())
-            locRepo.deleteOrder()
-        }
+        appRemoteRepository.deleteTask(locRepo.getOrderId())
+        locRepo.deleteOrder()
     }
 
     override suspend fun startTimer(reservedDuration: String, reservedAt: String) {
@@ -54,19 +48,16 @@ class CourierOrderTimerInteractorImpl(
     }
 
     override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
-        return withContext(Dispatchers.IO){
-            locRepo.observeOrderData()
-        }
+        return locRepo.observeOrderData()
     }
 
     override suspend fun timerEntity(): CourierTimerEntity {
-        return withContext(Dispatchers.IO) {
-            val it = locRepo.getOrder()
-            CourierTimerEntity(
-                it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
-                it.countOffices, it.gate, it.reservedDuration, it.reservedAt
-            )
-        }
+        val it = locRepo.getOrder()
+        return CourierTimerEntity(
+            it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
+            it.countOffices, it.gate, it.reservedDuration, it.reservedAt
+        )
+
     }
 
 }
