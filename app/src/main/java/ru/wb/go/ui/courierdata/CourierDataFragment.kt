@@ -1,10 +1,10 @@
 package ru.wb.go.ui.courierdata
 
+import CheckInternet
 import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +14,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.skip
 import kotlinx.parcelize.Parcelize
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -36,7 +37,9 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.date.DatePickerDialog
 import ru.wb.go.ui.dialogs.date.OnDateSelected
 import ru.wb.go.utils.SoftKeyboard
+import ru.wb.go.utils.clicks
 import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.textChanges
 import ru.wb.go.utils.time.DateTimeFormatter
 
 
@@ -125,8 +128,8 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
         val type: CourierDataQueryType
     )
 
-    private fun changeFieldObservables(): ArrayList<Observable<CourierDataUIAction>> {
-        val changeTextObservables = ArrayList<Observable<CourierDataUIAction>>()
+    private fun changeFieldObservables(): ArrayList<Flow<CourierDataUIAction>> {
+        val changeTextObservables = ArrayList<Flow<CourierDataUIAction>>()
 
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
@@ -278,7 +281,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     fun interface ClickEventInterface {
-        fun initListener(view: View): Observable<CourierDataUIAction>
+        fun initListener(view: View): Flow<CourierDataUIAction>
     }
 
     private fun createClickObserver(): ClickEventInterface {
@@ -290,7 +293,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     fun interface TextChangesInterface {
         fun initListener(
             textInputLayout: TextInputLayout, editText: EditText, queryType: CourierDataQueryType
-        ): Observable<CourierDataUIAction>
+        ): Flow<CourierDataUIAction>
     }
 
     private fun createFieldChangesObserver(): TextChangesInterface {
@@ -298,7 +301,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
 
             editText.textChanges()
-                .skip(1)
+                .drop(1)
                 .map { it.toString() }
                 .map { CourierDataUIAction.TextChange(it, queryType) }
         }

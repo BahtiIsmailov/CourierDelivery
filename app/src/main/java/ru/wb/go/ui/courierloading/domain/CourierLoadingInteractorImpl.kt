@@ -1,10 +1,9 @@
 package ru.wb.go.ui.courierloading.domain
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
@@ -12,6 +11,7 @@ import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
+import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.BaseServiceInteractorImpl
@@ -52,38 +52,64 @@ class CourierLoadingInteractorImpl(
         scannerState: ScannerState,
         data: CourierLoadingScanBoxData,
         boxCount: Int
-    ): CourierLoadingProcessData {
+    ): Flow<CourierLoadingProcessData> {
         scanRepo.scannerState(scannerState)
-        scanRepo.holdStart()
-        CourierLoadingProcessData(
-            CourierLoadingScanBoxData.ScannerReady,
-            boxCount
-        )
-        return CourierLoadingProcessData(data, boxCount)
-
+        return flowOf(CourierLoadingProcessData(data, boxCount))
+            .map {
+                scanRepo.holdStart()
+                CourierLoadingProcessData(
+                    CourierLoadingScanBoxData.ScannerReady,
+                    boxCount
+                )
+            }
     }
 
-    override fun observeScanProcess(): CourierLoadingProcessData {
-        var courierLoadingProgressData: CourierLoadingProcessData? = null
 
-        scanRepo.observeScannerAction().onEach {
-            if (it is ScannerAction.ScanResult) {
+//    private fun scanResult(
+//        scannerState: ScannerState,
+//        data: CourierLoadingScanBoxData,
+//        boxCount: Int
+//    ): Observable<CourierLoadingProcessData> {
+//        scanRepo.scannerState(scannerState)
+//        return Observable.just(CourierLoadingProcessData(data, boxCount))
+//            .mergeWith(
+//                scanRepo.holdStart()
+//                    .andThen(
+//                        Observable.just(
+//                            CourierLoadingProcessData(
+//                                CourierLoadingScanBoxData.ScannerReady,
+//                                boxCount
+//                            )
+//                        )
+//                    )
+//            )
+//
+//    }
+//
+////
+
+    @OptIn(FlowPreview::class)
+    override fun observeScanProcess(): Flow<CourierLoadingProcessData> {
+        return scanRepo.observeScannerAction()
+            .filter { it is ScannerAction.ScanResult }
+            .map { it as ScannerAction.ScanResult }
+            .map { scanRepo.parseScanBoxQr(it.value) }
+            .flatMapMerge { parsedScan ->
                 val boxes = localRepo.getBoxes()
                 val scanTime = timeManager.getLocalTime()
-                val parsedScan = scanRepo.parseScanBoxQr(it.value)
-                try {
-                    courierLoadingProgressData = scanResult(
+                if (!parsedScan.isOk) {
+                    scanResult(
                         ScannerState.HoldScanUnknown,
                         CourierLoadingScanBoxData.NotRecognizedQr,
                         boxes.size
                     )
-                } catch (e: Exception) {
+                } else {
                     val offices = localRepo.getOffices()
                     val office =
                         offices.find { off -> off.officeId.toString() == parsedScan.officeId }
                     var box = boxes.find { b -> b.boxId == parsedScan.boxId }
                     if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
-                        courierLoadingProgressData = scanResult(
+                        scanResult(
                             ScannerState.HoldScanError,
                             CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
                             boxes.size
@@ -101,14 +127,58 @@ class CourierLoadingInteractorImpl(
                         }
 
                         qrComplete(box, boxes.size, isNewBox, scanTime)
+
                     }
                 }
-
             }
-        }// 2
-
-        return courierLoadingProgressData!!
     }
+
+
+
+//    override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
+//        return scanRepo.observeScannerAction()
+//            .filter { it is ScannerAction.ScanResult }
+//            .map { it as ScannerAction.ScanResult }
+//            .map { scanRepo.parseScanBoxQr(it.value) }
+//            .flatMap { parsedScan ->
+//                val boxes = localRepo.getBoxes()
+//                val scanTime = timeManager.getLocalTime()
+//                if (!parsedScan.isOk) {
+//                    scanResult(
+//                        ScannerState.HoldScanUnknown,
+//                        CourierLoadingScanBoxData.NotRecognizedQr,
+//                        boxes.size
+//                    )
+//                } else {
+//                    val offices = localRepo.getOffices()
+//                    val office =
+//                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
+//                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
+//                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
+//                        scanResult(
+//                            ScannerState.HoldScanError,
+//                            CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
+//                            boxes.size
+//                        )
+//                    } else {
+//                        var isNewBox = false
+//                        if (box == null) {
+//                            isNewBox = true
+//                            box = LocalBoxEntity(
+//                                boxId = parsedScan.boxId, officeId = office.officeId,
+//                                address = office.address, loadingAt = scanTime, deliveredAt = ""
+//                            )
+//                        } else {
+//                            box = box.copy(loadingAt = scanTime)
+//                        }
+//
+//                        qrComplete(box, boxes.size, isNewBox, scanTime)
+//
+//                    }
+//                }
+//            }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
 
 
     private suspend fun qrComplete(
@@ -116,7 +186,7 @@ class CourierLoadingInteractorImpl(
         countBox: Int,
         isNewBox: Boolean,
         scanTime: String
-    ): CourierLoadingProcessData {
+    ): Flow<CourierLoadingProcessData> {
         return when (countBox) {
             0 -> {
                 firstBoxLoaderProgress()
@@ -242,72 +312,7 @@ data class LoadingBoxGoals(
         return localRepo.readAllLoadingBoxesSync()
             .compose(rxSchedulerFactory.applySingleSchedulers())
     }
-
-    private fun scanResult(
-        scannerState: ScannerState,
-        data: CourierLoadingScanBoxData,
-        boxCount: Int
-    ): Observable<CourierLoadingProcessData> {
-        scanRepo.scannerState(scannerState)
-        return Observable.just(CourierLoadingProcessData(data, boxCount))
-            .mergeWith(
-                scanRepo.holdStart()
-                    .andThen(
-                        Observable.just(
-                            CourierLoadingProcessData(
-                                CourierLoadingScanBoxData.ScannerReady,
-                                boxCount
-                            )
-                        )
-                    )
-            )
-
-    }
-
-    override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
-        return scanRepo.observeScannerAction()
-            .filter { it is ScannerAction.ScanResult }
-            .map { it as ScannerAction.ScanResult }
-            .map { scanRepo.parseScanBoxQr(it.value) }
-            .flatMap { parsedScan ->
-                val boxes = localRepo.getBoxes()
-                val scanTime = timeManager.getLocalTime()
-                if (!parsedScan.isOk) {
-                    scanResult(
-                        ScannerState.HoldScanUnknown,
-                        CourierLoadingScanBoxData.NotRecognizedQr,
-                        boxes.size
-                    )
-                } else {
-                    val offices = localRepo.getOffices()
-                    val office =
-                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
-                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
-                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
-                        scanResult(
-                            ScannerState.HoldScanError,
-                            CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
-                            boxes.size
-                        )
-                    } else {
-                        var isNewBox = false
-                        if (box == null) {
-                            isNewBox = true
-                            box = LocalBoxEntity(
-                                boxId = parsedScan.boxId, officeId = office.officeId,
-                                address = office.address, loadingAt = scanTime, deliveredAt = ""
-                            )
-                        } else {
-                            box = box.copy(loadingAt = scanTime)
-                        }
-
-                        qrComplete(box, boxes.size, isNewBox, scanTime)
-
-                    }
-                }
-            }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+//
 
     private fun qrComplete(
         box: LocalBoxEntity,

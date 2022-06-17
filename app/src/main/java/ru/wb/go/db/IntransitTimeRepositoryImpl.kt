@@ -8,7 +8,7 @@ import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import ru.wb.go.utils.CoroutineInterval
+import ru.wb.go.utils.CoroutineExtension
 import java.util.concurrent.TimeUnit
 
 class IntransitTimeRepositoryImpl : IntransitTimeRepository {
@@ -33,7 +33,7 @@ class IntransitTimeRepositoryImpl : IntransitTimeRepository {
 //    }
     override fun startTimer():Long {
     coroutineScope.launch {
-        CoroutineInterval.interval(1000L, TimeUnit.MILLISECONDS)
+        CoroutineExtension.interval(1000L, TimeUnit.MILLISECONDS)
           timerState
             .scan(0L) { accumulator, _ -> accumulator + 1 }
             .onEach { timerState.tryEmit(it) }

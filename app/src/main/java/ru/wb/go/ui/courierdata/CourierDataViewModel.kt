@@ -109,30 +109,30 @@ class UserFormViewModel(
     private fun checkTextPassportDepartmentCodeWrapper(focusChange: CourierDataUIAction.TextChange): CourierDataUIState =
         checkInputRequisite(focusChange)
 
-    fun onFormChanges(changeObservables: ArrayList<Observable<CourierDataUIAction>>) {
-        addSubscription(Observable.merge(changeObservables)
-            .map { mapAction(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
-        )
-    }
-
-//    fun onFormChanges(changeObservables: ArrayList<Flow<CourierDataUIAction>>) {
-//        changeObservables.map {
-//            it
-//                .map {
-//                    mapAction(it)
-//                }
-//                .onEach {
-//                    _formUIState.value = it
-//                }
-//                .catch {
-//                    LogUtils { logDebugApp(it.toString())}
-//                }
-//                .launchIn(viewModelScope)
-//        }
+//    fun onFormChanges(changeObservables: ArrayList<Observable<CourierDataUIAction>>) {
+//        addSubscription(Observable.merge(changeObservables)
+//            .map { mapAction(it) }
+//            .subscribe(
+//                { _formUIState.value = it },
+//                { LogUtils { logDebugApp(it.toString()) } })
+//        )
 //    }
+
+    fun onFormChanges(changeObservables: ArrayList<Flow<CourierDataUIAction>>) {
+        changeObservables.merge()
+            .map {
+                mapAction(it)
+            }
+            .onEach {
+                _formUIState.value = it
+            }
+            .catch {
+                LogUtils { logDebugApp(it.toString()) }
+            }
+            .launchIn(viewModelScope)
+
+
+    }
 
     private fun mapAction(action: CourierDataUIAction) = when (action) {
         is CourierDataUIAction.TextChange -> checkFieldText(action)

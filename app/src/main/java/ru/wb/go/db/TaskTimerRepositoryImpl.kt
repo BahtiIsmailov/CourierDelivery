@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
-import ru.wb.go.utils.CoroutineInterval
+import ru.wb.go.utils.CoroutineExtension
 import java.util.concurrent.TimeUnit
 
 class TaskTimerRepositoryImpl : TaskTimerRepository {
@@ -39,7 +39,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
                 Log.e("Mlog", "startTimer2")
                 job?.cancel()
                 Log.e("Mlog", "startTimer3")
-                job = CoroutineInterval.interval(1000L, TimeUnit.MILLISECONDS)
+                job = CoroutineExtension.interval(1000L, TimeUnit.MILLISECONDS)
                     .onEach {
                         onTimeConfirmCode(it)
                     }

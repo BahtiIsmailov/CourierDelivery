@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
-import ru.wb.go.utils.CoroutineInterval
+import ru.wb.go.utils.CoroutineExtension
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
@@ -136,7 +136,7 @@ class CourierMapInteractorImpl(
             // ссылка на слушателя если запущен то ничего ен делаем а если
             prolongHideSubject
                 .map {
-                    CoroutineInterval.interval(HIDE_DELAY, TimeUnit.SECONDS)
+                    CoroutineExtension.interval(HIDE_DELAY, TimeUnit.SECONDS)
                 }
                 .onEach {
                     hideManagerBar()

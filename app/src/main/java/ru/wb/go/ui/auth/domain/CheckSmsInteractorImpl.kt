@@ -9,7 +9,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
-import ru.wb.go.utils.CoroutineInterval
+import ru.wb.go.utils.CoroutineExtension
 import java.util.concurrent.TimeUnit
 
 class CheckSmsInteractorImpl(
@@ -26,7 +26,7 @@ class CheckSmsInteractorImpl(
     override suspend fun startTimer(durationTime: Int) {
         this.durationTime = durationTime
         coroutineScope {
-            CoroutineInterval.interval(PERIOD,TimeUnit.MILLISECONDS)
+            CoroutineExtension.interval(PERIOD,TimeUnit.MILLISECONDS)
                 .onEach {
                     onTimeConfirmCode(it)
                 }

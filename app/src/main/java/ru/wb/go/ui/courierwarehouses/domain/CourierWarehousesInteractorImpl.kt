@@ -14,7 +14,7 @@ import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.utils.CoroutineInterval
+import ru.wb.go.utils.CoroutineExtension
 import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
@@ -50,7 +50,7 @@ class CourierWarehousesInteractorImpl(
 //    }
 
     override fun loadProgress() {
-        CoroutineInterval.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
+        CoroutineExtension.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
     }
     //
 //    override fun loadProgress(): Completable {

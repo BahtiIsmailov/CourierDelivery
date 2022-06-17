@@ -2,6 +2,7 @@ package ru.wb.go.ui.scanner.domain
 
 import io.reactivex.Observable
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
@@ -49,8 +50,8 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
         return ParsedScanBoxQrEntity(parseParams[2], parseParams[3], isOk = true)
     }
 
-    override  fun holdStart(){
-        Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.MILLISECONDS)
+    override suspend fun holdStart(){
+        delay(DELAY_HOLD_SCANNER)
         scannerState(ScannerState.StartScan)
     }
 

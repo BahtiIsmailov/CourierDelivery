@@ -159,7 +159,6 @@ class CourierOrderTimerViewModel(
     }
 
     fun onRefuseOrderClick() {
-
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),

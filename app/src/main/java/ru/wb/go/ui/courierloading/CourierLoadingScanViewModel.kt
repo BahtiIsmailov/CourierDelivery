@@ -7,10 +7,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -172,16 +169,31 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        try {
-            val response = interactor.observeScanProcess()//1
-            observeScanProcessComplete(response)
-        } catch (e: Exception) {
-            viewModelScope.launch {
-                delay(1000)
-                scanProcessError(e)
+        interactor.observeScanProcess()
+            .onEach {
+                observeScanProcessComplete(it)
             }
-        }
+            .retryWhen { _, _ ->
+                delay(1000)
+                true
+            }
+            .catch {
+                scanProcessError(it)
+            }
+            .launchIn(viewModelScope)
     }
+
+//    private fun observeScanProcess() {
+//        addSubscription(
+//            interactor.observeScanProcess()
+//                .doOnError { scanProccessError(it) }
+//                .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
+//                .subscribe(
+//                    { observeScanProcessComplete(it) },
+//                    { scanProccessError(it) }
+//                )
+//        )
+//    }
 
     private fun scanProcessError(throwable: Throwable) {
         onTechErrorLog("observeScanProcessError", throwable)
@@ -510,19 +522,7 @@ class CourierLoadingScanViewModel(
     private fun initScanProcessError(it: Throwable) {
         onTechErrorLog("initScanProcessError", it)
     }
-
-    private fun observeScanProcess() {
-
-        addSubscription(
-            interactor.observeScanProcess()
-                .doOnError { scanProccessError(it) }
-                .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
-                .subscribe(
-                    { observeScanProcessComplete(it) },
-                    { scanProccessError(it) }
-                )
-        )
-    }
+//
 
     private fun scanProccessError(throwable: Throwable) {
         onTechErrorLog("observeScanProcessError", throwable)
