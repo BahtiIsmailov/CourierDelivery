@@ -17,7 +17,6 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.skip
 import kotlinx.parcelize.Parcelize
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -94,7 +93,11 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun updateChecked() {
-        binding.checkedAgreement.isChecked
+        viewModel.onCheckedClick(
+            binding.checkedAgreement.isChecked,
+        )
+
+
     }
 
     private fun initView() {
@@ -204,12 +207,18 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun getFormUserData() = mutableListOf(
-        with(viewModel){
+        with(viewModel) {
             CourierData(decodeToUTF8(binding.surname.text.toString()), CourierDataQueryType.SURNAME)
             CourierData(decodeToUTF8(binding.firstName.text.toString()), CourierDataQueryType.NAME)
             CourierData(binding.inn.text.toString(), CourierDataQueryType.INN)
-            CourierData(binding.passportSeries.text.toString(), CourierDataQueryType.PASSPORT_SERIES)
-            CourierData(binding.passportNumber.text.toString(), CourierDataQueryType.PASSPORT_NUMBER)
+            CourierData(
+                binding.passportSeries.text.toString(),
+                CourierDataQueryType.PASSPORT_SERIES
+            )
+            CourierData(
+                binding.passportNumber.text.toString(),
+                CourierDataQueryType.PASSPORT_NUMBER
+            )
             CourierData(
                 binding.passportDateOfIssue.text.toString(),
                 CourierDataQueryType.PASSPORT_DATE
@@ -227,16 +236,16 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     )
 
     private fun getCourierDocumentsEntity() = CourierDocumentsEntity(
-        surName =  binding.surname.text.toString().trim() ,
-        firstName =  binding.firstName.text.toString().trim() ,
-        middleName =  binding.middleName.text.toString().trim() ,
+        surName = binding.surname.text.toString().trim(),
+        firstName = binding.firstName.text.toString().trim(),
+        middleName = binding.middleName.text.toString().trim(),
         inn = binding.inn.text.toString().trim(),
         passportSeries = binding.passportSeries.text.toString().trim(),
         passportNumber = binding.passportNumber.text.toString().trim(),
         passportDateOfIssue = binding.passportDateOfIssue.text.toString().trim(),
         passportDepartmentCode = binding.passportDepartmentCode.text.toString().trim(),
-        passportIssuedBy =  binding.passportIssuedBy.text.toString().trim() ,
-        errorAnnotate = null,
+        passportIssuedBy = binding.passportIssuedBy.text.toString().trim(),
+        errorAnnotate = null
     )
 
     private fun dateSelect(view: View, dateText: EditText) {
