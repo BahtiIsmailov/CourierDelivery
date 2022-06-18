@@ -59,7 +59,7 @@ class CheckSmsInteractorImpl(
         timeConfirmCodeDisposable()
     }
 
-    override fun observeNetworkConnected(): NetworkState {
+    override fun observeNetworkConnected(): Flow<NetworkState> {
         return networkMonitorRepository.networkConnected()
 
     }

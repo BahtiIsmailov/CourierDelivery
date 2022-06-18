@@ -17,3 +17,15 @@ interface ScannerInteractor {
       fun observeScannerState(): Flow<ScannerState>
 
 }
+
+/*
+   fun observeHoldSplash(): Observable<Action>
+
+    fun barcodeScanned(barcode: String)
+
+    fun holdSplashUnlock()
+
+    fun prolongHoldTimer()
+
+    fun observeScannerState(): Observable<ScannerState>
+ */

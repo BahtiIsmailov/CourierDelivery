@@ -33,20 +33,14 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         this.durationTime = durationTime
         this.arrivalTime = arrivalTime
         publishCallState(TimerStateImpl(durationTime, arrivalTime))
-
-            Log.e("Mlog", "startTimer1")
             coroutineScope {
-                Log.e("Mlog", "startTimer2")
                 job?.cancel()
-                Log.e("Mlog", "startTimer3")
                 job = CoroutineExtension.interval(1000L, TimeUnit.MILLISECONDS)
                     .onEach {
                         onTimeConfirmCode(it)
                     }
                     .launchIn(this)
-                Log.e("Mlog", "startTimer4")
             }
-            Log.e("Mlog", "startTimer7")
 
     }
 //    override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {

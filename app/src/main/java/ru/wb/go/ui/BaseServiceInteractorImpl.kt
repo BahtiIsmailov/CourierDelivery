@@ -2,6 +2,7 @@ package ru.wb.go.ui
 
 import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
@@ -14,10 +15,9 @@ abstract class BaseServiceInteractorImpl(
     protected val deviceManager: DeviceManager,
 ) : BaseServiceInteractor {
 
-    override suspend fun observeNetworkConnected(): NetworkState  {
-        return withContext(Dispatchers.IO){
-            networkMonitorRepository.networkConnected()
-        }
+    override fun observeNetworkConnected(): Flow<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+
     }
 
     override fun versionApp(): String {

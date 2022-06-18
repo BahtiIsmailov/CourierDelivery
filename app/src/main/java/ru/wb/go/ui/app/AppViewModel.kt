@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -60,9 +61,12 @@ class AppViewModel(
 
 
     private fun fetchNetworkState() {
-        viewModelScope.launch {
-            _networkState.value = interactor.observeNetworkConnected()
-        }
+        interactor.observeNetworkConnected()
+            .onEach {
+                _networkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
     fun onSupportClick() {

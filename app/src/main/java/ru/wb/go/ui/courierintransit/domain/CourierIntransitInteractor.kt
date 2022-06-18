@@ -10,9 +10,9 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierIntransitInteractor : BaseServiceInteractor {
 
-    suspend fun getOffices():  List<LocalOfficeEntity>
+    fun getOffices(): Flow<List<LocalOfficeEntity>>
 
-    suspend fun observeOrderTimer():  Long
+    fun observeOrderTimer():  Flow<Long>
 
     suspend fun completeDelivery(order: LocalOrderEntity)
 
@@ -20,12 +20,36 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     suspend fun clearLocalTaskData()
 
-     fun observeMapAction(): Flow<CourierMapAction>
+    fun observeMapAction(): Flow<CourierMapAction>
 
-      fun mapState(state: CourierMapState)
+    fun mapState(state: CourierMapState)
 
     suspend fun getOrder(): LocalOrderEntity
     suspend fun getOrderId(): String
     suspend fun getOfflineBoxes(): List<LocalBoxEntity>
     suspend fun getBoxes(): List<LocalBoxEntity>
 }
+
+/*
+interface CourierIntransitInteractor : BaseServiceInteractor {
+
+    fun getOffices(): Observable<List<LocalOfficeEntity>>
+
+    fun observeOrderTimer(): Observable<Long>
+
+    fun completeDelivery(order: LocalOrderEntity): Completable
+
+    fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable
+
+    fun clearLocalTaskData()
+
+    fun observeMapAction(): Observable<CourierMapAction>
+
+    fun mapState(state: CourierMapState)
+
+    fun getOrder(): LocalOrderEntity
+    fun getOrderId(): String
+    fun getOfflineBoxes(): List<LocalBoxEntity>
+    fun getBoxes(): List<LocalBoxEntity>
+}
+ */

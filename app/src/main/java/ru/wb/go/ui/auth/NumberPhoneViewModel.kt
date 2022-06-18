@@ -51,8 +51,14 @@ class NumberPhoneViewModel(
     }
 
     private fun observeNetworkState() {
-        _toolbarNetworkState.value = interactor.observeNetworkConnected()
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
+
 
     fun onCheckPhone(number: String) {
         onTechEventLog("onCheckPhone", number)
@@ -79,7 +85,6 @@ class NumberPhoneViewModel(
             .catch {
                 onTechErrorLog("onNumberObservableClicked", it)
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
 
     }

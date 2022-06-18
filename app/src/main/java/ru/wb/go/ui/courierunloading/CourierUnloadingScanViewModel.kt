@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -89,9 +90,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun holdSplashScanner() {
-
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
-
     }
 
     private fun observeBoxInfoProcessInitState() {
@@ -170,18 +169,32 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
-        viewModelScope.launch {
-            try {
-                val response = interactor.observeScanProcess(parameters.officeId)
+        interactor.observeScanProcess(parameters.officeId)
+            .onEach {
                 holdSplashScanner()
-                observeScanProcessComplete(response)
-            } catch (e: Exception) {
-                onTechErrorLog("observeScanProcessError", e)
-                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+                observeScanProcessComplete(it)
             }
-        }
+            .catch {
+                onTechErrorLog("observeScanProcessError", it)
+                errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+            }
+            .launchIn(viewModelScope)
     }
 
+//
+//    private fun observeScanProcess() {
+//        addSubscription(
+//            interactor.observeScanProcess(parameters.officeId)
+//                .doOnSubscribe { holdSplashScanner() }
+//                .subscribe(
+//                    { observeScanProcessComplete(it) },
+//                    {
+//                        onTechErrorLog("observeScanProcessError", it)
+//                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+//                    }
+//                )
+//        )
+//    }
     fun onCloseDetailsClick() {
         onStartScanner()
         _navigationEvent.value = CourierUnloadingScanNavAction.HideUnloadingItems
@@ -278,17 +291,33 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProgress() {
-        viewModelScope.launch {
-            try {
-                _completeButtonEnable.value = when (interactor.scanLoaderProgress()) {
+        interactor.scanLoaderProgress()
+            .onEach {
+                _completeButtonEnable.value = when (it) {
                     CourierUnloadingProgressData.Complete -> true
                     CourierUnloadingProgressData.Progress -> false
                 }
-            } catch (e: Exception) {
-                onTechErrorLog("observeScanProcessError", e)
             }
-        }
+            .catch {
+                onTechErrorLog("observeScanProcessError", it)
+            }
+            .launchIn(viewModelScope)
     }
+
+    /*
+    private fun observeScanProgress() {
+        addSubscription(
+            interactor.scanLoaderProgress()
+                .subscribe({
+                    _completeButtonEnable.value = when (it) {
+                        CourierUnloadingProgressData.Complete -> true
+                        CourierUnloadingProgressData.Progress -> false
+                    }
+                },
+                    { onTechErrorLog("observeScanProcessError", it) })
+        )
+    }
+     */
 
     fun onListClicked() {
         onStopScanner()

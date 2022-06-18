@@ -1,5 +1,6 @@
 package ru.wb.go.ui.settings.domain
 
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.network.rx.RxSchedulerFactory
@@ -7,9 +8,8 @@ import ru.wb.go.network.rx.RxSchedulerFactory
 class SettingsInteractorImpl(
     private val networkMonitorRepository: NetworkMonitorRepository,
 ) : SettingsInteractor {
-    override  fun observeNetworkConnected(): NetworkState {
+    override  fun observeNetworkConnected(): Flow<NetworkState> {
         return networkMonitorRepository.networkConnected()
-
     }
 }
 

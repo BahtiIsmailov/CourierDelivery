@@ -14,7 +14,7 @@ class AppInteractorImpl(
     private val appNavRepository: AppNavRepository,
 ) : AppInteractor {
 
-    override fun observeNetworkConnected(): NetworkState {
+    override fun observeNetworkConnected(): Flow<NetworkState> {
         return networkMonitorRepository.networkConnected()
 
     }

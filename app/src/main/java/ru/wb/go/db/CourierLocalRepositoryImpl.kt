@@ -75,10 +75,10 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
-        return withContext(Dispatchers.IO) {
-            courierOrderDao.observeOrderData()
-        }
+    override fun observeOrderData(): Flow<CourierOrderLocalDataEntity> {
+        return courierOrderDao.observeOrderData()
+            .flowOn(Dispatchers.IO)
+
     }
 
     override suspend fun deleteAllOrder() {
@@ -194,10 +194,9 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun getOfficesFlowable(): List<LocalOfficeEntity> {
-        return withContext(Dispatchers.IO){
-            courierOrderDao.getOfficesFlowable()
-        }
+    override fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>> {
+        return courierOrderDao.getOfficesFlowable()
+            .flowOn(Dispatchers.IO)
     }
 
     override suspend fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean) {
@@ -239,10 +238,10 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun getBoxesLiveData(): List<LocalBoxEntity> {
-        return withContext(Dispatchers.IO){
-            courierLoadingBoxDao.getBoxesLive()
-        }
+    override fun getBoxesLiveData(): Flow<List<LocalBoxEntity>> {
+        return courierLoadingBoxDao.getBoxesLive()
+            .flowOn(Dispatchers.IO)
+
     }
 
     override suspend fun getBoxes(): List<LocalBoxEntity> {

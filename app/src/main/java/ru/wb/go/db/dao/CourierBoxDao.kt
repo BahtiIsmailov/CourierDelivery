@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 
@@ -69,7 +70,7 @@ interface CourierBoxDao {
     fun getBoxes(): List<LocalBoxEntity>
 
     @Query("SELECT * FROM boxes")
-    suspend fun getBoxesLive(): List<LocalBoxEntity>
+    fun getBoxesLive(): Flow<List<LocalBoxEntity>>
 
     @Query(
         """

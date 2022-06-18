@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
@@ -22,7 +23,7 @@ class CourierDataInteractorImpl(
     private val userManager: UserManager,
 ) : CourierDataInteractor {
 
-    override   fun observeNetworkConnected(): NetworkState {
+    override fun observeNetworkConnected(): Flow<NetworkState> {
         return networkMonitorRepository.networkConnected()
 
     }

@@ -16,7 +16,7 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     fun scannerAction(scannerAction: ScannerState)
 
-    suspend fun observeOrderData(): CourierOrderLocalDataEntity
+    fun observeOrderData(): Flow<CourierOrderLocalDataEntity>
 
     suspend fun deleteTask()
 
@@ -27,3 +27,27 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
     suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals
 
 }
+
+/*
+interface CourierLoadingInteractor : BaseServiceInteractor {
+
+    fun scannedBoxes(): Single<List<LocalBoxEntity>>
+
+    fun observeScanProcess(): Observable<CourierLoadingProcessData>
+
+    fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
+
+    fun scannerAction(scannerAction: ScannerState)
+
+    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+
+    fun deleteTask(): Completable
+
+    fun confirmLoadingBoxes(): Single<CourierCompleteData>
+
+    fun getGate(): Single<String>
+
+    fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals>
+
+}
+ */

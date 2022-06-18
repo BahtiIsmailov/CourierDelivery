@@ -33,3 +33,33 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
     suspend fun anchorTask()
 
 }
+
+/*
+interface CourierOrdersInteractor : BaseServiceInteractor {
+
+    fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>>
+
+    fun freeOrdersLocal(): Single<MutableList<CourierOrderLocalDataEntity>>
+
+    fun saveRowOrder(rowOrder: Int)
+
+    fun selectedOrder(rowOrder: Int): Single<CourierOrderLocalDataEntity>
+
+    fun selectedRowOrder(): Int
+
+    fun mapState(state: CourierMapState)
+
+    fun observeMapAction(): Observable<CourierMapAction>
+
+    fun carNumberIsConfirm(): Boolean
+
+    fun isDemoMode(): Boolean
+
+    fun carNumber(): String
+
+    fun carType(): Int
+
+    fun anchorTask(): Completable
+
+}
+ */

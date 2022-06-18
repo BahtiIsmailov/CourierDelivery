@@ -26,7 +26,7 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
-    suspend fun observeOrderData(): CourierOrderLocalDataEntity
+    fun observeOrderData(): Flow<CourierOrderLocalDataEntity>
 
     @Query("DELETE FROM CourierOrderLocalEntity")
     fun deleteAllOrder()
@@ -80,7 +80,7 @@ interface CourierOrderDao {
     fun getOfficeById(officeId: Int):  LocalOfficeEntity
 
     @Query("SELECT * FROM offices")
-    suspend fun getOfficesFlowable(): List<LocalOfficeEntity>
+    fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>>
 
     @Query("UPDATE courier_order SET status=:status, started_at=:startedAt")
     fun setOrderStart(status: String, startedAt: String)

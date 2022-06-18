@@ -25,7 +25,7 @@ interface CourierLocalRepository {
 
     suspend fun orderAndOffices(rowOrder: Int): CourierOrderLocalDataEntity
 
-    suspend fun observeOrderData(): CourierOrderLocalDataEntity
+    fun observeOrderData(): Flow<CourierOrderLocalDataEntity>
 
     suspend fun deleteAllOrder()
 
@@ -55,11 +55,11 @@ interface CourierLocalRepository {
 
     suspend fun getOffices(): List<LocalOfficeEntity>
 
-    suspend fun getOfficesFlowable(): List<LocalOfficeEntity>
+    fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>>
 
     suspend fun getBoxes(): List<LocalBoxEntity>
 
-    suspend fun getBoxesLiveData(): List<LocalBoxEntity>
+    fun getBoxesLiveData(): Flow<List<LocalBoxEntity>>
 
     suspend fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
 
@@ -82,3 +82,60 @@ interface CourierLocalRepository {
     suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 
 }
+
+/*
+
+
+    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+
+    fun deleteAllOrder()
+
+    fun deleteAllOrderOffices()
+
+    fun findOfficeById(officeId: Int): Single<LocalOfficeEntity>
+
+    //==============================
+    // True Order
+    //==============================
+
+    fun getOrder(): LocalOrderEntity
+
+    fun deleteOrder()
+
+    fun saveRemoteOrder(order: LocalComplexOrderEntity, boxes: List<LocalBoxEntity>): Completable
+
+    fun setOrderOrderStart(scanTime: String)
+
+    fun setOrderInReserve(order: LocalOrderEntity)
+
+    fun setOrderAfterLoadStatus(cost: Int)
+
+    fun getOrderId(): Single<String>
+    fun getOrderGate(): Single<String>
+    fun getOffices(): List<LocalOfficeEntity>
+    fun getOfficesFlowable(): Flowable<List<LocalOfficeEntity>>
+    fun getBoxes(): List<LocalBoxEntity>
+    fun getBoxesLiveData(): Flowable<List<LocalBoxEntity>>
+
+    fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean): Completable
+
+    fun visitOffice(officeId: Int)
+
+    fun getOfflineBoxes(): List<LocalBoxEntity>
+
+    fun setOnlineOffices()
+
+    fun unloadBox(box: LocalBoxEntity)
+
+    fun takeBackBox(box: LocalBoxEntity)
+
+    fun readAllLoadingBoxesSync(): Single<List<LocalBoxEntity>>
+
+    fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
+
+    fun clearOrder()
+
+    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+
+}
+ */

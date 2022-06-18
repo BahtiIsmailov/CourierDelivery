@@ -4,6 +4,8 @@ import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
@@ -43,16 +45,22 @@ class CourierIntransitInteractorImpl(
 //            .compose(rxSchedulerFactory.applyObservableSchedulers())
 //    }
 
-    override suspend fun getOffices(): List<LocalOfficeEntity> {
-        return locRepo.getOfficesFlowable().toMutableList().sortedWith(
-                compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes }))
+    override fun getOffices(): Flow<List<LocalOfficeEntity>> {
+        return locRepo.getOfficesFlowable()
+            .map {
+                it.toMutableList().sortedWith(
+                    compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes }))
+            }
 
     }
 
-    override suspend fun observeOrderTimer(): Long {
-        val order = locRepo.getOrder()
-        val offsetSec = timeManager.getPassedTime(order.startedAt)
-        return  intransitTimeRepository.startTimer() + offsetSec
+    override fun observeOrderTimer(): Flow<Long> {
+        return intransitTimeRepository.startTimer()
+            .map {
+                val order = locRepo.getOrder()
+                val offsetSec = timeManager.getPassedTime(order.startedAt)
+                it + offsetSec
+            }
     }
 
 //    override fun observeOrderTimer(): Observable<Long> {
@@ -77,26 +85,20 @@ class CourierIntransitInteractorImpl(
     }
 
     override suspend fun clearLocalTaskData() {
-
-            timeManager.clear()
-            locRepo.clearOrder()
-
+        timeManager.clear()
+        locRepo.clearOrder()
     }
 
     override suspend fun getOrder(): LocalOrderEntity {
         return locRepo.getOrder()
-
     }
 
     override suspend fun getOrderId(): String {
         return getOrder().orderId.toString()
-
     }
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-
-
     }
 
     override  fun mapState(state: CourierMapState) {

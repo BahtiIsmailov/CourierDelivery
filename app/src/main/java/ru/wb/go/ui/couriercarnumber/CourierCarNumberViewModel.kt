@@ -120,7 +120,6 @@ class CourierCarNumberViewModel(
             .catch {
                 onTechErrorLog("onNumberObservableClicked", it)
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
 
     }

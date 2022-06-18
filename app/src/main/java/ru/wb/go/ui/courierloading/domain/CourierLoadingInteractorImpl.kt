@@ -235,7 +235,7 @@ class CourierLoadingInteractorImpl(
         scanRepo.scannerState(scannerAction)
     }
 
-    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
+    override fun observeOrderData(): Flow<CourierOrderLocalDataEntity> {
         return localRepo.observeOrderData()
 
     }

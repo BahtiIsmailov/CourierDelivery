@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.mvvm.BaseServicesResourceProvider
 import ru.wb.go.network.monitor.NetworkState
@@ -30,9 +33,12 @@ abstract class ServicesViewModel(
     }
 
     private fun observeNetworkState() {
-        viewModelScope.launch {
-            _networkState.value = serviceInteractor.observeNetworkConnected()
-        }
+        serviceInteractor.observeNetworkConnected()
+            .onEach {
+                _networkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
 //    private fun observeNetworkState() {

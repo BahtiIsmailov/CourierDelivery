@@ -20,3 +20,21 @@ interface ScannerRepository {
 
     suspend fun holdStart()
 }
+/*
+interface ScannerRepository {
+
+    fun scannerAction(action: ScannerAction)
+
+    fun observeScannerAction(): Observable<ScannerAction>
+
+    fun scannerState(state: ScannerState)
+
+    fun observeScannerState(): Observable<ScannerState>
+
+    fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity
+
+    fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity
+
+    fun holdStart(): Completable
+}
+ */

@@ -47,7 +47,7 @@ class CourierOrderTimerInteractorImpl(
         taskTimerRepository.stopTimer()
     }
 
-    override suspend fun observeOrderData(): CourierOrderLocalDataEntity {
+    override fun observeOrderData(): Flow<CourierOrderLocalDataEntity> {
         return locRepo.observeOrderData()
     }
 

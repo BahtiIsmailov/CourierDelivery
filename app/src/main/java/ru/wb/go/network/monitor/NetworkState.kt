@@ -1,7 +1,7 @@
 package ru.wb.go.network.monitor
 
 
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.properties.Delegates
 
 open class NetworkState {
@@ -15,7 +15,7 @@ open class NetworkState {
     object Complete : NetworkState()
 
     companion object {
-        val connect =  NetworkState()
+        val connect = MutableSharedFlow<NetworkState>()
     }
 
 }

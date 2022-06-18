@@ -83,7 +83,7 @@ class CourierLoadingScanViewModel(
 
     init {
         observeInitScanProcess()
-        observeScanProcess()
+        observeScanProcess()//1
         getGate()
         holdSplashScanner()
     }
@@ -115,7 +115,6 @@ class CourierLoadingScanViewModel(
             .catch {
                 observeTimerError(it)
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
 
     }
@@ -168,7 +167,7 @@ class CourierLoadingScanViewModel(
         onTechErrorLog("initScanProcessError", it)
     }
 
-    private fun observeScanProcess() {
+    private fun observeScanProcess() {//2
         interactor.observeScanProcess()
             .onEach {
                 observeScanProcessComplete(it)

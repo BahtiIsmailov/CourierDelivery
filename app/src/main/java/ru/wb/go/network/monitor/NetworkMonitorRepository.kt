@@ -1,9 +1,9 @@
 package ru.wb.go.network.monitor
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 
 interface NetworkMonitorRepository {
 
-    fun networkConnected():  NetworkState
+    fun networkConnected(): Flow<NetworkState>
 
 }

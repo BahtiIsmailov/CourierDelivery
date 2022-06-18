@@ -52,14 +52,16 @@ class CourierScannerViewModel(
     }
 
     private fun observeHoldSplash() {
-        interactor.observeHoldSplash().onEach {
+        interactor.observeHoldSplash()
+            .onEach {
             _scannerAction.value = ScannerState.StopScanWithHoldSplash
-        }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onBarcodeScanned(barcode: String) {
         interactor.prolongHoldTimer()
-        interactor.barcodeScanned(barcode)
+        interactor.barcodeScanned(barcode) //пришел баркот номер 1 1 1 135223
     }
 
     fun onHoldSplashClick() {
@@ -69,7 +71,7 @@ class CourierScannerViewModel(
     }
 
     fun onDestroy() {
-        clearSubscription()
+        clearSubscription() // backStack
     }
 
     fun switchFlashlight() {

@@ -2,6 +2,7 @@ package ru.wb.go.ui.auth.domain
 
 import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -23,7 +24,7 @@ class NumberPhoneInteractorImpl(
 
     }
 
-    override fun observeNetworkConnected(): NetworkState {
+    override fun observeNetworkConnected(): Flow<NetworkState> {
         return networkMonitorRepository.networkConnected()
 
     }

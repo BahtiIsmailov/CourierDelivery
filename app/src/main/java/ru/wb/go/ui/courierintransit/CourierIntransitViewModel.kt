@@ -109,26 +109,51 @@ class CourierIntransitViewModel(
     }
 
     private fun observeOffices() {
-        viewModelScope.launch {
-            try {
-                initOfficesComplete(interactor.getOffices())
-            } catch (e: Exception) {
-                onTechErrorLog("Get Offices", e)
-                errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
+        interactor.getOffices()
+            .onEach {
+                initOfficesComplete(it)
             }
-        }
+            .catch {
+                onTechErrorLog("Get Offices", it)
+                errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+            }
+            .launchIn(viewModelScope)
     }
+
+//    private fun observeOffices() {
+//        addSubscription(
+//            interactor.getOffices()
+//                .subscribe({ initOfficesComplete(it) },
+//                    {
+//                        onTechErrorLog("Get Offices", it)
+//                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
+//                    })
+//        )
+//    }
+//
 
 
     private fun initTime() {
-        viewModelScope.launch {
-            _intransitTime.value =
-                CourierIntransitTimeState.Time(
-                    DateTimeFormatter.getDigitFullTime(interactor.observeOrderTimer().toInt())
-                )
-
-        }
+        interactor.observeOrderTimer()
+            .onEach {
+                _intransitTime.value = CourierIntransitTimeState.Time(
+                        DateTimeFormatter.getDigitFullTime(it.toInt()))
+            }
+            .catch {}
+            .launchIn(viewModelScope)
     }
+
+//    private fun initTime() {
+//        addSubscription(
+//            interactor.observeOrderTimer()
+//                .subscribe({
+//                    _intransitTime.value = CourierIntransitTimeState.Time(
+//                        DateTimeFormatter.getDigitFullTime(it.toInt())
+//                    )
+//                }, {})
+//        )
+//    }
+
 
     private fun setLoader(state: WaitLoader) {
         _waitLoader.value = state
@@ -157,10 +182,7 @@ class CourierIntransitViewModel(
     }
 
     private fun showManagerBar() {
-
-            interactor.mapState(CourierMapState.ShowManagerBar)
-
-
+        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     private fun onShowAllClick() {
@@ -195,9 +217,7 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers() {
-
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
-
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
     }
 
     private fun changeSelectedItemsByMarker(indexItemClick: Int, isMarkerSelected: Boolean) {
@@ -442,12 +462,9 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers(isSelected: Boolean, selectIndex: Int) {
-
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
-            if (isSelected)
-                interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
-
-
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        if (isSelected)
+            interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
 
     private fun getNormalMapIcon(type: IntransitItemType) =
@@ -471,10 +488,8 @@ class CourierIntransitViewModel(
     }
 
     private fun zoomMarkersFromBoundingBox() {
-
-            val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
-            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
-
+        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+        interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
     }
 
     data class Label(val label: String)

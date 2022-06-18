@@ -63,7 +63,12 @@ class CheckSmsViewModel(
     }
 
     private fun observeNetworkState() {
-        _toolbarNetworkState.value = interactor.observeNetworkConnected()
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchTitle() {
@@ -80,7 +85,6 @@ class CheckSmsViewModel(
             .catch {
                 onHandleSignUpTimerError(it)
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
 
     }
@@ -98,7 +102,6 @@ class CheckSmsViewModel(
             .catch {
                 formatSmsError(it)
             }
-            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
 
     }
