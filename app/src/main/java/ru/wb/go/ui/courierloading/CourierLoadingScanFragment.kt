@@ -92,7 +92,7 @@ class CourierLoadingScanFragment :
     }
 
     private fun initReturnResult() {
-
+        viewModel.onStartScanner()
         setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 viewModel.onStartScanner()

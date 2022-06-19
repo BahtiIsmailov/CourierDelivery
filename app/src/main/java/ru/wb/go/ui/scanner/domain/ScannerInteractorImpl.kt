@@ -103,6 +103,7 @@ class ScannerInteractorImpl(
 //    }
      private fun stopTimer() {
         coroutineScope?.cancel()
+        coroutineScope = null
     }
 //    private fun stopTimer() {
 //        if (holdSplashDisposable != null) {

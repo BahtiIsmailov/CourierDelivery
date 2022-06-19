@@ -1,10 +1,14 @@
 package ru.wb.go.ui.scanner
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -20,9 +24,13 @@ class CourierScannerViewModel(
     private val settingsManager: SettingsManager,
 ) : NetworkViewModel(compositeDisposable, metric) {
 
-    private val _scannerAction = SingleLiveEvent<ScannerState>()
-    val scannerAction: LiveData<ScannerState>
-        get() = _scannerAction
+//    private val _scannerAction = SingleLiveEvent<ScannerState>()
+//    val scannerAction: LiveData<ScannerState>
+//        get() = _scannerAction
+
+    private val _scannerAction = Channel<ScannerState>(capacity = Int.MAX_VALUE)
+    val scannerAction: Flow<ScannerState>
+        get() = _scannerAction.receiveAsFlow()
 
     private val _flashState = SingleLiveEvent<Boolean>()
     val flashState: LiveData<Boolean>
@@ -30,14 +38,18 @@ class CourierScannerViewModel(
 
     fun update() {
         observeHoldSplash()
+        Log.e("ScannerTag","observeHoldSplash")
         flashState()
+        Log.e("ScannerTag","flashState")
         observeScannerState()
+        Log.e("ScannerTag","observeScannerState")
     }
 
     private fun observeScannerState() {
         interactor.observeScannerState()
             .onEach {
-                _scannerAction.value = it
+                Log.e("ScannerTag","observeScannerState")
+                _scannerAction.trySend(it)
             }
             .launchIn(viewModelScope)
     }
@@ -54,7 +66,8 @@ class CourierScannerViewModel(
     private fun observeHoldSplash() {
         interactor.observeHoldSplash()
             .onEach {
-            _scannerAction.value = ScannerState.StopScanWithHoldSplash
+                Log.e("ScannerTag","observeHoldSplash1 $it")
+                _scannerAction.trySend(ScannerState.StopScanWithHoldSplash)
             }
             .launchIn(viewModelScope)
     }
@@ -67,11 +80,12 @@ class CourierScannerViewModel(
     fun onHoldSplashClick() {
         interactor.prolongHoldTimer()
         interactor.holdSplashUnlock()
-        _scannerAction.value = ScannerState.StartScan
+        _scannerAction.trySend(ScannerState.StartScan)
     }
 
     fun onDestroy() {
-        clearSubscription() // backStack
+        clearSubscription()
+        Log.e("ScannerTag","clearSubscription")// backStack
     }
 
     fun switchFlashlight() {

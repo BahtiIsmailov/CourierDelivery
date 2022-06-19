@@ -1,10 +1,12 @@
 package ru.wb.go.ui.scanner.domain
 
-import io.reactivex.Observable
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_V1
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_OLD
@@ -13,7 +15,6 @@ import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl.Companion.DELAY_HOLD_SCANNER
 import ru.wb.go.utils.time.TimeFormatter
-import java.util.concurrent.TimeUnit
 
 class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 ) : ScannerRepository {
@@ -21,8 +22,10 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 
     private var scannerActionSubject = MutableSharedFlow<ScannerAction>(extraBufferCapacity = Int.MAX_VALUE,
         onBufferOverflow = BufferOverflow.DROP_OLDEST)
-    private var scannerStateSubject = MutableSharedFlow<ScannerState>(extraBufferCapacity = Int.MAX_VALUE,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+//    private var scannerStateSubject = MutableSharedFlow<ScannerState>(replay = 1, extraBufferCapacity = Int.MAX_VALUE,
+//        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    private var scannerStateSubject = Channel<ScannerState>(capacity = Int.MAX_VALUE)
 
      override fun scannerAction(action:ScannerAction){
          scannerActionSubject.tryEmit(action)
@@ -33,11 +36,13 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override fun scannerState(state: ScannerState) {
-        scannerStateSubject.tryEmit(state)
+        //scannerStateSubject.tryEmit(state)
+        scannerStateSubject.trySend(state)
+
     }
 
     override fun observeScannerState(): Flow<ScannerState> {
-        return scannerStateSubject
+        return scannerStateSubject.receiveAsFlow()
     }
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {

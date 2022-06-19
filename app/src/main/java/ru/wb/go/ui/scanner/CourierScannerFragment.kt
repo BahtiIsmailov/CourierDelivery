@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -15,10 +16,14 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.app.AppConsts
@@ -72,9 +77,13 @@ open class CourierScannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListener()
+        Log.e("ScannerTag","onViewCreated1")
         initObserver()
+        Log.e("ScannerTag","onViewCreated2")
         initPermission()
+        Log.e("ScannerTag","onViewCreated3")
         viewModel.update()
+        Log.e("ScannerTag","onViewCreated4")
     }
 
     private fun initPermission() {
@@ -118,6 +127,7 @@ open class CourierScannerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
         binding.scanStatus.visibility = GONE
         barcodeView.resume()
     }
@@ -128,8 +138,11 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun startScanning() {
+        Log.e("ScannerTag","startScanning1")
         changeLaserVisibility(true)
+        Log.e("ScannerTag","changeLaserVisibility1")
         onResume()
+        Log.e("ScannerTag","onResume()inStartScanning")
         binding.holdSplash.visibility = GONE
         barcodeView.barcodeView.decodeSingle(callback)
     }
@@ -146,15 +159,20 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun initObserver() {
-        viewModel.scannerAction.observe(viewLifecycleOwner) {
-            when (it) {
-                ScannerState.StartScan -> startScanning()
-                ScannerState.StopScan -> stopScanning()
-                ScannerState.StopScanWithHoldSplash -> holdSplash()
-                ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
-                ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
-                ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
+        Log.e("ScannerTag","initObserver1")
+        lifecycleScope.launchWhenStarted {
+            viewModel.scannerAction.onEach{
+                Log.e("ScannerTag","initObserver2: $it")
+                when (it) {
+                    ScannerState.StartScan -> startScanning()
+                    ScannerState.StopScan -> stopScanning()
+                    ScannerState.StopScanWithHoldSplash -> holdSplash()
+                    ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
+                    ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
+                    ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
+                }
             }
+                .launchIn(this)
         }
 
         viewModel.flashState.observe(viewLifecycleOwner) {
@@ -164,21 +182,25 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun stopScanning() {
+        Log.e("ScannerTag","stopScanning1")
         changeLaserVisibility(false)
         barcodeView.pauseAndWait()
     }
 
     private fun holdSplash() {
+        Log.e("ScannerTag","holdSplash1")
         stopScanning()
         binding.holdSplash.visibility = VISIBLE
     }
 
     private fun holdWithIcon(icon: Int) {
+        Log.e("ScannerTag","holdWithIcon1")
         binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
         binding.scanStatus.visibility = VISIBLE
     }
 
     override fun onDestroyView() {
+        Log.e("ScannerTag","onDestroyView")
         viewModel.onDestroy()
         super.onDestroyView()
         _binding = null
