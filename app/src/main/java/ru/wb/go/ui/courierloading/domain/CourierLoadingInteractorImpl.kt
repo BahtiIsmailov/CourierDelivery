@@ -45,8 +45,13 @@ class CourierLoadingInteractorImpl(
 
     override suspend fun scannedBoxes(): List<LocalBoxEntity> {
         return localRepo.readAllLoadingBoxesSync()
-
     }
+    /*
+        override fun scannedBoxes(): Single<List<LocalBoxEntity>> {
+        return localRepo.readAllLoadingBoxesSync()
+            .compose(rxSchedulerFactory.applySingleSchedulers())
+    }
+     */
 
     private fun scanResult(
         scannerState: ScannerState,

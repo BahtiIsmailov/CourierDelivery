@@ -89,9 +89,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun holdSplashScanner() {
-
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
-
     }
 
     private fun getGate() {
@@ -143,6 +141,18 @@ class CourierLoadingScanViewModel(
             }
         }
     }
+
+    /*
+        private fun observeInitScanProcess() {
+        addSubscription(interactor.scannedBoxes()
+            .subscribe(
+                { initScanProcessComplete(it) },
+                { initScanProcessError(it) }
+            )
+        )
+    }
+
+     */
 
     private fun initScanProcessComplete(boxes: List<LocalBoxEntity>) {
         onTechEventLog("initScanProcessComplete", "countBox " + boxes.size)
@@ -335,15 +345,11 @@ class CourierLoadingScanViewModel(
     }
 
     fun onStartScanner() {
-
         interactor.scannerAction(ScannerState.StartScan)
-
     }
 
     private fun stopScanner() {
-
         interactor.scannerAction(ScannerState.StopScan)
-
     }
 
     override fun onTimerState(duration: Int, downTickSec: Int) {

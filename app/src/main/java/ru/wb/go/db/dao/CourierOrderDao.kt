@@ -22,14 +22,14 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity WHERE rowId=:rowOrder")
-    fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
+    suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
     fun observeOrderData(): Flow<CourierOrderLocalDataEntity>
 
     @Query("DELETE FROM CourierOrderLocalEntity")
-    fun deleteAllOrder()
+    suspend fun deleteAllOrder()
 
     // TODO: 15.09.2021 вынести в отдельный DAO
     //==============================================================================================
@@ -39,18 +39,18 @@ interface CourierOrderDao {
     suspend fun insertOrderOffices(courierOrderDstOfficeLocalEntity: List<CourierOrderDstOfficeLocalEntity>)
 
     @Query("DELETE FROM CourierOrderDstOfficeLocalEntity")
-    fun deleteAllOffices()
+    suspend fun deleteAllOffices()
 
     // ====================================
     // True Local Order
     @Transaction
-     fun addOrderFromReserve(order: LocalOrderEntity) {
+    suspend fun addOrderFromReserve(order: LocalOrderEntity) {
         addOrder(order)
         addOfficesFromReserve(order.orderId)
     }
 
     @Insert
-    fun addOrder(localOrder: LocalOrderEntity)
+    suspend fun addOrder(localOrder: LocalOrderEntity)
 
     @Query(
         """
@@ -59,47 +59,47 @@ interface CourierOrderDao {
         FROM CourierOrderDstOfficeLocalEntity WHERE dst_office_order_id=:orderId
     """
     )
-    fun addOfficesFromReserve(orderId: Int)
+    suspend fun addOfficesFromReserve(orderId: Int)
 
     @Query("DELETE FROM courier_order")
-    fun deleteOrder()
+    suspend fun deleteOrder()
 
     @Query("SELECT * FROM courier_order")
-    fun getOrder(): LocalOrderEntity
+    suspend fun getOrder(): LocalOrderEntity
 
     @Insert
-    fun addOffices(offices: List<LocalOfficeEntity>)
+    suspend fun addOffices(offices: List<LocalOfficeEntity>)
 
     @Query("DELETE FROM offices")
-    fun deleteOffices()
+    suspend fun deleteOffices()
 
     @Query("SELECT * FROM offices")
-    fun getOffices(): List<LocalOfficeEntity>
+    suspend fun getOffices(): List<LocalOfficeEntity>
 
     @Query("SELECT * FROM offices WHERE office_id=:officeId")
-    fun getOfficeById(officeId: Int):  LocalOfficeEntity
+    suspend fun getOfficeById(officeId: Int):  LocalOfficeEntity
 
     @Query("SELECT * FROM offices")
     fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>>
 
     @Query("UPDATE courier_order SET status=:status, started_at=:startedAt")
-    fun setOrderStart(status: String, startedAt: String)
+    suspend fun setOrderStart(status: String, startedAt: String)
 
     @Query("DELETE FROM offices WHERE count_boxes=0")
-    fun deleteNotUsedOffices()
+    suspend fun deleteNotUsedOffices()
 
     @Query("UPDATE courier_order SET status=:status, cost=:cost")
-    fun setCost(status: String, cost: Int)
+    suspend fun setCost(status: String, cost: Int)
 
     @Transaction
-    fun setOrderAfterLoadStatus(status: String, cost: Int) {
+    suspend fun setOrderAfterLoadStatus(status: String, cost: Int) {
         deleteNotUsedOffices()
         setCost(status, cost)
     }
 
     @Query("UPDATE offices SET is_visited = 1, is_online=0 WHERE office_id=:officeId")
-    fun setVisitOffice(officeId: Int)
+    suspend fun setVisitOffice(officeId: Int)
 
     @Query("UPDATE offices SET is_online=1 ")
-    fun setOnlineOffice()
+    suspend fun setOnlineOffice()
 }
