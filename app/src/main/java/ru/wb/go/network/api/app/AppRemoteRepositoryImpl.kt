@@ -217,9 +217,8 @@ class AppRemoteRepositoryImpl(
     override suspend fun appVersion(): String {
         return withContext(Dispatchers.IO) {
             autentificatorIntercept.initNameOfMethod("appVersion")
-            remoteRepo.getAppActualVersion(tokenManager.apiVersion()).version
+            remoteRepo.getAppActualVersion(apiVersion()).version
         }
-
     }
 
     private fun apiVersion() = tokenManager.apiVersion()

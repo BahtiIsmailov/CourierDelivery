@@ -75,6 +75,19 @@ class CourierLoaderViewModel(
         }
     }
 
+    /*
+        fun initVersion() {
+        _state.value = CourierLoaderUIState.Progress
+        addSubscription(
+            remoteRepo.appVersion()
+                .compose(rxSchedulerFactory.applySingleSchedulers())
+                .subscribe(
+                    { appVersionUpdateComplete(it) },
+                    { appVersionUpdateError(it) })
+        )
+    }
+     */
+
 
     private  fun appVersionUpdateComplete(version: String) {
         onTechEventLog("appVersionUpdateComplete", "appStart $version")

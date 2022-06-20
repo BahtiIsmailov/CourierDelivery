@@ -43,7 +43,16 @@ class AppViewModel(
     init {
         fetchNetworkState()
         fetchVersionApp()
+        observeNavigationApp()
 
+    }
+
+    private fun fetchVersionApp() {
+        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
+    }
+
+
+    private fun observeNavigationApp(){
         interactor.observeNavigationApp()
             .onEach {
                 if (it == INVALID_TOKEN) {
@@ -53,10 +62,6 @@ class AppViewModel(
                     throw IllegalStateException("Wrong param $it")
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun fetchVersionApp() {
-        _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
 
