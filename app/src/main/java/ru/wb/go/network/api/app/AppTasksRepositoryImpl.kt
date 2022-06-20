@@ -27,30 +27,6 @@ class AppTasksRepositoryImpl(
     }
 
 
-//       override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
-//    return with(Dispatchers.IO){
-//        autentificatorIntercept.initNameOfMethod("courierWarehouses")
-//         remoteRepo.freeTasksOffices(apiVersion()).data
-//         .map {
-//            convertCourierWarehouseEntity(it)
-//        }.toList()
-//    }
-//}
-
-
-//    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
-//        return with(courierOfficeResponse) {
-//            CourierWarehouseLocalEntity(
-//                id = id,
-//                name = name,
-//                fullAddress = fullAddress,
-//                longitude = long,
-//                latitude = lat
-//            )
-//        }
-//    }
-
-
     override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity> {
         return withContext(Dispatchers.IO){
             autentificatorIntercept.initNameOfMethod("courierOrders")
@@ -59,13 +35,6 @@ class AppTasksRepositoryImpl(
             }.toList()
         }
     }
-
-//    override suspend fun getFreeOrders(srcOfficeID: Int):  List<CourierOrderEntity>  {
-//        autentificatorIntercept.initNameOfMethod("courierOrders")
-//        return remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
-//                order -> convertCourierOrderEntity(order)
-//        }.toList()
-//    }
 
     private fun apiVersion() =
         if (tokenManager.isContains()) tokenManager.apiVersion() else tokenManager.apiDemoVersion()

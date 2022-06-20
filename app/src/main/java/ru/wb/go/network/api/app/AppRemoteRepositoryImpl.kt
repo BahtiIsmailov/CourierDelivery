@@ -68,69 +68,6 @@ class AppRemoteRepositoryImpl(
         }
     }
 
-//    override suspend fun tasksMy(orderId: Int?):  LocalComplexOrderEntity  {
-//        toLocalOrderEntity()
-//
-//        return withContext(Dispatchers.IO){
-//            remoteRepo.tasksMy(apiVersion())
-//                .map { task ->
-//                    if (task.id > 0) {
-//                        val remoteOffices =
-//                            mutableListOf<LocalOfficeEntity>()
-//                        task.dstOffices.forEach {
-//                            remoteOffices.add(
-//                                LocalOfficeEntity(
-//                                    officeId = it.id,
-//                                    officeName = it.name ?: "",
-//                                    address = it.fullAddress ?: "",
-//                                    longitude = it.long,
-//                                    latitude = it.lat,
-//                                    countBoxes = 0,
-//                                    deliveredBoxes = 0,
-//                                    isVisited = false,
-//                                    isOnline = false
-//                                )
-//                            )
-//                        }
-//                        LocalComplexOrderEntity(
-//                            order = LocalOrderEntity(
-//                                orderId = task.id,
-//                                routeID = task.routeID ?: 0,
-//                                gate = task.gate ?: "",
-//                                minPrice = task.minPrice,
-//                                minVolume = task.minVolume,
-//                                minBoxes = task.minBoxesCount,
-//                                countOffices = remoteOffices.size,
-//                                wbUserID = task.wbUserID,
-//                                carNumber = task.carNumber,
-//                                reservedAt = task.reservedAt,
-//                                startedAt = task.startedAt ?: "",
-//                                reservedDuration = task.reservedDuration,
-//                                status = task.status ?: "",
-//                                cost = (task.cost ?: 0) / COST_DIVIDER,
-//                                srcId = task.srcOffice.id,
-//                                srcName = task.srcOffice.name,
-//                                srcAddress = task.srcOffice.fullAddress,
-//                                srcLongitude = task.srcOffice.long,
-//                                srcLatitude = task.srcOffice.lat,
-//                                route = task.route ?: "не указан"
-//                            ),
-//                            offices = remoteOffices
-//                        )
-//                    } else {
-//                        LocalComplexOrderEntity(badOrder, listOf())
-//                    }
-//                }
-//                .onErrorResumeNext {
-//                    if (orderId == null) {
-//                        Single.error(it)
-//                    } else
-//                        Single.just(LocalComplexOrderEntity(badOrder.copy(orderId = -2), listOf()))
-//                }
-//                .compose(rxSchedulerFactory.applySingleMetrics("getMyTask"))
-//        }
-//
-//    }
 
 
     override suspend fun reserveTask(

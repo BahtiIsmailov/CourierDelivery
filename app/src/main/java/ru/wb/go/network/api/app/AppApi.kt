@@ -59,7 +59,7 @@ interface AppApi {
         @Body boxes: List<ApiBoxRequest>
     ):  StartTaskResponse
 
-    //TODO("Арсений")
+
     @POST("{version}/tasks/{taskID}/statuses/ready")
     suspend fun taskStatusesReady(
         @Path(value = "version", encoded = true) version: String,

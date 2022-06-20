@@ -28,26 +28,3 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
 }
 
-/*
-interface CourierLoadingInteractor : BaseServiceInteractor {
-
-    fun scannedBoxes(): Single<List<LocalBoxEntity>>
-
-    fun observeScanProcess(): Observable<CourierLoadingProcessData>
-
-    fun scanLoaderProgress(): Observable<CourierLoadingProgressData>
-
-    fun scannerAction(scannerAction: ScannerState)
-
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
-
-    fun deleteTask(): Completable
-
-    fun confirmLoadingBoxes(): Single<CourierCompleteData>
-
-    fun getGate(): Single<String>
-
-    fun loadingBoxBoxesGroupByOffice(): Single<LoadingBoxGoals>
-
-}
- */

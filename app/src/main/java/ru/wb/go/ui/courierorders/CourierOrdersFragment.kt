@@ -391,7 +391,7 @@ class CourierOrdersFragment :
                         binding.carChangeImage.visibility =
                             if (it.isChangeCarNumber) VISIBLE else GONE
                         linerNumber.text = it.itemId
-                        taskDistance.text = it.taskDistance
+                        taskDistance.text = it.taskDistance + " км"
                         cost.text = it.cost
                         cargo.text = it.cargo
                         countOffice.text = it.countPvz

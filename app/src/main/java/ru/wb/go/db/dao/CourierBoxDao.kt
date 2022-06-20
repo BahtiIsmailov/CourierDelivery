@@ -49,22 +49,22 @@ interface CourierBoxDao {
         WHERE office_id =:officeId
         """
     )
-    fun updateOfficeDeliveredBoxAfterUnload(officeId: Int)
+    suspend fun updateOfficeDeliveredBoxAfterUnload(officeId: Int)
 
     @Transaction
-    fun addNewBox(box: LocalBoxEntity) {
+    suspend fun addNewBox(box: LocalBoxEntity) {
         addBox(box)
         updateOfficeCountersAfterLoadingBox(box.officeId)
     }
 
     @Query("UPDATE boxes SET loading_at=:loadingAt WHERE box_id=:boxId")
-    fun updateBoxLoadingAt(boxId: String, loadingAt: String)
+    suspend fun updateBoxLoadingAt(boxId: String, loadingAt: String)
 
     @Insert
-    fun addBoxes(boxes: List<LocalBoxEntity>)
+    suspend fun addBoxes(boxes: List<LocalBoxEntity>)
 
     @Query("DELETE FROM boxes")
-    fun deleteBoxes()
+    suspend fun deleteBoxes()
 
     @Query("SELECT * FROM boxes")
     suspend fun getBoxes(): List<LocalBoxEntity>
@@ -82,13 +82,13 @@ interface CourierBoxDao {
         WHERE o.is_online=0 AND o.is_visited=1 )
     """
     )
-    fun getOfflineBoxes(): List<LocalBoxEntity>
+    suspend fun getOfflineBoxes(): List<LocalBoxEntity>
 
     @Query("UPDATE boxes SET delivered_at=:time WHERE box_id=:boxId")
-    fun setBoxDelivery(boxId: String, time: String)
+    suspend fun setBoxDelivery(boxId: String, time: String)
 
     @Transaction
-    fun unloadBoxInOffice(box: LocalBoxEntity) {
+    suspend fun unloadBoxInOffice(box: LocalBoxEntity) {
         setBoxDelivery(box.boxId, box.deliveredAt)
         updateOfficeDeliveredBoxAfterUnload(box.officeId)
     }
@@ -97,7 +97,7 @@ interface CourierBoxDao {
     fun clearDelivery(boxId: String)
 
     @Transaction
-    fun takeBoxBack(box: LocalBoxEntity) {
+    suspend fun takeBoxBack(box: LocalBoxEntity) {
         clearDelivery(box.boxId)
         updateOfficeDeliveredBoxAfterUnload(box.officeId)
     }

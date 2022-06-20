@@ -24,20 +24,3 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
 }
 
-/*
-interface CourierWarehousesInteractor : BaseServiceInteractor {
-
-    fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>>
-
-    fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable
-
-    fun loadProgress(): Completable
-
-    fun observeMapAction(): Observable<CourierMapAction>
-
-    fun mapState(state: CourierMapState)
-
-    fun isDemoMode(): Boolean
-
-}
- */
