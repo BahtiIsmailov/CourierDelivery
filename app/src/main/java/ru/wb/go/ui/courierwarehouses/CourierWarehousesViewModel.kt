@@ -202,27 +202,6 @@ class CourierWarehousesViewModel(
         }
     }
 
-    //
-//    private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
-//        sortedWarehouseEntities(it)
-//        convertAndSaveItemsPointsMarkers()
-//        updateMyLocation()
-//        courierWarehouseComplete()
-//        setLoader(WaitLoader.Complete)
-//    }
-//
-//    private fun getWarehousesError(it: Throwable) {
-//        onTechErrorLog("courierWarehouseError", it)
-//        setLoader(WaitLoader.Complete)
-//        if (it is NoInternetException) {
-//            _warehouseState.postValue(CourierWarehouseItemState.NoInternet)
-//        } else {
-//            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-//            _warehouseState.postValue(CourierWarehouseItemState.Empty("Ошибка получения данных"))
-//        }
-//    }
-//
-
 
     private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
         warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
@@ -249,26 +228,6 @@ class CourierWarehousesViewModel(
         }
         Log.e("test", "convertAndSaveItemsPointsMarkers : $mapMarkers")
     }
-//    private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
-//        warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
-//    }
-//
-//    private fun convertAndSaveItemsPointsMarkers() {
-//        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouseEntities.size)
-//        warehouseItems = mutableListOf()
-//        coordinatePoints = mutableListOf()
-//        mapMarkers = mutableListOf()
-//        warehouseEntities.forEachIndexed { index, item ->
-//            val wi = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
-//            warehouseItems.add(wi)
-//            coordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
-//            val mapPoint = MapPoint(index.toString(), item.latitude, item.longitude)
-//            val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
-//            mapMarkers.add(mapMarker)
-//        }
-//    }
-//
-
 
     private fun courierWarehouseComplete() {
         _warehouseState.value =
@@ -279,15 +238,11 @@ class CourierWarehousesViewModel(
     }
 
     private fun showManagerBar() {
-
         interactor.mapState(CourierMapState.ShowManagerBar)
-
     }
 
     private fun updateMyLocation() {
-
         interactor.mapState(CourierMapState.UpdateMyLocation)
-
     }
     //    private fun showManagerBar() {
 //        interactor.mapState(CourierMapState.ShowManagerBar)

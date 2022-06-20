@@ -271,12 +271,12 @@ class CheckSmsViewModel(
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
-//    override fun onCleared() {
-//        super.onCleared()
-//        viewModelScope.launch {
-//            interactor.stopTimer()
-//        }
-//    }
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            interactor.stopTimer()
+        }
+    }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG

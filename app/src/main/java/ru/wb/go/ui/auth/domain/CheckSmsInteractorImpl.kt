@@ -20,7 +20,18 @@ class CheckSmsInteractorImpl(
     private val timerStates = MutableSharedFlow<TimerState>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val coroutineScope = CoroutineScope(SupervisorJob())
+
+    private var coroutineScope:CoroutineScope? = null
+
+
+    override fun remindPasswordChanges(observable: Flow<CharSequence>): Flow<Boolean> {
+        return observable
+            .map { it.toString() }
+            .distinctUntilChanged()
+            .map { it.length >= LENGTH_PASSWORD_MIN }
+
+    }
+
 
     private var durationTime = 0
     override suspend fun startTimer(durationTime: Int) {
@@ -34,20 +45,23 @@ class CheckSmsInteractorImpl(
         }
     }
 
-    private suspend fun onTimeConfirmCode(tick: Long) {
-        withContext(Dispatchers.IO){
-            if (tick > durationTime) {
-                publishCallState(TimerOverStateImpl())
-            } else {
-                val counterTick = durationTime - tick.toInt()
-                publishCallState(TimerStateImpl(durationTime, counterTick))
-            }
+    private fun onTimeConfirmCode(tick: Long) {
+        if (tick > durationTime) {
+            publishCallState(TimerOverStateImpl())
+        } else {
+            val counterTick = durationTime - tick.toInt()
+            publishCallState(TimerStateImpl(durationTime, counterTick))
         }
+
     }
 
     private fun timeConfirmCodeDisposable() {
-         coroutineScope.cancel()
+        if (coroutineScope!= null) {
+            coroutineScope?.cancel()
+            coroutineScope = null
+        }
     }
+
     private fun publishCallState(timerState: TimerState) {
         timerStates.tryEmit(timerState)
     }

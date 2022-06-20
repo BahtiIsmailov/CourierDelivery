@@ -160,7 +160,7 @@ class CourierMapViewModel(
             is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
                 NavigateToPointZoom(it.point)
 
-            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
+            is CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
                 NavigateToMyLocation
 
             is CourierMapState.UpdateMarkers -> _updateMarkers.value =
@@ -169,7 +169,7 @@ class CourierMapViewModel(
             is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
                 UpdateMarkersWithIndex(it.points)
 
-            CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
+            is CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
                 UpdateMyLocation
 
             is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
@@ -187,11 +187,11 @@ class CourierMapViewModel(
                     it.offsetY
                 )
 
-            CourierMapState.ClearMap -> _clearMap.value = ClearMap
-            CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
+            is CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            is CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Visible
 
-            CourierMapState.HideManagerBar -> _visibleManagerBar.value =
+            is CourierMapState.HideManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Hide
 
         }
@@ -210,9 +210,7 @@ class CourierMapViewModel(
     }
 
     fun onForcedLocationUpdateDefault() {
-
-            interactor.onForcedLocationUpdate(moscowCoordinatePoint())
-
+        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
     }
 
     override fun getScreenTag(): String {
@@ -220,23 +218,16 @@ class CourierMapViewModel(
     }
 
     fun onZoomClick() {
-
-            interactor.prolongTimeHideManager()
-
-
+        interactor.prolongTimeHideManager()
     }
 
     fun onShowAllClick() {
         interactor.showAll()
-
-            interactor.prolongTimeHideManager()
-
+        interactor.prolongTimeHideManager()
     }
 
     fun onAnimateComplete() {
-
-            interactor.animateComplete()
-
+        interactor.animateComplete()
     }
 
     companion object {
