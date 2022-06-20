@@ -80,7 +80,7 @@ class CourierMapInteractorImpl(
             // ссылка на слушателя если запущен то ничего ен делаем а если
             prolongHideSubject
                 .mapLatest {
-                    delay(5000)
+                    delay(HIDE_DELAY)
                 }
                 .onEach {
                     hideManagerBar()
@@ -89,15 +89,6 @@ class CourierMapInteractorImpl(
         }
 
     }
-    /*
-        private fun startVisibilityManagerTimer1() {
-        if (hideSplashDisposable == null) {
-            hideSplashDisposable = prolongHideSubject
-                .switchMap { Observable.timer(HIDE_DELAY, TimeUnit.SECONDS) }
-                .subscribe({ hideManagerBar() }, {})
-        }
-    }
-     */
 
     private fun hideManagerBar() {
         courierMapRepository.mapState(CourierMapState.HideManagerBar)
@@ -106,7 +97,7 @@ class CourierMapInteractorImpl(
 
 
     companion object {
-        const val HIDE_DELAY = 5L
+        const val HIDE_DELAY = 5000L
     }
 
 }

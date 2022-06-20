@@ -165,10 +165,8 @@ class CourierOrdersViewModel(
 
 
     fun onShowOrderDetailsClick() {
-
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-
     }
 
     fun onChangeCarNumberClick() {
@@ -177,9 +175,7 @@ class CourierOrdersViewModel(
     }
 
     private fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
-
         action(interactor.selectedRowOrder())
-
     }
 
     private fun navigateToEditCarNumber(): (rowOrder: Int) -> Unit = {
@@ -356,27 +352,30 @@ class CourierOrdersViewModel(
             try {
                 orderLocalDataEntities =
                     interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
-                Log.e("method.call()", "initOrders: $orderLocalDataEntities")
                 initOrdersComplete(height)
             } catch (e: Exception) {
                 initOrdersError(e)
             }
         }
     }
+    /*
+        private fun initOrders(height: Int) {
+        setLoader(WaitLoader.Wait)
+        addSubscription(
+            interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
+                .doOnSuccess { this.orderLocalDataEntities = it }
+                .subscribe(
+                    { initOrdersComplete(height) },
+                    { initOrdersError(it) })
+        )
+    }
+     */
 
     private fun initOrdersComplete(height: Int) {
-        Log.e("method.call()", "initOrdersComplete1:  ")
         addressLabel()
-        Log.e("method.call()", "initOrdersComplete2:  ")
-        convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
-        Log.e("method.call()", "initOrdersComplete3:  ")
-
+        convertAndSaveOrderPointMarkers(orderLocalDataEntities)
         setLoader(WaitLoader.Complete)
-        Log.e("method.call()", "initOrdersComplete4:  ")
-
         ordersComplete(height)
-        Log.e("method.call()", "initOrdersComplete5:  ")
-
     }
 
     private fun initOrdersError(it: Throwable) {
@@ -561,10 +560,8 @@ class CourierOrdersViewModel(
         _orderItems.value = CourierOrderItemState.ScrollTo(index)
     }
 
-    private fun clearMap() {
-
+    fun clearMap() {
         interactor.mapState(CourierMapState.ClearMap)
-
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
