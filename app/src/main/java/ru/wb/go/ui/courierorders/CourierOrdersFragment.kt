@@ -22,13 +22,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -159,8 +157,13 @@ class CourierOrdersFragment :
         else if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 
+
     override fun onDestroyView() {
-        viewModel.clearSubscription()
+        //viewModel.clearSubscription()
+        viewModel.clearMap()
+        //TODO(технический долг!!!!!!!, временное решение для того чтоб заказы не отображались на карте
+        // со складами но по хорошему надо переписать метод из вью модели initOrders() в нем метод очистить и сохранить
+        // точки на карте)
         super.onDestroyView()
     }
 
@@ -365,7 +368,7 @@ class CourierOrdersFragment :
                     with(binding.selectedOrder) {
 
                         when (it.carNumber) {
-                            CarNumberState.Empty -> {
+                            is CarNumberState.Empty -> {
                                 binding.carNumber.visibility = GONE
                                 binding.carNumberEmpty.visibility = VISIBLE
                             }
@@ -404,7 +407,7 @@ class CourierOrdersFragment :
 
         viewModel.showOrderState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierOrderShowOrdersState.Disable -> {
+                is CourierOrderShowOrdersState.Disable -> {
                     with(binding.showOrderFab){
                          isEnabled = false
                          //isClickable = false
@@ -412,15 +415,15 @@ class CourierOrdersFragment :
                     }
 
                 }
-                CourierOrderShowOrdersState.Enable -> {
+                is CourierOrderShowOrdersState.Enable -> {
                     with(binding.showOrderFab) {
                          isEnabled = true
                          //isClickable = true
                          backgroundTintList = colorFab(R.color.colorPrimary)
                     }
                 }
-                CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
-                CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
+                is CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
+                is CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
             }
         }
 
@@ -485,6 +488,7 @@ class CourierOrdersFragment :
         spannable.setSpan(RelativeSizeSpan(0.8f), 6, 8, 0)
         return spannable
     }
+
 
     private fun isOrdersExpanded() =
         bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED

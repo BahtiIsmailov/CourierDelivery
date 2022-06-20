@@ -202,27 +202,6 @@ class CourierWarehousesViewModel(
         }
     }
 
-    //
-//    private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
-//        sortedWarehouseEntities(it)
-//        convertAndSaveItemsPointsMarkers()
-//        updateMyLocation()
-//        courierWarehouseComplete()
-//        setLoader(WaitLoader.Complete)
-//    }
-//
-//    private fun getWarehousesError(it: Throwable) {
-//        onTechErrorLog("courierWarehouseError", it)
-//        setLoader(WaitLoader.Complete)
-//        if (it is NoInternetException) {
-//            _warehouseState.postValue(CourierWarehouseItemState.NoInternet)
-//        } else {
-//            errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-//            _warehouseState.postValue(CourierWarehouseItemState.Empty("Ошибка получения данных"))
-//        }
-//    }
-//
-
 
     private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
         warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
@@ -258,15 +237,11 @@ class CourierWarehousesViewModel(
     }
 
     private fun showManagerBar() {
-
         interactor.mapState(CourierMapState.ShowManagerBar)
-
     }
 
     private fun updateMyLocation() {
-
         interactor.mapState(CourierMapState.UpdateMyLocation)
-
     }
     //    private fun showManagerBar() {
 //        interactor.mapState(CourierMapState.ShowManagerBar)

@@ -31,10 +31,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
@@ -48,10 +51,12 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
+import ru.wb.go.utils.CoroutineExtension
 import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 
 class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
@@ -684,7 +689,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private fun visibleManagerBar(courierVisibilityManagerBar: CourierVisibilityManagerBar) {
         when (courierVisibilityManagerBar) {
-            CourierVisibilityManagerBar.Hide -> {
+            is CourierVisibilityManagerBar.Hide -> {
                 if (binding.managerLayout.visibility == View.GONE) return
                 val animation = AnimationUtils.loadAnimation(context, R.anim.slide_out_right)
                 animation.setAnimationListener(object : Animation.AnimationListener {
@@ -701,11 +706,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
                 })
                 binding.managerLayout.startAnimation(animation)
             }
-            CourierVisibilityManagerBar.Visible -> {
+            is CourierVisibilityManagerBar.Visible -> {
                 if (binding.managerLayout.visibility == View.VISIBLE) return
                 binding.managerLayout.visibility = View.VISIBLE
                 val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right) // анимация с скрыванием кнопок боковых
                 binding.managerLayout.startAnimation(animation)
+
             }
         }
     }

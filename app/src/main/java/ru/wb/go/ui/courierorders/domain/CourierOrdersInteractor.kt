@@ -28,7 +28,7 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun carNumber(): String
 
-      fun carType(): Int
+    fun carType(): Int
 
     suspend fun anchorTask()
 

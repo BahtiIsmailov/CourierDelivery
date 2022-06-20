@@ -35,6 +35,18 @@ class AppTasksRepositoryImpl(
             }.toList()
         }
     }
+    /*
+        override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
+        return remoteRepo.freeTasks(apiVersion(), srcOfficeID)
+            .map { it.data }
+            .flatMap {
+                Observable.fromIterable(it)
+                    .map { order -> convertCourierOrderEntity(order) }
+                    .toList()
+            }
+            .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
+    }
+     */
 
     private fun apiVersion() =
         if (tokenManager.isContains()) tokenManager.apiVersion() else tokenManager.apiDemoVersion()
