@@ -27,7 +27,6 @@ import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSel
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractorImpl
 import ru.wb.go.ui.courierbilllingcomplete.domain.CourierBillingCompleteInteractor
 import ru.wb.go.ui.courierbilllingcomplete.domain.CourierBillingCompleteInteractorImpl
-import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractorImpl
 import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
 import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractorImpl
@@ -65,7 +64,7 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.prefs.SharedWorker
-import ru.wb.go.utils.time.TimeFormatter
+import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 
 val interactorModule = module {
 
@@ -128,7 +127,6 @@ val interactorModule = module {
     }
 
     fun provideCouriersCompleteRegistrationInteractorImpl(
-        rxSchedulerFactory: RxSchedulerFactory,
         refreshTokenRepository: RefreshTokenRepository,
         appRemoteRepository: AppRemoteRepository,
         tokenManager: TokenManager,
@@ -202,7 +200,6 @@ val interactorModule = module {
         userManager: UserManager,
         tokenManager: TokenManager,
         timeManager: TimeManager,
-        timeFormatter: TimeFormatter,
         sharedWorker: SharedWorker
     ): CourierOrdersInteractor {
         return CourierOrdersInteractorImpl(
@@ -216,7 +213,6 @@ val interactorModule = module {
             userManager,
             tokenManager,
             timeManager,
-            timeFormatter,
             sharedWorker
         )
     }
@@ -393,7 +389,7 @@ val interactorModule = module {
 
     single { provideNumberPhoneInteractor(get(), get(), get()) }
     single { provideUserFormInteractorImpl(get(), get(), get(), get()) }
-    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get(), get()) }
+    single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }
@@ -413,7 +409,6 @@ val interactorModule = module {
     factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get(), get()) }
     factory {
         provideCourierOrdersInteractor(
-            get(),
             get(),
             get(),
             get(),

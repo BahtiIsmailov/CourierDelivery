@@ -4,9 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
@@ -18,7 +15,7 @@ interface CourierBoxDao {
     suspend fun readAllBoxesSync(): List<LocalBoxEntity>
 
     @Insert
-    fun addBox(box: LocalBoxEntity)
+    suspend fun addBox(box: LocalBoxEntity)
 
     @Query(
         """
@@ -31,7 +28,7 @@ interface CourierBoxDao {
         WHERE office_id =:officeId
         """
     )
-    fun updateOfficeCountersAfterLoadingBox(officeId: Int)
+    suspend fun updateOfficeCountersAfterLoadingBox(officeId: Int)
 
     @Query("SELECT address AS address, count(*) AS count FROM boxes GROUP BY office_id")
     suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>

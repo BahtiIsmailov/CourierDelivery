@@ -238,37 +238,16 @@ class CourierWarehousesViewModel(
             warehouseItems.add(wi)
             coordinatePoints.add(
                 CoordinatePoint(item.latitude, item.longitude)
-            )// arrive latitude b longitotude
+            )
             val mapPoint = MapPoint(
                 index.toString(),
                 item.latitude,
                 item.longitude
-            )// arrive latitude b longitotude
+            )
             val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
             mapMarkers.add(mapMarker)// arrive latitude b longitotude
         }
-        Log.e("test", "convertAndSaveItemsPointsMarkers : $mapMarkers")
     }
-//    private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
-//        warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
-//    }
-//
-//    private fun convertAndSaveItemsPointsMarkers() {
-//        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouseEntities.size)
-//        warehouseItems = mutableListOf()
-//        coordinatePoints = mutableListOf()
-//        mapMarkers = mutableListOf()
-//        warehouseEntities.forEachIndexed { index, item ->
-//            val wi = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
-//            warehouseItems.add(wi)
-//            coordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
-//            val mapPoint = MapPoint(index.toString(), item.latitude, item.longitude)
-//            val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
-//            mapMarkers.add(mapMarker)
-//        }
-//    }
-//
-
 
     private fun courierWarehouseComplete() {
         _warehouseState.value =
@@ -334,7 +313,6 @@ class CourierWarehousesViewModel(
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
 
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
-        Log.e("test", "updateMarkersWithMyLocation : $mapMarkers")
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
 
     }

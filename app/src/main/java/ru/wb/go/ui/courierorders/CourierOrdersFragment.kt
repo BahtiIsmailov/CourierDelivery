@@ -396,7 +396,7 @@ class CourierOrdersFragment :
                         cargo.text = it.cargo
                         countOffice.text = it.countPvz
                         reserve.text = it.reserve
-                        Log.e("itKelometrs","$it")
+
                     }
                 }
             }

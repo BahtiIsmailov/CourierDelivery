@@ -59,9 +59,7 @@ class CourierOrdersInteractorImpl(
         courierLocalRepository.deleteAllOrder()
         courierLocalRepository.deleteAllOrderOffices()
         val localEntity = toCourierOrderLocalDataEntities(response)
-        Log.e("method.call()", "freeOrdersLocalClearAndSave start")
         courierLocalRepository.saveFreeOrders(localEntity)
-        Log.e("method.call()", "freeOrdersLocalClearAndSave end")
         return localEntity
     }
 

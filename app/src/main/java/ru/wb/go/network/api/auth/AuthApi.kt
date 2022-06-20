@@ -1,6 +1,5 @@
 package ru.wb.go.network.api.auth
 
-import io.reactivex.Single
 import retrofit2.http.*
 import ru.wb.go.network.api.auth.query.AuthBySmsOrPasswordQuery
 import ru.wb.go.network.api.auth.query.RefreshTokenQuery

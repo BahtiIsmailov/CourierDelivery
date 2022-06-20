@@ -5,9 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -25,8 +23,6 @@ import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.CourierMapAction
-import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.ADDRESS_MAP_PREFIX
-import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.WAREHOUSE_ID
 import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
@@ -44,6 +40,10 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import java.text.DecimalFormat
+import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.ADDRESS_MAP_PREFIX
+import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
+import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.WAREHOUSE_ID
+
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
@@ -356,7 +356,6 @@ class CourierOrdersViewModel(
             try {
                 orderLocalDataEntities =
                     interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
-                Log.e("method.call()", "initOrders: $orderLocalDataEntities")
                 initOrdersComplete(height)
             } catch (e: Exception) {
                 initOrdersError(e)
@@ -365,18 +364,10 @@ class CourierOrdersViewModel(
     }
 
     private fun initOrdersComplete(height: Int) {
-        Log.e("method.call()", "initOrdersComplete1:  ")
         addressLabel()
-        Log.e("method.call()", "initOrdersComplete2:  ")
         convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
-        Log.e("method.call()", "initOrdersComplete3:  ")
-
         setLoader(WaitLoader.Complete)
-        Log.e("method.call()", "initOrdersComplete4:  ")
-
         ordersComplete(height)
-        Log.e("method.call()", "initOrdersComplete5:  ")
-
     }
 
     private fun initOrdersError(it: Throwable) {

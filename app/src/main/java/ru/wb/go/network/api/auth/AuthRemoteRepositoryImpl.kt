@@ -36,7 +36,6 @@ class AuthRemoteRepositoryImpl(
                 authApi.couriersAuth(tokenManager.apiVersion(), phone)
                 userManager.savePhone(phone)
             } catch (e: Exception) {
-                Log.e("TAG", "couriersExistAndSavePhone:${e.message}")
             }
         }
     }

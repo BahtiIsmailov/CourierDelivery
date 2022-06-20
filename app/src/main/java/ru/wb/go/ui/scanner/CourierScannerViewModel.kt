@@ -38,17 +38,13 @@ class CourierScannerViewModel(
 
     fun update() {
         observeHoldSplash()
-        Log.e("ScannerTag","observeHoldSplash")
         flashState()
-        Log.e("ScannerTag","flashState")
         observeScannerState()
-        Log.e("ScannerTag","observeScannerState")
     }
 
     private fun observeScannerState() {
         interactor.observeScannerState()
             .onEach {
-                Log.e("ScannerTag","observeScannerState")
                 _scannerAction.trySend(it)
             }
             .launchIn(viewModelScope)
@@ -66,7 +62,6 @@ class CourierScannerViewModel(
     private fun observeHoldSplash() {
         interactor.observeHoldSplash()
             .onEach {
-                Log.e("ScannerTag","observeHoldSplash1 $it")
                 _scannerAction.trySend(ScannerState.StopScanWithHoldSplash)
             }
             .launchIn(viewModelScope)
@@ -85,7 +80,6 @@ class CourierScannerViewModel(
 
     fun onDestroy() {
         clearSubscription()
-        Log.e("ScannerTag","clearSubscription")// backStack
     }
 
     fun switchFlashlight() {

@@ -38,7 +38,6 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
             val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
             holder.binding.selectedBackground.visibility = selectable
             holder.binding.imageItemBorder.visibility = selectable
-            Log.e("itKelometrs","$item")
         }
     }
 

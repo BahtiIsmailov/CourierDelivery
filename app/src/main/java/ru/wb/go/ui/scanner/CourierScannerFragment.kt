@@ -77,13 +77,9 @@ open class CourierScannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListener()
-        Log.e("ScannerTag","onViewCreated1")
         initObserver()
-        Log.e("ScannerTag","onViewCreated2")
         initPermission()
-        Log.e("ScannerTag","onViewCreated3")
         viewModel.update()
-        Log.e("ScannerTag","onViewCreated4")
     }
 
     private fun initPermission() {
@@ -138,11 +134,8 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun startScanning() {
-        Log.e("ScannerTag","startScanning1")
         changeLaserVisibility(true)
-        Log.e("ScannerTag","changeLaserVisibility1")
         onResume()
-        Log.e("ScannerTag","onResume()inStartScanning")
         binding.holdSplash.visibility = GONE
         barcodeView.barcodeView.decodeSingle(callback)
     }
@@ -159,10 +152,8 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun initObserver() {
-        Log.e("ScannerTag","initObserver1")
         lifecycleScope.launchWhenStarted {
             viewModel.scannerAction.onEach{
-                Log.e("ScannerTag","initObserver2: $it")
                 when (it) {
                     ScannerState.StartScan -> startScanning()
                     ScannerState.StopScan -> stopScanning()
@@ -182,25 +173,21 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun stopScanning() {
-        Log.e("ScannerTag","stopScanning1")
         changeLaserVisibility(false)
         barcodeView.pauseAndWait()
     }
 
     private fun holdSplash() {
-        Log.e("ScannerTag","holdSplash1")
         stopScanning()
         binding.holdSplash.visibility = VISIBLE
     }
 
     private fun holdWithIcon(icon: Int) {
-        Log.e("ScannerTag","holdWithIcon1")
         binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
         binding.scanStatus.visibility = VISIBLE
     }
 
     override fun onDestroyView() {
-        Log.e("ScannerTag","onDestroyView")
         viewModel.onDestroy()
         super.onDestroyView()
         _binding = null

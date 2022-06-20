@@ -1,9 +1,6 @@
 package ru.wb.go.db.dao
 
 import androidx.room.*
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.*
 
@@ -22,7 +19,7 @@ interface CourierOrderDao {
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity WHERE rowId=:rowOrder")
-    suspend fun orderAndOffices(rowOrder: Int):  CourierOrderLocalDataEntity
+    suspend fun orderAndOffices(rowOrder: Int): CourierOrderLocalDataEntity
 
     @Transaction
     @Query("SELECT * FROM CourierOrderLocalEntity")
@@ -77,7 +74,7 @@ interface CourierOrderDao {
     suspend fun getOffices(): List<LocalOfficeEntity>
 
     @Query("SELECT * FROM offices WHERE office_id=:officeId")
-    suspend fun getOfficeById(officeId: Int):  LocalOfficeEntity
+    suspend fun getOfficeById(officeId: Int): LocalOfficeEntity
 
     @Query("SELECT * FROM offices")
     fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>>
