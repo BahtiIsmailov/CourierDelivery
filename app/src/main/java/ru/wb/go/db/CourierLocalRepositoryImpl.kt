@@ -45,7 +45,6 @@ class CourierLocalRepositoryImpl(
 
     override suspend fun saveFreeOrders(courierOrderLocalDataEntities: List<CourierOrderLocalDataEntity>) {
         courierOrderLocalDataEntities.map {
-
             saveOrderAndOffices(it.courierOrderLocalEntity, it.dstOffices)
         }
 
