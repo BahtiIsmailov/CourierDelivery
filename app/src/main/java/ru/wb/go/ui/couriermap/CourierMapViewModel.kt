@@ -1,7 +1,13 @@
 package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -117,60 +123,62 @@ class CourierMapViewModel(
     val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
         get() = _visibleManagerBar
 
-    fun subscribeState() {
-        subscribeMapState()
-    }
+    fun subscribeMapState() {
+        interactor.subscribeMapState()
+            .onEach {
+                subscribeMapStateComplete(it)
+            }
+            .catch {
+                LogUtils {
+                    logDebugApp("subscribeMapState() error $it")
+                }
+            }
+            .launchIn(viewModelScope)
 
-    private fun subscribeMapState() {
-        addSubscription(
-            interactor.subscribeMapState()
-                .subscribe(
-                    { subscribeMapStateComplete(it) },
-                    { LogUtils { logDebugApp("subscribeMapState() error " + it) } }
-                )
-        )
     }
 
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {
-            is CourierMapState.NavigateToPoint -> _navigateToPoint.postValue(
-                NavigateToPoint(it.point))
-            is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.postValue(
+            is CourierMapState.NavigateToPoint -> _navigateToPoint.value =
+                NavigateToPoint(it.point)
+
+            is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.value =
                 UpdateMarkersWithAnimateToPositions(
                     it.pointsHide,
                     it.pointFrom,
                     it.pointsTo,
                     it.animateTo,
                     it.offsetY
-                ))
-            is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.postValue(
+                )
+
+            is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.value =
                 ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
-            )
-            is CourierMapState.NavigateToMarker -> _navigateToMarker.postValue(
+
+            is CourierMapState.NavigateToMarker -> _navigateToMarker.value =
                 NavigateToMarker(it.id)
-            )
-            is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.postValue(
+
+            is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
                 NavigateToPointZoom(it.point)
-            )
-            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.postValue(
+
+            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
                 NavigateToMyLocation
-            )
-            is CourierMapState.UpdateMarkers -> _updateMarkers.postValue(
+
+            is CourierMapState.UpdateMarkers -> _updateMarkers.value =
                 UpdateMarkers(it.points)
-            )
-            is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.postValue(
+
+            is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
                 UpdateMarkersWithIndex(it.points)
-            )
-            CourierMapState.UpdateMyLocation -> _updateMyLocation.postValue(
+
+            CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
                 UpdateMyLocation
-            )
-            is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.postValue(
+
+            is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
                 UpdateMyLocationPoint(it.point)
-            )
-            is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.postValue(
+
+            is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
                 ZoomToBoundingBox(it.boundingBox, it.animate)
-            )
-            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.postValue(
+
+            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
                 UpdateMarkersWithAnimateToPosition(
                     it.pointsShow,
                     it.pointsFrom,
@@ -178,14 +186,14 @@ class CourierMapViewModel(
                     it.animateTo,
                     it.offsetY
                 )
-            )
-            CourierMapState.ClearMap -> _clearMap.postValue(ClearMap)
-            CourierMapState.ShowManagerBar -> _visibleManagerBar.postValue(
+
+            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Visible
-            )
-            CourierMapState.HideManagerBar -> _visibleManagerBar.postValue(
+
+            CourierMapState.HideManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Hide
-            )
+
         }
     }
 
@@ -202,7 +210,9 @@ class CourierMapViewModel(
     }
 
     fun onForcedLocationUpdateDefault() {
-        interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+
+            interactor.onForcedLocationUpdate(moscowCoordinatePoint())
+
     }
 
     override fun getScreenTag(): String {
@@ -210,16 +220,23 @@ class CourierMapViewModel(
     }
 
     fun onZoomClick() {
-        interactor.prolongTimeHideManager()
+
+            interactor.prolongTimeHideManager()
+
+
     }
 
     fun onShowAllClick() {
-        interactor.prolongTimeHideManager()
         interactor.showAll()
+
+            interactor.prolongTimeHideManager()
+
     }
 
     fun onAnimateComplete() {
-        interactor.animateComplete()
+
+            interactor.animateComplete()
+
     }
 
     companion object {
@@ -229,3 +246,5 @@ class CourierMapViewModel(
 }
 
 fun moscowCoordinatePoint() = CoordinatePoint(55.751244, 37.618423)
+
+

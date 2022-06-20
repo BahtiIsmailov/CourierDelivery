@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierorders.delegates
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
@@ -29,14 +30,15 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
         val binding = holder.binding
         with(binding) {
             linerNumber.text = item.lineNumber
-            orderId.text = item.orderId
             cost.text = item.cost
+            taskDistance.text =  item.taskDistance + " км"
             cargo.text = item.cargo
             countOffice.text = item.countPvz
             reserve.text = item.arrive
             val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
             holder.binding.selectedBackground.visibility = selectable
             holder.binding.imageItemBorder.visibility = selectable
+            Log.e("itKelometrs","$item")
         }
     }
 

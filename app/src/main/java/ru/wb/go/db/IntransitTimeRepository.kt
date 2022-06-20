@@ -1,10 +1,10 @@
 package ru.wb.go.db
 
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 interface IntransitTimeRepository {
 
-    fun startTimer(): Flowable<Long>
+    fun startTimer() : Flow<Long>
     fun stopTimer()
 
 }

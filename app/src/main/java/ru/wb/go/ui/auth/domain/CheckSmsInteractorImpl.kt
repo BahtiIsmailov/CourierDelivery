@@ -1,30 +1,87 @@
 package ru.wb.go.ui.auth.domain
 
-import com.jakewharton.rxbinding3.InitialValueObservable
-import io.reactivex.*
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.BehaviorSubject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
-import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.network.rx.RxSchedulerFactory
-import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
+import ru.wb.go.utils.CoroutineExtension
 import java.util.concurrent.TimeUnit
 
 class CheckSmsInteractorImpl(
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val authRepository: AuthRemoteRepository,
 ) : CheckSmsInteractor {
 
-    private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+    private val timerStates = MutableSharedFlow<TimerState>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val coroutineScope = CoroutineScope(SupervisorJob())
+
+    private var durationTime = 0
+    override suspend fun startTimer(durationTime: Int) {
+        this.durationTime = durationTime
+        coroutineScope {
+            CoroutineExtension.interval(PERIOD,TimeUnit.MILLISECONDS)
+                .onEach {
+                    onTimeConfirmCode(it)
+                }
+                .launchIn(this)
+        }
+    }
+
+    private suspend fun onTimeConfirmCode(tick: Long) {
+        withContext(Dispatchers.IO){
+            if (tick > durationTime) {
+                publishCallState(TimerOverStateImpl())
+            } else {
+                val counterTick = durationTime - tick.toInt()
+                publishCallState(TimerStateImpl(durationTime, counterTick))
+            }
+        }
+    }
+
+    private fun timeConfirmCodeDisposable() {
+         coroutineScope.cancel()
+    }
+    private fun publishCallState(timerState: TimerState) {
+        timerStates.tryEmit(timerState)
+    }
+
+    override val timer: Flow<TimerState>
+        get() = timerStates
+
+    override suspend fun stopTimer() {
+        timeConfirmCodeDisposable()
+    }
+
+    override fun observeNetworkConnected(): Flow<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+
+    }
+
+    override suspend fun auth(phone: String, password: String) {
+        authRepository.auth(phone, password, true)
+    }
+
+    override suspend fun couriersExistAndSavePhone(phone: String) {
+        authRepository.couriersExistAndSavePhone(phone)
+    }
+
+    companion object {
+        private const val PERIOD = 1000L
+        private const val LENGTH_PASSWORD_MIN = 4
+    }
+}
+
+
+/*
+private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
+
     private var timerDisposable: Disposable? = null
 
     override fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean> {
@@ -94,3 +151,4 @@ class CheckSmsInteractorImpl(
         private const val LENGTH_PASSWORD_MIN = 4
     }
 }
+*/

@@ -82,8 +82,9 @@ class CourierWarehousesFragment :
                     }
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     binding.items.adapter = adapter
+
                 }
-                is CourierWarehouseItemState.UpdateItems -> {
+                is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
                     adapter.clear()
                     adapter.addItems(it.items)
                     adapter.notifyDataSetChanged()
@@ -187,16 +188,8 @@ class CourierWarehousesFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                viewModel.updateData()
-            }
-        }
-        binding.update.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.updateData()
-            }
-        }
+        binding.refresh.setOnRefreshListener { viewModel.updateData() }//1
+        binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
@@ -218,10 +211,8 @@ class CourierWarehousesFragment :
 
     override fun onResume() {
         super.onResume()
-        viewModel.resumeInit()
-        lifecycleScope.launch {
-            viewModel.updateData()
-        }
+        viewModel.resumeInit()// если убрать то показывается дэмо версию
+        viewModel.updateData()// если убрать то не отображается список складов
     }
 
     override fun onPause() {
@@ -263,3 +254,4 @@ fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
         ?.let { decoration.setDrawable(it) }
     return decoration
 }
+

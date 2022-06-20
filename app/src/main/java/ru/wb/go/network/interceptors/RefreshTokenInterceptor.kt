@@ -1,6 +1,7 @@
 package ru.wb.go.network.interceptors
 
 import android.os.ConditionVariable
+import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -24,7 +25,6 @@ class RefreshTokenInterceptor(
 
     private val lock = ConditionVariable(true)
     private val isRefreshing: AtomicBoolean = AtomicBoolean(false)
-
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request = chain.request()
@@ -41,35 +41,38 @@ class RefreshTokenInterceptor(
 
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             if (isRefreshing.compareAndSet(false, true)) {
-                try {
-                    lock.close()
-                    when (refreshTokenRepository.doRefreshToken()) {
-                        RefreshResult.TokenInvalid -> {
-                            appNavRepository.navigate(INVALID_TOKEN)
+                runBlocking(Dispatchers.IO) {
+                    try {
+                        lock.close()
+                        when (refreshTokenRepository.doRefreshToken()) {
+                            RefreshResult.TokenInvalid -> {
+                                appNavRepository.navigate(INVALID_TOKEN)
+                            }
+                            RefreshResult.Success -> {
+                                val newRequest = createRequest(request, tokenManager.bearerToken())
+                                response.close()
+                                response = chain.proceed(newRequest)
+                            }
+                            is RefreshResult.Failed -> {
+                                // refresh failed. Attempt to continue without auth.
+                                // if 500 or timeout - show error
+                                response.close()
+                                val newRequest = createRequest(request, "")
+                                response = chain.proceed(newRequest)
+                            }
+                            RefreshResult.TimeOut -> {
+                                val newRequest = createRequest(request, tokenManager.bearerToken())
+                                response.close()
+                                response = chain.proceed(newRequest)
+                            }
                         }
-                        RefreshResult.Success -> {
-                            val newRequest = createRequest(request, tokenManager.bearerToken())
-                            response.close()
-                            response = chain.proceed(newRequest)
-                        }
-                        is RefreshResult.Failed -> {
-                            // refresh failed. Attempt to continue without auth.
-                            // if 500 or timeout - show error
-                            response.close()
-                            val newRequest = createRequest(request, "")
-                            response = chain.proceed(newRequest)
-                        }
-                        RefreshResult.TimeOut -> {
-                            val newRequest = createRequest(request, tokenManager.bearerToken())
-                            response.close()
-                            response = chain.proceed(newRequest)
-                        }
-                    }
 
-                }finally {
-                    lock.open()
-                    isRefreshing.set(false)
+                    }finally {
+                        lock.open()
+                        isRefreshing.set(false)
+                    }
                 }
+
             } else {
                 val conditionOpened = lock.block(REFRESH_TIME_OUT)
                 if (conditionOpened ) {

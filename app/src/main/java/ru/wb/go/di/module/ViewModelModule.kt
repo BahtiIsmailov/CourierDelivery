@@ -62,7 +62,6 @@ val viewModelModule = module {
         CourierLoaderViewModel(
             compositeDisposable = get(),
             metric = get(),
-            rxSchedulerFactory = get(),
             tokenManager = get(),
             locRepo = get(),
             remoteRepo = get(),
@@ -138,7 +137,7 @@ val viewModelModule = module {
         CourierStartDeliveryViewModel(parameters, get(), get(), get(), get())
     }
     viewModel { (parameters: CourierCompleteDeliveryParameters) ->
-        CourierCompleteDeliveryViewModel(parameters, get(), get(), get(), get())
+        CourierCompleteDeliveryViewModel(parameters, get(), get(), get())
     }
     viewModel { CourierMapViewModel(get(), get(), get()) }
 
@@ -170,7 +169,6 @@ val viewModelModule = module {
     viewModel { (parameters: CourierBillingCompleteParameters) ->
         CourierBillingCompleteViewModel(
             parameters,
-            get(),
             get(),
             get(),
             get()

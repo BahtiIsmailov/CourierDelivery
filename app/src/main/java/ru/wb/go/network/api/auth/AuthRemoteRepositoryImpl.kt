@@ -1,8 +1,6 @@
 package ru.wb.go.network.api.auth
 
 import android.util.Log
-import io.reactivex.Completable
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.entity.TokenEntity
@@ -12,7 +10,6 @@ import ru.wb.go.network.api.auth.response.StatisticsResponse
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.utils.managers.SettingsManager
-import java.lang.Exception
 
 class AuthRemoteRepositoryImpl(
     private val authApi: AuthApi,
@@ -24,19 +21,21 @@ class AuthRemoteRepositoryImpl(
     override suspend fun auth(
         password: String, phone: String, useSMS: Boolean,
     ) {
-        val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
-        val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
-        val tokenEntity = TokenEntity(auth.accessToken, auth.expiresIn, auth.refreshToken)
-        saveToken(tokenEntity)
-        turnOffDemo()
+        withContext(Dispatchers.IO) {
+            val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
+            val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
+            val tokenEntity = TokenEntity(auth.accessToken, auth.expiresIn, auth.refreshToken)
+            saveToken(tokenEntity)
+            turnOffDemo()
+        }
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String) {
-        return withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
                 authApi.couriersAuth(tokenManager.apiVersion(), phone)
                 userManager.savePhone(phone)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 Log.e("TAG", "couriersExistAndSavePhone:${e.message}")
             }
         }
@@ -50,12 +49,16 @@ class AuthRemoteRepositoryImpl(
         tokenManager.turnOffDemo()
     }
 
-    override fun statistics(): Single<StatisticsResponse> {
-        return authApi.statistics(tokenManager.apiVersion())
+    override suspend fun statistics(): StatisticsResponse {
+        return withContext(Dispatchers.IO){
+            authApi.statistics(tokenManager.apiVersion())
+        }
     }
 
-    override fun userInfo(): Single<UserInfoEntity> {
-        return Single.just(UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
+    override suspend fun userInfo(): UserInfoEntity {
+        return withContext(Dispatchers.IO){
+            UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+        }
     }
 
     override fun clearCurrentUser() {

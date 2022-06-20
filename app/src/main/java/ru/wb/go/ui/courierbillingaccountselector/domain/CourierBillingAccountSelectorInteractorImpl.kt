@@ -1,7 +1,5 @@
 package ru.wb.go.ui.courierbillingaccountselector.domain
 
-import io.reactivex.Completable
-import io.reactivex.Single
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
@@ -24,42 +22,29 @@ class CourierBillingAccountSelectorInteractorImpl(
 ) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
     CourierBillingAccountSelectorInteractor {
 
-    override fun payments(amount: Int, paymentEntity: PaymentEntity): Completable {
-        return initGuid()
-            .flatMapCompletable { guid ->
-                appRemoteRepository.payments(
-                    guid,
-                    amount,
-                    paymentEntity
-                )
+    override suspend fun payments(amount: Int, paymentEntity: PaymentEntity) {
+        try {
+            appRemoteRepository.payments(initGuid(), amount, paymentEntity)
+        } catch (e: Exception) {
+            if (e !is TimeoutException) {
+                userManager.clearPaymentGuid()
+                userManager.clearPaymentGuid()
             }
-            .doOnError {
-                if (it !is TimeoutException) {
-                    userManager.clearPaymentGuid()
-                }
-            }
-            .doOnComplete { userManager.clearPaymentGuid() }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-    }
-
-    private fun initGuid(): Single<String> {
-        return Single.fromCallable {
-            if (userManager.getPaymentGuid().isEmpty()) {
-                userManager.savePaymentGuid(deviceManager.guid())
-            }
-            userManager.getPaymentGuid()
         }
     }
 
-    override fun getBillingAccounts(): Single<List<CourierBillingAccountEntity>> {
-        return appRemoteRepository.getBankAccounts()
-            .flatMap {
-                val userName = tokenManager.userName()
-                val inn = it.inn
-                val billingAccounts = it.data.convertToBillingAccounts(userName, inn)
-                Single.just(billingAccounts)
-            }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
+    private fun initGuid(): String {
+        if (userManager.getPaymentGuid().isEmpty()) {
+            userManager.savePaymentGuid(deviceManager.guid())
+        }
+        return userManager.getPaymentGuid()
+    }
+
+    override suspend fun getBillingAccounts(): List<CourierBillingAccountEntity> {
+        val response = appRemoteRepository.getBankAccounts()
+        val userName = tokenManager.userName()
+        val inn = response.inn
+        return response.data.convertToBillingAccounts(userName, inn)
     }
 
     private fun List<AccountEntity>.convertToBillingAccounts(
@@ -81,3 +66,4 @@ class CourierBillingAccountSelectorInteractorImpl(
         return accountsEntity
     }
 }
+

@@ -1,29 +1,34 @@
 package ru.wb.go.ui.couriermap.domain
 
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
 class CourierMapRepositoryImpl : CourierMapRepository {
 
-    private var mapActionSubject = PublishSubject.create<CourierMapAction>()
 
-    private val mapStateSubject = PublishSubject.create<CourierMapState>()
+    private val mapStateSubject = MutableSharedFlow<CourierMapState>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    private val mapActionSubject = MutableSharedFlow<CourierMapAction>(
+        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-    override fun mapAction(action: CourierMapAction) {
-        mapActionSubject.onNext(action)
-    }
-
-    override fun observeMapState(): Observable<CourierMapState> {
+    override fun observeMapState(): Flow<CourierMapState> {
         return mapStateSubject
     }
 
     override fun mapState(state: CourierMapState) {
-        mapStateSubject.onNext(state)
+        mapStateSubject.tryEmit(state)
     }
 
-    override fun observeMapAction(): Observable<CourierMapAction> {
+    override fun mapAction(action: CourierMapAction) {
+        mapActionSubject.tryEmit(action) // закинуть в поток
+    }
+
+    override fun observeMapAction(): Flow<CourierMapAction> {
         return mapActionSubject
     }
 

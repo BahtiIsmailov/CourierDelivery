@@ -13,7 +13,7 @@ import ru.wb.go.R
 import ru.wb.go.databinding.AppLoaderFragmentBinding
 
 
-class AppLoaderFragment : Fragment(R.layout.app_loader_fragment) {
+class AppLoaderFragment : Fragment() {
 
     private var _binding: AppLoaderFragmentBinding? = null
     private val binding get() = _binding!!
@@ -30,18 +30,20 @@ class AppLoaderFragment : Fragment(R.layout.app_loader_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
+        (activity as NavToolbarListener).hideToolbar()
         initObserver()
         initListener()
     }
 
     private fun initListener() {
-        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.toDemo.setOnClickListener { viewModel.toDemoClick() }
-    }
-
-    private fun initView() {
-        (activity as NavToolbarListener).hideToolbar()
+        with(binding){
+            toRegistration.setOnClickListener {
+                viewModel.toAuth()
+            }
+            toDemo.setOnClickListener {
+                viewModel.toCourier()
+            }
+        }
     }
 
     private fun initObserver() {

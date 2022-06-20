@@ -2,7 +2,14 @@ package ru.wb.go.ui.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
@@ -37,26 +44,29 @@ class AppViewModel(
         fetchNetworkState()
         fetchVersionApp()
 
-        addSubscription(
-            interactor.observeNavigationApp()
-                .subscribe({
-                    if (it == INVALID_TOKEN) {
-                        interactor.exitAuth()
-                        _navigation.value = NavigationState.NavigateToRegistration
-                    } else
-                        throw IllegalStateException("Wrong param $it")
-                }, {})
-        )
+        interactor.observeNavigationApp()
+            .onEach {
+                if (it == INVALID_TOKEN) {
+                    interactor.exitAuth()
+                    _navigation.value = NavigationState.NavigateToRegistration
+                } else
+                    throw IllegalStateException("Wrong param $it")
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchVersionApp() {
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
+
     private fun fetchNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _networkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
     fun onSupportClick() {
@@ -64,9 +74,12 @@ class AppViewModel(
     }
 
     fun onExitAuthClick() {
-        interactor.exitAuth()
-        _navigation.value = NavigationState.NavigateToRegistration
+        viewModelScope.launch {
+            interactor.exitAuth()
+            _navigation.value = NavigationState.NavigateToRegistration
+        }
     }
+
 
     fun getDarkThemeSetting(): Boolean {
         return settingsManager.getSetting(
@@ -74,6 +87,7 @@ class AppViewModel(
             false
         )
     }
+
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
@@ -83,6 +97,7 @@ class AppViewModel(
         const val SCREEN_TAG = "App"
     }
 
+
     sealed class NavigationState {
 
         object NavigateToRegistration : NavigationState()
@@ -90,5 +105,7 @@ class AppViewModel(
         object NavigateToSupport : NavigationState()
 
     }
+
+
 
 }

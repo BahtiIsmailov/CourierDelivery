@@ -9,9 +9,6 @@ import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 
 interface AppTasksApi {
 
-    //==============================================================================================
-    //tasks
-    //==============================================================================================
     @GET("{version}/free-tasks/offices")
     suspend fun freeTasksOffices(
         @Path(value = "version", encoded = true) version: String

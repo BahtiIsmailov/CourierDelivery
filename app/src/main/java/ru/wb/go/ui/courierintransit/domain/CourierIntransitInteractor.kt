@@ -1,7 +1,6 @@
 package ru.wb.go.ui.courierintransit.domain
 
-import io.reactivex.Completable
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
@@ -11,22 +10,23 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 interface CourierIntransitInteractor : BaseServiceInteractor {
 
-    fun getOffices(): Observable<List<LocalOfficeEntity>>
+    fun getOffices(): Flow<List<LocalOfficeEntity>>
 
-    fun observeOrderTimer(): Observable<Long>
+    fun observeOrderTimer():  Flow<Long>
 
-    fun completeDelivery(order: LocalOrderEntity): Completable
+    suspend fun completeDelivery(order: LocalOrderEntity)
 
-    fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>): Completable
+    suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>)
 
-    fun clearLocalTaskData()
+    suspend fun clearLocalTaskData()
 
-    fun observeMapAction(): Observable<CourierMapAction>
+    fun observeMapAction(): Flow<CourierMapAction>
 
     fun mapState(state: CourierMapState)
 
-    fun getOrder(): LocalOrderEntity
-    fun getOrderId(): String
-    fun getOfflineBoxes(): List<LocalBoxEntity>
-    fun getBoxes(): List<LocalBoxEntity>
+    suspend fun getOrder(): LocalOrderEntity
+    suspend fun getOrderId(): String
+    suspend fun getOfflineBoxes(): List<LocalBoxEntity>
+    suspend fun getBoxes(): List<LocalBoxEntity>
 }
+

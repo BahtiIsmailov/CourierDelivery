@@ -12,6 +12,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -21,11 +22,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -97,10 +100,12 @@ class CourierOrdersFragment :
     }
 
     private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
+        override  fun handleOnBackPressed() {
             when {
                 isOrdersExpanded() -> viewModel.onCloseOrdersClick()
-                isOrderDetailsExpanded() -> viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+                isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+
+                }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
         }
@@ -170,7 +175,7 @@ class CourierOrdersFragment :
             @Suppress("DEPRECATION")
             display.getMetrics(outMetrics)
         }
-        return outMetrics.heightPixels / 2
+        return outMetrics.heightPixels / 2//!!!!!!!!!!!!!
     }
 
     private fun initView() {
@@ -211,9 +216,7 @@ class CourierOrdersFragment :
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
-        binding.closeOrderDetails.setOnClickListener {
-            viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
-        }
+        binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
         binding.carNumberEmpty.setOnClickListener { viewModel.onChangeCarNumberClick() }
@@ -250,7 +253,7 @@ class CourierOrdersFragment :
     private fun initStateObserves() {
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<CourierCarNumberResult>(COURIER_CAR_NUMBER_ID_EDIT_KEY)
-            ?.observe(viewLifecycleOwner) { viewModel.onChangeCarNumberOrders(it) }
+            ?.observe(viewLifecycleOwner) { viewModel.onChangeCarNumberOrders(it)}
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.title.text = it.label
@@ -388,11 +391,12 @@ class CourierOrdersFragment :
                         binding.carChangeImage.visibility =
                             if (it.isChangeCarNumber) VISIBLE else GONE
                         linerNumber.text = it.itemId
-                        orderId.text = it.orderId
+                        taskDistance.text = it.taskDistance + " км"
                         cost.text = it.cost
                         cargo.text = it.cargo
                         countOffice.text = it.countPvz
                         reserve.text = it.reserve
+                        Log.e("itKelometrs","$it")
                     }
                 }
             }

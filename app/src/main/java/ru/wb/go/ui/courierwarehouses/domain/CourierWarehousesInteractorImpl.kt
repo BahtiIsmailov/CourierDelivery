@@ -1,8 +1,8 @@
 package ru.wb.go.ui.courierwarehouses.domain
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
@@ -14,6 +14,7 @@ import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
+import ru.wb.go.utils.CoroutineExtension
 import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
@@ -37,28 +38,54 @@ class CourierWarehousesInteractorImpl(
 //            .compose(rxSchedulerFactory.applySingleSchedulers())
 //    }
 
-    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
+//    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
+//        return appRemoteRepository.courierWarehouses()
+//            .compose(rxSchedulerFactory.applySingleSchedulers())
+//    }
+
+
+    override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         courierLocalRepository.deleteAllWarehouse()
-        return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
     }
+//    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
+//        courierLocalRepository.deleteAllWarehouse()
+//        return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+//    }
 
-    override fun loadProgress(): Completable {
-        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+    override fun loadProgress() {
+        CoroutineExtension.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
     }
+    //
+//    override fun loadProgress(): Completable {
+//        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
+//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+//    }
 
-    override fun observeMapAction(): Observable<CourierMapAction> {
+
+    override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
+
+//    override fun observeMapAction(): Observable<CourierMapAction> {
+//        return courierMapRepository.observeMapAction()
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
 
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
 
+//    override fun mapState(state: CourierMapState) {
+//        courierMapRepository.mapState(state)
+//    }
+
+    override fun mapAction(action: CourierMapAction) {
+        courierMapRepository.mapAction(action)
+    }
+
     override fun isDemoMode(): Boolean {
         return tokenManager.isDemo()
     }
-
 }

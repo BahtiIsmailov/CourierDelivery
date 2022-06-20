@@ -1,11 +1,11 @@
 package ru.wb.go.network.api.app
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
-import ru.wb.go.network.api.app.entity.*
+import ru.wb.go.network.api.app.entity.BillingCommonEntity
+import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
+import ru.wb.go.network.api.app.entity.PaymentEntity
+import ru.wb.go.network.api.app.entity.TaskCostEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
@@ -17,38 +17,38 @@ interface AppRemoteRepository {
 
     suspend fun getCourierDocuments(): CourierDocumentsEntity
 
-    fun tasksMy(orderId:Int?): Single<LocalComplexOrderEntity>
+    suspend fun tasksMy(orderId:Int?): LocalComplexOrderEntity
 
-    fun reserveTask(taskID: String, carNumber: String): Completable
+    suspend fun reserveTask(taskID: String, carNumber: String)
 
-    fun deleteTask(taskID: String): Completable
+    suspend fun deleteTask(taskID: String)
 
-    fun taskBoxes(taskID: String): Single<List<LocalBoxEntity>>
+    suspend fun taskBoxes(taskID: String):  List<LocalBoxEntity>
 
-    fun setStartTask(taskID: String, box: LocalBoxEntity): Single<StartTaskResponse>
+    suspend fun setStartTask(taskID: String, box: LocalBoxEntity):  StartTaskResponse
 
-    fun setReadyTask(
+    suspend fun setReadyTask(
             taskID: String,
             boxes: List<LocalBoxEntity>
-    ): Single<TaskCostEntity>
+    ): TaskCostEntity
 
-    fun setIntransitTask(
+    suspend fun setIntransitTask(
         taskID: String,
         boxes: List<LocalBoxEntity>
-    ): Completable
+    )
 
-    fun taskStatusesEnd(taskID: String): Completable
+     suspend fun taskStatusesEnd(taskID: String)
 
-    fun getBillingInfo(isShowTransaction: Boolean): Single<BillingCommonEntity>
+    suspend fun getBillingInfo(isShowTransaction: Boolean):  BillingCommonEntity
 
-    fun payments(id: String, amount: Int, paymentEntity: PaymentEntity): Completable
+    suspend fun payments(id: String, amount: Int, paymentEntity: PaymentEntity)
 
-    fun getBank(bic: String): Maybe<BankEntity>
+    suspend fun getBank(bic: String): BankEntity
 
-    fun getBankAccounts(): Single<BankAccountsEntity>
+    suspend fun getBankAccounts(): BankAccountsEntity
 
-    fun setBankAccounts(accountEntities: List<AccountEntity>): Completable
+    suspend fun setBankAccounts(accountEntities: List<AccountEntity>)
 
-    fun appVersion(): Single<String>
+    suspend fun appVersion():  String
 
 }

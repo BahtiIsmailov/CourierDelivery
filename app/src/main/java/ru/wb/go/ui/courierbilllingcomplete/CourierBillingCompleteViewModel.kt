@@ -11,8 +11,7 @@ class CourierBillingCompleteViewModel(
         parameters: CourierBillingCompleteParameters,
         compositeDisposable: CompositeDisposable,
         metric: YandexMetricManager,
-        resourceProvider: CourierBillingCompleteResourceProvider,
-        private val interactor: CourierCompleteDeliveryInteractor,
+        resourceProvider: CourierBillingCompleteResourceProvider
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _titleState = MutableLiveData<CourierBillingCompleteState>()

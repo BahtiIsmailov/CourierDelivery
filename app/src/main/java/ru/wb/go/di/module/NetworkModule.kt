@@ -12,8 +12,6 @@ import retrofit2.CallAdapter
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.wb.go.network.NullOnEmptyConverterFactory
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
-import ru.wb.go.network.certificate.CertificateStore
-import ru.wb.go.network.certificate.CertificateStoreFactory
 import ru.wb.go.network.client.OkHttpFactory
 import ru.wb.go.network.exceptions.ErrorResolutionResourceProvider
 import ru.wb.go.network.exceptions.ErrorResolutionResourceProviderImpl
@@ -85,9 +83,6 @@ val networkModule = module {
     //==============================================================================================
     //certificate store
     //==============================================================================================
-    fun provideCertificateStore(context: Context): CertificateStore {
-        return CertificateStoreFactory.createCertificateStore(context)
-    }
 
     fun provideMockResponse(context: Context): MockResponse {
         return MockResponseImpl(context)
@@ -177,12 +172,10 @@ val networkModule = module {
     // OkHttpClient
     //==============================================================================================
     fun provideAuthOkHttpClient(
-        certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
         authMockResponseInterceptor: AuthMockResponseInterceptor
     ): OkHttpClient {
         return OkHttpFactory.createAuthOkHttpClient(
-            certificateStore,
             httpLoggingInterceptor,
             authMockResponseInterceptor
         )
@@ -193,13 +186,11 @@ val networkModule = module {
     }
 
     fun provideAppOkHttpClient(
-        certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor,
         appMetricResponseInterceptor: AppMetricResponseInterceptor,
     ): OkHttpClient {
         return OkHttpFactory.createAppOkHttpClient(
-            certificateStore,
             refreshResponseInterceptor,
             httpLoggingInterceptor,
             appMetricResponseInterceptor
@@ -207,10 +198,9 @@ val networkModule = module {
     }
 
     fun provideAppOkHttpDemoClient(
-        certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
-        return OkHttpFactory.createAppOkHttpDemoClient(certificateStore, httpLoggingInterceptor)
+        return OkHttpFactory.createAppOkHttpDemoClient(httpLoggingInterceptor)
     }
 
     //==============================================================================================
@@ -294,7 +284,6 @@ val networkModule = module {
     single { provideErrorResolutionStrategy(get()) }
     single { provideCallAdapterFactory(get()) }
 
-    single { provideCertificateStore(get()) }
 
     single { provideMockResponse(get()) }
 
@@ -328,13 +317,13 @@ val networkModule = module {
     }
 
     //OkHttp
-    single(named(AUTH_NAMED_HTTP_CLIENT)) { provideAuthOkHttpClient(get(), get(), get()) }
+    single(named(AUTH_NAMED_HTTP_CLIENT)) { provideAuthOkHttpClient(get(), get()) }
 
     single(named(REFRESH_TOKEN_NAMED_HTTP_CLIENT)) { provideTokenRefreshOkHttpClient() }
 
-    factory(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get(), get()) }
+    factory(named(APP_NAMED_HTTP_CLIENT)) { provideAppOkHttpClient(get(), get(), get()) }
 
-    factory(named(APP_NAMED_HTTP_DEMO_CLIENT)) { provideAppOkHttpDemoClient(get(), get()) }
+    factory(named(APP_NAMED_HTTP_DEMO_CLIENT)) { provideAppOkHttpDemoClient(get()) }
 
     single { provideGsonConverterFactory() }
     single { provideGson() }

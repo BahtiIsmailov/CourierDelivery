@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 41,
-    "identityHash": "e682df56c0455d375b3bfb7265caa0ae",
+    "version": 43,
+    "identityHash": "576ff634dbc5587ef470072209bee2dc",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "CourierOrderLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `rowId` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `gate` TEXT NOT NULL, `minPrice` INTEGER NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `rowId` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `gate` TEXT NOT NULL, `minPrice` INTEGER NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, `taskDistance` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -109,6 +109,12 @@
           {
             "fieldPath": "reservedAt",
             "columnName": "reservedAt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskDistance",
+            "columnName": "taskDistance",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -496,7 +502,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e682df56c0455d375b3bfb7265caa0ae')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '576ff634dbc5587ef470072209bee2dc')"
     ]
   }
 }

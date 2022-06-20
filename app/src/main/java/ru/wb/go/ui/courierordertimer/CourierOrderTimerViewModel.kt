@@ -2,8 +2,12 @@ package ru.wb.go.ui.courierordertimer
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Single
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
@@ -72,28 +76,46 @@ class CourierOrderTimerViewModel(
     }
 
     private fun initOrder() {
-        addSubscription(
-            interactor.timerEntity()
-                .subscribe(
-                    {
-                        initOrderInfo(it)
-                        initTimer(it.reservedDuration, it.reservedAt)
-                    },
-                    {
-                        onTechErrorLog("initOrder", it)
-                    }
-                )
-        )
+        subscribeTimer()
+        viewModelScope.launch {
+            try {
+                val it = interactor.timerEntity()
+                initOrderInfo(it)
+                startTimer(it.reservedDuration, it.reservedAt)
+            } catch (e: Exception) {
+                onTechErrorLog("initOrder", e)
+            }
+        }
     }
 
-    private fun initTimer(reservedDuration: String, reservedAt: String) {
-        updateTimer(0, 0)
-        interactor.startTimer(reservedDuration, reservedAt)
-        addSubscription(
-            interactor.timer
-                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
-        )
+    private fun subscribeTimer() {
+        interactor.timer
+            .onEach {
+                onHandleSignUpState(it)
+            }
+            .catch {
+                onHandleSignUpError(it)
+            }
+            .launchIn(viewModelScope)
+
     }
+
+
+    private fun startTimer(reservedDuration: String, reservedAt: String){
+        viewModelScope.launch {
+            updateTimer(0, 0)
+            interactor.startTimer(reservedDuration, reservedAt)
+        }
+    }
+
+//     private fun initTimer(reservedDuration: String, reservedAt: String) {
+//        updateTimer(0, 0)
+//        interactor.startTimer(reservedDuration, reservedAt)
+//        addSubscription(
+//            interactor.timer
+//                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
+//        )
+//    }
 
     private fun onHandleSignUpState(timerState: TimerState) {
         timerState.handle(this)
@@ -108,7 +130,7 @@ class CourierOrderTimerViewModel(
             DateTimeFormatter.getAnalogTime(0, 0),
             DateTimeFormatter.getDigitTime(0)
         )
-        _timeOut.postValue(true)
+        _timeOut.value = true
         _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerTitle(),
@@ -133,11 +155,10 @@ class CourierOrderTimerViewModel(
     }
 
     private fun setLoader(state: WaitLoader) {
-        _waitLoader.postValue(state)
+        _waitLoader.value = state
     }
 
     fun onRefuseOrderClick() {
-
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
@@ -164,27 +185,26 @@ class CourierOrderTimerViewModel(
     private fun deleteTask() {
 
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.deleteTask()
-                .subscribe(
-                    {
-                        setLoader(WaitLoader.Complete)
-                        onTechEventLog("toWarehouse")
-                        _navigationState.value =
-                            CourierOrderTimerNavigationState.NavigateToWarehouse
-                        _timeOut.postValue(false)
-                    },
-                    {
-                        setLoader(WaitLoader.Complete)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+        viewModelScope.launch {
+            try {
+                interactor.deleteTask()
+                setLoader(WaitLoader.Complete)
+                onTechEventLog("toWarehouse")
+                _navigationState.value =
+                    CourierOrderTimerNavigationState.NavigateToWarehouse
+                _timeOut.value = false
+            } catch (e: Exception) {
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
 
-                    }
-                )
-        )
     }
 
-    fun getOrderId(){
-       _getOrderId.value = courierLocalRepository.getOrder()
+    fun getOrderId() {
+        viewModelScope.launch {
+            _getOrderId.value = courierLocalRepository.getOrder()
+        }
     }
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
@@ -212,3 +232,4 @@ class CourierOrderTimerViewModel(
     }
 
 }
+

@@ -26,31 +26,29 @@ class AppLoaderViewModel(
     }
 
     private fun selectStateApp() {
-        if (tokenManager.isUserCourier()) toCourier()
+        if (tokenManager.isUserCourier()) {
+            toCourier()
+        }
         else {
-            if (tokenManager.isDemo()) _demoState.value = true
-            else toAuth()
+            if (tokenManager.isDemo()) {
+                _demoState.value = true
+            }
+            else {
+                toAuth()
+            }
         }
     }
 
-    private fun toCourier() {
+     fun toCourier() {
         _navState.value = AppLoaderNavigatioState.NavigateToCourier
     }
 
-    private fun toAuth() {
+      fun toAuth() {
         _navState.value = AppLoaderNavigatioState.NavigateToAuth
     }
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
-    }
-
-    fun toRegistrationClick() {
-        toAuth()
-    }
-
-    fun toDemoClick() {
-        toCourier()
     }
 
     companion object {

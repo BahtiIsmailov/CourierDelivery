@@ -63,6 +63,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginBottom="20dp"
         android:background="@color/lvl_1"
+        android:overScrollMode="never"
         android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -4,9 +4,10 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="0"
-                android:endColor="@color/colorBlueTransparentlySelectableLight"
-                android:startColor="@color/colorBlueTransparentlySelectableDark"
+                android:endColor="@color/colorPrimaryTransparentlySelectableLight"
+                android:startColor="#37642CA3"
                 android:type="linear" />
         </shape>
     </item>
 </layer-list>
+

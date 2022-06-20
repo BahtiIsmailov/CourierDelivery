@@ -21,7 +21,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.view.focusChanges
 import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.Observable
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -109,8 +108,8 @@ class CourierBillingAccountDataFragment :
 
     }
 
-    private fun changeFieldObservables(): ArrayList<Observable<CourierBillingAccountDataUIAction>> {
-        val changeTextObservables = ArrayList<Observable<CourierBillingAccountDataUIAction>>()
+    private fun changeFieldObservables(): ArrayList<CourierBillingAccountDataUIAction> {
+        val changeTextObservables = ArrayList<CourierBillingAccountDataUIAction>()
 
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
@@ -153,43 +152,67 @@ class CourierBillingAccountDataFragment :
     }
 
     fun interface ClickEventInterface {
-        fun initListener(view: View): Observable<CourierBillingAccountDataUIAction>
+        fun initListener(view: View): CourierBillingAccountDataUIAction
     }
 
     private fun createClickObserver(): ClickEventInterface {
         return ClickEventInterface { view ->
-            view.clicks().map {
-                view.isEnabled = false
-                CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
-            }
+             view.clicks()
+            view.isEnabled = false
+            CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
         }
     }
+//    private fun createClickObserver(): ClickEventInterface {
+//        return ClickEventInterface { view ->
+//            view.clicks().map {
+//                view.isEnabled = false
+//                CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
+//            }
+//        }
+//    }
 
     fun interface TextChangesInterface {
         fun initListener(
             textInputLayout: TextInputLayout,
             editText: EditText,
             queryType: CourierBillingAccountDataQueryType
-        ): Observable<CourierBillingAccountDataUIAction>
+        ): CourierBillingAccountDataUIAction
     }
 
     private fun createFieldChangesObserver(): TextChangesInterface {
-        return TextChangesInterface { textInputLayout, editText, queryType ->
+        return TextChangesInterface {
+            textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
-            val textChanges = editText.textChanges()
-                .map { it.toString() }
-                .map { CourierBillingAccountDataUIAction.TextChange(it, queryType) }
+            val textChanges = editText.textChanges().toString()
+            CourierBillingAccountDataUIAction.TextChange(textChanges, queryType)
             val focusChanges = editText.focusChanges()
-                .map {
-                    CourierBillingAccountDataUIAction.FocusChange(
-                        editText.text.toString(),
+            CourierBillingAccountDataUIAction.FocusChange(
+                       editText.text.toString(),
                         queryType,
-                        it
+                        focusChanges
                     )
-                }
-            Observable.merge(textChanges, focusChanges).skip(2)
+
         }
     }
+
+
+//    private fun createFieldChangesObserver(): TextChangesInterface {
+//        return TextChangesInterface { textInputLayout, editText, queryType ->
+//            changeText.add(ViewChanges(textInputLayout, editText, queryType))
+//            val textChanges = editText.textChanges()
+//                .map { it.toString() }
+//                .map { CourierBillingAccountDataUIAction.TextChange(it, queryType) }
+//            val focusChanges = editText.focusChanges()
+//                .map {
+//                    CourierBillingAccountDataUIAction.FocusChange(
+//                        editText.text.toString(),
+//                        queryType,
+//                        it
+//                    )
+//                }
+//            (textChanges + focusChanges).skip(2)
+//        }
+//    }
 
     private fun initInputMethod() {
         inputMethod =

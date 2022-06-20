@@ -2,8 +2,10 @@ package ru.wb.go.ui.courierunloading
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Completable
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -82,7 +84,9 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun initTitle() {
-        _orderState.value = resourceProvider.getOrderId(interactor.getOrderId())
+        viewModelScope.launch {
+            _orderState.value = resourceProvider.getOrderId(interactor.getOrderId())
+        }
     }
 
     private fun holdSplashScanner() {
@@ -90,14 +94,16 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeBoxInfoProcessInitState() {
-        addSubscription(
-            interactor.getCurrentOffice(parameters.officeId)
-                .map { mapInitScanProcess(it) }
-                .subscribe(
-                    { _fragmentStateUI.value = it },
-                    { onTechErrorLog("observeInitScanProcessError", it) }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                _fragmentStateUI.value =
+                    mapInitScanProcess(interactor.getCurrentOffice(parameters.officeId))
+
+            } catch (e: Exception) {
+                onTechErrorLog("observeInitScanProcessError", e)
+            }
+        }
+
     }
 
     private fun mapInitScanProcess(office: LocalOfficeEntity): UnloadingFragmentState {
@@ -117,11 +123,15 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun initToolbar() {
-        addSubscription(
-            interactor.getCurrentOffice(parameters.officeId)
-                .subscribe({ _toolbarLabelState.value = Label(it.officeName) },
-                    {})
-        )
+        viewModelScope.launch {
+            try {
+                _toolbarLabelState.value =
+                    Label(interactor.getCurrentOffice(parameters.officeId).officeName)
+            } catch (e: Exception) {
+                onTechErrorLog("initToolbar", e)
+            }
+        }
+
     }
 
     fun onCancelScoreUnloadingClick() {
@@ -132,7 +142,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun setLoader(state: WaitLoader) {
-        _waitLoader.postValue(state)
+        _waitLoader.value = state
     }
 
     fun onDestroy() {
@@ -146,37 +156,45 @@ class CourierUnloadingScanViewModel(
 
     private fun confirmUnloading() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.completeOfficeUnload()
-                .doFinally {
-                    _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
-                    setLoader(WaitLoader.Complete)
-                    clearSubscription()
-                }
-                .subscribe(
-                    {
-
-                    },
-                    {
-                        onTechErrorLog("confirmUnload", it)
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                interactor.completeOfficeUnload()
+                _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
+                setLoader(WaitLoader.Complete)
+                clearSubscription()
+            } catch (e: Exception) {
+                onTechErrorLog("confirmUnload", e)
+            }
+        }
     }
 
     private fun observeScanProcess() {
-        addSubscription(
-            interactor.observeScanProcess(parameters.officeId)
-                .doOnSubscribe { holdSplashScanner() }
-                .subscribe(
-                    { observeScanProcessComplete(it) },
-                    {
-                        onTechErrorLog("observeScanProcessError", it)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-                    }
-                )
-        )
+        interactor.observeScanProcess(parameters.officeId)
+            .onEach {
+                holdSplashScanner()
+                observeScanProcessComplete(it)
+            }
+            .catch {
+                onTechErrorLog("observeScanProcessError", it)
+                errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+            }
+            .launchIn(viewModelScope)
     }
 
+//
+//    private fun observeScanProcess() {
+//        addSubscription(
+//            interactor.observeScanProcess(parameters.officeId)
+//                .doOnSubscribe { holdSplashScanner() }
+//                .subscribe(
+//                    { observeScanProcessComplete(it) },
+//                    {
+//                        onTechErrorLog("observeScanProcessError", it)
+//                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+//                    }
+//                )
+//        )
+//    }
     fun onCloseDetailsClick() {
         onStartScanner()
         _navigationEvent.value = CourierUnloadingScanNavAction.HideUnloadingItems
@@ -215,7 +233,6 @@ class CourierUnloadingScanViewModel(
                 _completeButtonEnable.value = true
             }
             CourierUnloadingScanBoxData.UnknownQr -> {
-
                 _fragmentStateUI.value = UnloadingFragmentState.UnknownQr(
                     UnloadingFragmentData(
                         resourceProvider.getScanDialogTitle(),
@@ -274,27 +291,32 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProgress() {
-        addSubscription(
-            interactor.scanLoaderProgress()
-                .subscribe({
-                    _completeButtonEnable.value = when (it) {
-                        CourierUnloadingProgressData.Complete -> true
-                        CourierUnloadingProgressData.Progress -> false
-                    }
-                },
-                    { onTechErrorLog("observeScanProcessError", it) })
-        )
+        interactor.scanLoaderProgress()
+            .onEach {
+                _completeButtonEnable.value = when (it) {
+                    CourierUnloadingProgressData.Complete -> true
+                    CourierUnloadingProgressData.Progress -> false
+                }
+            }
+            .catch {
+                onTechErrorLog("observeScanProcessError", it)
+            }
+            .launchIn(viewModelScope)
     }
+
 
     fun onListClicked() {
         onStopScanner()
-        addSubscription(
-            interactor.getRemainBoxes(parameters.officeId)
-                .filter { it.isNotEmpty() }
-                .subscribe(
-                    { fillRemainBoxList(it) },
-                    { })
-        )
+        viewModelScope.launch {
+            try {
+                val it = interactor.getRemainBoxes(parameters.officeId)
+                if (it.isNotEmpty()) {
+                    fillRemainBoxList(it)
+                }
+            } catch (e: Exception) {
+
+            }
+        }
     }
 
     private fun fillRemainBoxList(boxes: List<LocalBoxEntity>) {
@@ -313,23 +335,20 @@ class CourierUnloadingScanViewModel(
     fun onCompleteUnloadClick() {
         _completeButtonEnable.value = false
         onStopScanner()
-        addSubscription(
-            interactor.getCurrentOffice(parameters.officeId)
-                .flatMapCompletable {
-                    if (it.countBoxes == it.deliveredBoxes) {
-                        confirmUnloading()
-                    } else {
-                        showUnloadingScoreDialog(it)
-                    }
-                    Completable.complete()
+        viewModelScope.launch {
+            try {
+                val it = interactor.getCurrentOffice(parameters.officeId)
+                if (it.countBoxes == it.deliveredBoxes) {
+                    confirmUnloading()
+                } else {
+                    showUnloadingScoreDialog(it)
                 }
-                .subscribe(
-                    { },
-                    {
-                        onTechErrorLog("readUnloadingBoxCounterError", it)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-                    })
-        )
+            } catch (e: Exception) {
+                onTechErrorLog("readUnloadingBoxCounterError", e)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
+
     }
 
     private fun showUnloadingScoreDialog(office: LocalOfficeEntity) {
@@ -346,11 +365,16 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun onStopScanner() {
+
         interactor.scannerAction(ScannerState.StopScan)
+
     }
 
     private fun onStartScanner() {
+
         interactor.scannerAction(ScannerState.StartScan)
+
+
     }
 
     fun onScoreDialogInfoClick() {
@@ -377,3 +401,4 @@ class CourierUnloadingScanViewModel(
 
     data class Label(val label: String)
 }
+

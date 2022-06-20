@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asFlow
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
@@ -20,12 +21,13 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.StatusBarListener
+import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard
 
 
-class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
+class NumberPhoneFragment : Fragment() {
 
     private var _binding: AuthPhoneFragmentBinding? = null
     private val binding get() = _binding!!
@@ -60,7 +62,6 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initViews() {
-        binding.next.isEnabled = false
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
         (activity as StatusBarListener).showStatusBar()
@@ -70,18 +71,13 @@ class NumberPhoneFragment : Fragment(R.layout.auth_phone_fragment) {
     }
 
     private fun initListeners() {
+        with(binding) {
+            next.setOnClickListener { viewModel.onCheckPhone(phoneNumberTitle.text.toString()) }
 
-        binding.loginLayout.setOnLongClickListener {
-            viewModel.onLongClick()
-            true
+            viewModel.onNumberObservableClicked(viewKeyboard.observableListener.asFlow()) // отображение номера телефона
+
+
         }
-
-        with(binding.phoneNumberTitle) {
-            binding.next.setOnClickListener { viewModel.onCheckPhone(text.toString()) }
-        }
-
-        viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener)
-
     }
 
     private fun initStateObserve() {

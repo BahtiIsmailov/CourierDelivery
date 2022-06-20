@@ -23,14 +23,14 @@ interface AuthApi {
     ):  CheckCouriersPhoneResponse
 
     @PUT("{version}/auth")
-    fun refreshToken(
+    suspend fun refreshToken(
         @Path(value = "version", encoded = true) version: String,
         @Body refreshTokenQuery: RefreshTokenQuery
-    ): Single<AuthResponse>
+    ):  AuthResponse
 
     @GET("{version}/statistics")
-    fun statistics(
+    suspend fun statistics(
         @Path(value = "version", encoded = true) version: String,
-    ): Single<StatisticsResponse>
+    ):  StatisticsResponse
 
 }

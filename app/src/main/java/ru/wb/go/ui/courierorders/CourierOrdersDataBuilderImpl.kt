@@ -29,9 +29,10 @@ class CourierOrdersDataBuilderImpl(
                 countPvz = resourceProvider.getCountPvz(dstOffices.size),
                 arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration),
                 idView = index,
-                isSelected = isSelected
+                isSelected = isSelected,
+                taskDistance = courierOrderLocalEntity.taskDistance
+
             )
         }
     }
-
 }

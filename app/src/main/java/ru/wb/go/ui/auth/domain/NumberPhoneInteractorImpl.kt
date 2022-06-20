@@ -1,9 +1,8 @@
 package ru.wb.go.ui.auth.domain
 
-import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.AuthRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
@@ -21,6 +20,20 @@ class NumberPhoneInteractorImpl(
     }
 
     override suspend fun couriersExistAndSavePhone(phone: String)  {
+        return authRepository.couriersExistAndSavePhone(phone)
+
+    }
+
+    override fun observeNetworkConnected(): Flow<NetworkState> {
+        return networkMonitorRepository.networkConnected()
+
+    }
+
+    /*override fun userPhone(): String {
+        return authRepository.userPhone()
+    }
+
+    override suspend fun couriersExistAndSavePhone(phone: String)  {
         return withContext(Dispatchers.IO){
             authRepository.couriersExistAndSavePhone(phone)
         }
@@ -31,5 +44,7 @@ class NumberPhoneInteractorImpl(
             .compose(rxSchedulerFactory.applyObservableSchedulers())
     }
 
+
+*/
 
 }

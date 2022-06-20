@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 
@@ -14,7 +15,7 @@ import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 interface CourierBoxDao {
 
     @Query("SELECT * FROM boxes")
-    fun readAllBoxesSync(): Single<List<LocalBoxEntity>>
+    suspend fun readAllBoxesSync(): List<LocalBoxEntity>
 
     @Insert
     fun addBox(box: LocalBoxEntity)
@@ -33,7 +34,7 @@ interface CourierBoxDao {
     fun updateOfficeCountersAfterLoadingBox(officeId: Int)
 
     @Query("SELECT address AS address, count(*) AS count FROM boxes GROUP BY office_id")
-    fun loadingBoxBoxesGroupByOffice(): Single<List<LocalLoadingBoxEntity>>
+    suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 
     @Query(
         """
@@ -48,28 +49,28 @@ interface CourierBoxDao {
         WHERE office_id =:officeId
         """
     )
-    fun updateOfficeDeliveredBoxAfterUnload(officeId: Int)
+    suspend fun updateOfficeDeliveredBoxAfterUnload(officeId: Int)
 
     @Transaction
-    fun addNewBox(box: LocalBoxEntity) {
+    suspend fun addNewBox(box: LocalBoxEntity) {
         addBox(box)
         updateOfficeCountersAfterLoadingBox(box.officeId)
     }
 
     @Query("UPDATE boxes SET loading_at=:loadingAt WHERE box_id=:boxId")
-    fun updateBoxLoadingAt(boxId: String, loadingAt: String)
+    suspend fun updateBoxLoadingAt(boxId: String, loadingAt: String)
 
     @Insert
-    fun addBoxes(boxes: List<LocalBoxEntity>)
+    suspend fun addBoxes(boxes: List<LocalBoxEntity>)
 
     @Query("DELETE FROM boxes")
-    fun deleteBoxes()
+    suspend fun deleteBoxes()
 
     @Query("SELECT * FROM boxes")
-    fun getBoxes(): List<LocalBoxEntity>
+    suspend fun getBoxes(): List<LocalBoxEntity>
 
     @Query("SELECT * FROM boxes")
-    fun getBoxesLive(): Flowable<List<LocalBoxEntity>>
+    fun getBoxesLive(): Flow<List<LocalBoxEntity>>
 
     @Query(
         """
@@ -81,13 +82,13 @@ interface CourierBoxDao {
         WHERE o.is_online=0 AND o.is_visited=1 )
     """
     )
-    fun getOfflineBoxes(): List<LocalBoxEntity>
+    suspend fun getOfflineBoxes(): List<LocalBoxEntity>
 
     @Query("UPDATE boxes SET delivered_at=:time WHERE box_id=:boxId")
-    fun setBoxDelivery(boxId: String, time: String)
+    suspend fun setBoxDelivery(boxId: String, time: String)
 
     @Transaction
-    fun unloadBoxInOffice(box: LocalBoxEntity) {
+    suspend fun unloadBoxInOffice(box: LocalBoxEntity) {
         setBoxDelivery(box.boxId, box.deliveredAt)
         updateOfficeDeliveredBoxAfterUnload(box.officeId)
     }
@@ -96,11 +97,11 @@ interface CourierBoxDao {
     fun clearDelivery(boxId: String)
 
     @Transaction
-    fun takeBoxBack(box: LocalBoxEntity) {
+    suspend fun takeBoxBack(box: LocalBoxEntity) {
         clearDelivery(box.boxId)
         updateOfficeDeliveredBoxAfterUnload(box.officeId)
     }
 
     @Query("SELECT * FROM boxes WHERE office_id=:officeId AND delivered_at=''")
-    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+    suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 }

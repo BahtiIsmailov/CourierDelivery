@@ -11,8 +11,7 @@ class CourierCompleteDeliveryViewModel(
     parameters: CourierCompleteDeliveryParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-    resourceProvider: CourierCompleteDeliveryResourceProvider,
-    private val interactor: CourierCompleteDeliveryInteractor,
+    resourceProvider: CourierCompleteDeliveryResourceProvider
 ) : NetworkViewModel(compositeDisposable, metric) {
 
     private val _infoState = MutableLiveData<CourierCompleteDeliveryState>()
@@ -44,5 +43,6 @@ class CourierCompleteDeliveryViewModel(
     }
 
     object NavigateToWarehouse
+
 
 }

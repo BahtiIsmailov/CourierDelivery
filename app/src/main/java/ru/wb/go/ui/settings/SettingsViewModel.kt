@@ -2,7 +2,12 @@ package ru.wb.go.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.app.AppViewModel
@@ -40,16 +45,26 @@ class SettingsViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
+        _versionApp.value =  resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .catch {
+
+            }
+            .launchIn(viewModelScope)
     }
 
+//    private fun observeNetworkState() {
+//        addSubscription(
+//            interactor.observeNetworkConnected()
+//                .subscribe({ _toolbarNetworkState.value = it }, {})
+//        )
+//    }
     fun settingClick(setting: String, state: Boolean) {
         settingsManager.setSetting(setting, state)
     }
@@ -65,3 +80,4 @@ class SettingsViewModel(
     object NavigateToWarehouse
 
 }
+
