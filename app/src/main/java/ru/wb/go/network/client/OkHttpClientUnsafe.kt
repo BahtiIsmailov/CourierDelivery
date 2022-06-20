@@ -3,7 +3,6 @@ package ru.wb.go.network.client
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.app.AppConfig
-import ru.wb.go.network.certificate.CertificateStore
 import ru.wb.go.network.interceptors.AppMetricResponseInterceptor
 import ru.wb.go.network.interceptors.RefreshTokenInterceptor
 import java.util.concurrent.TimeUnit
@@ -12,15 +11,10 @@ import javax.net.ssl.SSLSession
 object OkHttpClientUnsafe {
     @JvmStatic
     fun create(
-        certificateStore: CertificateStore,
         httpLoggerInterceptor: HttpLoggingInterceptor,
         authMockResponseInterceptor: ru.wb.go.network.interceptors.AuthMockResponseInterceptor
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(httpLoggerInterceptor)
             .addInterceptor(authMockResponseInterceptor)
@@ -32,16 +26,11 @@ object OkHttpClientUnsafe {
 
     @JvmStatic
     fun create(
-        certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLoggerInterceptor: HttpLoggingInterceptor,
         appMetricResponseInterceptor: AppMetricResponseInterceptor
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(refreshResponseInterceptor)
             .addInterceptor(httpLoggerInterceptor)
@@ -54,14 +43,9 @@ object OkHttpClientUnsafe {
 
     @JvmStatic
     fun create(
-        certificateStore: CertificateStore,
         httpLoggerInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         val okHttpBuilder = OkHttpClient.Builder()
-            .sslSocketFactory(
-                certificateStore.sslSocketFactory(),
-                certificateStore.x509TrustManager()
-            )
             .hostnameVerifier { _: String?, _: SSLSession? -> true }
             .addInterceptor(httpLoggerInterceptor)
             .connectTimeout(AppConfig.HTTP_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
