@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.wb.go.app.INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
@@ -80,29 +79,41 @@ class CouriersCompleteRegistrationViewModel(
             }
         }
     }
+    /*
+        fun onUpdateStatusClick() {
+        onTechEventLog("onUpdateStatusClick")
+        _progressState.value = CourierDataExpectsProgressState.ProgressData
+        addSubscription(
+            interactorData.saveRepeatCourierDocuments()
+                .andThen(interactorData.isRegisteredStatus())
+                .subscribe(
+                    { isRegisteredStatusComplete(it) },
+                    { isRegisteredStatusError(it) }
+                )
+        )
+    }
+     */
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
         onTechEventLog("isRegisteredStatusComplete")
-        viewModelScope.launch {
-            when (registerStatus) {
-                INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.value =
-                    CourierDataExpectsProgressState.Complete
+        when (registerStatus) {
+            INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.value =
+                CourierDataExpectsProgressState.Complete
 
-                INVALID_TOKEN -> appNavRepository.navigate(INVALID_TOKEN)
-                NEED_SEND_COURIER_DOCUMENTS -> toDataType(CourierDocumentsEntity())
-                NEED_CORRECT_COURIER_DOCUMENTS -> checkCorrectCourierDocuments()
-                NEED_APPROVE_COURIER_DOCUMENTS -> checkApproveCourierDocuments()
-                else -> {
-                    if (tokenManager.isUserCourier()) {
-                        //TODO не отображается ФИО при этом переходе
-                        _navAction.value = CourierDataExpectsNavAction.NavigateToCouriers
-                    } else {
-                        val ce = CustomException("Unknown error")
-                        onTechErrorLog("CheckRegistrationStatus", ce)
-                        errorDialogManager.showErrorDialog(ce, _showDialogInfo)
-                    }
-
+            INVALID_TOKEN -> appNavRepository.navigate(INVALID_TOKEN)
+            NEED_SEND_COURIER_DOCUMENTS -> toDataType(CourierDocumentsEntity())
+            NEED_CORRECT_COURIER_DOCUMENTS -> checkCorrectCourierDocuments()
+            NEED_APPROVE_COURIER_DOCUMENTS -> checkApproveCourierDocuments()
+            else -> {
+                if (tokenManager.isUserCourier()) {
+                    //TODO не отображается ФИО при этом переходе
+                    _navAction.value = CourierDataExpectsNavAction.NavigateToCouriers
+                } else {
+                    val ce = CustomException("Unknown error")
+                    onTechErrorLog("CheckRegistrationStatus", ce)
+                    errorDialogManager.showErrorDialog(ce, _showDialogInfo)
                 }
+
             }
         }
     }
@@ -128,7 +139,7 @@ class CouriersCompleteRegistrationViewModel(
                 _progressState.value = CourierDataExpectsProgressState.Complete
             }
         }
-     }
+    }
 
     private lateinit var courierDocumentsEntityDialog: CourierDocumentsEntity
 

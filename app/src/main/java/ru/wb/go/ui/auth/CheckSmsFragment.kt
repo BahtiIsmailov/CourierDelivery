@@ -81,10 +81,6 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
                     val navOptions: NavOptions =
                         navBuilder.setPopUpTo(R.id.load_navigation, true).build()
                     //findNavController().clearBackStack()
-
-
-
-
                     findNavController().navigate(R.id.load_navigation, null, navOptions)
                 }
 

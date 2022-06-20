@@ -11,9 +11,9 @@ import ru.wb.go.network.api.auth.response.RefreshResponse
 interface RefreshTokenApi {
 
     @PUT("/api/v1/auth")
-      fun refreshAccessTokens(
+     suspend fun refreshAccessTokens(
         @Header("Authorization") credentials: String,
         @Body refreshTokenQuery: RefreshTokenQuery
-    ): Call<RefreshResponse>
+    ): Response<RefreshResponse>
 
 }

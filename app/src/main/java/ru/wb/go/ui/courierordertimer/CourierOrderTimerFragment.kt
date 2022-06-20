@@ -84,7 +84,7 @@ class CourierOrderTimerFragment : Fragment() {
             var textForRouteNumber = requireContext().getText(R.string.route).toString()
             textForRouteNumber += " ${it.route}"
             binding.routeTV.text = textForRouteNumber
-            setFragmentResult("routeId", bundleOf("bundleKey" to textForRouteNumber))
+            setFragmentResult(DialogInfoFragment.ROUTE_ID, bundleOf("bundleKey" to textForRouteNumber))
         }
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {

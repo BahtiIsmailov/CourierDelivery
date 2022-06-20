@@ -130,13 +130,12 @@ class CourierLoadingScanFragment :
         (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        setFragmentResultListener("routeId") { key, bundle ->
+        setFragmentResultListener(DialogInfoFragment.ROUTE_ID) { key, bundle ->
             binding.routeTV.text = bundle.getString("bundleKey")
         }
     }
 
     private fun initObserver() {
-
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             showDialogInfo(it)
         }
