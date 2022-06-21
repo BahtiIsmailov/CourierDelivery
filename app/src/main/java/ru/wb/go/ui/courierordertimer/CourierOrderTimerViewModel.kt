@@ -101,11 +101,9 @@ class CourierOrderTimerViewModel(
     }
 
 
-    private fun startTimer(reservedDuration: String, reservedAt: String){
-        viewModelScope.launch {
-            updateTimer(0, 0)
-            interactor.startTimer(reservedDuration, reservedAt)
-        }
+    private fun startTimer(reservedDuration: String, reservedAt: String) {
+        updateTimer(0, 0)
+        interactor.startTimer(reservedDuration, reservedAt)
     }
 
 //     private fun initTimer(reservedDuration: String, reservedAt: String) {
@@ -170,6 +168,7 @@ class CourierOrderTimerViewModel(
 
     fun iArrivedClick() {
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
+        //.scannerAction(ScannerState.StartScan)
     }
 
     fun timeOutReturnToList() {

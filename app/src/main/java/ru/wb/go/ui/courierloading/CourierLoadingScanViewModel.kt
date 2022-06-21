@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierloading
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -93,6 +94,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun getGate() {
+        Log.e("observeInitScanProcess","start1getGate")
         viewModelScope.launch {
             try {
                 val response = interactor.getGate()
@@ -116,12 +118,6 @@ class CourierLoadingScanViewModel(
             .launchIn(viewModelScope)
 
     }
-//     private fun observeTimer() {
-//        addSubscription(
-//            courierOrderTimerInteractor.timer
-//                .subscribe({ observeTimerComplete(it) }, { observeTimerError(it) })
-//        )
-//    }
 
     private fun observeTimerComplete(timerState: TimerState) {
         timerState.handle(this)
@@ -131,17 +127,19 @@ class CourierLoadingScanViewModel(
         onTechErrorLog("observeTimerError", throwable)
     }
 
-    private fun observeInitScanProcess() {
+    private fun observeInitScanProcess() {// not work
+        Log.e("observeInitScanProcess","start1")
         viewModelScope.launch {
             try {
                 val response = interactor.scannedBoxes()
+                Log.e("observeInitScanProcess","$response")
                 initScanProcessComplete(response)
             } catch (e: Exception) {
                 initScanProcessError(e)
+                Log.e("observeInitScanProcess","$e")
             }
         }
     }
-
 
 
     private fun initScanProcessComplete(boxes: List<LocalBoxEntity>) {
@@ -163,20 +161,24 @@ class CourierLoadingScanViewModel(
         }
     }
 
+
     private fun initScanProcessError(it: Throwable) {
         onTechErrorLog("initScanProcessError", it)
     }
 
     private fun observeScanProcess() {//2
+        Log.e("observeInitScanProcess","start1")
         interactor.observeScanProcess()
             .onEach {
                 observeScanProcessComplete(it)
+                Log.e("observeInitScanProcess","$it")
             }
-            .retryWhen { _, _ ->
-                delay(1000)
-                true
-            }
+//            .retryWhen { _, _ ->
+//                delay(1000)
+//                true
+//            }
             .catch {
+                Log.e("observeInitScanProcess","$it")
                 scanProcessError(it)
             }
             .launchIn(viewModelScope)
@@ -206,7 +208,7 @@ class CourierLoadingScanViewModel(
         )
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
-
+        Log.e("UniqueId","$scanBoxData")
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar

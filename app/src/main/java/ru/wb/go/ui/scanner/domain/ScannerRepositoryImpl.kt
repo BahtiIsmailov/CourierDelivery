@@ -1,5 +1,6 @@
 package ru.wb.go.ui.scanner.domain
 
+import android.util.Log
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -29,6 +30,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 
      override fun scannerAction(action:ScannerAction){
          scannerActionSubject.tryEmit(action)
+         Log.e("UniqueId","scannerAction : $action")
     }
 
     override fun observeScannerAction(): Flow<ScannerAction> {
@@ -36,8 +38,8 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override fun scannerState(state: ScannerState) {
-        //scannerStateSubject.tryEmit(state)
         scannerStateSubject.trySend(state)
+
 
     }
 

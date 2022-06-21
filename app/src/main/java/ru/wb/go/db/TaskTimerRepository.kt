@@ -6,7 +6,7 @@ import ru.wb.go.ui.auth.signup.TimerState
 
 interface TaskTimerRepository {
 
-    suspend fun startTimer(durationTime: Int, arrivalTime: Int)
+      fun startTimer(durationTime: Int, arrivalTime: Int)
     val timer: Flow<TimerState>
     fun stopTimer()
 

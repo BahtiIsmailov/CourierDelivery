@@ -25,7 +25,7 @@ class CourierOrderTimerInteractorImpl(
         locRepo.deleteOrder()
     }
 
-    override suspend fun startTimer(reservedDuration: String, reservedAt: String) {
+    override fun startTimer(reservedDuration: String, reservedAt: String) {
         var arrivalSec: Long
         val durationSec = (reservedDuration.toIntOrNull() ?: DEFAULT_ARRIVAL_TIME_COURIER_MIN) * 60L
         arrivalSec = if (reservedAt.isEmpty()) {

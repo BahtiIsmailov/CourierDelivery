@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierloading.domain
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
@@ -53,6 +54,7 @@ class CourierLoadingInteractorImpl(
     }
      */
 
+
     private fun scanResult(
         scannerState: ScannerState,
         data: CourierLoadingScanBoxData,
@@ -60,13 +62,16 @@ class CourierLoadingInteractorImpl(
     ): Flow<CourierLoadingProcessData> {
         scanRepo.scannerState(scannerState)
         return flowOf(CourierLoadingProcessData(data, boxCount))
-            .map {
+            .onEach{
                 scanRepo.holdStart()
+            }
+            .onEach {
                 CourierLoadingProcessData(
                     CourierLoadingScanBoxData.ScannerReady,
                     boxCount
                 )
             }
+
     }
 
 
@@ -140,51 +145,6 @@ class CourierLoadingInteractorImpl(
 
 
 
-//    override fun observeScanProcess(): Observable<CourierLoadingProcessData> {
-//        return scanRepo.observeScannerAction()
-//            .filter { it is ScannerAction.ScanResult }
-//            .map { it as ScannerAction.ScanResult }
-//            .map { scanRepo.parseScanBoxQr(it.value) }
-//            .flatMap { parsedScan ->
-//                val boxes = localRepo.getBoxes()
-//                val scanTime = timeManager.getLocalTime()
-//                if (!parsedScan.isOk) {
-//                    scanResult(
-//                        ScannerState.HoldScanUnknown,
-//                        CourierLoadingScanBoxData.NotRecognizedQr,
-//                        boxes.size
-//                    )
-//                } else {
-//                    val offices = localRepo.getOffices()
-//                    val office =
-//                        offices.find { off -> off.officeId.toString() == parsedScan.officeId }
-//                    var box = boxes.find { b -> b.boxId == parsedScan.boxId }
-//                    if (office == null || (box != null && box.officeId.toString() != parsedScan.officeId)) {
-//                        scanResult(
-//                            ScannerState.HoldScanError,
-//                            CourierLoadingScanBoxData.ForbiddenTakeBox(parsedScan.boxId),
-//                            boxes.size
-//                        )
-//                    } else {
-//                        var isNewBox = false
-//                        if (box == null) {
-//                            isNewBox = true
-//                            box = LocalBoxEntity(
-//                                boxId = parsedScan.boxId, officeId = office.officeId,
-//                                address = office.address, loadingAt = scanTime, deliveredAt = ""
-//                            )
-//                        } else {
-//                            box = box.copy(loadingAt = scanTime)
-//                        }
-//
-//                        qrComplete(box, boxes.size, isNewBox, scanTime)
-//
-//                    }
-//                }
-//            }
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
-
 
     private suspend fun qrComplete(
         box: LocalBoxEntity,
@@ -195,11 +155,16 @@ class CourierLoadingInteractorImpl(
         return when (countBox) {
             0 -> {
                 firstBoxLoaderProgress()
-                remoteRepo.setStartTask(localRepo.getOrderId(), box)
-                firstBoxLoaderComplete()
+                val orderId = localRepo.getOrderId()
+                try {
+                    remoteRepo.setStartTask(orderId, box)
+                }finally {
+                    firstBoxLoaderComplete()
+                }
                 localRepo.loadBoxOnboard(box, true)
                 taskTimerRepository.stopTimer()
                 localRepo.setOrderOrderStart(scanTime)
+                Log.e("UniqueId","FirstBoxAdded")
                 scanResult(
                     ScannerState.HoldScanComplete,
                     CourierLoadingScanBoxData.FirstBoxAdded(
@@ -224,8 +189,9 @@ class CourierLoadingInteractorImpl(
     }
 
 
-    private fun firstBoxLoaderProgress() {
-        scanLoaderProgressSubject.tryEmit(CourierLoadingProgressData.Progress)
+
+    private suspend fun firstBoxLoaderProgress() {
+        scanLoaderProgressSubject.emit(CourierLoadingProgressData.Progress)
     }
 
     private fun firstBoxLoaderComplete() {
@@ -281,7 +247,6 @@ class CourierLoadingInteractorImpl(
 
     override suspend fun getGate(): String {
         return localRepo.getOrderGate()
-
     }
 
     override suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals {

@@ -12,7 +12,7 @@ interface CourierOrderTimerInteractor {
 
     suspend fun deleteTask()
 
-    suspend fun startTimer(reservedDuration: String, reservedAt: String)
+    fun startTimer(reservedDuration: String, reservedAt: String)
     val timer: Flow<TimerState>
     suspend fun stopTimer()
 
