@@ -1,10 +1,16 @@
 package ru.wb.go.utils.managers
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import ru.wb.go.R
 import ru.wb.go.network.exceptions.*
 import ru.wb.go.ui.SingleLiveEvent
+import ru.wb.go.ui.app.AppActivity
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import kotlin.system.exitProcess
+
 
 class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
 
@@ -52,7 +58,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     dlgTag = dlgTag,
                     type = DialogInfoStyle.ERROR.ordinal,
                     title = context.getString(R.string.error_title),
-                    message = (throwable.message ?: throwable.toString())
+                    message = context.getString(R.string.http_400_exception)
                 )
             }
         }

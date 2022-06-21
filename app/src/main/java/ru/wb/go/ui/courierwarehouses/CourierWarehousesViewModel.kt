@@ -160,29 +160,6 @@ class CourierWarehousesViewModel(
         }
     }
 
-    //
-//    private fun setLoader(state: WaitLoader) {
-//        _waitLoader.postValue(state)
-//    }
-//
-//    private suspend fun getWarehouses() {
-//        setLoader(WaitLoader.Wait)
-//         addsubsciption{
-//    interactor.getWarehouses()
-//              .dofinally{clearFabAndWhList()}
-//           .subscribe{
-//                   getWarehousesComplete(it)
-//           }
-//
-//            } catch (e: Exception) {
-//                getWarehousesError(e)
-//            }
-//        }
-//        job.join()
-//
-//    }
-
-
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
         sortedWarehouseEntities(it)// done size warehouses
         convertAndSaveItemsPointsMarkers()

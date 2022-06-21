@@ -14,6 +14,7 @@ import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.system.exitProcess
 
 
 class RefreshTokenInterceptor(
@@ -32,6 +33,11 @@ class RefreshTokenInterceptor(
         for ((key, value) in headerManager.headerApiMap) {
             builder.addHeader(key, value)
         }
+
+//        val response409: Response = chain.proceed(request)
+//        if (response409.code == 409){
+//            exitProcess(0)
+//        }
 
         var response = chain.proceed(builder.build())
 

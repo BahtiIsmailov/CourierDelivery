@@ -4,6 +4,10 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +39,7 @@ import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierOrdersFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.BaseServiceFragment
+import ru.wb.go.ui.app.AppActivity
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
@@ -49,6 +54,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
+import kotlin.system.exitProcess
 
 
 class CourierOrdersFragment :
@@ -100,7 +106,7 @@ class CourierOrdersFragment :
     private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
         override  fun handleOnBackPressed() {
             when {
-                isOrdersExpanded() -> viewModel.onCloseOrdersClick()
+                isOrdersExpanded() -> { viewModel.onCloseOrdersClick() }
                 isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
 
                 }
@@ -270,7 +276,7 @@ class CourierOrdersFragment :
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
                 CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                CourierOrdersNavigationState.NavigateToWarehouse -> findNavController().popBackStack()
+                CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
                 CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
                 is CourierOrdersNavigationState.NavigateToOrderDetails ->
                     showBottomSheetOrderDetails(it.isDemo)
