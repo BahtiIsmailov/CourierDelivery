@@ -94,11 +94,13 @@ class CourierIntransitFragment :
             when (state) {
                 CourierIntransitNavigatorUIState.Disable -> {
                     binding.navigatorButton.isEnabled = false
-                    setColorNavigatorTint(R.color.tertiary)
+                    binding.navigatorButton.setImageResource(R.drawable.ic_navigator)
+                    //setColorNavigatorTint(R.color.tertiary)
                 }
                 CourierIntransitNavigatorUIState.Enable -> {
                     binding.navigatorButton.isEnabled = true
-                    setColorNavigatorTint(R.color.colorPrimary)
+                    binding.navigatorButton.setImageResource(R.drawable.ic_bottom_navigator_color)
+//                    setColorNavigatorTint(R.color.colorPrimary)
                 }
             }
         }
