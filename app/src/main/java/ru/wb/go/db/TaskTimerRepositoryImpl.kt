@@ -41,16 +41,6 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
             publishCallState(TimerStateImpl(durationTime, arrivalTime))
         }
     }
- //    override suspend fun startTimer(durationTime: Int, arrivalTime: Int) {
-//        this.durationTime = durationTime
-//        this.arrivalTime = arrivalTime
-//        if (timerDisposable == null) {
-//            timerDisposable = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-//                .subscribe({ onTimeConfirmCode(it) }) { }
-//            publishCallState(TimerStateImpl(durationTime, arrivalTime))
-//        }
-//    }
-
 //    override val timer: Flow<TimerState>
 //        get() = timerStates.toFlowable(BackpressureStrategy.BUFFER)
 

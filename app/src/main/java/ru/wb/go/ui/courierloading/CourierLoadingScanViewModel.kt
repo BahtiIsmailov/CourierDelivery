@@ -173,10 +173,10 @@ class CourierLoadingScanViewModel(
                 observeScanProcessComplete(it)
                 Log.e("observeInitScanProcess","$it")
             }
-            .retryWhen { _, _ ->
-                delay(1000)
-                true
-            }
+//            .retryWhen { _, _ ->
+//                delay(1000)
+//                true
+//            }
             .catch {
                 Log.e("observeInitScanProcess","$it")
                 scanProcessError(it)

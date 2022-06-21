@@ -74,6 +74,9 @@ class CourierUnloadingInteractorImpl(
                 }
                 val it = localRepo.findOfficeById(officeId)
                  flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
+                     .onEach {
+                         scannerRepo.holdStart()
+                     }
             }
         //TODO(уточнить на счет возвращаемого значения)
     }
