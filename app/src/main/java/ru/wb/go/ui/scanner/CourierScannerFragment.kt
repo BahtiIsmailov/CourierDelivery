@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -15,24 +14,19 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.base.BaseFragment
 import ru.wb.go.utils.hasPermission
 
-open class CourierScannerFragment : Fragment() {
+open class CourierScannerFragment : BaseFragment() {
 
     private val viewModel by viewModel<CourierScannerViewModel>()
 
@@ -77,13 +71,9 @@ open class CourierScannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListener()
-        Log.e("ScannerTag","onViewCreated1")
         initObserver()
-        Log.e("ScannerTag","onViewCreated2")
         initPermission()
-        Log.e("ScannerTag","onViewCreated3")
         viewModel.update()
-        Log.e("ScannerTag","onViewCreated4")
     }
 
     private fun initPermission() {
@@ -159,21 +149,17 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun initObserver() {
-        Log.e("ScannerTag","initObserver1")
-        lifecycleScope.launchWhenStarted {
-            viewModel.scannerAction.onEach{
-                Log.e("ScannerTag","initObserver2: $it")
-                when (it) {
-                    ScannerState.StartScan -> startScanning()
-                    ScannerState.StopScan -> stopScanning()
-                    ScannerState.StopScanWithHoldSplash -> holdSplash()
-                    ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
-                    ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
-                    ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
-                }
+        viewModel.scannerAction.observeEvent{
+            when (it) {
+                ScannerState.StartScan -> startScanning()
+                ScannerState.StopScan -> stopScanning()
+                ScannerState.StopScanWithHoldSplash -> holdSplash()
+                ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
+                ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
+                ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
             }
-                .launchIn(this)
         }
+
 
         viewModel.flashState.observe(viewLifecycleOwner) {
             if (it) barcodeView.setTorchOn()

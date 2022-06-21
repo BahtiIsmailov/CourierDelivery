@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierloading
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
@@ -92,7 +93,7 @@ class CourierLoadingScanFragment :
     }
 
     private fun initReturnResult() {
-        viewModel.onStartScanner()
+        //viewModel.onStartScanner()
         setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 viewModel.onStartScanner()
@@ -122,7 +123,6 @@ class CourierLoadingScanFragment :
                 viewModel.returnToListOrderClick()
             }
         }
-
     }
 
     private fun initView() {
@@ -157,18 +157,21 @@ class CourierLoadingScanFragment :
         viewModel.orderTimer.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierLoadingScanTimerState.Timer -> {
-                    binding.timeDigit.visibility = View.VISIBLE
-                    binding.timer.visibility = View.VISIBLE
+                    binding.timeDigit.visibility = VISIBLE
+                    binding.timer.visibility = VISIBLE
                     binding.timeDigit.text = it.timeDigit
                     binding.timer.setProgress(it.timeAnalog)
+                    Log.e("it.timeDigit", it.timeDigit)
                 }
-                is CourierLoadingScanTimerState.TimeIsOut -> {
+                is CourierLoadingScanTimerState.TimeIsOut -> {// here must arrive when scanned first box
                     showTimeIsOutDialog(it.type, it.title, it.message, it.button)
                 }
-                CourierLoadingScanTimerState.Stopped -> {
+                is CourierLoadingScanTimerState.Stopped -> {
                     binding.timerLayout.visibility = View.GONE
                 }
-                is CourierLoadingScanTimerState.Info -> binding.gateDigit.text = it.gate
+                is CourierLoadingScanTimerState.Info -> {
+                    binding.gateDigit.text = it.gate
+                }
             }
         }
 
@@ -234,7 +237,7 @@ class CourierLoadingScanFragment :
 
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierLoadingScanBoxState.InitScanner -> {
+                is CourierLoadingScanBoxState.InitScanner -> {
                     with(binding) {
                         timerLayout.visibility = View.VISIBLE
                         boxInfoLayout.visibility = View.GONE
