@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierorders.domain
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import ru.wb.go.app.AppPreffsKeys.SELECTED_ORDER_INDEX_KEY
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.TaskStatus
@@ -64,9 +65,11 @@ class CourierOrdersInteractorImpl(
     }
 
 
+
     override fun freeOrdersLocal(): Flow<MutableList<CourierOrderLocalDataEntity>> {
         return courierLocalRepository.freeOrders()
             .map { it.toMutableList() }
+            .onEach {  }
     }
 
     /*
@@ -209,34 +212,22 @@ class CourierOrdersInteractorImpl(
         return userManager.carType()
     }
 
+    var orderId: String? = null
+
     override suspend fun anchorTask() {
         val courierOrderLocalDataEntity = selectedOrder(selectedRowOrder())
         val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()// null here
-        val localOrderEntity =
-            convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
+        val localOrderEntity = convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
         reserveTask(localOrderEntity)
+        orderId = localOrderEntity.orderId.toString()
         courierLocalRepository.setOrderInReserve(localOrderEntity)
     }
 
-//    override fun anchorTask(): Completable {
-//        return Completable.fromSingle(Single.zip(
-//            selectedOrder(selectedRowOrder()),
-//            courierLocalRepository.readCurrentWarehouse()
-//        ) { orderEntity, warehouseLocalEntity ->
-//            convertToLocalOrderEntity(orderEntity, warehouseLocalEntity)
-//        }
-//            .flatMap { reserveTask(it) }
-//            .doOnSuccess { lo -> courierLocalRepository.setOrderInReserve(lo) })
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
 
     private suspend fun reserveTask(it: LocalOrderEntity) =
         appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())
 
 
-//    private fun reserveTask(it: LocalOrderEntity) =
-//        appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())
-//            .andThen(Single.just(it)).compose(rxSchedulerFactory.applySingleSchedulers())
 
 
     private fun convertToLocalOrderEntity(

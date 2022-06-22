@@ -9,4 +9,5 @@ interface ErrorDialogManager {
         errorData: SingleLiveEvent<ErrorDialogData>,
         dlgTag: String = DialogInfoFragment.DIALOG_INFO_TAG
     )
+
 }

@@ -38,48 +38,23 @@ class CourierWarehousesInteractorImpl(
 //            .compose(rxSchedulerFactory.applySingleSchedulers())
 //    }
 
-//    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
-//        return appRemoteRepository.courierWarehouses()
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
-
-
     override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         courierLocalRepository.deleteAllWarehouse()
         courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
     }
-//    override fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity): Completable {
-//        courierLocalRepository.deleteAllWarehouse()
-//        return courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
 
     override fun loadProgress() {
         CoroutineExtension.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
     }
-    //
-//    override fun loadProgress(): Completable {
-//        return Completable.timer(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
-//            .compose(rxSchedulerFactory.applyCompletableSchedulers())
-//    }
-
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
     }
 
-//    override fun observeMapAction(): Observable<CourierMapAction> {
-//        return courierMapRepository.observeMapAction()
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
-
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
 
-//    override fun mapState(state: CourierMapState) {
-//        courierMapRepository.mapState(state)
-//    }
 
     override fun mapAction(action: CourierMapAction) {
         courierMapRepository.mapAction(action)

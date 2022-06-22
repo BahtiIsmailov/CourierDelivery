@@ -36,6 +36,8 @@ class DialogInfoFragment : DialogFragment() {
         }
     }
 
+
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =

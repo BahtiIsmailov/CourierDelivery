@@ -1,13 +1,13 @@
 package ru.wb.go.ui.courierorders
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -23,6 +23,7 @@ import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.HttpObjectNotFoundException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
+import ru.wb.go.ui.app.AppActivity
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.ADDRESS_MAP_PREFIX
@@ -75,6 +76,8 @@ class CourierOrdersViewModel(
     val waitLoader: LiveData<WaitLoader>
         get() = _waitLoader
 
+
+
     private val _demoState = MutableLiveData<Boolean>()
     val demoState: LiveData<Boolean>
         get() = _demoState
@@ -100,6 +103,7 @@ class CourierOrdersViewModel(
     private val _showOrderState = MutableLiveData<CourierOrderShowOrdersState>()
     val showOrderState: LiveData<CourierOrderShowOrdersState>
         get() = _showOrderState
+
 
     private var orderLocalDataEntities = listOf<CourierOrderLocalDataEntity>()
     private var orderItems = mutableListOf<BaseItem>()
@@ -131,12 +135,12 @@ class CourierOrdersViewModel(
         setLoader(WaitLoader.Wait)
         interactor.freeOrdersLocal()
             .onEach {
-                this.orderLocalDataEntities = it
                 addressLabel()
                 convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
                 updateOrderAndWarehouseMarkers()
                 showAllAndOrderItems()
                 initOrderDetails(interactor.selectedRowOrder())
+                this.orderLocalDataEntities = it
                 setLoader(WaitLoader.Complete)
             }
             .catch {
@@ -354,10 +358,14 @@ class CourierOrdersViewModel(
                     interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)
             } catch (e: Exception) {
+                Log.e("initOrdersError",e.message?:"")
                 initOrdersError(e)
+
             }
         }
     }
+
+
     /*
         private fun initOrders(height: Int) {
         setLoader(WaitLoader.Wait)
@@ -778,6 +786,8 @@ class CourierOrdersViewModel(
                 interactor.anchorTask()
                 anchorTaskComplete()
             } catch (e: Exception) {
+
+                _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
                 anchorTaskError(e)
             }
         }

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -15,24 +14,19 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.base.BaseFragment
 import ru.wb.go.utils.hasPermission
 
-open class CourierScannerFragment : Fragment() {
+open class CourierScannerFragment : BaseFragment() {
 
     private val viewModel by viewModel<CourierScannerViewModel>()
 
@@ -134,8 +128,11 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun startScanning() {
+        Log.e("ScannerTag","startScanning1")
         changeLaserVisibility(true)
+        Log.e("ScannerTag","changeLaserVisibility1")
         onResume()
+        Log.e("ScannerTag","onResume()inStartScanning")
         binding.holdSplash.visibility = GONE
         barcodeView.barcodeView.decodeSingle(callback)
     }
@@ -152,19 +149,17 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun initObserver() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.scannerAction.onEach{
-                when (it) {
-                    ScannerState.StartScan -> startScanning()
-                    ScannerState.StopScan -> stopScanning()
-                    ScannerState.StopScanWithHoldSplash -> holdSplash()
-                    ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
-                    ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
-                    ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
-                }
+        viewModel.scannerAction.observeEvent{
+            when (it) {
+                ScannerState.StartScan -> startScanning()
+                ScannerState.StopScan -> stopScanning()
+                ScannerState.StopScanWithHoldSplash -> holdSplash()
+                ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
+                ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
+                ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
             }
-                .launchIn(this)
         }
+
 
         viewModel.flashState.observe(viewLifecycleOwner) {
             if (it) barcodeView.setTorchOn()
@@ -173,21 +168,25 @@ open class CourierScannerFragment : Fragment() {
     }
 
     private fun stopScanning() {
+        Log.e("ScannerTag","stopScanning1")
         changeLaserVisibility(false)
         barcodeView.pauseAndWait()
     }
 
     private fun holdSplash() {
+        Log.e("ScannerTag","holdSplash1")
         stopScanning()
         binding.holdSplash.visibility = VISIBLE
     }
 
     private fun holdWithIcon(icon: Int) {
+        Log.e("ScannerTag","holdWithIcon1")
         binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
         binding.scanStatus.visibility = VISIBLE
     }
 
     override fun onDestroyView() {
+        Log.e("ScannerTag","onDestroyView")
         viewModel.onDestroy()
         super.onDestroyView()
         _binding = null

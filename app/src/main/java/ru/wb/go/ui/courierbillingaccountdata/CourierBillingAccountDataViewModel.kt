@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
@@ -214,15 +215,32 @@ class CourierBillingAccountDataViewModel(
         CourierBillingAccountDataUIState.Error("Введите 9 цифр", type)
     }
 
-    fun onFormChanges(changeObservables: ArrayList<CourierBillingAccountDataUIAction>) {
-        try {
-            changeObservables.map {
-                _formUIState.value = mapActionFormChanges(it)
+    fun onFormChanges(changeObservables: ArrayList<Flow<CourierBillingAccountDataUIAction>>) {
+        changeObservables
+            .merge()
+            .map {
+                mapActionFormChanges(it)
             }
-        } catch (e: Exception) {
-            LogUtils { logDebugApp(e.toString()) }
-        }
+            .onEach {
+                _formUIState.value = it
+            }
+            .catch {
+                LogUtils { logDebugApp(it.toString()) }
+            }
+            .launchIn(viewModelScope)
+
+
     }
+    /*
+        fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountDataUIAction>>) {
+        addSubscription(Observable.merge(changeObservables)
+            .flatMap { mapActionFormChanges(it) }
+            .subscribe(
+                { _formUIState.value = it },
+                { LogUtils { logDebugApp(it.toString()) } })
+        )
+    }
+     */
 
     private fun mapActionFormChanges(action: CourierBillingAccountDataUIAction) = when (action) {
         is CourierBillingAccountDataUIAction.FocusChange -> checkFieldFocusChange(action)

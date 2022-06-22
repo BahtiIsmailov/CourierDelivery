@@ -6,6 +6,8 @@ import android.view.View
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -93,7 +95,6 @@ class CourierLoadingScanFragment :
     }
 
     private fun initReturnResult() {
-        //viewModel.onStartScanner()
         setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 viewModel.onStartScanner()
@@ -161,16 +162,22 @@ class CourierLoadingScanFragment :
                     binding.timer.visibility = VISIBLE
                     binding.timeDigit.text = it.timeDigit
                     binding.timer.setProgress(it.timeAnalog)
-                    Log.e("it.timeDigit", it.timeDigit)
                 }
-                is CourierLoadingScanTimerState.TimeIsOut -> {// here must arrive when scanned first box
+                is CourierLoadingScanTimerState.TimeIsOut -> {
                     showTimeIsOutDialog(it.type, it.title, it.message, it.button)
                 }
                 is CourierLoadingScanTimerState.Stopped -> {
                     binding.timerLayout.visibility = View.GONE
                 }
                 is CourierLoadingScanTimerState.Info -> {
-                    binding.gateDigit.text = it.gate
+                    binding.gate.text = if (it.gate == "0"){
+                        binding.gateDigit.isGone = true
+                        requireContext().getText(R.string.courier_loading_pandus)
+                    }else {
+                        binding.gateDigit.isVisible = true
+                        binding.gateDigit.text = it.gate
+                         requireContext().getText(R.string.courier_loading_gate)
+                    }
                 }
             }
         }

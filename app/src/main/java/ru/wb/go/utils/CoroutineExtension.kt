@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.CheckResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -74,6 +75,20 @@ fun checkMainThread() {
         "Expected to be called on the main thread but was " + Thread.currentThread().name
     }
 }
+
+@CheckResult
+fun View.focusChanges(): InitialValueFlow<Boolean> = callbackFlow {
+    checkMainThread()
+    val listener = View.OnFocusChangeListener { _, hasFocus ->
+        trySend(hasFocus)
+    }
+    onFocusChangeListener = listener
+    awaitClose { onFocusChangeListener = null }
+}
+    .conflate()
+    .asInitialValueFlow { hasFocus() }
+
+
 
 private fun <T : Any> Flow<T>.asInitialValueFlow(initialValue: () -> T): InitialValueFlow<T> = InitialValueFlow(
     onStart {

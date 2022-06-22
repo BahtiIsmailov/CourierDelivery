@@ -64,9 +64,15 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 
 
     override fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity {
-
         return when {
-            qrCode.startsWith(PREFIX_QR_OFFICE_CODE_OLD) -> {
+            qrCode.startsWith(PREFIX_QR_OFFICE_CODE_V1) -> {
+                getSplitDynamicOfficeInfo(qrCode)
+            }
+            else -> ParsedScanOfficeQrEntity(-1, false)
+        }
+    }
+    /*
+    qrCode.startsWith(PREFIX_QR_OFFICE_CODE_OLD) -> {
                 val code = qrCode.split(".")
                 if (code.size != 3) {
                     ParsedScanOfficeQrEntity(-1, false)
@@ -78,13 +84,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
                         ParsedScanOfficeQrEntity(ofId, true)
                 }
             }
-            qrCode.startsWith(PREFIX_QR_OFFICE_CODE_V1) -> {
-                getSplitDynamicOfficeInfo(qrCode)
-            }
-            else -> ParsedScanOfficeQrEntity(-1, false)
-        }
-
-    }
+     */
 
     private fun getSplitDynamicOfficeInfo(input: String): ParsedScanOfficeQrEntity {
         val splitter = input.split(";")

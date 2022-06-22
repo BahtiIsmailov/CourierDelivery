@@ -3,6 +3,7 @@ package ru.wb.go.network.interceptors
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import ru.wb.go.utils.RebootApplication
 import ru.wb.go.utils.analytics.YandexMetricManager
 import java.io.IOException
 import java.nio.charset.Charset
@@ -14,6 +15,7 @@ class AppMetricResponseInterceptor(private val metric: YandexMetricManager) : In
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         val response: Response = chain.proceed(request)
+
 
         val url = request.url.toString()
         val singleApiMethod = "<-" + getSingleApiMethod(url)

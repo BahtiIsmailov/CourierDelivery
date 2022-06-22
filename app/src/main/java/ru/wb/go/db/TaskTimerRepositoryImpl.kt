@@ -1,7 +1,8 @@
 package ru.wb.go.db
 
-import android.util.Log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,9 +15,6 @@ import ru.wb.go.utils.CoroutineExtension
 import java.util.concurrent.TimeUnit
 
 class TaskTimerRepositoryImpl : TaskTimerRepository {
-
-    //private val timerStates: BehaviorSubject<TimerState> = BehaviorSubject.create()
-    //private var timerDisposable: Disposable? = null
 
     private val timerStates = MutableSharedFlow<TimerState>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -41,8 +39,6 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
             publishCallState(TimerStateImpl(durationTime, arrivalTime))
         }
     }
-//    override val timer: Flow<TimerState>
-//        get() = timerStates.toFlowable(BackpressureStrategy.BUFFER)
 
     override val timer: Flow<TimerState>
         get() = timerStates
@@ -70,10 +66,10 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         durationTime = 0
         arrivalTime = 0
         publishCallState(TimerStateImpl(durationTime, 0))
-        corutineScope!!.cancel()
-        corutineScope = null
-//        job?.cancel()
-
+        if (corutineScope != null) {
+            corutineScope!!.cancel()
+            corutineScope = null
+        }
     }
 
 
