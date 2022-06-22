@@ -168,7 +168,6 @@ class CourierOrderTimerViewModel(
 
     fun iArrivedClick() {
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
-        //.scannerAction(ScannerState.StartScan)
     }
 
     fun timeOutReturnToList() {
@@ -182,7 +181,6 @@ class CourierOrderTimerViewModel(
     }
 
     private fun deleteTask() {
-
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
@@ -199,6 +197,26 @@ class CourierOrderTimerViewModel(
         }
 
     }
+    /*
+    private fun deleteTask() {
+
+        setLoader(WaitLoader.Wait)
+        addSubscription(
+            interactor.deleteTask()
+                .subscribe(
+                    {
+                        setLoader(WaitLoader.Complete)
+                        onTechEventLog("toWarehouse")
+                        _navigationState.value =
+                            CourierOrderTimerNavigationState.NavigateToWarehouse
+                        _timeOut.postValue(false)
+                    },
+                    {
+                        setLoader(WaitLoader.Complete)
+                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+
+                    }
+     */
 
     fun getOrderId() {
         viewModelScope.launch {

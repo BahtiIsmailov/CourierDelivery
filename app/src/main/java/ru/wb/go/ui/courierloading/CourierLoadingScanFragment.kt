@@ -94,7 +94,6 @@ class CourierLoadingScanFragment :
     }
 
     private fun initReturnResult() {
-        //viewModel.onStartScanner()
         setFragmentResultListener(DialogInfoFragment.DIALOG_INFO_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DIALOG_INFO_BACK_KEY)) {
                 viewModel.onStartScanner()
@@ -162,9 +161,8 @@ class CourierLoadingScanFragment :
                     binding.timer.visibility = VISIBLE
                     binding.timeDigit.text = it.timeDigit
                     binding.timer.setProgress(it.timeAnalog)
-                    Log.e("it.timeDigit", it.timeDigit)
                 }
-                is CourierLoadingScanTimerState.TimeIsOut -> {// here must arrive when scanned first box
+                is CourierLoadingScanTimerState.TimeIsOut -> {
                     showTimeIsOutDialog(it.type, it.title, it.message, it.button)
                 }
                 is CourierLoadingScanTimerState.Stopped -> {
