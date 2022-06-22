@@ -567,7 +567,7 @@
     <string name="courier_loading_address">Адрес ПВЗ</string>
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
-
+    <string name="courier_loading_pandus">Пандус</string>
     <string name="courier_loading_details_title">Принято</string>
     <string name="courier_loading_pvz_goals_title">ПВЗ (%1$s)</string>
     <string name="courier_loading_box_goals_title">Коробки (%1$s)</string>

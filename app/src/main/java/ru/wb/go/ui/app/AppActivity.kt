@@ -131,19 +131,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             navController = f.findNavController()
         }
     }
-    fun rebootApplication(){
-        val mStartActivity = Intent(this, this::class.java)
-        val mPendingIntentId = 123456
-        val mPendingIntent = PendingIntent.getActivity(
-            this,
-            mPendingIntentId,
-            mStartActivity,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
-        val mgr =  getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        mgr[AlarmManager.RTC, System.currentTimeMillis() + 100] = mPendingIntent
-        exitProcess(0)
-    }
+
 
     private fun initObserver() {
 

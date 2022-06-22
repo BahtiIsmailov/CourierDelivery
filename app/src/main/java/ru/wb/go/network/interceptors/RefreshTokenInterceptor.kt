@@ -34,10 +34,7 @@ class RefreshTokenInterceptor(
             builder.addHeader(key, value)
         }
 
-//        val response409: Response = chain.proceed(request)
-//        if (response409.code == 409){
-//            exitProcess(0)
-//        }
+
 
         var response = chain.proceed(builder.build())
 
