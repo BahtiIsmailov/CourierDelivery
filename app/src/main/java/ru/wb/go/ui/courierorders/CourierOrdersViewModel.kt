@@ -783,9 +783,9 @@ class CourierOrdersViewModel(
                 interactor.anchorTask()
                 anchorTaskComplete()
             } catch (e: Exception) {
-                interactor.deleteOrderAfterCloseCourierOrder()
+
                 _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
-                //anchorTaskError(e)
+                anchorTaskError(e)
             }
         }
     }

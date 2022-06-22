@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -80,11 +82,14 @@ class CourierOrderTimerFragment : Fragment() {
     }
 
     private fun initObservable() {
-        viewModel.getOrderId.observe(viewLifecycleOwner){
+        viewModel.getOrderId.observe(viewLifecycleOwner) {
             var textForRouteNumber = requireContext().getText(R.string.route).toString()
             textForRouteNumber += " ${it.route}"
             binding.routeTV.text = textForRouteNumber
-            setFragmentResult(DialogInfoFragment.ROUTE_ID, bundleOf("bundleKey" to textForRouteNumber))
+            setFragmentResult(
+                DialogInfoFragment.ROUTE_ID,
+                bundleOf("bundleKey" to textForRouteNumber)
+            )
         }
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
@@ -94,7 +99,17 @@ class CourierOrderTimerFragment : Fragment() {
                     binding.coast.text = it.coast
                     binding.volume.text = it.countBoxAndVolume
                     binding.pvz.text = it.countPvz
-                    binding.gateDigit.text = it.gate
+                    binding.gate.text =
+                        if (it.gate == "0") {
+                            binding.gateDigit.isGone = true
+                            requireContext().getString(R.string.courier_loading_pandus)
+                        } else {
+                            binding.gateDigit.isVisible = true
+                            binding.gateDigit.text = it.gate
+                            requireContext().getString(
+                                R.string.courier_loading_gate
+                            )
+                        }
                 }
             }
         }

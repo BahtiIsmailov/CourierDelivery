@@ -223,11 +223,6 @@ class CourierOrdersInteractorImpl(
         courierLocalRepository.setOrderInReserve(localOrderEntity)
     }
 
-    override suspend fun deleteOrderAfterCloseCourierOrder() {//7823
-        val taskId = courierLocalRepository.getOrderId()
-        appRemoteRepository.deleteTask(orderId?:taskId)
-        courierLocalRepository.deleteOrder()
-    }
 
     private suspend fun reserveTask(it: LocalOrderEntity) =
         appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())

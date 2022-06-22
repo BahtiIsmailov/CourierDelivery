@@ -12,8 +12,6 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun freeOrdersLocal(): Flow<List<CourierOrderLocalDataEntity>>
 
-    suspend fun deleteOrderAfterCloseCourierOrder()
-
     fun saveRowOrder(rowOrder: Int)
 
     suspend fun selectedOrder(rowOrder: Int): CourierOrderLocalDataEntity

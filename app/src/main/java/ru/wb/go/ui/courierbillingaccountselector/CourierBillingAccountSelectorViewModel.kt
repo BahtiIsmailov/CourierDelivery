@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
@@ -160,15 +161,26 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun amountFromString(text: String) = text.replace("\\s".toRegex(), "").toInt()
 
-    fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
-        addSubscription(Observable.merge(changeObservables)
+    fun onFormChanges(changeObservables: ArrayList<Flow<CourierBillingAccountSelectorUIAction>>) {
+        changeObservables
+            .merge()
             .distinctUntilChanged()
             .map { mapAction(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
-        )
+            .onEach { _formUIState.value = it }
+            .catch { LogUtils { logDebugApp(it.toString()) } }
+            .launchIn(viewModelScope)
     }
+
+
+//    fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
+//        addSubscription(Observable.merge(changeObservables)
+//            .distinctUntilChanged()
+//            .map { mapAction(it) }
+//            .subscribe(
+//                { _formUIState.value = it },
+//                { LogUtils { logDebugApp(it.toString()) } })
+//        )
+//    }
 
     private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
         is CourierBillingAccountSelectorUIAction.FocusChange -> checkFieldFocus(action)

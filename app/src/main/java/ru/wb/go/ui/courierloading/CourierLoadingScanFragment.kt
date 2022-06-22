@@ -7,6 +7,7 @@ import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -169,12 +170,13 @@ class CourierLoadingScanFragment :
                     binding.timerLayout.visibility = View.GONE
                 }
                 is CourierLoadingScanTimerState.Info -> {
-                    if (it.gate == "1"){
+                    binding.gate.text = if (it.gate == "0"){
                         binding.gateDigit.isGone = true
-                        binding.gate.text = requireContext().getText(R.string.courier_loading_pandus)
+                        requireContext().getText(R.string.courier_loading_pandus)
                     }else {
+                        binding.gateDigit.isVisible = true
                         binding.gateDigit.text = it.gate
-                        binding.gate.text = requireContext().getText(R.string.courier_loading_gate)
+                         requireContext().getText(R.string.courier_loading_gate)
                     }
                 }
             }
