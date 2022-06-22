@@ -31,7 +31,7 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         this.arrivalTime = arrivalTime
         if (corutineScope == null) {
             corutineScope = CoroutineScope(SupervisorJob())
-            CoroutineExtension.interval(10L, TimeUnit.MILLISECONDS)
+            CoroutineExtension.interval(1000L, TimeUnit.MILLISECONDS)
                 .onEach {
                     onTimeConfirmCode(it)
                 }
