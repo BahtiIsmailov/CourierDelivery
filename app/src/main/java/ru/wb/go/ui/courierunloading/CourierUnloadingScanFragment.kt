@@ -199,70 +199,84 @@ class CourierUnloadingScanFragment :
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UnloadingFragmentState.Empty -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(primaryColor())
-                    binding.qrCode.text = state.data.qrCode
-                    binding.totalBoxes.text = state.data.accepted
-                    binding.counterLayout.isEnabled = false
-                    binding.boxAddress.text = state.data.address
-                    binding.completeButton.isEnabled = true
+                    with(binding){
+                         ribbonStatus.text = state.data.status
+                         statusLayout.setBackgroundColor(primaryColor())
+                         qrCode.text = state.data.qrCode
+                         totalBoxes.text = state.data.accepted
+                         counterLayout.isEnabled = false
+                         boxAddress.text = state.data.address
+                         completeButton.isEnabled = true
+                    }
                 }
                 is UnloadingFragmentState.BoxInit -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(grayColor())
-                    binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(colorBlack())
-                    binding.totalBoxes.text = state.data.accepted
-                    binding.counterLayout.isEnabled = false
-                    binding.boxAddress.text = state.data.address
-                    binding.completeButton.isEnabled = true
+                    with(binding) {
+                        ribbonStatus.text = state.data.status
+                        statusLayout.setBackgroundColor(grayColor())
+                        qrCode.text = state.data.qrCode
+                        qrCode.setTextColor(colorBlack())
+                        totalBoxes.text = state.data.accepted
+                        counterLayout.isEnabled = false
+                        boxAddress.text = state.data.address
+                        completeButton.isEnabled = true
+                    }
                 }
                 is UnloadingFragmentState.BoxAdded -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(colorGreen())
-                    binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(colorBlack())
-                    binding.totalBoxes.text = state.data.accepted
-                    binding.boxAddress.text = state.data.address
-                    binding.boxAddress.setTextColor(colorBlack())
-                    binding.completeButton.isEnabled = true
+                    with(binding) {
+                        ribbonStatus.text = state.data.status
+                        statusLayout.setBackgroundColor(colorGreen())
+                        qrCode.text = state.data.qrCode
+                        qrCode.setTextColor(colorBlack())
+                        totalBoxes.text = state.data.accepted
+                        boxAddress.text = state.data.address
+                        boxAddress.setTextColor(colorBlack())
+                        completeButton.isEnabled = true
+                    }
                 }
                 is UnloadingFragmentState.UnknownQr -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(getColor(R.color.yellow))
-                    binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(colorBlack())
-                    binding.boxAddress.text = state.data.address
-                    binding.boxAddress.setTextColor(colorBlack())
-                    binding.totalBoxes.text = state.data.accepted
+                    with(binding) {
+                        ribbonStatus.text = state.data.status
+                        statusLayout.setBackgroundColor(getColor(R.color.yellow))
+                        qrCode.text = state.data.qrCode
+                        qrCode.setTextColor(colorBlack())
+                        boxAddress.text = state.data.address
+                        boxAddress.setTextColor(colorBlack())
+                        totalBoxes.text = state.data.accepted
+                    }
                 }
                 is UnloadingFragmentState.ScannerReady -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(grayColor())
-                    binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(colorBlack())
-                    binding.totalBoxes.text = state.data.accepted
-                    binding.boxAddress.text = state.data.address
-                    binding.boxAddress.setTextColor(colorBlack())
-                    binding.completeButton.isEnabled = true
+                    with(binding) {
+                        ribbonStatus.text = state.data.status
+                        statusLayout.setBackgroundColor(grayColor())
+                        qrCode.text = state.data.qrCode
+                        qrCode.setTextColor(colorBlack())
+                        totalBoxes.text = state.data.accepted
+                        boxAddress.text = state.data.address
+                        boxAddress.setTextColor(colorBlack())
+                        completeButton.isEnabled = true
+                    }
                 }
                 is UnloadingFragmentState.ForbiddenBox -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(colorRed())
-                    binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(colorBlack())
-                    binding.boxAddress.text = state.data.address
-                    binding.boxAddress.setTextColor(colorBlack())
-                    binding.totalBoxes.text = state.data.accepted
+                    with(binding) {
+                        ribbonStatus.text = state.data.status
+                        statusLayout.setBackgroundColor(colorRed())
+                        qrCode.text = state.data.qrCode
+                        qrCode.setTextColor(colorBlack())
+                        boxAddress.text = state.data.address
+                        boxAddress.setTextColor(colorBlack())
+                        totalBoxes.text = state.data.accepted
+                    }
                 }
                 is UnloadingFragmentState.WrongBox -> {
-                    binding.ribbonStatus.text = state.data.status
-                    binding.statusLayout.setBackgroundColor(colorRed())
-                    binding.qrCode.text = state.data.qrCode
-                    binding.qrCode.setTextColor(colorBlack())
-                    binding.boxAddress.text = state.data.address
-                    binding.boxAddress.setTextColor(colorBlack())
-                    binding.totalBoxes.text = state.data.accepted
+                    with(binding) {
+                        ribbonStatus.text = state.data.status
+                        statusLayout.setBackgroundColor(colorRed())
+                        qrCode.text = state.data.qrCode
+                        qrCode.setTextColor(colorBlack())
+                        boxAddress.text = state.data.address
+                        boxAddress.setTextColor(colorBlack())
+                        totalBoxes.text = state.data.accepted
+                    }
                 }
             }
         }
