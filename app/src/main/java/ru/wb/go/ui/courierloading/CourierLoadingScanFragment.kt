@@ -246,7 +246,7 @@ class CourierLoadingScanFragment :
             when (state) {
                 is CourierLoadingScanBoxState.InitScanner -> {
                     with(binding) {
-                        timerLayout.visibility = View.VISIBLE
+                        timerLayout.visibility = VISIBLE
                         boxInfoLayout.visibility = View.GONE
                         ribbonStatus.setText(R.string.courier_loading_init_scanner)
                         ribbonStatus.setBackgroundColor(getColor(R.color.colorPrimary))
@@ -260,14 +260,14 @@ class CourierLoadingScanFragment :
                         ribbonStatus.setBackgroundColor(getColor(R.color.green))
                         qrCode.setTextColor(getColor(R.color.primary))
                         timerLayout.visibility = View.GONE
-                        boxInfoLayout.visibility = View.VISIBLE
+                        boxInfoLayout.visibility = VISIBLE
                         counterLayout.isEnabled = true
                     }
 
                 }
                 is CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
                     with(binding) {
-                        timerLayout.visibility = View.VISIBLE
+                        timerLayout.visibility = VISIBLE
                         boxInfoLayout.visibility = View.GONE
                         ribbonStatus.setText(R.string.courier_loading_forbidden_take)
                         ribbonStatus.setBackgroundColor(getColor(R.color.red))
@@ -372,7 +372,9 @@ class CourierLoadingScanFragment :
     }
 
     private fun initListener() {
-        binding.completeButton.setOnClickListener { viewModel.onCompleteLoaderClicked() }
+        binding.completeButton.setOnClickListener {
+            viewModel.onCompleteLoaderClicked()
+        }
         binding.counterLayout.setOnClickListener { viewModel.onCounterBoxClicked() }
         binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
     }
