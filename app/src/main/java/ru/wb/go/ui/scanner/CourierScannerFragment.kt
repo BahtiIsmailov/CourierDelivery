@@ -14,6 +14,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnLayout
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
@@ -128,11 +129,8 @@ open class CourierScannerFragment : BaseFragment() {
     }
 
     private fun startScanning() {
-        Log.e("ScannerTag","startScanning1")
         changeLaserVisibility(true)
-        Log.e("ScannerTag","changeLaserVisibility1")
         onResume()
-        Log.e("ScannerTag","onResume()inStartScanning")
         binding.holdSplash.visibility = GONE
         barcodeView.barcodeView.decodeSingle(callback)
     }
@@ -149,7 +147,7 @@ open class CourierScannerFragment : BaseFragment() {
     }
 
     private fun initObserver() {
-        viewModel.scannerAction.observeEvent{
+        viewModel.scannerAction.observe(viewLifecycleOwner){
             when (it) {
                 ScannerState.StartScan -> startScanning()
                 ScannerState.StopScan -> stopScanning()
@@ -168,25 +166,23 @@ open class CourierScannerFragment : BaseFragment() {
     }
 
     private fun stopScanning() {
-        Log.e("ScannerTag","stopScanning1")
         changeLaserVisibility(false)
-        barcodeView.pauseAndWait()
+        barcodeView.doOnLayout {// при каждой переразметке делай вот это действие
+            barcodeView.pauseAndWait()
+        }
     }
 
     private fun holdSplash() {
-        Log.e("ScannerTag","holdSplash1")
         stopScanning()
         binding.holdSplash.visibility = VISIBLE
     }
 
     private fun holdWithIcon(icon: Int) {
-        Log.e("ScannerTag","holdWithIcon1")
         binding.scanStatus.setImageDrawable(ContextCompat.getDrawable(requireContext(), icon))
         binding.scanStatus.visibility = VISIBLE
     }
 
     override fun onDestroyView() {
-        Log.e("ScannerTag","onDestroyView")
         viewModel.onDestroy()
         super.onDestroyView()
         _binding = null

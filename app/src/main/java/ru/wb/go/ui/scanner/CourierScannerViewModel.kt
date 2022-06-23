@@ -33,8 +33,12 @@ class CourierScannerViewModel(
 //        get() = _scannerAction.receiveAsFlow()
 
 
-    private val _scannerAction = MutableLiveData<Event<ScannerState>>()
-    val scannerAction: LiveData<Event<ScannerState>> = _scannerAction
+//    private val _scannerAction = MutableLiveData<Event<ScannerState>>()
+//    val scannerAction: LiveData<Event<ScannerState>> = _scannerAction
+
+    private val _scannerAction = SingleLiveEvent<ScannerState>()
+    val scannerAction: LiveData<ScannerState>
+        get() = _scannerAction
 
     private val _flashState = SingleLiveEvent<Boolean>()
     val flashState: LiveData<Boolean>
@@ -50,7 +54,7 @@ class CourierScannerViewModel(
     private fun observeScannerState() {
         interactor.observeScannerState()
             .onEach {
-                _scannerAction.emitEvent(it)
+                _scannerAction.value = it
             }
             .launchIn(viewModelScope)
     }
@@ -67,7 +71,7 @@ class CourierScannerViewModel(
     private fun observeHoldSplash() {
         interactor.observeHoldSplash()
             .onEach {
-                _scannerAction.emitEvent(ScannerState.StopScanWithHoldSplash)
+                _scannerAction.value = ScannerState.StopScanWithHoldSplash
             }
             .launchIn(viewModelScope)
     }
@@ -82,7 +86,7 @@ class CourierScannerViewModel(
     fun onHoldSplashClick() {
         interactor.prolongHoldTimer()
         interactor.holdSplashUnlock()
-        _scannerAction.emitEvent(ScannerState.StartScan)
+        _scannerAction.value = ScannerState.StartScan
     }
 
     fun onDestroy() {
