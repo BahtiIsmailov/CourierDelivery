@@ -68,7 +68,7 @@ class CourierOrdersFragment :
         const val DIALOG_TASK_NOT_EXIST_RESULT_TAG = "DIALOG_TASK_NOT_EXIST_RESULT_TAG"
         const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
         const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
-        const val FADE_ADDRESS_DETAILS = 500L
+        const val FADE_ADDRESS_DETAILS = 50L
     }
 
     private lateinit var adapter: DefaultAdapterDelegate

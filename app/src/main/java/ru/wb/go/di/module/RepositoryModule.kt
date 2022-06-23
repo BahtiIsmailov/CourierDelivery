@@ -41,11 +41,10 @@ val deliveryRepositoryModule = module {
 
     fun provideAppRemoteRepository(
         authenticator: AutentificatorIntercept,
-        rxSchedulerFactory: RxSchedulerFactory,
         api: AppApi,
         tokenManager: TokenManager,
     ): AppRemoteRepository {
-        return AppRemoteRepositoryImpl(authenticator,rxSchedulerFactory, api, tokenManager)
+        return AppRemoteRepositoryImpl(authenticator, api, tokenManager)
     }
 
     fun provideAppTasksRepository(
@@ -106,7 +105,7 @@ val deliveryRepositoryModule = module {
 
     single { provideAuthRemoteRepository(get(), get(), get(), get()) }
 
-    single { provideAppRemoteRepository(get(), get(), get(), get()) }
+    single { provideAppRemoteRepository(get(), get(), get()) }
     factory { provideAppTasksRepository(get(), get(), get()) }
 
     single { provideAutentificatorIntercept(get()) }

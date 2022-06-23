@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
@@ -160,10 +160,10 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun checkFocusAccountWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
-        with(focusChange) { predicateMessageChecker(accountPredicate, text, type) }
+        flowOf(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
 
     private fun checkTextAccountWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange) =
-        with(focusChange) { predicateMessageChecker(accountPredicate, text, type) }
+        flowOf(with(focusChange) { predicateMessageChecker(accountPredicate, text, type) })
 
     private val bikPredicate = { _: String ->
         if (bankEntity == null) {
@@ -174,28 +174,32 @@ class CourierBillingAccountDataViewModel(
     }
 
     private fun checkFocusBikWrapper(focusChange: CourierBillingAccountDataUIAction.FocusChange) =
-        with(focusChange) {
+        flowOf(with(focusChange) {
             predicateMessageChecker(bikPredicate, text, type)
         }
+        )
 
-    private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): CourierBillingAccountDataUIState {
-        var courierBillingAccountDataUIState: CourierBillingAccountDataUIState? = null
-        viewModelScope.launch {
-            courierBillingAccountDataUIState = try {
-                if (focusChange.text.length == KPP_LENGTH) {
-                    _bicProgressState.value = true
-                    bankEntity = null
-                    bankEntity = interactor.getBank(focusChange.text)
+    private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): Flow<CourierBillingAccountDataUIState> {
+        return flowOf(focusChange.text)
+            .filter {
+                it.length == KPP_LENGTH
+            }
+            .map {
+                _bicProgressState.value = true
+                bankEntity = null
+                interactor.getBank(it)
 
-                    _bankFindState.value =
-                        BankFind(bankEntity!!.name, bankEntity!!.correspondentAccount)
-                    _bicProgressState.value = false
-                    _keyboardState.value = false
-                    CourierBillingAccountDataUIState.Complete(bankEntity!!.name, focusChange.type)
-                } else {
-                    defaultBank(focusChange.type)
-                }
-            } catch (e: Exception) {
+            }
+            .onEach {
+                bankEntity = it
+            }
+            .map {
+                _bankFindState.value = BankFind(it.name, it.correspondentAccount)
+                _bicProgressState.value = false
+                _keyboardState.value = false
+                CourierBillingAccountDataUIState.Complete(it.name, focusChange.type)
+            }
+            .catch {
                 _bicProgressState.value = false
                 _bankFindState.value = BankFind("Банк не найден", "")
                 bankEntity = null
@@ -203,11 +207,37 @@ class CourierBillingAccountDataViewModel(
                     "БИК банка не найден", focusChange.type
                 )
             }
-
-        }
-        return courierBillingAccountDataUIState!!
+            .onEmpty {
+                defaultBank(focusChange.type)
+            }
     }
-
+/*
+private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): Observable<CourierBillingAccountDataUIState> {
+        return Observable.just(focusChange.text)
+            .filter { it.length == KPP_LENGTH }
+            .flatMapMaybe {
+                _bicProgressState.value = true
+                bankEntity = null
+                interactor.getBank(it)
+            }
+            .doOnNext { bankEntity = it }
+            .map<CourierBillingAccountDataUIState> {
+                _bankFindState.value = BankFind(it.name, it.correspondentAccount)
+                _bicProgressState.value = false
+                _keyboardState.value = false
+                CourierBillingAccountDataUIState.Complete(it.name, focusChange.type)
+            }
+            .onErrorReturn {
+                _bicProgressState.value = false
+                _bankFindState.value = BankFind("Банк не найден", "")
+                bankEntity = null
+                CourierBillingAccountDataUIState.Error(
+                    "БИК банка не найден", focusChange.type
+                )
+            }
+            .defaultIfEmpty(defaultBank(focusChange.type))
+    }
+ */
 
     private val defaultBank = { type: CourierBillingAccountDataQueryType ->
         _bankFindState.value = BankFind("Введите БИК банка", "")
@@ -215,21 +245,20 @@ class CourierBillingAccountDataViewModel(
         CourierBillingAccountDataUIState.Error("Введите 9 цифр", type)
     }
 
+    @OptIn(FlowPreview::class)
     fun onFormChanges(changeObservables: ArrayList<Flow<CourierBillingAccountDataUIAction>>) {
         changeObservables
             .merge()
-            .map {
+            .flatMapConcat {
                 mapActionFormChanges(it)
             }
             .onEach {
                 _formUIState.value = it
             }
             .catch {
-                LogUtils { logDebugApp(it.toString()) }
+                LogUtils { logDebugApp(it.toString()) } // сразу упал когда я нажал на бик и попытался ввести первую цифру
             }
             .launchIn(viewModelScope)
-
-
     }
     /*
         fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountDataUIAction>>) {
@@ -254,14 +283,16 @@ class CourierBillingAccountDataViewModel(
             CourierBillingAccountDataQueryType.BIK -> checkFocusBikWrapper(action)
         }
 
+
     private fun checkFieldTextChange(action: CourierBillingAccountDataUIAction.TextChange) =
         when (action.type) {
             CourierBillingAccountDataQueryType.ACCOUNT -> checkTextAccountWrapper(action)
             CourierBillingAccountDataQueryType.BIK -> checkTextBikWrapper(action)
         }
 
+
     private fun checkFieldAll(action: CourierBillingAccountDataUIAction.SaveClick):
-            CourierBillingAccountDataUIState {
+            Flow<CourierBillingAccountDataUIState> {
         val iterator = action.userData.iterator()
         while (iterator.hasNext()) {
             val nextItem = iterator.next()
@@ -273,12 +304,38 @@ class CourierBillingAccountDataViewModel(
                 if (isCompleteChecker(predicate, text, type)) iterator.remove()
             }
         }
-        return if (action.userData.isEmpty()) {
-            CourierBillingAccountDataUIState.Next
-        } else {
-            CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
-        }
+        return flowOf(
+            if (action.userData.isEmpty()) {
+                CourierBillingAccountDataUIState.Next
+            } else {
+                CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
+            }
+        )
     }
+
+    /*
+     private fun checkFieldAll(action: CourierBillingAccountDataUIAction.SaveClick):
+            Observable<CourierBillingAccountDataUIState> {
+        val iterator = action.userData.iterator()
+        while (iterator.hasNext()) {
+            val nextItem = iterator.next()
+            with(nextItem) {
+                val predicate = when (type) {
+                    CourierBillingAccountDataQueryType.ACCOUNT -> accountPredicate
+                    CourierBillingAccountDataQueryType.BIK -> bikPredicate
+                }
+                if (isCompleteChecker(predicate, text, type)) iterator.remove()
+            }
+        }
+        return Observable.just(
+            if (action.userData.isEmpty()) {
+                CourierBillingAccountDataUIState.Next
+            } else {
+                CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
+            }
+        )
+    }
+     */
 
     private fun setButtonAndLoaderState(isAction: Boolean) {
         if (isAction) {
@@ -343,7 +400,7 @@ class CourierBillingAccountDataViewModel(
         }
         assert(newList.isNotEmpty())
         setButtonAndLoaderState(true)
-        viewModelScope.launch  {
+        viewModelScope.launch {
             try {
                 interactor.saveBillingAccounts(newList)
                 removeAccountComplete()

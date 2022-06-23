@@ -35,7 +35,6 @@ object OkHttpFactory {
     }
 
     fun createAppOkHttpClient(
-
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLogginInterceptor: HttpLoggingInterceptor,
         appMetricResponseInterceptor: AppMetricResponseInterceptor

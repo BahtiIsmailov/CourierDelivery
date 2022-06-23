@@ -147,7 +147,8 @@ class CourierBillingAccountSelectorFragment :
                 .map{
                 CourierBillingAccountSelectorUIAction.FocusChange(
                     editText.text.toString(),
-                    queryType
+                    queryType,
+                    it
                 )
             }
             //Observable.merge(textChanges, focusChanges).skip(2)

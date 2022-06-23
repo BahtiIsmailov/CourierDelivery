@@ -15,6 +15,7 @@ import ru.wb.go.reader.FreeTasksOfficesPath;
 import ru.wb.go.reader.FreeTasksPath;
 import ru.wb.go.reader.MockResponse;
 import ru.wb.go.reader.MockType;
+import ru.wb.go.utils.RebootApplication;
 
 public class AppMockResponseInterceptor implements Interceptor {
 
@@ -41,6 +42,7 @@ public class AppMockResponseInterceptor implements Interceptor {
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request request = getRequestBuilder(chain.request()).build();
         Response response = chain.proceed(request);
+
         return getResponseBuilder(request, response).build();
     }
 

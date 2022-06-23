@@ -300,6 +300,7 @@ class CourierLoadingScanViewModel(
         addSubscription(
             stop.subscribe()
         )
+
     }
 
     fun onCounterBoxClicked() {
@@ -329,6 +330,34 @@ class CourierLoadingScanViewModel(
         }
 
     }
+    /*
+     fun onCounterBoxClicked() {
+        stopScanner()
+        addSubscription(
+            interactor.loadingBoxBoxesGroupByOffice()
+                .map { loadingBoxes ->
+                    val items = mutableListOf<CourierLoadingDetailsItem>()
+                    loadingBoxes.localLoadingBoxEntity.forEach {
+                        items.add(
+                            CourierLoadingDetailsItem(
+                                it.address,
+                                resourceProvider.getAccepted(it.count)
+                            )
+                        )
+                    }
+                    CourierLoadingScanNavAction.InitAndShowLoadingItems(
+                        resourceProvider.getPvzCountTitle(loadingBoxes.pvzCount),
+                        resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
+                        items
+                    )
+                }.subscribe(
+                    {
+                        _navigationEvent.value = it
+                    }, {
+
+                    }
+                )
+     */
 
 
     fun onCloseDetailsClick() {

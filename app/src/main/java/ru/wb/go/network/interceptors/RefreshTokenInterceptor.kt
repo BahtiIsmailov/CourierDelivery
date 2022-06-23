@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import ru.wb.go.app.App
 import ru.wb.go.network.api.refreshtoken.RefreshResult
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.headers.HeaderManager
@@ -12,6 +13,7 @@ import ru.wb.go.network.headers.HeaderManager.Companion.TOKEN_AUTH
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
+import ru.wb.go.utils.RebootApplication
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.exitProcess
@@ -30,13 +32,15 @@ class RefreshTokenInterceptor(
 
         val request = chain.request()
         val builder = request.newBuilder()
+        var response = chain.proceed(builder.build())
+
+        if (response.code == 409) {
+            RebootApplication.doRestart(App.getContext())
+        }
+
         for ((key, value) in headerManager.headerApiMap) {
             builder.addHeader(key, value)
         }
-
-
-
-        var response = chain.proceed(builder.build())
 
         if (tokenManager.bearerToken().isEmpty() || tokenManager.refreshToken().isEmpty()) {
             return response

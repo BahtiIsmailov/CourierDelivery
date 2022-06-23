@@ -57,6 +57,8 @@ class ScannerInteractorImpl(
             }
         }
 
+
+
     private fun workWithScan(it:ScannerState){
         if (it is ScannerState.StartScan) {
             startTimer()

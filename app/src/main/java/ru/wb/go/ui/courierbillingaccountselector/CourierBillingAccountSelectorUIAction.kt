@@ -4,8 +4,8 @@ sealed class CourierBillingAccountSelectorUIAction {
 
     data class FocusChange(
         val text: String,
-        val type: CourierBillingAccountSelectorQueryType
-        //val hasFocus: Boolean
+        val type: CourierBillingAccountSelectorQueryType,
+        val hasFocus: Boolean
     ) :
         CourierBillingAccountSelectorUIAction()
 

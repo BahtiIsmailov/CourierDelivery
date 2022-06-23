@@ -15,5 +15,6 @@ interface ScannerInteractor {
 
       fun observeScannerState(): Flow<ScannerState>
 
+
 }
 
