@@ -104,13 +104,13 @@ class CourierBillingAccountDataFragment :
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
 
         viewModel.onFormChanges(changeFieldObservables())
+
         binding.removeAccountButton.setOnClickListener { viewModel.onRemoveAccountClick() }
 
     }
 
     private fun changeFieldObservables(): ArrayList<Flow<CourierBillingAccountDataUIAction>> {
         val changeTextObservables = ArrayList<Flow<CourierBillingAccountDataUIAction>>()
-        Log.e("changeFieldObservables","start1")
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.accountLayout,
@@ -197,7 +197,8 @@ class CourierBillingAccountDataFragment :
                 .map {
                     CourierBillingAccountDataUIAction.FocusChange(
                         editText.text.toString(),
-                        queryType
+                        queryType,
+                        it
                     )
                 }
 
