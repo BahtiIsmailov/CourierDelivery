@@ -3,6 +3,7 @@ package ru.wb.go.network.interceptors
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import ru.wb.go.app.App
 import ru.wb.go.utils.RebootApplication
 import ru.wb.go.utils.analytics.YandexMetricManager
 import java.io.IOException
@@ -16,7 +17,9 @@ class AppMetricResponseInterceptor(private val metric: YandexMetricManager) : In
         val request: Request = chain.request()
         val response: Response = chain.proceed(request)
 
-
+        if (response.code == 409) {
+            RebootApplication.doRestart(App.getContext())
+        }
         val url = request.url.toString()
         val singleApiMethod = "<-" + getSingleApiMethod(url)
         val responseBody = response.body!!

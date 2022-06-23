@@ -67,7 +67,6 @@ class CourierScannerViewModel(
     private fun observeHoldSplash() {
         interactor.observeHoldSplash()
             .onEach {
-                Log.e("ScannerTag","observeHoldSplash1 $it")
                 _scannerAction.emitEvent(ScannerState.StopScanWithHoldSplash)
             }
             .launchIn(viewModelScope)
@@ -77,6 +76,8 @@ class CourierScannerViewModel(
         interactor.prolongHoldTimer()
         interactor.barcodeScanned(barcode) //пришел баркот номер 1 1 1 135223
     }
+
+
 
     fun onHoldSplashClick() {
         interactor.prolongHoldTimer()

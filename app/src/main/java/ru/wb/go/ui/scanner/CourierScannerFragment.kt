@@ -206,7 +206,9 @@ open class CourierScannerFragment : BaseFragment() {
             startActivityForResult(intent, PERMISSION_FROM_SETTING_REQUEST_CODE)
         }
 
-        binding.holdSplash.setOnClickListener { viewModel.onHoldSplashClick() }
+        binding.holdSplash.setOnClickListener {
+            viewModel.onHoldSplashClick() // когда кликаем по экрану
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

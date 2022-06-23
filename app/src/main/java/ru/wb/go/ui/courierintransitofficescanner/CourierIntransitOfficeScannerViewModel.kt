@@ -98,7 +98,7 @@ class CourierIntransitOfficeScannerViewModel(
                     )
                 onCleared()
             }
-            CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
+            is CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
                 onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.UnknownQrOffice
                 _navigationState.value =
@@ -106,7 +106,7 @@ class CourierIntransitOfficeScannerViewModel(
                         "QR код офиса не распознан", "Повторите сканирование"
                     )
             }
-            CourierIntransitOfficeScanData.WrongOfficeScan -> {
+            is CourierIntransitOfficeScanData.WrongOfficeScan -> {
                 onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.WrongOffice
                 _navigationState.value =
@@ -114,8 +114,8 @@ class CourierIntransitOfficeScannerViewModel(
                         "Офис не принадлежит маршруту", "Повторите сканирование"
                     )
             }
-            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
-            CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
+            is CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
+            is CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
         }
     }
 

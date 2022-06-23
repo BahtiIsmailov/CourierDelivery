@@ -124,6 +124,9 @@ class CourierLoadingScanFragment :
                 viewModel.returnToListOrderClick()
             }
         }
+        setFragmentResultListener(DialogInfoFragment.ROUTE_ID) { key, bundle ->
+            binding.routeTV.text = bundle.getString("bundleKey")
+        }
     }
 
     private fun initView() {
@@ -131,9 +134,6 @@ class CourierLoadingScanFragment :
         (activity as NavDrawerListener).lockNavDrawer()
         binding.toolbarLayout.toolbarTitle.text = getText(R.string.courier_order_scanner_label)
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
-        setFragmentResultListener(DialogInfoFragment.ROUTE_ID) { key, bundle ->
-            binding.routeTV.text = bundle.getString("bundleKey")
-        }
     }
 
     private fun initObserver() {
@@ -184,7 +184,7 @@ class CourierLoadingScanFragment :
 
         val navigationObserver = Observer<CourierLoadingScanNavAction> { state ->
             when (state) {
-                CourierLoadingScanNavAction.NavigateToConfirmDialog -> {
+                is CourierLoadingScanNavAction.NavigateToConfirmDialog -> {
                     showDialogConfirmInfo(
                         DialogInfoStyle.INFO.ordinal,
                         getString(R.string.courier_loading_dialog_done_title),
@@ -193,7 +193,7 @@ class CourierLoadingScanFragment :
                         getString(R.string.courier_order_scanner_dialog_negative_button)
                     )
                 }
-                CourierLoadingScanNavAction.NavigateToWarehouse ->
+                is CourierLoadingScanNavAction.NavigateToWarehouse ->
                     findNavController().navigate(CourierLoadingScanFragmentDirections.actionCourierScannerLoadingScanFragmentToCourierWarehouseFragment())
                 is CourierLoadingScanNavAction.NavigateToStartDelivery ->
                     findNavController().navigate(
@@ -209,7 +209,7 @@ class CourierLoadingScanFragment :
 
                     bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
                 }
-                CourierLoadingScanNavAction.HideLoadingItems -> {
+                is CourierLoadingScanNavAction.HideLoadingItems -> {
                     bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }
@@ -245,6 +245,7 @@ class CourierLoadingScanFragment :
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierLoadingScanBoxState.InitScanner -> {
+                    //здесь блокировать сканер
                     with(binding) {
                         timerLayout.visibility = VISIBLE
                         boxInfoLayout.visibility = View.GONE
@@ -286,7 +287,7 @@ class CourierLoadingScanFragment :
                     }
 
                 }
-                CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
+                is CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
                     with(binding){
                         timerLayout.visibility = View.VISIBLE
                         boxInfoLayout.visibility = View.GONE
@@ -299,7 +300,7 @@ class CourierLoadingScanFragment :
                     holdBackButtonOnScanBox()
                     with(binding){
                         timerLayout.visibility = View.GONE
-                        boxInfoLayout.visibility = View.VISIBLE
+                        boxInfoLayout.visibility =  VISIBLE
                         ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
                         ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
                     }

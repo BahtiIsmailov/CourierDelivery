@@ -19,7 +19,6 @@ import ru.wb.go.network.token.TokenManager
 
 class AppRemoteRepositoryImpl(
     private val autentificatorIntercept: AutentificatorIntercept,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val remoteRepo: AppApi,
     private val tokenManager: TokenManager,
 ) : AppRemoteRepository {

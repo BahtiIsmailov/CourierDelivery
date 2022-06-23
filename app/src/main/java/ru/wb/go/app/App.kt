@@ -15,8 +15,22 @@ import ru.wb.go.network.monitor.NetworkMonitor
 
 class App : Application() {
 
+
+companion object{
+    private var instance: App? = null
+
+    fun getInstance(): App? {
+        return instance
+    }
+
+    fun getContext(): Context? {
+        return instance
+    }
+}
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
         initDI()
         initNetworkMonitor()
         initFirebaseAnalytics()
@@ -43,6 +57,10 @@ class App : Application() {
             )
         }
     }
+
+
+
+
 
     private fun initFirebaseAnalytics() {
         //val isEnable: Boolean = !BuildConfig.DEBUG

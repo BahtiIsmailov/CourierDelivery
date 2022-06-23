@@ -150,10 +150,10 @@ class CourierOrderTimerFragment : Fragment() {
         }
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierOrderTimerNavigationState.NavigateToWarehouse -> {
+                is CourierOrderTimerNavigationState.NavigateToWarehouse -> {
                     findNavController().navigate(CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierWarehouseFragment())
                 }
-                CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
+                is CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
                     CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierScannerLoadingScanFragment()
                 )
             }

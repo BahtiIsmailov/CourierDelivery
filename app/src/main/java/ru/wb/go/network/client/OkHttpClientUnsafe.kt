@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 object OkHttpClientUnsafe {
+
     @JvmStatic
     fun create(
         httpLoggerInterceptor: HttpLoggingInterceptor,
