@@ -104,13 +104,13 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
                     binding.update.visibility = View.VISIBLE
                     binding.update.isEnabled = true
                 }
-                CourierLoaderUIState.Progress -> {
+                is CourierLoaderUIState.Progress -> {
                     binding.progress.visibility = View.VISIBLE
                     binding.errorMessage.visibility = View.GONE
                     binding.update.visibility = View.GONE
                     binding.update.isEnabled = false
                 }
-                CourierLoaderUIState.Complete -> {
+                is CourierLoaderUIState.Complete -> {
                     binding.logo.visibility = View.INVISIBLE
                     binding.progress.visibility = View.INVISIBLE
                     binding.errorMessage.visibility = View.INVISIBLE

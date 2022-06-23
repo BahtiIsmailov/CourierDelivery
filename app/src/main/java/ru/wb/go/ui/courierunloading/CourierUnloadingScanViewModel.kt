@@ -266,6 +266,7 @@ class CourierUnloadingScanViewModel(
                 _completeButtonEnable.value = true
             }
             is CourierUnloadingScanBoxData.ForbiddenBox -> {
+                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
                 _fragmentStateUI.value = UnloadingFragmentState.ForbiddenBox(
                     UnloadingFragmentData(
                         resourceProvider.getReadyForbiddenBox(),
@@ -274,7 +275,7 @@ class CourierUnloadingScanViewModel(
                         accepted
                     )
                 )
-                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
+
             }
             is CourierUnloadingScanBoxData.WrongBox -> {
                 _fragmentStateUI.value = UnloadingFragmentState.WrongBox(

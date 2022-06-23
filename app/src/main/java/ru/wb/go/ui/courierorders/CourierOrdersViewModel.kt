@@ -358,7 +358,6 @@ class CourierOrdersViewModel(
                     interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)
             } catch (e: Exception) {
-                Log.e("initOrdersError",e.message?:"")
                 initOrdersError(e)
 
             }
@@ -783,9 +782,9 @@ class CourierOrdersViewModel(
                 interactor.anchorTask()
                 anchorTaskComplete()
             } catch (e: Exception) {
-
-                _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
                 anchorTaskError(e)
+                _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+
             }
         }
     }
