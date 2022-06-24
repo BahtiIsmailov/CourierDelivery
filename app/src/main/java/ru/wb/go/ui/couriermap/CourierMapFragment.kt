@@ -608,7 +608,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun updateMapMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
-        mapPoints.forEachIndexed(updateMapMarkerWithIndex)
+        mapPoints.forEach(updateMapMarkerWithIndex)
         binding.map.invalidate()
     }
 
@@ -639,9 +639,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
-    private val updateMapMarkerWithIndex = { index: Int, item: CourierMapMarker ->
+    private val updateMapMarkerWithIndex = {item: CourierMapMarker ->
         with(item) {
-            addMapMarker(
+            addMapMarker( // если поставить дебаг он отображает и склады и местоположение
                 point.id,
                 point.lat,
                 point.long,
@@ -677,6 +677,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
         markerMap.id = id
         markerMap.icon = icon
+//        markerMap.isDraggable = true позволяет перетаскивать флажок местоположения
         markerMap.position = GeoPoint(lat, long)
         markerMap.setAnchor(0.5f, 0.5f)
         binding.map.overlays.add(markerMap)

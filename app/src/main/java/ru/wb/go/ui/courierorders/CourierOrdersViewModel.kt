@@ -316,14 +316,11 @@ class CourierOrdersViewModel(
                     address.timeWork,
                 )
             else CourierOrdersNavigationState.CloseAddressesDetail
-
     }
 
 
     private fun updateAddressMarkers() {
-        viewModelScope.launch {
-            interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
-        }
+        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
@@ -361,7 +358,6 @@ class CourierOrdersViewModel(
                 initOrdersComplete(height)
             } catch (e: Exception) {
                 initOrdersError(e)
-
             }
         }
     }

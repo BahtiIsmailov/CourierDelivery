@@ -69,6 +69,7 @@ class CourierWarehousesViewModel(
 
     private var whSelectedId: Int? = null
 
+
     fun resumeInit() {
         observeMapAction()
         checkDemoMode()
@@ -94,7 +95,6 @@ class CourierWarehousesViewModel(
                 observeMapActionError(it)
             }
             .launchIn(viewModelScope)
-
     }
 
 
@@ -138,6 +138,20 @@ class CourierWarehousesViewModel(
             }
         }
     }
+
+    /*
+        private fun getWarehouses() {
+        setLoader(WaitLoader.Wait)
+        addSubscription(
+            interactor.getWarehouses()
+                .doFinally { clearFabAndWhList() }
+                .subscribe(
+                    { getWarehousesComplete(it) },
+                    { getWarehousesError(it) }
+                )
+        )
+    }
+     */
 
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
         sortedWarehouseEntities(it)// done size warehouses

@@ -44,7 +44,6 @@ class CourierWarehousesFragment :
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.updateData()
         initView()
         initRecyclerView()
         initObservable()
@@ -164,7 +163,7 @@ class CourierWarehousesFragment :
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
+                is CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
@@ -176,7 +175,7 @@ class CourierWarehousesFragment :
                             )
                         )
                     )
-                CourierWarehousesNavigationState.NavigateToRegistration -> {
+                is CourierWarehousesNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
                     )
