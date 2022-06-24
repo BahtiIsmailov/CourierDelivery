@@ -184,7 +184,7 @@ class CourierUnloadingScanFragment :
             when (state) {
                 is CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
                 is CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
-                CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
+                is CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
             }
         }
 

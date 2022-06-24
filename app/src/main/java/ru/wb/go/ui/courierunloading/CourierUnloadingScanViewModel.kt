@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -171,10 +172,12 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcess() {
+        holdSplashScanner()
         interactor.observeScanProcess(parameters.officeId)
             .onEach {
-                holdSplashScanner()
                 observeScanProcessComplete(it)
+                delay(2000)
+                onStartScanner()
             }
             .catch {
                 onTechErrorLog("observeScanProcessError", it)
@@ -372,10 +375,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun onStartScanner() {
-
         interactor.scannerAction(ScannerState.StartScan)
-
-
     }
 
     fun onScoreDialogInfoClick() {
