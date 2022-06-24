@@ -244,8 +244,9 @@ class CourierOrdersViewModel(
             is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
             is CourierMapAction.MapClick -> showManagerBar()
             is CourierMapAction.ShowAll -> onShowAllClick()
-            CourierMapAction.AnimateComplete -> {}
-            is CourierMapAction.LocationUpdate -> {}
+            //is CourierMapAction.AnimateComplete -> {}
+            //is CourierMapAction.LocationUpdate -> {}
+            else -> {}
         }
     }
 
@@ -600,12 +601,10 @@ class CourierOrdersViewModel(
     }
 
      fun onNextFab() {
-
         initOrderDetails(interactor.selectedRowOrder())
         _showOrderState.value = CourierOrderShowOrdersState.Invisible
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-
     }
 
     fun onAddressesClick() {
@@ -616,7 +615,6 @@ class CourierOrdersViewModel(
         CoordinatePoint(parameters.warehouseLatitude, parameters.warehouseLongitude)
 
     private fun initOrderDetails(itemIndex: Int) {
-
         with(orderLocalDataEntities[itemIndex]) {
             initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
             convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
@@ -633,8 +631,6 @@ class CourierOrdersViewModel(
                 offsetY = DETAILS_HEIGHT
             )
         )
-
-
     }
 
     private fun removeWarehouseFromAddressMapMarker() {

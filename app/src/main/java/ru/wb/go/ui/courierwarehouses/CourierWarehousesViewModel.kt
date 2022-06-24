@@ -70,9 +70,8 @@ class CourierWarehousesViewModel(
     private var whSelectedId: Int? = null
 
     fun resumeInit() {
-        checkDemoMode()
         observeMapAction()
-
+        checkDemoMode()
     }
 
     private fun checkDemoMode() {
@@ -203,7 +202,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-
         onTechEventLog("initMapByLocation")
         myLocation = location
         if (coordinatePoints.isEmpty()) {
@@ -217,7 +215,6 @@ class CourierWarehousesViewModel(
 
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
         Log.e("test", "updateMarkersWithMyLocation : $mapMarkers")
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
@@ -225,7 +222,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
-
         if (coordinatePoints.isNotEmpty()) {
             val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
                 coordinatePoints, myLocation, RADIUS_KM

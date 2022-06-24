@@ -44,6 +44,7 @@ class CourierWarehousesFragment :
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.updateData()
         initView()
         initRecyclerView()
         initObservable()
@@ -188,7 +189,7 @@ class CourierWarehousesFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener { viewModel.updateData() }//1
+        binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }

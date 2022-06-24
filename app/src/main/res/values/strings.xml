@@ -282,7 +282,7 @@
 
     <string name="courier_orders_timer_dialog_title">Время вышло</string>
     <string name="courier_orders_timer_dialog_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
-    <string name="courier_orders_timer_dialog_button">Вернуться к списку заказов</string>
+    <string name="courier_orders_timer_dialog_button">Вернуться к списку складов</string>
 
     <string name="courier_orders_timer_dialog_skip_title">Отказаться от заказа</string>
     <string name="courier_orders_timer_dialog_skip_message">Вы уверены, что хотите отказаться от заказа?</string>
