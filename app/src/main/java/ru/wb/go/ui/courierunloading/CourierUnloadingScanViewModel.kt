@@ -163,6 +163,8 @@ class CourierUnloadingScanViewModel(
                 setLoader(WaitLoader.Complete)
                 clearSubscription()
             } catch (e: Exception) {
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
                 onTechErrorLog("confirmUnload", e)
             }
         }
@@ -334,7 +336,7 @@ class CourierUnloadingScanViewModel(
         resourceProvider.getUnloadingDetails(index, boxId.takeLast(3))
 
     fun onCompleteUnloadClick() {
-        _completeButtonEnable.value = false
+        //_completeButtonEnable.value = false
         onStopScanner()
         viewModelScope.launch {
             try {
@@ -345,8 +347,8 @@ class CourierUnloadingScanViewModel(
                     showUnloadingScoreDialog(it)
                 }
             } catch (e: Exception) {
-                onTechErrorLog("readUnloadingBoxCounterError", e)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+                onTechErrorLog("readUnloadingBoxCounterError", e)
             }
         }
 
@@ -366,9 +368,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun onStopScanner() {
-
         interactor.scannerAction(ScannerState.StopScan)
-
     }
 
     private fun onStartScanner() {

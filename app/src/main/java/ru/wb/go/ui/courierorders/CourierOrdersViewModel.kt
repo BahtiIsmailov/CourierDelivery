@@ -44,6 +44,7 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import java.net.UnknownHostException
 import java.text.DecimalFormat
 
 class CourierOrdersViewModel(
@@ -783,7 +784,7 @@ class CourierOrdersViewModel(
                 anchorTaskComplete()
             } catch (e: Exception) {
                 anchorTaskError(e)
-                _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+//                _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
 
             }
         }
@@ -805,7 +806,8 @@ class CourierOrdersViewModel(
             }
         } else if (it is HttpObjectNotFoundException) {
             taskRejected()
-        } else {
+        }
+        else {
             errorDialogManager.showErrorDialog(
                 it,
                 _navigateToDialogInfo,

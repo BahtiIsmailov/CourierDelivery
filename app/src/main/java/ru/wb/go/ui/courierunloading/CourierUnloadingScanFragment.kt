@@ -161,11 +161,11 @@ class CourierUnloadingScanFragment :
 
         val navigationObserver = Observer<CourierUnloadingScanNavAction> { state ->
             when (state) {
-                CourierUnloadingScanNavAction.NavigateToIntransit ->
+                is CourierUnloadingScanNavAction.NavigateToIntransit ->
                     findNavController().navigate(
                         CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment()
                     )
-                CourierUnloadingScanNavAction.HideUnloadingItems -> {
+                is CourierUnloadingScanNavAction.HideUnloadingItems -> {
                     bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
                     binding.completeButton.visibility = VISIBLE
                 }
