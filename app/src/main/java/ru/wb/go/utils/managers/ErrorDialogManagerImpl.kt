@@ -56,12 +56,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     title = context.getString(R.string.error_title),
                     message = (error.message ?: error.toString())
                 )
-//                ErrorDialogData(
-//                    dlgTag = dlgTag,
-//                    type = DialogInfoStyle.ERROR.ordinal,
-//                    title = context.getString(R.string.error_title),
-//                    message = context.getString(R.string.http_400_exception)
-//                )
+
             }
         }
 
