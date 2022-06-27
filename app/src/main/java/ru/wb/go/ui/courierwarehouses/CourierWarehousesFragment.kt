@@ -163,7 +163,7 @@ class CourierWarehousesFragment :
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
+                is CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
@@ -175,7 +175,7 @@ class CourierWarehousesFragment :
                             )
                         )
                     )
-                CourierWarehousesNavigationState.NavigateToRegistration -> {
+                is CourierWarehousesNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
                     )
@@ -188,7 +188,7 @@ class CourierWarehousesFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener { viewModel.updateData() }//1
+        binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }

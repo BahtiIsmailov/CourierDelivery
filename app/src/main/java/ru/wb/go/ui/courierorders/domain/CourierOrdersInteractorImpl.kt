@@ -123,7 +123,6 @@ class CourierOrdersInteractorImpl(
 
     override fun selectedRowOrder(): Int {
         return sharedWorker.load(SELECTED_ORDER_INDEX_KEY, 0)
-
     }
 
     private fun convertCourierOrderDstOfficesLocalEntity(
@@ -216,7 +215,7 @@ class CourierOrdersInteractorImpl(
 
     override suspend fun anchorTask() {
         val courierOrderLocalDataEntity = selectedOrder(selectedRowOrder())
-        val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()// null here
+        val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()
         val localOrderEntity = convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
         reserveTask(localOrderEntity)
         orderId = localOrderEntity.orderId.toString()

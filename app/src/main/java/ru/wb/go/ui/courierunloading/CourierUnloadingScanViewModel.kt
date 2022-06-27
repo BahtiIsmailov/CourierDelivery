@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -163,16 +164,20 @@ class CourierUnloadingScanViewModel(
                 setLoader(WaitLoader.Complete)
                 clearSubscription()
             } catch (e: Exception) {
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
                 onTechErrorLog("confirmUnload", e)
             }
         }
     }
 
     private fun observeScanProcess() {
+        holdSplashScanner()
         interactor.observeScanProcess(parameters.officeId)
             .onEach {
-                holdSplashScanner()
                 observeScanProcessComplete(it)
+                delay(2000)
+                onStartScanner()
             }
             .catch {
                 onTechErrorLog("observeScanProcessError", it)
@@ -266,6 +271,7 @@ class CourierUnloadingScanViewModel(
                 _completeButtonEnable.value = true
             }
             is CourierUnloadingScanBoxData.ForbiddenBox -> {
+                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
                 _fragmentStateUI.value = UnloadingFragmentState.ForbiddenBox(
                     UnloadingFragmentData(
                         resourceProvider.getReadyForbiddenBox(),
@@ -274,7 +280,7 @@ class CourierUnloadingScanViewModel(
                         accepted
                     )
                 )
-                _beepEvent.value = CourierUnloadingScanBeepState.UnknownBox
+
             }
             is CourierUnloadingScanBoxData.WrongBox -> {
                 _fragmentStateUI.value = UnloadingFragmentState.WrongBox(
@@ -333,7 +339,7 @@ class CourierUnloadingScanViewModel(
         resourceProvider.getUnloadingDetails(index, boxId.takeLast(3))
 
     fun onCompleteUnloadClick() {
-        _completeButtonEnable.value = false
+        //_completeButtonEnable.value = false
         onStopScanner()
         viewModelScope.launch {
             try {
@@ -344,8 +350,8 @@ class CourierUnloadingScanViewModel(
                     showUnloadingScoreDialog(it)
                 }
             } catch (e: Exception) {
-                onTechErrorLog("readUnloadingBoxCounterError", e)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+                onTechErrorLog("readUnloadingBoxCounterError", e)
             }
         }
 
@@ -365,16 +371,11 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun onStopScanner() {
-
         interactor.scannerAction(ScannerState.StopScan)
-
     }
 
     private fun onStartScanner() {
-
         interactor.scannerAction(ScannerState.StartScan)
-
-
     }
 
     fun onScoreDialogInfoClick() {

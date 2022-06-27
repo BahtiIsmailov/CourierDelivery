@@ -94,22 +94,24 @@ class CourierOrderTimerFragment : Fragment() {
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderTimerInfoUIState.InitOrderInfo -> {
-                    binding.order.text = it.order
-                    binding.name.text = it.name
-                    binding.coast.text = it.coast
-                    binding.volume.text = it.countBoxAndVolume
-                    binding.pvz.text = it.countPvz
-                    binding.gate.text =
-                        if (it.gate == "0") {
-                            binding.gateDigit.isGone = true
-                            requireContext().getString(R.string.courier_loading_pandus)
-                        } else {
-                            binding.gateDigit.isVisible = true
-                            binding.gateDigit.text = it.gate
-                            requireContext().getString(
-                                R.string.courier_loading_gate
-                            )
-                        }
+                    with(binding) {
+                        order.text = it.order
+                        name.text = it.name
+                        coast.text = it.coast
+                        volume.text = it.countBoxAndVolume
+                        pvz.text = it.countPvz
+                        gate.text =
+                            if (it.gate == "0") {
+                                gateDigit.isGone = true
+                                requireContext().getString(R.string.courier_loading_pandus)
+                            } else {
+                                gateDigit.isVisible = true
+                                gateDigit.text = it.gate
+                                requireContext().getString(
+                                    R.string.courier_loading_gate
+                                )
+                            }
+                    }
                 }
             }
         }

@@ -257,6 +257,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
         viewModel.clearMap.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","clearMap")
             clearMap()
         }
 
@@ -277,10 +278,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
         viewModel.updateMarkers.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMarkers")
             updateMarkers(it.points)
         }
 
         viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMarkersWithIndex")
             updateMarkersWithIndex(it.points)
         }
         viewModel.navigateToMarker.observe(viewLifecycleOwner) {
@@ -296,6 +299,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
         viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
@@ -608,7 +612,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun updateMapMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
-        mapPoints.forEachIndexed(updateMapMarkerWithIndex)
+        mapPoints.forEach(updateMapMarkerWithIndex)
         binding.map.invalidate()
     }
 
@@ -639,9 +643,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
-    private val updateMapMarkerWithIndex = { index: Int, item: CourierMapMarker ->
+    private val updateMapMarkerWithIndex = {item: CourierMapMarker ->
+
         with(item) {
-            addMapMarker(
+            addMapMarker( // если поставить дебаг он отображает и склады и местоположение
                 point.id,
                 point.lat,
                 point.long,
@@ -677,6 +682,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
         markerMap.id = id
         markerMap.icon = icon
+//        markerMap.isDraggable = true позволяет перетаскивать флажок местоположения
         markerMap.position = GeoPoint(lat, long)
         markerMap.setAnchor(0.5f, 0.5f)
         binding.map.overlays.add(markerMap)
@@ -892,7 +898,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val width = mapView.width
         val height = mapView.height
         val pScreenWidth = width - (leftPx + rightPx)
-        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(2) // не даст значению стать меньше 2
+        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
         val nextZoom = MapView.getTileSystem()
             .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
 
@@ -906,7 +912,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             mapView.isVerticalMapRepetitionEnabled,
             mapView.mapCenterOffsetX,
             mapView.mapCenterOffsetY
-        //TODO(надо разобраться с багом крайней южной точкой )
         )
 
 
@@ -915,12 +920,21 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val lonPerPx = (southEast.longitude - northWest.longitude) / width
         val latPerPx = (southEast.latitude - northWest.latitude) / height
 
-        return BoundingBox(
-            latNorth - topPx * latPerPx,
-            lonEast + rightPx * lonPerPx,
-            latSouth + bottomPx * latPerPx,
-            lonWest - leftPx * lonPerPx
-        )
+        return try{
+            BoundingBox(
+                latNorth - topPx * latPerPx,
+                lonEast + rightPx * lonPerPx,
+                latSouth + bottomPx * latPerPx,
+                lonWest - leftPx * lonPerPx
+            )
+        }catch (e:Exception){
+            BoundingBox(
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            )
+        }
 
     }
 

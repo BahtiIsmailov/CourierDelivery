@@ -108,9 +108,7 @@ class CourierOrdersFragment :
         override  fun handleOnBackPressed() {
             when {
                 isOrdersExpanded() -> { viewModel.onCloseOrdersClick() }
-                isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
-
-                }
+                isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
         }
@@ -166,11 +164,8 @@ class CourierOrdersFragment :
 
 
     override fun onDestroyView() {
-        //viewModel.clearSubscription()
+        viewModel.clearSubscription()
         viewModel.clearMap()
-        //TODO(технический долг!!!!!!!, временное решение для того чтоб заказы не отображались на карте
-        // со складами но по хорошему надо переписать метод из вью модели initOrders() в нем метод очистить и сохранить
-        // точки на карте)
         super.onDestroyView()
     }
 
@@ -276,15 +271,15 @@ class CourierOrdersFragment :
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
-                CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
-                CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
+                is CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
+                is CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
+                is CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
                 is CourierOrdersNavigationState.NavigateToOrderDetails ->
                     showBottomSheetOrderDetails(it.isDemo)
-                CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
-                CourierOrdersNavigationState.NavigateToRegistrationDialog ->
+                is CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
+                is CourierOrdersNavigationState.NavigateToRegistrationDialog ->
                     showRegistrationDialogConfirmInfo()
-                CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
+                is CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
                     ResourcesCompat.getDrawable(resources, it.icon, null)
                         ?.let { binding.iconAddress.setImageDrawable(it) }
@@ -294,12 +289,12 @@ class CourierOrdersFragment :
                         fadeOut(binding.addressDetailLayout).start()
                     }
                 }
-                CourierOrdersNavigationState.CloseAddressesDetail -> {
+                is CourierOrdersNavigationState.CloseAddressesDetail -> {
                     fadeIn(binding.addressDetailLayout).start()
                 }
-                CourierOrdersNavigationState.OnMapClick ->
+                is CourierOrdersNavigationState.OnMapClick ->
                     if (isOrderDetailsExpanded()) viewModel.onMapClickWithDetail()
-                CourierOrdersNavigationState.CourierLoader ->
+                is CourierOrdersNavigationState.CourierLoader ->
                     findNavController().navigate(
                         CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
                     )

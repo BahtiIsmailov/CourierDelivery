@@ -7,8 +7,10 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.exceptions.UnknownException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -17,6 +19,7 @@ import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.utils.analytics.YandexMetricManager
+import java.net.UnknownHostException
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
@@ -217,12 +220,12 @@ class CheckSmsViewModel(
     private fun authError(throwable: Throwable) {
         onTechErrorLog("authError", throwable)
         _checkSmsUIState.value = when (throwable) {
-            is NoInternetException -> CheckSmsUIState.MessageError(
+            is NoInternetException,is UnknownHostException -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> {
+            is BadRequestException  -> {
                 with(throwable.error) {
                     val restartTimer = if (data == null) {
                         DURATION_TIME_INIT

@@ -44,6 +44,7 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import java.net.UnknownHostException
 import java.text.DecimalFormat
 
 class CourierOrdersViewModel(
@@ -243,8 +244,9 @@ class CourierOrdersViewModel(
             is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
             is CourierMapAction.MapClick -> showManagerBar()
             is CourierMapAction.ShowAll -> onShowAllClick()
-            CourierMapAction.AnimateComplete -> {}
-            is CourierMapAction.LocationUpdate -> {}
+            //is CourierMapAction.AnimateComplete -> {}
+            //is CourierMapAction.LocationUpdate -> {}
+            else -> {}
         }
     }
 
@@ -314,14 +316,11 @@ class CourierOrdersViewModel(
                     address.timeWork,
                 )
             else CourierOrdersNavigationState.CloseAddressesDetail
-
     }
 
 
     private fun updateAddressMarkers() {
-        viewModelScope.launch {
-            interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
-        }
+        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
@@ -358,9 +357,7 @@ class CourierOrdersViewModel(
                     interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
                 initOrdersComplete(height)
             } catch (e: Exception) {
-                Log.e("initOrdersError",e.message?:"")
                 initOrdersError(e)
-
             }
         }
     }
@@ -603,12 +600,10 @@ class CourierOrdersViewModel(
     }
 
      fun onNextFab() {
-
         initOrderDetails(interactor.selectedRowOrder())
         _showOrderState.value = CourierOrderShowOrdersState.Invisible
         _navigationState.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
-
     }
 
     fun onAddressesClick() {
@@ -619,7 +614,6 @@ class CourierOrdersViewModel(
         CoordinatePoint(parameters.warehouseLatitude, parameters.warehouseLongitude)
 
     private fun initOrderDetails(itemIndex: Int) {
-
         with(orderLocalDataEntities[itemIndex]) {
             initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
             convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
@@ -636,8 +630,6 @@ class CourierOrdersViewModel(
                 offsetY = DETAILS_HEIGHT
             )
         )
-
-
     }
 
     private fun removeWarehouseFromAddressMapMarker() {
@@ -786,9 +778,9 @@ class CourierOrdersViewModel(
                 interactor.anchorTask()
                 anchorTaskComplete()
             } catch (e: Exception) {
-
-                _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
                 anchorTaskError(e)
+//                _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
+
             }
         }
     }
@@ -809,7 +801,8 @@ class CourierOrdersViewModel(
             }
         } else if (it is HttpObjectNotFoundException) {
             taskRejected()
-        } else {
+        }
+        else {
             errorDialogManager.showErrorDialog(
                 it,
                 _navigateToDialogInfo,

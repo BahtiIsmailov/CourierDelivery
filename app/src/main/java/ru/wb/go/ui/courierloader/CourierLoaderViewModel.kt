@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
+import ru.wb.go.R
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
@@ -24,6 +25,7 @@ import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
+import java.net.UnknownHostException
 
 class CourierLoaderViewModel(
     compositeDisposable: CompositeDisposable,
@@ -215,8 +217,9 @@ private fun onRxError(throwable: Throwable) {
         is BadRequestException -> {
             _state.value = CourierLoaderUIState.Error(throwable.message.toString())
         }
-        is NoInternetException ->
-            _state.value = CourierLoaderUIState.Error(throwable.message)
+        is NoInternetException, is UnknownHostException, is IllegalStateException -> {
+            _state.value = CourierLoaderUIState.Error("Возможно отсутствует интернет или низкая скорость соединения")
+        }
         else -> {
             _state.value = CourierLoaderUIState.Error(throwable.toString())
         }
