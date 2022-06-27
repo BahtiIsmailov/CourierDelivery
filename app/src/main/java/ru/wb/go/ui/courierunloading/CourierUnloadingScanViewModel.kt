@@ -164,12 +164,32 @@ class CourierUnloadingScanViewModel(
                 setLoader(WaitLoader.Complete)
                 clearSubscription()
             } catch (e: Exception) {
-                setLoader(WaitLoader.Complete)
-                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
                 onTechErrorLog("confirmUnload", e)
+            }finally {
+                _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+                setLoader(WaitLoader.Complete)
+                clearSubscription()
             }
         }
     }
+
+    /*
+      addSubscription(
+            interactor.completeOfficeUnload()
+                .doFinally {
+                    _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+                    setLoader(WaitLoader.Complete)
+                    clearSubscription()
+                }
+                .subscribe(
+                    {
+
+                    },
+                    {
+                        onTechErrorLog("confirmUnload", it)
+                    })
+        )
+     */
 
     private fun observeScanProcess() {
         holdSplashScanner()

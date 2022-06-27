@@ -152,9 +152,10 @@ open class CourierScannerFragment : BaseFragment() {
                 ScannerState.StartScan -> startScanning()
                 ScannerState.StopScan -> stopScanning()
                 ScannerState.StopScanWithHoldSplash -> holdSplash()
-                ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
-                ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
-                ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
+               // ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
+               // ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
+                //ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
+                else -> {}
             }
         }
 
