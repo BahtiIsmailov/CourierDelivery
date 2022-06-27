@@ -120,18 +120,6 @@ class CourierIntransitViewModel(
             .launchIn(viewModelScope)
     }
 
-//    private fun observeOffices() {
-//        addSubscription(
-//            interactor.getOffices()
-//                .subscribe({ initOfficesComplete(it) },
-//                    {
-//                        onTechErrorLog("Get Offices", it)
-//                        errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
-//                    })
-//        )
-//    }
-//
-
 
     private fun initTime() {
         interactor.observeOrderTimer()
@@ -142,17 +130,6 @@ class CourierIntransitViewModel(
             .catch {}
             .launchIn(viewModelScope)
     }
-
-//    private fun initTime() {
-//        addSubscription(
-//            interactor.observeOrderTimer()
-//                .subscribe({
-//                    _intransitTime.value = CourierIntransitTimeState.Time(
-//                        DateTimeFormatter.getDigitFullTime(it.toInt())
-//                    )
-//                }, {})
-//        )
-//    }
 
 
     private fun setLoader(state: WaitLoader) {
@@ -171,12 +148,13 @@ class CourierIntransitViewModel(
             .launchIn(viewModelScope)
     }
 
-
     private fun observeMapActionComplete(it: CourierMapAction) {
         when (it) {
-            is CourierMapAction.ItemClick -> onMapPointClick(it.point)
+            is CourierMapAction.ItemClick -> {
+                onMapPointClick(it.point)
+            }
             is CourierMapAction.MapClick -> showManagerBar()
-            CourierMapAction.ShowAll -> onShowAllClick()
+            is CourierMapAction.ShowAll -> onShowAllClick()
             else -> {}
         }
     }
@@ -211,7 +189,13 @@ class CourierIntransitViewModel(
             val normalIcon = getNormalMapIcon(item.type)
             item.icon =
                 if (item.point.id == mapPointClickId)
-                    if (isSelected) getSelectedMapIcon(item.type) else normalIcon
+                    if (isSelected) {
+                        changeEnableNavigator(true)
+                        getSelectedMapIcon(item.type)
+                    } else {
+                        changeEnableNavigator(false)
+                        normalIcon
+                    }
                 else normalIcon
         }
     }

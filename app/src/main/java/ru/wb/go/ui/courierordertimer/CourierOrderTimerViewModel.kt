@@ -106,14 +106,6 @@ class CourierOrderTimerViewModel(
         interactor.startTimer(reservedDuration, reservedAt)
     }
 
-//     private fun initTimer(reservedDuration: String, reservedAt: String) {
-//        updateTimer(0, 0)
-//        interactor.startTimer(reservedDuration, reservedAt)
-//        addSubscription(
-//            interactor.timer
-//                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
-//        )
-//    }
 
     private fun onHandleSignUpState(timerState: TimerState) {
         timerState.handle(this)
@@ -194,30 +186,12 @@ class CourierOrderTimerViewModel(
             } catch (e: Exception) {
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+                _navigationState.value =
+                    CourierOrderTimerNavigationState.NavigateToWarehouse
             }
         }
 
     }
-    /*
-    private fun deleteTask() {
-
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.deleteTask()
-                .subscribe(
-                    {
-                        setLoader(WaitLoader.Complete)
-                        onTechEventLog("toWarehouse")
-                        _navigationState.value =
-                            CourierOrderTimerNavigationState.NavigateToWarehouse
-                        _timeOut.postValue(false)
-                    },
-                    {
-                        setLoader(WaitLoader.Complete)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-
-                    }
-     */
 
     fun getOrderId() {
         viewModelScope.launch {
