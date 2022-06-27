@@ -3,8 +3,6 @@ package ru.wb.go.ui.app
 import CheckInternet
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -46,7 +44,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.support.SupportFragment
 import ru.wb.go.utils.SoftKeyboard
-import kotlin.system.exitProcess
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,

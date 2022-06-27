@@ -1,10 +1,8 @@
 package ru.wb.go.ui.scanner
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.wb.go.app.AppPreffsKeys
@@ -12,31 +10,16 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.Event
 import ru.wb.go.utils.analytics.YandexMetricManager
-import ru.wb.go.utils.emitEvent
 import ru.wb.go.utils.managers.SettingsManager
 
 class CourierScannerViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: ScannerInteractor,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
-//    private val _scannerAction = SingleLiveEvent<ScannerState>()
-//    val scannerAction: LiveData<ScannerState>
-//        get() = _scannerAction
-
-//    private val _scannerAction = Channel<ScannerState>(capacity = Int.MAX_VALUE)
-//    val scannerAction: Flow<ScannerState>
-//        get() = _scannerAction.receiveAsFlow()
-
-
-//    private val _scannerAction = MutableLiveData<Event<ScannerState>>()
-//    val scannerAction: LiveData<Event<ScannerState>> = _scannerAction
-
-    private val _scannerAction = SingleLiveEvent<ScannerState>()
+     private val _scannerAction = SingleLiveEvent<ScannerState>()
     val scannerAction: LiveData<ScannerState>
         get() = _scannerAction
 
@@ -90,7 +73,8 @@ class CourierScannerViewModel(
     }
 
     fun onDestroy() {
-        clearSubscription() // backStack
+        viewModelScope.coroutineContext.cancelChildren()
+        //clearSubscription() // backStack
     }
 
     fun switchFlashlight() {

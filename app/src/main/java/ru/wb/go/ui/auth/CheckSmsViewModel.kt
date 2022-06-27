@@ -3,14 +3,10 @@ package ru.wb.go.ui.auth
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
-import ru.wb.go.network.exceptions.UnknownException
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -23,11 +19,10 @@ import java.net.UnknownHostException
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CheckSmsInteractor,
     private val resourceProvider: AuthResourceProvider,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
+) : TimerStateHandler, NetworkViewModel(metric) {
 
     private val _stateTitleUI = MutableLiveData<InitTitle>()
     val stateTitleUI: LiveData<InitTitle>

@@ -3,11 +3,10 @@ package ru.wb.go.ui.courierintransitofficescanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScanData
@@ -21,13 +20,12 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 
 class CourierIntransitOfficeScannerViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierIntransitOfficeScannerInteractor,
     private val resourceProvider: CourierIntransitOfficeScannerResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -126,7 +124,8 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     fun onDestroy() {
-        clearSubscription()
+        viewModelScope.coroutineContext.cancelChildren()
+        //clearSubscription()
     }
 
     fun onErrorDialogConfirmClick() {

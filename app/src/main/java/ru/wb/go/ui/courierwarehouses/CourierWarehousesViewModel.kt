@@ -1,10 +1,8 @@
 package ru.wb.go.ui.courierwarehouses
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -29,12 +27,11 @@ import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 
 class CourierWarehousesViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
     val warehouseState: LiveData<CourierWarehouseItemState>
@@ -350,7 +347,7 @@ class CourierWarehousesViewModel(
             val oldEntity = warehouseEntities[index].copy()
             interactor.clearAndSaveCurrentWarehouses(oldEntity)
             navigateToCourierOrders(oldEntity)
-            clearSubscription()
+            //clearSubscription()
         }
     }
 

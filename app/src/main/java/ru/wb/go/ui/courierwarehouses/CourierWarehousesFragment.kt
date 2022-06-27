@@ -8,13 +8,11 @@ import android.view.View.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
-import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
@@ -217,7 +215,7 @@ class CourierWarehousesFragment :
 
     override fun onPause() {
         super.onPause()
-        viewModel.clearSubscription()
+        //viewModel.clearSubscription()
     }
 
     private fun showDialogInfo(

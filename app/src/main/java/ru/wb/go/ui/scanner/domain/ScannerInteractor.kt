@@ -1,11 +1,10 @@
 package ru.wb.go.ui.scanner.domain
 
-import io.reactivex.functions.Action
 import kotlinx.coroutines.flow.Flow
 
 interface ScannerInteractor {
 
-      fun observeHoldSplash(): Flow<Action>
+      fun observeHoldSplash(): Flow<Unit>
 
       fun barcodeScanned(barcode: String)
 

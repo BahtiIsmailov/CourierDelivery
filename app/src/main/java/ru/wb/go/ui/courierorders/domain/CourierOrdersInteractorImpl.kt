@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierorders.domain
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -17,7 +16,6 @@ import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
@@ -31,7 +29,6 @@ import ru.wb.go.utils.prefs.SharedWorker
 import java.util.*
 
 class CourierOrdersInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val appTasksRepository: AppTasksRepository,
@@ -42,7 +39,7 @@ class CourierOrdersInteractorImpl(
     private val tokenManager: TokenManager,
     private val timeManager: TimeManager,
     private val sharedWorker: SharedWorker
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierOrdersInteractor {
 
     private fun List<CourierOrderDstOfficeEntity>.sortByUnusualTimeAndAddress(): List<CourierOrderDstOfficeEntity> {
@@ -71,33 +68,6 @@ class CourierOrdersInteractorImpl(
             .map { it.toMutableList() }
             .onEach {  }
     }
-
-    /*
-        override fun freeOrdersLocalClearAndSave(srcOfficeID: Int): Single<MutableList<CourierOrderLocalDataEntity>> {
-        return appTasksRepository.getFreeOrders(srcOfficeID)
-            .map { freeOrders ->
-                val sortedFreeOrders = freeOrders.sortedBy { it.id }
-                sortedFreeOrders.forEach {
-                    it.dstOffices = it.dstOffices.sortByUnusualTimeAndAddress()
-                }
-                sortedFreeOrders
-            }
-            .flatMap {
-                courierLocalRepository.deleteAllOrder()
-                courierLocalRepository.deleteAllOrderOffices()
-                val localEntity = toCourierOrderLocalDataEntities(it)
-                courierLocalRepository.saveFreeOrders(localEntity)
-                    .andThen(Single.just(localEntity))
-            }
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-     */
-
-//    override fun freeOrdersLocal(): Single<MutableList<CourierOrderLocalDataEntity>> {
-//        return courierLocalRepository.freeOrders()
-//            .map { it.toMutableList() }
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
     private fun toCourierOrderLocalDataEntities(it: List<CourierOrderEntity>): List<CourierOrderLocalDataEntity> {
 
@@ -176,10 +146,6 @@ class CourierOrdersInteractorImpl(
 
     }
 
-//    override fun selectedOrder(rowOrder: Int): Single<CourierOrderLocalDataEntity> { //сюда приходит 0
-//        return courierLocalRepository.orderAndOffices(rowOrder)
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
     override fun mapState(state: CourierMapState) {
         // если убрать флаг на карте не будет работаь

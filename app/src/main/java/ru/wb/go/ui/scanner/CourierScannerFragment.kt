@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -20,7 +19,6 @@ import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.wb.go.R
 import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState

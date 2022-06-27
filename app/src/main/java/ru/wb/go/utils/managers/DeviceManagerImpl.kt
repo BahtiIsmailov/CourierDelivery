@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import ru.wb.go.BuildConfig
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.prefs.SharedWorker

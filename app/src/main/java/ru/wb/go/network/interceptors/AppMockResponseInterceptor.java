@@ -15,7 +15,6 @@ import ru.wb.go.reader.FreeTasksOfficesPath;
 import ru.wb.go.reader.FreeTasksPath;
 import ru.wb.go.reader.MockResponse;
 import ru.wb.go.reader.MockType;
-import ru.wb.go.utils.RebootApplication;
 
 public class AppMockResponseInterceptor implements Interceptor {
 

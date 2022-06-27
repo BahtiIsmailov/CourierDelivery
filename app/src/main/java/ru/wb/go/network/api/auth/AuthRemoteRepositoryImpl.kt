@@ -1,6 +1,5 @@
 package ru.wb.go.network.api.auth
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.entity.TokenEntity

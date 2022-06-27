@@ -3,7 +3,6 @@ package ru.wb.go.ui.courierbillingaccountdata
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,13 +21,12 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierBillingAccountDataViewModel(
     private val parameters: CourierBillingAccountDataAmountParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierBillingAccountDataInteractor,
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
     private val tokenManager: TokenManager,
     private val errorDialogManager: ErrorDialogManager
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     companion object {
         private const val ACCOUNT_LENGTH = 20
@@ -211,33 +209,6 @@ class CourierBillingAccountDataViewModel(
                 defaultBank(focusChange.type)
             }
     }
-/*
-private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): Observable<CourierBillingAccountDataUIState> {
-        return Observable.just(focusChange.text)
-            .filter { it.length == KPP_LENGTH }
-            .flatMapMaybe {
-                _bicProgressState.value = true
-                bankEntity = null
-                interactor.getBank(it)
-            }
-            .doOnNext { bankEntity = it }
-            .map<CourierBillingAccountDataUIState> {
-                _bankFindState.value = BankFind(it.name, it.correspondentAccount)
-                _bicProgressState.value = false
-                _keyboardState.value = false
-                CourierBillingAccountDataUIState.Complete(it.name, focusChange.type)
-            }
-            .onErrorReturn {
-                _bicProgressState.value = false
-                _bankFindState.value = BankFind("Банк не найден", "")
-                bankEntity = null
-                CourierBillingAccountDataUIState.Error(
-                    "БИК банка не найден", focusChange.type
-                )
-            }
-            .defaultIfEmpty(defaultBank(focusChange.type))
-    }
- */
 
     private val defaultBank = { type: CourierBillingAccountDataQueryType ->
         _bankFindState.value = BankFind("Введите БИК банка", "")
@@ -260,16 +231,6 @@ private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.T
             }
             .launchIn(viewModelScope)
     }
-    /*
-        fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountDataUIAction>>) {
-        addSubscription(Observable.merge(changeObservables)
-            .flatMap { mapActionFormChanges(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
-        )
-    }
-     */
 
     private fun mapActionFormChanges(action: CourierBillingAccountDataUIAction) = when (action) {
         is CourierBillingAccountDataUIAction.FocusChange -> checkFieldFocusChange(action)
@@ -313,29 +274,6 @@ private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.T
         )
     }
 
-    /*
-     private fun checkFieldAll(action: CourierBillingAccountDataUIAction.SaveClick):
-            Observable<CourierBillingAccountDataUIState> {
-        val iterator = action.userData.iterator()
-        while (iterator.hasNext()) {
-            val nextItem = iterator.next()
-            with(nextItem) {
-                val predicate = when (type) {
-                    CourierBillingAccountDataQueryType.ACCOUNT -> accountPredicate
-                    CourierBillingAccountDataQueryType.BIK -> bikPredicate
-                }
-                if (isCompleteChecker(predicate, text, type)) iterator.remove()
-            }
-        }
-        return Observable.just(
-            if (action.userData.isEmpty()) {
-                CourierBillingAccountDataUIState.Next
-            } else {
-                CourierBillingAccountDataUIState.ErrorFocus("", action.userData.first().type)
-            }
-        )
-    }
-     */
 
     private fun setButtonAndLoaderState(isAction: Boolean) {
         if (isAction) {

@@ -1,20 +1,16 @@
 package ru.wb.go.ui.courierloading.domain
 
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
-import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
@@ -23,7 +19,6 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierLoadingInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val remoteRepo: AppRemoteRepository,
@@ -31,7 +26,7 @@ class CourierLoadingInteractorImpl(
     private val timeManager: TimeManager,
     private val localRepo: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierLoadingInteractor {
 
 
@@ -47,13 +42,6 @@ class CourierLoadingInteractorImpl(
     override suspend fun scannedBoxes(): List<LocalBoxEntity> {
         return localRepo.readAllLoadingBoxesSync()
     }
-    /*
-        override fun scannedBoxes(): Single<List<LocalBoxEntity>> {
-        return localRepo.readAllLoadingBoxesSync()
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-     */
-
 
     private fun scanResult(
         scannerState: ScannerState,
@@ -75,30 +63,7 @@ class CourierLoadingInteractorImpl(
     }
 
 
-//    private fun scanResult(
-//        scannerState: ScannerState,
-//        data: CourierLoadingScanBoxData,
-//        boxCount: Int
-//    ): Observable<CourierLoadingProcessData> {
-//        scanRepo.scannerState(scannerState)
-//        return Observable.just(CourierLoadingProcessData(data, boxCount))
-//            .mergeWith(
-//                scanRepo.holdStart()
-//                    .andThen(
-//                        Observable.just(
-//                            CourierLoadingProcessData(
-//                                CourierLoadingScanBoxData.ScannerReady,
-//                                boxCount
-//                            )
-//                        )
-//                    )
-//            )
-//
-//    }
-//
-////
-
-    @OptIn(FlowPreview::class)
+     @OptIn(FlowPreview::class)
     override fun observeScanProcess(): Flow<CourierLoadingProcessData> {
         return scanRepo.observeScannerAction()
             .filter { it is ScannerAction.ScanResult }
@@ -227,22 +192,6 @@ class CourierLoadingInteractorImpl(
         return CourierCompleteData(res.coast, one.size)
 
     }
-    //
-//    override fun confirmLoadingBoxes(): Single<CourierCompleteData> {
-//        return localRepo.readAllLoadingBoxesSync()
-//            .flatMap { boxes ->
-//                localRepo.getOrderId()
-//                    .flatMap { taskId ->
-//                        remoteRepo.setReadyTask(taskId, boxes)
-//                            .map { it.coast }
-//                            .doOnSuccess {
-//                                localRepo.setOrderAfterLoadStatus(it)
-//                            }
-//                            .map { CourierCompleteData(it, boxes.size) }
-//                    }
-//            }
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
 
     override suspend fun getGate(): String {

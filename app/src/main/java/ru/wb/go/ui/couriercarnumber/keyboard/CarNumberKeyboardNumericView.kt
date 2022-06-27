@@ -6,14 +6,11 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
-import androidx.lifecycle.MutableLiveData
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.R
 import ru.wb.go.databinding.CarNumberKeyboardLayoutBinding
 import ru.wb.go.ui.auth.keyboard.KeyboardButtonView
-import java.util.*
 
 class CarNumberKeyboardNumericView : RelativeLayout {
 

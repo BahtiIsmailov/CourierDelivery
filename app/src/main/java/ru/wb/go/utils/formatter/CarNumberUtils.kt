@@ -13,10 +13,6 @@ class CarNumberUtils(number: String) {
 
     fun fullNumber() = fullNumber
 
-    fun fullNumberWithMask() = fullNumberWithMask
-
-    fun fullNumberSpanLength() = fullNumberSpanLength
-
     fun numberWithMask() = fullNumberWithMask.take(8)
 
     fun numberSpanLength() = if (fullNumberSpanLength > 8) 8 else fullNumberSpanLength

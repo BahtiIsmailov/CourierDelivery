@@ -3,9 +3,6 @@ package ru.wb.go.ui.courierbillingaccountselector
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
@@ -21,12 +18,11 @@ import java.text.DecimalFormat
 
 class CourierBillingAccountSelectorViewModel(
     private val parameters: CourierBillingAccountSelectorAmountParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -172,17 +168,7 @@ class CourierBillingAccountSelectorViewModel(
     }
 
 
-//    fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
-//        addSubscription(Observable.merge(changeObservables)
-//            .distinctUntilChanged()
-//            .map { mapAction(it) }
-//            .subscribe(
-//                { _formUIState.value = it },
-//                { LogUtils { logDebugApp(it.toString()) } })
-//        )
-//    }
-
-    private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
+     private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
         is CourierBillingAccountSelectorUIAction.FocusChange -> checkFieldFocus(action)
         is CourierBillingAccountSelectorUIAction.TextChange -> checkFieldText(action)
         is CourierBillingAccountSelectorUIAction.CompleteClick -> checkFieldAll(action)

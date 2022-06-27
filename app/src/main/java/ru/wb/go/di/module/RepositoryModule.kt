@@ -14,7 +14,6 @@ import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepositoryImpl
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepositoryImpl
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.app.domain.AppNavRepository
@@ -26,7 +25,6 @@ import ru.wb.go.ui.scanner.domain.ScannerRepositoryImpl
 import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.SettingsManager
 import ru.wb.go.utils.time.TimeFormatter
-import java.net.Authenticator
 
 val deliveryRepositoryModule = module {
 

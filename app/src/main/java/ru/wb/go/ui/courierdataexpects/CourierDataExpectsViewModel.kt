@@ -3,7 +3,6 @@ package ru.wb.go.ui.courierdataexpects
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import ru.wb.go.app.INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
@@ -26,7 +25,6 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 class CouriersCompleteRegistrationViewModel(
     private val parametersData: CourierDataExpectsParameters,
 
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
 
     private val resourceProviderData: CourierDataExpectsResourceProvider,
@@ -35,7 +33,7 @@ class CouriersCompleteRegistrationViewModel(
     private val errorDialogManager: ErrorDialogManager,
     private val tokenManager: TokenManager,
     private val appNavRepository: AppNavRepository
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _showDialogInfo = SingleLiveEvent<ErrorDialogData>()
     val showDialogInfo: LiveData<ErrorDialogData>

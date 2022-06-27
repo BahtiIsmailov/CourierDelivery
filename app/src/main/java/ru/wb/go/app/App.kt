@@ -50,7 +50,6 @@ companion object{
                     networkModule,
                     deliveryRepositoryModule,
                     resourceModule,
-                    rxModule,
                     utilsModule,
                     viewModelModule
                 )

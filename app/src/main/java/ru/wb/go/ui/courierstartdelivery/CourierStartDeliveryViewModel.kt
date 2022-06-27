@@ -2,18 +2,16 @@ package ru.wb.go.ui.courierstartdelivery
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CourierStartDeliveryViewModel(
     parameters: CourierStartDeliveryParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     resourceProvider: CourierStartDeliveryResourceProvider,
     private val interactor: CourierCompleteDeliveryInteractor,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _infoState = MutableLiveData<CourierStartDeliveryState>()
     val infoState: LiveData<CourierStartDeliveryState>

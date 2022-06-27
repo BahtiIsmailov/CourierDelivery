@@ -3,9 +3,7 @@ package ru.wb.go.ui.courierloader
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
-import ru.wb.go.R
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
@@ -28,7 +26,6 @@ import ru.wb.go.utils.managers.SettingsManager
 import java.net.UnknownHostException
 
 class CourierLoaderViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val tokenManager: TokenManager,
     private val locRepo: CourierLocalRepository,
@@ -37,7 +34,7 @@ class CourierLoaderViewModel(
     private val resourceProvider: CourierLoaderResourceProvider,
     private val settingsManager: SettingsManager,
     private val userManager: UserManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
     val drawerHeader: LiveData<UserInfoEntity>
@@ -148,23 +145,7 @@ class CourierLoaderViewModel(
 
     }
 
-    /*
-        private fun toApp(order: LocalOrderEntity?) {
-        addSubscription(
-            remoteRepo.tasksMy(order?.orderId)
-                .flatMap { solveJobInitialState(it, order) }
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .subscribe({
-                    _navigationDrawerState.postValue(it)
-                }, {
-                    onTechErrorLog("getMyTask", it)
-                    onRxError(it)
-                })
-        )
-    }
-     */
-
-    private fun solveJobInitialState(
+     private fun solveJobInitialState(
         remoteOrder: LocalComplexOrderEntity,
         order: LocalOrderEntity?
     ): CourierLoaderNavigationState {

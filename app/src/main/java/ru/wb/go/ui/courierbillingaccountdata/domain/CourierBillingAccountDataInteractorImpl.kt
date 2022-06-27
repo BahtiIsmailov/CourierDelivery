@@ -1,23 +1,19 @@
 package ru.wb.go.ui.courierbillingaccountdata.domain
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierBillingAccountDataInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val appRemoteRepository: AppRemoteRepository,
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierBillingAccountDataInteractor {
 
     override suspend fun saveBillingAccounts(accountsEntity: List<CourierBillingAccountEntity>) {

@@ -7,13 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.subjects.PublishSubject
-import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.R
 import ru.wb.go.databinding.KeyboardNumericLayoutBinding
 import ru.wb.go.utils.VIBRATE_CLICK
 import ru.wb.go.utils.vibrateOnAction
-import java.util.*
 
 class KeyboardNumericView : RelativeLayout {
 

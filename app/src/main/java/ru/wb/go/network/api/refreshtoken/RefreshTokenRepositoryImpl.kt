@@ -2,10 +2,7 @@ package ru.wb.go.network.api.refreshtoken
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.wb.go.app.AppConsts.PHONE_IS_UNEXPECTED
-
 import ru.wb.go.app.AppConsts.REFRESH_TOKEN_INVALID
 import ru.wb.go.app.AppConsts.SERVICE_CODE_BAD_REQUEST
 import ru.wb.go.network.api.auth.entity.TokenEntity
@@ -15,7 +12,6 @@ import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.network.exceptions.UnknownException
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.utils.analytics.YandexMetricManager
-import java.lang.IllegalArgumentException
 import java.net.SocketTimeoutException
 
 class RefreshTokenRepositoryImpl(

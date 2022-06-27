@@ -2,7 +2,6 @@ package ru.wb.go.network.headers
 
 import ru.wb.go.network.headers.HeaderManager.Companion.TOKEN_AUTH
 import ru.wb.go.network.token.TokenManager
-import java.util.*
 
 class RefreshTokenHeaderManagerImpl(private val tokenManager: TokenManager) : HeaderManager {
     override val headerApiMap: Map<String, String>

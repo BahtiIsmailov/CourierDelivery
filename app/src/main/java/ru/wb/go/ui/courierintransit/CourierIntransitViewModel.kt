@@ -3,10 +3,7 @@ package ru.wb.go.ui.courierintransit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -30,14 +27,13 @@ import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.time.DateTimeFormatter
 
 class CourierIntransitViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val sharedWorker: SharedWorker,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -400,7 +396,7 @@ class CourierIntransitViewModel(
                     cdr.countBoxes
                 )
 
-            clearSubscription()
+            //clearSubscription()
         }
     }
 

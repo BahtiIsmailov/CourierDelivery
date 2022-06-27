@@ -8,20 +8,16 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import retrofit2.CallAdapter
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.wb.go.network.NullOnEmptyConverterFactory
 import ru.wb.go.network.api.refreshtoken.RefreshTokenRepository
 import ru.wb.go.network.client.OkHttpFactory
 import ru.wb.go.network.exceptions.ErrorResolutionResourceProvider
 import ru.wb.go.network.exceptions.ErrorResolutionResourceProviderImpl
-import ru.wb.go.network.exceptions.ErrorResolutionStrategy
-import ru.wb.go.network.exceptions.ErrorResolutionStrategyImpl
 import ru.wb.go.network.headers.*
 import ru.wb.go.network.interceptors.*
 import ru.wb.go.network.rest.RefreshTokenRetrofitFactory
 import ru.wb.go.network.rest.RetrofitFactory
-import ru.wb.go.network.rx.RxHandlingCallAdapterFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.TokenManagerImpl
 import ru.wb.go.network.token.UserManager
@@ -70,15 +66,15 @@ val networkModule = module {
         return ErrorResolutionResourceProviderImpl(context)
     }
 
-    fun provideErrorResolutionStrategy(
-        resourceProvider: ErrorResolutionResourceProvider
-    ): ErrorResolutionStrategy {
-        return ErrorResolutionStrategyImpl(resourceProvider)
-    }
+//    fun provideErrorResolutionStrategy(
+//        resourceProvider: ErrorResolutionResourceProvider
+//    ): ErrorResolutionStrategy {
+//        return ErrorResolutionStrategyImpl(resourceProvider)
+//    }
 
-    fun provideCallAdapterFactory(errorResolutionStrategy: ErrorResolutionStrategy): CallAdapter.Factory {
-        return RxHandlingCallAdapterFactory.create(errorResolutionStrategy)
-    }
+//    fun provideCallAdapterFactory(errorResolutionStrategy: ErrorResolutionStrategy): CallAdapter.Factory {
+//        return RxHandlingCallAdapterFactory.create(errorResolutionStrategy)
+//    }
 
     //==============================================================================================
     //certificate store
@@ -209,14 +205,12 @@ val networkModule = module {
     fun provideAuthRetrofitFactory(
         apiServer: String,
         okHttpClient: OkHttpClient,
-        callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
         gsonConverterFactory: GsonConverterFactory,
     ): RetrofitFactory {
         return RetrofitFactory(
             apiServer,
             okHttpClient,
-            callAdapterFactory,
             nullOnEmptyConverterFactory,
             gsonConverterFactory
         )
@@ -237,14 +231,12 @@ val networkModule = module {
     fun provideAppRetrofitFactory(
         baseUrlServer: String,
         okHttpClient: OkHttpClient,
-        callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
         gsonConverterFactory: GsonConverterFactory,
     ): RetrofitFactory {
         return RetrofitFactory(
             baseUrlServer,
             okHttpClient,
-            callAdapterFactory,
             nullOnEmptyConverterFactory,
             gsonConverterFactory
         )
@@ -253,14 +245,12 @@ val networkModule = module {
     fun provideAppTasksRetrofitFactory(
         baseUrlServer: String,
         okHttpClient: OkHttpClient,
-        callAdapterFactory: CallAdapter.Factory,
         nullOnEmptyConverterFactory: NullOnEmptyConverterFactory,
         gsonConverterFactory: GsonConverterFactory
     ): RetrofitFactory {
         return RetrofitFactory(
             baseUrlServer,
             okHttpClient,
-            callAdapterFactory,
             nullOnEmptyConverterFactory,
             gsonConverterFactory
         )
@@ -281,8 +271,8 @@ val networkModule = module {
     single(named(APP_NAMED_BASE_URL)) { provideAppBaseUrlServer(get()) }
 
     single { provideErrorResolutionResourceProvider(get()) }
-    single { provideErrorResolutionStrategy(get()) }
-    single { provideCallAdapterFactory(get()) }
+//    single { provideErrorResolutionStrategy(get()) }
+    //single { provideCallAdapterFactory(get()) }
 
 
     single { provideMockResponse(get()) }
@@ -333,7 +323,6 @@ val networkModule = module {
             get(named(AUTH_NAMED_BASE_URL)),
             get(named(AUTH_NAMED_HTTP_CLIENT)),
             get(),
-            get(),
             get()
         )
     }
@@ -350,7 +339,7 @@ val networkModule = module {
         provideAppRetrofitFactory(
             baseUrlServer = get(named(APP_NAMED_BASE_URL)),
             okHttpClient = get(named(APP_NAMED_HTTP_CLIENT)),
-            callAdapterFactory = get(),
+
             nullOnEmptyConverterFactory = get(),
             gsonConverterFactory = get()
         )
@@ -360,7 +349,7 @@ val networkModule = module {
         provideAppTasksRetrofitFactory(
             baseUrlServer = get(named(APP_NAMED_BASE_URL)),
             okHttpClient = get(named(okHttpClientNamed(tokenManager = get()))),
-            callAdapterFactory = get(),
+
             nullOnEmptyConverterFactory = get(),
             gsonConverterFactory = get(),
         )

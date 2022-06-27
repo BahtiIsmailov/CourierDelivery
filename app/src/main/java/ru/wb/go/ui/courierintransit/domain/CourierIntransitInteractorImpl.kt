@@ -1,12 +1,7 @@
 package ru.wb.go.ui.courierintransit.domain
 
-import io.reactivex.Observable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.IntransitTimeRepository
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -14,7 +9,6 @@ import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -23,7 +17,6 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierIntransitInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val remoteRepo: AppRemoteRepository,
@@ -31,19 +24,9 @@ class CourierIntransitInteractorImpl(
     private val intransitTimeRepository: IntransitTimeRepository,
     private val timeManager: TimeManager,
     private val courierMapRepository: CourierMapRepository,
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierIntransitInteractor {
 
-//    override fun getOffices(): Observable<List<LocalOfficeEntity>> {
-//        return locRepo.getOfficesFlowable()
-//            .toObservable()
-//            .map { office ->
-//                office.toMutableList().sortedWith(
-//                    compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
-//                )
-//            }
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
 
     override fun getOffices(): Flow<List<LocalOfficeEntity>> {
         return locRepo.getOfficesFlowable()
@@ -63,16 +46,6 @@ class CourierIntransitInteractorImpl(
             }
     }
 
-//    override fun observeOrderTimer(): Observable<Long> {
-//        val order = locRepo.getOrder()!!
-//        // TODO: 25.11.2021 переработать с учетом часового пояса
-//        val offsetSec = timeManager.getPassedTime(order.startedAt)
-//
-//        return intransitTimeRepository.startTimer()
-//            .toObservable()
-//            .map { it + offsetSec }
-//            .compose(rxSchedulerFactory.applyObservableSchedulers())
-//    }
 
 
     override suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>) {

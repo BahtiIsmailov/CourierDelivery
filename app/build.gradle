@@ -181,7 +181,6 @@ dependencies {
 
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2"
 
     //ViewModel
@@ -196,12 +195,11 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
 
     //room
-    implementation "androidx.room:room-rxjava2:$version_room"
     kapt "androidx.room:room-compiler:$version_room"
     kapt "android.arch.persistence.room:compiler:1.1.1"
     implementation "android.arch.persistence.room:runtime:1.1.1"
 
-//    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    //annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
     annotationProcessor 'androidx.room:room-compiler:2.4.2'
 
     //coroutine suspend fun
@@ -213,11 +211,6 @@ dependencies {
 
     //delegates
     api 'com.hannesdorfmann:adapterdelegates3:3.0.1'
-
-    //rx
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
-    implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha1'
 
     //pref
     implementation 'androidx.preference:preference-ktx:1.2.0'

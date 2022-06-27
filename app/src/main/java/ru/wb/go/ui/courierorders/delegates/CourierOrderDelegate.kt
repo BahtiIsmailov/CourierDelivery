@@ -1,7 +1,6 @@
 package ru.wb.go.ui.courierorders.delegates
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R

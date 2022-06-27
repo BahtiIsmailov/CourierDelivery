@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -30,7 +28,6 @@ import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.time.DateTimeFormatter
 
 class CourierLoadingScanViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val resourceProvider: CourierLoadingResourceProvider,
     private val interactor: CourierLoadingInteractor,
@@ -38,7 +35,7 @@ class CourierLoadingScanViewModel(
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
 ) : TimerStateHandler,
-    ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+    ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
     val orderTimer: LiveData<CourierLoadingScanTimerState>
@@ -184,17 +181,6 @@ class CourierLoadingScanViewModel(
             .launchIn(viewModelScope)
     }
 
-//    private fun observeScanProcess() {
-//        addSubscription(
-//            interactor.observeScanProcess()
-//                .doOnError { scanProccessError(it) }
-//                .retryWhen { errorObservable -> errorObservable.delay(1, TimeUnit.SECONDS) }
-//                .subscribe(
-//                    { observeScanProcessComplete(it) },
-//                    { scanProccessError(it) }
-//                )
-//        )
-//    }
 
     private fun scanProcessError(throwable: Throwable) {
         onTechErrorLog("observeScanProcessError", throwable)
@@ -294,12 +280,13 @@ class CourierLoadingScanViewModel(
     }
 
     fun onCompleteLoaderClicked() {
-        val stop = Single.just(stopScanner())
+        //val stop = Single.just(stopScanner())
         _completeButtonState.value = false
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
-        addSubscription(
-            stop.subscribe()
-        )
+        stopScanner()
+//        addSubscription(
+//            stop.subscribe()
+//        )
 
     }
 
@@ -330,37 +317,7 @@ class CourierLoadingScanViewModel(
         }
 
     }
-    /*
-     fun onCounterBoxClicked() {
-        stopScanner()
-        addSubscription(
-            interactor.loadingBoxBoxesGroupByOffice()
-                .map { loadingBoxes ->
-                    val items = mutableListOf<CourierLoadingDetailsItem>()
-                    loadingBoxes.localLoadingBoxEntity.forEach {
-                        items.add(
-                            CourierLoadingDetailsItem(
-                                it.address,
-                                resourceProvider.getAccepted(it.count)
-                            )
-                        )
-                    }
-                    CourierLoadingScanNavAction.InitAndShowLoadingItems(
-                        resourceProvider.getPvzCountTitle(loadingBoxes.pvzCount),
-                        resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
-                        items
-                    )
-                }.subscribe(
-                    {
-                        _navigationEvent.value = it
-                    }, {
-
-                    }
-                )
-     */
-
-
-    fun onCloseDetailsClick() {
+     fun onCloseDetailsClick() {
         onStartScanner()
         _navigationEvent.value = CourierLoadingScanNavAction.HideLoadingItems
     }

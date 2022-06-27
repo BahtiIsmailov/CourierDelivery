@@ -3,8 +3,6 @@ package ru.wb.go.ui.couriercarnumber
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import ru.wb.go.app.DEFAULT_CAR_NUMBER
 import ru.wb.go.app.DEFAULT_CAR_TYPE
@@ -25,11 +23,10 @@ fun String.revertCarNumberY(): String {
 
 class CourierCarNumberViewModel(
     private val parameters: CourierCarNumberParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierCarNumberInteractor,
     resourceProvider: CourierCarNumberResourceProvider,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _navigationState =
         SingleLiveEvent<CourierCarNumberNavigationState>()
@@ -81,24 +78,7 @@ class CourierCarNumberViewModel(
         _stateUI.value = CourierCarNumberUIState.CloseTypeItems
     }
 
-
-//    init {
-//        updateCarType()
-//    }
-//
-//    fun onCheckCarNumberClick() {
-//        putCarTypeAndNumber()
-//    }
-//
-//    fun onCancelCarNumberClick() {
-//        fetchCarNumberComplete()
-//    }
-//
-//    fun onCarTypeSelectClick() {
-//        _stateUI.value = CourierCarNumberUIState.InitTypeItems(types)
-//    }
-
-    fun onNumberObservableClicked(event: Flow<CarNumberKeyboardNumericView.ButtonAction>) {
+     fun onNumberObservableClicked(event: Flow<CarNumberKeyboardNumericView.ButtonAction>) {
         event.scan(interactor.getCarNumber()) { accumulator, item ->
             accumulateNumber(accumulator, item)
         }

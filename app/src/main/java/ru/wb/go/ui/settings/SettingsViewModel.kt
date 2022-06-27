@@ -3,15 +3,11 @@ package ru.wb.go.ui.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.ui.app.AppViewModel
-import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.settings.domain.SettingsInteractor
 import ru.wb.go.ui.settings.domain.SettingsResourceProvider
 import ru.wb.go.utils.analytics.YandexMetricManager
@@ -19,13 +15,12 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class SettingsViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val resourcesProvider: SettingsResourceProvider,
     private val deviceManager: DeviceManager,
     private val interactor: SettingsInteractor,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _versionApp = MutableLiveData<String>()
     val versionApp: LiveData<String>
@@ -59,13 +54,7 @@ class SettingsViewModel(
             .launchIn(viewModelScope)
     }
 
-//    private fun observeNetworkState() {
-//        addSubscription(
-//            interactor.observeNetworkConnected()
-//                .subscribe({ _toolbarNetworkState.value = it }, {})
-//        )
-//    }
-    fun settingClick(setting: String, state: Boolean) {
+     fun settingClick(setting: String, state: Boolean) {
         settingsManager.setSetting(setting, state)
     }
 

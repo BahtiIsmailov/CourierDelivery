@@ -1,7 +1,8 @@
 package ru.wb.go.network.interceptors
 
 import android.os.ConditionVariable
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -16,7 +17,6 @@ import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.utils.RebootApplication
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.system.exitProcess
 
 
 class RefreshTokenInterceptor(

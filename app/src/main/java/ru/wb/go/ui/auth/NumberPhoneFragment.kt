@@ -21,7 +21,6 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.app.StatusBarListener
-import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.SoftKeyboard

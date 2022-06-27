@@ -2,16 +2,14 @@ package ru.wb.go.ui.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 class AppLoaderViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val tokenManager: TokenManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _navState = MutableLiveData<AppLoaderNavigatioState>()
     val navState: LiveData<AppLoaderNavigatioState>

@@ -1,16 +1,14 @@
 package ru.wb.go.ui.couriermap.domain
 
-import io.reactivex.functions.Action
+
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
-import ru.wb.go.utils.CoroutineExtension
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
-import java.util.concurrent.TimeUnit
 
 class CourierMapInteractorImpl(
     private val courierMapRepository: CourierMapRepository,
@@ -18,7 +16,7 @@ class CourierMapInteractorImpl(
 ) : CourierMapInteractor {
 
 
-    private val prolongHideSubject = MutableSharedFlow<Action>(
+    private val prolongHideSubject = MutableSharedFlow<Unit>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
@@ -70,7 +68,7 @@ class CourierMapInteractorImpl(
 
 
     private fun prolongHideTimerManager() {
-        prolongHideSubject.tryEmit(Action { }) // отправляет акшн в рх как стэйт флоу
+        prolongHideSubject.tryEmit(Unit) // отправляет акшн в рх как стэйт флоу
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

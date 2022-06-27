@@ -1,7 +1,5 @@
 package ru.wb.go.ui.courierbillingaccountdata
 
-import com.jakewharton.rxbinding3.InitialValueObservable
-
 sealed class CourierBillingAccountDataUIAction {
 
     data class FocusChange(

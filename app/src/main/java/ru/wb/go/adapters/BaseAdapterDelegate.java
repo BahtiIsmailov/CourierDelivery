@@ -10,9 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate;
-import ru.wb.go.mvvm.model.base.BaseItem;
 
 import java.util.List;
+
+import ru.wb.go.mvvm.model.base.BaseItem;
 
 public abstract class BaseAdapterDelegate<T extends BaseItem, VH extends RecyclerView.ViewHolder> extends AdapterDelegate<List<BaseItem>> {
 

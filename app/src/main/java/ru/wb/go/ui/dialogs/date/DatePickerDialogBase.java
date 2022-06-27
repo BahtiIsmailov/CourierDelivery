@@ -13,8 +13,6 @@ import androidx.fragment.app.DialogFragment;
 
 import org.joda.time.DateTime;
 
-import ru.wb.go.R;
-
 public abstract class DatePickerDialogBase extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     private OnDateSelected activityCallback;

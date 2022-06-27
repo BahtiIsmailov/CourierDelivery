@@ -3,10 +3,7 @@ package ru.wb.go.ui.app
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -20,13 +17,12 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class AppViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: AppInteractor,
     private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _networkState = MutableLiveData<NetworkState>()
     val networkState: LiveData<NetworkState>

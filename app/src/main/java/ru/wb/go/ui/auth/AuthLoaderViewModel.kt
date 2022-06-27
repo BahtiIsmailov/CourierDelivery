@@ -2,14 +2,12 @@ package ru.wb.go.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 class AuthLoaderViewModel(
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _navigationState = MutableLiveData<AuthLoaderNavigationState>()
     val navigationState: LiveData<AuthLoaderNavigationState>

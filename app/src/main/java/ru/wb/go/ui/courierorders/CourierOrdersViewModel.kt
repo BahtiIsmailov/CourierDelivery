@@ -1,12 +1,9 @@
 package ru.wb.go.ui.courierorders
 
-import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,7 +20,6 @@ import ru.wb.go.network.exceptions.CustomException
 import ru.wb.go.network.exceptions.HttpObjectNotFoundException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.app.AppActivity
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.ADDRESS_MAP_PREFIX
@@ -45,19 +41,17 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import ru.wb.go.utils.prefs.SharedWorker
-import java.net.UnknownHostException
 import java.text.DecimalFormat
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val sharedWorker: SharedWorker,
     private val interactor: CourierOrdersInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>

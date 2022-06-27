@@ -4,7 +4,6 @@ package ru.wb.go.ui.courierdata
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
@@ -20,11 +19,10 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 
 class UserFormViewModel(
     private val parameters: CourierDataParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel(metric) {
 
     private val _navigateToMessageInfo = SingleLiveEvent<ErrorDialogData>()
     val navigateToMessageInfo: LiveData<ErrorDialogData>

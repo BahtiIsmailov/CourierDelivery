@@ -3,9 +3,11 @@ package ru.wb.go.ui.courierunloading
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -27,13 +29,12 @@ import ru.wb.go.utils.managers.PlayManager
 
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
-    compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(metric, interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>
@@ -147,7 +148,8 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onDestroy() {
-        clearSubscription()
+        viewModelScope.coroutineContext.cancelChildren()
+        //clearSubscription()
     }
 
     fun onConfirmScoreUnloadingClick() {
@@ -165,7 +167,7 @@ class CourierUnloadingScanViewModel(
             }finally {
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
                 setLoader(WaitLoader.Complete)
-                clearSubscription()
+//                clearSubscription()
             }
         }
     }

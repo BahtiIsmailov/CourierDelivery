@@ -9,12 +9,9 @@ import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
-import ru.wb.go.network.api.app.remote.accounts.AccountRequest
-import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.courier.CourierAnchorResponse
 import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
 import ru.wb.go.network.api.app.remote.courier.convertToApiBoxRequest
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 
 class AppRemoteRepositoryImpl(

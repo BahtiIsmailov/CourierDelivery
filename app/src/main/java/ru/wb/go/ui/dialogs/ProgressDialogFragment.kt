@@ -8,7 +8,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import ru.wb.go.R
-import ru.wb.go.ui.courierwarehouses.CourierWarehousesFragment
 
 class ProgressDialogFragment : DialogFragment() {
 

@@ -1,14 +1,11 @@
 package ru.wb.go.ui.courierwarehouses.domain
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.AppTasksRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -19,14 +16,13 @@ import ru.wb.go.utils.managers.DeviceManager
 import java.util.concurrent.TimeUnit
 
 class CourierWarehousesInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val appRemoteRepository: AppTasksRepository,
     private val courierLocalRepository: CourierLocalRepository,
     private val courierMapRepository: CourierMapRepository,
     private val tokenManager: TokenManager
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierWarehousesInteractor {
 
     override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {

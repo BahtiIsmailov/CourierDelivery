@@ -6,20 +6,18 @@ import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierBillingAccountSelectorInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val appRemoteRepository: AppRemoteRepository,
     private val userManager: UserManager,
     private val tokenManager: TokenManager
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierBillingAccountSelectorInteractor {
 
     override suspend fun payments(amount: Int, paymentEntity: PaymentEntity) {

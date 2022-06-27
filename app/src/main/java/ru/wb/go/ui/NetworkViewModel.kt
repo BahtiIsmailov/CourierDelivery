@@ -1,29 +1,15 @@
 package ru.wb.go.ui
 
 import androidx.lifecycle.ViewModel
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import ru.wb.go.utils.analytics.YandexMetricManager
 
 abstract class NetworkViewModel(
-    private val compositeDisposable: CompositeDisposable,
     private val metric: YandexMetricManager,
 ) :
     ViewModel() {
 
     abstract fun getScreenTag(): String
 
-    protected fun addSubscription(disposable: Disposable) {
-        compositeDisposable.add(disposable)
-    }
-
-    override fun onCleared() {
-        compositeDisposable.apply { if (!isDisposed) dispose() }
-    }
-
-    fun clearSubscription() {
-        compositeDisposable.apply { if (!isDisposed) clear() }
-    }
 
     fun onTechEventLog(method: String, message: String = EMPTY_MESSAGE) {
         metric.onTechEventLog(getScreenTag(), method, message)

@@ -1,6 +1,5 @@
 package ru.wb.go.ui.couriercarnumber.domain
 
-import io.reactivex.Completable
 import ru.wb.go.network.token.UserManager
 
 class CourierCarNumberInteractorImpl(

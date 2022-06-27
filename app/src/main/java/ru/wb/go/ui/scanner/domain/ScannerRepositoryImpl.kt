@@ -6,11 +6,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_V1
-import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_OLD
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_V1
 import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity

@@ -7,10 +7,8 @@ import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.utils.managers.TimeManager
-import ru.wb.go.utils.time.TimeFormatter
 
 class CourierOrderTimerInteractorImpl(
     private val appRemoteRepository: AppRemoteRepository,
