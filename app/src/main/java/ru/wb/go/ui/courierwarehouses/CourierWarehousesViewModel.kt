@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -85,7 +86,10 @@ class CourierWarehousesViewModel(
             .onEach {
                 when (it) {
                     is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-                    is CourierMapAction.LocationUpdate -> initMapByLocation(it.point)
+                    is CourierMapAction.LocationUpdate -> {
+                        initMapByLocation(it.point)
+                        delay(200)
+                    }
                     is CourierMapAction.MapClick -> showManagerBar()
                     is CourierMapAction.ShowAll -> onShowAllClick()
                     else -> {}
@@ -109,17 +113,6 @@ class CourierWarehousesViewModel(
     fun toRegistrationClick() {
         _navigationState.value = CourierWarehousesNavigationState.NavigateToRegistration
     }
-//    private fun observeMapActionError(throwable: Throwable) {
-//        onTechErrorLog("observeMapActionError", throwable)
-//    }
-//
-//    suspend fun updateData() {
-//        getWarehouses()
-//    }
-//
-//    fun toRegistrationClick() {
-//        _navigationState.value = CourierWarehousesNavigationState.NavigateToRegistration
-//    }
 
     private fun setLoader(state: WaitLoader) {
         _waitLoader.value = state
@@ -230,7 +223,6 @@ class CourierWarehousesViewModel(
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
-        Log.e("test", "updateMarkersWithMyLocation : $mapMarkers")
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
 
     }

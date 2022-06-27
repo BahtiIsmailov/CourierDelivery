@@ -257,6 +257,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
         viewModel.clearMap.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","clearMap")
             clearMap()
         }
 
@@ -277,10 +278,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
         viewModel.updateMarkers.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMarkers")
             updateMarkers(it.points)
         }
 
         viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMarkersWithIndex")
             updateMarkersWithIndex(it.points)
         }
         viewModel.navigateToMarker.observe(viewLifecycleOwner) {
@@ -296,6 +299,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
         viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
@@ -640,6 +644,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private val updateMapMarkerWithIndex = {item: CourierMapMarker ->
+
         with(item) {
             addMapMarker( // если поставить дебаг он отображает и склады и местоположение
                 point.id,
