@@ -898,7 +898,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val width = mapView.width
         val height = mapView.height
         val pScreenWidth = width - (leftPx + rightPx)
-        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(2) // не даст значению стать меньше 2
+        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
         val nextZoom = MapView.getTileSystem()
             .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
 
@@ -912,7 +912,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             mapView.isVerticalMapRepetitionEnabled,
             mapView.mapCenterOffsetX,
             mapView.mapCenterOffsetY
-        //TODO(надо разобраться с багом крайней южной точкой )
         )
 
 
@@ -921,12 +920,21 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val lonPerPx = (southEast.longitude - northWest.longitude) / width
         val latPerPx = (southEast.latitude - northWest.latitude) / height
 
-        return BoundingBox(
-            latNorth - topPx * latPerPx,
-            lonEast + rightPx * lonPerPx,
-            latSouth + bottomPx * latPerPx,
-            lonWest - leftPx * lonPerPx
-        )
+        return try{
+            BoundingBox(
+                latNorth - topPx * latPerPx,
+                lonEast + rightPx * lonPerPx,
+                latSouth + bottomPx * latPerPx,
+                lonWest - leftPx * lonPerPx
+            )
+        }catch (e:Exception){
+            BoundingBox(
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            )
+        }
 
     }
 
