@@ -102,7 +102,7 @@ class CourierWarehousesFragment :
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
-                CourierWarehouseItemState.NoInternet -> {
+                is CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.visibility = VISIBLE
                     binding.items.visibility = GONE
                 }

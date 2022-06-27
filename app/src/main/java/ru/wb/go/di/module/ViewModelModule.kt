@@ -77,7 +77,7 @@ val viewModelModule = module {
     viewModel { CourierWarehousesViewModel(get(), get(), get(), get(), get()) }
 
     viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get())
+        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get(), get(),get())
     }
 
 
@@ -116,7 +116,7 @@ val viewModelModule = module {
     }
 
     viewModel { CourierScannerViewModel(get(), get(), get(), get()) }
-    viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CourierIntransitViewModel(get(), get(), get(), get(), get(), get(),get()) }
     viewModel {
         CourierIntransitOfficeScannerViewModel(
             get(),

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.View.*
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -47,6 +48,7 @@ class CourierIntransitFragment :
             viewModel.onItemOfficeClick(idItem)
         }
     }
+//    var schedul = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,6 +67,10 @@ class CourierIntransitFragment :
                 viewModel.onErrorDialogConfirmClick()
             }
         }
+//        setFragmentResultListener(ADDRESS_DETAIL_SCHEDULE) { _, bundle ->
+//              schedul = bundle.getString(ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT).toString()
+//        }
+
     }
 
     private fun initView() {
@@ -94,13 +100,14 @@ class CourierIntransitFragment :
             when (state) {
                 CourierIntransitNavigatorUIState.Disable -> {
                     binding.navigatorButton.isEnabled = false
+                    binding.addressDetailSchedule.isVisible = false
                     binding.navigatorButton.setImageResource(R.drawable.ic_navigator)
-                    //setColorNavigatorTint(R.color.tertiary)
                 }
-                CourierIntransitNavigatorUIState.Enable -> {
+                is CourierIntransitNavigatorUIState.Enable -> {
                     binding.navigatorButton.isEnabled = true
+                    binding.timeWorkDetail.text = state.scheduleOrder
+                    binding.addressDetailSchedule.isVisible = true
                     binding.navigatorButton.setImageResource(R.drawable.ic_bottom_navigator_color)
-//                    setColorNavigatorTint(R.color.colorPrimary)
                 }
             }
         }
@@ -139,7 +146,7 @@ class CourierIntransitFragment :
                     binding.routes.visibility = GONE
                 }
                 is CourierIntransitItemState.UpdateItems -> displayItems(it.items)
-                CourierIntransitItemState.CompleteDelivery -> {
+                is CourierIntransitItemState.CompleteDelivery -> {
                     binding.navigatorButton.visibility = INVISIBLE
                     binding.scanQrPvzButton.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.visibility = VISIBLE
@@ -292,5 +299,6 @@ class CourierIntransitFragment :
     private fun scanWrongOffice() {
         viewModel.play(R.raw.wrongoffice)
     }
+
 
 }

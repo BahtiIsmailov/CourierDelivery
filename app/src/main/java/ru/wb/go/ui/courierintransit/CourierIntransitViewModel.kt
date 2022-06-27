@@ -26,11 +26,13 @@ import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.time.DateTimeFormatter
 
 class CourierIntransitViewModel(
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
+    private val sharedWorker: SharedWorker,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
@@ -48,6 +50,9 @@ class CourierIntransitViewModel(
     private val _navigatorState = SingleLiveEvent<CourierIntransitNavigatorUIState>()
     val navigatorState: LiveData<CourierIntransitNavigatorUIState>
         get() = _navigatorState
+
+    private val _readScheduleValueLiveData = MutableLiveData<String>()
+    val readScheduleValueLiveData: LiveData<String> = _readScheduleValueLiveData
 
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
@@ -166,6 +171,7 @@ class CourierIntransitViewModel(
     private fun onShowAllClick() {
         zoomMarkersFromBoundingBox()
     }
+
 
     private fun onMapPointClick(mapPoint: MapPoint) {
         onTechEventLog("onItemPointClick")
@@ -413,8 +419,9 @@ class CourierIntransitViewModel(
     }
 
     private fun changeEnableNavigator(isSelected: Boolean) {
+        val schedule = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,"")
         _navigatorState.value =
-            if (isSelected) CourierIntransitNavigatorUIState.Enable else CourierIntransitNavigatorUIState.Disable
+            if (isSelected) CourierIntransitNavigatorUIState.Enable(schedule) else CourierIntransitNavigatorUIState.Disable
 
     }
 

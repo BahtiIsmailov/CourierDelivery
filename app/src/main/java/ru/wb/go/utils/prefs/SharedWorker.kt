@@ -13,4 +13,7 @@ interface SharedWorker {
     fun <T> load(key: String, serializeClass: Class<T>): T?
     fun isAllExists(vararg keys: String): Boolean
     fun delete(vararg keys: String)
+    companion object{
+        const val ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT = "bundle_key"
+    }
 }

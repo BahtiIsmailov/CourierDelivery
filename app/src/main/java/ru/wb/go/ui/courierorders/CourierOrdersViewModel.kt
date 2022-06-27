@@ -44,6 +44,7 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.prefs.SharedWorker
 import java.net.UnknownHostException
 import java.text.DecimalFormat
 
@@ -51,6 +52,7 @@ class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
     compositeDisposable: CompositeDisposable,
     metric: YandexMetricManager,
+    private val sharedWorker: SharedWorker,
     private val interactor: CourierOrdersInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
@@ -255,9 +257,7 @@ class CourierOrdersViewModel(
     }
 
     private fun showManagerBar() {
-        viewModelScope.launch {
-            interactor.mapState(CourierMapState.ShowManagerBar)
-        }
+        interactor.mapState(CourierMapState.ShowManagerBar)
     }
 
     fun onMapClickWithDetail() {
@@ -680,6 +680,11 @@ class CourierOrdersViewModel(
             }
         }
     }
+
+    fun getAddressFromOrderAddressItems(){
+        sharedWorker.save(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,orderAddressItems.lastOrNull()?.timeWork.orEmpty())
+    }
+
 
     private fun saveAddressItems(items: List<CourierOrderDetailsAddressItem>) {
         orderAddressItems = items.toMutableList()

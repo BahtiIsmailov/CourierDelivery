@@ -65,6 +65,46 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/address_detail_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginEnd="@dimen/pad16"
+        android:layout_marginBottom="@dimen/pad16"
+        android:background="@drawable/spinner_account_rounded_corner"
+        android:paddingTop="@dimen/pad16"
+        android:paddingBottom="@dimen/pad16"
+        tools:visibility="visible"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/currentOrderId"
+        >
+
+        <ImageView
+            android:id="@+id/icon_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pad16"
+            android:src="@drawable/ic_address_point_detail"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription,MissingConstraints" />
+
+
+        <TextView
+            android:id="@+id/time_work_detail"
+            style="@style/MediumPrimaryRegularText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="start"
+            android:layout_marginStart="@dimen/pad16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/icon_address" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
         android:id="@+id/currentOrderId"
         style="@style/LargePrimaryMediumText"
