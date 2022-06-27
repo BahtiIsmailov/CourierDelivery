@@ -29,12 +29,12 @@
     </plurals>
 
     <plurals name="volume">
-        <item quantity="zero">%d кубов</item>
-        <item quantity="one">%d куба</item>
-        <item quantity="two">%d кубов</item>
-        <item quantity="few">%d кубов</item>
-        <item quantity="many">%d кубов</item>
-        <item quantity="other">%d кубов</item>
+        <item quantity="zero">%d Кубов</item>
+        <item quantity="one">%d Куба</item>
+        <item quantity="two">%d Кубов</item>
+        <item quantity="few">%d Кубов</item>
+        <item quantity="many">%d Кубов</item>
+        <item quantity="other">%d Кубов</item>
     </plurals>
 
 
