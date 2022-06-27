@@ -160,13 +160,10 @@ class CourierUnloadingScanViewModel(
         viewModelScope.launch {
             try {
                 interactor.completeOfficeUnload()
-                _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
-                setLoader(WaitLoader.Complete)
-                clearSubscription()
             } catch (e: Exception) {
                 onTechErrorLog("confirmUnload", e)
             }finally {
-                _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
+                _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
                 setLoader(WaitLoader.Complete)
                 clearSubscription()
             }
