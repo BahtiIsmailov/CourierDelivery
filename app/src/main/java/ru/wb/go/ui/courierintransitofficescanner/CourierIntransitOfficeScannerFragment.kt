@@ -112,7 +112,7 @@ class CourierIntransitOfficeScannerFragment :
 
         viewModel.officeScannerNavigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierIntransitOfficeScannerNavigationState.NavigateToMap -> {
+                is CourierIntransitOfficeScannerNavigationState.NavigateToMap -> {
                     findNavController().popBackStack()
                 }
                 is CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed -> {
@@ -128,7 +128,7 @@ class CourierIntransitOfficeScannerFragment :
                         )
                     )
                 }
-                CourierIntransitOfficeScannerNavigationState.NavigateToScanner -> {
+                is CourierIntransitOfficeScannerNavigationState.NavigateToScanner -> {
                     hideAllBottomSheet()
                 }
             }

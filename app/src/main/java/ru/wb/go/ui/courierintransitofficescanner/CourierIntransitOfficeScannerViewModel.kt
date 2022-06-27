@@ -78,15 +78,6 @@ class CourierIntransitOfficeScannerViewModel(
              }
              .launchIn(viewModelScope)
     }
-//
-//    private fun initScanner() {
-//        addSubscription(
-//            interactor.observeOfficeIdScanProcess()
-//                .subscribe(
-//                    {  },
-//                    { observeOfficeIdScanProcessError(it) })
-//        )
-//    }
 
     private fun observeOfficeIdScanProcessComplete(it: CourierIntransitOfficeScanData) {
         when (it) {
@@ -103,7 +94,7 @@ class CourierIntransitOfficeScannerViewModel(
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.UnknownQrOffice
                 _navigationState.value =
                     CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
-                        "QR код офиса не распознан", "Повторите сканирование"
+                        "QR-код ПВЗ не распознан", "QR код должен предоставить менеджер ПВЗ"
                     )
             }
             is CourierIntransitOfficeScanData.WrongOfficeScan -> {
@@ -111,7 +102,7 @@ class CourierIntransitOfficeScannerViewModel(
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.WrongOffice
                 _navigationState.value =
                     CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
-                        "Офис не принадлежит маршруту", "Повторите сканирование"
+                        "У вас нет коробок для этого ПВЗ.", "Проверьте свой маршрут"
                     )
             }
             is CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
