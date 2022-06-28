@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierordertimer
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +40,7 @@ class CourierOrderTimerFragment : Fragment() {
         const val DIALOG_TIME_OUT_INFO_TAG = "DIALOG_TIME_OUT_INFO_TAG"
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -49,6 +51,7 @@ class CourierOrderTimerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.e("subscribeTimer","onViewCreated")
         initView()
         initObservable()
         initListeners()

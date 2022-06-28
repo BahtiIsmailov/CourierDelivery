@@ -1,6 +1,7 @@
 package ru.wb.go.utils.managers
 
 import android.content.Context
+import retrofit2.HttpException
 import ru.wb.go.R
 import ru.wb.go.network.exceptions.*
 import ru.wb.go.ui.SingleLiveEvent
@@ -40,7 +41,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     message = error.message!!
                 )
             }
-            is BadRequestException->{
+            is BadRequestException -> {
                 val msg = error.error.toString()
                 ErrorDialogData(
                     dlgTag = dlgTag,
@@ -59,12 +60,15 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
 
             }
         }
-
-        errorData.postValue(data)
+        if (!isIgnoreException(error)) {
+            errorData.postValue(data)
+        }
     }
 }
 
-
+private fun isIgnoreException(exception: Throwable):Boolean{
+    return exception is HttpException && exception.code() == 409
+}
 data class ErrorDialogData(
     val dlgTag: String,
     val type: Int, val title: String, val message: String

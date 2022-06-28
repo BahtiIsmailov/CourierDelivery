@@ -59,6 +59,11 @@ class CourierLoadingScanFragment :
         override fun onSlide(bottomSheet: View, slideOffset: Float) {}
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.observeTimer()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()

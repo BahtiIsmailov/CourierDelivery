@@ -15,6 +15,7 @@ import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.utils.RebootApplication
+import ru.wb.go.utils.RebootDialogManager
 import java.net.HttpURLConnection
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -35,7 +36,7 @@ class RefreshTokenInterceptor(
         var response = chain.proceed(builder.build())
 
         if (response.code == 409) {
-            RebootApplication.doRestart(App.getContext())
+            RebootDialogManager.showRebootDialog()
         }
 
         for ((key, value) in headerManager.headerApiMap) {

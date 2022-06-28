@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierordertimer
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -85,13 +86,30 @@ class CourierOrderTimerViewModel(
             }
         }
     }
-
+//
+//    private fun initOrder() {
+//        addSubscription(
+//            interactor.timerEntity()
+//                .subscribe(
+//                    {
+//                        initOrderInfo(it)
+//                        initTimer(it.reservedDuration, it.reservedAt)
+//                    },
+//                    {
+//                        onTechErrorLog("initOrder", it)
+//                    }
+//                )
+//        )
+//    }
     private fun subscribeTimer() {
+    Log.e("subscribeTimer","start")
         interactor.timer
             .onEach {
+                Log.e("subscribeTimer","onEach")
                 onHandleSignUpState(it)
             }
             .catch {
+                Log.e("subscribeTimer","catch")
                 onHandleSignUpError(it)
             }
             .launchIn(viewModelScope)

@@ -304,7 +304,7 @@
     <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
     <string name="courier_order_scanner_title">Время вышло</string>
     <string name="courier_order_scanner_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
-    <string name="courier_order_scanner_dialog">Вернуться к списку заказов</string>
+    <string name="courier_order_scanner_dialog">Понятно</string>
 
     <string name="courier_loading_boxes_index">%1$d.</string>
     <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
