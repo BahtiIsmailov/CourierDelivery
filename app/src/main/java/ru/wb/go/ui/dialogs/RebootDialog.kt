@@ -2,7 +2,6 @@ package ru.wb.go.ui.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.KeyEvent
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,9 +23,9 @@ class RebootDialog : DialogFragment(){
         val positive: Button = dialogView.findViewById(R.id.positive)
         builder.setView(dialogView)
         titleLayout.setImageResource(R.drawable.ic_dialog_title_alarm)
-        title.text = "Ошибка"
-        message.text = "Заказа больше не существует\nПриложение будет перезагружено"
-        positive.text = "ok"
+        title.text = requireContext().getString(R.string.error_title)
+        message.text = requireContext().getString(R.string.http409)
+        positive.text = requireContext().getString(R.string.courier_expects_positive)
         positive.setOnClickListener {
             dismiss()
             RebootApplication.doRestart(requireContext())
