@@ -104,7 +104,7 @@ class CourierLoadingScanViewModel(
         }
     }
 
-    private fun observeTimer() {
+    fun observeTimer() {
         courierOrderTimerInteractor.timer
             .onEach {
                 observeTimerComplete(it)

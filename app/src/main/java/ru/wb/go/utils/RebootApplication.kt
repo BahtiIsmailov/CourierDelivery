@@ -34,7 +34,7 @@ object RebootApplication {
                             PendingIntent.FLAG_CANCEL_CURRENT
                         )
                     val mgr = c.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    mgr[AlarmManager.RTC, System.currentTimeMillis() + 100] =
+                    mgr[AlarmManager.RTC, System.currentTimeMillis()] =
                         mPendingIntent
                     //kill the application
                     System.exit(0)

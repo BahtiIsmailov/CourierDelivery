@@ -5,6 +5,7 @@ import okhttp3.Request
 import okhttp3.Response
 import ru.wb.go.app.App
 import ru.wb.go.utils.RebootApplication
+import ru.wb.go.utils.RebootDialogManager
 import ru.wb.go.utils.analytics.YandexMetricManager
 import java.io.IOException
 import java.nio.charset.Charset
@@ -18,7 +19,7 @@ class AppMetricResponseInterceptor(private val metric: YandexMetricManager) : In
         val response: Response = chain.proceed(request)
 
         if (response.code == 409) {
-            RebootApplication.doRestart(App.getContext())
+            RebootDialogManager.showRebootDialog()
         }
         val url = request.url.toString()
         val singleApiMethod = "<-" + getSingleApiMethod(url)

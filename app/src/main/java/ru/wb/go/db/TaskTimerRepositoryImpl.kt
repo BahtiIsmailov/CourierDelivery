@@ -1,13 +1,11 @@
 package ru.wb.go.db
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import ru.wb.go.ui.auth.signup.TimerOverStateImpl
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateImpl
@@ -16,9 +14,7 @@ import java.util.concurrent.TimeUnit
 
 class TaskTimerRepositoryImpl : TaskTimerRepository {
 
-    private val timerStates = MutableSharedFlow<TimerState>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val timerStates = MutableStateFlow<TimerState>(TimerStateImpl(0,0))
 
     private var corutineScope:CoroutineScope? = null
 
@@ -33,10 +29,12 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
             corutineScope = CoroutineScope(SupervisorJob())
             CoroutineExtension.interval(1000L, TimeUnit.MILLISECONDS)
                 .onEach {
+                    Log.e("subscribeTimer","interval")
                     onTimeConfirmCode(it)
                 }
                 .launchIn(corutineScope!!)
             publishCallState(TimerStateImpl(durationTime, arrivalTime))
+            Log.e("subscribeTimer","onTimeConfirmCode3")
         }
     }
 
@@ -52,20 +50,26 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         if (tick >= arrivalTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
+            Log.e("subscribeTimer","onTimeConfirmCode1")
         } else {
             val downTickSec = arrivalTime - tick.toInt()
             publishCallState(TimerStateImpl(durationTime, downTickSec))
+            Log.e("subscribeTimer","onTimeConfirmCode2")
         }
     }
 
     private fun publishCallState(timerState: TimerState) {
-        timerStates.tryEmit(timerState)
+        Log.e("subscribeTimer","publishCallState")
+        timerStates.update{
+            timerState
+        }
     }
 
     private fun timeConfirmCodeDisposable() {
         durationTime = 0
         arrivalTime = 0
         publishCallState(TimerStateImpl(durationTime, 0))
+        Log.e("subscribeTimer","onTimeConfirmCode4")
         if (corutineScope != null) {
             corutineScope!!.cancel()
             corutineScope = null

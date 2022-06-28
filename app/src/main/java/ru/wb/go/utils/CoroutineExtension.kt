@@ -29,10 +29,9 @@ object CoroutineExtension {
         }
 
         while (true) {
-            delay(delayTime)
             emit(counter++)
+            delay(delayTime)
         }
-
     }
 }
 

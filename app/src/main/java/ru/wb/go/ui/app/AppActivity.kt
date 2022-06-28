@@ -25,6 +25,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -33,6 +34,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.SplashActivityBinding
@@ -42,8 +45,11 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.RebootDialog
 import ru.wb.go.ui.support.SupportFragment
+import ru.wb.go.utils.RebootDialogManager
 import ru.wb.go.utils.SoftKeyboard
+import kotlin.system.exitProcess
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
@@ -131,6 +137,13 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
 
     private fun initObserver() {
+        lifecycleScope.launchWhenStarted {
+            RebootDialogManager.observerShowRebootDialog()
+                .onEach {
+                    RebootDialog.newInstance().show(supportFragmentManager, RebootDialog.TAG)
+                }
+                .launchIn(this)
+        }
 
         viewModel.networkState.observe(this) {
 
@@ -356,7 +369,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     private fun exitApp() {
-        finish()
+        finishAndRemoveTask()
+        exitProcess(0)
     }
 
     override fun onNegativeDialogClick(resultTag: String) {

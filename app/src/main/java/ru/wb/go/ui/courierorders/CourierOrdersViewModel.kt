@@ -783,8 +783,6 @@ class CourierOrdersViewModel(
                 anchorTaskComplete()
             } catch (e: Exception) {
                 anchorTaskError(e)
-//                _navigationState.value = CourierOrdersNavigationState.NavigateToOrders
-
             }
         }
     }
