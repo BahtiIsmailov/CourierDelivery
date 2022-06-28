@@ -57,10 +57,6 @@ companion object{
         }
     }
 
-
-
-
-
     private fun initFirebaseAnalytics() {
         //val isEnable: Boolean = !BuildConfig.DEBUG
         FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(true)

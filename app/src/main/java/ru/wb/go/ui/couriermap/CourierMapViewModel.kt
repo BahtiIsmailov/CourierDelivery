@@ -2,6 +2,8 @@ package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -133,6 +135,9 @@ class CourierMapViewModel(
 
     }
 
+    fun clearSubscription(){
+        viewModelScope.coroutineContext.cancelChildren()
+    }
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {
             is CourierMapState.NavigateToPoint -> _navigateToPoint.value =

@@ -21,7 +21,6 @@ class NumberPhoneInteractorImpl(
 
     override fun observeNetworkConnected(): Flow<NetworkState> {
         return networkMonitorRepository.networkConnected()
-
     }
 
 

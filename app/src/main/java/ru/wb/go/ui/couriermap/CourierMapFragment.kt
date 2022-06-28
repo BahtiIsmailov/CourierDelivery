@@ -783,7 +783,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     override fun onDestroyView() {
-        //viewModel.clearSubscription()
+        viewModel.clearSubscription()
         super.onDestroyView()
         _binding = null
     }

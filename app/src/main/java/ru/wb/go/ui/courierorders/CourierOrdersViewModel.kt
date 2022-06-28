@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -72,7 +73,6 @@ class CourierOrdersViewModel(
     private val _waitLoader = SingleLiveEvent<WaitLoader>()
     val waitLoader: LiveData<WaitLoader>
         get() = _waitLoader
-
 
 
     private val _demoState = MutableLiveData<Boolean>()
@@ -146,6 +146,9 @@ class CourierOrdersViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun clearSubscription() {
+        viewModelScope.coroutineContext.cancelChildren()
+    }
 
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
@@ -162,7 +165,6 @@ class CourierOrdersViewModel(
 
             .launchIn(viewModelScope)
     }
-
 
 
     fun onShowOrderDetailsClick() {
@@ -548,7 +550,7 @@ class CourierOrdersViewModel(
         changeShowDetailsOrder(isSelected)
     }
 
-     private fun changeShowDetailsOrder(selected: Boolean) {
+    private fun changeShowDetailsOrder(selected: Boolean) {
         _showOrderState.value =
             if (selected) CourierOrderShowOrdersState.Enable
             else CourierOrderShowOrdersState.Disable
@@ -593,7 +595,7 @@ class CourierOrdersViewModel(
         return isSelected
     }
 
-     fun onNextFab() {
+    fun onNextFab() {
         initOrderDetails(interactor.selectedRowOrder())
         _showOrderState.value = CourierOrderShowOrdersState.Invisible
         _navigationState.value =
@@ -675,8 +677,11 @@ class CourierOrdersViewModel(
         }
     }
 
-    fun getAddressFromOrderAddressItems(){
-        sharedWorker.save(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,orderAddressItems.lastOrNull()?.timeWork.orEmpty())
+    fun getAddressFromOrderAddressItems() {
+        sharedWorker.save(
+            SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
+            orderAddressItems.lastOrNull()?.timeWork.orEmpty()
+        )
     }
 
 
@@ -784,7 +789,7 @@ class CourierOrdersViewModel(
         }
     }
 
-     private fun anchorTaskComplete() {
+    private fun anchorTaskComplete() {
         setLoader(WaitLoader.Complete)
         _navigationState.value = CourierOrdersNavigationState.NavigateToTimer
     }
@@ -800,8 +805,7 @@ class CourierOrdersViewModel(
             }
         } else if (it is HttpObjectNotFoundException) {
             taskRejected()
-        }
-        else {
+        } else {
             errorDialogManager.showErrorDialog(
                 it,
                 _navigateToDialogInfo,

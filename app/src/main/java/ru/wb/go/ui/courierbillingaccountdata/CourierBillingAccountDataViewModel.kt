@@ -175,7 +175,7 @@ class CourierBillingAccountDataViewModel(
         flowOf(with(focusChange) {
             predicateMessageChecker(bikPredicate, text, type)
         }
-        )
+    )
 
     private fun checkTextBikWrapper(focusChange: CourierBillingAccountDataUIAction.TextChange): Flow<CourierBillingAccountDataUIState> {
         return flowOf(focusChange.text)
@@ -186,7 +186,6 @@ class CourierBillingAccountDataViewModel(
                 _bicProgressState.value = true
                 bankEntity = null
                 interactor.getBank(it)
-
             }
             .onEach {
                 bankEntity = it

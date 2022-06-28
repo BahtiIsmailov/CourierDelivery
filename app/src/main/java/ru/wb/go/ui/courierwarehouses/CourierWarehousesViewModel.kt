@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierwarehouses
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -98,6 +99,9 @@ class CourierWarehousesViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun clearSubscription(){
+        viewModelScope.coroutineContext.cancelChildren()
+    }
 
     private fun observeMapActionError(throwable: Throwable) {
         onTechErrorLog("observeMapActionError", throwable)

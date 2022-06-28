@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ru.wb.go.app.App
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -55,6 +56,12 @@ class NumberPhoneViewModel(
             .catch {  }
             .launchIn(viewModelScope)
     }
+//        if (CheckInternet.checkConnection(App.getContext()!!)){
+//            _toolbarNetworkState.value = NetworkState.Complete
+//        }else{
+//            _toolbarNetworkState.value = NetworkState.Failed
+//        }
+
 
 
     fun onCheckPhone(number: String) {

@@ -158,7 +158,7 @@ class CourierOrdersFragment :
 
 
     override fun onDestroyView() {
-        //viewModel.clearSubscription()
+        viewModel.clearSubscription()
         viewModel.clearMap()
         super.onDestroyView()
     }

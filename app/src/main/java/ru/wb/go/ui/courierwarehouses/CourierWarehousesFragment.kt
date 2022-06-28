@@ -215,7 +215,7 @@ class CourierWarehousesFragment :
 
     override fun onPause() {
         super.onPause()
-        //viewModel.clearSubscription()
+        viewModel.clearSubscription()
     }
 
     private fun showDialogInfo(

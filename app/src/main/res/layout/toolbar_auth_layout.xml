@@ -50,7 +50,7 @@
             android:clickable="true"
             android:focusable="true"
             android:scaleType="center"
-            android:visibility="visible"
+            android:visibility="invisible"
             app:srcCompat="@drawable/ic_inet_failed"
             tools:ignore="ContentDescription" />
 
