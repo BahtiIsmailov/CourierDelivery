@@ -80,8 +80,10 @@ companion object{
             YandexMetricaConfig.newConfigBuilder(getYandexMetricKey())
                 //TODO: 16.11.2021 включить после тестирования аналитики
                 //.withStatisticsSending(!BuildConfig.DEBUG)
+                .withLocationTracking(false)
                 .build()
         YandexMetrica.activate(context, config)
+        YandexMetrica.setLocationTracking(false)
         YandexMetrica.enableActivityAutoTracking(context as Application)
     }
 
