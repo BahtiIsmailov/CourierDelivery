@@ -1,6 +1,5 @@
 package ru.wb.go.ui.scanner.domain
 
-import android.util.Log
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -21,14 +20,14 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
 
     private var scannerActionSubject = MutableSharedFlow<ScannerAction>(extraBufferCapacity = Int.MAX_VALUE,
         onBufferOverflow = BufferOverflow.DROP_OLDEST)
-//    private var scannerStateSubject = MutableSharedFlow<ScannerState>(replay = 1, extraBufferCapacity = Int.MAX_VALUE,
-//        onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    private var scannerStateSubject = Channel<ScannerState>(capacity = Int.MAX_VALUE)
+    private var scannerStateSubject = MutableSharedFlow<ScannerState>(extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+   // private var scannerStateSubject = Channel<ScannerState>(capacity = Int.MAX_VALUE)
 
      override fun scannerAction(action:ScannerAction){
          scannerActionSubject.tryEmit(action)
-         Log.e("UniqueId","scannerAction : $action")
     }
 
     override fun observeScannerAction(): Flow<ScannerAction> {
@@ -36,13 +35,12 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override fun scannerState(state: ScannerState) {
-        scannerStateSubject.trySend(state)
-
-
+        scannerStateSubject.tryEmit(state)
+        //scannerStateSubject.trySend(state)
     }
 
     override fun observeScannerState(): Flow<ScannerState> {
-        return scannerStateSubject.receiveAsFlow()
+        return scannerStateSubject//.receiveAsFlow()
     }
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {
@@ -69,20 +67,6 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
             else -> ParsedScanOfficeQrEntity(-1, false)
         }
     }
-    /*
-    qrCode.startsWith(PREFIX_QR_OFFICE_CODE_OLD) -> {
-                val code = qrCode.split(".")
-                if (code.size != 3) {
-                    ParsedScanOfficeQrEntity(-1, false)
-                } else {
-                    val ofId = code[1].toIntOrNull()
-                    if (ofId == null) {
-                        ParsedScanOfficeQrEntity(-1, false)
-                    } else
-                        ParsedScanOfficeQrEntity(ofId, true)
-                }
-            }
-     */
 
     private fun getSplitDynamicOfficeInfo(input: String): ParsedScanOfficeQrEntity {
         val splitter = input.split(";")

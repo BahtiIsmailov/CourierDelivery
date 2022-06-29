@@ -2,10 +2,7 @@ package ru.wb.go.ui.scanner.domain
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.utils.managers.SettingsManager
 
@@ -15,12 +12,15 @@ class ScannerInteractorImpl(
     private val settingsManager: SettingsManager,
 ) : ScannerInteractor {
 
-    private val holdSplashSubject = MutableSharedFlow<Unit>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    private val prolongHoldSubject = MutableSharedFlow<Unit>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+//    private val holdSplashSubject = MutableSharedFlow<Unit>(
+//        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+//    )
+//    private val prolongHoldSubject = MutableSharedFlow<Unit>(
+//        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+//    )
+
+    private val holdSplashSubject = MutableStateFlow(Unit)
+    private val prolongHoldSubject = MutableStateFlow(Unit)
 
     private var coroutineScope:CoroutineScope? = null
     private var holdSplashDisposable:Job? = null
@@ -44,7 +44,8 @@ class ScannerInteractorImpl(
 
     override fun prolongHoldTimer() {
         startTimer()
-        prolongHoldSubject.tryEmit(Unit)
+        //prolongHoldSubject.tryEmit(Unit)
+        prolongHoldSubject.update { Unit }
     }
 
     override fun observeScannerState(): Flow<ScannerState>  {
@@ -80,7 +81,8 @@ class ScannerInteractorImpl(
             .onEach {
                 delay(HOLD_SCANNER_DELAY,)
                 scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
-                holdSplashSubject.tryEmit(Unit)
+                //holdSplashSubject.tryEmit(Unit)
+                holdSplashSubject.update { Unit }
             }
             .launchIn(coroutineScope!!)
 

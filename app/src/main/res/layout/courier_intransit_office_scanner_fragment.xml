@@ -40,6 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:gravity="center"
+            android:textColor="@color/colorDividerPale"
             android:text="@string/courier_intransit_office_scanner_info"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

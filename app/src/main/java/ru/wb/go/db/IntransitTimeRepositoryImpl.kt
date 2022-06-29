@@ -30,7 +30,7 @@ class IntransitTimeRepositoryImpl : IntransitTimeRepository {
                  var count = 0L
                  while (isActive) {
                      delay(1000)
-                     timerState.tryEmit(++count)
+                     timerState.tryEmit(count+1)
                  }
              }
 
