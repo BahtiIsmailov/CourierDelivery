@@ -164,18 +164,16 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeScanProcess() {//2
-        Log.e("observeInitScanProcess","start1")
         interactor.observeScanProcess()
             .onEach {
                 observeScanProcessComplete(it)
-                Log.e("observeInitScanProcess","$it")
+                interactor.scanRepoHoldStart()
             }
 //            .retryWhen { _, _ ->
 //                delay(1000)
 //                true
 //            }
             .catch {
-                Log.e("observeInitScanProcess","$it")
                 scanProcessError(it)
             }
             .launchIn(viewModelScope)

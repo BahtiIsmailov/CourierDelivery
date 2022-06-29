@@ -56,11 +56,8 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override suspend fun holdStart(){
-        Log.e("holdStart", "1 - holdStart")
         delay(DELAY_HOLD_SCANNER)
-        Log.e("holdStart", "2 - holdStart")
         scannerState(ScannerState.StartScan)
-        Log.e("holdStart", "3 - holdStart")
     }
 
 

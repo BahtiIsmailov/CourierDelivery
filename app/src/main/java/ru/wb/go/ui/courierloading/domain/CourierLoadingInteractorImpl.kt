@@ -50,9 +50,9 @@ class CourierLoadingInteractorImpl(
     ): Flow<CourierLoadingProcessData> {
         scanRepo.scannerState(scannerState)
         return flowOf(CourierLoadingProcessData(data, boxCount))
-            .onEach{
-                scanRepo.holdStart()
-            }
+//            .onEach{
+//                scanRepo.holdStart()
+//            }
             .onEach {
                 CourierLoadingProcessData(
                     CourierLoadingScanBoxData.ScannerReady,
@@ -61,6 +61,11 @@ class CourierLoadingInteractorImpl(
             }
 
     }
+
+    override suspend fun scanRepoHoldStart(){
+        scanRepo.holdStart()
+    }
+
 
 
      @OptIn(FlowPreview::class)
@@ -107,8 +112,6 @@ class CourierLoadingInteractorImpl(
                 }
             }
     }
-
-
 
 
     private suspend fun qrComplete(
