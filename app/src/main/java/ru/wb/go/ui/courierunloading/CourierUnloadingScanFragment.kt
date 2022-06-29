@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierunloading
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -197,6 +198,7 @@ class CourierUnloadingScanFragment :
         }
 
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
+            Log.e("scannerAction","statusLayout : $state")
             when (state) {
                 is UnloadingFragmentState.Empty -> {
                     with(binding){

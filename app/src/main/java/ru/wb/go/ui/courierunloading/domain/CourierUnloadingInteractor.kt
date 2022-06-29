@@ -26,4 +26,6 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
     suspend fun getRemainBoxes(officeId: Int):  List<LocalBoxEntity>
 
     suspend fun getOrderId(): String
+
+    suspend fun scannerRepoHoldStart()
 }

@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierunloading
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -81,6 +82,7 @@ class CourierUnloadingScanViewModel(
         initTitle()
         initToolbar()
         observeBoxInfoProcessInitState()
+        Log.e("scannerAction","update - observeScanProcess")
         observeScanProcess()
         observeScanProgress()
     }
@@ -172,31 +174,16 @@ class CourierUnloadingScanViewModel(
         }
     }
 
-    /*
-      addSubscription(
-            interactor.completeOfficeUnload()
-                .doFinally {
-                    _navigationEvent.postValue(CourierUnloadingScanNavAction.NavigateToIntransit)
-                    setLoader(WaitLoader.Complete)
-                    clearSubscription()
-                }
-                .subscribe(
-                    {
-
-                    },
-                    {
-                        onTechErrorLog("confirmUnload", it)
-                    })
-        )
-     */
-
     private fun observeScanProcess() {
         holdSplashScanner()
         interactor.observeScanProcess(parameters.officeId)
             .onEach {
+                Log.e("scannerAction","observeScanProcessOnEach : $it")
                 observeScanProcessComplete(it)
-                delay(2000)
+                interactor.scannerRepoHoldStart()
+//                delay(2000)
                 onStartScanner()
+
             }
             .catch {
                 onTechErrorLog("observeScanProcessError", it)
@@ -229,6 +216,7 @@ class CourierUnloadingScanViewModel(
         val scanBoxData = scanProcess.scanBoxData
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
+        Log.e("scannerAction","observeScanProcessComplete : $scanBoxData")
         when (scanBoxData) {
             is CourierUnloadingScanBoxData.ScannerReady -> {
                 _fragmentStateUI.value = with(scanBoxData) {

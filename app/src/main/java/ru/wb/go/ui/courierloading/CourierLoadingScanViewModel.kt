@@ -194,7 +194,6 @@ class CourierLoadingScanViewModel(
         )
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
-        Log.e("UniqueId","$scanBoxData")
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar

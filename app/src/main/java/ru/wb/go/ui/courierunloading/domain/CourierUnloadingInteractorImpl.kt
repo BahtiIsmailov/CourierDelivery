@@ -1,7 +1,10 @@
 package ru.wb.go.ui.courierunloading.domain
 
+import android.util.Log
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -31,11 +34,15 @@ class CourierUnloadingInteractorImpl(
 
     @OptIn(FlowPreview::class)
     override fun observeScanProcess(officeId: Int): Flow<CourierUnloadingProcessData> {
+        Log.e("scannerAction","observeScanProcess : $officeId")
         return scannerRepo.observeScannerAction()
             .filter { it is ScannerAction.ScanResult }
             .map { it as ScannerAction.ScanResult }
-            .map { scannerRepo.parseScanBoxQr(it.value) }
+            .map {
+                Log.e("scannerAction","observeScanProcess - Map : $it")
+                scannerRepo.parseScanBoxQr(it.value) }
             .flatMapMerge { parsedScan ->
+                Log.e("scannerAction","observeScanProcess - flatMapMerge : $parsedScan")
                 val boxes = localRepo.getBoxes()
                 val box = boxes.find { box -> box.boxId == parsedScan.boxId }
                 val scanTime = timeManager.getLocalTime()
@@ -70,15 +77,29 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanComplete)
                     }
                 }
+                Log.e("scannerAction","observeScanProcess - flatMapMergeAfterWhen : $parsedScan")
                 val it = localRepo.findOfficeById(officeId)
+                Log.e("scannerAction","observeScanProcess - findOfficeById : $parsedScan")
                  flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
-                     .onEach {
-                         scannerRepo.holdStart()
-                     }
+
             }
         //TODO(уточнить на счет возвращаемого значения)
     }
+    /*
+    localRepo.findOfficeById(officeId)
+                    .flatMapObservable {
+                        Observable.just(
+                            CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes)
+                        ).mergeWith(scannerRepo.holdStart())
+                    }
+                    .compose(rxSchedulerFactory.applyObservableSchedulers())
+     */
 
+
+
+    override suspend fun scannerRepoHoldStart(){
+        scannerRepo.holdStart()
+    }
 
 
     var scanLoaderProgressSubject = MutableSharedFlow<CourierUnloadingProgressData>()

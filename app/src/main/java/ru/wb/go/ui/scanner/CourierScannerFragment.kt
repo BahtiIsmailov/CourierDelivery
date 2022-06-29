@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -96,9 +97,9 @@ open class CourierScannerFragment : BaseFragment() {
                 binding.permissionInfo.visibility = VISIBLE
                 if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                     binding.requestPermissionSetting.visibility = GONE
-                    binding.requestPermission.visibility =  VISIBLE
+                    binding.requestPermission.visibility = VISIBLE
                 } else {
-                    binding.requestPermissionSetting.visibility =  VISIBLE
+                    binding.requestPermissionSetting.visibility = VISIBLE
                     binding.requestPermission.visibility = GONE
                 }
                 onPause()
@@ -146,7 +147,8 @@ open class CourierScannerFragment : BaseFragment() {
     }
 
     private fun initObserver() {
-        viewModel.scannerAction.observe(viewLifecycleOwner){
+        viewModel.scannerAction.observe(viewLifecycleOwner) {
+            Log.e("scannerAction", "galochka : $it")
             when (it) {
                 ScannerState.StartScan -> startScanning()
                 ScannerState.StopScan -> stopScanning()

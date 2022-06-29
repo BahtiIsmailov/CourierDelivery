@@ -1,5 +1,6 @@
 package ru.wb.go.ui.scanner.domain
 
+import android.util.Log
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -27,6 +28,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
    // private var scannerStateSubject = Channel<ScannerState>(capacity = Int.MAX_VALUE)
 
      override fun scannerAction(action:ScannerAction){
+         Log.e("scannerAction","emit:$action")
          scannerActionSubject.tryEmit(action)
     }
 
@@ -54,8 +56,11 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
     }
 
     override suspend fun holdStart(){
+        Log.e("holdStart", "1 - holdStart")
         delay(DELAY_HOLD_SCANNER)
+        Log.e("holdStart", "2 - holdStart")
         scannerState(ScannerState.StartScan)
+        Log.e("holdStart", "3 - holdStart")
     }
 
 
