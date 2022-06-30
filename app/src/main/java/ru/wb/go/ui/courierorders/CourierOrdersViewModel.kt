@@ -34,7 +34,6 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
@@ -46,13 +45,12 @@ import java.text.DecimalFormat
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
-    metric: YandexMetricManager,
     private val sharedWorker: SharedWorker,
     private val interactor: CourierOrdersInteractor,
     private val dataBuilder: CourierOrdersDataBuilder,
     private val resourceProvider: CourierOrdersResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>

@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ru.wb.go.app.App
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -14,14 +13,12 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.NumberPhoneUIState.*
 import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.PhoneUtils
 
 class NumberPhoneViewModel(
-    metric: YandexMetricManager,
     private val resourceProvider: AuthResourceProvider,
     private val interactor: NumberPhoneInteractor,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _navigationEvent =
         SingleLiveEvent<NumberPhoneNavAction>()

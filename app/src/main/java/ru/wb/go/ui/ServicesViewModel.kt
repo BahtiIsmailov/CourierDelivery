@@ -8,13 +8,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.wb.go.mvvm.BaseServicesResourceProvider
 import ru.wb.go.network.monitor.NetworkState
-import ru.wb.go.utils.analytics.YandexMetricManager
 
 abstract class ServicesViewModel(
-    metric: YandexMetricManager,
     private val serviceInteractor: BaseServiceInteractor,
     private val resourceProvider: BaseServicesResourceProvider
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _networkState = MutableLiveData<NetworkState>()
     val networkState: LiveData<NetworkState>

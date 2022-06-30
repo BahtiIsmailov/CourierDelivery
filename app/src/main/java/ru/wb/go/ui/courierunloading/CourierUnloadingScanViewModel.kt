@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,19 +22,17 @@ import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 
 class CourierUnloadingScanViewModel(
     private val parameters: CourierUnloadingScanParameters,
-    metric: YandexMetricManager,
     private val resourceProvider: CourierUnloadingResourceProvider,
     private val interactor: CourierUnloadingInteractor,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>

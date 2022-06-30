@@ -7,7 +7,6 @@ import ru.wb.go.network.headers.HeaderManager
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.ui.app.domain.AppNavRepository
-import ru.wb.go.utils.analytics.YandexMetricManager
 
 object InterceptorFactory {
 
@@ -27,8 +26,8 @@ object InterceptorFactory {
         return AppMockResponseInterceptor(apiServer, mockResponse)
     }
 
-    fun createAppMetricResponseInterceptor(metric: YandexMetricManager): AppMetricResponseInterceptor {
-        return AppMetricResponseInterceptor(metric)
+    fun createAppMetricResponseInterceptor(): AppMetricResponseInterceptor {
+        return AppMetricResponseInterceptor()
     }
 
     fun createRefreshTokenInterceptor(

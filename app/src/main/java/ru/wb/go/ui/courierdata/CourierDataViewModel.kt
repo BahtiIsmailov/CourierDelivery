@@ -13,16 +13,14 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class UserFormViewModel(
     private val parameters: CourierDataParameters,
-    metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _navigateToMessageInfo = SingleLiveEvent<ErrorDialogData>()
     val navigateToMessageInfo: LiveData<ErrorDialogData>

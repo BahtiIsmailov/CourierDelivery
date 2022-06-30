@@ -12,18 +12,16 @@ import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierBillingViewModel(
-    metric: YandexMetricManager,
     private val interactor: CourierBillingInteractor,
     private val dataBuilder: CourierBillingDataBuilder,
     private val resourceProvider: CourierBillingResourceProvider,
     private val userManager: UserManager,
     private val errorDialogManager: ErrorDialogManager
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private var balance = 0
 

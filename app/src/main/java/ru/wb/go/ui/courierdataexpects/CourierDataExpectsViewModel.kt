@@ -18,22 +18,18 @@ import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.ui.courierdataexpects.CourierDataExpectsFragment.Companion.DIALOG_EXPECTS_ERROR_RESULT_TAG
 import ru.wb.go.ui.courierdataexpects.domain.CourierDataExpectsInteractor
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CouriersCompleteRegistrationViewModel(
     private val parametersData: CourierDataExpectsParameters,
-
-    metric: YandexMetricManager,
-
     private val resourceProviderData: CourierDataExpectsResourceProvider,
     private val interactorData: CourierDataExpectsInteractor,
     private val appRemoteRepository: AppRemoteRepository,
     private val errorDialogManager: ErrorDialogManager,
     private val tokenManager: TokenManager,
     private val appNavRepository: AppNavRepository
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _showDialogInfo = SingleLiveEvent<ErrorDialogData>()
     val showDialogInfo: LiveData<ErrorDialogData>

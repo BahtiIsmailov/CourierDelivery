@@ -16,7 +16,6 @@ import ru.wb.go.ui.courierintransit.domain.CourierIntransitInteractor
 import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
@@ -27,13 +26,12 @@ import ru.wb.go.utils.prefs.SharedWorker
 import ru.wb.go.utils.time.DateTimeFormatter
 
 class CourierIntransitViewModel(
-    metric: YandexMetricManager,
     private val sharedWorker: SharedWorker,
     private val interactor: CourierIntransitInteractor,
     private val resourceProvider: CourierIntransitResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<Label>()
     val toolbarLabelState: LiveData<Label>

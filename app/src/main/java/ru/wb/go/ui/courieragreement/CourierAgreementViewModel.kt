@@ -4,14 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class CourierAgreementViewModel(
-    metric: YandexMetricManager,
     private val settingsManager: SettingsManager
 ) :
-    NetworkViewModel(metric) {
+    NetworkViewModel() {
 
     private val _navigationState = MutableLiveData<CourierAgreementNavigationState>()
     val navigationState: LiveData<CourierAgreementNavigationState>

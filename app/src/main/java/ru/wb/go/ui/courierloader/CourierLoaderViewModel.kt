@@ -20,13 +20,11 @@ import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 import java.net.UnknownHostException
 
 class CourierLoaderViewModel(
-    metric: YandexMetricManager,
     private val tokenManager: TokenManager,
     private val locRepo: CourierLocalRepository,
     private val remoteRepo: AppRemoteRepository,
@@ -34,7 +32,7 @@ class CourierLoaderViewModel(
     private val resourceProvider: CourierLoaderResourceProvider,
     private val settingsManager: SettingsManager,
     private val userManager: UserManager,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
     val drawerHeader: LiveData<UserInfoEntity>

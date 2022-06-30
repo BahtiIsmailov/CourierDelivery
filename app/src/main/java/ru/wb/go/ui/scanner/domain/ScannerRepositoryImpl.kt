@@ -2,11 +2,9 @@ package ru.wb.go.ui.scanner.domain
 
 import android.util.Log
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_V1
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_V1

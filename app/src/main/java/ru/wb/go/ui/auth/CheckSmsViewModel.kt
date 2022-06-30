@@ -14,15 +14,13 @@ import ru.wb.go.ui.auth.domain.CheckSmsInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
-import ru.wb.go.utils.analytics.YandexMetricManager
 import java.net.UnknownHostException
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
-    metric: YandexMetricManager,
     private val interactor: CheckSmsInteractor,
     private val resourceProvider: AuthResourceProvider,
-) : TimerStateHandler, NetworkViewModel(metric) {
+) : TimerStateHandler, NetworkViewModel() {
 
     private val _stateTitleUI = MutableLiveData<InitTitle>()
     val stateTitleUI: LiveData<InitTitle>

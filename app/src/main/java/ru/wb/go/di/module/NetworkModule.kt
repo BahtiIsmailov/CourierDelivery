@@ -25,7 +25,6 @@ import ru.wb.go.network.token.UserManagerImpl
 import ru.wb.go.reader.MockResponse
 import ru.wb.go.reader.MockResponseImpl
 import ru.wb.go.ui.app.domain.AppNavRepository
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ConfigManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.prefs.SharedWorker
@@ -146,8 +145,8 @@ val networkModule = module {
         )
     }
 
-    fun provideAppMetricResponseInterceptor(metric: YandexMetricManager): AppMetricResponseInterceptor {
-        return InterceptorFactory.createAppMetricResponseInterceptor(metric)
+    fun provideAppMetricResponseInterceptor(): AppMetricResponseInterceptor {
+        return InterceptorFactory.createAppMetricResponseInterceptor()
     }
 
     fun provideRefreshTokenInterceptor(
@@ -295,7 +294,7 @@ val networkModule = module {
 
     single { provideAuthMockResponseInterceptor() }
     single { provideAppMockResponseInterceptor(get()) }
-    single { provideAppMetricResponseInterceptor(get()) }
+    single { provideAppMetricResponseInterceptor() }
 
     single {
         provideRefreshTokenInterceptor(

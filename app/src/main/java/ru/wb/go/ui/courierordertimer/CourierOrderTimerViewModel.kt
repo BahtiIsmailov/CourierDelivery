@@ -20,19 +20,17 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
-    metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
     val courierLocalRepository: CourierLocalRepository,
     private val resourceProvider: CourierOrderTimerResourceProvider,
     private val errorDialogManager: ErrorDialogManager
-) : TimerStateHandler, NetworkViewModel(metric) {
+) : TimerStateHandler, NetworkViewModel() {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
     val orderTimer: LiveData<CourierOrderTimerState>

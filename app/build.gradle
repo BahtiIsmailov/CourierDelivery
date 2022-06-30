@@ -233,9 +233,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics'
 
-    //yandex
-    implementation 'com.yandex.android:mobmetricalib:3.21.0'
-
     //coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 

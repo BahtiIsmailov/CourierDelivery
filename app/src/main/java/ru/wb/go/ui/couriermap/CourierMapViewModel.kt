@@ -2,7 +2,6 @@ package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -12,14 +11,12 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 
 class CourierMapViewModel(
-    metric: YandexMetricManager,
     private val interactor: CourierMapInteractor,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     object ClearMap
 

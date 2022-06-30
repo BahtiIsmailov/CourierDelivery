@@ -1,7 +1,6 @@
 package ru.wb.go.network.rest
 
 import okhttp3.OkHttpClient
-import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.wb.go.network.NullOnEmptyConverterFactory

@@ -21,21 +21,19 @@ import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.time.DateTimeFormatter
 
 class CourierLoadingScanViewModel(
-    metric: YandexMetricManager,
     private val resourceProvider: CourierLoadingResourceProvider,
     private val interactor: CourierLoadingInteractor,
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
 ) : TimerStateHandler,
-    ServicesViewModel(metric, interactor, resourceProvider) {
+    ServicesViewModel(interactor, resourceProvider) {
 
     private val _orderTimer = MutableLiveData<CourierLoadingScanTimerState>()
     val orderTimer: LiveData<CourierLoadingScanTimerState>

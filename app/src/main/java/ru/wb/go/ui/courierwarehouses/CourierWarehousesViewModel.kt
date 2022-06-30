@@ -20,7 +20,6 @@ import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
@@ -28,11 +27,10 @@ import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 
 class CourierWarehousesViewModel(
-    metric: YandexMetricManager,
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
     val warehouseState: LiveData<CourierWarehouseItemState>

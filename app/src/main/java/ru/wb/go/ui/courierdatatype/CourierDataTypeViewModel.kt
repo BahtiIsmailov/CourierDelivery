@@ -5,15 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.CourierDataParameters
-import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CourierDataTypeViewModel(
     private val parameters: CourierDataParameters,
-
-    metric: YandexMetricManager,
-
     private val resourceProviderData: CourierDataTypeResourceProvider,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _navAction = MutableLiveData<CourierDataTypeNavAction>()
     val navigationState: LiveData<CourierDataTypeNavAction>

@@ -11,13 +11,11 @@ import ru.wb.go.network.api.auth.response.RefreshResponse
 import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.network.exceptions.UnknownException
 import ru.wb.go.network.token.TokenManager
-import ru.wb.go.utils.analytics.YandexMetricManager
 import java.net.SocketTimeoutException
 
 class RefreshTokenRepositoryImpl(
     private var server: RefreshTokenApi,
-    private val tokenManager: TokenManager,
-    private val metric: YandexMetricManager
+    private val tokenManager: TokenManager
 ) : RefreshTokenRepository {
 
     override suspend fun doRefreshToken(): RefreshResult {
@@ -49,7 +47,7 @@ class RefreshTokenRepositoryImpl(
                         RefreshResult.Success
                     } else {
                         val ex = UnknownException("Empty body", "")
-                        metric.onTechErrorLog("RefreshToken", "refreshSuccessResponse", "emptyBody")
+                        //metric.onTechErrorLog("RefreshToken", "refreshSuccessResponse", "emptyBody")
                         RefreshResult.Failed(ex)
                     }
                 } else {
@@ -65,13 +63,13 @@ class RefreshTokenRepositoryImpl(
                         RefreshResult.TokenInvalid
                     } else {
                         val msg = errorResponse?.toString() ?: "-"
-                        metric.onTechErrorLog("RefreshToken", "unknownResponse", msg)
+                        //metric.onTechErrorLog("RefreshToken", "unknownResponse", msg)
                         val ex = UnknownException("Validation error", "")
                         RefreshResult.Failed(ex)
                     }
                 }
             } catch (ex: Exception) {
-                metric.onTechErrorLog("RefreshToken", "catchException", ex.message ?: "-")
+                //metric.onTechErrorLog("RefreshToken", "catchException", ex.message ?: "-")
                 when (ex) {
                     is TimeoutException, is SocketTimeoutException -> {
                         RefreshResult.TimeOut

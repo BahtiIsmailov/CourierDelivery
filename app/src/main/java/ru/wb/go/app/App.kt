@@ -3,8 +3,6 @@ package ru.wb.go.app
 import android.app.Application
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -34,7 +32,7 @@ companion object{
         initDI()
         initNetworkMonitor()
         initFirebaseAnalytics()
-        initYandexMetric(this)
+        //initYandexMetric(this)
     }
 
     private fun initDI() {
@@ -75,17 +73,17 @@ companion object{
         NetworkMonitor(this).stopNetworkCallback()
     }
 
-    private fun initYandexMetric(context: Context) {
-        val config: YandexMetricaConfig =
-            YandexMetricaConfig.newConfigBuilder(getYandexMetricKey())
-                //TODO: 16.11.2021 включить после тестирования аналитики
-                //.withStatisticsSending(!BuildConfig.DEBUG)
-                .withLocationTracking(false)
-                .build()
-        YandexMetrica.activate(context, config)
-        YandexMetrica.setLocationTracking(false)
-        YandexMetrica.enableActivityAutoTracking(context as Application)
-    }
+//    private fun initYandexMetric(context: Context) {
+//        val config: YandexMetricaConfig =
+//            YandexMetricaConfig.newConfigBuilder(getYandexMetricKey())
+//                //TODO: 16.11.2021 включить после тестирования аналитики
+//                //.withStatisticsSending(!BuildConfig.DEBUG)
+//                .withLocationTracking(false)
+//                .build()
+//        YandexMetrica.activate(context, config)
+//        YandexMetrica.setLocationTracking(false)
+//        YandexMetrica.enableActivityAutoTracking(context as Application)
+//    }
 
     private fun getYandexMetricKey() =
         if (BuildConfig.DEBUG) YANDEX_METRIC_DEBUG_KEY else YANDEX_METRIC_KEY

@@ -3,15 +3,12 @@ package ru.wb.go.network.interceptors
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import ru.wb.go.app.App
-import ru.wb.go.utils.RebootApplication
 import ru.wb.go.utils.RebootDialogManager
-import ru.wb.go.utils.analytics.YandexMetricManager
 import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
-class AppMetricResponseInterceptor(private val metric: YandexMetricManager) : Interceptor {
+class AppMetricResponseInterceptor() : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -53,7 +50,7 @@ class AppMetricResponseInterceptor(private val metric: YandexMetricManager) : In
 
         val codeOut =
             "response code " + response.code + " firstItemHeader " + firstItemHeader + " " + out
-        metric.onTechNetworkLog(singleApiMethod, codeOut)
+        //metric.onTechNetworkLog(singleApiMethod, codeOut)
         return response
     }
 

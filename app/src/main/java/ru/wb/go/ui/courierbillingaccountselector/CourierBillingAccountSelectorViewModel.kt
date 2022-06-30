@@ -11,18 +11,16 @@ import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import java.text.DecimalFormat
 
 class CourierBillingAccountSelectorViewModel(
     private val parameters: CourierBillingAccountSelectorAmountParameters,
-    metric: YandexMetricManager,
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>

@@ -15,18 +15,16 @@ import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInt
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierBillingAccountDataViewModel(
     private val parameters: CourierBillingAccountDataAmountParameters,
-    metric: YandexMetricManager,
     private val interactor: CourierBillingAccountDataInteractor,
     private val resourceProvider: CourierBillingAccountDataResourceProvider,
     private val tokenManager: TokenManager,
     private val errorDialogManager: ErrorDialogManager
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     companion object {
         private const val ACCOUNT_LENGTH = 20

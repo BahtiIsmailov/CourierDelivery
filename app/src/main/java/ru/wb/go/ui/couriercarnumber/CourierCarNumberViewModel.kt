@@ -10,7 +10,6 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriercarnumber.domain.CourierCarNumberInteractor
 import ru.wb.go.ui.couriercarnumber.keyboard.CarNumberKeyboardNumericView
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.CarNumberUtils
 
 fun String.replaceCarNumberY(): String {
@@ -23,10 +22,9 @@ fun String.revertCarNumberY(): String {
 
 class CourierCarNumberViewModel(
     private val parameters: CourierCarNumberParameters,
-    metric: YandexMetricManager,
     private val interactor: CourierCarNumberInteractor,
     resourceProvider: CourierCarNumberResourceProvider,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _navigationState =
         SingleLiveEvent<CourierCarNumberNavigationState>()

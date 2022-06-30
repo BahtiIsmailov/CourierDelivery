@@ -1,7 +1,9 @@
 package ru.wb.go.ui.scanner.domain
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.utils.managers.SettingsManager

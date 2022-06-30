@@ -10,14 +10,12 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.scanner.domain.ScannerInteractor
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class CourierScannerViewModel(
-    metric: YandexMetricManager,
     private val interactor: ScannerInteractor,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel( ) {
 
      private val _scannerAction = SingleLiveEvent<ScannerState>()
     val scannerAction: LiveData<ScannerState>

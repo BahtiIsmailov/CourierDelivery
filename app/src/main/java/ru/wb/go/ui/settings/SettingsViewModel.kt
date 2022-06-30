@@ -10,17 +10,15 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.settings.domain.SettingsInteractor
 import ru.wb.go.ui.settings.domain.SettingsResourceProvider
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class SettingsViewModel(
-    metric: YandexMetricManager,
     private val resourcesProvider: SettingsResourceProvider,
     private val deviceManager: DeviceManager,
     private val interactor: SettingsInteractor,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _versionApp = MutableLiveData<String>()
     val versionApp: LiveData<String>

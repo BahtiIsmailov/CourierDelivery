@@ -3,14 +3,12 @@ package ru.wb.go.ui.courierversioncontrol
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierVersionControlViewModel(
-        metric: YandexMetricManager,
         private val resourceProvider: CourierVersionControlResourceProvider,
         private val deviceManager: DeviceManager,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _versionTitleState = MutableLiveData<String>()
     val versionTitleState: LiveData<String>

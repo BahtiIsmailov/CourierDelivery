@@ -12,17 +12,15 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class AppViewModel(
-    metric: YandexMetricManager,
     private val interactor: AppInteractor,
     private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(metric) {
+) : NetworkViewModel() {
 
     private val _networkState = MutableLiveData<NetworkState>()
     val networkState: LiveData<NetworkState>

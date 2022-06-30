@@ -14,18 +14,16 @@ import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeSc
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 
 class CourierIntransitOfficeScannerViewModel(
-    metric: YandexMetricManager,
     private val interactor: CourierIntransitOfficeScannerInteractor,
     private val resourceProvider: CourierIntransitOfficeScannerResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
