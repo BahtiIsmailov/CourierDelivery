@@ -15,7 +15,6 @@
 
     <application
         android:name="ru.wb.go.app.App"
-        android:allowBackup="false"
         android:exported="false"
         android:icon="@mipmap/ic_launcher_go"
         android:label="${appName}"
