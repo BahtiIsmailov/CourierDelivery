@@ -2,7 +2,6 @@ package ru.wb.go.ui.courierintransit
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -12,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -106,23 +106,70 @@ class CourierIntransitFragment :
         val scheduleOrder = bottomSheetDialog.findViewById<TextView>(R.id.time_work_detail1)
         val address = bottomSheetDialog.findViewById<TextView>(R.id.fullAddressOrder1)
         val currentOrderId1 = bottomSheetDialog.findViewById<TextView>(R.id.currentOrderId1)
-        val scanQrPvzButton = bottomSheetDialog.findViewById<AppCompatButton>(R.id.scan_qr_pvz_button1)
+        val scanQrPvzButton =
+            bottomSheetDialog.findViewById<AppCompatButton>(R.id.scan_qr_pvz_button1)
         val navigatorButton = bottomSheetDialog.findViewById<ImageButton>(R.id.navigator_button1)
-        val scanQrPvzCompleteButton = bottomSheetDialog.findViewById<ImageButton>(R.id.scan_qr_pvz_complete_button1)
-        val completeDeliveryButton = bottomSheetDialog.findViewById<AppCompatButton>(R.id.complete_delivery_button1)
+        val scanQrPvzCompleteButton =
+            bottomSheetDialog.findViewById<ImageButton>(R.id.scan_qr_pvz_complete_button1)
+        val completeDeliveryButton =
+            bottomSheetDialog.findViewById<AppCompatButton>(R.id.complete_delivery_button1)
         val imageItemBorder = bottomSheetDialog.findViewById<ImageView>(R.id.image_item_border1)
-        val selectedBackground1 = bottomSheetDialog.findViewById<ImageView>(R.id.selected_background1)
+        val selectedBackground1 =
+            bottomSheetDialog.findViewById<ImageView>(R.id.selected_background1)
         val icon = bottomSheetDialog.findViewById<ImageView>(R.id.icon1)
 
-        visibleAppCompatButton(binding.scanQrPvzButton,scanQrPvzButton!!)
-        visibleAppCompatButton(binding.navigatorButton,navigatorButton!!)
-        visibleAppCompatButton(binding.scanQrPvzCompleteButton,scanQrPvzCompleteButton!!)
-        visibleAppCompatButton(binding.completeDeliveryButton,completeDeliveryButton!!)
+        visibleAppCompatButton(binding.scanQrPvzButton, scanQrPvzButton!!)
+        visibleAppCompatButton(binding.navigatorButton, navigatorButton!!)
+        visibleAppCompatButton(binding.scanQrPvzCompleteButton, scanQrPvzCompleteButton!!)
+        visibleAppCompatButton(binding.completeDeliveryButton, completeDeliveryButton!!)
+
+        fun initialiseBackgroundForItem(
+            @DrawableRes imageItemBorderValue: Int,
+            @DrawableRes selectedBackgroundValue: Int,
+            @DrawableRes iconValue: Int
+        ) {
+            imageItemBorder?.setImageResource(imageItemBorderValue)
+            selectedBackground1?.setImageResource(selectedBackgroundValue)
+            icon?.setImageResource(iconValue)
+        }
+
+        viewModel.currentItemBackgroundForBottomSheet.observe(viewLifecycleOwner) {
+            when (it) {
+                IntransitItemType.Empty -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_primary,
+                        R.drawable.courier_background_select_warehouse,
+                        R.drawable.ic_intransit_item_empty
+                    )
+
+                }
+                IntransitItemType.UnloadingExpects -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_yellow,
+                        R.drawable.courier_intransit_background_select_yellow,
+                        R.drawable.ic_intransit_item_wait
+                    )
+                }
+                IntransitItemType.FailedUnloadingAll -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_red,
+                        R.drawable.courier_intransit_background_select_red,
+                        R.drawable.ic_intransit_item_error
+                    )
+                }
+
+                IntransitItemType.Complete -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_green,
+                        R.drawable.courier_intransit_background_select_green,
+                        R.drawable.ic_intransit_item_complete
+                        )
+                }
 
 
-        imageItemBorder?.setImageResource()
-        selectedBackground1?.setImageResource()
-        icon?.setImageResource(viewModel.iconForBottomSheet!!)
+            }
+        }
+
 
         closeButton!!.setOnClickListener {
             bottomSheetDialog.dismiss()
@@ -150,10 +197,11 @@ class CourierIntransitFragment :
     }
 
     private fun visibleAppCompatButton(view: View, bottomSheetButton: View) {
-        if (view.isVisible){
+        if (view.isVisible) {
             bottomSheetButton.isVisible = true
         }
     }
+    //private fun initialiseBackgroundForItem(@DrawableRes)
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {

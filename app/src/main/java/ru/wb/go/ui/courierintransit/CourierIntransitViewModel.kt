@@ -77,6 +77,10 @@ class CourierIntransitViewModel(
     val isEnableBottomState: LiveData<Boolean>
         get() = _isEnableState
 
+    private val _currentItemBackgroundForBottomSheet = MutableLiveData<IntransitItemType>()
+    val currentItemBackgroundForBottomSheet: LiveData<IntransitItemType> = _currentItemBackgroundForBottomSheet
+
+
     private var intransitItems = mutableListOf<BaseIntransitItem>()
     private var mapMarkers = mutableListOf<IntransitMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
@@ -221,7 +225,7 @@ class CourierIntransitViewModel(
     }
 
 
-    var iconForBottomSheet:Int? = null
+
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
         onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
         val schedule = getSchedule()
@@ -240,7 +244,7 @@ class CourierIntransitViewModel(
 
                 val type = itemType(deliveredBoxes, countBoxes, isVisited, isOnline)
                 val iconMap = getNormalMapIcon(type)
-                iconForBottomSheet = iconMap
+
 
 
                 when (type) {
@@ -289,6 +293,8 @@ class CourierIntransitViewModel(
                         )
                     }
                 }
+
+                _currentItemBackgroundForBottomSheet.value = type
 
                 val mapPoint = MapPoint(index.toString(), latitude, longitude)
                 mapMarker = Intransit(mapPoint, iconMap, type)
