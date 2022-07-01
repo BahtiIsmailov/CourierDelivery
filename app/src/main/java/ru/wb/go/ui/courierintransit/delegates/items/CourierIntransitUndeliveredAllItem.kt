@@ -4,6 +4,7 @@ data class CourierIntransitUndeliveredAllItem(
     val id: Int,
     val fullAddress: String,
     val deliveryCount: String,
+    val timeWork:String,
     val fromCount: String,
     override var isSelected: Boolean,
     override var idView: Int,

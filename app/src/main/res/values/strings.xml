@@ -316,7 +316,8 @@
     <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
     <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
 
-    <string name="courier_intransit_label_id">#%1$s</string>
+    <string name="courier_intransit_label_id">Заказ #%1$s</string>
+    <string name="courier_intransit_time_order">Время работы: #%1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
     <string name="courier_intransit_delegate_divider">/</string>

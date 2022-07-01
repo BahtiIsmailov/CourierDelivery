@@ -30,6 +30,7 @@ class CourierIntransitEmptyDelegate(
     override fun onBind(item: CourierIntransitEmptyItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
         holder.binding.boxAddress.text = item.fullAddress
+        holder.binding.timeWorkDetail12.text = item.timeWork // + not null
         holder.binding.deliveryCount.text = item.deliveryCount
         holder.binding.fromCount.text = item.fromCount
         val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
@@ -47,7 +48,7 @@ class CourierIntransitEmptyDelegate(
 
         init {
             binding.main.setOnClickListener {
-                val (_, _, _, _, _, idView) = getTag(itemView)
+                val (_, _, _, _, _, _, idView) = getTag(itemView)
                 onCourierIntransitCallback.onPickToPointClick(idView)
             }
         }

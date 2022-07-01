@@ -678,7 +678,8 @@ class CourierOrdersViewModel(
     fun getAddressFromOrderAddressItems() {
         sharedWorker.save(
             SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
-            orderAddressItems.lastOrNull()?.timeWork.orEmpty()
+           "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
+
         )
     }
 

@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierintransit
 
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -45,8 +46,6 @@ class CourierIntransitViewModel(
     val navigatorState: LiveData<CourierIntransitNavigatorUIState>
         get() = _navigatorState
 
-    private val _readScheduleValueLiveData = MutableLiveData<String>()
-    val readScheduleValueLiveData: LiveData<String> = _readScheduleValueLiveData
 
     private val _navigateToDialogConfirmInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogConfirmInfo: LiveData<NavigateToDialogConfirmInfo>
@@ -91,6 +90,7 @@ class CourierIntransitViewModel(
     }
 
     init {
+        getSchedule()
         onTechEventLog("initIntransit")
         initTime()
         observeMapAction()
@@ -124,7 +124,8 @@ class CourierIntransitViewModel(
         interactor.observeOrderTimer()
             .onEach {
                 _intransitTime.value = CourierIntransitTimeState.Time(
-                        DateTimeFormatter.getDigitFullTime(it.toInt()))
+                    DateTimeFormatter.getDigitFullTime(it.toInt())
+                )
             }
             .catch {}
             .launchIn(viewModelScope)
@@ -219,8 +220,11 @@ class CourierIntransitViewModel(
         _intransitOrders.value = CourierIntransitItemState.ScrollTo(indexItemClick)
     }
 
+
+    var iconForBottomSheet:Int? = null
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
         onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
+        val schedule = getSchedule()
         val items = mutableListOf<BaseIntransitItem>()
         coordinatePoints = mutableListOf()
         val markers = mutableListOf<IntransitMapMarker>()
@@ -236,11 +240,14 @@ class CourierIntransitViewModel(
 
                 val type = itemType(deliveredBoxes, countBoxes, isVisited, isOnline)
                 val iconMap = getNormalMapIcon(type)
+                iconForBottomSheet = iconMap
+
 
                 when (type) {
                     IntransitItemType.Empty -> {
                         item = CourierIntransitEmptyItem(
                             id = index,
+                            timeWork = schedule,//+
                             fullAddress = address,
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
@@ -252,6 +259,7 @@ class CourierIntransitViewModel(
                         item = CourierIntransitUnloadingExpectsItem(
                             id = index,
                             fullAddress = address,
+                            timeWork = schedule,
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
                             isSelected = DEFAULT_SELECT_ITEM,
@@ -262,6 +270,7 @@ class CourierIntransitViewModel(
                         item = CourierIntransitUndeliveredAllItem(
                             id = index,
                             fullAddress = address,
+                            timeWork = schedule,
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
                             isSelected = DEFAULT_SELECT_ITEM,
@@ -272,6 +281,7 @@ class CourierIntransitViewModel(
                         item = CourierIntransitCompleteItem(
                             id = index,
                             fullAddress = address,
+                            timeWork = schedule, //+-
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
                             isSelected = DEFAULT_SELECT_ITEM,
@@ -313,14 +323,14 @@ class CourierIntransitViewModel(
         coordinatePoints: MutableList<CoordinatePoint>
     ) {
 
-            if (mapMarkers.isEmpty()) {
-                interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
-            } else {
-                interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
-                val boundingBox =
-                    MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
-                interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
-            }
+        if (mapMarkers.isEmpty()) {
+            interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
+        } else {
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+            val boundingBox =
+                MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+            interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
+        }
 
     }
 
@@ -412,13 +422,27 @@ class CourierIntransitViewModel(
         updateMarkers(isSelected, index)
     }
 
+
     private fun changeEnableNavigator(isSelected: Boolean) {
-        val schedule = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,"")
+        val value = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT, "")
+        val parts = value.split(";")
+        val scheduleOrder = parts[1]
+
+
+        val address = parts[0]
         _navigatorState.value =
-            if (isSelected) CourierIntransitNavigatorUIState.Enable(schedule) else CourierIntransitNavigatorUIState.Disable
+            if (isSelected) CourierIntransitNavigatorUIState.Enable(
+                scheduleOrder,
+                address
+            ) else CourierIntransitNavigatorUIState.Disable
 
     }
 
+    private fun getSchedule(): String {
+        val value = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT, "")
+        val parts = value.split(";")
+        return parts[1]
+    }
     private fun changeSelectedItems(selectIndex: Int) {
         intransitItems.forEachIndexed { index, item ->
             intransitItems[index].isSelected =

@@ -5,6 +5,7 @@ data class CourierIntransitUnloadingExpectsItem(
     val fullAddress: String,
     val deliveryCount: String,
     val fromCount: String,
+    val timeWork:String,
     override var isSelected: Boolean,
     override var idView: Int,
 ) : BaseIntransitItem

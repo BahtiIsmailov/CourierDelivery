@@ -2,11 +2,17 @@ package ru.wb.go.ui.courierintransit
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.View.*
+import android.view.WindowManager
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
@@ -15,6 +21,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
@@ -48,7 +56,7 @@ class CourierIntransitFragment :
             viewModel.onItemOfficeClick(idItem)
         }
     }
-//    var schedul = ""
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,10 +75,6 @@ class CourierIntransitFragment :
                 viewModel.onErrorDialogConfirmClick()
             }
         }
-//        setFragmentResultListener(ADDRESS_DETAIL_SCHEDULE) { _, bundle ->
-//              schedul = bundle.getString(ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT).toString()
-//        }
-
     }
 
     private fun initView() {
@@ -85,10 +89,77 @@ class CourierIntransitFragment :
         )
     }
 
+
+    private var currentOrderId1: String? = null
+    private fun showBottomSheetDialogCardOfOrders(state: CourierIntransitNavigatorUIState.Enable) {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        bottomSheetDialog.setContentView(R.layout.courier_intransit_card_of_orders)
+        bottomSheetDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        bottomSheetDialog.context.setTheme(R.style.AppBottomSheetDialogTheme)
+
+        val sheetBehavior = BottomSheetBehavior.from(binding.bottomSheetLayoutListItem)
+        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        bottomSheetDialog.show()
+
+        val closeButton = bottomSheetDialog.findViewById<ImageView>(R.id.addresses_close1)
+        val scheduleOrder = bottomSheetDialog.findViewById<TextView>(R.id.time_work_detail1)
+        val address = bottomSheetDialog.findViewById<TextView>(R.id.fullAddressOrder1)
+        val currentOrderId1 = bottomSheetDialog.findViewById<TextView>(R.id.currentOrderId1)
+        val scanQrPvzButton = bottomSheetDialog.findViewById<AppCompatButton>(R.id.scan_qr_pvz_button1)
+        val navigatorButton = bottomSheetDialog.findViewById<ImageButton>(R.id.navigator_button1)
+        val scanQrPvzCompleteButton = bottomSheetDialog.findViewById<ImageButton>(R.id.scan_qr_pvz_complete_button1)
+        val completeDeliveryButton = bottomSheetDialog.findViewById<AppCompatButton>(R.id.complete_delivery_button1)
+        val imageItemBorder = bottomSheetDialog.findViewById<ImageView>(R.id.image_item_border1)
+        val selectedBackground1 = bottomSheetDialog.findViewById<ImageView>(R.id.selected_background1)
+        val icon = bottomSheetDialog.findViewById<ImageView>(R.id.icon1)
+
+        visibleAppCompatButton(binding.scanQrPvzButton,scanQrPvzButton!!)
+        visibleAppCompatButton(binding.navigatorButton,navigatorButton!!)
+        visibleAppCompatButton(binding.scanQrPvzCompleteButton,scanQrPvzCompleteButton!!)
+        visibleAppCompatButton(binding.completeDeliveryButton,completeDeliveryButton!!)
+
+
+        imageItemBorder?.setImageResource()
+        selectedBackground1?.setImageResource()
+        icon?.setImageResource(viewModel.iconForBottomSheet!!)
+
+        closeButton!!.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
+        }
+        address?.text = state.address
+        scheduleOrder?.text = state.scheduleOrder
+        currentOrderId1?.text = this.currentOrderId1
+        scanQrPvzButton.setOnClickListener {
+            viewModel.onScanQrPvzClick()
+            bottomSheetDialog.dismiss()
+        }
+        navigatorButton.setOnClickListener {
+            viewModel.onNavigatorClick()
+            bottomSheetDialog.dismiss()
+        }
+        scanQrPvzCompleteButton.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            viewModel.onScanQrPvzClick()
+        }
+        completeDeliveryButton.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            viewModel.onCompleteDeliveryClick()
+        }
+    }
+
+    private fun visibleAppCompatButton(view: View, bottomSheetButton: View) {
+        if (view.isVisible){
+            bottomSheetButton.isVisible = true
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+            currentOrderId1 = it.label
             binding.currentOrderId.text = it.label
         }
 
@@ -99,15 +170,11 @@ class CourierIntransitFragment :
         viewModel.navigatorState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierIntransitNavigatorUIState.Disable -> {
-                    binding.navigatorButton.isEnabled = false
-                    binding.addressDetailSchedule.isVisible = false
-                    binding.navigatorButton.setImageResource(R.drawable.ic_navigator)
+                    //binding.addressDetailSchedule.isVisible = false
+                    //binding.navigatorButton.setImageResource(R.drawable.ic_navigator)
                 }
                 is CourierIntransitNavigatorUIState.Enable -> {
-                    binding.navigatorButton.isEnabled = true
-                    binding.timeWorkDetail.text = state.scheduleOrder
-                    binding.addressDetailSchedule.isVisible = true
-                    binding.navigatorButton.setImageResource(R.drawable.ic_bottom_navigator_color)
+                    showBottomSheetDialogCardOfOrders(state)
                 }
             }
         }
@@ -177,6 +244,7 @@ class CourierIntransitFragment :
                     binding.completeDeliveryButton.isEnabled = false
 
                     binding.holdList.visibility = VISIBLE
+
                     findNavController().navigate(
                         CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierIntransitOfficeScannerFragment()
                     )

@@ -31,6 +31,7 @@ class CourierIntransitUnloadingExpectsDelegate(
         holder.itemView.tag = item
         holder.binding.boxAddress.text = item.fullAddress
         holder.binding.deliveryCount.text = item.deliveryCount
+        holder.binding.timeWorkDetail12.text = item.timeWork
         holder.binding.fromCount.text = item.fromCount
         val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
         holder.binding.selectedBackground.visibility = selectable
@@ -46,7 +47,7 @@ class CourierIntransitUnloadingExpectsDelegate(
 
         init {
             binding.main.setOnClickListener {
-                val (_, _, _, _, _, idView) = getTag(itemView)
+                val (_, _, _, _, _, _, idView) = getTag(itemView)
                 onCourierIntransitCallback.onPickToPointClick(idView)
             }
         }

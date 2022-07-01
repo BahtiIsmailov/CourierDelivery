@@ -28,15 +28,26 @@
         style="@style/MediumPrimaryRegularText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/pad16"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="@dimen/pad8"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/selected_background"
         app:layout_constraintEnd_toStartOf="@+id/delivery_count"
-        app:layout_constraintStart_toStartOf="@+id/selected_background"
+        app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="@+id/selected_background"
         tools:text="г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20" />
+
+    <TextView
+        android:id="@+id/time_work_detail_12"
+        style="@style/MediumPrimaryRegularText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="start"
+        app:layout_constraintEnd_toEndOf="@+id/box_address"
+        app:layout_constraintStart_toStartOf="@+id/box_address"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/pad16"
+        app:layout_constraintTop_toBottomOf="@+id/box_address"/>
 
     <TextView
         android:id="@+id/delivery_count"
@@ -79,10 +90,10 @@
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pad8"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/pad16"
         android:src="@drawable/ic_intransit_item_error"
-        app:layout_constraintEnd_toEndOf="@+id/selected_background"
+        app:layout_constraintBottom_toBottomOf="@+id/image_item_border"
+        app:layout_constraintStart_toStartOf="@+id/selected_background"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
