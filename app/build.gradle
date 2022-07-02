@@ -163,6 +163,9 @@ android {
 
 dependencies {
 
+    //LeakCanary для утечек памяти
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.fragment:fragment-ktx:1.5.0'

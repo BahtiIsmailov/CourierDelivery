@@ -32,10 +32,6 @@ class CourierWarehousesFragment :
         CourierWarehouseFragmentBinding::inflate
     ) {
 
-    private lateinit var adapter: CourierWarehousesAdapter
-    private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var smoothScroller: SmoothScroller
-
     override val viewModel by viewModel<CourierWarehousesViewModel>()
 
 
@@ -62,7 +58,7 @@ class CourierWarehousesFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-
+         var adapter: CourierWarehousesAdapter? = null
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             showDialogInfo(it)
         }
@@ -83,9 +79,9 @@ class CourierWarehousesFragment :
 
                 }
                 is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
-                    adapter.clear()
-                    adapter.addItems(it.items)
-                    adapter.notifyDataSetChanged()
+                    adapter?.clear()
+                    adapter?.addItems(it.items)
+                    adapter?.notifyDataSetChanged()
                 }
                 is CourierWarehouseItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
@@ -94,8 +90,8 @@ class CourierWarehousesFragment :
                     binding.items.visibility = GONE
                 }
                 is CourierWarehouseItemState.UpdateItem -> {
-                    adapter.setItem(it.position, it.item)
-                    adapter.notifyItemChanged(it.position, it.item)
+                    adapter?.setItem(it.position, it.item)
+                    adapter?.notifyItemChanged(it.position, it.item)
                 }
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
@@ -192,15 +188,14 @@ class CourierWarehousesFragment :
     }
 
     private fun initRecyclerView() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.items.layoutManager = layoutManager
+        binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.addItemDecoration(getHorizontalDividerDecoration())
         binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
 
     private fun initSmoothScroller() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -233,7 +228,8 @@ class CourierWarehousesFragment :
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()
         smoothScroller.targetPosition = position
-        layoutManager.startSmoothScroll(smoothScroller)
+        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
+        layoutManager?.startSmoothScroll(smoothScroller)
     }
 
     private fun createSmoothScroller(): SmoothScroller {
@@ -245,6 +241,7 @@ class CourierWarehousesFragment :
     }
 
 }
+
 
 fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
     val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)

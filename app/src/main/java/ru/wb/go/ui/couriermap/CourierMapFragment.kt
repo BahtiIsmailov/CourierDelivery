@@ -7,6 +7,7 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
+import android.media.browse.MediaBrowser
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -49,9 +50,10 @@ import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
+import java.sql.Connection
 
 
-class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
+class CourierMapFragment : Fragment()  {
 
     private val viewModel by viewModel<CourierMapViewModel>()
 
@@ -76,12 +78,13 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var googleApiClient: GoogleApiClient
+    private var googleApiClient: GoogleApiClient? = null
     private lateinit var locationRequest: LocationRequest
     private var lastLocation: Location? = null
     private var isRequestAccessLocation = false
 
-    private lateinit var mapController: IMapController
+    private val mapController: IMapController
+        get() = binding.map.controller
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,9 +119,21 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         googleApiClient =
             GoogleApiClient.Builder(requireActivity())
                 .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
+                .addConnectionCallbacks(object: GoogleApiClient.ConnectionCallbacks{
+                    override fun onConnected(p0: Bundle?) {
+                        if (isLocationPermissionGranted()) {
+                            updateLastLocation()
+                        }
+                        if (lastLocation == null) {
+                            startLocationUpdates()
+                        }
+                    }
+
+                    override fun onConnectionSuspended(p0: Int) {}
+
+                })
                 .build()
-        googleApiClient.connect()
+        googleApiClient?.connect()
     }
 
     override fun onStart() {
@@ -127,7 +142,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun startGoogleApiClient() {
-        if (!googleApiClient.isConnected) googleApiClient.connect()
+        googleApiClient?.let { googleApiClient->
+            if (!googleApiClient.isConnected) googleApiClient.connect()
+        }
     }
 
     override fun onStop() {
@@ -136,7 +153,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun stopGoogleApiClient() {
-        googleApiClient.disconnect()
+        googleApiClient?.disconnect()
     }
 
     private fun initAccessLocationPermissions() {
@@ -194,7 +211,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        mapController = binding.map.controller
+
+        val mapController = mapController
         mapController.setZoom(DEFAULT_ZOOM)
         with(moscowCoordinatePoint()) {
             mapController.setCenter(GeoPoint(latitude, longitude))
@@ -546,6 +564,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     private fun navigateToPointZoom(it: CoordinatePoint) {
         val point = GeoPoint(it.latitude, it.longitude)
+        val mapController = mapController
         mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
         binding.map.invalidate()
@@ -784,31 +803,29 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     override fun onDestroyView() {
         viewModel.clearSubscription()
+
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onConnected(p0: Bundle?) {
-        if (isLocationPermissionGranted()) {
-            updateLastLocation()
-        }
-        if (lastLocation == null) {
-            startLocationUpdates()
-        }
-    }
+
 
     @SuppressLint("MissingPermission")
     private fun updateLastLocation() {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
+        googleApiClient?.let {
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(it)
+        }
         updateLocation()
     }
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        if (isLocationPermissionGranted()) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                googleApiClient, locationRequest, locationListener()
-            )
+        googleApiClient?.let {googleApiClient->
+            if (isLocationPermissionGranted()) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(
+                    googleApiClient, locationRequest, locationListener()
+                )
+            }
         }
     }
 
@@ -823,7 +840,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun locationListener(): (Location) -> Unit =
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }
 
-    override fun onConnectionSuspended(p0: Int) {}
+
 
     private fun getBitmapIndexMarker(index: String, @DrawableRes res: Int): Bitmap? {
         val bitmap = convertDrawableToBitmap(res)
@@ -929,5 +946,6 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
     }
+
 
 }

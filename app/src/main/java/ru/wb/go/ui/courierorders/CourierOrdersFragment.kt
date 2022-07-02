@@ -49,7 +49,6 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
-
 class CourierOrdersFragment :
     BaseServiceFragment<CourierOrdersViewModel, CourierOrdersFragmentBinding>(
         CourierOrdersFragmentBinding::inflate
@@ -64,16 +63,21 @@ class CourierOrdersFragment :
     }
 
     private lateinit var adapter: DefaultAdapterDelegate
-    private lateinit var layoutManager: LinearLayoutManager
+
     private lateinit var smoothScroller: SmoothScroller
 
     private lateinit var addressAdapter: CourierOrderDetailsAddressAdapter
     private lateinit var addressLayoutManager: LinearLayoutManager
     private lateinit var addressSmoothScroller: SmoothScroller
 
-    private lateinit var bottomSheetOrders: BottomSheetBehavior<FrameLayout>
-    private lateinit var bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
-    private lateinit var bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
+    private val bottomSheetOrders: BottomSheetBehavior<FrameLayout>
+        get() = BottomSheetBehavior.from(binding.ordersLayout)
+
+    private val bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
+        get() = BottomSheetBehavior.from(binding.orderDetailsLayout)
+
+    private val bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
+        get() = BottomSheetBehavior.from(binding.orderAddresses)
 
     override val viewModel by viewModel<CourierOrdersViewModel> {
         parametersOf(requireArguments().getParcelable<CourierOrderParameters>(COURIER_ORDER_ID_KEY))
@@ -186,9 +190,6 @@ class CourierOrdersFragment :
 
     private fun initBottomSheet() {
         binding.orderAddresses.visibility = VISIBLE
-        bottomSheetOrders = BottomSheetBehavior.from(binding.ordersLayout)
-        bottomSheetOrderDetails = BottomSheetBehavior.from(binding.orderDetailsLayout)
-        bottomSheetOrderAddresses = BottomSheetBehavior.from(binding.orderAddresses)
         bottomSheetOrderAddresses.skipCollapsed = true
     }
 
@@ -470,7 +471,8 @@ class CourierOrdersFragment :
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()
         smoothScroller.targetPosition = position
-        layoutManager.startSmoothScroll(smoothScroller)
+        val layoutManager = binding.orders.layoutManager as? LinearLayoutManager
+        layoutManager?.startSmoothScroll(smoothScroller)
     }
 
     private fun createSmoothScroller(): SmoothScroller {
@@ -566,8 +568,7 @@ class CourierOrdersFragment :
     }
 
     private fun initRecyclerViewOrders() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.orders.layoutManager = layoutManager
+        binding.orders.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.orders.addItemDecoration(getHorizontalDividerDecoration())
         binding.orders.setHasFixedSize(true)
         initSmoothScrollerOrders()
@@ -640,6 +641,7 @@ class CourierOrdersFragment :
     }
 
 }
+
 
 @Parcelize
 data class CourierOrderParameters(

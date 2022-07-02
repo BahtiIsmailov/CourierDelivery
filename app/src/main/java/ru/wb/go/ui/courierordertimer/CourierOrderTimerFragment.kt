@@ -32,8 +32,8 @@ class CourierOrderTimerFragment : Fragment() {
 
     private val viewModel by viewModel<CourierOrderTimerViewModel>()
 
-    private lateinit var _binding: CourierOrderTimerFragmentBinding
-    private val binding get() = _binding
+    private var _binding: CourierOrderTimerFragmentBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         const val DIALOG_REFUSE_INFO_TAG = "DIALOG_REFUSE_INFO_TAG"
@@ -212,6 +212,11 @@ class CourierOrderTimerFragment : Fragment() {
         parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
             if (it is ProgressDialogFragment) it.dismiss()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun showDialogInfo(
