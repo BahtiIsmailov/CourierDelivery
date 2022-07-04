@@ -49,8 +49,7 @@ class CourierIntransitFragment :
     override val viewModel by viewModel<CourierIntransitViewModel>()
 
     private lateinit var adapter: DefaultAdapterDelegate
-    private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var smoothScroller: RecyclerView.SmoothScroller
+
     private val itemCallback = object : OnCourierIntransitCallback {
         override fun onPickToPointClick(idItem: Int) {
             viewModel.onItemOfficeClick(idItem)
@@ -145,9 +144,9 @@ class CourierIntransitFragment :
                 }
                 IntransitItemType.UnloadingExpects -> {
                     initialiseBackgroundForItem(
-                        R.drawable.ic_courier_intransit_item_border_yellow,
-                        R.drawable.courier_intransit_background_select_yellow,
-                        R.drawable.ic_intransit_item_wait
+                        R.drawable.ic_courier_intransit_item_border_green,
+                        R.drawable.courier_intransit_background_select_green,
+                        R.drawable.ic_intransit_item_wait_new
                     )
                 }
                 IntransitItemType.FailedUnloadingAll -> {
@@ -374,8 +373,7 @@ class CourierIntransitFragment :
     }
 
     private fun initRecyclerView() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.routes.layoutManager = layoutManager
+        binding.routes.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.routes.addItemDecoration(
             DividerItemDecoration(
                 activity,
@@ -387,7 +385,7 @@ class CourierIntransitFragment :
     }
 
     private fun initSmoothScroller() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+          object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }

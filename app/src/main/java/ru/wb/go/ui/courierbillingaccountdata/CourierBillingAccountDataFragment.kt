@@ -87,7 +87,7 @@ class CourierBillingAccountDataFragment :
         }
         with(params.account) {
             binding.userName.setText(userName)
-            binding.inn.setText(inn)
+            //binding.inn.setText(inn)
             binding.account.setText(account)
             binding.bik.setText(bic)
             binding.bank.setText(bank)
@@ -141,7 +141,7 @@ class CourierBillingAccountDataFragment :
         val bankEntity = viewModel.getBankEntity()!!
         return CourierBillingAccountEntity(
             userName = binding.userName.text.toString(),
-            inn = binding.inn.text.toString(),
+            inn = "",//binding.inn.text.toString(),
             account = binding.account.text.toString(),
             correspondentAccount = bankEntity.correspondentAccount,
             bic = bankEntity.bic,
@@ -218,14 +218,14 @@ class CourierBillingAccountDataFragment :
             when (it) {
                 is CourierBillingAccountDataInitUIState.Create -> {
                     binding.userName.setText(it.userName)
-                    binding.inn.setText(it.userInn)
+                    //binding.inn.setText(it.userInn)
                     binding.removeAccountButton.visibility = GONE
                 }
                 is CourierBillingAccountDataInitUIState.Edit -> {
                     binding.removeAccountButton.visibility = VISIBLE
                     with(it.field) {
                         binding.userName.setText(userName)
-                        binding.inn.setText(inn)
+                        //binding.inn.setText(inn)
                         binding.account.setText(account)
                         binding.bik.setText(bik)
                         binding.bank.setText(bank)

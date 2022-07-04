@@ -198,7 +198,7 @@ class AppRemoteRepositoryImpl(
     override suspend fun getBankAccounts(): BankAccountsEntity {
         return withContext(Dispatchers.IO) {
             val response = remoteRepo.getBankAccounts(apiVersion())
-             BankAccountsEntity(response.inn, response.data.convertToEntity())
+            BankAccountsEntity(response.inn, response.data.convertToEntity())
         }
     }
 

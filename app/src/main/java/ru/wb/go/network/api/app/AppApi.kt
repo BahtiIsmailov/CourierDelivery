@@ -105,7 +105,7 @@ interface AppApi {
     @GET("{version}/me/bank-accounts")
     suspend fun getBankAccounts(
         @Path(value = "version", encoded = true) version: String
-    ):  AccountsResponse
+    ): AccountsResponse
 
     @PUT("{version}/me/bank-accounts")
     suspend fun setBankAccounts(

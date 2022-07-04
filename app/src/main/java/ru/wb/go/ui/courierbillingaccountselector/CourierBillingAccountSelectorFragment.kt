@@ -182,6 +182,9 @@ class CourierBillingAccountSelectorFragment :
 
     private fun initObservers() {
 
+        viewModel.courierInnLivaData.observe(viewLifecycleOwner){
+            binding.inn.setText(it)
+        }
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it
         }

@@ -11,6 +11,7 @@ import ru.wb.go.network.token.UserManager
 class CourierDataInteractorImpl(
     private val networkMonitorRepository: NetworkMonitorRepository,
     private val appRemoteRepository: AppRemoteRepository,
+    //private val localRepo:
     private val userManager: UserManager,
 ) : CourierDataInteractor {
 

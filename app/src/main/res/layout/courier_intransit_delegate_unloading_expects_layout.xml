@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/courier_intransit_background_select_yellow"
+        app:srcCompat="@drawable/courier_intransit_background_select_green"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -88,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/pad16"
-        android:src="@drawable/ic_intransit_item_wait"
+        android:src="@drawable/ic_intransit_item_wait_new"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -99,7 +99,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_courier_intransit_item_border_yellow"
+        android:src="@drawable/ic_courier_intransit_item_border_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

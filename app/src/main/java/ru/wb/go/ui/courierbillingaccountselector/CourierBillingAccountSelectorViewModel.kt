@@ -51,6 +51,9 @@ class CourierBillingAccountSelectorViewModel(
     val loaderState: LiveData<CourierBillingAccountSelectorUILoaderState>
         get() = _loaderState
 
+    private val _courierInnLivaData = MutableLiveData<String>()
+    val courierInnLivaData: LiveData<String> = _courierInnLivaData
+
     private val _balanceChangeState = MutableLiveData<CourierBillingAccountSelectorBalanceAction>()
     val balanceChangeState: LiveData<CourierBillingAccountSelectorBalanceAction>
         get() = _balanceChangeState
@@ -86,6 +89,9 @@ class CourierBillingAccountSelectorViewModel(
         viewModelScope.launch  {
             try {
                 billingAccounts = interactor.getBillingAccounts().toMutableList()
+                billingAccounts.map {
+                    _courierInnLivaData.value = it.inn
+                }
                 copyCourierBillingAccountSelectorAdapterItems = convertToItems(billingAccounts)
                 setLoader(CourierBillingAccountSelectorUILoaderState.Complete)
                 _dropAccountState.value =
