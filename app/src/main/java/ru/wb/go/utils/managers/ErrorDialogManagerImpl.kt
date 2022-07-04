@@ -55,7 +55,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     dlgTag = dlgTag,
                     type = DialogInfoStyle.ERROR.ordinal,
                     title = context.getString(R.string.error_title),
-                    message = context.getString(R.string.http_timeout_error)//(error.message ?: error.toString())
+                    message = (error.message ?: error.toString())
                 )
 
             }

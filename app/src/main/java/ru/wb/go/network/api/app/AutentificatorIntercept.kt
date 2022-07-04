@@ -23,7 +23,10 @@ class AutentificatorIntercept(
         val response: Response = chain.proceed(original)
 
         if (response.code == 409) {
-            RebootDialogManager.showRebootDialog()
+            RebootDialogManager.showRebootDialog(409)
+        }
+        if (response.code == 500){
+            RebootDialogManager.showRebootDialog(500)
         }
         doOnSubscribe(nameOfMethod)
 

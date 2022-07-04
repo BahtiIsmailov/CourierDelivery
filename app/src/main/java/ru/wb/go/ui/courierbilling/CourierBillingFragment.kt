@@ -30,7 +30,7 @@ class CourierBillingFragment :
         CourierBillingFragmentBinding::inflate
     ) {
 
-    private lateinit var adapter: DefaultAdapterDelegate
+    private var adapter: DefaultAdapterDelegate? = null
 
     override val viewModel by viewModel<CourierBillingViewModel>()
 
@@ -135,7 +135,7 @@ class CourierBillingFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
-        with(adapter) {
+        with(adapter!!) {
             clear()
             addItems(items)
             notifyDataSetChanged()
@@ -162,6 +162,11 @@ class CourierBillingFragment :
             addDelegate(CourierBillingNegativeDelegate(requireContext()))
         }
         binding.operations.adapter = adapter
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adapter = null
     }
 
     private fun showDialogInfo(

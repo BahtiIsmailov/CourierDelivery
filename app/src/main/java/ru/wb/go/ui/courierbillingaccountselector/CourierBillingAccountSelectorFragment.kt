@@ -40,7 +40,7 @@ class CourierBillingAccountSelectorFragment :
     ) {
 
 
-    private lateinit var inputMethod: InputMethodManager
+    private var inputMethod: InputMethodManager? = null
 
     companion object {
         const val COURIER_BILLING_ACCOUNT_SELECTOR_AMOUNT_KEY =
@@ -327,6 +327,11 @@ class CourierBillingAccountSelectorFragment :
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        inputMethod = null
     }
 
     private fun scrollToViewTop(scrollView: ScrollView, childView: View) {

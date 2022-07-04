@@ -34,7 +34,10 @@ class RefreshTokenInterceptor(
         var response = chain.proceed(builder.build())
 
         if (response.code == 409) {
-            RebootDialogManager.showRebootDialog()
+            RebootDialogManager.showRebootDialog(409)
+        }
+        if (response.code == 500){
+            RebootDialogManager.showRebootDialog(500)
         }
 
         for ((key, value) in headerManager.headerApiMap) {

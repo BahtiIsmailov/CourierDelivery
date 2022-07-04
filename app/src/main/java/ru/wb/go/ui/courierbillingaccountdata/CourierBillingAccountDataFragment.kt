@@ -46,7 +46,7 @@ class CourierBillingAccountDataFragment :
     ) {
 
     private lateinit var inputMethod: InputMethodManager
-    private val changeText = ArrayList<ViewChanges>()
+    private var changeText:ArrayList<ViewChanges>? = null
 
     override val viewModel by viewModel<CourierBillingAccountDataViewModel> {
         parametersOf(
@@ -174,7 +174,7 @@ class CourierBillingAccountDataFragment :
     private fun createFieldChangesObserver(): TextChangesInterface {
         return TextChangesInterface {
             textInputLayout, editText, queryType ->
-            changeText.add(ViewChanges(textInputLayout, editText, queryType))
+            changeText?.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
                 .map {
                     it.toString()
@@ -242,16 +242,16 @@ class CourierBillingAccountDataFragment :
             when (state) {
                 is CourierBillingAccountDataUIState.Complete -> {
                     val textLayout =
-                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = getText(R.string.error_empty)
                 }
                 is CourierBillingAccountDataUIState.Error -> {
                     val textLayout =
-                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message
                 }
                 is CourierBillingAccountDataUIState.ErrorFocus -> {
-                    changeText.find { it.type == state.typeBillingAccount }?.text?.let {
+                    changeText?.find { it.type == state.typeBillingAccount }?.text?.let {
                         it.setSelection(it.length())
                         it.requestFocus()
                         scrollToViewTop(binding.scrollView, it)
@@ -405,6 +405,11 @@ class CourierBillingAccountDataFragment :
 
     companion object {
         const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        changeText = null
     }
 
 }
