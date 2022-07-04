@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierbillingaccountdata
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -196,7 +197,7 @@ class CourierBillingAccountDataViewModel(
             }
             .catch {
                 _bicProgressState.value = false
-                _bankFindState.value = BankFind("Банк не найден", "")
+                _bankFindState.value = BankFind("Введите БИК", "")
                 bankEntity = null
                 CourierBillingAccountDataUIState.Error(
                     "БИК банка не найден", focusChange.type
@@ -208,7 +209,7 @@ class CourierBillingAccountDataViewModel(
     }
 
     private val defaultBank = { type: CourierBillingAccountDataQueryType ->
-        _bankFindState.value = BankFind("Введите БИК банка", "")
+        _bankFindState.value = BankFind("БИК банка не найден", "")
         bankEntity = null
         CourierBillingAccountDataUIState.Error("Введите 9 цифр", type)
     }

@@ -190,7 +190,7 @@ class AppRemoteRepositoryImpl(
 
     override suspend fun getBank(bic: String): BankEntity {
         return withContext(Dispatchers.IO) {
-            val response = remoteRepo.getBank(apiVersion(), bic)
+            val response = remoteRepo.getBank(apiDemoVersion(), bic)
             with(response) { BankEntity(response.bic, name, correspondentAccount, isDeleted) }
         }
     }
@@ -218,6 +218,7 @@ class AppRemoteRepositoryImpl(
     }
 
     private fun apiVersion() = tokenManager.apiVersion()
+    private fun apiDemoVersion() = tokenManager.apiDemoVersion()
 
 }
 
