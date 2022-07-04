@@ -16,7 +16,10 @@ class AppMetricResponseInterceptor() : Interceptor {
         val response: Response = chain.proceed(request)
 
         if (response.code == 409) {
-            RebootDialogManager.showRebootDialog()
+            RebootDialogManager.showRebootDialog(409)
+        }
+        if (response.code == 500){
+            RebootDialogManager.showRebootDialog(500)
         }
         val url = request.url.toString()
         val singleApiMethod = "<-" + getSingleApiMethod(url)

@@ -13,6 +13,7 @@ import ru.wb.go.utils.RebootApplication
 class RebootDialog : DialogFragment(){
 
 
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =
@@ -23,12 +24,21 @@ class RebootDialog : DialogFragment(){
         val positive: Button = dialogView.findViewById(R.id.positive)
         builder.setView(dialogView)
         titleLayout.setImageResource(R.drawable.ic_dialog_title_alarm)
-        title.text = requireContext().getString(R.string.error_title)
-        message.text = requireContext().getString(R.string.http409)
-        positive.text = requireContext().getString(R.string.courier_expects_positive)
-        positive.setOnClickListener {
-            dismiss()
-            RebootApplication.doRestart(requireContext())
+        if (globalCode == 409) {
+            title.text = requireContext().getString(R.string.error_title)
+            message.text = requireContext().getString(R.string.http409)
+            positive.text = requireContext().getString(R.string.courier_expects_positive)
+            positive.setOnClickListener {
+                dismiss()
+                RebootApplication.doRestart(requireContext())
+            }
+        }else if (globalCode == 500){
+            title.text = requireContext().getString(R.string.error_title)
+            message.text = requireContext().getString(R.string.unknown_generic_error)
+            positive.text = requireContext().getString(R.string.courier_expects_positive)
+            positive.setOnClickListener {
+                dismiss()
+            }
         }
 
         val dialog = builder.create()
@@ -38,9 +48,11 @@ class RebootDialog : DialogFragment(){
     }
 
     companion object{
-        fun newInstance():RebootDialog{
-            return RebootDialog()
+        fun newInstance(code:Int):RebootDialog{
+             globalCode = code
+             return RebootDialog()
         }
         const val TAG = "reboot_dialog"
+        var globalCode:Int? = null
     }
 }

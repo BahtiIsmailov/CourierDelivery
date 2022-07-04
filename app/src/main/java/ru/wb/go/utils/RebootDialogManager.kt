@@ -7,15 +7,15 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 object RebootDialogManager {
 
-    private val showRebootDialogFlow = Channel<Unit>(
+    private val showRebootDialogFlow = Channel<Int>(
          onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    fun showRebootDialog(){
-        showRebootDialogFlow.trySend(Unit)
+    fun showRebootDialog(code:Int){
+        showRebootDialogFlow.trySend(code)
     }
 
-    fun observerShowRebootDialog(): Flow<Unit> {
+    fun observerShowRebootDialog(): Flow<Int> {
         return showRebootDialogFlow.receiveAsFlow()
     }
 }

@@ -31,8 +31,6 @@ class CourierBillingFragment :
     ) {
 
     private lateinit var adapter: DefaultAdapterDelegate
-    private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var smoothScroller: SmoothScroller
 
     override val viewModel by viewModel<CourierBillingViewModel>()
 
@@ -145,14 +143,13 @@ class CourierBillingFragment :
     }
 
     private fun initRecyclerView() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.operations.layoutManager = layoutManager
+        binding.operations.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.operations.setHasFixedSize(true)
         initSmoothScroller()
     }
 
     private fun initSmoothScroller() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -160,7 +157,6 @@ class CourierBillingFragment :
     }
 
     private fun initAdapter() {
-
         adapter = with(DefaultAdapterDelegate()) {
             addDelegate(CourierBillingPositiveDelegate(requireContext()))
             addDelegate(CourierBillingNegativeDelegate(requireContext()))

@@ -85,7 +85,7 @@ class CourierBillingAccountSelectorFragment :
 
     }
 
-    private val changeText = ArrayList<ViewChanges>()
+    private val changeText :ArrayList<ViewChanges>? = null
 
     data class ViewChanges(
         val textLayout: TextInputLayout,
@@ -138,7 +138,7 @@ class CourierBillingAccountSelectorFragment :
     @OptIn(FlowPreview::class)
     private fun createFieldChangesObserver(): TextChangesInterface {
         return TextChangesInterface { textInputLayout, editText, queryType ->
-            changeText.add(ViewChanges(textInputLayout, editText, queryType))
+            changeText?.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
                 .map { it.toString() }
                 .map { CourierBillingAccountSelectorUIAction.TextChange(it, queryType) }
@@ -151,29 +151,9 @@ class CourierBillingAccountSelectorFragment :
                     it
                 )
             }
-            //Observable.merge(textChanges, focusChanges).skip(2)
            flowOf(textChanges,focusChanges).flattenMerge().drop(2)
         }
     }
- /*
-      private fun createFieldChangesObserver(): TextChangesInterface {
-        return TextChangesInterface { textInputLayout, editText, queryType ->
-            changeText.add(ViewChanges(textInputLayout, editText, queryType))
-            val textChanges = editText.textChanges()
-                .map { it.toString() }
-                .map { CourierBillingAccountSelectorUIAction.TextChange(it, queryType) }
-            val focusChanges = editText.focusChanges()
-                .map {
-                    CourierBillingAccountSelectorUIAction.FocusChange(
-                        editText.text.toString(),
-                        queryType,
-                        it
-                    )
-                }
-            Observable.merge(textChanges, focusChanges).skip(2)
-        }
-    }
-     */
 
     private fun initInputMethod() {
         inputMethod =
@@ -219,29 +199,29 @@ class CourierBillingAccountSelectorFragment :
             when (state) {
                 is CourierBillingAccountSelectorUIState.Empty -> {
                     val textLayout =
-                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message
                 }
                 is CourierBillingAccountSelectorUIState.Complete -> {
                     val textLayout =
-                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = getText(R.string.error_empty)
 
-                    val text = changeText.find { it.type == state.typeBillingAccount }?.text
+                    val text = changeText?.find { it.type == state.typeBillingAccount }?.text
                     text?.setText(state.formatBalance)
                     text?.setSelection(state.formatBalance.length)
                 }
                 is CourierBillingAccountSelectorUIState.Error -> {
                     val textLayout =
-                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message
 
-                    val text = changeText.find { it.type == state.typeBillingAccount }?.text
+                    val text = changeText?.find { it.type == state.typeBillingAccount }?.text
                     text?.setText(state.formatBalance)
                     text?.setSelection(state.formatBalance.length)
                 }
                 is CourierBillingAccountSelectorUIState.ErrorFocus -> {
-                    changeText.find { it.type == state.typeBillingAccount }?.text?.let {
+                    changeText?.find { it.type == state.typeBillingAccount }?.text?.let {
                         it.setSelection(it.length())
                         it.requestFocus()
                         scrollToViewTop(binding.scrollView, it)

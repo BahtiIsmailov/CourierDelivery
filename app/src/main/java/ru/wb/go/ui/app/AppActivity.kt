@@ -140,7 +140,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         lifecycleScope.launchWhenStarted {
             RebootDialogManager.observerShowRebootDialog()
                 .onEach {
-                    RebootDialog.newInstance().show(supportFragmentManager, RebootDialog.TAG)
+                    RebootDialog.newInstance(it).show(supportFragmentManager, RebootDialog.TAG)
                 }
                 .launchIn(this)
         }
