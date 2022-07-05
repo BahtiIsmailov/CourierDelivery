@@ -93,7 +93,7 @@
             android:layout_height="match_parent"
             app:behavior_hideable="false"
             android:background="#ffffffff"
-            app:behavior_peekHeight="50dp"
+            app:behavior_peekHeight="60dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
             >
 
@@ -101,7 +101,7 @@
                 android:id="@+id/currentOrderId"
                 style="@style/LargePrimaryMediumText"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="58dp"
                 android:background="@color/lvl_2"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
@@ -112,6 +112,7 @@
                 tools:text="2000000251" />
 
             <LinearLayout
+                android:id="@+id/box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -119,6 +120,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="4dp"
+                android:layout_marginTop="-12dp"
                 app:layout_constraintBottom_toBottomOf="@+id/currentOrderId"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -138,6 +140,23 @@
                     tools:text="0 / 0" />
 
             </LinearLayout>
+            <ProgressBar
+                android:id="@+id/progress_limit"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:indeterminate="false"
+                tools:max="100"
+                android:maxHeight="10dp"
+                android:minHeight="10dp"
+                tools:progress="60"
+                android:layout_marginBottom="6dp"
+                app:layout_constraintStart_toStartOf="@+id/box"
+                app:layout_constraintTop_toBottomOf="@+id/box"
+                app:layout_constraintEnd_toEndOf="@+id/box"
+                app:layout_constraintBottom_toBottomOf="@+id/currentOrderId"
+                android:progressDrawable="@drawable/progress_limit"
+                 />
 
             <ImageView
                 android:id="@+id/line"

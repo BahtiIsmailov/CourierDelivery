@@ -2,7 +2,7 @@ package ru.wb.go.ui.courierintransit
 
 sealed class CourierIntransitNavigatorUIState {
 
-    data class Enable(val scheduleOrder:String, val address:String): CourierIntransitNavigatorUIState()
+    object Enable : CourierIntransitNavigatorUIState()
     object Disable: CourierIntransitNavigatorUIState()
 
 }

@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierintransit
 
-import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -78,7 +77,27 @@ class CourierIntransitViewModel(
         get() = _isEnableState
 
     private val _currentItemBackgroundForBottomSheet = MutableLiveData<IntransitItemType>()
-    val currentItemBackgroundForBottomSheet: LiveData<IntransitItemType> = _currentItemBackgroundForBottomSheet
+    val currentItemBackgroundForBottomSheet: LiveData<IntransitItemType> =
+        _currentItemBackgroundForBottomSheet
+
+    private val _courierIntransitEmptyItemLiveData = MutableLiveData<CourierIntransitEmptyItem>()
+    val courierIntransitEmptyItemLiveData: LiveData<CourierIntransitEmptyItem> =
+        _courierIntransitEmptyItemLiveData
+
+    private val _courierIntransitCompleteItemLiveData =
+        MutableLiveData<CourierIntransitCompleteItem>()
+    val courierIntransitCompleteItemLiveData: LiveData<CourierIntransitCompleteItem> =
+        _courierIntransitCompleteItemLiveData
+
+    private val _courierIntransitUndeliveredAllItemLiveData =
+        MutableLiveData<CourierIntransitUndeliveredAllItem>()
+    val courierIntransitUndeliveredAllItemLiveData: LiveData<CourierIntransitUndeliveredAllItem> =
+        _courierIntransitUndeliveredAllItemLiveData
+
+    private val _courierIntransitUnloadingExpectsItemLiveData =
+        MutableLiveData<CourierIntransitUnloadingExpectsItem>()
+    val courierIntransitUnloadingExpectsItemLiveData: LiveData<CourierIntransitUnloadingExpectsItem> =
+        _courierIntransitUnloadingExpectsItemLiveData
 
 
     private var intransitItems = mutableListOf<BaseIntransitItem>()
@@ -152,7 +171,7 @@ class CourierIntransitViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun observeMapActionComplete(it: CourierMapAction) {
+    private fun observeMapActionComplete(it: CourierMapAction) {//!!!!!!!!!
         when (it) {
             is CourierMapAction.ItemClick -> {
                 onMapPointClick(it.point)
@@ -203,6 +222,28 @@ class CourierIntransitViewModel(
                     }
                 else normalIcon
         }
+        initCourierIntransit(mapPointClickId.toInt())
+    }
+
+    private fun initCourierIntransit(selectIndex: Int) {
+        when(intransitItems[selectIndex]){
+            is CourierIntransitEmptyItem -> {
+                _courierIntransitEmptyItemLiveData.value =  intransitItems[selectIndex] as CourierIntransitEmptyItem
+                _currentItemBackgroundForBottomSheet.value = IntransitItemType.Empty
+            }
+            is CourierIntransitCompleteItem ->{
+                _courierIntransitCompleteItemLiveData.value = intransitItems[selectIndex] as CourierIntransitCompleteItem
+                _currentItemBackgroundForBottomSheet.value = IntransitItemType.Complete
+            }
+            is CourierIntransitUndeliveredAllItem -> {
+                _courierIntransitUndeliveredAllItemLiveData.value = intransitItems[selectIndex] as CourierIntransitUndeliveredAllItem
+                _currentItemBackgroundForBottomSheet.value = IntransitItemType.FailedUnloadingAll
+            }
+            is CourierIntransitUnloadingExpectsItem -> {
+                _courierIntransitUnloadingExpectsItemLiveData.value = intransitItems[selectIndex] as CourierIntransitUnloadingExpectsItem
+                _currentItemBackgroundForBottomSheet.value = IntransitItemType.UnloadingExpects
+            }
+        }
     }
 
     private fun updateMarkers() {
@@ -223,7 +264,6 @@ class CourierIntransitViewModel(
 
         _intransitOrders.value = CourierIntransitItemState.ScrollTo(indexItemClick)
     }
-
 
 
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
@@ -293,8 +333,8 @@ class CourierIntransitViewModel(
                         )
                     }
                 }
-
-                _currentItemBackgroundForBottomSheet.value = type
+//
+//                _currentItemBackgroundForBottomSheet.value = type
 
                 val mapPoint = MapPoint(index.toString(), latitude, longitude)
                 mapMarker = Intransit(mapPoint, iconMap, type)
@@ -361,7 +401,6 @@ class CourierIntransitViewModel(
 
     fun onScanQrPvzClick() {
         onTechEventLog("Button scan QR Office")
-        changeSelectedMarkers("1", false)
         updateMarkers()
         changeSelectedItemsByMarker(0, false)
         updateAndScrollToItems(0)
@@ -425,22 +464,25 @@ class CourierIntransitViewModel(
         val isSelected = intransitItems[index].isSelected
         changeEnableNavigator(isSelected)
         changeSelectedMarkers(isSelected, index)
+        initCourierIntransit(index)
         updateMarkers(isSelected, index)
     }
 
 
     private fun changeEnableNavigator(isSelected: Boolean) {
-        val value = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT, "")
-        val parts = value.split(";")
-        val scheduleOrder = parts[1]
-
-
-        val address = parts[0]
+//        val value = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT, "")
+//        val parts = value.split(";")
+//        val scheduleOrder = parts[1]
+//
+//
+//        val address = parts[0]
         _navigatorState.value =
-            if (isSelected) CourierIntransitNavigatorUIState.Enable(
-                scheduleOrder,
-                address
-            ) else CourierIntransitNavigatorUIState.Disable
+            if (isSelected) {
+                CourierIntransitNavigatorUIState.Enable
+            }
+            else {
+                CourierIntransitNavigatorUIState.Disable
+            }
 
     }
 
@@ -449,12 +491,16 @@ class CourierIntransitViewModel(
         val parts = value.split(";")
         return parts[1]
     }
+
     private fun changeSelectedItems(selectIndex: Int) {
         intransitItems.forEachIndexed { index, item ->
             intransitItems[index].isSelected =
-                if (selectIndex == index) !item.isSelected
-                else false
+                if (selectIndex == index) {
+                    !item.isSelected
+                } else false
         }
+        //initCourierIntransit(selectIndex)
+
     }
 
     private fun updateItems() {

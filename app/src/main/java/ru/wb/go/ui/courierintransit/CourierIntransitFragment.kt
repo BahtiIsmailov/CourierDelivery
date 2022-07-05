@@ -56,7 +56,6 @@ class CourierIntransitFragment :
         }
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
@@ -81,16 +80,9 @@ class CourierIntransitFragment :
         (activity as NavDrawerListener).lockNavDrawer()
     }
 
-    private fun setColorNavigatorTint(@ColorRes colorRes: Int) {
-        binding.navigatorButton.setColorFilter(
-            ContextCompat.getColor(requireContext(), colorRes),
-            android.graphics.PorterDuff.Mode.SRC_IN
-        )
-    }
-
 
     private var currentOrderId1: String? = null
-    private fun showBottomSheetDialogCardOfOrders(state: CourierIntransitNavigatorUIState.Enable) {
+    private fun showBottomSheetDialogCardOfOrders() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         bottomSheetDialog.setContentView(R.layout.courier_intransit_card_of_orders)
         bottomSheetDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -132,6 +124,30 @@ class CourierIntransitFragment :
             icon?.setImageResource(iconValue)
         }
 
+        viewModel.courierIntransitEmptyItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.courierIntransitCompleteItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.courierIntransitUndeliveredAllItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.courierIntransitUnloadingExpectsItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
         viewModel.currentItemBackgroundForBottomSheet.observe(viewLifecycleOwner) {
             when (it) {
                 IntransitItemType.Empty -> {
@@ -164,19 +180,14 @@ class CourierIntransitFragment :
                         R.drawable.ic_intransit_item_complete
                         )
                 }
-
-
             }
         }
-
 
         closeButton!!.setOnClickListener {
             bottomSheetDialog.dismiss()
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
-        address?.text = state.address
-        scheduleOrder?.text = state.scheduleOrder
-        currentOrderId1?.text = this.currentOrderId1
+
         scanQrPvzButton.setOnClickListener {
             viewModel.onScanQrPvzClick()
             bottomSheetDialog.dismiss()
@@ -200,7 +211,6 @@ class CourierIntransitFragment :
             bottomSheetButton.isVisible = true
         }
     }
-    //private fun initialiseBackgroundForItem(@DrawableRes)
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
@@ -221,7 +231,7 @@ class CourierIntransitFragment :
                     //binding.navigatorButton.setImageResource(R.drawable.ic_navigator)
                 }
                 is CourierIntransitNavigatorUIState.Enable -> {
-                    showBottomSheetDialogCardOfOrders(state)
+                    showBottomSheetDialogCardOfOrders()
                 }
             }
         }
@@ -251,6 +261,9 @@ class CourierIntransitFragment :
             when (it) {
                 is CourierIntransitItemState.InitItems -> {
                     binding.deliveryTotalCount.text = it.boxTotal
+                    val value = it.boxTotal.split("/")
+                    binding.progressLimit.max = value[1].toInt()
+                    binding.progressLimit.progress = value[0].toInt()
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
                     displayItems(it.items)
