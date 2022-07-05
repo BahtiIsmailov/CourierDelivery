@@ -231,24 +231,28 @@ class CourierIntransitFragment :
         viewModel.courierIntransitEmptyItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
             setColorNavigatorTint(R.color.colorPrimary)
         }
 
         viewModel.courierIntransitCompleteItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
             setColorNavigatorTint(R.color.green)
         }
 
         viewModel.courierIntransitUndeliveredAllItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
             setColorNavigatorTint(R.color.red)
         }
 
         viewModel.courierIntransitUnloadingExpectsItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
             setColorNavigatorTint(R.color.green)
         }
 
