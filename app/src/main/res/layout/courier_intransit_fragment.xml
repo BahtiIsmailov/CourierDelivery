@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/lvl_1">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/map_layout"
@@ -77,6 +75,94 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/address_constraint"
+        style="@style/AppTransparentImageButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginEnd="@dimen/pad16"
+        android:layout_marginBottom="136dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/map_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/navigator_button1"
+            style="@style/AppTransparentImageButtonStyle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/ic_bottom_navigator_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="contentDescription" />
+
+
+        <LinearLayout
+            android:id="@+id/address_and_schedule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/box1"
+            app:layout_constraintStart_toEndOf="@+id/navigator_button1"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/fullAddressOrder1"
+                style="@style/MediumPrimaryMediumText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="г. Подольск, ул. Троицкая, 20 г. Подольск, ул. Троицкая, 20" />
+
+            <TextView
+                android:id="@+id/time_work_detail1"
+                style="@style/MediumPrimaryRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                tools:text="Пн - вс: 11:00 - 16:00" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/box1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/transparent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/delivery_total_count1"
+                style="@style/LargePrimaryRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                tools:text="0 / 0" />
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -84,18 +170,18 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="15dp"
-        app:layout_constraintBottom_toTopOf="@+id/complete_delivery_button"
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_constraint"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_sheet_layout_list_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:behavior_hideable="false"
             android:background="#ffffffff"
+            app:behavior_hideable="false"
             app:behavior_peekHeight="60dp"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-            >
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
 
             <TextView
                 android:id="@+id/currentOrderId"
@@ -115,12 +201,12 @@
                 android:id="@+id/box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-12dp"
                 android:layout_marginEnd="16dp"
                 android:background="@color/lvl_2"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="4dp"
-                android:layout_marginTop="-12dp"
                 app:layout_constraintBottom_toBottomOf="@+id/currentOrderId"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -140,23 +226,23 @@
                     tools:text="0 / 0" />
 
             </LinearLayout>
+
             <ProgressBar
                 android:id="@+id/progress_limit"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
                 android:indeterminate="false"
-                tools:max="100"
                 android:maxHeight="10dp"
                 android:minHeight="10dp"
-                tools:progress="60"
-                android:layout_marginBottom="6dp"
+                android:progressDrawable="@drawable/progress_limit"
+                app:layout_constraintBottom_toBottomOf="@+id/currentOrderId"
+                app:layout_constraintEnd_toEndOf="@+id/box"
                 app:layout_constraintStart_toStartOf="@+id/box"
                 app:layout_constraintTop_toBottomOf="@+id/box"
-                app:layout_constraintEnd_toEndOf="@+id/box"
-                app:layout_constraintBottom_toBottomOf="@+id/currentOrderId"
-                android:progressDrawable="@drawable/progress_limit"
-                 />
+                tools:max="100"
+                tools:progress="60" />
 
             <ImageView
                 android:id="@+id/line"
@@ -191,12 +277,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/view_divider"
                 tools:listitem="@layout/courier_intransit_delegate_empty_layout" />
 
-            <View
-                android:id="@+id/view_divider_bottom"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDividerPale"
-                app:layout_constraintTop_toBottomOf="@+id/routes" />
 
             <View
                 android:id="@+id/hold_list"
@@ -227,95 +307,89 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8235294" />
+        app:layout_constraintGuide_begin="587dp" />
 
-    <ImageButton
-        android:id="@+id/navigator_button"
-        style="@style/AppTransparentImageButtonStyle"
-        android:layout_width="64dp"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="20dp"
-        android:enabled="false"
-        android:src="@drawable/ic_navigator"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="ContentDescription" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/scan_qr_pvz_button"
-        style="@style/AppButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:text="@string/courier_intransit_scan"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/navigator_button" />
-
-    <ImageButton
-        android:id="@+id/scan_qr_pvz_complete_button"
-        style="@style/AppButtonStyle"
-        android:layout_width="64dp"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/ic_qr"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="ContentDescription" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/complete_delivery_button"
-        style="@style/AppButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/auth_button_height"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/progress_image_button_round_complete"
-        android:text="@string/courier_intransit_complete"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete_button" />
-
-    <ImageView
-        android:id="@+id/no_internet_image"
-        android:layout_width="?actionBarSize"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/scan_qr_pvz_constraint"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="end"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:scaleType="center"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_inet_failed"
-        tools:ignore="ContentDescription" />
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-        android:id="@+id/version_app"
-        style="@style/SmallSecondaryRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@id/no_internet_image"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="end"
-        android:gravity="center"
-        android:maxLines="1"
-        android:textSize="11sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="10.22.3877" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/scan_qr_pvz_button"
+            style="@style/AppButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/auth_button_height"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/courier_intransit_scan"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
+        <ImageButton
+            android:id="@+id/scan_qr_pvz_complete_button"
+            style="@style/AppButtonStyle"
+            android:layout_width="64dp"
+            android:layout_height="@dimen/auth_button_height"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/ic_qr"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/complete_delivery_button"
+            style="@style/AppButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/auth_button_height"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/progress_image_button_round_complete"
+            android:text="@string/courier_intransit_complete"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/scan_qr_pvz_complete_button" />
+
+        <ImageView
+            android:id="@+id/no_internet_image"
+            android:layout_width="?actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="center"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_inet_failed"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/version_app"
+            style="@style/SmallSecondaryRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/no_internet_image"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textSize="11sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="10.22.3877" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
