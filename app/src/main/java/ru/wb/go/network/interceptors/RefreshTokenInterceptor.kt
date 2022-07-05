@@ -36,7 +36,7 @@ class RefreshTokenInterceptor(
         if (response.code == 409) {
             RebootDialogManager.showRebootDialog(409)
         }
-        if (response.code == 500){
+        if (response.code >= 500){
             RebootDialogManager.showRebootDialog(500)
         }
 

@@ -14,6 +14,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -53,6 +54,8 @@ class CourierIntransitFragment :
     private val itemCallback = object : OnCourierIntransitCallback {
         override fun onPickToPointClick(idItem: Int) {
             viewModel.onItemOfficeClick(idItem)
+            val sheetBehavior = BottomSheetBehavior.from(binding.bottomSheetLayoutListItem)
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
@@ -81,7 +84,7 @@ class CourierIntransitFragment :
     }
 
 
-    private var currentOrderId1: String? = null
+    /*private var currentOrderId1: String? = null
     private fun showBottomSheetDialogCardOfOrders() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         bottomSheetDialog.setContentView(R.layout.courier_intransit_card_of_orders)
@@ -211,12 +214,44 @@ class CourierIntransitFragment :
             bottomSheetButton.isVisible = true
         }
     }
+*/
 
+    private fun setColorNavigatorTint(@ColorRes colorRes: Int) {
+        binding.navigatorButton1.setColorFilter(
+            ContextCompat.getColor(requireContext(), colorRes),
+            android.graphics.PorterDuff.Mode.SRC_IN
+        )
+    }
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
+        viewModel.courierIntransitEmptyItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            setColorNavigatorTint(R.color.colorPrimary)
+        }
+
+        viewModel.courierIntransitCompleteItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            setColorNavigatorTint(R.color.green)
+        }
+
+        viewModel.courierIntransitUndeliveredAllItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            setColorNavigatorTint(R.color.red)
+        }
+
+        viewModel.courierIntransitUnloadingExpectsItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            setColorNavigatorTint(R.color.green)
+        }
+
+
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
-            currentOrderId1 = it.label
+            //currentOrderId1 = it.label
             binding.currentOrderId.text = it.label
         }
 
@@ -227,11 +262,11 @@ class CourierIntransitFragment :
         viewModel.navigatorState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierIntransitNavigatorUIState.Disable -> {
-                    //binding.addressDetailSchedule.isVisible = false
-                    //binding.navigatorButton.setImageResource(R.drawable.ic_navigator)
+                    binding.addressConstraint.isGone = true
                 }
                 is CourierIntransitNavigatorUIState.Enable -> {
-                    showBottomSheetDialogCardOfOrders()
+                    binding.addressConstraint.isVisible = true
+                    //showBottomSheetDialogCardOfOrders()
                 }
             }
         }
@@ -261,6 +296,8 @@ class CourierIntransitFragment :
             when (it) {
                 is CourierIntransitItemState.InitItems -> {
                     binding.deliveryTotalCount.text = it.boxTotal
+                    binding.deliveryTotalCount1.text = it.boxTotal
+
                     val value = it.boxTotal.split("/")
                     binding.progressLimit.max = value[1].toInt()
                     binding.progressLimit.progress = value[0].toInt()
@@ -274,7 +311,7 @@ class CourierIntransitFragment :
                 }
                 is CourierIntransitItemState.UpdateItems -> displayItems(it.items)
                 is CourierIntransitItemState.CompleteDelivery -> {
-                    binding.navigatorButton.visibility = INVISIBLE
+                    //binding.navigatorButton.visibility = INVISIBLE
                     binding.scanQrPvzButton.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.visibility = VISIBLE
                     binding.completeDeliveryButton.visibility = VISIBLE
@@ -299,7 +336,7 @@ class CourierIntransitFragment :
             when (it) {
                 CourierIntransitNavigationState.NavigateToScanner -> {
                     binding.scanQrPvzButton.isEnabled = false
-                    binding.navigatorButton.isEnabled = false
+                    //binding.navigatorButton.isEnabled = false
                     binding.scanQrPvzCompleteButton.isEnabled = false
                     binding.completeDeliveryButton.isEnabled = false
 
@@ -352,7 +389,7 @@ class CourierIntransitFragment :
     }
 
     private fun initListeners() {
-        binding.navigatorButton.setOnClickListener { viewModel.onNavigatorClick() }
+        binding.navigatorButton1.setOnClickListener { viewModel.onNavigatorClick() }
         binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
