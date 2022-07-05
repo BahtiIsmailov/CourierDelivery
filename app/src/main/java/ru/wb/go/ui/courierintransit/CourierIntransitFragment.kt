@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierintransit
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -49,7 +50,9 @@ class CourierIntransitFragment :
 
     override val viewModel by viewModel<CourierIntransitViewModel>()
 
-    private lateinit var adapter: DefaultAdapterDelegate
+    private val adapter: DefaultAdapterDelegate
+        get() = binding.routes.adapter as DefaultAdapterDelegate
+
 
     private val itemCallback = object : OnCourierIntransitCallback {
         override fun onPickToPointClick(idItem: Int) {
@@ -301,6 +304,11 @@ class CourierIntransitFragment :
                     val value = it.boxTotal.split("/")
                     binding.progressLimit.max = value[1].toInt()
                     binding.progressLimit.progress = value[0].toInt()
+                    if(value[0] == value[1]){
+//                        binding.box.foregroundTintList = ColorStateList.valueOf(resources.getColor(R.color.green,context?.theme))
+//                        binding.deliveryTotalCount.setTextColor(resources.getColor(R.color.green,context?.theme))
+                        binding.progressLimit.progressTintList =  ColorStateList.valueOf(resources.getColor(R.color.green,context?.theme))
+                    }
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
                     displayItems(it.items)
@@ -311,7 +319,6 @@ class CourierIntransitFragment :
                 }
                 is CourierIntransitItemState.UpdateItems -> displayItems(it.items)
                 is CourierIntransitItemState.CompleteDelivery -> {
-                    //binding.navigatorButton.visibility = INVISIBLE
                     binding.scanQrPvzButton.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.visibility = VISIBLE
                     binding.completeDeliveryButton.visibility = VISIBLE
@@ -383,6 +390,7 @@ class CourierIntransitFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
+        val adapter = adapter
         adapter.clear()
         adapter.addItems(items)
         adapter.notifyDataSetChanged()
@@ -443,13 +451,12 @@ class CourierIntransitFragment :
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapterDelegate()) {
+        binding.routes.adapter = with(DefaultAdapterDelegate()) {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitUndeliveredAllDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
-        binding.routes.adapter = adapter
     }
 
     private fun scanOfficeAccepted() {

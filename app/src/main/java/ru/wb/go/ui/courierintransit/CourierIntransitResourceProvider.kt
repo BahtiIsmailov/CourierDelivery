@@ -28,9 +28,9 @@ class CourierIntransitResourceProvider(private val context: Context) :
 
     fun getFailedUndeliveredAllSelectedMapIcon() = R.drawable.ic_intransit_office_map_undelivered_all_select
 
-    fun getUnloadingExpectsMapIcon() = R.drawable.ic_intransit_expects_office_map
+    fun getUnloadingExpectsMapIcon() = R.drawable.ic_intransit_office_map_complete//R.drawable.ic_intransit_expects_office_map
 
-    fun getUnloadingExpectsSelectedMapIcon() = R.drawable.ic_intransit_expects_office_map_selected
+    fun getUnloadingExpectsSelectedMapIcon() = R.drawable.ic_intransit_office_map_complete_select//R.drawable.ic_intransit_expects_office_map_selected
 
     fun getCompleteMapIcon() = R.drawable.ic_intransit_office_map_complete
 

@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/center_horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_constraint"
+        android:layout_marginBottom="68dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.fragment.app.FragmentContainerView
@@ -86,9 +87,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/pad16"
         android:layout_marginEnd="@dimen/pad16"
-        android:layout_marginBottom="136dp"
+        android:layout_marginBottom="80dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/map_layout"
+        app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_constraint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible">
@@ -214,7 +215,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_box_count"
+                    android:src="@drawable/ic_boxes_in_custom_progress"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -300,14 +301,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="587dp" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

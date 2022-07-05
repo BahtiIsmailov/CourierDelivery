@@ -67,7 +67,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
 }
 
 private fun isIgnoreException(exception: Throwable):Boolean{
-    return exception is HttpException && exception.code() == 409
+    return ((exception is HttpException) && (exception.code() == 409) && (exception.code() >= 500))
 }
 data class ErrorDialogData(
     val dlgTag: String,
