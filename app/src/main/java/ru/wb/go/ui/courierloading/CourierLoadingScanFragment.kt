@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
@@ -40,11 +39,8 @@ class CourierLoadingScanFragment :
         CourierLoadingFragmentBinding::inflate
     ) {
 
-    private lateinit var addressAdapter: CourierLoadingDetailsAdapter
-    private lateinit var addressLayoutManager: LinearLayoutManager
-    private lateinit var addressSmoothScroller: RecyclerView.SmoothScroller
 
-    private lateinit var bottomSheetDetails: BottomSheetBehavior<FrameLayout>
+    private var bottomSheetDetails: BottomSheetBehavior<FrameLayout>? = null
 
     override val viewModel by viewModel<CourierLoadingScanViewModel>()
 
@@ -77,20 +73,19 @@ class CourierLoadingScanFragment :
     private fun initBottomSheet() {
         binding.detailsLayout.visibility = VISIBLE
         bottomSheetDetails = BottomSheetBehavior.from(binding.detailsGoals)
-        bottomSheetDetails.skipCollapsed = true
-        bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
-        bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetDetails?.skipCollapsed = true
+        bottomSheetDetails?.addBottomSheetCallback(bottomSheetDetailsCallback)
+        bottomSheetDetails?.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun initRecyclerViewDetails() {
-        addressLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.boxDetails.layoutManager = addressLayoutManager
+        binding.boxDetails.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.boxDetails.setHasFixedSize(true)
         initSmoothScrollerAddress()
     }
 
     private fun initSmoothScrollerAddress() {
-        addressSmoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference() = SNAP_TO_START
         }
     }
@@ -205,13 +200,12 @@ class CourierLoadingScanFragment :
                 is CourierLoadingScanNavAction.InitAndShowLoadingItems -> {
                     binding.pvzCountTitle.text = state.pvzCount
                     binding.boxCountTitle.text = state.boxCount
-                    addressAdapter = CourierLoadingDetailsAdapter(requireContext(), state.items)
-                    binding.boxDetails.adapter = addressAdapter
+                    binding.boxDetails.adapter = CourierLoadingDetailsAdapter(requireContext(), state.items)
 
-                    bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
+                    bottomSheetDetails?.state = BottomSheetBehavior.STATE_EXPANDED
                 }
                 is CourierLoadingScanNavAction.HideLoadingItems -> {
-                    bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
+                    bottomSheetDetails?.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }
         }
@@ -243,6 +237,19 @@ class CourierLoadingScanFragment :
             binding.completeButton.isEnabled = it
         }
 
+        viewModel.dublicateBoxId.observe(viewLifecycleOwner){
+            if (it){
+                showDialogInfo(
+                     ErrorDialogData(
+                         "Warning",
+                         DialogInfoStyle.WARNING.ordinal,
+                         "Внимание",
+                         "коробка была уже отсканирована"
+                     )
+                )
+
+            }
+        }
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierLoadingScanBoxState.InitScanner -> {

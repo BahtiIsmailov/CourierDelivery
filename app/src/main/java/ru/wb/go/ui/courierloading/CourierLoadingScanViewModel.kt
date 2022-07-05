@@ -72,10 +72,18 @@ class CourierLoadingScanViewModel(
     val completeButtonState: LiveData<Boolean>
         get() = _completeButtonState
 
+    private val _dublicateBoxId = MutableLiveData<Boolean>()
+    val dublicateBoxId: LiveData<Boolean> = _dublicateBoxId
+
+
     private val _timeOut = SingleLiveEvent<Boolean>()
         .apply { value = false }
     val timeOut: LiveData<Boolean>
         get() = _timeOut
+
+
+    private val indantifyBoxValue = mutableListOf<Int>()
+    private var indexOfElement = 0
 
     init {
         observeInitScanProcess()
@@ -194,7 +202,12 @@ class CourierLoadingScanViewModel(
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
                 _boxDataStateUI.value =
-                    with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) }
+                    with(scanBoxData) {
+                        BoxInfoDataState(qrCode, address, countBoxes)
+                    }
+//                indexOfElement = 0
+                //indantifyBoxValue.add(scanBoxData.qrCode.toInt())
+//                _dublicateBoxId.value = findDuplicateBox(indantifyBoxValue,indexOfElement)
                 _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
                 _orderTimer.value = CourierLoadingScanTimerState.Stopped
                 _completeButtonState.value = true
@@ -203,6 +216,10 @@ class CourierLoadingScanViewModel(
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
                 _boxDataStateUI.value =
                     with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) }
+
+                indexOfElement+=1
+                //indantifyBoxValue.add(scanBoxData.qrCode.toInt())
+                //_dublicateBoxId.value = findDuplicateBox(indantifyBoxValue,indexOfElement)
             }
             is CourierLoadingScanBoxData.ForbiddenTakeBox -> {
                 if (scanResult.count == 0) {
@@ -233,6 +250,10 @@ class CourierLoadingScanViewModel(
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownQR
             }
         }
+    }
+
+    private fun findDuplicateBox(boxesQr:MutableList<Int>, index:Int):Boolean{
+         return boxesQr[index] == boxesQr[index - 1]
     }
 
     fun onErrorDialogConfirmClick() {

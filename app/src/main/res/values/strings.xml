@@ -47,7 +47,7 @@
     <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
     <string name="http_timeout_error">"TimeOut. Возможно отсутствует интернет или низкая скорость соединения"</string>
-    <string name="http409">"Заказа в другом статусе, либо был завершен\nПриложение будет перезагружено"</string>
+    <string name="http409">"Заказ в другом статусе, либо был завершен\nПриложение будет перезагружено"</string>
     <string name="http_400_exception">"Неизвестная ошибка, попробуйте перезапустить приложение"</string>
     <string name="http_error" />
     <string name="http_unknown_error" />

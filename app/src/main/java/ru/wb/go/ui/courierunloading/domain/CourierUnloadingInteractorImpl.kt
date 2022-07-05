@@ -32,15 +32,11 @@ class CourierUnloadingInteractorImpl(
 
     @OptIn(FlowPreview::class)
     override fun observeScanProcess(officeId: Int): Flow<CourierUnloadingProcessData> {
-        Log.e("scannerAction","observeScanProcess : $officeId")
         return scannerRepo.observeScannerAction()
             .filter { it is ScannerAction.ScanResult }
             .map { it as ScannerAction.ScanResult }
-            .map {
-                Log.e("scannerAction","observeScanProcess - Map : $it")
-                scannerRepo.parseScanBoxQr(it.value) }
+            .map { scannerRepo.parseScanBoxQr(it.value) }
             .flatMapMerge { parsedScan ->
-                Log.e("scannerAction","observeScanProcess - flatMapMerge : $parsedScan")
                 val boxes = localRepo.getBoxes()
                 val box = boxes.find { box -> box.boxId == parsedScan.boxId }
                 val scanTime = timeManager.getLocalTime()
@@ -75,24 +71,10 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanComplete)
                     }
                 }
-                Log.e("scannerAction","observeScanProcess - flatMapMergeAfterWhen : $parsedScan")
-                val it = localRepo.findOfficeById(officeId)
-                Log.e("scannerAction","observeScanProcess - findOfficeById : $parsedScan")
-                 flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
-
+                 val it = localRepo.findOfficeById(officeId)
+                  flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
             }
-        //TODO(уточнить на счет возвращаемого значения)
     }
-    /*
-    localRepo.findOfficeById(officeId)
-                    .flatMapObservable {
-                        Observable.just(
-                            CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes)
-                        ).mergeWith(scannerRepo.holdStart())
-                    }
-                    .compose(rxSchedulerFactory.applyObservableSchedulers())
-     */
-
 
 
     override suspend fun scannerRepoHoldStart(){
