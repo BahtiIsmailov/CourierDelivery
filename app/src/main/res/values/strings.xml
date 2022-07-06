@@ -55,6 +55,7 @@
     <string name="body_is_empty">"Body is empty" </string>
 
     <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+    <string name="error_service">Ошибка сервиса\nСтатус %s</string>
 
     <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
     <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>

@@ -33,7 +33,7 @@ class RebootDialog : DialogFragment(){
                 RebootApplication.doRestart(requireContext())
             }
         }else if (globalCode!! >= 500){
-            title.text = requireContext().getString(R.string.error_title)
+            title.text = requireContext().getString(R.string.error_service, globalCode)
             message.text = requireContext().getString(R.string.unknown_generic_error)
             positive.text = requireContext().getString(R.string.courier_expects_positive)
             positive.setOnClickListener {
