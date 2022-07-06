@@ -79,12 +79,16 @@ class CourierMapFragment : Fragment()  {
     private val binding get() = _binding!!
 
     private var googleApiClient: GoogleApiClient? = null
+
+
     private lateinit var locationRequest: LocationRequest
+
     private var lastLocation: Location? = null
+
     private var isRequestAccessLocation = false
 
     private val mapController: IMapController
-        get() = binding.map.controller
+        get() = binding.map.controller as IMapController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -212,7 +216,6 @@ class CourierMapFragment : Fragment()  {
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
 
-        val mapController = mapController
         mapController.setZoom(DEFAULT_ZOOM)
         with(moscowCoordinatePoint()) {
             mapController.setCenter(GeoPoint(latitude, longitude))
@@ -564,7 +567,6 @@ class CourierMapFragment : Fragment()  {
 
     private fun navigateToPointZoom(it: CoordinatePoint) {
         val point = GeoPoint(it.latitude, it.longitude)
-        val mapController = mapController
         mapController.setZoom(DEFAULT_POINT_ZOOM)
         mapController.setCenter(point)
         binding.map.invalidate()

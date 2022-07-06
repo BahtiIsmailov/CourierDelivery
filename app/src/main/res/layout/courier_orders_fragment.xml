@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.courierorders.CourierOrdersFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
@@ -49,6 +50,7 @@
         android:focusable="true"
         android:scaleType="center"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_inet_failed"
@@ -66,6 +68,7 @@
         android:maxLines="1"
         android:textSize="11sp"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="10.22.3877" />
@@ -154,6 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:visibility="gone"
+                    tools:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/title_list_divider">
 
@@ -233,6 +237,7 @@
                 android:paddingTop="@dimen/pad16"
                 android:paddingBottom="@dimen/pad16"
                 android:visibility="gone"
+                tools:visibility="visible"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -337,6 +342,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/pad8"
                     android:visibility="gone"
+                    tools:visibility="visible"
                     android:src="@drawable/ic_car_type_uncknown"
                     app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
                     app:layout_constraintStart_toEndOf="@+id/car_number"
@@ -431,6 +437,7 @@
             android:clickable="false"
             android:focusable="false"
             android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

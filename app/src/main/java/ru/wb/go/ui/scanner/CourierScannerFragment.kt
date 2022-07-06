@@ -34,8 +34,11 @@ open class CourierScannerFragment : BaseFragment() {
     private var _binding: CourierScannerFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var barcodeView: DecoratedBarcodeView
-    private lateinit var viewFinder: ViewfinderView
+    private val barcodeView: DecoratedBarcodeView
+    get() = binding.zxingBarcodeScanner
+
+    private val viewFinder: ViewfinderView
+    get() = binding.zxingViewfinderView
 
     private lateinit var beepManager: BeepManager
 
@@ -49,8 +52,6 @@ open class CourierScannerFragment : BaseFragment() {
     ): View {
 
         _binding = CourierScannerFragmentBinding.inflate(inflater, container, false)
-        barcodeView = binding.zxingBarcodeScanner
-        viewFinder = binding.zxingViewfinderView
 
         val switchFlashlightButton = binding.flash
 

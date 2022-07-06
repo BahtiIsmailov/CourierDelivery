@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_constraint"
-        android:layout_marginBottom="68dp"
+        android:layout_marginBottom="60dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.fragment.app.FragmentContainerView
@@ -171,7 +171,7 @@
         android:id="@+id/list_items_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="25dp"
         app:layout_constraintBottom_toTopOf="@+id/scan_qr_pvz_constraint"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -216,7 +216,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_boxes_in_custom_progress"
+                    android:src="@drawable/ic_box_count"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -233,7 +233,7 @@
                 android:id="@+id/progress_limit"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="6dp"
                 android:layout_marginBottom="6dp"
                 android:indeterminate="false"
                 android:maxHeight="10dp"

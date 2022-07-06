@@ -62,13 +62,12 @@ class CourierOrdersFragment :
         const val FADE_ADDRESS_DETAILS = 50L
     }
 
-    private lateinit var adapter: DefaultAdapterDelegate
+    private val adapter: DefaultAdapterDelegate
+        get() = binding.orders.adapter as DefaultAdapterDelegate
 
-    private lateinit var smoothScroller: SmoothScroller
 
-    private lateinit var addressAdapter: CourierOrderDetailsAddressAdapter
-    private lateinit var addressLayoutManager: LinearLayoutManager
-    private lateinit var addressSmoothScroller: SmoothScroller
+    private val addressAdapter: CourierOrderDetailsAddressAdapter
+        get() = binding.addresses.adapter as CourierOrderDetailsAddressAdapter
 
     private val bottomSheetOrders: BottomSheetBehavior<FrameLayout>
         get() = BottomSheetBehavior.from(binding.ordersLayout)
@@ -229,7 +228,7 @@ class CourierOrdersFragment :
     private fun fadeOut(view: View): ObjectAnimator {
         val fadeOut =
             ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
-        fadeOut.duration = FADE_ADDRESS_DETAILS
+//        fadeOut.duration = FADE_ADDRESS_DETAILS
         fadeOut.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
                 view.visibility = VISIBLE
@@ -242,7 +241,7 @@ class CourierOrdersFragment :
     private fun fadeIn(view: View): ObjectAnimator {
         val fadeIn =
             ObjectAnimator.ofFloat(view, "alpha", 1f, 0f)
-        fadeIn.duration = FADE_ADDRESS_DETAILS
+        //fadeIn.duration = FADE_ADDRESS_DETAILS
         fadeIn.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
                 view.visibility = GONE
@@ -302,6 +301,7 @@ class CourierOrdersFragment :
         }
 
         viewModel.orders.observe(viewLifecycleOwner) { state ->
+            val adapter = adapter
             when (state) {
                 is CourierOrderItemState.ShowItems -> {
                     binding.emptyList.visibility = GONE
@@ -440,9 +440,8 @@ class CourierOrdersFragment :
                             viewModel.onAddressItemClick(index)
                         }
                     }
-                    addressAdapter =
+                    binding.addresses.adapter =
                         CourierOrderDetailsAddressAdapter(requireContext(), it.items, callback)
-                    binding.addresses.adapter = addressAdapter
                 }
                 is CourierOrderAddressesUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
@@ -450,6 +449,7 @@ class CourierOrdersFragment :
                     binding.takeOrder.isEnabled = false
                 }
                 is CourierOrderAddressesUIState.UpdateItems -> {
+                    val addressAdapter = addressAdapter
                     addressAdapter.clear()
                     addressAdapter.addItems(it.items)
                     addressAdapter.notifyDataSetChanged()
@@ -562,6 +562,7 @@ class CourierOrdersFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
+        val adapter = adapter
         adapter.clear()
         adapter.addItems(items)
         adapter.notifyDataSetChanged()
@@ -575,7 +576,7 @@ class CourierOrdersFragment :
     }
 
     private fun initSmoothScrollerOrders() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+         object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -583,14 +584,13 @@ class CourierOrdersFragment :
     }
 
     private fun initRecyclerViewAddress() {
-        addressLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.addresses.layoutManager = addressLayoutManager
+        binding.addresses.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.addresses.setHasFixedSize(true)
         initSmoothScrollerAddress()
     }
 
     private fun initSmoothScrollerAddress() {
-        addressSmoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -598,7 +598,7 @@ class CourierOrdersFragment :
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapterDelegate()) {
+        binding.orders.adapter = with(DefaultAdapterDelegate()) {
             addDelegate(
                 CourierOrderDelegate(requireContext(),
                     object : OnCourierOrderCallback {
@@ -608,7 +608,6 @@ class CourierOrdersFragment :
                     })
             )
         }
-        binding.orders.adapter = adapter
     }
 
 

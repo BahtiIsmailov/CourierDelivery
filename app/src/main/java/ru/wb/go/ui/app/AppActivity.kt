@@ -9,8 +9,10 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity.LEFT
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
+import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.*
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -38,6 +40,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
+import ru.wb.go.databinding.AppLoaderFragmentBinding
 import ru.wb.go.databinding.SplashActivityBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierdatatype.CourierDataTypeFragmentDirections
@@ -59,11 +62,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     private val viewModel by viewModel<AppViewModel>()
 
-    lateinit var binding: SplashActivityBinding
+    private lateinit var binding: SplashActivityBinding
+
 
     private var navController: NavController? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: NavController.OnDestinationChangedListener
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         initTheme()

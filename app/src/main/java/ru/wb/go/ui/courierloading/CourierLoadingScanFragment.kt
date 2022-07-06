@@ -40,7 +40,8 @@ class CourierLoadingScanFragment :
     ) {
 
 
-    private var bottomSheetDetails: BottomSheetBehavior<FrameLayout>? = null
+    private val bottomSheetDetails: BottomSheetBehavior<FrameLayout>
+    get() = BottomSheetBehavior.from(binding.detailsGoals)
 
     override val viewModel by viewModel<CourierLoadingScanViewModel>()
 
@@ -72,10 +73,10 @@ class CourierLoadingScanFragment :
 
     private fun initBottomSheet() {
         binding.detailsLayout.visibility = VISIBLE
-        bottomSheetDetails = BottomSheetBehavior.from(binding.detailsGoals)
-        bottomSheetDetails?.skipCollapsed = true
-        bottomSheetDetails?.addBottomSheetCallback(bottomSheetDetailsCallback)
-        bottomSheetDetails?.state = BottomSheetBehavior.STATE_HIDDEN
+        val bottomSheetDetails = bottomSheetDetails
+        bottomSheetDetails.skipCollapsed = true
+        bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
+        bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun initRecyclerViewDetails() {
@@ -202,10 +203,10 @@ class CourierLoadingScanFragment :
                     binding.boxCountTitle.text = state.boxCount
                     binding.boxDetails.adapter = CourierLoadingDetailsAdapter(requireContext(), state.items)
 
-                    bottomSheetDetails?.state = BottomSheetBehavior.STATE_EXPANDED
+                    bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
                 }
                 is CourierLoadingScanNavAction.HideLoadingItems -> {
-                    bottomSheetDetails?.state = BottomSheetBehavior.STATE_HIDDEN
+                    bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
                 }
             }
         }

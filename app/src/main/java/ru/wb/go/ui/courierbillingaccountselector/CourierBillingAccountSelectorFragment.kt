@@ -39,9 +39,6 @@ class CourierBillingAccountSelectorFragment :
         CourierBillingAccountSelectorFragmentBinding::inflate
     ) {
 
-
-    private var inputMethod: InputMethodManager? = null
-
     companion object {
         const val COURIER_BILLING_ACCOUNT_SELECTOR_AMOUNT_KEY =
             "courier_billing_account_selector_amount_key"
@@ -85,8 +82,9 @@ class CourierBillingAccountSelectorFragment :
 
     }
 
-    private val changeText :ArrayList<ViewChanges>? = null
+    private var changeText = ArrayList<ViewChanges>()
 
+     
     data class ViewChanges(
         val textLayout: TextInputLayout,
         val text: EditText,
@@ -138,7 +136,7 @@ class CourierBillingAccountSelectorFragment :
     @OptIn(FlowPreview::class)
     private fun createFieldChangesObserver(): TextChangesInterface {
         return TextChangesInterface { textInputLayout, editText, queryType ->
-            changeText?.add(ViewChanges(textInputLayout, editText, queryType))
+            changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
                 .map { it.toString() }
                 .map { CourierBillingAccountSelectorUIAction.TextChange(it, queryType) }
@@ -156,7 +154,7 @@ class CourierBillingAccountSelectorFragment :
     }
 
     private fun initInputMethod() {
-        inputMethod =
+        val inputMethod =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -199,29 +197,29 @@ class CourierBillingAccountSelectorFragment :
             when (state) {
                 is CourierBillingAccountSelectorUIState.Empty -> {
                     val textLayout =
-                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message
                 }
                 is CourierBillingAccountSelectorUIState.Complete -> {
                     val textLayout =
-                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = getText(R.string.error_empty)
 
-                    val text = changeText?.find { it.type == state.typeBillingAccount }?.text
+                    val text = changeText.find { it.type == state.typeBillingAccount }?.text
                     text?.setText(state.formatBalance)
                     text?.setSelection(state.formatBalance.length)
                 }
                 is CourierBillingAccountSelectorUIState.Error -> {
                     val textLayout =
-                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message
 
-                    val text = changeText?.find { it.type == state.typeBillingAccount }?.text
+                    val text = changeText.find { it.type == state.typeBillingAccount }?.text
                     text?.setText(state.formatBalance)
                     text?.setSelection(state.formatBalance.length)
                 }
                 is CourierBillingAccountSelectorUIState.ErrorFocus -> {
-                    changeText?.find { it.type == state.typeBillingAccount }?.text?.let {
+                    changeText.find { it.type == state.typeBillingAccount }?.text?.let {
                         it.setSelection(it.length())
                         it.requestFocus()
                         scrollToViewTop(binding.scrollView, it)
@@ -327,11 +325,6 @@ class CourierBillingAccountSelectorFragment :
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        inputMethod = null
     }
 
     private fun scrollToViewTop(scrollView: ScrollView, childView: View) {

@@ -18,7 +18,8 @@ import ru.wb.go.databinding.SupportFragmentBinding
 class SupportFragment : BottomSheetDialogFragment() {
 
     lateinit var binding: SupportFragmentBinding
-    private lateinit var behavior: BottomSheetBehavior<FrameLayout>
+    private val behavior: BottomSheetBehavior<FrameLayout>
+    get() = BottomSheetBehavior.from(dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout)
 
     override fun getTheme() = R.style.AppBottomSheetDialogTheme
 
@@ -41,9 +42,9 @@ class SupportFragment : BottomSheetDialogFragment() {
             }
             supportCancel.setOnClickListener { hide() }
         }
-        val bottomSheet =
-            dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout
-        behavior = BottomSheetBehavior.from(bottomSheet)
+
+
+
     }
 
     private fun hide() {

@@ -47,7 +47,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     private var _binding: CourierDataFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var inputMethod: InputMethodManager
+
     private val viewModel by viewModel<UserFormViewModel> {
         parametersOf(requireArguments().getParcelable<CourierDataParameters>(REGISTER_FORM_PARAMS))
     }
@@ -317,7 +317,7 @@ class CourierDataFragment : Fragment(R.layout.courier_data_fragment) {
     }
 
     private fun initInputMethod() {
-        inputMethod =
+        val inputMethod =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 

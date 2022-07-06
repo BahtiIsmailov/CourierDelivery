@@ -45,8 +45,8 @@ class CourierBillingAccountDataFragment :
         CourierBillingDataFragmentBinding::inflate
     ) {
 
-    private lateinit var inputMethod: InputMethodManager
-    private var changeText:ArrayList<ViewChanges>? = null
+
+    private var changeText = ArrayList<ViewChanges>() 
 
     override val viewModel by viewModel<CourierBillingAccountDataViewModel> {
         parametersOf(
@@ -174,7 +174,7 @@ class CourierBillingAccountDataFragment :
     private fun createFieldChangesObserver(): TextChangesInterface {
         return TextChangesInterface {
             textInputLayout, editText, queryType ->
-            changeText?.add(ViewChanges(textInputLayout, editText, queryType))
+            changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
                 .map {
                     it.toString()
@@ -200,7 +200,7 @@ class CourierBillingAccountDataFragment :
 
 
     private fun initInputMethod() {
-        inputMethod =
+        val inputMethod =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -239,19 +239,20 @@ class CourierBillingAccountDataFragment :
         }
 
         viewModel.formUIState.observe(viewLifecycleOwner) { state ->
+//            val changeText = changeText
             when (state) {
                 is CourierBillingAccountDataUIState.Complete -> {
                     val textLayout =
-                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = getText(R.string.error_empty)
                 }
                 is CourierBillingAccountDataUIState.Error -> {
                     val textLayout =
-                        changeText?.find { it.type == state.typeBillingAccount }?.textLayout
+                        changeText.find { it.type == state.typeBillingAccount }?.textLayout
                     textLayout?.error = state.message
                 }
                 is CourierBillingAccountDataUIState.ErrorFocus -> {
-                    changeText?.find { it.type == state.typeBillingAccount }?.text?.let {
+                    changeText.find { it.type == state.typeBillingAccount }?.text?.let {
                         it.setSelection(it.length())
                         it.requestFocus()
                         scrollToViewTop(binding.scrollView, it)
@@ -407,10 +408,10 @@ class CourierBillingAccountDataFragment :
         const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        changeText = null
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        changeText = null
+//    }
 
 }
 

@@ -26,7 +26,7 @@
 
     <item>
         <rotate
-            android:pivotX="25%"
+            android:pivotX="20%"
             android:fromDegrees="90"
             >
             <shape
@@ -43,7 +43,24 @@
 
     <item>
         <rotate
-            android:pivotX="50%"
+            android:pivotX="40%"
+            android:fromDegrees="90"
+            >
+            <shape
+                android:shape="line">
+                <stroke
+                    android:color="#ffffff"
+                    android:width="1dp"
+
+                    />
+            </shape>
+
+        </rotate>
+    </item>
+
+    <item>
+        <rotate
+            android:pivotX="60%"
             android:fromDegrees="90">
             <shape
                 android:shape="line">
@@ -56,7 +73,7 @@
     </item>
     <item>
         <rotate
-            android:pivotX="75%"
+            android:pivotX="80%"
             android:fromDegrees="90">
             <shape
                 android:shape="line">

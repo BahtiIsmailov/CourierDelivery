@@ -24,7 +24,6 @@ class CourierVersionControlFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-
         _binding = CourierVersionControlFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

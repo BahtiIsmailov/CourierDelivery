@@ -28,7 +28,8 @@ class CourierIntransitOfficeScannerFragment :
         CourierIntransitOfficeScannerFragmentBinding::inflate
     ) {
 
-    private lateinit var bottomSheetQrOfficeFailed: BottomSheetBehavior<FrameLayout>
+    private val bottomSheetQrOfficeFailed: BottomSheetBehavior<FrameLayout>
+        get() = BottomSheetBehavior.from(binding.qrOfficeFailed)
 
     override val viewModel by viewModel<CourierIntransitOfficeScannerViewModel>()
 
@@ -41,7 +42,6 @@ class CourierIntransitOfficeScannerFragment :
     }
 
     private fun initBottomSheet() {
-        bottomSheetQrOfficeFailed = BottomSheetBehavior.from(binding.qrOfficeFailed)
         bottomSheetQrOfficeFailed.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {

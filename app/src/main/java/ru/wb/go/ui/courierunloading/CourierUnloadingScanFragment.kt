@@ -47,11 +47,12 @@ class CourierUnloadingScanFragment :
             "DIALOG_CONFIRM_SCORE_UNLOADING_RESULT_TAG"
     }
 
-    private lateinit var addressAdapter: RemainBoxAdapter
-    private lateinit var addressLayoutManager: LinearLayoutManager
-    private lateinit var addressSmoothScroller: RecyclerView.SmoothScroller
+    private val addressAdapter: RemainBoxAdapter
+    get() = binding.boxDetails.adapter as RemainBoxAdapter
 
-    private lateinit var bottomSheetDetails: BottomSheetBehavior<FrameLayout>
+
+    private val bottomSheetDetails: BottomSheetBehavior<FrameLayout>
+    get() = BottomSheetBehavior.from(binding.detailsGoals)
 
     override val viewModel by viewModel<CourierUnloadingScanViewModel> {
         parametersOf(
@@ -73,14 +74,13 @@ class CourierUnloadingScanFragment :
     }
 
     private fun initRecyclerViewDetails() {
-        addressLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.boxDetails.layoutManager = addressLayoutManager
+        binding.boxDetails.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.boxDetails.setHasFixedSize(true)
         initSmoothScrollerAddress()
     }
 
     private fun initSmoothScrollerAddress() {
-        addressSmoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference() = SNAP_TO_START
         }
     }
@@ -98,7 +98,7 @@ class CourierUnloadingScanFragment :
 
     private fun initBottomSheet() {
         binding.detailsLayout.visibility = RecyclerView.VISIBLE
-        bottomSheetDetails = BottomSheetBehavior.from(binding.detailsGoals)
+        val bottomSheetDetails = bottomSheetDetails
         bottomSheetDetails.skipCollapsed = true
         bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
         bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
@@ -171,8 +171,7 @@ class CourierUnloadingScanFragment :
                     binding.completeButton.visibility = VISIBLE
                 }
                 is CourierUnloadingScanNavAction.InitAndShowUnloadingItems -> {
-                    addressAdapter = RemainBoxAdapter(requireContext(), state.items)
-                    binding.boxDetails.adapter = addressAdapter
+                    binding.boxDetails.adapter = RemainBoxAdapter(requireContext(), state.items)
                     bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
                     binding.completeButton.visibility = GONE
                 }
