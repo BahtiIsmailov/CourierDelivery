@@ -182,7 +182,7 @@ class CourierLoadingScanViewModel(
             }
             .catch {
                 scanProcessError(it)
-//                interactor.scanRepoHoldStart()
+                interactor.scanRepoHoldStart()
             }
             .launchIn(viewModelScope)
     }
