@@ -71,7 +71,7 @@ class CourierScannerViewModel(
     }
 
     fun onDestroy() {
-        viewModelScope.coroutineContext.cancelChildren()
+        //viewModelScope.coroutineContext.cancelChildren()
         //clearSubscription() // backStack
     }
 

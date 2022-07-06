@@ -97,9 +97,9 @@ class CourierWarehousesViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun clearSubscription(){
-        viewModelScope.coroutineContext.cancelChildren()
-    }
+//    fun clearSubscription(){
+//        viewModelScope.coroutineContext.cancelChildren()
+//    }
 
     private fun observeMapActionError(throwable: Throwable) {
         onTechErrorLog("observeMapActionError", throwable)
@@ -131,19 +131,6 @@ class CourierWarehousesViewModel(
         }
     }
 
-    /*
-        private fun getWarehouses() {
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.getWarehouses()
-                .doFinally { clearFabAndWhList() }
-                .subscribe(
-                    { getWarehousesComplete(it) },
-                    { getWarehousesError(it) }
-                )
-        )
-    }
-     */
 
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
         sortedWarehouseEntities(it)// done size warehouses

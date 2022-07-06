@@ -133,7 +133,7 @@ class CourierMapViewModel(
     }
 
     fun clearSubscription(){
-        viewModelScope.coroutineContext.cancelChildren()
+        //viewModelScope.coroutineContext.cancelChildren()
     }
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {

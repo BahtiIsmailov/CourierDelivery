@@ -145,7 +145,7 @@ class CourierOrdersViewModel(
     }
 
     fun clearSubscription() {
-        viewModelScope.coroutineContext.cancelChildren()
+        //viewModelScope.coroutineContext.cancelChildren()
     }
 
     private fun checkDemoMode() {

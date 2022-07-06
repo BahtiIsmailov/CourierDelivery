@@ -147,7 +147,7 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onDestroy() {
-        viewModelScope.coroutineContext.cancelChildren()
+        //viewModelScope.coroutineContext.cancelChildren()
         //clearSubscription()
     }
 

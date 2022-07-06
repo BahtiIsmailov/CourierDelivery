@@ -122,7 +122,7 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     fun onDestroy() {
-        viewModelScope.coroutineContext.cancelChildren()
+        //viewModelScope.coroutineContext.cancelChildren()
         //clearSubscription()
     }
 
