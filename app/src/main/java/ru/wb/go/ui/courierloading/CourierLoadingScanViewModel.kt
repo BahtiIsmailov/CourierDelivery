@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import retrofit2.Response
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
+import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
@@ -176,13 +179,12 @@ class CourierLoadingScanViewModel(
                 observeScanProcessComplete(it)
                 interactor.scanRepoHoldStart()
             }
-            .retryWhen { _, _ ->
-                delay(1000)
-                true
-            }
             .catch {
                 scanProcessError(it)
-                interactor.scanRepoHoldStart()
+            }
+            .retryWhen { _, _ ->
+                delay(1500)
+                true
             }
             .launchIn(viewModelScope)
     }
