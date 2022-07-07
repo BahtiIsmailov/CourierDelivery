@@ -61,7 +61,7 @@ class CourierWarehousesViewModel(
     private var warehouseItems = mutableListOf<CourierWarehouseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
-    private lateinit var myLocation: CoordinatePoint //TODO(FIXME не успевает инициализироваться)
+    private lateinit var myLocation: CoordinatePoint
 
 
     private var whSelectedId: Int? = null

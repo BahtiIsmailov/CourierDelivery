@@ -23,7 +23,7 @@ class CourierOrderTimerInteractorImpl(
         locRepo.deleteOrder()
     }
 
-    override fun startTimer(reservedDuration: String, reservedAt: String) {
+    override fun startTimer(reservedDuration: String, reservedAt: String) { // arrival time = 0
         var arrivalSec: Long
         val durationSec = (reservedDuration.toIntOrNull() ?: DEFAULT_ARRIVAL_TIME_COURIER_MIN) * 60L
         arrivalSec = if (reservedAt.isEmpty()) {
@@ -32,11 +32,12 @@ class CourierOrderTimerInteractorImpl(
             durationSec - timeManager.getPassedTime(reservedAt)
         }
 
-        if (arrivalSec < 0 || arrivalSec > durationSec) arrivalSec = 0L
+        if (arrivalSec < 0 || arrivalSec > durationSec) {
+            arrivalSec = 0L // приходит arrivalSec > durationSec когда часовой пояс другой
+        }
 
         return taskTimerRepository.startTimer(durationSec.toInt(), arrivalSec.toInt())
     }
-
 
     override val timer: Flow<TimerState>
         get() = taskTimerRepository.timer
@@ -50,9 +51,12 @@ class CourierOrderTimerInteractorImpl(
     }
 
     override suspend fun timerEntity(): CourierTimerEntity {
-        val it = locRepo.getOrder()
+        var it = locRepo.getOrder()
+        if (it == null){
+            it = appRemoteRepository.tasksMy().order
+        }
         return CourierTimerEntity(
-            it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
+            it.route, it.srcName, it.orderId, it.minPrice, it.minBoxes, it.minVolume,
             it.countOffices, it.gate, it.reservedDuration, it.reservedAt
         )
 

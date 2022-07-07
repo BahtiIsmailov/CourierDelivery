@@ -231,28 +231,28 @@ class CourierIntransitFragment :
         viewModel.courierIntransitEmptyItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
-            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
             setColorNavigatorTint(R.color.colorPrimary)
         }
 
         viewModel.courierIntransitCompleteItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
-            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
             setColorNavigatorTint(R.color.green)
         }
 
         viewModel.courierIntransitUndeliveredAllItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
-            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
             setColorNavigatorTint(R.color.red)
         }
 
         viewModel.courierIntransitUnloadingExpectsItemLiveData.observe(viewLifecycleOwner){
             binding.fullAddressOrder1.text = it.fullAddress
             binding.timeWorkDetail1.text = it.timeWork
-            binding.deliveryTotalCount1.text = "${it.deliveryCount}/${it.fromCount}"
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
             setColorNavigatorTint(R.color.green)
         }
 
@@ -303,7 +303,6 @@ class CourierIntransitFragment :
             when (it) {
                 is CourierIntransitItemState.InitItems -> {
                     binding.deliveryTotalCount.text = it.boxTotal
-                    binding.deliveryTotalCount1.text = it.boxTotal
 
                     val value = it.boxTotal.split("/")
                     binding.progressLimit.max = value[1].toInt()
@@ -474,6 +473,4 @@ class CourierIntransitFragment :
     private fun scanWrongOffice() {
         viewModel.play(R.raw.wrongoffice)
     }
-
-
 }

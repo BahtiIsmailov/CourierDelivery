@@ -132,7 +132,7 @@ class CourierLoaderViewModel(
     private fun toApp(order: LocalOrderEntity?) {
         viewModelScope.launch {
             try {
-                val orderFromRemote = remoteRepo.tasksMy(order?.orderId)
+                val orderFromRemote = remoteRepo.tasksMy()
                 val res = solveJobInitialState(orderFromRemote, order)
                 _navigationDrawerState.value = res
             } catch (e: Exception) {

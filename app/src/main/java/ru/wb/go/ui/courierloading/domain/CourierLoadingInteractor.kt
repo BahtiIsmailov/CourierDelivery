@@ -22,7 +22,7 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun confirmLoadingBoxes(): CourierCompleteData
 
-    suspend fun getGate(): String
+    suspend fun getGate(): String?
 
     suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals
 

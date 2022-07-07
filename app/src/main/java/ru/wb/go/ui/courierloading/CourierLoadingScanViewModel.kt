@@ -106,7 +106,7 @@ class CourierLoadingScanViewModel(
             try {
                 val response = interactor.getGate()
                 _orderTimer.value =
-                    CourierLoadingScanTimerState.Info(response.ifEmpty { "-" })
+                    CourierLoadingScanTimerState.Info(response?.ifEmpty { "-" }?:"")
 
             } catch (e: Exception) {
                 _orderTimer.value = CourierLoadingScanTimerState.Info("-")

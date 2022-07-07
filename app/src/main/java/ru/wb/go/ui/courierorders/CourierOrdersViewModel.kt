@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
+import retrofit2.HttpException
 import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
+import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR_400
 import ru.wb.go.app.COURIER_TASK_ALREADY_RESERVED_ERROR
 import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
@@ -356,25 +358,9 @@ class CourierOrdersViewModel(
         }
     }
 
-
-    /*
-        private fun initOrders(height: Int) {
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.freeOrdersLocalClearAndSave(parameters.warehouseId)
-                .doOnSuccess { this.orderLocalDataEntities = it }
-                .subscribe(
-                    { initOrdersComplete(height) },
-                    { initOrdersError(it) })
-        )
-    }
-     */
-
     private fun initOrdersComplete(height: Int) {
         addressLabel()
-        Log.e("method.call()", "initOrdersComplete2:  ")
         convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
-        Log.e("method.call()", "initOrdersComplete3:  ")
 
         setLoader(WaitLoader.Complete)
         ordersComplete(height)
@@ -679,7 +665,6 @@ class CourierOrdersViewModel(
         sharedWorker.save(
             SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
            "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
-
         )
     }
 
@@ -794,7 +779,12 @@ class CourierOrdersViewModel(
     private fun anchorTaskError(it: Throwable) {
         onTechErrorLog("anchorTaskError", it)
         setLoader(WaitLoader.Complete)
-        if (it is BadRequestException) {
+        if (it is HttpException){
+            if (it.code() == COURIER_ONLY_ONE_TASK_ERROR_400){
+                _navigationState.value = CourierOrdersNavigationState.CourierLoader
+            }
+        }
+        else if (it is BadRequestException) {
             if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
                 _navigationState.value = CourierOrdersNavigationState.CourierLoader
             } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {

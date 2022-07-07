@@ -41,7 +41,7 @@ class CourierIntransitInteractorImpl(
         return intransitTimeRepository.startTimer()
             .map {
                 val order = locRepo.getOrder()
-                val offsetSec = timeManager.getPassedTime(order.startedAt)
+                val offsetSec = timeManager.getPassedTime(order?.startedAt?:"")
                 it + offsetSec
             }
     }
@@ -62,12 +62,12 @@ class CourierIntransitInteractorImpl(
         locRepo.clearOrder()
     }
 
-    override suspend fun getOrder(): LocalOrderEntity {
+    override suspend fun getOrder(): LocalOrderEntity? {
         return locRepo.getOrder()
     }
 
     override suspend fun getOrderId(): String {
-        return getOrder().orderId.toString()
+        return getOrder()?.orderId.toString()
     }
 
     override fun observeMapAction(): Flow<CourierMapAction> {

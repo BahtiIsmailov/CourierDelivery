@@ -28,12 +28,11 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
             corutineScope = CoroutineScope(SupervisorJob())
             CoroutineExtension.interval(1000L, TimeUnit.MILLISECONDS)
                 .onEach {
-                    Log.e("subscribeTimer","interval")
                     onTimeConfirmCode(it)
                 }
                 .launchIn(corutineScope!!)
             publishCallState(TimerStateImpl(durationTime, arrivalTime))
-            Log.e("subscribeTimer","onTimeConfirmCode3")
+
         }
     }
 
@@ -49,16 +48,13 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         if (tick >= arrivalTime) {
             timeConfirmCodeDisposable()
             publishCallState(TimerOverStateImpl())
-            Log.e("subscribeTimer","onTimeConfirmCode1")
         } else {
             val downTickSec = arrivalTime - tick.toInt()
             publishCallState(TimerStateImpl(durationTime, downTickSec))
-            Log.e("subscribeTimer","onTimeConfirmCode2")
         }
     }
 
     private fun publishCallState(timerState: TimerState) {
-        Log.e("subscribeTimer","publishCallState")
         timerStates.update{
             timerState
         }
@@ -68,7 +64,6 @@ class TaskTimerRepositoryImpl : TaskTimerRepository {
         durationTime = 0
         arrivalTime = 0
         publishCallState(TimerStateImpl(durationTime, 0))
-        Log.e("subscribeTimer","onTimeConfirmCode4")
         if (corutineScope != null) {
             corutineScope!!.cancel()
             corutineScope = null

@@ -40,7 +40,7 @@ class AppRemoteRepositoryImpl(
         }
     }
 
-    override suspend fun tasksMy(orderId: Int?): LocalComplexOrderEntity {
+    override suspend fun tasksMy(): LocalComplexOrderEntity {
         toLocalOrderEntity()
         autentificatorIntercept.initNameOfMethod("getMyTask")
         return withContext(Dispatchers.IO) {
@@ -55,9 +55,9 @@ class AppRemoteRepositoryImpl(
                     LocalComplexOrderEntity(toLocalOrderEntity(), listOf())
                 }
             } catch (e: Exception) {
-                if (orderId == null) {
-                    error(e)
-                } else
+//                if (orderId == null) {
+//                    error(e)
+//                } else
                     LocalComplexOrderEntity(toLocalOrderEntity().copy(orderId = -2), listOf())
 
             }

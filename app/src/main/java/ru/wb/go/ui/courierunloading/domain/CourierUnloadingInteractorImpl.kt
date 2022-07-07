@@ -117,7 +117,7 @@ class CourierUnloadingInteractorImpl(
 
     override suspend fun getOrderId(): String {
         // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
-        return localRepo.getOrder().orderId.toString()
+        return localRepo.getOrder()?.orderId.toString()
     }
 
 }

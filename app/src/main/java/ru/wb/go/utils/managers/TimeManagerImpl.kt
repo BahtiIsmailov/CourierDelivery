@@ -55,7 +55,7 @@ class TimeManagerImpl(private val worker: SharedWorker, private val timeFormatte
         return timeFormatter.currentDateTimeFormat(DATE_AND_TIME)
     }
 
-    override fun getPassedTime(startTime: String): Long {
+    override fun getPassedTime(startTime: String): Long { // приходит дата и время резерва
         val start =
             timeFormatter.dateTimeWithoutTimezoneFromString(startTime).millis
 

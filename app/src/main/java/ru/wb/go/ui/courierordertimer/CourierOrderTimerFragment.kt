@@ -12,7 +12,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderTimerFragmentBinding
@@ -51,7 +53,6 @@ class CourierOrderTimerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("subscribeTimer","onViewCreated")
         initView()
         initObservable()
         initListeners()
@@ -81,23 +82,15 @@ class CourierOrderTimerFragment : Fragment() {
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
-        viewModel.getOrderId()
     }
 
     private fun initObservable() {
-        viewModel.getOrderId.observe(viewLifecycleOwner) {
-            var textForRouteNumber = requireContext().getText(R.string.route).toString()
-            textForRouteNumber += " ${it.route}"
-            binding.routeTV.text = textForRouteNumber
-            setFragmentResult(
-                DialogInfoFragment.ROUTE_ID,
-                bundleOf("bundleKey" to textForRouteNumber)
-            )
-        }
+
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderTimerInfoUIState.InitOrderInfo -> {
                     with(binding) {
+                        routeTV.text = it.route
                         order.text = it.order
                         name.text = it.name
                         coast.text = it.coast
@@ -114,6 +107,10 @@ class CourierOrderTimerFragment : Fragment() {
                                     R.string.courier_loading_gate
                                 )
                             }
+                        setFragmentResult(
+                            DialogInfoFragment.ROUTE_ID,
+                            bundleOf("bundleKey" to it.route)
+                        )
                     }
                 }
             }

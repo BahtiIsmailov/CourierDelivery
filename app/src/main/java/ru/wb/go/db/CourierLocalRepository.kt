@@ -37,7 +37,7 @@ interface CourierLocalRepository {
     // True Order
     //==============================
 
-    suspend fun getOrder(): LocalOrderEntity
+    suspend fun getOrder(): LocalOrderEntity?
 
     suspend fun deleteOrder()
 
@@ -51,7 +51,7 @@ interface CourierLocalRepository {
 
     suspend fun getOrderId(): String
 
-    suspend fun getOrderGate(): String
+    suspend fun getOrderGate(): String?
 
     suspend fun getOffices(): List<LocalOfficeEntity>
 

@@ -197,7 +197,7 @@ class CourierLoadingInteractorImpl(
     }
 
 
-    override suspend fun getGate(): String {
+    override suspend fun getGate(): String? {
         return localRepo.getOrderGate()
     }
 

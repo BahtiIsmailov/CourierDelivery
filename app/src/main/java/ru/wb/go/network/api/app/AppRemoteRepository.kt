@@ -17,7 +17,7 @@ interface AppRemoteRepository {
 
     suspend fun getCourierDocuments(): CourierDocumentsEntity
 
-    suspend fun tasksMy(orderId:Int?): LocalComplexOrderEntity
+    suspend fun tasksMy(): LocalComplexOrderEntity
 
     suspend fun reserveTask(taskID: String, carNumber: String)
 

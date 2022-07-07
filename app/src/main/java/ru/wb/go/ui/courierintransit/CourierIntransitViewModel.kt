@@ -113,7 +113,7 @@ class CourierIntransitViewModel(
     }
 
     init {
-        getSchedule()
+        //getSchedule()
         onTechEventLog("initIntransit")
         initTime()
         observeMapAction()
@@ -268,7 +268,7 @@ class CourierIntransitViewModel(
 
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
         onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
-        val schedule = getSchedule()
+        //val schedule = getSchedule()
         val items = mutableListOf<BaseIntransitItem>()
         coordinatePoints = mutableListOf()
         val markers = mutableListOf<IntransitMapMarker>()
@@ -291,7 +291,7 @@ class CourierIntransitViewModel(
                     IntransitItemType.Empty -> {
                         item = CourierIntransitEmptyItem(
                             id = index,
-                            timeWork = schedule,//+
+                            timeWork = "пн - вс: 10:00 - 18:00",//+
                             fullAddress = address,
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
@@ -303,7 +303,7 @@ class CourierIntransitViewModel(
                         item = CourierIntransitUnloadingExpectsItem(
                             id = index,
                             fullAddress = address,
-                            timeWork = schedule,
+                            timeWork = "пн - вс: 10:00 - 18:00",
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
                             isSelected = DEFAULT_SELECT_ITEM,
@@ -314,7 +314,7 @@ class CourierIntransitViewModel(
                         item = CourierIntransitUndeliveredAllItem(
                             id = index,
                             fullAddress = address,
-                            timeWork = schedule,
+                            timeWork = "пн - вс: 10:00 - 18:00",
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
                             isSelected = DEFAULT_SELECT_ITEM,
@@ -325,7 +325,7 @@ class CourierIntransitViewModel(
                         item = CourierIntransitCompleteItem(
                             id = index,
                             fullAddress = address,
-                            timeWork = schedule, //+-
+                            timeWork = "пн - вс: 10:00 - 18:00", //+-
                             deliveryCount = deliveredBoxes.toString(),
                             fromCount = countBoxes.toString(),
                             isSelected = DEFAULT_SELECT_ITEM,
@@ -414,10 +414,10 @@ class CourierIntransitViewModel(
                 _isEnableState.value = false
                 val boxes = interactor.getBoxes()
                 val order = interactor.getOrder()
-                val orderId = order.orderId.toString()
+                val orderId = order?.orderId.toString()
                 setLoader(WaitLoader.Wait)
                 interactor.setIntransitTask(orderId, boxes)
-                interactor.completeDelivery(order)
+                interactor.completeDelivery(order!!)
                 completeDeliveryComplete(order.cost)
             } catch (e: Exception) {
                 onTechErrorLog("CompleteDelivery", e)

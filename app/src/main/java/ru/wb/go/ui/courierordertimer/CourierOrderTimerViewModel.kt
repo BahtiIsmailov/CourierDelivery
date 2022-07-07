@@ -44,8 +44,6 @@ class CourierOrderTimerViewModel(
     val navigateToDialogTimeIsOut: LiveData<NavigateToDialogInfo>
         get() = _navigateToDialogTimeIsOut
 
-    private val _getOrderId = MutableLiveData<LocalOrderEntity>()
-    val getOrderId: LiveData<LocalOrderEntity> = _getOrderId
 
     private val _navigateToDialogRefuseOrder = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
@@ -84,30 +82,13 @@ class CourierOrderTimerViewModel(
             }
         }
     }
-//
-//    private fun initOrder() {
-//        addSubscription(
-//            interactor.timerEntity()
-//                .subscribe(
-//                    {
-//                        initOrderInfo(it)
-//                        initTimer(it.reservedDuration, it.reservedAt)
-//                    },
-//                    {
-//                        onTechErrorLog("initOrder", it)
-//                    }
-//                )
-//        )
-//    }
+
     private fun subscribeTimer() {
-    Log.e("subscribeTimer","start")
         interactor.timer
             .onEach {
-                Log.e("subscribeTimer","onEach")
                 onHandleSignUpState(it)
             }
             .catch {
-                Log.e("subscribeTimer","catch")
                 onHandleSignUpError(it)
             }
             .launchIn(viewModelScope)
@@ -148,15 +129,17 @@ class CourierOrderTimerViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(price)
             _orderInfo.value = CourierOrderTimerInfoUIState.InitOrderInfo(
+                resourceProvider.getRoute(route),
                 resourceProvider.getOrder(orderId),
                 name,
                 resourceProvider.getCoast(coast),
                 resourceProvider.getBoxCountAndVolume(boxesCount, volume),
                 resourceProvider.getPvz(countPvz),
-                if (gate.isEmpty()) "-" else gate
+                gate.ifEmpty { "-" }
             )
         }
     }
+
 
     private fun setLoader(state: WaitLoader) {
         _waitLoader.value = state
@@ -207,11 +190,7 @@ class CourierOrderTimerViewModel(
 
     }
 
-    fun getOrderId() {
-        viewModelScope.launch {
-            _getOrderId.value = courierLocalRepository.getOrder()
-        }
-    }
+
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
         updateTimer(duration, downTickSec)

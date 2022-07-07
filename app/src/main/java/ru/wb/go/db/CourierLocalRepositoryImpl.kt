@@ -30,8 +30,8 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun getOrderGate(): String {
-        return getOrder().gate
+    override suspend fun getOrderGate(): String? {
+        return getOrder()?.gate
 
     }
 
@@ -97,7 +97,7 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun getOrder(): LocalOrderEntity {
+    override suspend fun getOrder(): LocalOrderEntity? {
         return withContext(Dispatchers.IO) {
             courierOrderDao.getOrder()
         }
@@ -146,7 +146,7 @@ class CourierLocalRepositoryImpl(
 
     override suspend fun getOrderId(): String {
         return withContext(Dispatchers.IO){
-            getOrder().orderId.toString()
+            getOrder()?.orderId.toString()
         }
     }
 

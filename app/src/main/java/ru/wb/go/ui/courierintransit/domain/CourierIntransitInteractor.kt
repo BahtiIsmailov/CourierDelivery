@@ -24,7 +24,7 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     fun mapState(state: CourierMapState)
 
-    suspend fun getOrder(): LocalOrderEntity
+    suspend fun getOrder(): LocalOrderEntity?
     suspend fun getOrderId(): String
     suspend fun getOfflineBoxes(): List<LocalBoxEntity>
     suspend fun getBoxes(): List<LocalBoxEntity>
