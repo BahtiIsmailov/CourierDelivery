@@ -122,10 +122,12 @@ class CourierWarehousesViewModel(
         viewModelScope.launch {
             try {
                 val response = interactor.getWarehouses()
+                setLoader(WaitLoader.Complete)
                 getWarehousesComplete(response) // сюда пришли данные размер массива
             } catch (e: Exception) {
                 getWarehousesError(e)
             } finally {
+
                 clearFabAndWhList()
             }
         }
@@ -137,7 +139,6 @@ class CourierWarehousesViewModel(
         convertAndSaveItemsPointsMarkers()
         updateMyLocation()
         courierWarehouseComplete()
-        setLoader(WaitLoader.Complete)
     }
 
     private fun getWarehousesError(it: Throwable) {

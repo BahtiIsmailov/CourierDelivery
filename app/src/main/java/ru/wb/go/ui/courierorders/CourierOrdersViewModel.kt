@@ -361,7 +361,6 @@ class CourierOrdersViewModel(
     private fun initOrdersComplete(height: Int) {
         addressLabel()
         convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
-
         setLoader(WaitLoader.Complete)
         ordersComplete(height)
     }

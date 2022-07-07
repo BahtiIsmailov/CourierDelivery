@@ -179,10 +179,8 @@ class CourierLoadingScanViewModel(
                 observeScanProcessComplete(it)
                 interactor.scanRepoHoldStart()
             }
-            .catch {
+            .retryWhen { it, _ ->
                 scanProcessError(it)
-            }
-            .retryWhen { _, _ ->
                 delay(1500)
                 true
             }
