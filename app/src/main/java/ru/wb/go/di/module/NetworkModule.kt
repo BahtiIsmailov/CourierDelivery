@@ -65,15 +65,6 @@ val networkModule = module {
         return ErrorResolutionResourceProviderImpl(context)
     }
 
-//    fun provideErrorResolutionStrategy(
-//        resourceProvider: ErrorResolutionResourceProvider
-//    ): ErrorResolutionStrategy {
-//        return ErrorResolutionStrategyImpl(resourceProvider)
-//    }
-
-//    fun provideCallAdapterFactory(errorResolutionStrategy: ErrorResolutionStrategy): CallAdapter.Factory {
-//        return RxHandlingCallAdapterFactory.create(errorResolutionStrategy)
-//    }
 
     //==============================================================================================
     //certificate store

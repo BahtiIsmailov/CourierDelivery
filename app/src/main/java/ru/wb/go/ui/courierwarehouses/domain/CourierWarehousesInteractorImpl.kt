@@ -5,6 +5,7 @@ import ru.wb.go.app.DELAY_NETWORK_REQUEST_MS
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.AppTasksRepository
+import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.BaseServiceInteractorImpl
@@ -25,7 +26,7 @@ class CourierWarehousesInteractorImpl(
 ) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierWarehousesInteractor {
 
-    override suspend fun getWarehouses(): List<CourierWarehouseLocalEntity> {
+    override suspend fun getWarehouses(): CourierWarehousesResponse {
         return appRemoteRepository.courierWarehouses()
 
     }

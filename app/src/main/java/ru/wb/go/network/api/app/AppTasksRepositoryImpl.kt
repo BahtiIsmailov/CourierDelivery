@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.token.TokenManager
 
 class AppTasksRepositoryImpl(
@@ -13,13 +14,10 @@ class AppTasksRepositoryImpl(
 ) : AppTasksRepository {
 
 
-    override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity> {
+    override suspend fun courierWarehouses(): CourierWarehousesResponse {
         return withContext(Dispatchers.IO) {
             autentificatorIntercept.initNameOfMethod("courierWarehouses")
-            remoteRepo.freeTasksOffices(apiVersion()).data
-                .map {
-                    convertCourierWarehouseEntity(it) // сюда пришел ширина и долгота
-                }
+            remoteRepo.freeTasksOffices(apiVersion())
         }
     }
 

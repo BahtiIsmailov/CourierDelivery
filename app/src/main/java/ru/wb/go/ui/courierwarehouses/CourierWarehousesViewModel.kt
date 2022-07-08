@@ -1,15 +1,18 @@
 package ru.wb.go.ui.courierwarehouses
 
+import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -30,6 +33,7 @@ class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
+    private val courierWarehouseDao: CourierWarehouseDao
 ) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
@@ -57,9 +61,10 @@ class CourierWarehousesViewModel(
     val demoState: LiveData<Boolean>
         get() = _demoState
 
-    private var warehouseEntities = mutableListOf<CourierWarehouseLocalEntity>()
+    private var warehouseEntities = mutableSetOf<CourierWarehouseLocalEntity>()
     private var warehouseItems = mutableListOf<CourierWarehouseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()
+    private var locationDistance = mutableListOf<Float>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private lateinit var myLocation: CoordinatePoint
 
@@ -90,16 +95,12 @@ class CourierWarehousesViewModel(
                     is CourierMapAction.ShowAll -> onShowAllClick()
                     else -> {}
                 }
-        }
+            }
             .catch {
                 observeMapActionError(it)
             }
             .launchIn(viewModelScope)
     }
-
-//    fun clearSubscription(){
-//        viewModelScope.coroutineContext.cancelChildren()
-//    }
 
     private fun observeMapActionError(throwable: Throwable) {
         onTechErrorLog("observeMapActionError", throwable)
@@ -122,24 +123,53 @@ class CourierWarehousesViewModel(
         viewModelScope.launch {
             try {
                 val response = interactor.getWarehouses()
+                val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
-                getWarehousesComplete(response) // сюда пришли данные размер массива
+                getWarehousesComplete(r) // сюда пришли данные размер массива
             } catch (e: Exception) {
                 getWarehousesError(e)
             } finally {
-
                 clearFabAndWhList()
             }
         }
     }
 
+    private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): List<CourierWarehouseLocalEntity> {
+
+        courierWarehouseResponse.data.forEach {
+            warehouseEntities.add(
+                CourierWarehouseLocalEntity(
+                    id = it.id,
+                    name = it.name,
+                    fullAddress = it.fullAddress,
+                    longitude = it.long,
+                    latitude = it.lat,
+                    distanceFromUser = getDistanceFromUser(it.lat,it.long)
+                )
+            )
+        }
+        return warehouseEntities.toList()
+
+    }
+
+
+    private fun getDistanceFromUser(lat:Double,long:Double) : Float {
+        val loc1 = Location("")
+        loc1.latitude = lat
+        loc1.longitude = long
+        val loc2 = Location("")
+        loc2.latitude = myLocation.latitude
+        loc2.longitude = myLocation.longitude
+        return loc1.distanceTo(loc2)
+    }
 
     private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
-        sortedWarehouseEntities(it)// done size warehouses
+        sortedWarehouseEntitiesByCourierLocation(it)
         convertAndSaveItemsPointsMarkers()
         updateMyLocation()
         courierWarehouseComplete()
     }
+
 
     private fun getWarehousesError(it: Throwable) {
         onTechErrorLog("courierWarehouseError", it)
@@ -153,8 +183,8 @@ class CourierWarehousesViewModel(
     }
 
 
-    private fun sortedWarehouseEntities(it: List<CourierWarehouseLocalEntity>) {
-        warehouseEntities = it.sortedBy { warehouse -> warehouse.name }.toMutableList()
+    private fun sortedWarehouseEntitiesByCourierLocation(it: List<CourierWarehouseLocalEntity>) {
+        warehouseEntities = it.sortedBy { warehouse -> warehouse.distanceFromUser }.toMutableSet()
     }
 
     private fun convertAndSaveItemsPointsMarkers() {
@@ -334,7 +364,7 @@ class CourierWarehousesViewModel(
             val index = warehouseItems.indexOfFirst { item -> item.isSelected }
             assert(index != -1)
             clearFabAndWhList()
-            val oldEntity = warehouseEntities[index].copy()
+            val oldEntity = warehouseEntities.toList()[index].copy()
             interactor.clearAndSaveCurrentWarehouses(oldEntity)
             navigateToCourierOrders(oldEntity)
             //clearSubscription()

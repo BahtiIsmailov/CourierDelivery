@@ -208,11 +208,6 @@ class CourierWarehousesFragment :
         viewModel.updateData()// если убрать то не отображается список складов
     }
 
-    override fun onPause() {
-        super.onPause()
-        //viewModel.clearSubscription()
-    }
-
     private fun showDialogInfo(
         errorDialogData: ErrorDialogData
     ) {
