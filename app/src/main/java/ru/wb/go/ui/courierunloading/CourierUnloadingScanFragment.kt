@@ -48,11 +48,11 @@ class CourierUnloadingScanFragment :
     }
 
     private val addressAdapter: RemainBoxAdapter
-    get() = binding.boxDetails.adapter as RemainBoxAdapter
+        get() = binding.boxDetails.adapter as RemainBoxAdapter
 
 
     private val bottomSheetDetails: BottomSheetBehavior<FrameLayout>
-    get() = BottomSheetBehavior.from(binding.detailsGoals)
+        get() = BottomSheetBehavior.from(binding.detailsGoals)
 
     override val viewModel by viewModel<CourierUnloadingScanViewModel> {
         parametersOf(
@@ -358,10 +358,7 @@ class CourierUnloadingScanFragment :
         binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
     }
 
-    override fun onDestroyView() {
-        viewModel.onDestroy()
-        super.onDestroyView()
-    }
+
 
     private fun beepSuccess() {
         // TODO: 11.10.2021 unused

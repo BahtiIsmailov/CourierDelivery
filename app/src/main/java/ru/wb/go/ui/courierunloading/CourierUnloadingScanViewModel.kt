@@ -79,7 +79,6 @@ class CourierUnloadingScanViewModel(
         initTitle()
         initToolbar()
         observeBoxInfoProcessInitState()
-        Log.e("scannerAction","update - observeScanProcess")
         observeScanProcess()
         observeScanProgress()
     }
@@ -146,27 +145,22 @@ class CourierUnloadingScanViewModel(
         _waitLoader.value = state
     }
 
-    fun onDestroy() {
-        //viewModelScope.coroutineContext.cancelChildren()
-        //clearSubscription()
-    }
-
     fun onConfirmScoreUnloadingClick() {
         onTechEventLog("onConfirmScoreUnloadingClick")
         confirmUnloading()
     }
 
     private fun confirmUnloading() {
-        setLoader(WaitLoader.Wait)
+        //setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
+                //setLoader(WaitLoader.Complete)
                 interactor.completeOfficeUnload()
             } catch (e: Exception) {
                 onTechErrorLog("confirmUnload", e)
             }finally {
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
-                setLoader(WaitLoader.Complete)
-//                clearSubscription()
+
             }
         }
     }
