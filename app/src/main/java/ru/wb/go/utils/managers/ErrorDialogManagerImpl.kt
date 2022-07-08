@@ -56,7 +56,7 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                         dlgTag = dlgTag,
                         type = DialogInfoStyle.ERROR.ordinal,
                         title = context.getString(R.string.error_service, error.code()),
-                        message = context.getString(R.string.unknown_generic_error)
+                        message = error.message ?: error.toString()
                     )
                 } else {
                     ErrorDialogData(
