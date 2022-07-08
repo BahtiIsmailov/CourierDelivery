@@ -2,7 +2,8 @@ package ru.wb.go.network.api.app
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import ru.wb.go.utils.RebootDialogManager
+import ru.wb.go.app.App
+import ru.wb.go.utils.RebootApplication
 import java.io.IOException
 
 class AutentificatorIntercept(
@@ -23,11 +24,9 @@ class AutentificatorIntercept(
         val response: Response = chain.proceed(original)
 
         if (response.code == 409) {
-            RebootDialogManager.showRebootDialog(409)
+             RebootApplication.doRestart(App.getContext())
         }
-        if (response.code >= 500){
-            RebootDialogManager.showRebootDialog(500)
-        }
+
         doOnSubscribe(nameOfMethod)
 
         if (response.isSuccessful) {

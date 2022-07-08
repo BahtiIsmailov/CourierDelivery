@@ -9,10 +9,8 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity.LEFT
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
-import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.*
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -40,7 +38,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
-import ru.wb.go.databinding.AppLoaderFragmentBinding
 import ru.wb.go.databinding.SplashActivityBinding
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.courierdatatype.CourierDataTypeFragmentDirections
@@ -48,9 +45,7 @@ import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment.Companion.DIALOG_CONFIRM_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
-import ru.wb.go.ui.dialogs.RebootDialog
 import ru.wb.go.ui.support.SupportFragment
-import ru.wb.go.utils.RebootDialogManager
 import ru.wb.go.utils.SoftKeyboard
 import kotlin.system.exitProcess
 
@@ -143,13 +138,6 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
 
     private fun initObserver() {
-        lifecycleScope.launchWhenStarted {
-            RebootDialogManager.observerShowRebootDialog()
-                .onEach {
-                    RebootDialog.newInstance(it).show(supportFragmentManager, RebootDialog.TAG)
-                }
-                .launchIn(this)
-        }
 
         viewModel.networkState.observe(this) {
 

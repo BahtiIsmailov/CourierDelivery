@@ -50,6 +50,23 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
                     message = (error.message ?: error.toString()) + msg
                 )
             }
+            is HttpException -> {
+                if (error.code() >= 500) {
+                    ErrorDialogData(
+                        dlgTag = dlgTag,
+                        type = DialogInfoStyle.ERROR.ordinal,
+                        title = context.getString(R.string.error_service, error.code()),
+                        message = context.getString(R.string.unknown_generic_error)
+                    )
+                } else {
+                    ErrorDialogData(
+                        dlgTag = dlgTag,
+                        type = DialogInfoStyle.ERROR.ordinal,
+                        title = context.getString(R.string.error_title),
+                        message = (error.message ?: error.toString())
+                    )
+                }
+            }
             else -> {
                 ErrorDialogData(
                     dlgTag = dlgTag,
@@ -60,16 +77,22 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
 
             }
         }
-        if (!isIgnoreException(error)) {
-            errorData.postValue(data)
-        }
+        //if (!isIgnoreException(error)) {
+        errorData.postValue(data)
+        //}
     }
+
+
 }
 
-private fun isIgnoreException(exception: Throwable):Boolean{
-    return ((exception is HttpException) && (exception.code() == 409) && (exception.code() >= 500))
-}
+//private fun isIgnoreException(exception: Throwable):Boolean{
+//    return ((exception is HttpException) && (exception.code() == 409 || exception.code() >= 500))
+//}
+
+
 data class ErrorDialogData(
     val dlgTag: String,
-    val type: Int, val title: String, val message: String
+    val type: Int,
+    val title: String,
+    val message: String
 )

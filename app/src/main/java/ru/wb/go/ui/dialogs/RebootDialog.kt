@@ -2,11 +2,14 @@ package ru.wb.go.ui.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
+import android.os.Message
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import org.koin.core.instance.getArguments
 import ru.wb.go.R
 import ru.wb.go.utils.RebootApplication
 
@@ -32,9 +35,9 @@ class RebootDialog : DialogFragment(){
                 dismiss()
                 RebootApplication.doRestart(requireContext())
             }
-        }else if (globalCode!! >= 500){
+        }else if (globalCode >= 500){
             title.text = requireContext().getString(R.string.error_service, globalCode)
-            message.text = requireContext().getString(R.string.unknown_generic_error)
+            message.text = this.message ?: requireContext().getString(R.string.unknown_generic_error)
             positive.text = requireContext().getString(R.string.courier_expects_positive)
             positive.setOnClickListener {
                 dismiss()
@@ -48,11 +51,15 @@ class RebootDialog : DialogFragment(){
     }
 
     companion object{
-        fun newInstance(code:Int):RebootDialog{
-             globalCode = code
-             return RebootDialog()
+        fun newInstance(code:Int,message: String?):RebootDialog{
+             return RebootDialog().apply {
+                 arguments = bundleOf("globalCode" to code, "message" to message)
+             }
         }
         const val TAG = "reboot_dialog"
-        var globalCode:Int? = null
     }
+    private val globalCode:Int
+        get() = requireArguments().getInt("globalCode")
+    val message:String?
+        get() = requireArguments().getString("message")
 }

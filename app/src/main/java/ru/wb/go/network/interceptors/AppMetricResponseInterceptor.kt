@@ -3,7 +3,8 @@ package ru.wb.go.network.interceptors
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import ru.wb.go.utils.RebootDialogManager
+import ru.wb.go.app.App
+import ru.wb.go.utils.RebootApplication
 import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -15,12 +16,10 @@ class AppMetricResponseInterceptor() : Interceptor {
         val request: Request = chain.request()
         val response: Response = chain.proceed(request)
 
-        if (response.code == 409) {
-            RebootDialogManager.showRebootDialog(409)
+        if (response.code == 409 ) {
+            RebootApplication.doRestart(App.getContext())
         }
-        if (response.code >= 500){
-            RebootDialogManager.showRebootDialog(500)
-        }
+
         val url = request.url.toString()
         val singleApiMethod = "<-" + getSingleApiMethod(url)
         val responseBody = response.body!!
