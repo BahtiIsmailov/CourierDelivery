@@ -64,9 +64,13 @@ class CourierWarehousesViewModel(
     private var warehouseEntities = mutableSetOf<CourierWarehouseLocalEntity>()
     private var warehouseItems = mutableListOf<CourierWarehouseItem>()
     private var mapMarkers = mutableListOf<CourierMapMarker>()
-    private var locationDistance = mutableListOf<Float>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
-    private lateinit var myLocation: CoordinatePoint
+    private var myLocation: CoordinatePoint? = null
+        get() = if (field == null){
+                CoordinatePoint(55.751244, 37.618423)
+            }else{
+                field
+            }
 
 
     private var whSelectedId: Int? = null
@@ -135,7 +139,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): List<CourierWarehouseLocalEntity> {
-
         courierWarehouseResponse.data.forEach {
             warehouseEntities.add(
                 CourierWarehouseLocalEntity(
@@ -158,8 +161,8 @@ class CourierWarehousesViewModel(
         loc1.latitude = lat
         loc1.longitude = long
         val loc2 = Location("")
-        loc2.latitude = myLocation.latitude
-        loc2.longitude = myLocation.longitude
+        loc2.latitude = myLocation!!.latitude
+        loc2.longitude = myLocation!!.longitude
         return loc1.distanceTo(loc2)
     }
 
@@ -297,7 +300,7 @@ class CourierWarehousesViewModel(
 
     private fun updateMarkers() {
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
-        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+        interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation!!))
     }
 
     fun onItemClick(index: Int) {
@@ -320,7 +323,7 @@ class CourierWarehousesViewModel(
                 resourceProvider.getWarehouseMapIcon()
             }
         }
-        updateMarkersWithMyLocation(myLocation)
+        updateMarkersWithMyLocation(myLocation!!)
         if (isSelected) {
             with(mapMarkers[clickItemIndex].point) {
                 val coordinatePoint = CoordinatePoint(lat, long)
@@ -367,13 +370,12 @@ class CourierWarehousesViewModel(
             val oldEntity = warehouseEntities.toList()[index].copy()
             interactor.clearAndSaveCurrentWarehouses(oldEntity)
             navigateToCourierOrders(oldEntity)
-            //clearSubscription()
         }
     }
 
 
     private fun onShowAllClick() {
-        zoomMarkersFromBoundingBox(myLocation)
+        zoomMarkersFromBoundingBox(myLocation!!)
     }
 
     private fun clearFabAndWhList() {
