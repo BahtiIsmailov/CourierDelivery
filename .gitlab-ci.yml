@@ -1,46 +1,75 @@
-stages:
-  - build sdk
-  - build apk
-  - cleanup
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Android.gitlab-ci.yml
 
-sdk:
-  stage: build sdk
-  script:
-    - docker build --file dockerfiles/sdk --label intermediate --label project=${CI_PROJECT_NAME} --label version=${CI_PIPELINE_ID}-${CI_COMMIT_REF_SLUG} --tag ${CI_REGISTRY_IMAGE}/sdk:${CI_PIPELINE_ID}-${CI_COMMIT_REF_SLUG} .
+# Read more about this script on this blog post https://about.gitlab.com/2018/10/24/setting-up-gitlab-ci-for-android-projects/, by Jason Lenny
+# If you are interested in using Android with FastLane for publishing take a look at the Android-Fastlane template.
 
-.apk_build_common: &apk_build_common
-  stage: build apk
-  image:
-    name: ${CI_REGISTRY_IMAGE}/sdk:${CI_PIPELINE_ID}-${CI_COMMIT_REF_SLUG}
-  variables:
-    GRADLE_USER_HOME: /storage/.gradle
+image: openjdk:11-jdk
+
+variables:
+
+  # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
+  # It should match compileSdkVersion.
+  ANDROID_COMPILE_SDK: "30"
+
+  # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
+  # It should match buildToolsVersion.
+  ANDROID_BUILD_TOOLS: "30.0.3"
+
+  # It's what version of the command line tools we're going to download from the official site.
+  # Official Site-> https://developer.android.com/studio/index.html
+  # There, look down below at the cli tools only, sdk tools package is of format:
+  #        commandlinetools-os_type-ANDROID_SDK_TOOLS_latest.zip
+  # when the script was last modified for latest compileSdkVersion, it was which is written down below
+  ANDROID_SDK_TOOLS: "7583922"
+
+# Packages installation before running script
+before_script:
+  - apt-get --quiet update --yes
+  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+
+  # Setup path as ANDROID_HOME for moving/exporting the downloaded sdk into it
+  - export ANDROID_HOME="${PWD}/android-home"
+  # Create a new directory at specified location
+  - install -d $ANDROID_HOME
+  # Here we are installing androidSDK tools from official source,
+  # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
+  # after that unzipping those tools and
+  # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
+  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+  # move to the archive at ANDROID_HOME
+  - pushd $ANDROID_HOME
+  - unzip -d cmdline-tools cmdline-tools.zip
+  - pushd cmdline-tools
+  # since commandline tools version 7583922 the root folder is named "cmdline-tools" so we rename it if necessary
+  - mv cmdline-tools tools || true
+  - popd
+  - popd
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+
+  # Nothing fancy here, just checking sdkManager version
+  - sdkmanager --version
+
+  # use yes to accept all licenses
+  - yes | sdkmanager --licenses || true
+  - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
+  - sdkmanager "platform-tools"
+  - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+
+  # Not necessary, but just for surity
+  - chmod +x ./gradlew
+
+# Make Project
+assembleDebug:
+  interruptible: true
+  stage: build
   script:
-    - echo ${JKS_RELEASE} | base64 -d > private/release.jks
-    - bash ./gradlew assemble${CI_JOB_NAME}
+    - ./gradlew assembleDebug
   artifacts:
-    name: apk-${CI_JOB_NAME}-${CI_PIPELINE_ID}-${CI_COMMIT_REF_SLUG}
     paths:
-      - apk/
+      - app/build/outputs/
 
-debug:
-  <<: *apk_build_common
-  only:
-    refs:
-      - /^dev$/
 
-release:
-  <<: *apk_build_common
-  only:
-    refs:
-      - /^master$/
 
-images:
-  stage: cleanup
-  tags:
-    - docker-prune
-  variables:
-    GIT_STRATEGY: none
-  when: always
-  script:
-    - apk add --no-cache coreutils
-    - docker image prune -af --filter label=project=${CI_PROJECT_NAME} --filter until=$(date +%Y-%m-%d -d "-3 day")
