@@ -76,8 +76,8 @@ assembleRelease:
   stage: build
   variables: 
     script:
-      - echo $WBGO | base64 -d >> private/keystore.jks
-      - echo "${WBGO}"
+      - "echo $WBGO | base64 -d >> private/keystore.jks"
+      - 'echo "$WBGO"'
   script:
     - ./gradlew assembleRelease
   artifacts:
