@@ -76,12 +76,11 @@ assembleRelease:
   stage: build
   variables:
     script:
-      - echo "$WBGO" 
-      - echo "$WBGO" | base64 -d >> keystore.jks # вызывает пользовательскую переменную типа 'env_var'
+      - echo $WBGO | base64 -d >> private/keystore.jks
+      - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
   script:
     - ./gradlew assembleRelease
   artifacts:
     paths:
       - app/build/outputs/
-    
-
+  
