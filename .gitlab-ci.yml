@@ -75,10 +75,8 @@ assembleRelease:
   interruptible: true
   stage: build
   variables:
-    stage: build
     script:
       - echo $WBGO | base64 -d >> private/keystore.jks
-      - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
   script:
     - ./gradlew assembleRelease
   artifacts:
