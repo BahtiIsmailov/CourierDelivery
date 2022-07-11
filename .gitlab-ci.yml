@@ -75,9 +75,9 @@ assembleRelease:
   interruptible: true
   stage: build
   variables:
-    script:
-        - echo $WBGO | base64 -d >> private/keystore.jks
-        - echo "$WBGO"
+      script:
+          - echo $WBGO | base64 -d >> private / keystore.jks
+          - echo "$WBGO"
   script:
     - ./gradlew assembleRelease
   artifacts:
