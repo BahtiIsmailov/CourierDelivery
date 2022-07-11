@@ -75,8 +75,9 @@ assembleRelease:
   interruptible: true
   stage: build
   variables:
+    REVIEW_PATH: "/private"
     script:
-      - echo $WBGO | base64 -d >> private/keystore.jks
+      - echo $WBGO | base64 -d >> keystore.jks
   script:
     - ./gradlew assembleRelease
   artifacts:
