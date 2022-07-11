@@ -74,7 +74,7 @@ assembleDebug:
 
 assembleRelease:
   interruptible: true
-  variable: $WBGO
+  variables: $WBGO
   stage: build
   script:
     - ./gradlew assembleRelease
