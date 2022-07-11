@@ -16,7 +16,7 @@ class AppInteractorImpl(
 
     }
 
-    override suspend fun exitAuth() {
+    override fun exitAuth() {
         authRemoteRepository.clearCurrentUser()
     }
 
