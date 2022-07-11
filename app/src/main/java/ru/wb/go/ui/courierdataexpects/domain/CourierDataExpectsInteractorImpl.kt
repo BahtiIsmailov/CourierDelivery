@@ -28,11 +28,11 @@ class CourierDataExpectsInteractorImpl(
 
     override suspend fun isRegisteredStatus(): String {
         return if (userManager.courierDocumentsEntity() == null) {
-            val refreshResult = refreshTokenRepository.doRefreshToken() // сюда приходит нетворк он майн срэд эксепшн
-            val resource = tokenManager.resources()// сюда приходит NEED_SEND_COURIER_DOCUMENTS
+            val refreshResult = refreshTokenRepository.doRefreshToken()
+            val resource = tokenManager.resources()
             when {
-                refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN // сначало срабатывает тут и должно тут и оставваться
-                resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> NEED_SEND_COURIER_DOCUMENTS // потом прыгает сюда и дальше
+                refreshResult == RefreshResult.TokenInvalid -> INVALID_TOKEN
+                resource.contains(NEED_SEND_COURIER_DOCUMENTS) -> NEED_SEND_COURIER_DOCUMENTS
                 resource.contains(NEED_CORRECT_COURIER_DOCUMENTS) -> NEED_CORRECT_COURIER_DOCUMENTS
                 resource.contains(NEED_APPROVE_COURIER_DOCUMENTS) -> NEED_APPROVE_COURIER_DOCUMENTS
                 else -> ""
