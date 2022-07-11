@@ -61,12 +61,7 @@ before_script:
   # Not necessary, but just for surity
   - chmod +x ./gradlew
 
-variable:
-  stage: build
-  script:
-    - echo $WBGO | base64 -d >> private/keystore.jks
-    - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
-    
+
 # Make Project
 assembleDebug:
   interruptible: true
@@ -85,4 +80,10 @@ assembleRelease:
   artifacts:
     paths:
       - app/build/outputs/
+
+variable:
+  stage: build
+  script:
+    - echo $WBGO | base64 -d >> private/keystore.jks
+    - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
   
