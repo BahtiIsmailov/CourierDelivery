@@ -32,11 +32,11 @@ abstract class ServicesViewModel(
             .onEach {
                 _networkState.value = it
             }
-            .catch {  }
+            .catch {
+                logException(it,"observeNetworkState")
+            }
             .launchIn(viewModelScope)
     }
-
-
 
     private fun fetchVersionApp() {
         _versionApp.value = resourceProvider.getVersionApp(serviceInteractor.versionApp())

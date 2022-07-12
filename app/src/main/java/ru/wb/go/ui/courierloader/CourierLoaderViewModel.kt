@@ -65,6 +65,7 @@ class CourierLoaderViewModel(
                 val response = remoteRepo.appVersion()
                 appVersionUpdateComplete(response)
             } catch (e: Exception) {
+                logException(e,"initVersion")
                 appVersionUpdateError(e)
             }
         }
@@ -136,6 +137,7 @@ class CourierLoaderViewModel(
                 val res = solveJobInitialState(orderFromRemote, order)
                 _navigationDrawerState.value = res
             } catch (e: Exception) {
+                logException(e,"toApp")
                 onTechErrorLog("getMyTask", e)
                 onRxError(e)
             }
@@ -228,6 +230,7 @@ private fun toRegistration(phone: String) {
             _navigationDrawerState.value = responseState
 
         } catch (e: Exception) {
+            logException(e,"toRegistration")
             onTechErrorLog("getUserDocs", e)
             onRxError(e)
         }

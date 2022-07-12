@@ -7,7 +7,6 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
-import android.media.browse.MediaBrowser
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -50,7 +49,6 @@ import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
-import java.sql.Connection
 
 
 class CourierMapFragment : Fragment()  {

@@ -47,7 +47,7 @@ class SettingsViewModel(
                 _toolbarNetworkState.value = it
             }
             .catch {
-
+                logException(it,"observeNetworkState")
             }
             .launchIn(viewModelScope)
     }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -100,6 +99,7 @@ class CourierUnloadingScanViewModel(
                     mapInitScanProcess(interactor.getCurrentOffice(parameters.officeId))
 
             } catch (e: Exception) {
+                logException(e,"observeBoxInfoProcessInitState")
                 onTechErrorLog("observeInitScanProcessError", e)
             }
         }
@@ -128,6 +128,7 @@ class CourierUnloadingScanViewModel(
                 _toolbarLabelState.value =
                     Label(interactor.getCurrentOffice(parameters.officeId).officeName)
             } catch (e: Exception) {
+                logException(e,"initToolbar")
                 onTechErrorLog("initToolbar", e)
             }
         }
@@ -151,12 +152,11 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun confirmUnloading() {
-        //setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
-                //setLoader(WaitLoader.Complete)
                 interactor.completeOfficeUnload()
             } catch (e: Exception) {
+                logException(e,"confirmUnloading")
                 onTechErrorLog("confirmUnload", e)
             }finally {
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
@@ -177,6 +177,7 @@ class CourierUnloadingScanViewModel(
 
             }
             .catch {
+                logException(it,"observeScanProcess")
                 onTechErrorLog("observeScanProcessError", it)
                 errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
             }
@@ -303,6 +304,7 @@ class CourierUnloadingScanViewModel(
                 }
             }
             .catch {
+                logException(it,"observeScanProgress")
                 onTechErrorLog("observeScanProcessError", it)
             }
             .launchIn(viewModelScope)
@@ -318,7 +320,7 @@ class CourierUnloadingScanViewModel(
                     fillRemainBoxList(it)
                 }
             } catch (e: Exception) {
-
+                logException(e,"onListClicked")
             }
         }
     }
@@ -348,6 +350,7 @@ class CourierUnloadingScanViewModel(
                     showUnloadingScoreDialog(it)
                 }
             } catch (e: Exception) {
+                logException(e,"onCompleteUnloadClick")
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
                 onTechErrorLog("readUnloadingBoxCounterError", e)
             }

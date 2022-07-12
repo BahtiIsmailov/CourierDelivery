@@ -3,7 +3,6 @@ package ru.wb.go.ui.courierbilling
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
@@ -75,6 +74,7 @@ class CourierBillingViewModel(
             try {
                 billingComplete(interactor.getBillingInfo())
             }catch (e:Exception){
+                logException(e,"initBalanceAndTransactions")
                 onTechErrorLog("billingError", e)
                 setLoader(WaitLoader.Complete)
                 _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
