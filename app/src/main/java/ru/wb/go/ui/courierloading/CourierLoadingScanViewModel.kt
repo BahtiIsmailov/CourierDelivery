@@ -10,10 +10,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import retrofit2.Response
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
-import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
@@ -109,6 +106,7 @@ class CourierLoadingScanViewModel(
                     CourierLoadingScanTimerState.Info(response?.ifEmpty { "-" }?:"")
 
             } catch (e: Exception) {
+                logException(e,"getGate")
                 _orderTimer.value = CourierLoadingScanTimerState.Info("-")
             }
         }
@@ -120,6 +118,7 @@ class CourierLoadingScanViewModel(
                 observeTimerComplete(it)
             }
             .catch {
+                logException(it,"observeTimer")
                 observeTimerError(it)
             }
             .launchIn(viewModelScope)
@@ -142,6 +141,7 @@ class CourierLoadingScanViewModel(
                 Log.e("observeInitScanProcess","$response")
                 initScanProcessComplete(response)
             } catch (e: Exception) {
+                logException(e,"observeInitScanProcess")
                 initScanProcessError(e)
                 Log.e("observeInitScanProcess","$e")
             }
@@ -264,6 +264,7 @@ class CourierLoadingScanViewModel(
                 setLoader(WaitLoader.Complete)
                 confirmLoadingBoxesComplete(response)
             } catch (e: Exception) {
+                logException(e,"onConfirmLoadingClick")
                 setLoader(WaitLoader.Complete)
                 onTechErrorLog("confirmLoadingBoxesError", e)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
@@ -319,7 +320,7 @@ class CourierLoadingScanViewModel(
                     )
 
             } catch (e: Exception) {
-
+                logException(e,"onCounterBoxClicked")
             }
         }
 
@@ -378,6 +379,7 @@ class CourierLoadingScanViewModel(
                 toWarehouse()
                 _timeOut.value = false
             } catch (e: Exception) {
+                logException(e,"deleteTask")
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
             }

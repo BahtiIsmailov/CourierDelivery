@@ -1,7 +1,6 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -101,6 +100,7 @@ class CourierWarehousesViewModel(
                 }
             }
             .catch {
+                logException(it,"observeMapAction")
                 observeMapActionError(it)
             }
             .launchIn(viewModelScope)
@@ -131,6 +131,7 @@ class CourierWarehousesViewModel(
                 setLoader(WaitLoader.Complete)
                 getWarehousesComplete(r) // сюда пришли данные размер массива
             } catch (e: Exception) {
+                logException(e,"getWarehouses")
                 getWarehousesError(e)
             } finally {
                 clearFabAndWhList()

@@ -50,7 +50,9 @@ class NumberPhoneViewModel(
             .onEach {
                 _toolbarNetworkState.value = it
             }
-            .catch {  }
+            .catch {
+                logException(it,"observeNetworkState")
+            }
             .launchIn(viewModelScope)
     }
 //        if (CheckInternet.checkConnection(App.getContext()!!)){
@@ -84,6 +86,7 @@ class NumberPhoneViewModel(
                 _stateUI.value = it
             }
             .catch {
+                logException(it,"onNumberObservableClicked")
                 onTechErrorLog("onNumberObservableClicked", it)
             }
             .launchIn(viewModelScope)
@@ -126,6 +129,7 @@ class NumberPhoneViewModel(
                 interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
                 fetchPhoneNumberComplete(phone)
             } catch (e: Exception) {
+                logException(e,"fetchPhoneNumber")
                 fetchPhoneNumberError(e, phone)
             }
         }

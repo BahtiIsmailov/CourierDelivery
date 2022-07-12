@@ -3,7 +3,6 @@ package ru.wb.go.network.api.app
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courier.CourierOrderEntity
-import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.token.TokenManager
 

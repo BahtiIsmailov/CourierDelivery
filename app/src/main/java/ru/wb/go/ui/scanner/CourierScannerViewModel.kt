@@ -2,7 +2,6 @@ package ru.wb.go.ui.scanner
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.wb.go.app.AppPreffsKeys

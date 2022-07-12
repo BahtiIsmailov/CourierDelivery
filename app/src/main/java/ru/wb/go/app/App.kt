@@ -7,7 +7,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import ru.wb.go.BuildConfig
 import ru.wb.go.di.module.*
 import ru.wb.go.network.monitor.NetworkMonitor
 
@@ -85,7 +84,7 @@ companion object{
 //        YandexMetrica.enableActivityAutoTracking(context as Application)
 //    }
 
-    private fun getYandexMetricKey() =
-        if (BuildConfig.DEBUG) YANDEX_METRIC_DEBUG_KEY else YANDEX_METRIC_KEY
+//    private fun getYandexMetricKey() =
+//        if (BuildConfig.DEBUG) YANDEX_METRIC_DEBUG_KEY else YANDEX_METRIC_KEY
 
 }

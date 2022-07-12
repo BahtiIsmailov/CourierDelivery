@@ -2,14 +2,12 @@ package ru.wb.go.ui.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
-import android.os.Message
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import org.koin.core.instance.getArguments
 import ru.wb.go.R
 import ru.wb.go.utils.RebootApplication
 

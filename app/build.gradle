@@ -17,9 +17,7 @@ android {
             keyAlias System.getenv("KEY_ALIAS")
             keyPassword System.getenv("keyPassword")
         }
-
     }
-
 
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
@@ -103,6 +101,7 @@ android {
 //            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
+            //signingConfig signingConfigs.release
             matchingFallbacks = ['release']
             ndk{
                 debugSymbolLevel 'FULL'
@@ -113,6 +112,7 @@ android {
             //FIXME необходмио внедрить тестовую информацию
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             matchingFallbacks = ['release']
+            //signingConfig signingConfigs.release
         }
         debug {
 //            minifyEnabled true
@@ -233,7 +233,7 @@ dependencies {
     //firebase
     implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
     //coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
