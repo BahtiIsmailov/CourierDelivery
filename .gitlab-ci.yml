@@ -62,18 +62,18 @@ before_script:
   # Not necessary, but just for surity
   - chmod +x ./gradlew
 stages:
-  - build
+  #- build
   - release
 
 # Make Project
-assembleDebug:
-  interruptible: true
-  stage: build
-  script:
-    - ./gradlew assembleDebug
-  artifacts:
-    paths:
-      - $OUTPUT_DIR
+#assembleDebug:
+ # interruptible: true
+  #stage: build
+  #script:
+   # - ./gradlew assembleDebug
+  #artifacts:
+   # paths:
+    #  - $OUTPUT_DIR
 
 assembleRelease:
   interruptible: true
@@ -81,9 +81,6 @@ assembleRelease:
   script:
     - echo $WBGO | base64 -d > keystore.jks
     - ./gradlew assembleRelease
-    - Pandroid.injected.signing.store.password=$storePassword
-    - Pandroid.injected.signing.key.alias=$KEY_ALIAS
-    - Pandroid.injected.signing.key.password=$keyPassword
   artifacts:
     paths:
       - $OUTPUT_DIR
