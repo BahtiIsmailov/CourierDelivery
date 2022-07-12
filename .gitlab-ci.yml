@@ -68,18 +68,24 @@ assembleDebug:
   interruptible: true
   stage: build
   script:
-    - ./gradlew assembleDebug
+    - ./gradlew clean assembleDebug
+  retry: 2 
   artifacts:
     paths:
       - $OUTPUT_DIR
+  only:
+    - dev
 
 assembleRelease:
   interruptible: true
   stage: release
   script:
     - echo $WBGO | base64 -d > keystore.jks
-    - ./gradlew assembleRelease
+    - ./gradlew clean assembleRelease
+  retry: 2
   artifacts:
     paths:
       - $OUTPUT_DIR
+  only:
+    - dev
   
