@@ -76,7 +76,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - developer
+    - dev
 
 assembleRelease:
   interruptible: true
@@ -89,5 +89,5 @@ assembleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - developer
+    - dev
   
