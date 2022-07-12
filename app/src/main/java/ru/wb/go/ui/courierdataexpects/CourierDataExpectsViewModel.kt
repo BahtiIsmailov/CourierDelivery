@@ -55,6 +55,7 @@ class CouriersCompleteRegistrationViewModel(
                 interactorData.saveRepeatCourierDocuments()
                 _progressState.value = CourierDataExpectsProgressState.Complete
             } catch (e: Exception) {
+                logException(e,"onFormChanges")
                 _progressState.value = CourierDataExpectsProgressState.Complete
             }
         }
@@ -69,6 +70,7 @@ class CouriersCompleteRegistrationViewModel(
                 val result = interactorData.isRegisteredStatus()
                 isRegisteredStatusComplete(result)
             } catch (e: Exception) {
+                logException(e,"onUpdateStatusClick")
                 isRegisteredStatusError(e)
             }
         }
@@ -115,6 +117,7 @@ class CouriersCompleteRegistrationViewModel(
                 val response = appRemoteRepository.getCourierDocuments()
                 checkCorrectCourierDocumentsComplete(response)
             } catch (e: Exception) {
+                logException(e,"checkCorrectCourierDocuments")
                 errorDialogManager.showErrorDialog(e, _showDialogInfo)
                 _progressState.value = CourierDataExpectsProgressState.Complete
             }

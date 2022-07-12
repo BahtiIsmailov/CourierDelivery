@@ -100,6 +100,7 @@ class CourierBillingAccountSelectorViewModel(
                     )
 
             } catch (e: Exception) {
+                logException(e,"initAccounts")
                 onTechErrorLog("getBillingAccounts", e)
                 errorDialogManager.showErrorDialog(e, _errorDialogState)
             }
@@ -167,7 +168,9 @@ class CourierBillingAccountSelectorViewModel(
             .distinctUntilChanged()
             .map { mapAction(it) }
             .onEach { _formUIState.value = it }
-            .catch { LogUtils { logDebugApp(it.toString()) } }
+            .catch {
+                logException(it,"onFormChanges")
+                LogUtils { logDebugApp(it.toString()) } }
             .launchIn(viewModelScope)
     }
 
@@ -256,6 +259,7 @@ class CourierBillingAccountSelectorViewModel(
                 interactor.payments(amountFromText, paymentEntity)
                 paymentsComplete(amountFromText)
             } catch (e: Exception) {
+                logException(e,"onNextCompleteClick")
                 onTechErrorLog("requestPayout", e)
                 errorDialogManager.showErrorDialog(e, _errorDialogState)
             }

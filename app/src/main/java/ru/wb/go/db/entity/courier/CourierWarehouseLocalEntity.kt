@@ -3,7 +3,6 @@ package ru.wb.go.db.entity.courier
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.osmdroid.util.Distance
 
 @Entity
 data class CourierWarehouseLocalEntity(

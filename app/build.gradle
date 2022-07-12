@@ -17,9 +17,7 @@ android {
             keyAlias System.getenv("KEY_ALIAS")
             keyPassword System.getenv("keyPassword")
         }
-
     }
-
 
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
@@ -103,7 +101,7 @@ android {
 //            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
-            signingConfig signingConfigs.release
+            //signingConfig signingConfigs.release
             matchingFallbacks = ['release']
             ndk{
                 debugSymbolLevel 'FULL'
@@ -113,8 +111,8 @@ android {
             manifestPlaceholders = [appName: "WB Go"]
             //FIXME необходмио внедрить тестовую информацию
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
             matchingFallbacks = ['release']
+            //signingConfig signingConfigs.release
         }
         debug {
 //            minifyEnabled true

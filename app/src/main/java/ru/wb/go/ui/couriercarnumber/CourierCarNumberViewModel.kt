@@ -96,6 +96,7 @@ class CourierCarNumberViewModel(
                 _stateUI.value = it
             }
             .catch {
+                logException(it,"onNumberObservableClicked")
                 onTechErrorLog("onNumberObservableClicked", it)
             }
             .launchIn(viewModelScope)
@@ -188,6 +189,7 @@ class CourierCarNumberViewModel(
             )
             fetchCarNumberComplete()
         } catch (e: Exception) {
+            logException(e,"putCarTypeAndNumber")
             fetchCarNumberError(e)
         }
 

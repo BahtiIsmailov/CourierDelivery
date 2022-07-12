@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.adapters.BaseAdapterDelegate
 import ru.wb.go.databinding.CourierIntransitDelegateCompleteLayoutBinding
-import ru.wb.go.databinding.CourierIntransitDelegateEmptyLayoutBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
 

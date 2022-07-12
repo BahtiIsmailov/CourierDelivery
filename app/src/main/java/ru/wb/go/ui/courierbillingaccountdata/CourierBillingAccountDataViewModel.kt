@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierbillingaccountdata
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -196,6 +195,7 @@ class CourierBillingAccountDataViewModel(
                 CourierBillingAccountDataUIState.Complete(it.name, focusChange.type)
             }
             .catch {
+                logException(it,"checkTextBikWrapper")
                 _bicProgressState.value = false
                 _bankFindState.value = BankFind("Введите БИК", "")
                 bankEntity = null
@@ -225,6 +225,7 @@ class CourierBillingAccountDataViewModel(
                 _formUIState.value = it
             }
             .catch {
+                logException(it,"onFormChanges")
                 LogUtils { logDebugApp(it.toString()) } // сразу упал когда я нажал на бик и попытался ввести первую цифру
             }
             .launchIn(viewModelScope)
@@ -295,6 +296,7 @@ class CourierBillingAccountDataViewModel(
                 interactor.saveBillingAccounts(newData)
                 saveAccountComplete()
             } catch (e: Exception) {
+                logException(e,"onSaveAccountClick")
                 setButtonAndLoaderState(false)
                 errorDialogManager.showErrorDialog(e, _navigateToMessageState)
             }
@@ -341,6 +343,7 @@ class CourierBillingAccountDataViewModel(
                 interactor.saveBillingAccounts(newList)
                 removeAccountComplete()
             } catch (e: Exception) {
+                logException(e,"removeConfirmed")
                 setButtonAndLoaderState(false)
                 errorDialogManager.showErrorDialog(e, _navigateToMessageState)
             }

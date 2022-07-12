@@ -110,6 +110,7 @@ class UserFormViewModel(
                 _formUIState.value = it
             }
             .catch {
+                logException(it,"onFormChanges")
                 LogUtils { logDebugApp(it.toString()) }
             }
             .launchIn(viewModelScope)
@@ -162,6 +163,7 @@ class UserFormViewModel(
                 interactor.saveCourierDocuments(courierDocumentsEntity)
                 couriersFormComplete()
             }catch (e:Exception){
+                logException(e,"onNextClick")
                 couriersFormError(e)
             }
         }

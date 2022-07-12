@@ -64,7 +64,9 @@ class AppViewModel(
             .onEach {
                 _networkState.value = it
             }
-            .catch {  }
+            .catch {
+                logException(it,"fetchNetworkState")
+            }
             .launchIn(viewModelScope)
     }
 

@@ -136,6 +136,7 @@ class CourierIntransitViewModel(
                 initOfficesComplete(it)
             }
             .catch {
+                logException(it,"observeOffices")
                 onTechErrorLog("Get Offices", it)
                 errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
             }
@@ -150,7 +151,9 @@ class CourierIntransitViewModel(
                     DateTimeFormatter.getDigitFullTime(it.toInt())
                 )
             }
-            .catch {}
+            .catch {
+                logException(it,"initTime")
+            }
             .launchIn(viewModelScope)
     }
 
@@ -165,6 +168,7 @@ class CourierIntransitViewModel(
                 observeMapActionComplete(it)
             }
             .catch {
+                logException(it,"observeMapAction")
                 onTechErrorLog("observeMapAction", it)
             }
 
@@ -420,6 +424,7 @@ class CourierIntransitViewModel(
                 interactor.completeDelivery(order!!)
                 completeDeliveryComplete(order.cost)
             } catch (e: Exception) {
+                logException(e,"onCompleteDeliveryClick")
                 onTechErrorLog("CompleteDelivery", e)
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)

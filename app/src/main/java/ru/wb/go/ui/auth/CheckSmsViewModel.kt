@@ -63,7 +63,9 @@ class CheckSmsViewModel(
             .onEach {
                 _toolbarNetworkState.value = it
             }
-            .catch {  }
+            .catch {
+                logException(it,"observeNetworkState")
+            }
             .launchIn(viewModelScope)
     }
 
@@ -79,6 +81,7 @@ class CheckSmsViewModel(
                 onHandleSignUpTimerState(it)
             }
             .catch {
+                logException(it,"subscribeTimer")
                 onHandleSignUpTimerError(it)
             }
             .launchIn(viewModelScope)
@@ -96,6 +99,7 @@ class CheckSmsViewModel(
                 formatSmsComplete(it)
             }
             .catch {
+                logException(it,"onNumberObservableClicked")
                 formatSmsError(it)
             }
             .launchIn(viewModelScope)
@@ -143,6 +147,7 @@ class CheckSmsViewModel(
                 interactor.couriersExistAndSavePhone(formatPhone())
                 fetchingPasswordComplete()
             } catch (e: Exception) {
+                logException(e,"onRepeatPassword")
                 fetchingPasswordError(e)
             }
 
@@ -199,6 +204,7 @@ class CheckSmsViewModel(
                 interactor.auth(phone, password)
                 authComplete()
             } catch (e: Exception) {
+                logException(e,"fetchAuth")
                 authError(e)
             }
         }

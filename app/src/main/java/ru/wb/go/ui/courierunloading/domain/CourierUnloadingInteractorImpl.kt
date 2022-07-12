@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierunloading.domain
 
-import android.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import ru.wb.go.db.CourierLocalRepository

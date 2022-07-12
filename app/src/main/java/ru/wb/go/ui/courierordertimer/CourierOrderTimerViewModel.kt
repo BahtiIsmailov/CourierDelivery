@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierordertimer
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -10,7 +9,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
-import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
@@ -78,6 +76,7 @@ class CourierOrderTimerViewModel(
                 initOrderInfo(it)
                 startTimer(it.reservedDuration, it.reservedAt)
             } catch (e: Exception) {
+                logException(e,"initOrder")
                 onTechErrorLog("initOrder", e)
             }
         }
@@ -89,6 +88,7 @@ class CourierOrderTimerViewModel(
                 onHandleSignUpState(it)
             }
             .catch {
+                logException(it,"subscribeTimer")
                 onHandleSignUpError(it)
             }
             .launchIn(viewModelScope)
@@ -181,6 +181,7 @@ class CourierOrderTimerViewModel(
                     CourierOrderTimerNavigationState.NavigateToWarehouse
                 _timeOut.value = false
             } catch (e: Exception) {
+                logException(e,"deleteTask")
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
                 _navigationState.value =
