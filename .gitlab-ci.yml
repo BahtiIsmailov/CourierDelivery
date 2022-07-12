@@ -62,18 +62,18 @@ before_script:
   # Not necessary, but just for surity
   - chmod +x ./gradlew
 stages:
-  #- build
+  - build
   - release
 
 # Make Project
-#assembleDebug:
- # interruptible: true
-  #stage: build
-  #script:
-   # - ./gradlew assembleDebug
-  #artifacts:
-   # paths:
-    #  - $OUTPUT_DIR
+assembleDebug:
+  interruptible: true
+  stage: build
+  script:
+    - ./gradlew assembleDebug
+  artifacts:
+    paths:
+      - $OUTPUT_DIR
 
 assembleRelease:
   interruptible: true
