@@ -1,9 +1,6 @@
 package ru.wb.go.utils.formatter
 
-import io.reactivex.Observable
 import ru.wb.go.R
-import ru.wb.go.network.rx.RxSchedulerFactory
-import kotlin.math.min
 
 object PhoneUtils {
 
@@ -43,17 +40,17 @@ object PhoneUtils {
         return phoneNumber.replace(PHONE_DIGIT_FORMAT.toRegex(), "")
     }
 
-    fun phoneFormatter(
-        observablePhone: Observable<CharSequence>,
-        rxSchedulerFactory: RxSchedulerFactory,
-    ): Observable<String> {
-        return observablePhone
-            .map { it.toString() }
-            .distinctUntilChanged()
-            .map { phoneFormat(it) }
-            .map { it.substring(0, min(it.length, MAX_PHONE_FORMAT_DIGITS)) }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+//    fun phoneFormatter(
+//        observablePhone: Observable<CharSequence>,
+//        rxSchedulerFactory: RxSchedulerFactory,
+//    ): Observable<String> {
+//        return observablePhone
+//            .map { it.toString() }
+//            .distinctUntilChanged()
+//            .map { phoneFormat(it) }
+//            .map { it.substring(0, min(it.length, MAX_PHONE_FORMAT_DIGITS)) }
+//            .compose(rxSchedulerFactory.applyObservableSchedulers())
+//    }
 
     fun phoneFormatter(number: String): String {
         val formatPhone = phoneFormat("+7".plus(number))

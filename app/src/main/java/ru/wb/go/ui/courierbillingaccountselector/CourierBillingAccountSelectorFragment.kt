@@ -12,10 +12,8 @@ import android.widget.EditText
 import android.widget.ScrollView
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.view.focusChanges
-import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.Observable
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -30,16 +28,16 @@ import ru.wb.go.ui.courierbilllingcomplete.CourierBillingCompleteParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.SoftKeyboard
+import ru.wb.go.utils.clicks
+import ru.wb.go.utils.focusChanges
 import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.textChanges
 
 
 class CourierBillingAccountSelectorFragment :
     BaseServiceFragment<CourierBillingAccountSelectorViewModel, CourierBillingAccountSelectorFragmentBinding>(
         CourierBillingAccountSelectorFragmentBinding::inflate
     ) {
-
-
-    private lateinit var inputMethod: InputMethodManager
 
     companion object {
         const val COURIER_BILLING_ACCOUNT_SELECTOR_AMOUNT_KEY =
@@ -84,16 +82,17 @@ class CourierBillingAccountSelectorFragment :
 
     }
 
-    private val changeText = ArrayList<ViewChanges>()
+    private var changeText = ArrayList<ViewChanges>()
 
+     
     data class ViewChanges(
         val textLayout: TextInputLayout,
         val text: EditText,
         val type: CourierBillingAccountSelectorQueryType
     )
 
-    private fun changeFieldObservables(): ArrayList<Observable<CourierBillingAccountSelectorUIAction>> {
-        val changeTextObservables = ArrayList<Observable<CourierBillingAccountSelectorUIAction>>()
+    private fun changeFieldObservables(): ArrayList<Flow<CourierBillingAccountSelectorUIAction>> {
+        val changeTextObservables = ArrayList<Flow<CourierBillingAccountSelectorUIAction>>()
 
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
@@ -116,7 +115,7 @@ class CourierBillingAccountSelectorFragment :
     )
 
     fun interface ClickEventInterface {
-        fun initListener(view: View): Observable<CourierBillingAccountSelectorUIAction>
+        fun initListener(view: View): Flow<CourierBillingAccountSelectorUIAction>
     }
 
     private fun createClickObserver(): ClickEventInterface {
@@ -131,34 +130,39 @@ class CourierBillingAccountSelectorFragment :
             textInputLayout: TextInputLayout,
             editText: EditText,
             queryType: CourierBillingAccountSelectorQueryType
-        ): Observable<CourierBillingAccountSelectorUIAction>
+        ): Flow<CourierBillingAccountSelectorUIAction>
     }
 
+    @OptIn(FlowPreview::class)
     private fun createFieldChangesObserver(): TextChangesInterface {
         return TextChangesInterface { textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
                 .map { it.toString() }
                 .map { CourierBillingAccountSelectorUIAction.TextChange(it, queryType) }
+
             val focusChanges = editText.focusChanges()
-                .map {
-                    CourierBillingAccountSelectorUIAction.FocusChange(
-                        editText.text.toString(),
-                        queryType,
-                        it
-                    )
-                }
-            Observable.merge(textChanges, focusChanges).skip(2)
+                .map{
+                CourierBillingAccountSelectorUIAction.FocusChange(
+                    editText.text.toString(),
+                    queryType,
+                    it
+                )
+            }
+           flowOf(textChanges,focusChanges).flattenMerge().drop(2)
         }
     }
 
     private fun initInputMethod() {
-        inputMethod =
+        val inputMethod =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
     private fun initObservers() {
 
+        viewModel.courierInnLivaData.observe(viewLifecycleOwner){
+            binding.inn.setText(it)
+        }
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
             binding.toolbarLayout.toolbarTitle.text = it
         }

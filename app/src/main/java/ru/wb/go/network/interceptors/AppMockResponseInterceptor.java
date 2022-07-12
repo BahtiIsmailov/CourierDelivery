@@ -41,6 +41,7 @@ public class AppMockResponseInterceptor implements Interceptor {
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request request = getRequestBuilder(chain.request()).build();
         Response response = chain.proceed(request);
+
         return getResponseBuilder(request, response).build();
     }
 

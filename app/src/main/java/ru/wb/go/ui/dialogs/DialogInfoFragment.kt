@@ -36,6 +36,8 @@ class DialogInfoFragment : DialogFragment() {
         }
     }
 
+
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
         val dialogView =
@@ -102,6 +104,7 @@ class DialogInfoFragment : DialogFragment() {
         const val DIALOG_INFO_BACK_VALUE = 1000
         const val DIALOG_INFO_TAG = "DIALOG_INFO_TAG"
         const val DIALOG_INFO2_TAG = "DIALOG_INFO2_TAG"
+        const val ROUTE_ID = "routeId"
     }
 
 }

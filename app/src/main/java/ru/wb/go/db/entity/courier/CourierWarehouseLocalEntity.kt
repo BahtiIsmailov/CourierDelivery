@@ -3,6 +3,7 @@ package ru.wb.go.db.entity.courier
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.osmdroid.util.Distance
 
 @Entity
 data class CourierWarehouseLocalEntity(
@@ -12,5 +13,6 @@ data class CourierWarehouseLocalEntity(
     val name: String,
     val fullAddress: String,
     val longitude: Double,
-    val latitude: Double
+    val latitude: Double,
+    val distanceFromUser:Float
 )

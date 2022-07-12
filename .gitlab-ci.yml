@@ -14,6 +14,7 @@ variables:
   # It should match compileSdkVersion.
   ANDROID_COMPILE_SDK: "30"
 
+  OUTPUT_DIR: app/build/outputs/
   # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
   # It should match buildToolsVersion.
   ANDROID_BUILD_TOOLS: "30.0.3"
@@ -60,6 +61,9 @@ before_script:
 
   # Not necessary, but just for surity
   - chmod +x ./gradlew
+stages:
+  - build
+  - release
 
 # Make Project
 assembleDebug:
@@ -69,14 +73,15 @@ assembleDebug:
     - ./gradlew assembleDebug
   artifacts:
     paths:
-      - app/build/outputs/
+      - $OUTPUT_DIR
 
 assembleRelease:
   interruptible: true
-  stage: build
+  stage: release
   script:
+    - echo $WBGO | base64 -d > keystore.jks
     - ./gradlew assembleRelease
   artifacts:
     paths:
-      - app/build/outputs/
-
+      - $OUTPUT_DIR
+  

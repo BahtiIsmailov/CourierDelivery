@@ -2,8 +2,9 @@ package ru.wb.go.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -12,15 +13,12 @@ import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.NumberPhoneUIState.*
 import ru.wb.go.ui.auth.domain.NumberPhoneInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.formatter.PhoneUtils
 
 class NumberPhoneViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val resourceProvider: AuthResourceProvider,
     private val interactor: NumberPhoneInteractor,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     private val _navigationEvent =
         SingleLiveEvent<NumberPhoneNavAction>()
@@ -48,33 +46,48 @@ class NumberPhoneViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
+//        if (CheckInternet.checkConnection(App.getContext()!!)){
+//            _toolbarNetworkState.value = NetworkState.Complete
+//        }else{
+//            _toolbarNetworkState.value = NetworkState.Failed
+//        }
+
+
 
     fun onCheckPhone(number: String) {
         onTechEventLog("onCheckPhone", number)
         fetchPhoneNumber(number)
     }
 
-    fun onLongClick() {
-        // TODO: 26.11.2021 turn off config
-        //navigateToConfig()
-    }
 
-    fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
-        val initPhone = Observable.just(interactor.userPhone())
-        val eventKeyboard =
-            event.scan(String()) { accumulator, item -> accumulateNumber(accumulator, item) }
-        addSubscription(
-            initPhone.concatWith(eventKeyboard)
-                .doOnNext { switchNext(it) }
-                .map { numberToPhoneSpanFormat(it) }
-                .subscribe(
-                    { _stateUI.value = it },
-                    { onTechErrorLog("onNumberObservableClicked", it) })
-        )
+    fun onNumberObservableClicked(event: Flow<KeyboardNumericView.ButtonAction>) {
+        interactor.userPhone()
+        val eventKeyboard = event.scan("") {// previous value concatenate to the next
+                accumulator, item ->
+            accumulateNumber(accumulator, item)
+        }
+        eventKeyboard
+            .onEach {
+                switchNext(it)
+            }
+            .map {
+                numberToPhoneSpanFormat(it)
+            }
+            .onEach {
+                _stateUI.value = it
+            }
+            .catch {
+                onTechErrorLog("onNumberObservableClicked", it)
+            }
+            .launchIn(viewModelScope)
+
     }
 
     private fun numberToPhoneSpanFormat(it: String) = PhoneSpanFormat(
@@ -83,8 +96,13 @@ class NumberPhoneViewModel(
     )
 
     private fun switchNext(it: String) {
-        _stateKeyboardBackspaceUI.value =
-            if (it.isEmpty()) NumberPhoneBackspaceUIState.Inactive else NumberPhoneBackspaceUIState.Active
+        if (it.isEmpty()) {
+            _stateKeyboardBackspaceUI.value =
+                NumberPhoneBackspaceUIState.Inactive
+
+        } else {
+            _stateKeyboardBackspaceUI.value = NumberPhoneBackspaceUIState.Active
+        }
         _stateUI.value =
             if (it.length < NUMBER_LENGTH_MAX) NumberNotFilled else NumberFormatComplete
     }
@@ -101,14 +119,18 @@ class NumberPhoneViewModel(
         }
 
     private fun fetchPhoneNumber(phone: String) {
+        onTechEventLog("onCheckPhone", phone)
         _stateUI.value = NumberCheckProgress
-        val disposable = interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
-            .subscribe(
-                { fetchPhoneNumberComplete(phone) },
-                { fetchPhoneNumberError(it, phone) }
-            )
-        addSubscription(disposable)
+        viewModelScope.launch {
+            try {
+                interactor.couriersExistAndSavePhone(phone.filter { it.isDigit() })
+                fetchPhoneNumberComplete(phone)
+            } catch (e: Exception) {
+                fetchPhoneNumberError(e, phone)
+            }
+        }
     }
+
 
     private fun fetchPhoneNumberComplete(phone: String) {
         onTechEventLog("fetchPhoneNumberComplete", phone)
@@ -119,30 +141,36 @@ class NumberPhoneViewModel(
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
         onTechErrorLog("fetchPhoneNumberError $phone", throwable)
         when (throwable) {
-            is NoInternetException -> _stateUI.value = Error(
-                resourceProvider.getGenericInternetTitleError(),
-                resourceProvider.getGenericInternetMessageError(),
-                resourceProvider.getGenericInternetButtonError()
-            )
+            is NoInternetException -> _stateUI.value =
+                Error(
+                    resourceProvider.getGenericInternetTitleError(),
+                    resourceProvider.getGenericInternetMessageError(),
+                    resourceProvider.getGenericInternetButtonError()
+                )
+
             is BadRequestException -> {
                 if (throwable.error.code == CODE_SENT) {
                     val ttl = throwable.error.data?.ttl ?: DEFAULT_TTL
                     _navigationEvent.value =
                         NumberPhoneNavAction.NavigateToCheckPassword(phone, ttl)
+
                     _stateUI.value = NumberFormatComplete
                 } else {
-                    _stateUI.value = NumberNotFound(
-                        resourceProvider.getGenericServiceTitleError(),
-                        throwable.error.message,
-                        resourceProvider.getGenericServiceButtonError()
-                    )
+                    _stateUI.value =
+                        NumberNotFound(
+                            resourceProvider.getGenericServiceTitleError(),
+                            throwable.error.message,
+                            resourceProvider.getGenericServiceButtonError()
+                        )
+
                 }
             }
-            else -> _stateUI.value = Error(
-                resourceProvider.getGenericServiceTitleError(),
-                throwable.toString(),
-                resourceProvider.getGenericServiceButtonError()
-            )
+            else -> _stateUI.value =
+                Error(
+                    resourceProvider.getGenericServiceTitleError(),
+                    throwable.toString(),
+                    resourceProvider.getGenericServiceButtonError()
+                )
         }
     }
 
@@ -157,5 +185,6 @@ class NumberPhoneViewModel(
         const val DEFAULT_TTL = 0
         const val SCREEN_TAG = "NumberPhone"
     }
+
 
 }

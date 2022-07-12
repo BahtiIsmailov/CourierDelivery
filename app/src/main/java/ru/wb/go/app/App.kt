@@ -3,8 +3,6 @@ package ru.wb.go.app
 import android.app.Application
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -15,12 +13,26 @@ import ru.wb.go.network.monitor.NetworkMonitor
 
 class App : Application() {
 
+
+companion object{
+    private var instance: App? = null
+
+    fun getInstance(): App? {
+        return instance
+    }
+
+    fun getContext(): Context? {
+        return instance
+    }
+}
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
         initDI()
         initNetworkMonitor()
         initFirebaseAnalytics()
-        initYandexMetric(this)
+        //initYandexMetric(this)
     }
 
     private fun initDI() {
@@ -36,7 +48,6 @@ class App : Application() {
                     networkModule,
                     deliveryRepositoryModule,
                     resourceModule,
-                    rxModule,
                     utilsModule,
                     viewModelModule
                 )
@@ -62,15 +73,17 @@ class App : Application() {
         NetworkMonitor(this).stopNetworkCallback()
     }
 
-    private fun initYandexMetric(context: Context) {
-        val config: YandexMetricaConfig =
-            YandexMetricaConfig.newConfigBuilder(getYandexMetricKey())
-                //TODO: 16.11.2021 включить после тестирования аналитики
-                //.withStatisticsSending(!BuildConfig.DEBUG)
-                .build()
-        YandexMetrica.activate(context, config)
-        YandexMetrica.enableActivityAutoTracking(context as Application)
-    }
+//    private fun initYandexMetric(context: Context) {
+//        val config: YandexMetricaConfig =
+//            YandexMetricaConfig.newConfigBuilder(getYandexMetricKey())
+//                //TODO: 16.11.2021 включить после тестирования аналитики
+//                //.withStatisticsSending(!BuildConfig.DEBUG)
+//                .withLocationTracking(false)
+//                .build()
+//        YandexMetrica.activate(context, config)
+//        YandexMetrica.setLocationTracking(false)
+//        YandexMetrica.enableActivityAutoTracking(context as Application)
+//    }
 
     private fun getYandexMetricKey() =
         if (BuildConfig.DEBUG) YANDEX_METRIC_DEBUG_KEY else YANDEX_METRIC_KEY

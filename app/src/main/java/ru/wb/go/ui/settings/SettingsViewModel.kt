@@ -2,25 +2,23 @@ package ru.wb.go.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.ui.app.AppViewModel
-import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.settings.domain.SettingsInteractor
 import ru.wb.go.ui.settings.domain.SettingsResourceProvider
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class SettingsViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val resourcesProvider: SettingsResourceProvider,
     private val deviceManager: DeviceManager,
     private val interactor: SettingsInteractor,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     private val _versionApp = MutableLiveData<String>()
     val versionApp: LiveData<String>
@@ -40,17 +38,21 @@ class SettingsViewModel(
     }
 
     private fun fetchVersionApp() {
-        _versionApp.value = resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
+        _versionApp.value =  resourcesProvider.getVersionApp(deviceManager.toolbarVersion)
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .catch {
+
+            }
+            .launchIn(viewModelScope)
     }
 
-    fun settingClick(setting: String, state: Boolean) {
+     fun settingClick(setting: String, state: Boolean) {
         settingsManager.setSetting(setting, state)
     }
 
@@ -65,3 +67,4 @@ class SettingsViewModel(
     object NavigateToWarehouse
 
 }
+

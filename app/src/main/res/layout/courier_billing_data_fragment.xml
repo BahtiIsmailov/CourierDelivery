@@ -19,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="vertical"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toTopOf="@id/edit_account_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,34 +64,6 @@
                     android:paddingTop="@dimen/auth_padding_top"
                     android:paddingBottom="@dimen/auth_padding_bottom"
                     tools:text="ФИО" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inn_layout"
-                style="@style/TextInputDisableLayoutStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/auth_input_horizontal_patent_offset"
-                android:layout_marginTop="18dp"
-                android:enabled="false"
-                app:errorEnabled="false"
-                app:errorIconDrawable="@null"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/middle_name_layout"
-                tools:ignore="MissingConstraints">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/auth_user_inn"
-                    android:inputType="number"
-                    android:letterSpacing="0.04"
-                    android:maxLength="@integer/inn"
-                    android:paddingTop="@dimen/auth_padding_top"
-                    android:paddingBottom="@dimen/auth_padding_bottom" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -25,6 +25,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -33,6 +34,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.SplashActivityBinding
@@ -44,6 +47,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.support.SupportFragment
 import ru.wb.go.utils.SoftKeyboard
+import kotlin.system.exitProcess
 
 
 class AppActivity : AppCompatActivity(), NavToolbarListener,
@@ -53,11 +57,14 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
     private val viewModel by viewModel<AppViewModel>()
 
-    lateinit var binding: SplashActivityBinding
+    private lateinit var binding: SplashActivityBinding
+
 
     private var navController: NavController? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var onDestinationChangedListener: NavController.OnDestinationChangedListener
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         initTheme()
@@ -128,6 +135,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             navController = f.findNavController()
         }
     }
+
 
     private fun initObserver() {
 
@@ -355,7 +363,8 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
     }
 
     private fun exitApp() {
-        finish()
+        finishAndRemoveTask()
+        exitProcess(0)
     }
 
     override fun onNegativeDialogClick(resultTag: String) {

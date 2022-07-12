@@ -1,12 +1,9 @@
 package ru.wb.go.ui.courierdataexpects.domain
 
-import io.reactivex.Completable
-import io.reactivex.Single
-
 interface CourierDataExpectsInteractor {
 
-    fun saveRepeatCourierDocuments(): Completable
+    suspend fun saveRepeatCourierDocuments()
 
-    fun isRegisteredStatus(): Single<String>
+    suspend fun isRegisteredStatus():String
 
 }

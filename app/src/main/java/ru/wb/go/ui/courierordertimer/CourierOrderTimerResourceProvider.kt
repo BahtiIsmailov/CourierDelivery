@@ -12,6 +12,10 @@ class CourierOrderTimerResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_details_order, id)
     }
 
+    fun getRoute(rout:String) : String{
+        return context.getString(R.string.courier_orders_details_route, rout)
+    }
+
     fun getCoast(amount: String): String {
         return context.getString(R.string.courier_orders_details_coast, amount)
     }

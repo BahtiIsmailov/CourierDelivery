@@ -30,9 +30,8 @@ class CourierBillingFragment :
         CourierBillingFragmentBinding::inflate
     ) {
 
-    private lateinit var adapter: DefaultAdapterDelegate
-    private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var smoothScroller: SmoothScroller
+    private val adapter: DefaultAdapterDelegate
+        get() = binding.operations.adapter as DefaultAdapterDelegate
 
     override val viewModel by viewModel<CourierBillingViewModel>()
 
@@ -137,6 +136,7 @@ class CourierBillingFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
+        val adapter = adapter
         with(adapter) {
             clear()
             addItems(items)
@@ -145,14 +145,13 @@ class CourierBillingFragment :
     }
 
     private fun initRecyclerView() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.operations.layoutManager = layoutManager
+        binding.operations.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.operations.setHasFixedSize(true)
         initSmoothScroller()
     }
 
     private fun initSmoothScroller() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -160,12 +159,10 @@ class CourierBillingFragment :
     }
 
     private fun initAdapter() {
-
-        adapter = with(DefaultAdapterDelegate()) {
+        binding.operations.adapter = with(DefaultAdapterDelegate()) {
             addDelegate(CourierBillingPositiveDelegate(requireContext()))
             addDelegate(CourierBillingNegativeDelegate(requireContext()))
         }
-        binding.operations.adapter = adapter
     }
 
     private fun showDialogInfo(

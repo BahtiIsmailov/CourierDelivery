@@ -2,11 +2,11 @@ package ru.wb.go.network.api.app
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import ru.wb.go.utils.analytics.YandexMetricManager
+import ru.wb.go.app.App
+import ru.wb.go.utils.RebootApplication
 import java.io.IOException
 
 class AutentificatorIntercept(
-    private val metric: YandexMetricManager
     ) : Interceptor {
 
     var nameOfMethod:String? = null
@@ -22,6 +22,11 @@ class AutentificatorIntercept(
         val original = chain.request()
 
         val response: Response = chain.proceed(original)
+
+        if (response.code == 409) {
+             RebootApplication.doRestart(App.getContext())
+        }
+
         doOnSubscribe(nameOfMethod)
 
         if (response.isSuccessful) {
@@ -35,19 +40,19 @@ class AutentificatorIntercept(
 
 
      fun doOnNext(method: String?) {
-        metric.onTechNetworkLog(method?: "", "doOnNext")
+        //metric.onTechNetworkLog(method?: "", "doOnNext")
     }
 
      private fun doOnComplete(method: String?) { //завершил
-        metric.onTechNetworkLog(method?: "", "doOnComplete")
+        //metric.onTechNetworkLog(method?: "", "doOnComplete")
     }
 
      private fun doOnSubscribe(method: String?) {
-        metric.onTechNetworkLog(method?: "", "doOnSubscribe")
+        //metric.onTechNetworkLog(method?: "", "doOnSubscribe")
     }
 
      private fun onError(method: String?, error: String) {
-        metric.onTechNetworkLog(method?: "", error)
+        //metric.onTechNetworkLog(method?: "", error)
     }
 }
 

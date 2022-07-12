@@ -2,17 +2,13 @@ package ru.wb.go.ui.courierversioncontrol
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierVersionControlViewModel(
-        compositeDisposable: CompositeDisposable,
-        metric: YandexMetricManager,
         private val resourceProvider: CourierVersionControlResourceProvider,
         private val deviceManager: DeviceManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     private val _versionTitleState = MutableLiveData<String>()
     val versionTitleState: LiveData<String>
@@ -51,3 +47,4 @@ class CourierVersionControlViewModel(
     }
 
 }
+

@@ -15,6 +15,7 @@ sealed class CourierOrderDetailsInfoUIState {
         val cargo: String,
         val countPvz: String,
         val reserve: String,
+        val taskDistance: String,
     ) : CourierOrderDetailsInfoUIState()
 
 }

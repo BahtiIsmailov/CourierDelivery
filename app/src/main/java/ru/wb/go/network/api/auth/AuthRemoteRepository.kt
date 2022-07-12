@@ -1,19 +1,17 @@
 package ru.wb.go.network.api.auth
 
-import io.reactivex.Completable
-import io.reactivex.Single
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.api.auth.response.StatisticsResponse
 
 interface AuthRemoteRepository {
 
-    fun auth(password: String, phone: String, useSMS: Boolean): Completable
+    suspend fun auth(password: String, phone: String, useSMS: Boolean)
 
-    fun couriersExistAndSavePhone(phone: String): Completable
+    suspend fun couriersExistAndSavePhone(phone: String)
 
-    fun statistics(): Single<StatisticsResponse>
+    suspend fun statistics(): StatisticsResponse
 
-    fun userInfo(): Single<UserInfoEntity>
+    suspend fun userInfo():  UserInfoEntity
 
     fun clearCurrentUser()
 

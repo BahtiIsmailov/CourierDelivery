@@ -1,12 +1,12 @@
 package ru.wb.go.ui.app.domain
 
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.network.monitor.NetworkState
 
 interface AppInteractor {
 
-    fun observeNetworkConnected(): Observable<NetworkState>
+    fun observeNetworkConnected(): Flow<NetworkState>
     fun exitAuth()
-    fun observeNavigationApp(): Observable<String>
+    fun observeNavigationApp(): Flow<String>
 
 }

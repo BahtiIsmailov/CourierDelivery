@@ -18,10 +18,8 @@ import androidx.core.content.res.getDrawableOrThrow
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.view.focusChanges
-import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.Observable
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -39,8 +37,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.ProgressDialogFragment
-import ru.wb.go.utils.SoftKeyboard
-import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.*
 import ru.wb.go.utils.managers.ErrorDialogData
 
 class CourierBillingAccountDataFragment :
@@ -48,8 +45,8 @@ class CourierBillingAccountDataFragment :
         CourierBillingDataFragmentBinding::inflate
     ) {
 
-    private lateinit var inputMethod: InputMethodManager
-    private val changeText = ArrayList<ViewChanges>()
+
+    private var changeText = ArrayList<ViewChanges>() 
 
     override val viewModel by viewModel<CourierBillingAccountDataViewModel> {
         parametersOf(
@@ -90,7 +87,7 @@ class CourierBillingAccountDataFragment :
         }
         with(params.account) {
             binding.userName.setText(userName)
-            binding.inn.setText(inn)
+            //binding.inn.setText(inn)
             binding.account.setText(account)
             binding.bik.setText(bic)
             binding.bank.setText(bank)
@@ -105,13 +102,13 @@ class CourierBillingAccountDataFragment :
         binding.toolbarLayout.back.setOnClickListener { findNavController().popBackStack() }
 
         viewModel.onFormChanges(changeFieldObservables())
+
         binding.removeAccountButton.setOnClickListener { viewModel.onRemoveAccountClick() }
 
     }
 
-    private fun changeFieldObservables(): ArrayList<Observable<CourierBillingAccountDataUIAction>> {
-        val changeTextObservables = ArrayList<Observable<CourierBillingAccountDataUIAction>>()
-
+    private fun changeFieldObservables(): ArrayList<Flow<CourierBillingAccountDataUIAction>> {
+        val changeTextObservables = ArrayList<Flow<CourierBillingAccountDataUIAction>>()
         changeTextObservables.add(
             createFieldChangesObserver().initListener(
                 binding.accountLayout,
@@ -144,7 +141,7 @@ class CourierBillingAccountDataFragment :
         val bankEntity = viewModel.getBankEntity()!!
         return CourierBillingAccountEntity(
             userName = binding.userName.text.toString(),
-            inn = binding.inn.text.toString(),
+            inn = "",//binding.inn.text.toString(),
             account = binding.account.text.toString(),
             correspondentAccount = bankEntity.correspondentAccount,
             bic = bankEntity.bic,
@@ -153,15 +150,15 @@ class CourierBillingAccountDataFragment :
     }
 
     fun interface ClickEventInterface {
-        fun initListener(view: View): Observable<CourierBillingAccountDataUIAction>
+        fun initListener(view: View): Flow<CourierBillingAccountDataUIAction>
     }
 
     private fun createClickObserver(): ClickEventInterface {
         return ClickEventInterface { view ->
-            view.clicks().map {
-                view.isEnabled = false
-                CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
-            }
+             view.clicks().map {
+                 view.isEnabled = false
+                 CourierBillingAccountDataUIAction.SaveClick(getFormUserData())
+             }
         }
     }
 
@@ -170,15 +167,22 @@ class CourierBillingAccountDataFragment :
             textInputLayout: TextInputLayout,
             editText: EditText,
             queryType: CourierBillingAccountDataQueryType
-        ): Observable<CourierBillingAccountDataUIAction>
+        ): Flow<CourierBillingAccountDataUIAction>
     }
 
+    @OptIn(FlowPreview::class)
     private fun createFieldChangesObserver(): TextChangesInterface {
-        return TextChangesInterface { textInputLayout, editText, queryType ->
+        return TextChangesInterface {
+            textInputLayout, editText, queryType ->
             changeText.add(ViewChanges(textInputLayout, editText, queryType))
             val textChanges = editText.textChanges()
-                .map { it.toString() }
-                .map { CourierBillingAccountDataUIAction.TextChange(it, queryType) }
+                .map {
+                    it.toString()
+                }
+                .map {
+                    CourierBillingAccountDataUIAction.TextChange(it, queryType)
+                }
+
             val focusChanges = editText.focusChanges()
                 .map {
                     CourierBillingAccountDataUIAction.FocusChange(
@@ -187,12 +191,16 @@ class CourierBillingAccountDataFragment :
                         it
                     )
                 }
-            Observable.merge(textChanges, focusChanges).skip(2)
+
+            flowOf(textChanges,focusChanges).flattenMerge().drop(2)
+
         }
     }
 
+
+
     private fun initInputMethod() {
-        inputMethod =
+        val inputMethod =
             requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -210,14 +218,14 @@ class CourierBillingAccountDataFragment :
             when (it) {
                 is CourierBillingAccountDataInitUIState.Create -> {
                     binding.userName.setText(it.userName)
-                    binding.inn.setText(it.userInn)
+                    //binding.inn.setText(it.userInn)
                     binding.removeAccountButton.visibility = GONE
                 }
                 is CourierBillingAccountDataInitUIState.Edit -> {
                     binding.removeAccountButton.visibility = VISIBLE
                     with(it.field) {
                         binding.userName.setText(userName)
-                        binding.inn.setText(inn)
+                        //binding.inn.setText(inn)
                         binding.account.setText(account)
                         binding.bik.setText(bik)
                         binding.bank.setText(bank)
@@ -231,6 +239,7 @@ class CourierBillingAccountDataFragment :
         }
 
         viewModel.formUIState.observe(viewLifecycleOwner) { state ->
+//            val changeText = changeText
             when (state) {
                 is CourierBillingAccountDataUIState.Complete -> {
                     val textLayout =
@@ -398,6 +407,11 @@ class CourierBillingAccountDataFragment :
     companion object {
         const val COURIER_BILLING_DATA_AMOUNT_KEY = "courier_billing_data_amount_key"
     }
+
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        changeText = null
+//    }
 
 }
 

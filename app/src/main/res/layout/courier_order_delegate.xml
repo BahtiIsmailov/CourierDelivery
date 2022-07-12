@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/background"
@@ -17,8 +18,10 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/courier_background_select_order"
         tools:ignore="ContentDescription" />
 
@@ -27,6 +30,7 @@
         style="@style/MediumLvl1SmallRegularText"
         android:layout_width="@dimen/pad24"
         android:layout_height="@dimen/pad24"
+        android:textColor="#642CA3"
         android:layout_marginHorizontal="@dimen/pad16"
         android:background="@drawable/ic_courier_map_order_none_border"
         android:gravity="center"
@@ -43,26 +47,30 @@
         app:layout_constraintGuide_begin="@dimen/pad56" />
 
     <TextView
-        android:id="@+id/orderId"
+        android:id="@+id/countOffice"
         style="@style/LargePrimaryMediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         app:layout_constraintStart_toEndOf="@id/icon_vertical_1"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry"
-        tools:text="@sample/orders.json/orders/id" />
+        tools:text="@sample/orders.json/orders/num"
+         />
+
 
     <TextView
-        android:id="@+id/countOffice"
-        style="@style/MediumSecondaryMediumText"
+        android:id="@+id/taskDistance"
+        style="@style/LargePrimaryMediumText"
         android:layout_width="wrap_content"
+        android:layout_marginTop="12dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/orderId"
-        app:layout_constraintStart_toEndOf="@id/orderId"
-        app:layout_constraintTop_toTopOf="@id/orderId"
-        tools:text="@sample/orders.json/orders/num" />
+        tools:text="3 км "
+        app:layout_constraintStart_toEndOf="@id/countOffice"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
 
     <TextView
         android:id="@+id/cost"
@@ -71,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/orderId"
+        app:layout_constraintTop_toTopOf="@id/countOffice"
         tools:text="@sample/orders.json/orders/price" />
 
     <TextView
@@ -82,7 +90,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/orderId"
+        app:layout_constraintStart_toStartOf="@id/countOffice"
         app:layout_constraintTop_toBottomOf="@id/countOffice"
         tools:text="@sample/orders.json/orders/val" />
 

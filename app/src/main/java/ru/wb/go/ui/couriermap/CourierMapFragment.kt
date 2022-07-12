@@ -7,16 +7,19 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
+import android.media.browse.MediaBrowser
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DimenRes
@@ -47,15 +50,16 @@ import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
+import java.sql.Connection
 
 
-class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
+class CourierMapFragment : Fragment()  {
 
     private val viewModel by viewModel<CourierMapViewModel>()
 
     companion object {
         const val MY_LOCATION_ID = "my_location_id"
-        const val WAREHOUSE_ID = ""
+        const val WAREHOUSE_ID = "warehouse_id"
         const val ADDRESS_MAP_PREFIX = "ADR_"
         private const val OSMD_BASE_PATH = "osmdroid"
         private const val OSMD_BASE_TILES = "tiles"
@@ -74,12 +78,17 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var googleApiClient: GoogleApiClient
+    private var googleApiClient: GoogleApiClient? = null
+
+
     private lateinit var locationRequest: LocationRequest
+
     private var lastLocation: Location? = null
+
     private var isRequestAccessLocation = false
 
-    private lateinit var mapController: IMapController
+    private val mapController: IMapController
+        get() = binding.map.controller as IMapController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,7 +103,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         initObservable()
         initListeners()
         initMapView()
-        viewModel.subscribeState()
+        viewModel.subscribeMapState()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,9 +123,21 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         googleApiClient =
             GoogleApiClient.Builder(requireActivity())
                 .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
+                .addConnectionCallbacks(object: GoogleApiClient.ConnectionCallbacks{
+                    override fun onConnected(p0: Bundle?) {
+                        if (isLocationPermissionGranted()) {
+                            updateLastLocation()
+                        }
+                        if (lastLocation == null) {
+                            startLocationUpdates()
+                        }
+                    }
+
+                    override fun onConnectionSuspended(p0: Int) {}
+
+                })
                 .build()
-        googleApiClient.connect()
+        googleApiClient?.connect()
     }
 
     override fun onStart() {
@@ -125,7 +146,9 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun startGoogleApiClient() {
-        if (!googleApiClient.isConnected) googleApiClient.connect()
+        googleApiClient?.let { googleApiClient->
+            if (!googleApiClient.isConnected) googleApiClient.connect()
+        }
     }
 
     override fun onStop() {
@@ -134,7 +157,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun stopGoogleApiClient() {
-        googleApiClient.disconnect()
+        googleApiClient?.disconnect()
     }
 
     private fun initAccessLocationPermissions() {
@@ -192,7 +215,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
         binding.map.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        mapController = binding.map.controller
+
         mapController.setZoom(DEFAULT_ZOOM)
         with(moscowCoordinatePoint()) {
             mapController.setCenter(GeoPoint(latitude, longitude))
@@ -233,20 +256,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         true
     }
 
-    private fun addMapMarker(
-        id: String,
-        lat: Double,
-        long: Double,
-        icon: Drawable?
-    ) {
-        val markerMap = Marker(binding.map)
-        markerMap.setOnMarkerClickListener(onMarkerClickListener)
-        markerMap.id = id
-        markerMap.icon = icon
-        markerMap.position = GeoPoint(lat, long)
-        markerMap.setAnchor(0.5f, 0.5f)
-        binding.map.overlays.add(markerMap)
-    }
+    private val onSkipMarkerClickListener = { _: Marker, _: MapView -> true }
 
     private fun getIcon(idRes: Int) = AppCompatResources.getDrawable(requireContext(), idRes)
 
@@ -259,12 +269,17 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
+        viewModel.clearMap.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","clearMap")
+            clearMap()
+        }
+
         viewModel.zoomToBoundingBoxOffsetY.observe(viewLifecycleOwner) {
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
         viewModel.updateMarkersWithAnimateToPositions.observe(viewLifecycleOwner) {
-            updateMarkersWithAnimateToPositions(it.pointsTo, it.pointFrom)
+            updateMarkersWithAnimateToPositions(it)
         }
 
         viewModel.updateMarkersWithAnimateToPosition.observe(viewLifecycleOwner) {
@@ -276,10 +291,12 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
         viewModel.updateMarkers.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMarkers")
             updateMarkers(it.points)
         }
 
         viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMarkersWithIndex")
             updateMarkersWithIndex(it.points)
         }
         viewModel.navigateToMarker.observe(viewLifecycleOwner) {
@@ -295,6 +312,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
 
         viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
+            Log.e("mapDebug","updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
@@ -306,8 +324,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             updateMyLocation()
         }
 
-        viewModel.visibleShowAll.observe(viewLifecycleOwner) {
-            visibleShowAll()
+        viewModel.visibleManagerBar.observe(viewLifecycleOwner) {
+            visibleManagerBar(it)
         }
 
     }
@@ -328,13 +346,63 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             isFind
         }
 
+    private inner class BoundingBoxAnimator(
+        from: BoundingBox,
+        val to: BoundingBox,
+        val offsetY: Int
+    ) {
+
+        val maxLatFrom = from.latNorth
+        val maxLongFrom = from.lonEast
+        val minLatFrom = from.latSouth
+        val minLongFrom = from.lonWest
+
+        val maxLatTo = to.latNorth
+        val maxLongTo = to.lonEast
+        val minLatTo = to.latSouth
+        val minLongTo = to.lonWest
+
+        var latMax: Double = 0.0
+        var lngMax: Double = 0.0
+        var latMin: Double = 0.0
+        var lngMin: Double = 0.0
+
+        fun next(interpolation: Float, offsetAnimation: Float) {
+            if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
+                latMax = interpolation * maxLatTo + offsetAnimation * maxLatFrom
+                lngMax = interpolation * maxLongTo + offsetAnimation * maxLongFrom
+                latMin = interpolation * minLatTo + offsetAnimation * minLatFrom
+                lngMin = interpolation * minLongTo + offsetAnimation * minLongFrom
+            } else {
+                latMax = maxLatTo
+                lngMax = maxLongTo
+                latMin = minLatTo
+                lngMin = minLongTo
+            }
+            to.set(latMax, lngMax, latMin, lngMin)
+            checkMapViewAndZoomToBoundingBoxOffsetY(
+                CourierMapViewModel.ZoomToBoundingBoxOffsetY(to, false, offsetY)
+            )
+        }
+    }
+
     private fun updateMarkersWithAnimateToPosition(withAnimateToPosition: CourierMapViewModel.UpdateMarkersWithAnimateToPosition) {
 
+        val boundingBoxAnimator = BoundingBoxAnimator(
+            binding.map.boundingBox,
+            withAnimateToPosition.animateTo,
+            withAnimateToPosition.offsetY
+        )
+
         val showMarkers = findMapMarkersByFilterId(withAnimateToPosition.pointsShow)
+        showMarkers.forEach { it.setOnMarkerClickListener(onMarkerClickListener) }
         val animateMarkersTo = findMapMarkersByFilterId(withAnimateToPosition.pointsFrom)
+
         val fromGeoPoints = mutableListOf<GeoPoint>()
         animateMarkersTo.forEach {
-            fromGeoPoints.add(GeoPoint(it.position.latitude, it.position.longitude))
+            with(it.position) {
+                fromGeoPoints.add(GeoPoint(latitude, longitude))
+            }
         }
 
         val pointTo = withAnimateToPosition.pointTo.point
@@ -343,25 +411,27 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val interpolator = LinearInterpolator()
 
         handler.post(object : Runnable {
+
+            var lat: Double = 0.0
+            var lng: Double = 0.0
+
             override fun run() {
                 val elapsed = (SystemClock.uptimeMillis() - start).toFloat()
                 val interpolation = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
                 val offsetAnimation = 1 - interpolation
-                var lng: Double
-                var lat: Double
+
                 val alpha = 1 - offsetAnimation
 
                 animateMarkersTo.forEachIndexed { index, marker ->
                     val pointFrom = fromGeoPoints[index]
                     if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
-                        lng = interpolation * pointTo.long + offsetAnimation * pointFrom.longitude
                         lat = interpolation * pointTo.lat + offsetAnimation * pointFrom.latitude
-                    } else {
-                        lng = pointTo.long
-                        lat = pointTo.lat
-                    }
+                        lng = interpolation * pointTo.long + offsetAnimation * pointFrom.longitude
+                    } else removeMarkerById(marker.id)
                     marker.position = GeoPoint(lat, lng)
                 }
+
+                boundingBoxAnimator.next(interpolation, offsetAnimation)
 
                 showMarkers.forEach { marker ->
                     if (interpolation < 1.0) marker.alpha = alpha
@@ -388,6 +458,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         return findMapMarkers
     }
 
+    private fun clearMap() {
+        binding.map.overlays.clear()
+    }
+
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {
         with(binding.map) {
             if (height > 0 && width > 0) {
@@ -412,64 +486,83 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun updateMarkersWithAnimateToPositions(
-        pointsTo: List<CourierMapMarker>,
-        pointFrom: CourierMapMarker
+        withAnimateToPositions: CourierMapViewModel.UpdateMarkersWithAnimateToPositions
     ) {
-        val markersHide = mutableListOf<Marker>()
-        binding.map.overlays
-            .filterIsInstance<Marker>()
-            .filter { item -> item.id.isNotEmpty() }
-            .apply { markersHide.addAll(this) }
 
-        binding.map.overlays.clear()
-        val markersTo = mutableListOf<Marker>()
-        pointsTo.forEach { pointTo ->
-            val markerMap = Marker(binding.map).apply {
-                id = pointTo.point.id
-                icon = getIcon(pointTo.icon)
-                position = GeoPoint(pointFrom.point.lat, pointFrom.point.long)
-                setAnchor(0.5f, 0.5f)
-            }
-            markersTo.add(markerMap)
-            binding.map.overlays.add(markerMap)
-        }
-        binding.map.overlays.addAll(markersHide)
+        val boundingBoxAnimator = BoundingBoxAnimator(
+            binding.map.boundingBox,
+            withAnimateToPositions.animateTo,
+            withAnimateToPositions.offsetY
+        )
+        binding.map.overlays.remove(overlayBackground)
 
-        val handler = Handler(Looper.getMainLooper())
-        val start = SystemClock.uptimeMillis()
-        val interpolator = LinearInterpolator()
+        with(withAnimateToPositions) {
 
-        handler.post(object : Runnable {
-            override fun run() {
-                val elapsed = (SystemClock.uptimeMillis() - start).toFloat()
-                val interpolation = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
-                val offsetAnimation = 1 - interpolation
-                val alpha = offsetAnimation * 1.0f
-                var lng: Double
-                var lat: Double
-                markersTo.forEachIndexed { index, marker ->
-                    val pointTo = pointsTo[index].point
-                    if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
-                        lng = interpolation * pointTo.long + offsetAnimation * pointFrom.point.long
-                        lat = interpolation * pointTo.lat + offsetAnimation * pointFrom.point.lat
-                    } else {
-                        lng = pointTo.long
-                        lat = pointTo.lat
-                        marker.setOnMarkerClickListener(onMarkerClickListener)
+            pointsTo.forEach { removeMarkerById(it.point.id) }
+            val markersRestore = mutableListOf<Marker>()
+            binding.map.overlays
+                .filterIsInstance<Marker>()
+                .apply { markersRestore.addAll(this) }
+
+            binding.map.overlays.clear()
+            pointsTo.forEach(updateMapMarker)
+            val markersTo = findMapMarkersByFilterId(pointsTo)
+            binding.map.overlays.addAll(markersRestore)
+
+            val markersHide = findMapMarkersByFilterId(pointsHide)
+            markersHide.forEach { it.setOnMarkerClickListener(onSkipMarkerClickListener) }
+
+            val handler = Handler(Looper.getMainLooper())
+            val start = SystemClock.uptimeMillis()
+            val interpolator = LinearInterpolator()
+
+            handler.post(object : Runnable {
+
+                var lat: Double = 0.0
+                var lng: Double = 0.0
+
+                override fun run() {
+                    val elapsed = (SystemClock.uptimeMillis() - start).toFloat()
+                    val interpolation = interpolator.getInterpolation(elapsed / DURATION_POINTS_MS)
+                    val offsetAnimation = 1 - interpolation
+                    val alpha = offsetAnimation * 1.0f
+
+                    markersTo.forEachIndexed { index, marker ->
+                        val pointTo = pointsTo[index].point
+                        if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
+                            lat =
+                                interpolation * pointTo.lat + offsetAnimation * pointFrom.point.lat
+                            lng =
+                                interpolation * pointTo.long + offsetAnimation * pointFrom.point.long
+
+                        } else {
+                            lat = pointTo.lat
+                            lng = pointTo.long
+                            //marker.setOnMarkerClickListener(onMarkerClickListener)
+                        }
+                        marker.position = GeoPoint(lat, lng)
                     }
-                    marker.position = GeoPoint(lat, lng)
-                }
 
-                markersHide.forEach { marker ->
-                    if (interpolation < 1.0) marker.alpha = alpha
-                    else marker.alpha = 0f
+                    markersHide.forEach { marker ->
+                        if (interpolation < 1.0) marker.alpha = alpha
+                        else marker.alpha = 0f
+                    }
+
+                    boundingBoxAnimator.next(interpolation, offsetAnimation)
+
+                    if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
+                        handler.postDelayed(this, DELAY_ANIMATION_MS)
+                    } else {
+                        binding.map.overlays.clear()
+                        addOverlayBackground()
+                        binding.map.overlays.addAll(markersRestore)
+                        binding.map.overlays.addAll(markersTo)
+                    }
+
+                    binding.map.postInvalidate()
                 }
-                if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
-                    handler.postDelayed(this, DELAY_ANIMATION_MS)
-                }
-                binding.map.postInvalidate()
-            }
-        })
+            })
+        }
     }
 
     private fun navigateToPointZoom(it: CoordinatePoint) {
@@ -506,6 +599,10 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         zoomToCenterBoundingBox(offsetBoundingBox, animate)
     }
 
+    private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
+        updateMapMarkers(mapPoints)
+    }
+
     private fun zoomToCenterBoundingBox(boundingBox: BoundingBox, animate: Boolean) {
         with(binding.map) {
             if (height > 0) {
@@ -523,45 +620,46 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
-    private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
-        binding.map.overlays.clear()
-        initMapMarkers(mapPoints)
-    }
-
     private fun updateMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
-        binding.map.overlays.clear()
-        initMapMarkersWithIndex(mapPoints)
+        updateMapMarkersWithIndex(mapPoints)
     }
 
-    private fun initMapMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
-        addOverlayBackground()
-        mapPoints.forEachIndexed(addMapMarkerWithIndex)
+    private fun updateMapMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
+        mapPoints.forEach(updateMapMarkerWithIndex)
         binding.map.invalidate()
     }
 
-    private fun initMapMarkers(mapPoints: List<CourierMapMarker>) {
+    private fun updateMapMarkers(mapPoints: List<CourierMapMarker>) {
         addOverlayBackground()
-        mapPoints.forEach(addMapMarker)
+        mapPoints.forEach(updateMapMarker)
         binding.map.invalidate()
     }
+
+    private val overlayBackground = OverlayBackground(
+        object : OverlayBackground.OnBackgroundClickListener {
+            override fun onBackgroundClick() {
+                viewModel.onMapClick()
+            }
+        })
 
     private fun addOverlayBackground() {
-        val overlayBackground = OverlayBackground(
-            object : OverlayBackground.OnBackgroundClickListener {
-                override fun onBackgroundClick() {
-                    viewModel.onMapClick()
-                }
-            })
-        binding.map.overlays.add(overlayBackground)
+        val overlayBackground = binding.map.overlays.find { it.equals(overlayBackground) }
+        if (overlayBackground == null) binding.map.overlays.add(this.overlayBackground)
     }
 
-    private val addMapMarker = { item: CourierMapMarker ->
-        with(item) { addMapMarker(point.id, point.lat, point.long, getIcon(icon)) }
-    }
-
-    private val addMapMarkerWithIndex = { index: Int, item: CourierMapMarker ->
+    private val updateMapMarker = { item: CourierMapMarker ->
         with(item) {
-            addMapMarker(
+            val findPoint = findMapPointById(point.id)
+            if (findPoint == null)
+                addMapMarker(point.id, point.lat, point.long, getIcon(item.icon))
+            else updateMapMarker(findPoint, point.id, point.lat, point.long, getIcon(item.icon))
+        }
+    }
+
+    private val updateMapMarkerWithIndex = {item: CourierMapMarker ->
+
+        with(item) {
+            addMapMarker( // если поставить дебаг он отображает и склады и местоположение
                 point.id,
                 point.lat,
                 point.long,
@@ -570,22 +668,89 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         }
     }
 
-    private fun visibleShowAll() {
-        binding.showAll.visibility = VISIBLE
+    private fun updateMapMarker(
+        mapMarker: Marker,
+        id: String,
+        lat: Double,
+        long: Double,
+        icon: Drawable?
+    ) {
+        mapMarker.apply {
+            this.id = id
+            this.icon = icon
+            this.position = GeoPoint(lat, long)
+            this.setAnchor(0.5f, 0.5f)
+        }
+
+    }
+
+    private fun addMapMarker(
+        id: String,
+        lat: Double,
+        long: Double,
+        icon: Drawable?
+    ) {
+        val markerMap = Marker(binding.map)
+        markerMap.setOnMarkerClickListener(onMarkerClickListener)
+
+        markerMap.id = id
+        markerMap.icon = icon
+//        markerMap.isDraggable = true позволяет перетаскивать флажок местоположения
+        markerMap.position = GeoPoint(lat, long)
+        markerMap.setAnchor(0.5f, 0.5f)
+        binding.map.overlays.add(markerMap)
+    }
+
+     private fun findMapPointById(id: String) =
+        binding.map.overlays
+            .filterIsInstance<Marker>()
+            .find { it.id == id }
+
+    private fun visibleManagerBar(courierVisibilityManagerBar: CourierVisibilityManagerBar) {
+        when (courierVisibilityManagerBar) {
+            is CourierVisibilityManagerBar.Hide -> {
+                if (binding.managerLayout.visibility == View.GONE) return
+                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_out_right)
+                animation.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationStart(animation: Animation?) {
+                    }
+
+                    override fun onAnimationEnd(animation: Animation?) {
+                        binding.managerLayout.visibility = View.GONE
+                    }
+
+                    override fun onAnimationRepeat(animation: Animation?) {
+                    }
+
+                })
+                binding.managerLayout.startAnimation(animation)
+            }
+            is CourierVisibilityManagerBar.Visible -> {
+                if (binding.managerLayout.visibility == View.VISIBLE) return
+                binding.managerLayout.visibility = View.VISIBLE
+                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right) // анимация с скрыванием кнопок боковых
+                binding.managerLayout.startAnimation(animation)
+
+            }
+        }
     }
 
     private fun initListeners() {
         binding.zoomIn.setOnClickListener {
             binding.map.controller.zoomIn()
+            viewModel.onZoomClick()
         }
         binding.zoomOut.setOnClickListener {
             binding.map.controller.zoomOut()
+            viewModel.onZoomClick()
         }
-        binding.showAll.setOnClickListener { viewModel.onShowAllClick() }
+        binding.showAll.setOnClickListener {
+            viewModel.onShowAllClick()
+        }
     }
 
     private fun navigateToMyLocation() {
-        removeMyLocationPoint()
+        removeMarkerById(MY_LOCATION_ID)
         if (lastLocation == null) {
             navigateToDefault()
         } else {
@@ -605,21 +770,22 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     }
 
     private fun updateMyLocationPoint(point: CoordinatePoint) {
-        removeMyLocationPoint()
+        removeMarkerById(MY_LOCATION_ID)
         addMyLocationPoint(point.latitude, point.longitude)
     }
 
-    private fun removeMyLocationPoint() {
-        binding.map.overlays
-            .filterIsInstance<Marker>()
-            .find { it.id == MY_LOCATION_ID }
-            ?.apply { binding.map.overlays.remove(this) }
+    private fun removeMarkerById(id: String) {
+        with(binding.map.overlays) {
+            filterIsInstance<Marker>()
+                .find { it.id == id }
+                ?.apply { remove(this) }
+        }
     }
 
     private fun addMyLocationPoint(latitude: Double, longitude: Double) {
         val point = MapPoint(MY_LOCATION_ID, latitude, longitude)
         val mapMarker = Empty(point, R.drawable.ic_warehouse_my_location)
-        addMapMarker(mapMarker)
+        updateMapMarker(mapMarker)
         binding.map.invalidate()
     }
 
@@ -639,31 +805,29 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
 
     override fun onDestroyView() {
         viewModel.clearSubscription()
+
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onConnected(p0: Bundle?) {
-        if (isLocationPermissionGranted()) {
-            updateLastLocation()
-        }
-        if (lastLocation == null) {
-            startLocationUpdates()
-        }
-    }
+
 
     @SuppressLint("MissingPermission")
     private fun updateLastLocation() {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
+        googleApiClient?.let {
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(it)
+        }
         updateLocation()
     }
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        if (isLocationPermissionGranted()) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                googleApiClient, locationRequest, locationListener()
-            )
+        googleApiClient?.let {googleApiClient->
+            if (isLocationPermissionGranted()) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(
+                    googleApiClient, locationRequest, locationListener()
+                )
+            }
         }
     }
 
@@ -678,7 +842,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
     private fun locationListener(): (Location) -> Unit =
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }
 
-    override fun onConnectionSuspended(p0: Int) {}
+
 
     private fun getBitmapIndexMarker(index: String, @DrawableRes res: Int): Bitmap? {
         val bitmap = convertDrawableToBitmap(res)
@@ -689,7 +853,8 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             paint.style = Paint.Style.FILL
 
             paint.textAlign = Paint.Align.CENTER
-            paint.color = ResourcesCompat.getColor(resources, R.color.lvl_1, null)
+            paint.color = ResourcesCompat.getColor(resources,
+                R.color.button_app_primary_pressed, null)
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             paint.textSize = TEXT_SIZE_INDEX_MARKER
 
@@ -735,7 +900,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         @DimenRes left: Int,
         @DimenRes right: Int
     ): BoundingBox {
-        val offsetBottom = offsetY * -2
+        val offsetBottom = offsetY * -2 // отступ снизу
         val topPx = mapView.context.resources.getDimensionPixelSize(top)
         val bottomPx = mapView.context.resources.getDimensionPixelSize(bottom) + offsetBottom
         val leftPx = mapView.context.resources.getDimensionPixelSize(left)
@@ -744,7 +909,7 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
         val width = mapView.width
         val height = mapView.height
         val pScreenWidth = width - (leftPx + rightPx)
-        val pScreenHeight = height - (topPx + bottomPx)
+        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
         val nextZoom = MapView.getTileSystem()
             .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
 
@@ -760,18 +925,29 @@ class CourierMapFragment : Fragment(), GoogleApiClient.ConnectionCallbacks {
             mapView.mapCenterOffsetY
         )
 
+
         val northWest = projection.fromPixels(0, 0)
         val southEast = projection.fromPixels(width, height)
         val lonPerPx = (southEast.longitude - northWest.longitude) / width
         val latPerPx = (southEast.latitude - northWest.latitude) / height
 
-        return BoundingBox(
-            latNorth - topPx * latPerPx,
-            lonEast + rightPx * lonPerPx,
-            latSouth + bottomPx * latPerPx,
-            lonWest - leftPx * lonPerPx
-        )
+        return try{
+            BoundingBox(
+                latNorth - topPx * latPerPx,
+                lonEast + rightPx * lonPerPx,
+                latSouth + bottomPx * latPerPx,
+                lonWest - leftPx * lonPerPx
+            )
+        }catch (e:Exception){
+            BoundingBox(
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            )
+        }
 
     }
+
 
 }

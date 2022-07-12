@@ -1,11 +1,13 @@
 package ru.wb.go.ui.courierintransitofficescanner.domain
 
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
@@ -13,40 +15,39 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.managers.DeviceManager
 
 class CourierIntransitOfficeScannerInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val locRepo: CourierLocalRepository,
     private val scannerRepo: ScannerRepository,
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierIntransitOfficeScannerInteractor {
 
-    override fun getOffices(): Observable<List<LocalOfficeEntity>> {
-        return locRepo.getOfficesFlowable()
-            .toObservable()
-            .map { office ->
-                office.toMutableList().sortedWith(
+
+     override fun getOffices(): Flow<List<LocalOfficeEntity>> {
+         return locRepo.getOfficesFlowable()
+             .map { office ->
+               office.toMutableList().sortedWith(
                     compareBy({ it.isVisited }, { it.deliveredBoxes == it.countBoxes })
                 )
-            }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
-    }
+             }
+     }
 
-    override fun observeOfficeIdScanProcess(): Observable<CourierIntransitOfficeScanData> {
+
+    @OptIn(FlowPreview::class)
+    override fun observeOfficeIdScanProcess(): Flow<CourierIntransitOfficeScanData> {
         return scannerRepo.observeScannerAction()
-            .flatMap { convertScannerAction(it) }
-            .compose(rxSchedulerFactory.applyObservableSchedulers())
+            .flatMapMerge{
+                flowOf(
+                    when (it) {
+                        is ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
+                        is ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
+                        is ScannerAction.ScanResult -> scanResult(it)
+                    }
+                )
+            }
     }
 
-    private fun convertScannerAction(it: ScannerAction) = Single.just(
-        when (it) {
-            ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
-            ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
-            is ScannerAction.ScanResult -> scanResult(it)
-        }
-    ).toObservable()
-
-    private fun scanResult(it: ScannerAction.ScanResult): CourierIntransitOfficeScanData {
+    private suspend fun scanResult(it: ScannerAction.ScanResult): CourierIntransitOfficeScanData {
         val parse = scannerRepo.parseScanOfficeQr(it.value)
         return when (parse.isOk) {
             true -> {
@@ -64,5 +65,5 @@ class CourierIntransitOfficeScannerInteractorImpl(
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
     }
-
 }
+

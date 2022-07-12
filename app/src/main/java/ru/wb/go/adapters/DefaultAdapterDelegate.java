@@ -7,10 +7,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate;
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager;
-import ru.wb.go.mvvm.model.base.BaseItem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.wb.go.mvvm.model.base.BaseItem;
 
 public class DefaultAdapterDelegate extends RecyclerView.Adapter {
 

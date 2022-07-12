@@ -1,18 +1,18 @@
 package ru.wb.go.ui.auth.domain
 
-import com.jakewharton.rxbinding3.InitialValueObservable
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.network.monitor.NetworkState
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Observable
 import ru.wb.go.ui.auth.signup.TimerState
 
 interface CheckSmsInteractor {
-    fun remindPasswordChanges(observable: InitialValueObservable<CharSequence>): Observable<Boolean>
-    fun observeNetworkConnected(): Observable<NetworkState>
-    fun auth(phone: String, password: String): Completable
-    fun couriersExistAndSavePhone(phone: String) : Completable
-    fun startTimer(durationTime: Int)
-    val timer: Flowable<TimerState>
-    fun stopTimer()
+
+    fun remindPasswordChanges(observable: Flow<CharSequence>): Flow<Boolean>
+    fun observeNetworkConnected(): Flow<NetworkState>
+
+    suspend fun auth(phone: String, password: String)
+    suspend fun couriersExistAndSavePhone(phone: String)
+
+    suspend fun startTimer(durationTime: Int)
+    val timer: Flow<TimerState>
+    suspend fun stopTimer()
 }

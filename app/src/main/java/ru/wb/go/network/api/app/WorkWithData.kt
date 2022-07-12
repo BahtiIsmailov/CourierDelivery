@@ -1,5 +1,8 @@
 package ru.wb.go.network.api.app
 
+import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
+import ru.wb.go.db.entity.courier.CourierOrderEntity
+import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalComplexOrderEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -10,9 +13,7 @@ import ru.wb.go.network.api.app.remote.CourierDocumentsRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountRequest
 import ru.wb.go.network.api.app.remote.accounts.AccountResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
-import ru.wb.go.network.api.app.remote.courier.CourierDocumentsResponse
-import ru.wb.go.network.api.app.remote.courier.CourierTaskBoxesResponse
-import ru.wb.go.network.api.app.remote.courier.MyTaskResponse
+import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentRequest
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
 
@@ -119,7 +120,7 @@ fun toLocalComplexOrderEntity(
             startedAt = myTaskResponse.startedAt ?: "",
             reservedDuration = myTaskResponse.reservedDuration,
             status = myTaskResponse.status ?: "",
-            cost = (myTaskResponse.cost ?: 0) / AppRemoteRepositoryCoroutineImpl.COST_DIVIDER,
+            cost = (myTaskResponse.cost ?: 0) / AppRemoteRepositoryImpl.COST_DIVIDER,
             srcId = myTaskResponse.srcOffice.id,
             srcName = myTaskResponse.srcOffice.name,
             srcAddress = myTaskResponse.srcOffice.fullAddress,
@@ -195,6 +196,97 @@ fun toPaymentsRequest(id: String, amount: Int, paymentEntity: PaymentEntity) : P
         )
     }
 }
+
+fun toCourierOrderDstOfficeEntity(courierOrderDstOfficeResponse: CourierOrderDstOfficeResponse): CourierOrderDstOfficeEntity{
+    return CourierOrderDstOfficeEntity(
+        id = courierOrderDstOfficeResponse.id,
+        name = courierOrderDstOfficeResponse.name ?: "",
+        fullAddress = courierOrderDstOfficeResponse.fullAddress ?: "",
+        long = courierOrderDstOfficeResponse.long,
+        lat = courierOrderDstOfficeResponse.lat,
+        workTimes = courierOrderDstOfficeResponse.wrkTime ?: "",
+        isUnusualTime = courierOrderDstOfficeResponse.unusualTime
+    )
+}
+
+fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:MutableList<CourierOrderDstOfficeEntity>): CourierOrderEntity{
+    return CourierOrderEntity (
+        id = courierOrderResponse.id,
+        routeID = courierOrderResponse.routeID ?: 0,
+        gate = courierOrderResponse.gate ?: "",
+        minPrice = courierOrderResponse.minPrice,
+        minVolume = courierOrderResponse.minVolume,
+        minBoxesCount = courierOrderResponse.minBoxesCount,
+        dstOffices =  dstOffices,
+        reservedAt = "",
+        reservedDuration = courierOrderResponse.reservedDuration,
+        route = courierOrderResponse.route ?: "не указан",
+        taskDistance = courierOrderResponse.taskDistance
+    )
+}
+
+fun toLocalOrderEntity():LocalOrderEntity {
+    return LocalOrderEntity(
+        orderId = -1,
+        routeID = 0,
+        gate = "",
+        minPrice = 0,
+        minVolume = 0,
+        minBoxes = 0,
+        countOffices = 0,
+        wbUserID = 0,
+        carNumber = "",
+        reservedAt = "",
+        startedAt = "",
+        reservedDuration = "",
+        status = "",
+        cost = 0,
+        srcId = 0,
+        srcName = "",
+        srcAddress = "",
+        srcLongitude = 0.0,
+        srcLatitude = 0.0,
+        route = ""
+    )
+}
+
+fun toLocalOfficeEntity(myDstOfficeResponse: MyDstOfficeResponse):LocalOfficeEntity{
+    return LocalOfficeEntity(
+        officeId = myDstOfficeResponse.id,
+        officeName = myDstOfficeResponse.name ?: "",
+        address = myDstOfficeResponse.fullAddress ?: "",
+        longitude = myDstOfficeResponse.long,
+        latitude = myDstOfficeResponse.lat,
+        countBoxes = 0,
+        deliveredBoxes = 0,
+        isVisited = false,
+        isOnline = false
+    )
+}
+fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
+    return with(courierOfficeResponse) {
+        CourierWarehouseLocalEntity(
+            id = id,
+            name = name,
+            fullAddress = fullAddress,
+            longitude = long,
+            latitude = lat,
+            distanceFromUser = 0.0F
+        )
+    }
+}
+fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
+    val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
+    courierOrderResponse.dstOffices.forEach { dstOffice ->
+        if (dstOffice.id != -1) {
+            dstOffices.add(toCourierOrderDstOfficeEntity(dstOffice))
+        }//широта долгота +
+    }
+    return toCourierOrderEntity(courierOrderResponse, dstOffices)
+
+}
+
+
 fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {
     val accountsEntity = mutableListOf<AccountEntity>()
     forEach {

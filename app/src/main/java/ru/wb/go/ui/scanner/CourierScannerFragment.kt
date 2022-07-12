@@ -4,9 +4,9 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -14,7 +14,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.core.view.doOnLayout
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
@@ -24,18 +24,21 @@ import ru.wb.go.R
 import ru.wb.go.app.AppConsts
 import ru.wb.go.databinding.CourierScannerFragmentBinding
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.LogUtils
+import ru.wb.go.utils.base.BaseFragment
 import ru.wb.go.utils.hasPermission
 
-open class CourierScannerFragment : Fragment() {
+open class CourierScannerFragment : BaseFragment() {
 
     private val viewModel by viewModel<CourierScannerViewModel>()
 
     private var _binding: CourierScannerFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var barcodeView: DecoratedBarcodeView
-    private lateinit var viewFinder: ViewfinderView
+    private val barcodeView: DecoratedBarcodeView
+    get() = binding.zxingBarcodeScanner
+
+    private val viewFinder: ViewfinderView
+    get() = binding.zxingViewfinderView
 
     private lateinit var beepManager: BeepManager
 
@@ -49,8 +52,6 @@ open class CourierScannerFragment : Fragment() {
     ): View {
 
         _binding = CourierScannerFragmentBinding.inflate(inflater, container, false)
-        barcodeView = binding.zxingBarcodeScanner
-        viewFinder = binding.zxingViewfinderView
 
         val switchFlashlightButton = binding.flash
 
@@ -94,15 +95,13 @@ open class CourierScannerFragment : Fragment() {
                 binding.requestPermissionSetting.visibility = GONE
                 onResume()
             } else {
-                binding.permissionInfo.visibility = View.VISIBLE
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                        binding.requestPermissionSetting.visibility = GONE
-                        binding.requestPermission.visibility = View.VISIBLE
-                    } else {
-                        binding.requestPermissionSetting.visibility = View.VISIBLE
-                        binding.requestPermission.visibility = GONE
-                    }
+                binding.permissionInfo.visibility = VISIBLE
+                if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    binding.requestPermissionSetting.visibility = GONE
+                    binding.requestPermission.visibility = VISIBLE
+                } else {
+                    binding.requestPermissionSetting.visibility = VISIBLE
+                    binding.requestPermission.visibility = GONE
                 }
                 onPause()
             }
@@ -120,6 +119,7 @@ open class CourierScannerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
         binding.scanStatus.visibility = GONE
         barcodeView.resume()
     }
@@ -149,6 +149,7 @@ open class CourierScannerFragment : Fragment() {
 
     private fun initObserver() {
         viewModel.scannerAction.observe(viewLifecycleOwner) {
+            Log.e("scannerAction", "galochka : $it")
             when (it) {
                 ScannerState.StartScan -> startScanning()
                 ScannerState.StopScan -> stopScanning()
@@ -156,8 +157,10 @@ open class CourierScannerFragment : Fragment() {
                 ScannerState.HoldScanComplete -> holdWithIcon(R.drawable.ic_scan_complete)
                 ScannerState.HoldScanError -> holdWithIcon(R.drawable.ic_scan_error)
                 ScannerState.HoldScanUnknown -> holdWithIcon(R.drawable.ic_scan_unknown)
+                else -> {}
             }
         }
+
 
         viewModel.flashState.observe(viewLifecycleOwner) {
             if (it) barcodeView.setTorchOn()
@@ -167,7 +170,9 @@ open class CourierScannerFragment : Fragment() {
 
     private fun stopScanning() {
         changeLaserVisibility(false)
-        barcodeView.pauseAndWait()
+        barcodeView.doOnLayout {// при каждой переразметке делай вот это действие
+            barcodeView.pauseAndWait()
+        }
     }
 
     private fun holdSplash() {
@@ -200,7 +205,9 @@ open class CourierScannerFragment : Fragment() {
             startActivityForResult(intent, PERMISSION_FROM_SETTING_REQUEST_CODE)
         }
 
-        binding.holdSplash.setOnClickListener { viewModel.onHoldSplashClick() }
+        binding.holdSplash.setOnClickListener {
+            viewModel.onHoldSplashClick() // когда кликаем по экрану
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -2,8 +2,9 @@ package ru.wb.go.ui.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -13,15 +14,13 @@ import ru.wb.go.ui.auth.domain.CheckSmsInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
-import ru.wb.go.utils.analytics.YandexMetricManager
+import java.net.UnknownHostException
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CheckSmsInteractor,
     private val resourceProvider: AuthResourceProvider,
-) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
+) : TimerStateHandler, NetworkViewModel() {
 
     private val _stateTitleUI = MutableLiveData<InitTitle>()
     val stateTitleUI: LiveData<InitTitle>
@@ -60,35 +59,48 @@ class CheckSmsViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchTitle() {
-        _stateTitleUI.postValue(
+        _stateTitleUI.value =
             InitTitle(resourceProvider.getTitleCheckSms(parameters.phone), parameters.phone)
-        )
+
     }
 
     private fun subscribeTimer() {
-        addSubscription(
-            interactor.timer.subscribe(
-                { onHandleSignUpTimerState(it) },
-                { onHandleSignUpTimerError(it) })
-        )
+        interactor.timer
+            .onEach {
+                onHandleSignUpTimerState(it)
+            }
+            .catch {
+                onHandleSignUpTimerError(it)
+            }
+            .launchIn(viewModelScope)
+
     }
 
-    fun onNumberObservableClicked(event: Observable<KeyboardNumericView.ButtonAction>) {
-        addSubscription(
-            event.scan(String(), { accumulator, item -> accumulateCode(accumulator, item) })
-                .doOnNext { switchNext(it) }
-                .subscribe(
-                    { formatSmsComplete(it) },
-                    { formatSmsError(it) })
-        )
-    }
+    fun onNumberObservableClicked(event: Flow<KeyboardNumericView.ButtonAction>) {
+        event.scan("") { accumulator, item ->
+            accumulateCode(accumulator, item)
+        }
+            .onEach {
+                switchNext(it)
+            }
+            .onEach {
+                formatSmsComplete(it)
+            }
+            .catch {
+                formatSmsError(it)
+            }
+            .launchIn(viewModelScope)
 
+    }
 
     private fun formatSmsError(throwable: Throwable) {
         onTechErrorLog("formatSmsError", throwable)
@@ -113,6 +125,7 @@ class CheckSmsViewModel(
     private fun switchNext(code: String) {
         _stateKeyboardBackspaceUI.value =
             if (code.isEmpty()) CheckSmsBackspaceUIState.Inactive else CheckSmsBackspaceUIState.Active
+
     }
 
     private fun onHandleSignUpTimerState(timerState: TimerState) {
@@ -125,13 +138,17 @@ class CheckSmsViewModel(
 
     fun onRepeatPassword() {
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
-        addSubscription(
-            interactor.couriersExistAndSavePhone(formatPhone()).subscribe(
-                { fetchingPasswordComplete() },
-                { fetchingPasswordError(it) }
-            )
-        )
+        viewModelScope.launch {
+            try {
+                interactor.couriersExistAndSavePhone(formatPhone())
+                fetchingPasswordComplete()
+            } catch (e: Exception) {
+                fetchingPasswordError(e)
+            }
+
+        }
     }
+
 
     private fun fetchingPasswordComplete() {
         onTechEventLog("fetchingPasswordComplete")
@@ -164,22 +181,27 @@ class CheckSmsViewModel(
                     throwable.toString(),
                     resourceProvider.getGenericServiceButtonError()
                 )
+
         }
     }
 
     private fun restartTimer(durationTime: Int) {
-        interactor.startTimer(durationTime)
+        viewModelScope.launch {
+            interactor.startTimer(durationTime)
+        }
     }
 
     private fun fetchAuth(password: String) {
         _checkSmsUIState.value = CheckSmsUIState.Progress
         val phone = formatPhone()
-        addSubscription(interactor.auth(phone, password)
-            .subscribe(
-                { authComplete() },
-                { authError(it) }
-            )
-        )
+        viewModelScope.launch  {
+            try {
+                interactor.auth(phone, password)
+                authComplete()
+            } catch (e: Exception) {
+                authError(e)
+            }
+        }
     }
 
     private fun authComplete() {
@@ -191,12 +213,12 @@ class CheckSmsViewModel(
     private fun authError(throwable: Throwable) {
         onTechErrorLog("authError", throwable)
         _checkSmsUIState.value = when (throwable) {
-            is NoInternetException -> CheckSmsUIState.MessageError(
+            is NoInternetException,is UnknownHostException -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericInternetTitleError(),
                 resourceProvider.getGenericInternetMessageError(),
                 resourceProvider.getGenericInternetButtonError()
             )
-            is BadRequestException -> {
+            is BadRequestException  -> {
                 with(throwable.error) {
                     val restartTimer = if (data == null) {
                         DURATION_TIME_INIT
@@ -224,10 +246,12 @@ class CheckSmsViewModel(
     override fun onTimerState(duration: Int, downTickSec: Int) {
         val time: String =
             resourceProvider.getSignUpTimeConfirmCode(getMin(downTickSec), getSec(downTickSec))
-        _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordTimer(
-            time,
-            resourceProvider.getTitleInputTimerSpan()
-        )
+        _repeatStateUI.value =
+            CheckSmsUIRepeatState.RepeatPasswordTimer(
+                time,
+                resourceProvider.getTitleInputTimerSpan()
+            )
+
     }
 
     private fun getMin(duration: Int): Int {
@@ -245,7 +269,9 @@ class CheckSmsViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        interactor.stopTimer()
+        viewModelScope.launch {
+            interactor.stopTimer()
+        }
     }
 
     override fun getScreenTag(): String {

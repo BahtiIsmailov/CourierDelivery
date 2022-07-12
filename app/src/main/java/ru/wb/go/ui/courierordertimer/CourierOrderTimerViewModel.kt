@@ -1,9 +1,13 @@
 package ru.wb.go.ui.courierordertimer
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
@@ -16,20 +20,17 @@ import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.dialogs.NavigateToDialogInfo
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.text.DecimalFormat
 
 class CourierOrderTimerViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CourierOrderTimerInteractor,
     val courierLocalRepository: CourierLocalRepository,
     private val resourceProvider: CourierOrderTimerResourceProvider,
     private val errorDialogManager: ErrorDialogManager
-) : TimerStateHandler, NetworkViewModel(compositeDisposable, metric) {
+) : TimerStateHandler, NetworkViewModel() {
 
     private val _orderTimer = MutableLiveData<CourierOrderTimerState>()
     val orderTimer: LiveData<CourierOrderTimerState>
@@ -43,8 +44,6 @@ class CourierOrderTimerViewModel(
     val navigateToDialogTimeIsOut: LiveData<NavigateToDialogInfo>
         get() = _navigateToDialogTimeIsOut
 
-    private val _getOrderId = MutableLiveData<LocalOrderEntity>()
-    val getOrderId: LiveData<LocalOrderEntity> = _getOrderId
 
     private val _navigateToDialogRefuseOrder = SingleLiveEvent<NavigateToDialogConfirmInfo>()
     val navigateToDialogRefuseOrder: LiveData<NavigateToDialogConfirmInfo>
@@ -72,28 +71,36 @@ class CourierOrderTimerViewModel(
     }
 
     private fun initOrder() {
-        addSubscription(
-            interactor.timerEntity()
-                .subscribe(
-                    {
-                        initOrderInfo(it)
-                        initTimer(it.reservedDuration, it.reservedAt)
-                    },
-                    {
-                        onTechErrorLog("initOrder", it)
-                    }
-                )
-        )
+        subscribeTimer()
+        viewModelScope.launch {
+            try {
+                val it = interactor.timerEntity()
+                initOrderInfo(it)
+                startTimer(it.reservedDuration, it.reservedAt)
+            } catch (e: Exception) {
+                onTechErrorLog("initOrder", e)
+            }
+        }
     }
 
-    private fun initTimer(reservedDuration: String, reservedAt: String) {
+    private fun subscribeTimer() {
+        interactor.timer
+            .onEach {
+                onHandleSignUpState(it)
+            }
+            .catch {
+                onHandleSignUpError(it)
+            }
+            .launchIn(viewModelScope)
+
+    }
+
+
+    private fun startTimer(reservedDuration: String, reservedAt: String) {
         updateTimer(0, 0)
         interactor.startTimer(reservedDuration, reservedAt)
-        addSubscription(
-            interactor.timer
-                .subscribe({ onHandleSignUpState(it) }, { onHandleSignUpError(it) })
-        )
     }
+
 
     private fun onHandleSignUpState(timerState: TimerState) {
         timerState.handle(this)
@@ -108,7 +115,7 @@ class CourierOrderTimerViewModel(
             DateTimeFormatter.getAnalogTime(0, 0),
             DateTimeFormatter.getDigitTime(0)
         )
-        _timeOut.postValue(true)
+        _timeOut.value = true
         _navigateToDialogTimeIsOut.value = NavigateToDialogInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerTitle(),
@@ -122,22 +129,23 @@ class CourierOrderTimerViewModel(
             val decimalFormat = DecimalFormat("#,###.##")
             val coast = decimalFormat.format(price)
             _orderInfo.value = CourierOrderTimerInfoUIState.InitOrderInfo(
+                resourceProvider.getRoute(route),
                 resourceProvider.getOrder(orderId),
                 name,
                 resourceProvider.getCoast(coast),
                 resourceProvider.getBoxCountAndVolume(boxesCount, volume),
                 resourceProvider.getPvz(countPvz),
-                if (gate.isEmpty()) "-" else gate
+                gate.ifEmpty { "-" }
             )
         }
     }
 
+
     private fun setLoader(state: WaitLoader) {
-        _waitLoader.postValue(state)
+        _waitLoader.value = state
     }
 
     fun onRefuseOrderClick() {
-
         _navigateToDialogRefuseOrder.value = NavigateToDialogConfirmInfo(
             DialogInfoStyle.WARNING.ordinal,
             resourceProvider.getDialogTimerSkipTitle(),
@@ -149,6 +157,7 @@ class CourierOrderTimerViewModel(
 
     fun iArrivedClick() {
         _navigationState.value = CourierOrderTimerNavigationState.NavigateToScanner
+        //.scannerAction(ScannerState.StartScan)
     }
 
     fun timeOutReturnToList() {
@@ -162,30 +171,26 @@ class CourierOrderTimerViewModel(
     }
 
     private fun deleteTask() {
-
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.deleteTask()
-                .subscribe(
-                    {
-                        setLoader(WaitLoader.Complete)
-                        onTechEventLog("toWarehouse")
-                        _navigationState.value =
-                            CourierOrderTimerNavigationState.NavigateToWarehouse
-                        _timeOut.postValue(false)
-                    },
-                    {
-                        setLoader(WaitLoader.Complete)
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+        viewModelScope.launch {
+            try {
+                interactor.deleteTask()
+                setLoader(WaitLoader.Complete)
+                onTechEventLog("toWarehouse")
+                _navigationState.value =
+                    CourierOrderTimerNavigationState.NavigateToWarehouse
+                _timeOut.value = false
+            } catch (e: Exception) {
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+                _navigationState.value =
+                    CourierOrderTimerNavigationState.NavigateToWarehouse
+            }
+        }
 
-                    }
-                )
-        )
     }
 
-    fun getOrderId(){
-       _getOrderId.value = courierLocalRepository.getOrder()
-    }
+
 
     override fun onTimerState(duration: Int, downTickSec: Int) {
         updateTimer(duration, downTickSec)
@@ -212,3 +217,4 @@ class CourierOrderTimerViewModel(
     }
 
 }
+

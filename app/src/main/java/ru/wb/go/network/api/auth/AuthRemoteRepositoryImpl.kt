@@ -1,7 +1,7 @@
 package ru.wb.go.network.api.auth
 
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.wb.go.network.api.auth.entity.TokenEntity
 import ru.wb.go.network.api.auth.entity.UserInfoEntity
 import ru.wb.go.network.api.auth.query.AuthBySmsOrPasswordQuery
@@ -17,21 +17,26 @@ class AuthRemoteRepositoryImpl(
     private val settingsManager: SettingsManager,
 ) : AuthRemoteRepository {
 
-    override fun auth(
+    override suspend fun auth(
         password: String, phone: String, useSMS: Boolean,
-    ): Completable {
-        val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
-        val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
-            .map { TokenEntity(it.accessToken, it.expiresIn, it.refreshToken) }
-            .doOnSuccess { saveToken(it) }
-            .doOnSuccess { turnOffDemo() }
-        return Completable.fromSingle(auth)
+    ) {
+        withContext(Dispatchers.IO) {
+            val requestBody = AuthBySmsOrPasswordQuery(phone, password, useSMS)
+            val auth = authApi.auth(tokenManager.apiVersion(), requestBody)
+            val tokenEntity = TokenEntity(auth.accessToken, auth.expiresIn, auth.refreshToken)
+            saveToken(tokenEntity)
+            turnOffDemo()
+        }
     }
 
-    override fun couriersExistAndSavePhone(phone: String): Completable {
-        return authApi.couriersAuth(tokenManager.apiVersion(), phone)
-            .doOnSuccess { userManager.savePhone(phone) }
-            .ignoreElement()
+    override suspend fun couriersExistAndSavePhone(phone: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                authApi.couriersAuth(tokenManager.apiVersion(), phone)
+                userManager.savePhone(phone)
+            } catch (e: Exception) {
+            }
+        }
     }
 
     private fun saveToken(tokenEntity: TokenEntity) {
@@ -42,12 +47,16 @@ class AuthRemoteRepositoryImpl(
         tokenManager.turnOffDemo()
     }
 
-    override fun statistics(): Single<StatisticsResponse> {
-        return authApi.statistics(tokenManager.apiVersion())
+    override suspend fun statistics(): StatisticsResponse {
+        return withContext(Dispatchers.IO){
+            authApi.statistics(tokenManager.apiVersion())
+        }
     }
 
-    override fun userInfo(): Single<UserInfoEntity> {
-        return Single.just(UserInfoEntity(tokenManager.userName(), tokenManager.userCompany()))
+    override suspend fun userInfo(): UserInfoEntity {
+        return withContext(Dispatchers.IO){
+            UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+        }
     }
 
     override fun clearCurrentUser() {

@@ -2,27 +2,25 @@ package ru.wb.go.ui.courierbillingaccountselector
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierBillingAccountEntity
 import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import java.text.DecimalFormat
 
 class CourierBillingAccountSelectorViewModel(
     private val parameters: CourierBillingAccountSelectorAmountParameters,
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CourierBillingAccountSelectorInteractor,
     private val resourceProvider: CourierBillingAccountSelectorResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -52,6 +50,9 @@ class CourierBillingAccountSelectorViewModel(
     private val _loaderState = MutableLiveData<CourierBillingAccountSelectorUILoaderState>()
     val loaderState: LiveData<CourierBillingAccountSelectorUILoaderState>
         get() = _loaderState
+
+    private val _courierInnLivaData = MutableLiveData<String>()
+    val courierInnLivaData: LiveData<String> = _courierInnLivaData
 
     private val _balanceChangeState = MutableLiveData<CourierBillingAccountSelectorBalanceAction>()
     val balanceChangeState: LiveData<CourierBillingAccountSelectorBalanceAction>
@@ -85,24 +86,25 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun initAccounts() {
         setLoader(CourierBillingAccountSelectorUILoaderState.Progress)
-        addSubscription(
-            interactor.getBillingAccounts()
-                .map { sortedAccounts(it) }
-                .doOnSuccess {
-                    billingAccounts = it.toMutableList()
+        viewModelScope.launch  {
+            try {
+                billingAccounts = interactor.getBillingAccounts().toMutableList()
+                billingAccounts.map {
+                    _courierInnLivaData.value = it.inn
                 }
-                .map { convertToItems(it) }
-                .doOnSuccess {
-                    copyCourierBillingAccountSelectorAdapterItems = it.toMutableList()
-                }
-                .doFinally { setLoader(CourierBillingAccountSelectorUILoaderState.Complete) }
-                .subscribe({
-                    _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetItems(it)
-                }, {
-                    onTechErrorLog("getBillingAccounts", it)
-                    errorDialogManager.showErrorDialog(it, _errorDialogState)
-                })
-        )
+                copyCourierBillingAccountSelectorAdapterItems = convertToItems(billingAccounts)
+                setLoader(CourierBillingAccountSelectorUILoaderState.Complete)
+                _dropAccountState.value =
+                    CourierBillingAccountSelectorDropAction.SetItems(
+                        copyCourierBillingAccountSelectorAdapterItems
+                    )
+
+            } catch (e: Exception) {
+                onTechErrorLog("getBillingAccounts", e)
+                errorDialogManager.showErrorDialog(e, _errorDialogState)
+            }
+        }
+
     }
 
     private fun convertToItems(it: List<CourierBillingAccountEntity>): MutableList<CourierBillingAccountSelectorAdapterItem> {
@@ -159,17 +161,18 @@ class CourierBillingAccountSelectorViewModel(
 
     private fun amountFromString(text: String) = text.replace("\\s".toRegex(), "").toInt()
 
-    fun onFormChanges(changeObservables: ArrayList<Observable<CourierBillingAccountSelectorUIAction>>) {
-        addSubscription(Observable.merge(changeObservables)
+    fun onFormChanges(changeObservables: ArrayList<Flow<CourierBillingAccountSelectorUIAction>>) {
+        changeObservables
+            .merge()
             .distinctUntilChanged()
             .map { mapAction(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
-        )
+            .onEach { _formUIState.value = it }
+            .catch { LogUtils { logDebugApp(it.toString()) } }
+            .launchIn(viewModelScope)
     }
 
-    private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
+
+     private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
         is CourierBillingAccountSelectorUIAction.FocusChange -> checkFieldFocus(action)
         is CourierBillingAccountSelectorUIAction.TextChange -> checkFieldText(action)
         is CourierBillingAccountSelectorUIAction.CompleteClick -> checkFieldAll(action)
@@ -248,15 +251,15 @@ class CourierBillingAccountSelectorViewModel(
                 recipientInn = inn
             )
         }
-        addSubscription(
-            interactor.payments(amountFromText, paymentEntity)
-                .subscribe(
-                    { paymentsComplete(amountFromText) },
-                    {
-                        onTechErrorLog("requestPayout", it)
-                        errorDialogManager.showErrorDialog(it, _errorDialogState)
-                    })
-        )
+        viewModelScope.launch  {
+            try {
+                interactor.payments(amountFromText, paymentEntity)
+                paymentsComplete(amountFromText)
+            } catch (e: Exception) {
+                onTechErrorLog("requestPayout", e)
+                errorDialogManager.showErrorDialog(e, _errorDialogState)
+            }
+        }
     }
 
     fun onEditAccountClick(idView: Int) {
@@ -297,5 +300,6 @@ class CourierBillingAccountSelectorViewModel(
     override fun getScreenTag(): String {
         return ""
     }
+
 
 }

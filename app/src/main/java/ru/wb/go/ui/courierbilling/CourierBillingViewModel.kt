@@ -2,7 +2,9 @@ package ru.wb.go.ui.courierbilling
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.entity.BillingCommonEntity
 import ru.wb.go.network.token.UserManager
@@ -10,19 +12,16 @@ import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbilling.domain.CourierBillingInteractor
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CourierBillingViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CourierBillingInteractor,
     private val dataBuilder: CourierBillingDataBuilder,
     private val resourceProvider: CourierBillingResourceProvider,
     private val userManager: UserManager,
     private val errorDialogManager: ErrorDialogManager
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private var balance = 0
 
@@ -72,23 +71,22 @@ class CourierBillingViewModel(
 
     private fun initBalanceAndTransactions() {
         setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.getBillingInfo()
-                .subscribe(
-                    { billingComplete(it) },
-                    {
-                        onTechErrorLog("billingError", it)
-                        setLoader(WaitLoader.Complete)
-                        _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
-                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-                    })
-        )
+        viewModelScope.launch  {
+            try {
+                billingComplete(interactor.getBillingInfo())
+            }catch (e:Exception){
+                onTechErrorLog("billingError", e)
+                setLoader(WaitLoader.Complete)
+                _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
     }
 
     private fun billingComplete(it: BillingCommonEntity) {
         balance = it.balance
 
-        _balanceInfo.value = resourceProvider.formatMoney(balance, false)
+        _balanceInfo.value =  resourceProvider.formatMoney(balance, false)
         val items = mutableListOf<BaseItem>()
         it.transactions.sortedByDescending { it.createdAt }
             .forEachIndexed { index, billingTransactionEntity ->
@@ -106,7 +104,7 @@ class CourierBillingViewModel(
     fun canCheckout() = balance > 0
 
     private fun setLoader(state: WaitLoader) {
-        _waitLoader.postValue(state)
+        _waitLoader.value = state
     }
 
     fun onUpdateClick() {
@@ -119,7 +117,8 @@ class CourierBillingViewModel(
     }
 
     fun onCancelLoadClick() {
-        clearSubscription()
+        //viewModelScope.coroutineContext.cancelChildren()
+        //clearSubscription()
     }
 
     override fun getScreenTag(): String {
@@ -129,5 +128,7 @@ class CourierBillingViewModel(
     companion object {
         const val SCREEN_TAG = "CourierBilling"
     }
+
+
 
 }

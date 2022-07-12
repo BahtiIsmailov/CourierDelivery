@@ -8,13 +8,11 @@ import android.view.View.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
-import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
@@ -33,10 +31,6 @@ class CourierWarehousesFragment :
     BaseServiceFragment<CourierWarehousesViewModel, CourierWarehouseFragmentBinding>(
         CourierWarehouseFragmentBinding::inflate
     ) {
-
-    private lateinit var adapter: CourierWarehousesAdapter
-    private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var smoothScroller: SmoothScroller
 
     override val viewModel by viewModel<CourierWarehousesViewModel>()
 
@@ -64,7 +58,7 @@ class CourierWarehousesFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-
+         var adapter: CourierWarehousesAdapter? = null
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             showDialogInfo(it)
         }
@@ -82,11 +76,12 @@ class CourierWarehousesFragment :
                     }
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     binding.items.adapter = adapter
+
                 }
-                is CourierWarehouseItemState.UpdateItems -> {
-                    adapter.clear()
-                    adapter.addItems(it.items)
-                    adapter.notifyDataSetChanged()
+                is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
+                    adapter?.clear()
+                    adapter?.addItems(it.items)
+                    adapter?.notifyDataSetChanged()
                 }
                 is CourierWarehouseItemState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
@@ -95,13 +90,13 @@ class CourierWarehousesFragment :
                     binding.items.visibility = GONE
                 }
                 is CourierWarehouseItemState.UpdateItem -> {
-                    adapter.setItem(it.position, it.item)
-                    adapter.notifyItemChanged(it.position, it.item)
+                    adapter?.setItem(it.position, it.item)
+                    adapter?.notifyItemChanged(it.position, it.item)
                 }
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
-                CourierWarehouseItemState.NoInternet -> {
+                is CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.visibility = VISIBLE
                     binding.items.visibility = GONE
                 }
@@ -162,7 +157,7 @@ class CourierWarehousesFragment :
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
+                is CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
@@ -174,7 +169,7 @@ class CourierWarehousesFragment :
                             )
                         )
                     )
-                CourierWarehousesNavigationState.NavigateToRegistration -> {
+                is CourierWarehousesNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
                     )
@@ -187,29 +182,20 @@ class CourierWarehousesFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                viewModel.updateData()
-            }
-        }
-        binding.update.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.updateData()
-            }
-        }
+        binding.refresh.setOnRefreshListener { viewModel.updateData() }
+        binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
     private fun initRecyclerView() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.items.layoutManager = layoutManager
+        binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.addItemDecoration(getHorizontalDividerDecoration())
         binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
 
     private fun initSmoothScroller() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -218,15 +204,8 @@ class CourierWarehousesFragment :
 
     override fun onResume() {
         super.onResume()
-        viewModel.resumeInit()
-        lifecycleScope.launch {
-            viewModel.updateData()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.clearSubscription()
+        viewModel.resumeInit()// если убрать то показывается дэмо версию
+        viewModel.updateData()// если убрать то не отображается список складов
     }
 
     private fun showDialogInfo(
@@ -244,7 +223,8 @@ class CourierWarehousesFragment :
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()
         smoothScroller.targetPosition = position
-        layoutManager.startSmoothScroll(smoothScroller)
+        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
+        layoutManager?.startSmoothScroll(smoothScroller)
     }
 
     private fun createSmoothScroller(): SmoothScroller {
@@ -257,9 +237,11 @@ class CourierWarehousesFragment :
 
 }
 
+
 fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
     val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
     ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
         ?.let { decoration.setDrawable(it) }
     return decoration
 }
+

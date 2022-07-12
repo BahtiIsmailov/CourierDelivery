@@ -1,6 +1,7 @@
 package ru.wb.go.db.entity.courierlocal
 
 data class CourierTimerEntity(
+    val route:String,
     val name: String,
     val orderId: Int,
     val price: Int,

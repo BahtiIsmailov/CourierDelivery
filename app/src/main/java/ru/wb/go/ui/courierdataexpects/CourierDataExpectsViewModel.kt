@@ -2,7 +2,8 @@ package ru.wb.go.ui.courierdataexpects
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import ru.wb.go.app.INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
@@ -10,7 +11,6 @@ import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.CustomException
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
@@ -18,24 +18,18 @@ import ru.wb.go.ui.app.domain.AppNavRepository
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
 import ru.wb.go.ui.courierdataexpects.CourierDataExpectsFragment.Companion.DIALOG_EXPECTS_ERROR_RESULT_TAG
 import ru.wb.go.ui.courierdataexpects.domain.CourierDataExpectsInteractor
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class CouriersCompleteRegistrationViewModel(
     private val parametersData: CourierDataExpectsParameters,
-
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
-
     private val resourceProviderData: CourierDataExpectsResourceProvider,
     private val interactorData: CourierDataExpectsInteractor,
     private val appRemoteRepository: AppRemoteRepository,
-    private val rxSchedulerFactory: RxSchedulerFactory,
     private val errorDialogManager: ErrorDialogManager,
     private val tokenManager: TokenManager,
     private val appNavRepository: AppNavRepository
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     private val _showDialogInfo = SingleLiveEvent<ErrorDialogData>()
     val showDialogInfo: LiveData<ErrorDialogData>
@@ -56,25 +50,28 @@ class CouriersCompleteRegistrationViewModel(
     init {
         onTechEventLog("init")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
-        addSubscription(
-            interactorData.saveRepeatCourierDocuments()
-                .subscribe(
-                    { _progressState.value = CourierDataExpectsProgressState.Complete },
-                    { _progressState.value = CourierDataExpectsProgressState.Complete })
-        )
+        viewModelScope.launch {
+            try {
+                interactorData.saveRepeatCourierDocuments()
+                _progressState.value = CourierDataExpectsProgressState.Complete
+            } catch (e: Exception) {
+                _progressState.value = CourierDataExpectsProgressState.Complete
+            }
+        }
     }
 
     fun onUpdateStatusClick() {
         onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
-        addSubscription(
-            interactorData.saveRepeatCourierDocuments()
-                .andThen(interactorData.isRegisteredStatus())
-                .subscribe(
-                    { isRegisteredStatusComplete(it) },
-                    { isRegisteredStatusError(it) }
-                )
-        )
+        viewModelScope.launch {
+            try {
+                interactorData.saveRepeatCourierDocuments()
+                val result = interactorData.isRegisteredStatus()
+                isRegisteredStatusComplete(result)
+            } catch (e: Exception) {
+                isRegisteredStatusError(e)
+            }
+        }
     }
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
@@ -82,6 +79,7 @@ class CouriersCompleteRegistrationViewModel(
         when (registerStatus) {
             INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.value =
                 CourierDataExpectsProgressState.Complete
+
             INVALID_TOKEN -> appNavRepository.navigate(INVALID_TOKEN)
             NEED_SEND_COURIER_DOCUMENTS -> toDataType(CourierDocumentsEntity())
             NEED_CORRECT_COURIER_DOCUMENTS -> checkCorrectCourierDocuments()
@@ -112,16 +110,15 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun checkCorrectCourierDocuments() {
-        addSubscription(
-            appRemoteRepository.getCourierDocuments()
-                .compose(rxSchedulerFactory.applySingleSchedulers())
-                .subscribe(
-                    { checkCorrectCourierDocumentsComplete(it) },
-                    {
-                        errorDialogManager.showErrorDialog(it, _showDialogInfo)
-                        _progressState.value = CourierDataExpectsProgressState.Complete
-                    })
-        )
+        viewModelScope.launch {
+            try {
+                val response = appRemoteRepository.getCourierDocuments()
+                checkCorrectCourierDocumentsComplete(response)
+            } catch (e: Exception) {
+                errorDialogManager.showErrorDialog(e, _showDialogInfo)
+                _progressState.value = CourierDataExpectsProgressState.Complete
+            }
+        }
     }
 
     private lateinit var courierDocumentsEntityDialog: CourierDocumentsEntity
@@ -141,7 +138,12 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun toDataType(it: CourierDocumentsEntity) {
-        _navAction.value = CourierDataExpectsNavAction.NavigateToDataType(parametersData.phone, it)
+        _navAction.value =
+            CourierDataExpectsNavAction.NavigateToDataType(
+                parametersData.phone,
+                it
+            )
+
     }
 
     override fun getScreenTag(): String {
@@ -153,3 +155,4 @@ class CouriersCompleteRegistrationViewModel(
     }
 
 }
+

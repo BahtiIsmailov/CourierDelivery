@@ -22,7 +22,7 @@ class DeviceManagerImpl(private val context: Context,
     override val deviceName = String.format("%s %s", Build.MANUFACTURER, Build.DEVICE)
 
     override val appVersion: String
-        get() {
+        get() {//лежит в контекст приложения можно мотреть ккие приложения установлены на устройстве
             var packageInfo: PackageInfo? = null
             try {
                 packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)

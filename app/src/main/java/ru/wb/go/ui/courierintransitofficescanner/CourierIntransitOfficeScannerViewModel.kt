@@ -2,7 +2,11 @@ package ru.wb.go.ui.courierintransitofficescanner
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeScanData
@@ -10,19 +14,16 @@ import ru.wb.go.ui.courierintransitofficescanner.domain.CourierIntransitOfficeSc
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.WaitLoader
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 
 class CourierIntransitOfficeScannerViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CourierIntransitOfficeScannerInteractor,
     private val resourceProvider: CourierIntransitOfficeScannerResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
-) : ServicesViewModel(compositeDisposable, metric, interactor, resourceProvider) {
+) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _toolbarLabelState = MutableLiveData<String>()
     val toolbarLabelState: LiveData<String>
@@ -64,12 +65,14 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun initScanner() {
-        addSubscription(
-            interactor.observeOfficeIdScanProcess()
-                .subscribe(
-                    { observeOfficeIdScanProcessComplete(it) },
-                    { observeOfficeIdScanProcessError(it) })
-        )
+         interactor.observeOfficeIdScanProcess()
+             .onEach {
+                 observeOfficeIdScanProcessComplete(it)
+             }
+             .catch {
+                 observeOfficeIdScanProcessError(it)
+             }
+             .launchIn(viewModelScope)
     }
 
     private fun observeOfficeIdScanProcessComplete(it: CourierIntransitOfficeScanData) {
@@ -82,24 +85,24 @@ class CourierIntransitOfficeScannerViewModel(
                     )
                 onCleared()
             }
-            CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
+            is CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
                 onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.UnknownQrOffice
                 _navigationState.value =
                     CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
-                        "QR код офиса не распознан", "Повторите сканирование"
+                        "QR-код ПВЗ не распознан", "QR код должен предоставить менеджер ПВЗ"
                     )
             }
-            CourierIntransitOfficeScanData.WrongOfficeScan -> {
+            is CourierIntransitOfficeScanData.WrongOfficeScan -> {
                 onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.WrongOffice
                 _navigationState.value =
                     CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed(
-                        "Офис не принадлежит маршруту", "Повторите сканирование"
+                        "У вас нет коробок для этого ПВЗ.", "Проверьте свой маршрут"
                     )
             }
-            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
-            CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
+            is CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
+            is CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
         }
     }
 
@@ -119,7 +122,8 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     fun onDestroy() {
-        clearSubscription()
+        //viewModelScope.coroutineContext.cancelChildren()
+        //clearSubscription()
     }
 
     fun onErrorDialogConfirmClick() {
@@ -147,3 +151,4 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
 }
+

@@ -2,24 +2,25 @@ package ru.wb.go.ui.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.app.domain.AppInteractor
 import ru.wb.go.ui.app.domain.AppNavRepositoryImpl.Companion.INVALID_TOKEN
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
 
 class AppViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: AppInteractor,
     private val resourceProvider: AppResourceProvider,
     private val deviceManager: DeviceManager,
     private val settingsManager: SettingsManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     private val _networkState = MutableLiveData<NetworkState>()
     val networkState: LiveData<NetworkState>
@@ -36,27 +37,35 @@ class AppViewModel(
     init {
         fetchNetworkState()
         fetchVersionApp()
+        observeNavigationApp()
 
-        addSubscription(
-            interactor.observeNavigationApp()
-                .subscribe({
-                    if (it == INVALID_TOKEN) {
-                        interactor.exitAuth()
-                        _navigation.value = NavigationState.NavigateToRegistration
-                    } else
-                        throw IllegalStateException("Wrong param $it")
-                }, {})
-        )
     }
 
     private fun fetchVersionApp() {
         _versionApp.value = resourceProvider.getVersionApp(deviceManager.appVersion)
     }
 
+
+    private fun observeNavigationApp(){
+        interactor.observeNavigationApp()
+            .onEach {
+                if (it == INVALID_TOKEN) {
+                    interactor.exitAuth()
+                    _navigation.value = NavigationState.NavigateToRegistration
+                } else
+                    throw IllegalStateException("Wrong param $it")
+            }
+            .launchIn(viewModelScope)
+    }
+
+
     private fun fetchNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected().subscribe({ _networkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _networkState.value = it
+            }
+            .catch {  }
+            .launchIn(viewModelScope)
     }
 
     fun onSupportClick() {
@@ -64,9 +73,12 @@ class AppViewModel(
     }
 
     fun onExitAuthClick() {
-        interactor.exitAuth()
-        _navigation.value = NavigationState.NavigateToRegistration
+        viewModelScope.launch {
+            interactor.exitAuth()
+            _navigation.value = NavigationState.NavigateToRegistration
+        }
     }
+
 
     fun getDarkThemeSetting(): Boolean {
         return settingsManager.getSetting(
@@ -74,6 +86,7 @@ class AppViewModel(
             false
         )
     }
+
 
     override fun getScreenTag(): String {
         return SCREEN_TAG
@@ -83,6 +96,7 @@ class AppViewModel(
         const val SCREEN_TAG = "App"
     }
 
+
     sealed class NavigationState {
 
         object NavigateToRegistration : NavigationState()
@@ -90,5 +104,7 @@ class AppViewModel(
         object NavigateToSupport : NavigationState()
 
     }
+
+
 
 }

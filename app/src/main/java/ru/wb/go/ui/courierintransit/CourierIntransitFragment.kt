@@ -2,18 +2,29 @@ package ru.wb.go.ui.courierintransit
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.View.*
+import android.view.WindowManager
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.adapters.DefaultAdapterDelegate
@@ -39,12 +50,15 @@ class CourierIntransitFragment :
 
     override val viewModel by viewModel<CourierIntransitViewModel>()
 
-    private lateinit var adapter: DefaultAdapterDelegate
-    private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var smoothScroller: RecyclerView.SmoothScroller
+    private val adapter: DefaultAdapterDelegate
+        get() = binding.routes.adapter as DefaultAdapterDelegate
+
+
     private val itemCallback = object : OnCourierIntransitCallback {
         override fun onPickToPointClick(idItem: Int) {
             viewModel.onItemOfficeClick(idItem)
+            val sheetBehavior = BottomSheetBehavior.from(binding.bottomSheetLayoutListItem)
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
@@ -72,17 +86,179 @@ class CourierIntransitFragment :
         (activity as NavDrawerListener).lockNavDrawer()
     }
 
+
+    /*private var currentOrderId1: String? = null
+    private fun showBottomSheetDialogCardOfOrders() {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        bottomSheetDialog.setContentView(R.layout.courier_intransit_card_of_orders)
+        bottomSheetDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        bottomSheetDialog.context.setTheme(R.style.AppBottomSheetDialogTheme)
+
+        val sheetBehavior = BottomSheetBehavior.from(binding.bottomSheetLayoutListItem)
+        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        bottomSheetDialog.show()
+
+        val closeButton = bottomSheetDialog.findViewById<ImageView>(R.id.addresses_close1)
+        val scheduleOrder = bottomSheetDialog.findViewById<TextView>(R.id.time_work_detail1)
+        val address = bottomSheetDialog.findViewById<TextView>(R.id.fullAddressOrder1)
+        val currentOrderId1 = bottomSheetDialog.findViewById<TextView>(R.id.currentOrderId1)
+        val scanQrPvzButton =
+            bottomSheetDialog.findViewById<AppCompatButton>(R.id.scan_qr_pvz_button1)
+        val navigatorButton = bottomSheetDialog.findViewById<ImageButton>(R.id.navigator_button1)
+        val scanQrPvzCompleteButton =
+            bottomSheetDialog.findViewById<ImageButton>(R.id.scan_qr_pvz_complete_button1)
+        val completeDeliveryButton =
+            bottomSheetDialog.findViewById<AppCompatButton>(R.id.complete_delivery_button1)
+        val imageItemBorder = bottomSheetDialog.findViewById<ImageView>(R.id.image_item_border1)
+        val selectedBackground1 =
+            bottomSheetDialog.findViewById<ImageView>(R.id.selected_background1)
+        val icon = bottomSheetDialog.findViewById<ImageView>(R.id.icon1)
+
+        visibleAppCompatButton(binding.scanQrPvzButton, scanQrPvzButton!!)
+        visibleAppCompatButton(binding.navigatorButton, navigatorButton!!)
+        visibleAppCompatButton(binding.scanQrPvzCompleteButton, scanQrPvzCompleteButton!!)
+        visibleAppCompatButton(binding.completeDeliveryButton, completeDeliveryButton!!)
+
+        fun initialiseBackgroundForItem(
+            @DrawableRes imageItemBorderValue: Int,
+            @DrawableRes selectedBackgroundValue: Int,
+            @DrawableRes iconValue: Int
+        ) {
+            imageItemBorder?.setImageResource(imageItemBorderValue)
+            selectedBackground1?.setImageResource(selectedBackgroundValue)
+            icon?.setImageResource(iconValue)
+        }
+
+        viewModel.courierIntransitEmptyItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.courierIntransitCompleteItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.courierIntransitUndeliveredAllItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.courierIntransitUnloadingExpectsItemLiveData.observe(viewLifecycleOwner){
+            address?.text = it.fullAddress
+            scheduleOrder?.text = it.timeWork
+            currentOrderId1?.text = this.currentOrderId1
+        }
+
+        viewModel.currentItemBackgroundForBottomSheet.observe(viewLifecycleOwner) {
+            when (it) {
+                IntransitItemType.Empty -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_primary,
+                        R.drawable.courier_background_select_warehouse,
+                        R.drawable.ic_intransit_item_empty
+                    )
+
+                }
+                IntransitItemType.UnloadingExpects -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_green,
+                        R.drawable.courier_intransit_background_select_green,
+                        R.drawable.ic_intransit_item_wait_new
+                    )
+                }
+                IntransitItemType.FailedUnloadingAll -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_red,
+                        R.drawable.courier_intransit_background_select_red,
+                        R.drawable.ic_intransit_item_error
+                    )
+                }
+
+                IntransitItemType.Complete -> {
+                    initialiseBackgroundForItem(
+                        R.drawable.ic_courier_intransit_item_border_green,
+                        R.drawable.courier_intransit_background_select_green,
+                        R.drawable.ic_intransit_item_complete
+                        )
+                }
+            }
+        }
+
+        closeButton!!.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
+        }
+
+        scanQrPvzButton.setOnClickListener {
+            viewModel.onScanQrPvzClick()
+            bottomSheetDialog.dismiss()
+        }
+        navigatorButton.setOnClickListener {
+            viewModel.onNavigatorClick()
+            bottomSheetDialog.dismiss()
+        }
+        scanQrPvzCompleteButton.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            viewModel.onScanQrPvzClick()
+        }
+        completeDeliveryButton.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            viewModel.onCompleteDeliveryClick()
+        }
+    }
+
+    private fun visibleAppCompatButton(view: View, bottomSheetButton: View) {
+        if (view.isVisible) {
+            bottomSheetButton.isVisible = true
+        }
+    }
+*/
+
     private fun setColorNavigatorTint(@ColorRes colorRes: Int) {
-        binding.navigatorButton.setColorFilter(
+        binding.navigatorButton1.setColorFilter(
             ContextCompat.getColor(requireContext(), colorRes),
             android.graphics.PorterDuff.Mode.SRC_IN
         )
     }
-
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
 
+        viewModel.courierIntransitEmptyItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
+            setColorNavigatorTint(R.color.colorPrimary)
+        }
+
+        viewModel.courierIntransitCompleteItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
+            setColorNavigatorTint(R.color.green)
+        }
+
+        viewModel.courierIntransitUndeliveredAllItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
+            setColorNavigatorTint(R.color.red)
+        }
+
+        viewModel.courierIntransitUnloadingExpectsItemLiveData.observe(viewLifecycleOwner){
+            binding.fullAddressOrder1.text = it.fullAddress
+            binding.timeWorkDetail1.text = it.timeWork
+            binding.deliveryTotalCount1.text = "${it.deliveryCount} / ${it.fromCount}"
+            setColorNavigatorTint(R.color.green)
+        }
+
+
         viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+            //currentOrderId1 = it.label
             binding.currentOrderId.text = it.label
         }
 
@@ -93,12 +269,11 @@ class CourierIntransitFragment :
         viewModel.navigatorState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierIntransitNavigatorUIState.Disable -> {
-                    binding.navigatorButton.isEnabled = false
-                    setColorNavigatorTint(R.color.tertiary)
+                    binding.addressConstraint.isGone = true
                 }
-                CourierIntransitNavigatorUIState.Enable -> {
-                    binding.navigatorButton.isEnabled = true
-                    setColorNavigatorTint(R.color.colorPrimary)
+                is CourierIntransitNavigatorUIState.Enable -> {
+                    binding.addressConstraint.isVisible = true
+                    //showBottomSheetDialogCardOfOrders()
                 }
             }
         }
@@ -128,6 +303,15 @@ class CourierIntransitFragment :
             when (it) {
                 is CourierIntransitItemState.InitItems -> {
                     binding.deliveryTotalCount.text = it.boxTotal
+
+                    val value = it.boxTotal.split("/")
+                    binding.progressLimit.max = value[1].toInt()
+                    binding.progressLimit.progress = value[0].toInt()
+                    if(value[0] == value[1]){
+//                        binding.box.foregroundTintList = ColorStateList.valueOf(resources.getColor(R.color.green,context?.theme))
+//                        binding.deliveryTotalCount.setTextColor(resources.getColor(R.color.green,context?.theme))
+                        binding.progressLimit.progressTintList =  ColorStateList.valueOf(resources.getColor(R.color.green,context?.theme))
+                    }
                     binding.emptyList.visibility = GONE
                     binding.routes.visibility = VISIBLE
                     displayItems(it.items)
@@ -137,8 +321,7 @@ class CourierIntransitFragment :
                     binding.routes.visibility = GONE
                 }
                 is CourierIntransitItemState.UpdateItems -> displayItems(it.items)
-                CourierIntransitItemState.CompleteDelivery -> {
-                    binding.navigatorButton.visibility = INVISIBLE
+                is CourierIntransitItemState.CompleteDelivery -> {
                     binding.scanQrPvzButton.visibility = INVISIBLE
                     binding.scanQrPvzCompleteButton.visibility = VISIBLE
                     binding.completeDeliveryButton.visibility = VISIBLE
@@ -163,11 +346,12 @@ class CourierIntransitFragment :
             when (it) {
                 CourierIntransitNavigationState.NavigateToScanner -> {
                     binding.scanQrPvzButton.isEnabled = false
-                    binding.navigatorButton.isEnabled = false
+                    //binding.navigatorButton.isEnabled = false
                     binding.scanQrPvzCompleteButton.isEnabled = false
                     binding.completeDeliveryButton.isEnabled = false
 
                     binding.holdList.visibility = VISIBLE
+
                     findNavController().navigate(
                         CourierIntransitFragmentDirections.actionCourierIntransitFragmentToCourierIntransitOfficeScannerFragment()
                     )
@@ -209,13 +393,14 @@ class CourierIntransitFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun displayItems(items: List<BaseItem>) {
+        val adapter = adapter
         adapter.clear()
         adapter.addItems(items)
         adapter.notifyDataSetChanged()
     }
 
     private fun initListeners() {
-        binding.navigatorButton.setOnClickListener { viewModel.onNavigatorClick() }
+        binding.navigatorButton1.setOnClickListener { viewModel.onNavigatorClick() }
         binding.scanQrPvzButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.scanQrPvzCompleteButton.setOnClickListener { viewModel.onScanQrPvzClick() }
         binding.completeDeliveryButton.setOnClickListener { viewModel.onCompleteDeliveryClick() }
@@ -249,8 +434,7 @@ class CourierIntransitFragment :
     }
 
     private fun initRecyclerView() {
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.routes.layoutManager = layoutManager
+        binding.routes.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.routes.addItemDecoration(
             DividerItemDecoration(
                 activity,
@@ -262,7 +446,7 @@ class CourierIntransitFragment :
     }
 
     private fun initSmoothScroller() {
-        smoothScroller = object : LinearSmoothScroller(context) {
+          object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
             }
@@ -270,13 +454,12 @@ class CourierIntransitFragment :
     }
 
     private fun initAdapter() {
-        adapter = with(DefaultAdapterDelegate()) {
+        binding.routes.adapter = with(DefaultAdapterDelegate()) {
             addDelegate(CourierIntransitEmptyDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitCompleteDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitUndeliveredAllDelegate(requireContext(), itemCallback))
             addDelegate(CourierIntransitUnloadingExpectsDelegate(requireContext(), itemCallback))
         }
-        binding.routes.adapter = adapter
     }
 
     private fun scanOfficeAccepted() {
@@ -290,5 +473,4 @@ class CourierIntransitFragment :
     private fun scanWrongOffice() {
         viewModel.play(R.raw.wrongoffice)
     }
-
 }

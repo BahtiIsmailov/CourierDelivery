@@ -11,10 +11,15 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.ContextCompat
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import ru.wb.go.R
+import ru.wb.go.utils.CoroutineExtension
 import java.util.concurrent.TimeUnit
 
 class TimerProgressView : View {
@@ -34,7 +39,7 @@ class TimerProgressView : View {
     private var backgroundColor1 = DEFAULT_PROGRESS_BACKGROUND_COLOR
     private var foregroundColor = DEFAULT_PROGRESS_FOREGROUND_COLOR
     private var displayMetrics: DisplayMetrics? = null
-    private var timer: Disposable? = null
+    private var timer: CoroutineScope? = null
 
     constructor(context: Context?) : super(context) {
         init(null)
@@ -230,21 +235,23 @@ class TimerProgressView : View {
 
     private fun clearTimer() {
         if (timer != null) {
-            timer!!.dispose()
+            timer!!.cancel()
+            timer = null
         }
     }
 
     private fun startTimer() {
         val frameCount = frameCount(progress)
         val stepArcProgress = stepArcProgress(progress, frameCount)
-        timer = Flowable.interval(
+        timer = CoroutineScope(SupervisorJob())
+        CoroutineExtension.interval(
             FRAMES_PER_SECOND.toLong(),
-            TimeUnit.MILLISECONDS,
-            AndroidSchedulers.mainThread()
+            TimeUnit.MILLISECONDS
         )
-            .take(frameCount.toLong())
+            .take(frameCount)
             .map { frame: Long -> frame + 1 }
-            .subscribe { frame: Long -> animateArc(frameCount, stepArcProgress, frame.toInt()) }
+            .onEach { frame: Long -> animateArc(frameCount, stepArcProgress, frame.toInt()) }
+            .launchIn(timer!!)
     }
 
     private fun frameCount(progress: Float): Int {
@@ -279,7 +286,6 @@ class TimerProgressView : View {
         private const val MAX_PROGRESS_SCALE = 100f
         private const val DEFAULT_PROGRESS_VALUE = 0f
         private const val START_ARC_ANGLE = -90
-
         private const val DEFAULT_STROKE_WIDTH_SCALE = 5
         private const val DEFAULT_IS_DIVIDER_SCALE = false
         private const val RADIUS_SCALE = 0.95f

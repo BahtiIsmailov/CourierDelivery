@@ -3,8 +3,9 @@ package ru.wb.go.ui.courierdata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.wb.go.network.api.app.entity.CourierDocumentsEntity
 import ru.wb.go.network.exceptions.InternalServerException
 import ru.wb.go.network.monitor.NetworkState
@@ -12,17 +13,14 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
 class UserFormViewModel(
     private val parameters: CourierDataParameters,
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CourierDataInteractor,
     private val errorDialogManager: ErrorDialogManager,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     private val _navigateToMessageInfo = SingleLiveEvent<ErrorDialogData>()
     val navigateToMessageInfo: LiveData<ErrorDialogData>
@@ -49,13 +47,10 @@ class UserFormViewModel(
     val loaderState: LiveData<CourierDataUILoaderState>
         get() = _loaderState
 
-//    private val _showErrorAnnotationState = MutableLiveData<Boolean>()
-//    private val showAnnotationState: LiveData<Boolean>
-//        get() = _showErrorAnnotationState
+
 
     init {
-        //_showErrorAnnotationState.value = !parameters.docs.errorAnnotate.isNullOrEmpty()
-        observeNetworkState()
+         observeNetworkState()
     }
 
     private fun checkTextSurnameWrapper(focusChange: CourierDataUIAction.TextChange): CourierDataUIState =
@@ -106,13 +101,18 @@ class UserFormViewModel(
     private fun checkTextPassportDepartmentCodeWrapper(focusChange: CourierDataUIAction.TextChange): CourierDataUIState =
         checkInputRequisite(focusChange)
 
-    fun onFormChanges(changeObservables: ArrayList<Observable<CourierDataUIAction>>) {
-        addSubscription(Observable.merge(changeObservables)
-            .map { mapAction(it) }
-            .subscribe(
-                { _formUIState.value = it },
-                { LogUtils { logDebugApp(it.toString()) } })
-        )
+    fun onFormChanges(changeObservables: ArrayList<Flow<CourierDataUIAction>>) {
+        changeObservables.merge()
+            .map {
+                mapAction(it)
+            }
+            .onEach {
+                _formUIState.value = it
+            }
+            .catch {
+                LogUtils { logDebugApp(it.toString()) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun mapAction(action: CourierDataUIAction) = when (action) {
@@ -153,16 +153,20 @@ class UserFormViewModel(
 
     private fun isNotCheck(state: CourierDataUIState) = state !is CourierDataUIState.Complete
 
+
     fun onNextClick(courierDocumentsEntity: CourierDocumentsEntity) {
         _loaderState.value = CourierDataUILoaderState.Progress
         courierDocumentsEntity.courierType = parameters.docs.courierType
-        addSubscription(
-            interactor.saveCourierDocuments(courierDocumentsEntity)
-                .subscribe(
-                    { couriersFormComplete() },
-                    { couriersFormError(it) })
-        )
+        viewModelScope.launch {
+            try {
+                interactor.saveCourierDocuments(courierDocumentsEntity)
+                couriersFormComplete()
+            }catch (e:Exception){
+                couriersFormError(e)
+            }
+        }
     }
+
 
     fun onCheckedClick(isAgreement: Boolean) {
         _loaderState.value = if (isAgreement) {
@@ -187,15 +191,15 @@ class UserFormViewModel(
     }
 
     private fun observeNetworkState() {
-        addSubscription(
-            interactor.observeNetworkConnected()
-                .subscribe({ _toolbarNetworkState.value = it }, {})
-        )
+        interactor.observeNetworkConnected()
+            .onEach {
+                _toolbarNetworkState.value = it
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onShowAgreementClick() {
         onTechEventLog("onShowAgreementClick")
-//        _showErrorAnnotationState.value = false
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 
@@ -203,15 +207,7 @@ class UserFormViewModel(
         return parameters
     }
 
-//    fun showAnnotation() {
-//        if (!showAnnotationState.value!!) {
-//            return
-//        }
-//        assert(parameters.docs.errorAnnotate != null)
-//        val it = CustomException(parameters.docs.errorAnnotate!!)
-//        errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
-//    }
-    fun decodeToUTF8(data: String): String {
+     fun decodeToUTF8(data: String): String {
         val resultWord = data.map {
             println(it.code)
             if (it.code == 235) {
@@ -236,5 +232,4 @@ class UserFormViewModel(
         const val SCREEN_TAG = "UserForm"
     }
 
-
-}
+ }

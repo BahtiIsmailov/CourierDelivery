@@ -1,37 +1,46 @@
 package ru.wb.go.ui.scanner.domain
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import android.util.Log
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_SPLITTER_V1
 import ru.wb.go.app.PREFIX_BOX_QR_CODE_V1
-import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_OLD
 import ru.wb.go.app.PREFIX_QR_OFFICE_CODE_V1
 import ru.wb.go.network.api.app.entity.ParsedScanBoxQrEntity
 import ru.wb.go.network.api.app.entity.ParsedScanOfficeQrEntity
 import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl.Companion.DELAY_HOLD_SCANNER
 import ru.wb.go.utils.time.TimeFormatter
-import java.util.concurrent.TimeUnit
 
-class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerRepository {
+class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
+) : ScannerRepository {
 
-    private var scannerActionSubject = PublishSubject.create<ScannerAction>()
-    private val scannerStateSubject = PublishSubject.create<ScannerState>()
 
-    override fun scannerAction(action: ScannerAction) {
-        scannerActionSubject.onNext(action)
+    private var scannerActionSubject = MutableSharedFlow<ScannerAction>(extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    private var scannerStateSubject = MutableSharedFlow<ScannerState>(extraBufferCapacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+   // private var scannerStateSubject = Channel<ScannerState>(capacity = Int.MAX_VALUE)
+
+     override fun scannerAction(action:ScannerAction){
+         Log.e("scannerAction","emit:$action")
+         scannerActionSubject.tryEmit(action)
     }
 
-    override fun observeScannerAction(): Observable<ScannerAction> {
-        return scannerActionSubject
+    override fun observeScannerAction(): Flow<ScannerAction> {
+       return scannerActionSubject
     }
 
     override fun scannerState(state: ScannerState) {
-        scannerStateSubject.onNext(state)
+        scannerStateSubject.tryEmit(state)
+        //scannerStateSubject.trySend(state)
     }
 
-    override fun observeScannerState(): Observable<ScannerState> {
-        return scannerStateSubject
+    override fun observeScannerState(): Flow<ScannerState> {
+        return scannerStateSubject//.receiveAsFlow()
     }
 
     override fun parseScanBoxQr(qrCode: String): ParsedScanBoxQrEntity {
@@ -44,32 +53,19 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
         return ParsedScanBoxQrEntity(parseParams[2], parseParams[3], isOk = true)
     }
 
-    override fun holdStart(): Completable =
-        Observable.timer(DELAY_HOLD_SCANNER, TimeUnit.MILLISECONDS)
-            .doOnNext { scannerState(ScannerState.StartScan) }
-            .flatMapCompletable { Completable.complete() }
+    override suspend fun holdStart(){
+        delay(DELAY_HOLD_SCANNER)
+        scannerState(ScannerState.StartScan)
+    }
+
 
     override fun parseScanOfficeQr(qrCode: String): ParsedScanOfficeQrEntity {
-
         return when {
-            qrCode.startsWith(PREFIX_QR_OFFICE_CODE_OLD) -> {
-                val code = qrCode.split(".")
-                if (code.size != 3) {
-                    ParsedScanOfficeQrEntity(-1, false)
-                } else {
-                    val ofId = code[1].toIntOrNull()
-                    if (ofId == null) {
-                        ParsedScanOfficeQrEntity(-1, false)
-                    } else
-                        ParsedScanOfficeQrEntity(ofId, true)
-                }
-            }
             qrCode.startsWith(PREFIX_QR_OFFICE_CODE_V1) -> {
                 getSplitDynamicOfficeInfo(qrCode)
             }
             else -> ParsedScanOfficeQrEntity(-1, false)
         }
-
     }
 
     private fun getSplitDynamicOfficeInfo(input: String): ParsedScanOfficeQrEntity {
@@ -94,3 +90,4 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter) : ScannerR
     }
 
 }
+

@@ -15,4 +15,5 @@ data class CourierOrderEntity(
     var dstOffices: List<CourierOrderDstOfficeEntity>,
     val reservedDuration: String,
     val reservedAt: String,
+    val taskDistance:String
 ) : Parcelable

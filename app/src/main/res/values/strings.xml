@@ -47,12 +47,15 @@
     <string name="auth_wrong_identity_error">Ошибка идентификации пользователя</string>
     <string name="no_internet_error">Проверьте подключение к сети интернет</string>
     <string name="http_timeout_error">"TimeOut. Возможно отсутствует интернет или низкая скорость соединения"</string>
+    <string name="http409">"Заказ в другом статусе, либо был завершен\nПриложение будет перезагружено"</string>
+    <string name="http_400_exception">"Неизвестная ошибка, попробуйте перезапустить приложение"</string>
     <string name="http_error" />
     <string name="http_unknown_error" />
     <string name="body_is_empty_or_null">"Body is null or empty" </string>
     <string name="body_is_empty">"Body is empty" </string>
 
     <string name="unknown_generic_error">Сервис временно недоступен\nПовторите действие чуть позже</string>
+    <string name="error_service">Ошибка сервиса\nСтатус %s</string>
 
     <string name="unknown_internet_title_error">Интернет-соединение отсутствует</string>
     <string name="unknown_internet_message_error">Восстановите соединение и повторите попытку</string>
@@ -237,8 +240,8 @@
     <string name="courier_orders_update">Обновить</string>
     <string name="courier_orders_order">\u0020- %1$d</string>
     <string name="orderCost">от %1$s ₽</string>
-    <string name="orderCargo">от %1$d м\u00B3 / %2$d шт.</string>
-    <string name="itemOfficeCount">(%1$d ПВЗ)</string>
+    <string name="orderCargo">от %2$d шт / %1$d м\u00B3.</string>
+    <string name="itemOfficeCount">%1$d ПВЗ ~</string>
     <string name="courier_orders_volume">от %1$s</string>
     <string name="courier_orders_count_pvz">%1$s</string>
     <string name="courier_orders_arrive">\u0020%1$s мин</string>
@@ -251,6 +254,7 @@
     <string name="reserve_title">резерв </string>
     <string name="reserveCapTitle">Резерв </string>
     <string name="courier_orders_details_order">Заказ %1$d</string>
+    <string name="courier_orders_details_route">Маршрут %1$s</string>
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_empty_address">Список пуст</string>
@@ -281,7 +285,7 @@
 
     <string name="courier_orders_timer_dialog_title">Время вышло</string>
     <string name="courier_orders_timer_dialog_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
-    <string name="courier_orders_timer_dialog_button">Вернуться к списку заказов</string>
+    <string name="courier_orders_timer_dialog_button">Вернуться к списку складов</string>
 
     <string name="courier_orders_timer_dialog_skip_title">Отказаться от заказа</string>
     <string name="courier_orders_timer_dialog_skip_message">Вы уверены, что хотите отказаться от заказа?</string>
@@ -303,7 +307,7 @@
     <string name="courier_order_scanner_dialog_positive_button">Завершить</string>
     <string name="courier_order_scanner_title">Время вышло</string>
     <string name="courier_order_scanner_message">К сожалению, вы не успели приехать вовремя. Заказ был отменён</string>
-    <string name="courier_order_scanner_dialog">Вернуться к списку заказов</string>
+    <string name="courier_order_scanner_dialog">Понятно</string>
 
     <string name="courier_loading_boxes_index">%1$d.</string>
     <string name="courier_loading_boxes_date_and_time_and_address">%1$s • %2$s • %3$s</string>
@@ -314,7 +318,8 @@
     <string name="courier_unloading_scan_dialog_title_error">Выгрузка коробок на ПВЗ</string>
     <string name="courier_unloading_scan_dialog_message_error">Отсканируйте QR коробки</string>
 
-    <string name="courier_intransit_label_id">#%1$s</string>
+    <string name="courier_intransit_label_id">Заказ #%1$s</string>
+    <string name="courier_intransit_time_order">Время работы: #%1$s</string>
     <string name="courier_intransit_label">Доставка</string>
     <string name="courier_intransit_count">%1$d/%2$d</string>
     <string name="courier_intransit_delegate_divider">/</string>
@@ -566,7 +571,7 @@
     <string name="courier_loading_address">Адрес ПВЗ</string>
     <string name="courier_loading_reserve">Резерв</string>
     <string name="courier_loading_gate">Ворота</string>
-
+    <string name="courier_loading_pandus">Пандус</string>
     <string name="courier_loading_details_title">Принято</string>
     <string name="courier_loading_pvz_goals_title">ПВЗ (%1$s)</string>
     <string name="courier_loading_box_goals_title">Коробки (%1$s)</string>

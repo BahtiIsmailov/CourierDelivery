@@ -5,6 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import ru.wb.go.R
 import ru.wb.go.adapters.BaseAdapterDelegate
+import ru.wb.go.databinding.CourierIntransitDelegateCompleteLayoutBinding
 import ru.wb.go.databinding.CourierIntransitDelegateEmptyLayoutBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.courierintransit.delegates.items.CourierIntransitCompleteItem
@@ -30,6 +31,7 @@ class CourierIntransitCompleteDelegate(
     override fun onBind(item: CourierIntransitCompleteItem, holder: RouterViewHolder) {
         holder.itemView.tag = item
         holder.binding.boxAddress.text = item.fullAddress
+        holder.binding.timeWorkDetail12.text = item.timeWork
         holder.binding.deliveryCount.text = item.deliveryCount
         holder.binding.fromCount.text = item.fromCount
         val selectable = if (item.isSelected) View.VISIBLE else View.INVISIBLE
@@ -38,7 +40,7 @@ class CourierIntransitCompleteDelegate(
     }
 
     inner class RouterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val binding = CourierIntransitDelegateEmptyLayoutBinding.bind(itemView)
+        val binding = CourierIntransitDelegateCompleteLayoutBinding.bind(itemView)
 
         private fun getTag(itemView: View): CourierIntransitCompleteItem {
             return itemView.tag as CourierIntransitCompleteItem
@@ -46,7 +48,7 @@ class CourierIntransitCompleteDelegate(
 
         init {
             binding.main.setOnClickListener {
-                val (_, _, _, _, _, idView) = getTag(itemView)
+                val (_, _, _, _, _, _, idView) = getTag(itemView)
                 onCourierIntransitCallback.onPickToPointClick(idView)
             }
         }

@@ -29,8 +29,8 @@ class CourierOrderDelegate(context: Context, val onCourierOrderCallback: OnCouri
         val binding = holder.binding
         with(binding) {
             linerNumber.text = item.lineNumber
-            orderId.text = item.orderId
             cost.text = item.cost
+            taskDistance.text =  item.taskDistance + " км"
             cargo.text = item.cargo
             countOffice.text = item.countPvz
             reserve.text = item.arrive

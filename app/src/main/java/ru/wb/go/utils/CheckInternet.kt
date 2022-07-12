@@ -3,8 +3,6 @@
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.fragment.app.Fragment
-import com.google.android.gms.dynamic.SupportFragmentWrapper
 import ru.wb.go.R
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle

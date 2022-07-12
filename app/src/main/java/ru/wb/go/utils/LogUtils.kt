@@ -34,7 +34,6 @@ class LogUtils(block: LogUtils.() -> Unit) {
 
     fun logError(owner: Any, message: String) {
         if (DEBUG_MODE) {
-            Log.e(owner.javaClass.simpleName, message)
         }
     }
 

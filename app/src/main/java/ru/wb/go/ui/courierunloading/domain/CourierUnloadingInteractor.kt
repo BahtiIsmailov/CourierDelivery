@@ -1,6 +1,6 @@
 package ru.wb.go.ui.courierunloading.domain
 
-import io.reactivex.*
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
@@ -9,21 +9,23 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 
 interface CourierUnloadingInteractor : BaseServiceInteractor {
 
-    fun getCurrentOffice(officeId: Int): Single<LocalOfficeEntity>
+    suspend fun getCurrentOffice(officeId: Int):  LocalOfficeEntity
 
-    fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData>
+    fun observeScanProcess(officeId: Int): Flow<CourierUnloadingProcessData>
 
-    fun removeScannedBoxes(checkedBoxes: List<String>): Completable
+    suspend fun removeScannedBoxes(checkedBoxes: List<String>)
 
-    fun scanLoaderProgress(): Observable<CourierUnloadingProgressData>
+    fun scanLoaderProgress(): Flow<CourierUnloadingProgressData>
 
     fun scannerAction(scannerAction: ScannerState)
 
-    fun observeOrderData(): Flowable<CourierOrderLocalDataEntity>
+    fun observeOrderData(): Flow<CourierOrderLocalDataEntity>
 
-    fun completeOfficeUnload(): Completable
+    suspend fun completeOfficeUnload()
 
-    fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>>
+    suspend fun getRemainBoxes(officeId: Int):  List<LocalBoxEntity>
 
-    fun getOrderId(): String
+    suspend fun getOrderId(): String
+
+    suspend fun scannerRepoHoldStart()
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
+import ru.wb.go.ui.scanner.domain.ScannerAction
+import ru.wb.go.ui.scanner.domain.ScannerState
 
 class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker {
 
@@ -12,6 +14,14 @@ class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker 
 
     override fun load(key: String, defValue: String): String {
         return preferences.getString(key, defValue)!!
+    }
+
+    fun load(key: String, defValue: ScannerAction): String {
+        return preferences.getString(key, defValue.toString())!!
+    }
+
+    fun load(key: String, defValue: ScannerState): String {
+        return preferences.getString(key, defValue.toString())!!
     }
 
     override fun load(key: String, defValue: Long): Long {

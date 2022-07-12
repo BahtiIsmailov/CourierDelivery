@@ -44,14 +44,15 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
         )
     }
 
-    private lateinit var _binding: CourierCarNumberFragmentBinding
-    private val binding get() = _binding
+    private var _binding: CourierCarNumberFragmentBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var carTypeAdapter: CourierCarTypeAdapter
-    private lateinit var carTypeLayoutManager: LinearLayoutManager
-    private lateinit var carTypeSmoothScroller: RecyclerView.SmoothScroller
+    private val carTypeAdapter: CourierCarTypeAdapter
+        get() = binding.types.adapter as CourierCarTypeAdapter
 
-    private lateinit var bottomSheetCarTypes: BottomSheetBehavior<ConstraintLayout>
+
+    private val bottomSheetCarTypes: BottomSheetBehavior<ConstraintLayout>
+    get() = BottomSheetBehavior.from(binding.carTypes)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +60,11 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     ): View {
         _binding = CourierCarNumberFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,21 +90,20 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
     }
 
     private fun initBottomSheet() {
-        bottomSheetCarTypes = BottomSheetBehavior.from(binding.carTypes)
+        val bottomSheetCarTypes = bottomSheetCarTypes
         bottomSheetCarTypes.skipCollapsed = true
         bottomSheetCarTypes.addBottomSheetCallback(bottomSheetDetailsCallback)
         bottomSheetCarTypes.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun initRecyclerViewDetails() {
-        carTypeLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.types.layoutManager = carTypeLayoutManager
+        binding.types.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.types.setHasFixedSize(true)
         initSmoothScrollerAddress()
     }
 
     private fun initSmoothScrollerAddress() {
-        carTypeSmoothScroller = object : LinearSmoothScroller(context) {
+        object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference() = SNAP_TO_START
         }
     }
@@ -165,8 +170,7 @@ class CourierCarNumberFragment : Fragment(R.layout.courier_car_number_fragment) 
                     binding.viewKeyboard.setKeyboardMode(state.mode)
                 }
                 is CourierCarNumberUIState.InitTypeItems -> {
-                    carTypeAdapter = CourierCarTypeAdapter(requireContext(), state.items, callback)
-                    binding.types.adapter = carTypeAdapter
+                    binding.types.adapter = CourierCarTypeAdapter(requireContext(), state.items, callback)
                     showCarTypes()
                 }
                 CourierCarNumberUIState.CloseTypeItems -> closeCarTypes()

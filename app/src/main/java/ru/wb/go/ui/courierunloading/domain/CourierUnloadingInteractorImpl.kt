@@ -1,14 +1,14 @@
 package ru.wb.go.ui.courierunloading.domain
 
-import io.reactivex.*
-import io.reactivex.subjects.PublishSubject
+import android.util.Log
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalOfficeEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.monitor.NetworkMonitorRepository
-import ru.wb.go.network.rx.RxSchedulerFactory
 import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.scanner.domain.ScannerAction
 import ru.wb.go.ui.scanner.domain.ScannerRepository
@@ -17,33 +17,26 @@ import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 
 class CourierUnloadingInteractorImpl(
-    rxSchedulerFactory: RxSchedulerFactory,
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val remoteRepo: AppRemoteRepository,
     private val scannerRepo: ScannerRepository,
     private val timeManager: TimeManager,
     private val localRepo: CourierLocalRepository,
-) : BaseServiceInteractorImpl(rxSchedulerFactory, networkMonitorRepository, deviceManager),
+) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
     CourierUnloadingInteractor {
 
     companion object {
         const val EMPTY_ADDRESS = ""
     }
 
-    private val scanLoaderProgressSubject = PublishSubject.create<CourierUnloadingProgressData>()
-
-    override fun getCurrentOffice(officeId: Int): Single<LocalOfficeEntity> {
-        return localRepo.findOfficeById(officeId)
-            .compose(rxSchedulerFactory.applySingleSchedulers())
-    }
-
-    override fun observeScanProcess(officeId: Int): Observable<CourierUnloadingProcessData> {
+    @OptIn(FlowPreview::class)
+    override fun observeScanProcess(officeId: Int): Flow<CourierUnloadingProcessData> {
         return scannerRepo.observeScannerAction()
             .filter { it is ScannerAction.ScanResult }
             .map { it as ScannerAction.ScanResult }
             .map { scannerRepo.parseScanBoxQr(it.value) }
-            .flatMap { parsedScan ->
+            .flatMapMerge { parsedScan ->
                 val boxes = localRepo.getBoxes()
                 val box = boxes.find { box -> box.boxId == parsedScan.boxId }
                 val scanTime = timeManager.getLocalTime()
@@ -78,55 +71,54 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanComplete)
                     }
                 }
-
-                localRepo.findOfficeById(officeId)
-                    .flatMapObservable {
-                        Observable.just(
-                            CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes)
-                        ).mergeWith(scannerRepo.holdStart())
-                    }
-                    .compose(rxSchedulerFactory.applyObservableSchedulers())
+                 val it = localRepo.findOfficeById(officeId)
+                  flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
             }
     }
 
-    override fun scanLoaderProgress(): Observable<CourierUnloadingProgressData> {
+
+    override suspend fun scannerRepoHoldStart(){
+        scannerRepo.holdStart()
+    }
+
+
+    var scanLoaderProgressSubject = MutableSharedFlow<CourierUnloadingProgressData>()
+    override suspend fun getCurrentOffice(officeId: Int): LocalOfficeEntity {
+        return localRepo.findOfficeById(officeId)
+
+    }
+
+    override fun scanLoaderProgress(): Flow<CourierUnloadingProgressData> {
         return scanLoaderProgressSubject
     }
 
-    override fun removeScannedBoxes(checkedBoxes: List<String>): Completable {
-        return Completable.complete()
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+     override suspend fun removeScannedBoxes(checkedBoxes: List<String>) {
+        return
     }
 
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
     }
 
-    override fun observeOrderData(): Flowable<CourierOrderLocalDataEntity> {
+    override fun observeOrderData(): Flow<CourierOrderLocalDataEntity> {
         return localRepo.observeOrderData()
-            .compose(rxSchedulerFactory.applyFlowableSchedulers())
     }
 
-    override fun completeOfficeUnload(): Completable {
+    override suspend fun completeOfficeUnload() {
         val boxes = localRepo.getOfflineBoxes()
-        boxes.find { b -> b.deliveredAt != "" } ?: return Completable.complete()
-        return localRepo.getOrderId()
-            .flatMapCompletable {
-                remoteRepo.setIntransitTask(it, boxes)
-            }
-            .doOnComplete {
-                localRepo.setOnlineOffices()
-            }
-            .compose(rxSchedulerFactory.applyCompletableSchedulers())
+        boxes.find { b -> b.deliveredAt != "" }
+        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes)
+        localRepo.setOnlineOffices()
     }
 
-    override fun getRemainBoxes(officeId: Int): Maybe<List<LocalBoxEntity>> {
+    override suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity> {
         return localRepo.getRemainBoxes(officeId)
     }
 
-    override fun getOrderId(): String {
+    override suspend fun getOrderId(): String {
         // FIXME: У одного курьера здесь происходит NullPointerException. Причина пока не понятна
-        return localRepo.getOrder().orderId.toString()
+        return localRepo.getOrder()?.orderId.toString()
     }
 
 }
+

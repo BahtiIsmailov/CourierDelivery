@@ -2,18 +2,12 @@ package ru.wb.go.ui.courierbilllingcomplete
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
-import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CourierBillingCompleteViewModel(
         parameters: CourierBillingCompleteParameters,
-        compositeDisposable: CompositeDisposable,
-        metric: YandexMetricManager,
-        resourceProvider: CourierBillingCompleteResourceProvider,
-        private val interactor: CourierCompleteDeliveryInteractor,
-) : NetworkViewModel(compositeDisposable, metric) {
+        resourceProvider: CourierBillingCompleteResourceProvider
+) : NetworkViewModel() {
 
     private val _titleState = MutableLiveData<CourierBillingCompleteState>()
     val titleState: LiveData<CourierBillingCompleteState>

@@ -1,21 +1,22 @@
 package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
-import io.reactivex.disposables.CompositeDisposable
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.utils.LogUtils
-import ru.wb.go.utils.analytics.YandexMetricManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 
 class CourierMapViewModel(
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
     private val interactor: CourierMapInteractor,
-) : NetworkViewModel(compositeDisposable, metric) {
+) : NetworkViewModel() {
 
     data class ZoomToBoundingBoxOffsetY(
         val boundingBox: BoundingBox,
@@ -103,62 +104,80 @@ class CourierMapViewModel(
     val zoomToBoundingBox: LiveData<ZoomToBoundingBox>
         get() = _zoomToBoundingBox
 
-    object VisibleShowAll
+    private val _visibleManagerBar = SingleLiveEvent<CourierVisibilityManagerBar>()
+    val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
+        get() = _visibleManagerBar
 
-    private val _visibleShowAll = SingleLiveEvent<VisibleShowAll>()
-    val visibleShowAll: LiveData<VisibleShowAll>
-        get() = _visibleShowAll
+    fun subscribeMapState() {
+        interactor.subscribeMapState()
+            .onEach {
+                subscribeMapStateComplete(it)
+            }
+            .catch {
+                LogUtils {
+                    logDebugApp("subscribeMapState() error $it")
+                }
+            }
+            .launchIn(viewModelScope)
 
-    fun subscribeState() {
-        subscribeMapState()
     }
 
-    private fun subscribeMapState() {
-        addSubscription(
-            interactor.subscribeMapState()
-                .subscribe(
-                    { subscribeMapStateComplete(it) },
-                    { LogUtils { logDebugApp("subscribeMapState() error " + it) } }
-                )
-        )
+    fun clearSubscription(){
+        //viewModelScope.coroutineContext.cancelChildren()
     }
-
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {
             is CourierMapState.NavigateToPoint -> _navigateToPoint.value =
                 NavigateToPoint(it.point)
+
             is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.value =
                 UpdateMarkersWithAnimateToPositions(
                     it.pointsHide,
                     it.pointFrom,
                     it.pointsTo
                 )
+
             is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.value =
                 ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
+
             is CourierMapState.NavigateToMarker -> _navigateToMarker.value =
                 NavigateToMarker(it.id)
+
             is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
                 NavigateToPointZoom(it.point)
-            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
+
+            is CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
                 NavigateToMyLocation
+
             is CourierMapState.UpdateMarkers -> _updateMarkers.value =
                 UpdateMarkers(it.points)
+
             is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
                 UpdateMarkersWithIndex(it.points)
-            CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
+
+            is CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
                 UpdateMyLocation
+
             is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
                 UpdateMyLocationPoint(it.point)
+
             is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
                 ZoomToBoundingBox(it.boundingBox, it.animate)
-            CourierMapState.VisibleShowAll -> _visibleShowAll.value = VisibleShowAll
+
             is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
                 UpdateMarkersWithAnimateToPosition(
                     it.pointsShow,
                     it.pointsFrom,
                     it.pointTo
                 )
-            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+
+            is CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            is CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
+                CourierVisibilityManagerBar.Visible
+
+            is CourierMapState.HideManagerBar -> _visibleManagerBar.value =
+                CourierVisibilityManagerBar.Hide
+
         }
     }
 
@@ -182,8 +201,13 @@ class CourierMapViewModel(
         return SCREEN_TAG
     }
 
+    fun onZoomClick() {
+        interactor.prolongTimeHideManager()
+    }
+
     fun onShowAllClick() {
         interactor.showAll()
+        interactor.prolongTimeHideManager()
     }
 
     fun onAnimateComplete() {
@@ -197,3 +221,5 @@ class CourierMapViewModel(
 }
 
 fun moscowCoordinatePoint() = CoordinatePoint(55.751244, 37.618423)
+
+

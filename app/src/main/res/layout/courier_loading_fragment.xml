@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lvl_1">
+    android:background="@color/lvl_1"
+    tools:context="ui.courierloading.CourierLoadingScanFragment">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -239,7 +240,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="@string/courier_loading_gate"
+            tools:text="@string/courier_loading_gate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view2" />
@@ -247,12 +248,13 @@
         <TextView
             android:id="@+id/gate_digit"
             style="@style/LargePrimaryRegularText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="40sp"
+            android:textSize="28sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@+id/timer"
+            app:layout_constraintStart_toStartOf="@+id/timer"
             app:layout_constraintTop_toBottomOf="@id/gate"
             tools:text="303" />
 

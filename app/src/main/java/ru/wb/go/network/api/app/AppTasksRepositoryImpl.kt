@@ -1,12 +1,10 @@
 package ru.wb.go.network.api.app
 
 import kotlinx.coroutines.Dispatchers
-import ru.wb.go.db.entity.courier.CourierOrderDstOfficeEntity
+import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
-import ru.wb.go.network.api.app.remote.courier.CourierOrderResponse
-import ru.wb.go.network.api.app.remote.courier.CourierWarehouseResponse
-import ru.wb.go.network.rx.RxSchedulerFactory
+import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.token.TokenManager
 
 class AppTasksRepositoryImpl(
@@ -16,67 +14,23 @@ class AppTasksRepositoryImpl(
 ) : AppTasksRepository {
 
 
-override suspend fun courierWarehouses(): List<CourierWarehouseLocalEntity>  {
-    return with(Dispatchers.IO){
-        autentificatorIntercept.initNameOfMethod("courierWarehouses")
-         remoteRepo.freeTasksOffices(apiVersion()).data
-         .map {
-            convertCourierWarehouseEntity(it)
-        }.toList()
-    }
-}
-    private fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {
-        return with(courierOfficeResponse) {
-            CourierWarehouseLocalEntity(
-                id = id,
-                name = name,
-                fullAddress = fullAddress,
-                longitude = long,
-                latitude = lat
-            )
+    override suspend fun courierWarehouses(): CourierWarehousesResponse {
+        return withContext(Dispatchers.IO) {
+            autentificatorIntercept.initNameOfMethod("courierWarehouses")
+            remoteRepo.freeTasksOffices(apiVersion())
         }
     }
 
-    override suspend fun getFreeOrders(srcOfficeID: Int):  List<CourierOrderEntity>  {
-        autentificatorIntercept.initNameOfMethod("courierOrders")
-        return remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
-                order -> convertCourierOrderEntity(order)
-        }.toList()
+
+    override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity> {
+        return withContext(Dispatchers.IO){
+            autentificatorIntercept.initNameOfMethod("courierOrders")
+            remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
+                convertCourierOrderEntity(it)
+            }.toList()
+        }
     }
 
-    private fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): CourierOrderEntity {
-        val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
-        courierOrderResponse.dstOffices.forEach { dstOffice ->
-            // TODO: 05.10.2021 убрать после исправлениня на беке получение минусового id
-            if (dstOffice.id != -1) {
-                dstOffices.add(
-                    CourierOrderDstOfficeEntity(
-                        id = dstOffice.id,
-                        name = dstOffice.name ?: "",
-                        fullAddress = dstOffice.fullAddress ?: "",
-                        long = dstOffice.long,
-                        lat = dstOffice.lat,
-                        workTimes = dstOffice.wrkTime ?: "",
-                        isUnusualTime = dstOffice.unusualTime
-                    )
-                )
-            }
-        }
-        return with(courierOrderResponse) {
-            CourierOrderEntity(
-                id = id,
-                routeID = routeID ?: 0,
-                gate = gate ?: "",
-                minPrice = minPrice,
-                minVolume = minVolume,
-                minBoxesCount = minBoxesCount,
-                dstOffices = dstOffices,
-                reservedAt = "",
-                reservedDuration = reservedDuration,
-                route = route ?: "не указан"
-            )
-        }
-    }
 
     private fun apiVersion() =
         if (tokenManager.isContains()) tokenManager.apiVersion() else tokenManager.apiDemoVersion()

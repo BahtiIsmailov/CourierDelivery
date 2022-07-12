@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 40,
-    "identityHash": "c8b8c3d63fcd411104bbbe6f538ad307",
+    "version": 46,
+    "identityHash": "3d7490e2840074da366d8b02c0db5465",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`warehouse_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `fullAddress` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, PRIMARY KEY(`warehouse_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`warehouse_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `fullAddress` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `distanceFromUser` REAL NOT NULL, PRIMARY KEY(`warehouse_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,12 @@
             "columnName": "latitude",
             "affinity": "REAL",
             "notNull": true
+          },
+          {
+            "fieldPath": "distanceFromUser",
+            "columnName": "distanceFromUser",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -50,7 +56,7 @@
       },
       {
         "tableName": "CourierOrderLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `rowId` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `gate` TEXT NOT NULL, `minPrice` INTEGER NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `rowId` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `gate` TEXT NOT NULL, `minPrice` INTEGER NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, `taskDistance` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -111,6 +117,12 @@
             "columnName": "reservedAt",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "taskDistance",
+            "columnName": "taskDistance",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -124,7 +136,7 @@
       },
       {
         "tableName": "CourierOrderDstOfficeLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dst_office_key` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dst_office_id` INTEGER NOT NULL, `dst_office_order_id` INTEGER NOT NULL, `dst_office_name` TEXT NOT NULL, `dst_office_full_address` TEXT NOT NULL, `dst_office_longitude` REAL NOT NULL, `dst_office_latitude` REAL NOT NULL, `dst_office_visited_at` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dst_office_key` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dst_office_id` INTEGER NOT NULL, `dst_office_order_id` INTEGER NOT NULL, `dst_office_name` TEXT NOT NULL, `dst_office_full_address` TEXT NOT NULL, `dst_office_longitude` REAL NOT NULL, `dst_office_latitude` REAL NOT NULL, `dst_office_visited_at` TEXT NOT NULL, `dst_office_work_times` TEXT NOT NULL, `dst_office_is_unusual_time` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "key",
@@ -172,6 +184,18 @@
             "fieldPath": "visitedAt",
             "columnName": "dst_office_visited_at",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "workTimes",
+            "columnName": "dst_office_work_times",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isUnusualTime",
+            "columnName": "dst_office_is_unusual_time",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -484,7 +508,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c8b8c3d63fcd411104bbbe6f538ad307')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3d7490e2840074da366d8b02c0db5465')"
     ]
   }
 }

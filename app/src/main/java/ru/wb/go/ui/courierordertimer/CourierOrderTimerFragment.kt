@@ -1,15 +1,20 @@
 package ru.wb.go.ui.courierordertimer
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierOrderTimerFragmentBinding
@@ -29,13 +34,14 @@ class CourierOrderTimerFragment : Fragment() {
 
     private val viewModel by viewModel<CourierOrderTimerViewModel>()
 
-    private lateinit var _binding: CourierOrderTimerFragmentBinding
-    private val binding get() = _binding
+    private var _binding: CourierOrderTimerFragmentBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         const val DIALOG_REFUSE_INFO_TAG = "DIALOG_REFUSE_INFO_TAG"
         const val DIALOG_TIME_OUT_INFO_TAG = "DIALOG_TIME_OUT_INFO_TAG"
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,25 +82,36 @@ class CourierOrderTimerFragment : Fragment() {
     private fun initView() {
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).lockNavDrawer()
-        viewModel.getOrderId()
     }
 
     private fun initObservable() {
-        viewModel.getOrderId.observe(viewLifecycleOwner){
-            var textForRouteNumber = requireContext().getText(R.string.route).toString()
-            textForRouteNumber += " ${it.route}"
-            binding.routeTV.text = textForRouteNumber
-            setFragmentResult("routeId", bundleOf("bundleKey" to textForRouteNumber))
-        }
+
         viewModel.orderInfo.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderTimerInfoUIState.InitOrderInfo -> {
-                    binding.order.text = it.order
-                    binding.name.text = it.name
-                    binding.coast.text = it.coast
-                    binding.volume.text = it.countBoxAndVolume
-                    binding.pvz.text = it.countPvz
-                    binding.gateDigit.text = it.gate
+                    with(binding) {
+                        routeTV.text = it.route
+                        order.text = it.order
+                        name.text = it.name
+                        coast.text = it.coast
+                        volume.text = it.countBoxAndVolume
+                        pvz.text = it.countPvz
+                        gate.text =
+                            if (it.gate == "0") {
+                                gateDigit.isGone = true
+                                requireContext().getString(R.string.courier_loading_pandus)
+                            } else {
+                                gateDigit.isVisible = true
+                                gateDigit.text = it.gate
+                                requireContext().getString(
+                                    R.string.courier_loading_gate
+                                )
+                            }
+                        setFragmentResult(
+                            DialogInfoFragment.ROUTE_ID,
+                            bundleOf("bundleKey" to it.route)
+                        )
+                    }
                 }
             }
         }
@@ -135,10 +152,10 @@ class CourierOrderTimerFragment : Fragment() {
         }
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                CourierOrderTimerNavigationState.NavigateToWarehouse -> {
+                is CourierOrderTimerNavigationState.NavigateToWarehouse -> {
                     findNavController().navigate(CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierWarehouseFragment())
                 }
-                CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
+                is CourierOrderTimerNavigationState.NavigateToScanner -> findNavController().navigate(
                     CourierOrderTimerFragmentDirections.actionCourierOrderTimerFragmentToCourierScannerLoadingScanFragment()
                 )
             }
@@ -192,6 +209,11 @@ class CourierOrderTimerFragment : Fragment() {
         parentFragmentManager.findFragmentByTag(ProgressDialogFragment.PROGRESS_DIALOG_TAG)?.let {
             if (it is ProgressDialogFragment) it.dismiss()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun showDialogInfo(

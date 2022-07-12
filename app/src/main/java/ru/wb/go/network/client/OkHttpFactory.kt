@@ -3,7 +3,6 @@ package ru.wb.go.network.client
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.wb.go.BuildConfig
-import ru.wb.go.network.certificate.CertificateStore
 import ru.wb.go.network.interceptors.AppMetricResponseInterceptor
 import ru.wb.go.network.interceptors.AuthMockResponseInterceptor
 import ru.wb.go.network.interceptors.RefreshTokenInterceptor
@@ -11,18 +10,16 @@ import ru.wb.go.network.interceptors.RefreshTokenInterceptor
 object OkHttpFactory {
 
     fun createAuthOkHttpClient(
-        certificateStore: CertificateStore,
         httpLoggingInterceptor: HttpLoggingInterceptor,
         authMockResponseInterceptor: AuthMockResponseInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
             OkHttpClientUnsafe.create(
-                certificateStore,
                 httpLoggingInterceptor,
                 authMockResponseInterceptor
             )
         } else {
-            OkHttpClientSafe.create(certificateStore, httpLoggingInterceptor)
+            OkHttpClientSafe.create(httpLoggingInterceptor)
         }
     }
 
@@ -38,21 +35,18 @@ object OkHttpFactory {
     }
 
     fun createAppOkHttpClient(
-        certificateStore: CertificateStore,
         refreshResponseInterceptor: RefreshTokenInterceptor,
         httpLogginInterceptor: HttpLoggingInterceptor,
         appMetricResponseInterceptor: AppMetricResponseInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
             OkHttpClientUnsafe.create(
-                certificateStore,
                 refreshResponseInterceptor,
                 httpLogginInterceptor,
                 appMetricResponseInterceptor
             )
         } else {
             OkHttpClientSafe.create(
-                certificateStore,
                 refreshResponseInterceptor,
                 httpLogginInterceptor,
             )
@@ -60,13 +54,12 @@ object OkHttpFactory {
     }
 
     fun createAppOkHttpDemoClient(
-        certificateStore: CertificateStore,
         httpLogginInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return if (BuildConfig.DEBUG) {
-            OkHttpClientUnsafe.create(certificateStore, httpLogginInterceptor)
+            OkHttpClientUnsafe.create(httpLogginInterceptor)
         } else {
-            OkHttpClientSafe.create(certificateStore, httpLogginInterceptor)
+            OkHttpClientSafe.create(httpLogginInterceptor)
         }
     }
 }

@@ -2,18 +2,12 @@ package ru.wb.go.ui.couriercompletedelivery
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.ui.couriercompletedelivery.domain.CourierCompleteDeliveryInteractor
-import ru.wb.go.utils.analytics.YandexMetricManager
 
 class CourierCompleteDeliveryViewModel(
     parameters: CourierCompleteDeliveryParameters,
-    compositeDisposable: CompositeDisposable,
-    metric: YandexMetricManager,
-    resourceProvider: CourierCompleteDeliveryResourceProvider,
-    private val interactor: CourierCompleteDeliveryInteractor,
-) : NetworkViewModel(compositeDisposable, metric) {
+    resourceProvider: CourierCompleteDeliveryResourceProvider
+) : NetworkViewModel() {
 
     private val _infoState = MutableLiveData<CourierCompleteDeliveryState>()
     val infoState: LiveData<CourierCompleteDeliveryState>
@@ -44,5 +38,6 @@ class CourierCompleteDeliveryViewModel(
     }
 
     object NavigateToWarehouse
+
 
 }
