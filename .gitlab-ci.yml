@@ -30,8 +30,6 @@ variables:
 before_script:
   - apt-get --quiet update --yes
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-  # получение порядкового номера билда
-  - export BUILD_NUMBER-$(git rev-list --count ${CI_BUILD_REF})
 
   # Setup path as ANDROID_HOME for moving/exporting the downloaded sdk into it
   - export ANDROID_HOME="${PWD}/android-home"
@@ -63,8 +61,6 @@ before_script:
 
   # Not necessary, but just for surity
   - chmod +x ./gradlew
-stages:
-  - build
 
 
 # Make Project
@@ -72,31 +68,18 @@ assembleDebug:
   interruptible: true
   stage: build
   script:
-    - ./gradlew clean assembleDebug
-  retry: 2
-  only:
-    - dev
+    - ./gradlew assembleDebug
   artifacts:
-    name: "${CI_PROJECT_NAME}_${CI_COMIT_REF_NAME}"
     paths:
       - $OUTPUT_DIR
 
 assembleRelease:
   interruptible: true
-  stage: build
-  variables:
-    Wb: $WBGO
-  retry: 2
+  stage: release
   script:
+    - echo $WBGO | base64 -d > keystore.jks
     - ./gradlew assembleRelease
-  only:
-    - dev
   artifacts:
     paths:
       - $OUTPUT_DIR
-
-variable:
-  stage: build
-  script:
-    - echo $WBGO | base64 -d >> private/keystore.jks
-    - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
+  

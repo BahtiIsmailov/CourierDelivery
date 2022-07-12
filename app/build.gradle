@@ -10,6 +10,16 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlinx-serialization'
 
 android {
+    signingConfigs{
+        release{
+            storeFile file(String.valueOf(System.getenv("WBGO")))
+            storePassword System.getenv("storePassword")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("keyPassword")
+        }
+
+    }
+
 
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
