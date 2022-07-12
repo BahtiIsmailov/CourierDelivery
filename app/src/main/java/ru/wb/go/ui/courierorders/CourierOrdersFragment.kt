@@ -118,7 +118,7 @@ class CourierOrdersFragment :
         initListeners()
         initStateObserves()
         initReturnDialogResult()
-        viewModel.resumeInit()
+        viewModel.init()
     }
 
     private fun initReturnDialogResult() {
@@ -203,6 +203,7 @@ class CourierOrdersFragment :
     private fun showAddresses() {
         binding.navDrawerMenu.visibility = INVISIBLE
         binding.toRegistration.visibility = INVISIBLE
+        binding.supportApp.visibility = INVISIBLE
         showBottomSheetOrderAddresses()
     }
 
@@ -602,7 +603,7 @@ class CourierOrdersFragment :
                 CourierOrderDelegate(requireContext(),
                     object : OnCourierOrderCallback {
                         override fun onOrderClick(idView: Int) {
-                            viewModel.onOrderClick(idView)
+                            viewModel.onOrderItemClick(idView)
                         }
                     })
             )

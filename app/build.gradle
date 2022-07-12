@@ -161,8 +161,6 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-analytics:17.2.2'
-
 
     //LeakCanary для утечек памяти
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'

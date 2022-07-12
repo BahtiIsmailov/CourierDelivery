@@ -11,6 +11,12 @@ class CourierLoadingResourceProvider(private val context: Context) :
 
     fun getEmptyAddress(): String = context.getString(R.string.courier_order_scanner_empty_address)
 
+    fun getPvzCountTitle(count: Int): String =
+        context.getString(R.string.courier_order_scanner_pvz_count_title, count)
+
+    fun getBoxCountTitle(count: Int): String =
+        context.getString(R.string.courier_order_scanner_box_count_title, count)
+
     fun getAccepted(count: Int): String =
         context.getString(R.string.courier_order_scanner_accepted, count)
 

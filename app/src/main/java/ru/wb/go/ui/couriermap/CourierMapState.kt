@@ -7,18 +7,24 @@ sealed class CourierMapState {
 
     data class UpdateMarkers(val points: MutableList<CourierMapMarker>) : CourierMapState()
 
+    object ClearMap : CourierMapState()
+
     data class UpdateMarkersWithIndex(val points: List<CourierMapMarker>) : CourierMapState()
 
     data class UpdateMarkersWithAnimateToPositions(
         val pointsHide: List<CourierMapMarker>,
         val pointFrom: CourierMapMarker,
-        val pointsTo: List<CourierMapMarker>
+        val pointsTo: List<CourierMapMarker>,
+        val animateTo: BoundingBox,
+        val offsetY: Int
     ) : CourierMapState()
 
     data class UpdateMarkersWithAnimateToPosition(
         val pointsShow: List<CourierMapMarker>,
         val pointsFrom: List<CourierMapMarker>,
-        val pointTo: CourierMapMarker
+        val pointTo: CourierMapMarker,
+        val animateTo: BoundingBox,
+        val offsetY: Int
     ) : CourierMapState()
 
     data class ZoomToBoundingBox(val boundingBox: BoundingBox, val animate: Boolean) :

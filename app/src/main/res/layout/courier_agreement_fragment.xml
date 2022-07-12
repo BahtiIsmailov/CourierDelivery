@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:overScrollMode="never"
         android:layout_marginTop="30dp"
-
         android:layout_marginStart="@dimen/pad16"
         android:layout_marginEnd="@dimen/pad16"
         android:layout_above="@+id/bottom_layout"

@@ -6,7 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class CourierOrderDstOfficeLocalEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "dst_office_key")
+    val key: Int,
     @ColumnInfo(name = "dst_office_id")
     val id: Int,
     @ColumnInfo(name = "dst_office_order_id")

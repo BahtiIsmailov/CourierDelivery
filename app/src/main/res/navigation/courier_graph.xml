@@ -178,7 +178,7 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_courierOrderTimerFragment_to_courierWarehouseFragment"
-            app:destination="@id/courierLoaderFragment"
+            app:destination="@id/courierWarehousesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
