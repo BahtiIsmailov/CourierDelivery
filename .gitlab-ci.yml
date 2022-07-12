@@ -62,7 +62,7 @@ before_script:
   # Not necessary, but just for surity
   - chmod +x ./gradlew
 stages:
-  #- build
+  - build
   - release
 
 # Make Project
