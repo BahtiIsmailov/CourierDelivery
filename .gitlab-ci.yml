@@ -63,6 +63,7 @@ before_script:
   - chmod +x ./gradlew
 stages:
   - build
+  - release
 
 # Make Project
 assembleDebug:
@@ -76,18 +77,15 @@ assembleDebug:
 
 assembleRelease:
   interruptible: true
-  stage: build
-  variables: 
-    Wb: $WBGO
+  stage: release
   script:
+    - echo $WBGO | base64 -d > keystore.jks
     - ./gradlew assembleRelease
+    - Pandroid.injected.signing.store.file=$(pwd)/keystore.jks
+    - Pandroid.injected.signing.store.password=$keystore
+    - Pandroid.injected.signing.key.alias=$alias
+    - Pandroid.injected.signing.key.password=$password
   artifacts:
     paths:
       - $OUTPUT_DIR
-
-variable:
-  stage: build
-  script:
-    - echo $WBGO | base64 -d >> private/keystore.jks
-    - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
   
