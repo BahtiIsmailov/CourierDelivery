@@ -82,9 +82,9 @@ assembleRelease:
     - echo $WBGO | base64 -d > keystore.jks
     - ./gradlew assembleRelease
     - Pandroid.injected.signing.store.file=$(pwd)/keystore.jks
-    - Pandroid.injected.signing.store.password=$keystore
-    - Pandroid.injected.signing.key.alias=$alias
-    - Pandroid.injected.signing.key.password=$password
+    - Pandroid.injected.signing.store.password=$storeePassword
+    - Pandroid.injected.signing.key.alias=$KEY_ALIAS
+    - Pandroid.injected.signing.key.password=$keyPassword
   artifacts:
     paths:
       - $OUTPUT_DIR
