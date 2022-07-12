@@ -11,15 +11,6 @@ apply plugin: 'kotlinx-serialization'
 
 android {
 
-    signingConfigs {
-        release {
-            storeFile file('../private/keystore.jks')
-            storePassword 'W9jUStPGd53U1Jks_store'
-            keyAlias 'wbgo'
-            keyPassword 'DhtMrW9OU1Jks_alias'
-        }
-    }
-
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
 

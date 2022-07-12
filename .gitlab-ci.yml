@@ -14,6 +14,7 @@ variables:
   # It should match compileSdkVersion.
   ANDROID_COMPILE_SDK: "30"
 
+  OUTPUT_DIR: app/build/outputs/
   # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
   # It should match buildToolsVersion.
   ANDROID_BUILD_TOOLS: "30.0.3"
@@ -29,6 +30,8 @@ variables:
 before_script:
   - apt-get --quiet update --yes
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+  # получение порядкового номера билда
+  - export BUILD_NUMBER-$(git rev-list --count ${CI_BUILD_REF})
 
   # Setup path as ANDROID_HOME for moving/exporting the downloaded sdk into it
   - export ANDROID_HOME="${PWD}/android-home"
@@ -60,6 +63,8 @@ before_script:
 
   # Not necessary, but just for surity
   - chmod +x ./gradlew
+stages:
+  - build
 
 
 # Make Project
@@ -67,25 +72,31 @@ assembleDebug:
   interruptible: true
   stage: build
   script:
-    - ./gradlew assembleDebug
+    - ./gradlew clean assembleDebug
+  retry: 2
+  only:
+    - dev
   artifacts:
+    name: "${CI_PROJECT_NAME}_${CI_COMIT_REF_NAME}"
     paths:
-      - app/build/outputs/
+      - $OUTPUT_DIR
 
 assembleRelease:
   interruptible: true
-  variables: 
-    WBGO: variable
   stage: build
+  variables:
+    Wb: $WBGO
+  retry: 2
   script:
     - ./gradlew assembleRelease
+  only:
+    - dev
   artifacts:
     paths:
-      - app/build/outputs/
+      - $OUTPUT_DIR
 
 variable:
   stage: build
   script:
-    - echo $WBGO | base64 -d >> keystore.jks
+    - echo $WBGO | base64 -d >> private/keystore.jks
     - echo "$WBGO"          # вызывает пользовательскую переменную типа 'env_var'
-  
