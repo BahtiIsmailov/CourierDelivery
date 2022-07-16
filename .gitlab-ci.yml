@@ -62,13 +62,13 @@ before_script:
   # Not necessary, but just for surity
   - chmod +x ./gradlew
 stages:
-  - build
-  - release
+  - debugApk
+  - releaseApk
 
 # Make Project
 assembleDebug:
   interruptible: true
-  stage: build
+  stage: debugApk
   script:
     - ./gradlew clean assembleDebug
   retry: 2 
@@ -80,7 +80,7 @@ assembleDebug:
 
 assembleRelease:
   interruptible: true
-  stage: release
+  stage: releaseApk
   script:
     - echo $WBGO | base64 -d > keystore.jks
     - ./gradlew clean assembleRelease
