@@ -98,10 +98,10 @@ assembleProdRelease:  # описываем джобу для release сборк�
   script:
     - echo $KEYSTORE_FILE | base64 -d > my.keystore
     - ./gradlew testProdRelease assembleProdRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci, о них позже
-      -Pandroid.injected.signing.store.file=$(pwd)/my.keystore
-      -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
-      -Pandroid.injected.signing.key.alias=$KEY_ALIAS
-      -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+    - Pandroid.injected.signing.store.file=$(pwd)/my.keystore
+    - Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
+    - Pandroid.injected.signing.key.alias=$KEY_ALIAS
+    - Pandroid.injected.signing.key.password=$KEY_PASSWORD
   artifacts:
     paths:
       - app/build/outputs/
