@@ -107,11 +107,11 @@ class CheckSmsViewModel(
     }
 
     private fun formatSmsError(throwable: Throwable) {
-        onTechErrorLog("formatSmsError", throwable)
+        //onTechEventLog("formatSmsError", throwable)
     }
 
     private fun formatSmsComplete(code: String) {
-        onTechEventLog("formatSmsComplete", "code " + code.length)
+        //onTechEventLog("formatSmsComplete", "code " + code.length)
         _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)
         if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
     }
@@ -137,7 +137,7 @@ class CheckSmsViewModel(
     }
 
     private fun onHandleSignUpTimerError(throwable: Throwable) {
-        onTechErrorLog("onHandleSignUpError", throwable)
+        //onTechEventLog("onHandleSignUpError", throwable)
     }
 
     fun onRepeatPassword() {
@@ -156,12 +156,12 @@ class CheckSmsViewModel(
 
 
     private fun fetchingPasswordComplete() {
-        onTechEventLog("fetchingPasswordComplete")
+        //onTechEventLog("fetchingPasswordComplete")
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
     private fun fetchingPasswordError(throwable: Throwable) {
-        onTechErrorLog("fetchingPasswordError", throwable)
+        //onTechEventLog("fetchingPasswordError", throwable)
         when (throwable) {
             is NoInternetException -> _repeatStateUI.value =
                 CheckSmsUIRepeatState.ErrorPassword(
@@ -211,13 +211,13 @@ class CheckSmsViewModel(
     }
 
     private fun authComplete() {
-        onTechEventLog("authComplete", "NavigateToAppLoader")
+        //onTechEventLog("authComplete", "NavigateToAppLoader")
         _checkSmsUIState.value = CheckSmsUIState.Complete
         _navigationEvent.value = CheckSmsNavigationState.NavigateToAppLoader
     }
 
     private fun authError(throwable: Throwable) {
-        onTechErrorLog("authError", throwable)
+        //onTechEventLog("authError", throwable)
         _checkSmsUIState.value = when (throwable) {
             is NoInternetException,is UnknownHostException -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericInternetTitleError(),
@@ -269,7 +269,7 @@ class CheckSmsViewModel(
     }
 
     override fun onTimeIsOverState() {
-        onTechEventLog("onTimeIsOverState")
+        //onTechEventLog("onTimeIsOverState")
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 

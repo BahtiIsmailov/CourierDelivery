@@ -9,11 +9,11 @@ package ru.wb.go.utils.analytics
 //) :
 //    YandexMetricManager {
 //
-//    override fun onTechErrorLog(screen: String, method: String, message: String) {
+//    override fun //onTechEventLog(screen: String, method: String, message: String) {
 //        sendTechReportEvent(loadAsJson(TECH_ERROR, screen, split(method, message)).toString())
 //    }
 //
-//    override fun onTechEventLog(screen: String, method: String, message: String) {
+//    override fun //onTechEventLog(screen: String, method: String, message: String) {
 //        sendTechReportEvent(loadAsJson(TECH_EVENT, screen, split(method, message)).toString())
 //    }
 //

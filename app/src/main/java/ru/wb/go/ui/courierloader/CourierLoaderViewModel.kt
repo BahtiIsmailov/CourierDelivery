@@ -48,7 +48,7 @@ class CourierLoaderViewModel(
 
 
     init {
-        onTechEventLog("init")
+        //onTechEventLog("init")
         initDrawer()
         initVersion()
         checkRootState()
@@ -72,17 +72,17 @@ class CourierLoaderViewModel(
     }
 
     private fun appVersionUpdateComplete(version: String) {
-        onTechEventLog("appVersionUpdateComplete", "appStart $version")
+        //onTechEventLog("appVersionUpdateComplete", "appStart $version")
         checkUserState(version)
     }
 
     private fun appVersionUpdateError(throwable: Throwable) {
-        onTechErrorLog("appVersionUpdateError", throwable)
+        //onTechEventLog("appVersionUpdateError", throwable)
         checkUserState("0.0.0")
     }
 
     private fun goToUpdate(version: String): Boolean {
-        onTechEventLog("admin version: $version")
+        //onTechEventLog("admin version: $version")
         val res = !deviceManager.isAppVersionActual(version)
         if (res)
             toAppUpdate()
@@ -91,7 +91,7 @@ class CourierLoaderViewModel(
 
     private fun checkRootState() {
         if (resourceProvider.isRooted()) {
-            onTechEventLog("phoneIsRooted")
+            //onTechEventLog("phoneIsRooted")
         }
     }
 
@@ -138,7 +138,7 @@ class CourierLoaderViewModel(
                 _navigationDrawerState.value = res
             } catch (e: Exception) {
                 logException(e,"toApp")
-                onTechErrorLog("getMyTask", e)
+                //onTechEventLog("getMyTask", e)
                 onRxError(e)
             }
         }
@@ -153,13 +153,13 @@ class CourierLoaderViewModel(
         val remoteTaskId = remoteOrder.order.orderId
         return when {
             (order == null || remoteTaskId != order.orderId) && (remoteTaskId != -2) -> {
-                onTechEventLog("OrderSynchronization", "Get from server")
+                //onTechEventLog("OrderSynchronization", "Get from server")
                 syncFromServer(remoteOrder)
                 getNavigationState(remoteOrder.order.status)
             }
             else -> {
                 val localStatus = order!!.status
-                onTechEventLog("OrderSynchronization", "Get local version")
+                //onTechEventLog("OrderSynchronization", "Get local version")
                 getNavigationState(localStatus)
             }
         }
@@ -231,7 +231,7 @@ private fun toRegistration(phone: String) {
 
         } catch (e: Exception) {
             logException(e,"toRegistration")
-            onTechErrorLog("getUserDocs", e)
+            //onTechEventLog("getUserDocs", e)
             onRxError(e)
         }
     }
@@ -257,7 +257,7 @@ private fun toAppUpdate() {
 
 private fun checkNewInstallation() {
     if (settingsManager.checkNewInstall(deviceManager.appVersion)) {
-        onTechEventLog("newInstallDetected", deviceManager.appVersion)
+        //onTechEventLog("newInstallDetected", deviceManager.appVersion)
     }
 }
 

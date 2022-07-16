@@ -180,9 +180,7 @@ class CourierOrdersInteractorImpl(
     var orderId: String? = null
 
     override suspend fun anchorTask() {
-        val courierOrderLocalDataEntity = selectedOrder(selectedRowOrder())
-        val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()
-        val localOrderEntity = convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
+        val localOrderEntity = courierLocalOrderEntity()
         reserveTask(localOrderEntity)
         orderId = localOrderEntity.orderId.toString()
         courierLocalRepository.setOrderInReserve(localOrderEntity)
@@ -193,6 +191,11 @@ class CourierOrdersInteractorImpl(
         appRemoteRepository.reserveTask(it.orderId.toString(), userManager.carNumber())
 
 
+    override suspend fun courierLocalOrderEntity() : LocalOrderEntity {
+        val courierOrderLocalDataEntity = selectedOrder(selectedRowOrder())
+        val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()
+        return convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
+    }
 
 
     private fun convertToLocalOrderEntity(

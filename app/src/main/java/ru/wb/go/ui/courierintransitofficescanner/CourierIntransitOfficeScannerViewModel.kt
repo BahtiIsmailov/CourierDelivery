@@ -107,7 +107,7 @@ class CourierIntransitOfficeScannerViewModel(
     }
 
     private fun observeOfficeIdScanProcessError(it: Throwable) {
-        onTechErrorLog("observeOfficeIdScanProcess", it)
+        //onTechEventLog("observeOfficeIdScanProcess", it)
         errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
     }
 

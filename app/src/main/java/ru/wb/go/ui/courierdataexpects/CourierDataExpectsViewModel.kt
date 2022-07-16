@@ -48,7 +48,7 @@ class CouriersCompleteRegistrationViewModel(
         get() = _progressState
 
     init {
-        onTechEventLog("init")
+        //onTechEventLog("init")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
         viewModelScope.launch {
             try {
@@ -62,7 +62,7 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     fun onUpdateStatusClick() {
-        onTechEventLog("onUpdateStatusClick")
+        //onTechEventLog("onUpdateStatusClick")
         _progressState.value = CourierDataExpectsProgressState.ProgressData
         viewModelScope.launch {
             try {
@@ -77,7 +77,7 @@ class CouriersCompleteRegistrationViewModel(
     }
 
     private fun isRegisteredStatusComplete(registerStatus: String?) {
-        onTechEventLog("isRegisteredStatusComplete")
+        //onTechEventLog("isRegisteredStatusComplete")
         when (registerStatus) {
             INTERNAL_SERVER_ERROR_COURIER_DOCUMENTS -> _progressState.value =
                 CourierDataExpectsProgressState.Complete
@@ -92,7 +92,7 @@ class CouriersCompleteRegistrationViewModel(
                     _navAction.value = CourierDataExpectsNavAction.NavigateToCouriers
                 } else {
                     val ce = CustomException("Unknown error")
-                    onTechErrorLog("CheckRegistrationStatus", ce)
+                    //onTechEventLog("CheckRegistrationStatus", ce)
                     errorDialogManager.showErrorDialog(ce, _showDialogInfo)
                 }
 

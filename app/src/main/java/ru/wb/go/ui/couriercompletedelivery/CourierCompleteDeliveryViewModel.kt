@@ -20,12 +20,12 @@ class CourierCompleteDeliveryViewModel(
     init {
         val amount = resourceProvider.getAmountInfo(parameters.amount)
         val score = resourceProvider.getDeliveredInfo(parameters.unloadedCount, parameters.fromCount)
-        onTechEventLog("init", "score $amount")
+        //onTechEventLog("init", "score $amount")
         _infoState.value = CourierCompleteDeliveryState.InfoDelivery(amount, score)
     }
 
     fun onCompleteDeliveryClick() {
-        onTechEventLog("onCompleteDeliveryClick", "NavigateToWarehouse")
+        //onTechEventLog("onCompleteDeliveryClick", "NavigateToWarehouse")
         _navigateToBack.value = NavigateToWarehouse
     }
 

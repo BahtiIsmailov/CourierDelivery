@@ -113,7 +113,7 @@ class CourierOrdersViewModel(
     private var height = 0
 
     init {
-        onTechEventLog("init")
+        //onTechEventLog("init")
     }
 
     fun init() {
@@ -172,7 +172,7 @@ class CourierOrdersViewModel(
     }
 
     fun onChangeCarNumberClick() {
-        onTechEventLog("onChangeCarNumberClick")
+        //onTechEventLog("onChangeCarNumberClick")
         withSelectedRowOrder(navigateToEditCarNumber())
     }
 
@@ -275,7 +275,7 @@ class CourierOrdersViewModel(
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        onTechEventLog("onItemPointClick", "mapPoint.id = " + mapPoint.id)
+        //onTechEventLog("onItemPointClick", "mapPoint.id = " + mapPoint.id)
         if (mapPoint.id.startsWith(ADDRESS_MAP_PREFIX)) addressMapClick(mapPoint)
         else if (mapPoint.id != WAREHOUSE_ID) orderMapClick(mapPoint)
     }
@@ -333,7 +333,7 @@ class CourierOrdersViewModel(
     }
 
     private fun observeMapActionError(throwable: Throwable) {
-        onTechErrorLog("observeMapActionError", throwable)
+        //onTechEventLog("observeMapActionError", throwable)
     }
 
     private fun addressLabel() {
@@ -365,7 +365,7 @@ class CourierOrdersViewModel(
     }
 
     private fun initOrdersError(it: Throwable) {
-        onTechErrorLog("ordersError", it)
+        //onTechEventLog("ordersError", it)
         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
         _orderItems.value = CourierOrderItemState.Empty("Ошибка получения данных")
         setLoader(WaitLoader.Complete)
@@ -518,12 +518,12 @@ class CourierOrdersViewModel(
     }
 
     fun onOrderItemClick(clickItemIndex: Int) {
-        onTechEventLog("onItemClick", "idView $clickItemIndex")
+        //onTechEventLog("onItemClick", "idView $clickItemIndex")
         onOrderClick(clickItemIndex)
     }
 
     private fun onOrderClick(itemIndex: Int) {
-        onTechEventLog("onTakeOrderClick")
+        //onTechEventLog("onTakeOrderClick")
         saveRowOrder(itemIndex)
         val isSelected = changeSelectedOrderItems(itemIndex)
         changeMapMarkers(itemIndex, isSelected)
@@ -637,7 +637,7 @@ class CourierOrdersViewModel(
     ) {
         viewModelScope.launch {
             with(courierOrderEntity) {
-                onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
+                //onTechEventLog("initOrderInfo", "order id: $id pvz: $pvz")
                 val carNumber = carNumberFormat(interactor.carNumber())
                 val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
                 val itemId = (idView + 1).toString()
@@ -757,7 +757,7 @@ class CourierOrdersViewModel(
     }
 
     fun onConfirmOrderClick() {
-        onTechEventLog("onConfirmOrderClick")
+        //onTechEventLog("onConfirmOrderClick")
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
@@ -765,6 +765,9 @@ class CourierOrdersViewModel(
                 anchorTaskComplete()
             } catch (e: Exception) {
                 anchorTaskError(e)
+            }finally {
+                val localOderEntity = interactor.courierLocalOrderEntity()
+                logCourierAndOrderData(localOderEntity)
             }
         }
     }
@@ -775,7 +778,7 @@ class CourierOrdersViewModel(
     }
 
     private fun anchorTaskError(it: Throwable) {
-        onTechErrorLog("anchorTaskError", it)
+        //onTechEventLog("anchorTaskError", it)
         setLoader(WaitLoader.Complete)
         if (it is HttpException){
             if (it.code() == COURIER_ONLY_ONE_TASK_ERROR_400){

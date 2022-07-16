@@ -101,7 +101,7 @@ class CourierBillingAccountSelectorViewModel(
 
             } catch (e: Exception) {
                 logException(e,"initAccounts")
-                onTechErrorLog("getBillingAccounts", e)
+                //onTechEventLog("getBillingAccounts", e)
                 errorDialogManager.showErrorDialog(e, _errorDialogState)
             }
         }
@@ -260,7 +260,7 @@ class CourierBillingAccountSelectorViewModel(
                 paymentsComplete(amountFromText)
             } catch (e: Exception) {
                 logException(e,"onNextCompleteClick")
-                onTechErrorLog("requestPayout", e)
+                //onTechEventLog("requestPayout", e)
                 errorDialogManager.showErrorDialog(e, _errorDialogState)
             }
         }

@@ -130,7 +130,7 @@ class CourierLoadingScanViewModel(
     }
 
     private fun observeTimerError(throwable: Throwable) {
-        onTechErrorLog("observeTimerError", throwable)
+        //onTechEventLog("observeTimerError", throwable)
     }
 
     private fun observeInitScanProcess() {// not work
@@ -150,7 +150,7 @@ class CourierLoadingScanViewModel(
 
 
     private fun initScanProcessComplete(boxes: List<LocalBoxEntity>) {
-        onTechEventLog("initScanProcessComplete", "countBox " + boxes.size)
+        //onTechEventLog("initScanProcessComplete", "countBox " + boxes.size)
         if (boxes.isEmpty()) {
             observeTimer()
             _fragmentStateUI.value = CourierLoadingScanBoxState.InitScanner
@@ -170,7 +170,7 @@ class CourierLoadingScanViewModel(
 
 
     private fun initScanProcessError(it: Throwable) {
-        onTechErrorLog("initScanProcessError", it)
+        //onTechEventLog("initScanProcessError", it)
     }
 
     private fun observeScanProcess() {//2
@@ -189,15 +189,15 @@ class CourierLoadingScanViewModel(
 
 
     private fun scanProcessError(throwable: Throwable) {
-        onTechErrorLog("observeScanProcessError", throwable)
+        //onTechEventLog("observeScanProcessError", throwable)
         errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }
 
     private fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
-        onTechEventLog(
-            "observeScanProcessComplete",
-            scanResult.scanBoxData.toString() + " " + scanResult.count
-        )
+        //onTechEventLog(
+           // "observeScanProcessComplete",
+           // scanResult.scanBoxData.toString() + " " + scanResult.count
+       // )
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
         when (scanBoxData) {
@@ -266,7 +266,7 @@ class CourierLoadingScanViewModel(
             } catch (e: Exception) {
                 logException(e,"onConfirmLoadingClick")
                 setLoader(WaitLoader.Complete)
-                onTechErrorLog("confirmLoadingBoxesError", e)
+                //onTechEventLog("confirmLoadingBoxesError", e)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
             }
         }
@@ -318,6 +318,8 @@ class CourierLoadingScanViewModel(
                         resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
                         items
                     )
+                setLogBoxesCount(loadingBoxes.boxCount)
+                setLogPvzCount(loadingBoxes.pvzCount)
 
             } catch (e: Exception) {
                 logException(e,"onCounterBoxClicked")
@@ -351,7 +353,7 @@ class CourierLoadingScanViewModel(
     }
 
     override fun onTimeIsOverState() {
-        onTechEventLog("onTimeIsOverState")
+        //onTechEventLog("onTimeIsOverState")
         _timeOut.value = true
         stopScanner()
         _orderTimer.value =
@@ -365,7 +367,7 @@ class CourierLoadingScanViewModel(
     }
 
     fun returnToListOrderClick() {
-        onTechEventLog("returnToListOrderClick")
+        //onTechEventLog("returnToListOrderClick")
         deleteTask()
     }
 
@@ -375,7 +377,7 @@ class CourierLoadingScanViewModel(
             try {
                 interactor.deleteTask()
                 setLoader(WaitLoader.Complete)
-                onTechEventLog("toWarehouse")
+                //onTechEventLog("toWarehouse")
                 toWarehouse()
                 _timeOut.value = false
             } catch (e: Exception) {

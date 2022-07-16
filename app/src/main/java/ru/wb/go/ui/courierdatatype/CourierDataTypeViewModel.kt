@@ -20,7 +20,7 @@ class CourierDataTypeViewModel(
         get() = _switchState
 
     init {
-        onTechEventLog("init")
+        //onTechEventLog("init")
         _switchState.value =
             when (parameters.docs.courierType.lowercase()) {
                 resourceProviderData.getSelfEmployed().lowercase() ->

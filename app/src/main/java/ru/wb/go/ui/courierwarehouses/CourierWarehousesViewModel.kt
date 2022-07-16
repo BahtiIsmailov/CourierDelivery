@@ -1,9 +1,12 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -107,7 +110,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun observeMapActionError(throwable: Throwable) {
-        onTechErrorLog("observeMapActionError", throwable)
+        //onTechEventLog("observeMapActionError", throwable)
     }
 
     fun updateData() {
@@ -176,7 +179,7 @@ class CourierWarehousesViewModel(
 
 
     private fun getWarehousesError(it: Throwable) {
-        onTechErrorLog("courierWarehouseError", it)
+        //onTechEventLog("courierWarehouseError", it)
         setLoader(WaitLoader.Complete)
         if (it is NoInternetException) {
             _warehouseState.value = CourierWarehouseItemState.NoInternet
@@ -192,7 +195,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun convertAndSaveItemsPointsMarkers() {
-        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouseEntities.size)
+        //onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouseEntities.size)
         warehouseItems = mutableListOf()
         coordinatePoints = mutableListOf()
         mapMarkers = mutableListOf()
@@ -229,7 +232,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-        onTechEventLog("initMapByLocation")
+        //onTechEventLog("initMapByLocation")
         myLocation = location
         if (coordinatePoints.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToMyLocation)
@@ -260,7 +263,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        onTechEventLog("onItemPointClick")
+        //onTechEventLog("onItemPointClick")
         if (mapPoint.id != MY_LOCATION_ID) {
             val indexItemClick = mapPoint.id.toInt()
             changeSelectedMapPoint(mapPoint)
@@ -305,7 +308,7 @@ class CourierWarehousesViewModel(
     }
 
     fun onItemClick(index: Int) {
-        onTechEventLog("onItemClick", "index $index")
+        //onTechEventLog("onItemClick", "index $index")
         val isSelected = !warehouseItems[index].isSelected
         changeMapMarkers(index, isSelected)
         changeWarehouseItems(index, isSelected)

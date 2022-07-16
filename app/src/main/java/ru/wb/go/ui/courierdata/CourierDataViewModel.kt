@@ -179,14 +179,14 @@ class UserFormViewModel(
     }
 
     private fun couriersFormComplete() {
-        onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
+        //onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
         _loaderState.value = CourierDataUILoaderState.Disable
         _navigationEvent.value =
             CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
     }
 
     private fun couriersFormError(it: Throwable) {
-        onTechErrorLog("couriersFormError", it)
+        //onTechEventLog("couriersFormError", it)
         _loaderState.value = CourierDataUILoaderState.Enable
         if (it is InternalServerException) couriersFormComplete()
         else errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
@@ -201,7 +201,7 @@ class UserFormViewModel(
     }
 
     fun onShowAgreementClick() {
-        onTechEventLog("onShowAgreementClick")
+        //onTechEventLog("onShowAgreementClick")
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 

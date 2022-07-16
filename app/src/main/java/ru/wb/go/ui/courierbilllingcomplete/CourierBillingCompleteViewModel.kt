@@ -19,12 +19,12 @@ class CourierBillingCompleteViewModel(
 
     init {
         val amount = resourceProvider.getTitle(parameters.amount)
-        onTechEventLog("init", "amount $amount")
+        //onTechEventLog("init", "amount $amount")
         _titleState.value = CourierBillingCompleteState.InfoDelivery(amount)
     }
 
     fun onCompleteClick() {
-        onTechEventLog("onCompleteClick", "NavigateToBilling")
+        //onTechEventLog("onCompleteClick", "NavigateToBilling")
         _navigateToBack.value = NavigateToBilling
     }
 

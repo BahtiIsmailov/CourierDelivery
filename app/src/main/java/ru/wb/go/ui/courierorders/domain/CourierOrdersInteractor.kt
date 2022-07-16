@@ -2,6 +2,7 @@ package ru.wb.go.ui.courierorders.domain
 
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.ui.BaseServiceInteractor
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -31,6 +32,8 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
     fun carType(): Int
 
     suspend fun anchorTask()
+
+    suspend fun courierLocalOrderEntity():LocalOrderEntity
 
 }
 

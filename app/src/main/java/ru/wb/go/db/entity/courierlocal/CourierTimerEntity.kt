@@ -1,5 +1,9 @@
 package ru.wb.go.db.entity.courierlocal
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class CourierTimerEntity(
     val route:String,
     val name: String,
@@ -11,4 +15,4 @@ data class CourierTimerEntity(
     val gate: String,
     val reservedDuration: String,
     val reservedAt: String
-)
+):Parcelable

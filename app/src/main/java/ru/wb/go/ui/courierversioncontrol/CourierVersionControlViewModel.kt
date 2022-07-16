@@ -27,7 +27,7 @@ class CourierVersionControlViewModel(
     }
 
     fun onUpdateClick() {
-        onTechEventLog("onUpdateClick")
+        //onTechEventLog("onUpdateClick")
         val packageName: String = deviceManager.appPackageName
         _updateFromGooglePlay.value = UpdateFromGooglePlay(
                 resourceProvider.getUriPlayMarket(packageName),

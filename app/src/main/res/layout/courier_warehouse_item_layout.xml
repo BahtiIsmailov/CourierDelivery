@@ -55,9 +55,9 @@
         android:layout_marginStart="@dimen/pad12"
         android:scaleType="fitStart"
         android:src="@drawable/ic_courier_map_warehouse_none_border"
-        app:layout_constraintBottom_toBottomOf="@id/name_warehouse"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_item_border"
-        app:layout_constraintTop_toTopOf="@id/name_warehouse"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
     <ImageView
