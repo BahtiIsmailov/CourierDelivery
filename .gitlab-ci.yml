@@ -37,6 +37,7 @@ before_script:
 stages:
   - debugApk
   - releaseApk
+  - prepare
   - releaseBundle
 
 # Make Project
@@ -65,18 +66,26 @@ assembleRelease:
   only:
     - master
 
-bundleRelease:   
-  interruptible: true
-  stage: releaseBundle
+create_property_files:
+  stage: prepare
+  only:
+    - dev
   script:
     - echo $KEYSTORE_FILE | base64 -d > keystore.jks
     - echo "keystorePath=../keystore.jks" > keystore.properties
     - echo "keystorePassword=$KEYSTORE_PASSWORD" >> keystore.properties
     - echo "keyAlias=$KEY_ALIAS" >> keystore.properties
     - echo "keyPassword=$KEY_PASSWORD" >> keystore.properties
-    - md5sum keystore.jks
-    - md5sum keystore.properties
-    - cat keystore.properties
+  artifacts:
+    paths:
+      - keystore.jks
+      - signing.properties
+     
+
+bundleRelease:   
+  interruptible: true
+  stage: releaseBundle
+  script:
     - ./gradlew clean bundleRelease --stacktrace
   artifacts:
     paths:
