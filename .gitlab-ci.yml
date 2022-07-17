@@ -56,7 +56,7 @@ before_script:
 stages:
   - debugApk
   - releaseApk
-  - build
+  - releaseBundle
 
 # Make Project
 assembleDebug:
@@ -86,7 +86,7 @@ assembleRelease:
 
 bundleRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
   interruptible: true
-  stage: build
+  stage: releaseBundle
   script:
     - echo $KEYSTORE_FILE | base64 -d > keystore.jks
     - ./gradlew clean bundleRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci
