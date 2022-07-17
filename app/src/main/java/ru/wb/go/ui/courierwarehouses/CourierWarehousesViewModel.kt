@@ -104,13 +104,8 @@ class CourierWarehousesViewModel(
             }
             .catch {
                 logException(it,"observeMapAction")
-                observeMapActionError(it)
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun observeMapActionError(throwable: Throwable) {
-        //onTechEventLog("observeMapActionError", throwable)
     }
 
     fun updateData() {
@@ -219,7 +214,7 @@ class CourierWarehousesViewModel(
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
             else CourierWarehouseItemState.InitItems(
-                warehouseItems.toMutableList()
+                warehouseItems.toMutableSet()
             )
     }
 
@@ -232,7 +227,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-        //onTechEventLog("initMapByLocation")
         myLocation = location
         if (coordinatePoints.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToMyLocation)

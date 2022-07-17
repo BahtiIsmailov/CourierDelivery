@@ -74,7 +74,7 @@ class CourierWarehousesFragment :
                             viewModel.onItemClick(index)
                         }
                     }
-                    adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
+                    adapter = CourierWarehousesAdapter(requireContext(), it.items.toMutableList(), callback)
                     binding.items.adapter = adapter
 
                 }

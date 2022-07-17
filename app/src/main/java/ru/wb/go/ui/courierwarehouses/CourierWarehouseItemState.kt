@@ -2,7 +2,7 @@ package ru.wb.go.ui.courierwarehouses
 
 sealed class CourierWarehouseItemState {
 
-    data class InitItems(val items: MutableList<CourierWarehouseItem>) :
+    data class InitItems(val items: MutableSet<CourierWarehouseItem>) :
         CourierWarehouseItemState()
 
     data class UpdateItems(val items: MutableList<CourierWarehouseItem>) :
