@@ -79,7 +79,7 @@ create_property_files:
   artifacts:
     paths:
       - keystore.jks
-      - signing.properties
+      - keystore.properties
      
 
 bundleRelease:   
