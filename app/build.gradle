@@ -12,7 +12,7 @@ apply plugin: 'kotlinx-serialization'
 android {
     signingConfigs{
         release{
-            storeFile file(String.valueOf(System.getenv("KEYSTORE_FILE")))
+            storeFile file("keystore.jks")
             storePassword System.getenv("KEYSTORE_PSSWORD")
             keyAlias System.getenv("KEY_ALIAS")
             keyPassword System.getenv("KEY_PASSWORD")
