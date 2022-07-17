@@ -95,7 +95,7 @@ assembleRelease:
 bundleRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
   stage: build
   script:
-    - echo $KEYSTORE_FILE | base64 -d > keystore.jks
+    - echo $KEYSTORE_FILE | base64 -d > app/keystore.jks
     - ./gradlew bundleRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci
     - Pandroid.injected.signing.store.file=$(pwd)/keystore.jks
     - Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
