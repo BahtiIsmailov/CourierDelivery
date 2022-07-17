@@ -11,8 +11,16 @@ apply plugin: 'kotlinx-serialization'
 
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion "30.0.3"
+
+    defaultConfig{
+        compileSdkVersion 32
+        buildToolsVersion "30.0.3"
+        multiDexEnabled true
+        applicationId "ru.wb.go"
+        minSdkVersion 23
+        targetSdkVersion 32
+    }
+
 
     signingConfigs{
         release{
