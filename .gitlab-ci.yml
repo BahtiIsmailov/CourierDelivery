@@ -1,11 +1,3 @@
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Android.gitlab-ci.yml
-
-# Read more about this script on this blog post https://about.gitlab.com/2018/10/24/setting-up-gitlab-ci-for-android-projects/, by Jason Lenny
-# If you are interested in using Android with FastLane for publishing take a look at the Android-Fastlane template.
-
 image: openjdk:11-jdk
 
 variables:
@@ -61,15 +53,18 @@ before_script:
 
   # Not necessary, but just for surity
   - chmod +x ./gradlew
-
+stages:
+  - debugApk
+  - releaseApk
+  - releaseBundle
 
 # Make Project
 assembleDebug:
   interruptible: true
-  stage: build
+  stage: debugApk
   script:
     - ./gradlew clean assembleDebug
-  retry: 2 
+  retry: 2
   artifacts:
     paths:
       - $OUTPUT_DIR
@@ -78,9 +73,9 @@ assembleDebug:
 
 assembleRelease:
   interruptible: true
-  stage: release
+  stage: releaseApk
   script:
-    - echo $WBGO | base64 -d > keystore.jks
+    - echo $KEYSTORE_FILE | base64 -d > keystore.jks
     - ./gradlew clean assembleRelease
   retry: 2
   artifacts:
@@ -88,4 +83,15 @@ assembleRelease:
       - $OUTPUT_DIR
   only:
     - dev
-  
+
+bundleRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
+  interruptible: true
+  stage: releaseBundle
+  script:
+    - echo $KEYSTORE_FILE | base64 -d > keystore.jks
+    - ./gradlew clean bundleRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci
+  artifacts:
+    paths:
+      - $OUTPUT_DIR
+  only:
+    - dev

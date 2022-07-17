@@ -12,10 +12,13 @@ apply plugin: 'kotlinx-serialization'
 android {
     signingConfigs{
         release{
-            storeFile file(String.valueOf(System.getenv("WBGO")))
-            storePassword System.getenv("storePassword")
-            keyAlias System.getenv("KEY_ALIAS")
-            keyPassword System.getenv("keyPassword")
+            storeFile file("../keystore.jks")
+            storePassword 'W9jUStPGd53U1Jks_store'
+            keyAlias 'wbgo'
+            keyPassword 'DhtMrW9OU1Jks_alias'
+//            storePassword String.valueOf(System.getenv("KEYSTORE_PSSWORD"))
+//            keyAlias String.valueOf(System.getenv("KEY_ALIAS"))
+//            keyPassword String.valueOf(System.getenv("KEY_PASSWORD"))
         }
     }
 
@@ -101,7 +104,7 @@ android {
 //            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
-            //signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
             matchingFallbacks = ['release']
             ndk{
                 debugSymbolLevel 'FULL'
