@@ -119,7 +119,6 @@ class CourierLoadingScanViewModel(
             }
             .catch {
                 logException(it,"observeTimer")
-                observeTimerError(it)
             }
             .launchIn(viewModelScope)
 
@@ -127,10 +126,6 @@ class CourierLoadingScanViewModel(
 
     private fun observeTimerComplete(timerState: TimerState) {
         timerState.handle(this)
-    }
-
-    private fun observeTimerError(throwable: Throwable) {
-        //onTechEventLog("observeTimerError", throwable)
     }
 
     private fun observeInitScanProcess() {// not work
@@ -142,7 +137,6 @@ class CourierLoadingScanViewModel(
                 initScanProcessComplete(response)
             } catch (e: Exception) {
                 logException(e,"observeInitScanProcess")
-                initScanProcessError(e)
                 Log.e("observeInitScanProcess","$e")
             }
         }
@@ -150,7 +144,6 @@ class CourierLoadingScanViewModel(
 
 
     private fun initScanProcessComplete(boxes: List<LocalBoxEntity>) {
-        //onTechEventLog("initScanProcessComplete", "countBox " + boxes.size)
         if (boxes.isEmpty()) {
             observeTimer()
             _fragmentStateUI.value = CourierLoadingScanBoxState.InitScanner
@@ -166,11 +159,6 @@ class CourierLoadingScanViewModel(
             _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
             _completeButtonState.value = boxes.isNotEmpty()
         }
-    }
-
-
-    private fun initScanProcessError(it: Throwable) {
-        //onTechEventLog("initScanProcessError", it)
     }
 
     private fun observeScanProcess() {//2
@@ -189,15 +177,10 @@ class CourierLoadingScanViewModel(
 
 
     private fun scanProcessError(throwable: Throwable) {
-        //onTechEventLog("observeScanProcessError", throwable)
         errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }
 
     private fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
-        //onTechEventLog(
-           // "observeScanProcessComplete",
-           // scanResult.scanBoxData.toString() + " " + scanResult.count
-       // )
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
         when (scanBoxData) {
@@ -207,6 +190,8 @@ class CourierLoadingScanViewModel(
                     with(scanBoxData) {
                         BoxInfoDataState(qrCode, address, countBoxes)
                     }
+                setLogBoxesQrCodeAddressAndCount(scanBoxData.qrCode,scanBoxData.address,countBoxes)
+                setValueToStartLog(true)
                  _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
                 _orderTimer.value = CourierLoadingScanTimerState.Stopped
                 _completeButtonState.value = true
@@ -266,7 +251,6 @@ class CourierLoadingScanViewModel(
             } catch (e: Exception) {
                 logException(e,"onConfirmLoadingClick")
                 setLoader(WaitLoader.Complete)
-                //onTechEventLog("confirmLoadingBoxesError", e)
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
             }
         }
@@ -288,14 +272,9 @@ class CourierLoadingScanViewModel(
     }
 
     fun onCompleteLoaderClicked() {
-        //val stop = Single.just(stopScanner())
         _completeButtonState.value = false
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
         stopScanner()
-//        addSubscription(
-//            stop.subscribe()
-//        )
-
     }
 
     fun onCounterBoxClicked() {
@@ -318,8 +297,6 @@ class CourierLoadingScanViewModel(
                         resourceProvider.getBoxCountTitle(loadingBoxes.boxCount),
                         items
                     )
-                setLogBoxesCount(loadingBoxes.boxCount)
-                setLogPvzCount(loadingBoxes.pvzCount)
 
             } catch (e: Exception) {
                 logException(e,"onCounterBoxClicked")

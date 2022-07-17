@@ -3,38 +3,24 @@ package ru.wb.go.ui
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.room.ColumnInfo
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.MutableSharedFlow
-import ru.wb.go.db.entity.courierlocal.CourierTimerEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
-import ru.wb.go.ui.courierorders.CourierOrderDetailsInfoUIState
 
 abstract class NetworkViewModel() : ViewModel() {
 
     abstract fun getScreenTag(): String
-    private val countPvz = MutableLiveData<Int>()
-    private val boxCount = MutableLiveData<Int>()
+    private val startLog = MutableLiveData<Boolean>()
     private val params = Bundle()
-    
-     // fun onTechEventLog(method: String, message: String = EMPTY_MESSAGE) {
-        //metric.//onTechEventLog(getScreenTag(), method, message)
-    //}
 
-     //fun onTechEventLog(method: String, error: Throwable) {
-        //metric.//onTechEventLog(getScreenTag(), method, error.toString())
-    //}
 
-    fun logException(throwable: Throwable,message: String) {
+    fun logException(throwable: Throwable, message: String) {
         Firebase.crashlytics.log(message)
         Firebase.crashlytics.recordException(throwable)
     }
 
     fun logCourierAndOrderData(data: LocalOrderEntity) {
-        
-
         params.putInt("wbUserID", data.wbUserID)
         params.putString("carNumber", data.carNumber)
         params.putInt("orderId", data.orderId)
@@ -55,27 +41,27 @@ abstract class NetworkViewModel() : ViewModel() {
         params.putInt("srcId", data.srcId)
         params.putDouble("srcLongitude", data.srcLongitude)
         params.putDouble("srcLatitude", data.srcLatitude)
-        
-        params.putInt("LoadingPvzCount",getLogPvzCount())
-        params.putInt("LoadingBoxesCount",getBoxesCount())
-        
-        
+
+        if (startLog.value == true) {
+            setDataToFireBase()
+        }
     }
-    
-    fun setLogPvzCount(pvzCount:Int) {
-        countPvz.value = pvzCount
-    }       
-    
-    private fun getLogPvzCount() = countPvz.value?:0
-    
-    fun setLogBoxesCount(boxesCount:Int) {
-        boxCount.value = boxesCount
-    } 
-    
-    private fun getBoxesCount() = boxCount.value?:0
-    
-    
-    fun setDataToFireBase(){
+
+    fun setLogBoxesQrCodeAddressAndCount(boxesQrCode: String, address: String, boxesCount: String) {
+        params.putString("boxesQrCode", boxesQrCode)
+        params.putString("address", address)
+        params.putString("boxesCount", boxesCount)
+    }
+
+
+    fun setValueToStartLog(startLog: Boolean) {
+        this.startLog.value = startLog
+    }
+
+    private fun getValueStartLog() = startLog.value
+
+
+    private fun setDataToFireBase() {
         Firebase.analytics.logEvent("CourierStartedOrder", params)
     }
 
