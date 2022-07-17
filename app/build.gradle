@@ -9,16 +9,17 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlinx-serialization'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties");
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs{
         release{
-            storeFile file("../keystore.jks")
-            storePassword 'W9jUStPGd53U1Jks_store'
-            keyAlias 'wbgo'
-            keyPassword 'DhtMrW9OU1Jks_alias'
-//            storePassword String.valueOf(System.getenv("KEYSTORE_PSSWORD"))
-//            keyAlias String.valueOf(System.getenv("KEY_ALIAS"))
-//            keyPassword String.valueOf(System.getenv("KEY_PASSWORD"))
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
         }
     }
 
