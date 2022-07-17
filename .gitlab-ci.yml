@@ -75,7 +75,7 @@ bundleRelease:
     - echo "keyAlias=$KEY_ALIAS" >> keystore.properties
     - echo "keyPassword=$KEY_PASSWORD" >> keystore.properties
     - cat keystore.properties
-    - ./gradlew clean bundleRelease 
+    - ./gradlew clean bundleRelease --stacktrace
   artifacts:
     paths:
       - $OUTPUT_DIR
