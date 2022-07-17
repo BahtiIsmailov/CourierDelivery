@@ -13,9 +13,12 @@ android {
     signingConfigs{
         release{
             storeFile file("../keystore.jks")
-            storePassword String.valueOf(System.getenv("KEYSTORE_PSSWORD"))
-            keyAlias String.valueOf(System.getenv("KEY_ALIAS"))
-            keyPassword String.valueOf(System.getenv("KEY_PASSWORD"))
+            storePassword 'W9jUStPGd53U1Jks_store'
+            keyAlias 'wbgo'
+            keyPassword 'DhtMrW9OU1Jks_alias'
+//            storePassword String.valueOf(System.getenv("KEYSTORE_PSSWORD"))
+//            keyAlias String.valueOf(System.getenv("KEY_ALIAS"))
+//            keyPassword String.valueOf(System.getenv("KEY_PASSWORD"))
         }
     }
 
