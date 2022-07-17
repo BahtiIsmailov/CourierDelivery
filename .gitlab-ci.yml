@@ -50,7 +50,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 assembleRelease:
   interruptible: true
@@ -63,7 +63,7 @@ assembleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 bundleRelease:
   interruptible: true
