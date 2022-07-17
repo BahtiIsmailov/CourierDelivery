@@ -101,7 +101,7 @@ android {
 //            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [appName: "WB Go"]
-            //signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
             matchingFallbacks = ['release']
             ndk{
                 debugSymbolLevel 'FULL'
