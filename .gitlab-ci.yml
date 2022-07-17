@@ -69,20 +69,20 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 assembleRelease:
   interruptible: true
   stage: releaseApk
   script:
-    - echo $WBGO | base64 -d > keystore.jks
+    - echo $KEYSTORE_FILE | base64 -d > keystore.jks
     - ./gradlew clean assembleRelease
   retry: 2
   artifacts:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 bundleRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
   interruptible: true
@@ -93,3 +93,5 @@ bundleRelease:  # описываем джобу для release сборки с p
   artifacts:
     paths:
       - $OUTPUT_DIR
+  only:
+    - dev
