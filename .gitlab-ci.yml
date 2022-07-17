@@ -92,12 +92,12 @@ assembleRelease:
   only:
     - dev
 
-assembleProdRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
+bundleProdRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
   image: lenant255/android:latest
   stage: build
   script:
     - echo $KEYSTORE_FILE | base64 -d > keystore.jks
-    - ./gradlew testProdRelease assembleProdRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci
+    - ./gradlew bundleProdRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci
     - Pandroid.injected.signing.store.file=$(pwd)/keystore.jks
     - Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
     - Pandroid.injected.signing.key.alias=$KEY_ALIAS
