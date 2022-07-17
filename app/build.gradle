@@ -9,19 +9,26 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlinx-serialization'
 
-def keystorePropertiesFile = rootProject.file("keystore.properties");
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     signingConfigs{
         release{
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
+            file("../keystore.properties").with { propFile ->
+                if (propFile.canRead()) {
+                    def properties = new Properties()
+                    properties.load(new FileInputStream(propFile))
+                    storeFile file(properties['storeFile'])
+                    storePassword properties['storePassword']
+                    keyAlias properties['keyAlias']
+                    keyPassword properties['keyPassword']
+                }else {
+                    println 'Unable to read signing.properties'
+                }
+            }
         }
     }
+
+
 
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
