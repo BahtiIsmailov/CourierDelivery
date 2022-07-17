@@ -93,7 +93,6 @@ assembleRelease:
     - master
 
 bundleProdRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
-  image: lenant255/android:latest
   stage: build
   script:
     - echo $KEYSTORE_FILE | base64 -d > keystore.jks
