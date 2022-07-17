@@ -73,7 +73,7 @@ create_property_files:
     - dev
   script:
     - echo $KEYSTORE_FILE | base64 -d > keystore.jks
-    - echo "storeFile=../keystore.jks" > keystore.properties
+    - echo "storeFile=keystore.jks" > keystore.properties
     - echo "storePassword=$KEYSTORE_PASSWORD" >> keystore.properties
     - echo "keyAlias=$KEY_ALIAS" >> keystore.properties
     - echo "keyPassword=$KEY_PASSWORD" >> keystore.properties
