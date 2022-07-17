@@ -97,7 +97,7 @@ bundleRelease:  # описываем джобу для release сборки с p
   script:
     - echo $KEYSTORE_FILE | base64 -d > app/keystore.jks
     - ./gradlew bundleRelease # для подписания передадим некоторые параметры в gradlew, они определяются в интферейсе gitlab ci
-    - Pandroid.injected.signing.store.file=$(pwd)/keystore.jks
+    - Pandroid.injected.signing.store.file=$(pwd)/app/keystore.jks
     - Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
     - Pandroid.injected.signing.key.alias=$KEY_ALIAS
     - Pandroid.injected.signing.key.password=$KEY_PASSWORD
