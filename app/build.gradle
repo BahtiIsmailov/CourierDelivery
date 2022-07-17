@@ -11,6 +11,9 @@ apply plugin: 'kotlinx-serialization'
 
 
 android {
+    compileSdkVersion 32
+    buildToolsVersion "30.0.3"
+
     signingConfigs{
         release{
             file("../keystore.properties").with { propFile ->
@@ -27,11 +30,6 @@ android {
             }
         }
     }
-
-
-
-    compileSdkVersion 32
-    buildToolsVersion "30.0.3"
 
     def versionPropsFile = file('version.properties')
 
