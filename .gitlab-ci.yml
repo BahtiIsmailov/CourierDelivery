@@ -62,8 +62,8 @@ before_script:
   # Not necessary, but just for surity
   - chmod +x ./gradlew
 stages:
-  #- debugApk
-  #- releaseApk
+  - debugApk
+  - releaseApk
   - build
 
 # Make Project
@@ -77,7 +77,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 assembleRelease:
   interruptible: true
@@ -90,7 +90,7 @@ assembleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 bundleProdRelease:  # описываем джобу для release сборки с prod флейвором - тут все то же самое, но есть доп шаги для подписания
   image: lenant255/android:latest
