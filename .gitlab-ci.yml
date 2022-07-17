@@ -67,6 +67,7 @@ assembleRelease:
     - master
 
 create_property_files:
+  interruptible: true
   stage: prepare
   only:
     - dev
