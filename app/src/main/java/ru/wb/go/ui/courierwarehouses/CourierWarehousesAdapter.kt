@@ -10,7 +10,7 @@ import ru.wb.go.databinding.CourierWarehouseItemLayoutBinding
 
 class CourierWarehousesAdapter(
     context: Context,
-    private val items: MutableList<CourierWarehouseItem>,
+    private val items: MutableSet<CourierWarehouseItem>,
     private val onItemClickCallBack: OnItemClickCallBack,
 ) : RecyclerView.Adapter<CourierWarehousesAdapter.ViewHolder>() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -25,7 +25,7 @@ class CourierWarehousesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (_, name, address, isSelected) = items[position]
+        val (_, name, address, isSelected) = items.toMutableList()[position]
         holder.binding.nameWarehouse.text = name
         holder.binding.fullAddressWarehouse.text = address
         val selectable = if (isSelected) View.VISIBLE else View.INVISIBLE
@@ -38,7 +38,7 @@ class CourierWarehousesAdapter(
     }
 
     fun setItem(index: Int, item: CourierWarehouseItem) {
-        if (items.size > index) items[index] = item
+        if (items.size > index) items.toMutableList()[index] = item
     }
 
     inner class ViewHolder(rootView: View) :

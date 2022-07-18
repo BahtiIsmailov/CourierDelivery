@@ -112,10 +112,6 @@ class CourierOrdersViewModel(
 
     private var height = 0
 
-    init {
-        //onTechEventLog("init")
-    }
-
     fun init() {
         checkDemoMode()
         observeMapAction()
@@ -145,9 +141,6 @@ class CourierOrdersViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun clearSubscription() {
-        //viewModelScope.coroutineContext.cancelChildren()
-    }
 
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
@@ -172,7 +165,6 @@ class CourierOrdersViewModel(
     }
 
     fun onChangeCarNumberClick() {
-        //onTechEventLog("onChangeCarNumberClick")
         withSelectedRowOrder(navigateToEditCarNumber())
     }
 

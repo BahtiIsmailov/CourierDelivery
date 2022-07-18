@@ -2,7 +2,10 @@ package ru.wb.go.ui.couriermap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.osmdroid.util.BoundingBox
@@ -117,6 +120,9 @@ class CourierMapViewModel(
     val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
         get() = _visibleManagerBar
 
+
+
+
     fun subscribeMapState() {
         interactor.subscribeMapState()
             .onEach {
@@ -132,9 +138,6 @@ class CourierMapViewModel(
 
     }
 
-    fun clearSubscription(){
-        //viewModelScope.coroutineContext.cancelChildren()
-    }
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {
             is CourierMapState.NavigateToPoint -> _navigateToPoint.value =
@@ -158,7 +161,7 @@ class CourierMapViewModel(
             is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
                 NavigateToPointZoom(it.point)
 
-            is CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
+            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
                 NavigateToMyLocation
 
             is CourierMapState.UpdateMarkers -> _updateMarkers.value =
@@ -167,7 +170,7 @@ class CourierMapViewModel(
             is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
                 UpdateMarkersWithIndex(it.points)
 
-            is CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
+            CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
                 UpdateMyLocation
 
             is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
@@ -185,11 +188,11 @@ class CourierMapViewModel(
                     it.offsetY
                 )
 
-            is CourierMapState.ClearMap -> _clearMap.value = ClearMap
-            is CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
+            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Visible
 
-            is CourierMapState.HideManagerBar -> _visibleManagerBar.value =
+            CourierMapState.HideManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Hide
 
         }
