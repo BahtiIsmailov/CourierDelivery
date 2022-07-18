@@ -1,11 +1,8 @@
 package ru.wb.go.ui.couriermap.domain
 
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -39,6 +36,18 @@ class CourierMapInteractorImpl(
                 }
             }
     }
+    /*
+     override fun subscribeMapState(): Observable<CourierMapState> {
+        return courierMapRepository
+            .observeMapState()
+            .doOnNext {
+                when (it) {
+                    CourierMapState.ShowManagerBar -> prolongHideTimerManager()
+                    is CourierMapState.UpdateMarkers -> hideManagerBar()
+                    else -> {}
+                }
+            }
+     */
 
 
     override fun markerClick(point: MapPoint) {
@@ -51,7 +60,8 @@ class CourierMapInteractorImpl(
 
     override fun onForcedLocationUpdate(point: CoordinatePoint) {
         deviceManager.saveLocation("${point.latitude}:${point.longitude}")
-        courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))
+
+        courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))//1
     }
 
     override fun showAll() {
@@ -85,6 +95,7 @@ class CourierMapInteractorImpl(
                 .onEach {
                     hideManagerBar()
                 }
+                .flowOn(Dispatchers.IO)
                 .launchIn(coroutineScope!!)
         }
 

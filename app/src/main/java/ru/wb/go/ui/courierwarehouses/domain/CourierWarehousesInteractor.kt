@@ -23,5 +23,7 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun mapAction(action: CourierMapAction)
 
+
+
 }
 

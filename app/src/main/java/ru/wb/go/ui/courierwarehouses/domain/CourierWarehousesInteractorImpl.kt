@@ -30,10 +30,6 @@ class CourierWarehousesInteractorImpl(
         return appRemoteRepository.courierWarehouses()
 
     }
-//    override suspend fun getWarehouses(): Single<List<CourierWarehouseLocalEntity>> {
-//        return appRemoteRepository.courierWarehouses()
-//            .compose(rxSchedulerFactory.applySingleSchedulers())
-//    }
 
     override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         courierLocalRepository.deleteAllWarehouse()
@@ -51,7 +47,6 @@ class CourierWarehousesInteractorImpl(
     override fun mapState(state: CourierMapState) {
         courierMapRepository.mapState(state)
     }
-
 
     override fun mapAction(action: CourierMapAction) {
         courierMapRepository.mapAction(action)

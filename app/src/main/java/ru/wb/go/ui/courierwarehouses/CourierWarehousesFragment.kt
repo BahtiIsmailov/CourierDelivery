@@ -96,7 +96,7 @@ class CourierWarehousesFragment :
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
-                is CourierWarehouseItemState.NoInternet -> {
+                CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.visibility = VISIBLE
                     binding.items.visibility = GONE
                 }
@@ -207,6 +207,8 @@ class CourierWarehousesFragment :
         viewModel.resumeInit()// если убрать то показывается дэмо версию
         viewModel.updateData()// если убрать то не отображается список складов
     }
+
+//
 
     private fun showDialogInfo(
         errorDialogData: ErrorDialogData

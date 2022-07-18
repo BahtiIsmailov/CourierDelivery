@@ -120,8 +120,13 @@ class CourierOrdersViewModel(
     fun updateOrders(height: Int) {
         checkDemoMode()
         initOrders(height)
+
     }
 
+
+    fun clearSharedFlow(){
+        interactor.clearedSharedFlow()
+    }
     fun restoreDetails() {
         setLoader(WaitLoader.Wait)
         interactor.freeOrdersLocal()
@@ -151,10 +156,7 @@ class CourierOrdersViewModel(
             .onEach {
                 observeMapActionComplete(it)
             }
-            .catch {
-                observeMapActionError(it)
-            }
-
+            .catch {}
             .launchIn(viewModelScope)
     }
 
@@ -231,8 +233,8 @@ class CourierOrdersViewModel(
     private fun observeMapActionComplete(courierMapAction: CourierMapAction) {
         when (courierMapAction) {
             is CourierMapAction.ItemClick -> onMapPointClick(courierMapAction.point)
-            is CourierMapAction.MapClick -> showManagerBar()
-            is CourierMapAction.ShowAll -> onShowAllClick()
+            CourierMapAction.MapClick -> showManagerBar()
+            CourierMapAction.ShowAll -> onShowAllClick()
             //is CourierMapAction.AnimateComplete -> {}
             //is CourierMapAction.LocationUpdate -> {}
             else -> {}
@@ -307,7 +309,7 @@ class CourierOrdersViewModel(
 
 
     private fun updateAddressMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
+        //interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
@@ -324,9 +326,6 @@ class CourierOrdersViewModel(
         }
     }
 
-    private fun observeMapActionError(throwable: Throwable) {
-        //onTechEventLog("observeMapActionError", throwable)
-    }
 
     private fun addressLabel() {
         _toolbarLabelState.value = Label(parameters.address)
@@ -357,7 +356,6 @@ class CourierOrdersViewModel(
     }
 
     private fun initOrdersError(it: Throwable) {
-        //onTechEventLog("ordersError", it)
         errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
         _orderItems.value = CourierOrderItemState.Empty("Ошибка получения данных")
         setLoader(WaitLoader.Complete)
@@ -510,12 +508,10 @@ class CourierOrdersViewModel(
     }
 
     fun onOrderItemClick(clickItemIndex: Int) {
-        //onTechEventLog("onItemClick", "idView $clickItemIndex")
         onOrderClick(clickItemIndex)
     }
 
     private fun onOrderClick(itemIndex: Int) {
-        //onTechEventLog("onTakeOrderClick")
         saveRowOrder(itemIndex)
         val isSelected = changeSelectedOrderItems(itemIndex)
         changeMapMarkers(itemIndex, isSelected)
@@ -607,7 +603,6 @@ class CourierOrdersViewModel(
     }
 
     private fun zoomAllOrderAddressPoints() {
-
         interactor.mapState(
             CourierMapState.ZoomToBoundingBoxOffsetY(
                 addressesBoundingBox(),

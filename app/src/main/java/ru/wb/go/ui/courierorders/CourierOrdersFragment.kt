@@ -159,6 +159,10 @@ class CourierOrdersFragment :
         else if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 
+    override fun onStop(){
+        super.onStop()
+        viewModel.clearSharedFlow()
+    }
 
     private fun getHalfHeightDisplay(): Int {
         val outMetrics = DisplayMetrics()
@@ -244,6 +248,11 @@ class CourierOrdersFragment :
         })
         return fadeIn
     }
+
+//    override fun onStop() {
+//        super.onStop()
+//        viewModel.clearMap()
+//    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initStateObserves() {

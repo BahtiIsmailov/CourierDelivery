@@ -9,12 +9,13 @@ import ru.wb.go.ui.couriermap.CourierMapState
 class CourierMapRepositoryImpl : CourierMapRepository {
 
 
-    private val mapStateSubject = MutableSharedFlow<CourierMapState>(
+    private var mapStateSubject = MutableSharedFlow<CourierMapState>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val mapActionSubject = MutableSharedFlow<CourierMapAction>(
+    private var mapActionSubject = MutableSharedFlow<CourierMapAction>(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+
 
     override fun observeMapState(): Flow<CourierMapState> {
         return mapStateSubject
@@ -30,6 +31,15 @@ class CourierMapRepositoryImpl : CourierMapRepository {
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return mapActionSubject
+    }
+
+    override fun clearCacheSharedFlow() {
+        mapActionSubject = MutableSharedFlow(
+            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+        mapStateSubject = MutableSharedFlow(
+            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
     }
 
 }

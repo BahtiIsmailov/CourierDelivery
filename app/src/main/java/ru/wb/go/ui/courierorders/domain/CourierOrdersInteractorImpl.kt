@@ -148,7 +148,6 @@ class CourierOrdersInteractorImpl(
 
 
     override fun mapState(state: CourierMapState) {
-        // если убрать флаг на карте не будет работаь
         courierMapRepository.mapState(state)
 
     }
@@ -197,6 +196,9 @@ class CourierOrdersInteractorImpl(
         return convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
     }
 
+    override fun clearedSharedFlow() {
+        courierMapRepository.clearCacheSharedFlow()
+    }
 
     private fun convertToLocalOrderEntity(
         orderEntity: CourierOrderLocalDataEntity,
