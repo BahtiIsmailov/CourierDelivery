@@ -71,7 +71,7 @@ class CheckSmsInteractorImpl(
     override val timer: Flow<TimerState>
         get() = timerStates
 
-    override suspend fun stopTimer() {
+    override fun stopTimer() {
         timeConfirmCodeDisposable()
     }
 

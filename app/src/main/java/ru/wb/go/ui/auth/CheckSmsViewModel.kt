@@ -15,6 +15,7 @@ import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import java.net.UnknownHostException
+import kotlin.math.floor
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
@@ -82,7 +83,7 @@ class CheckSmsViewModel(
             }
             .catch {
                 logException(it,"subscribeTimer")
-                onHandleSignUpTimerError(it)
+
             }
             .launchIn(viewModelScope)
 
@@ -100,18 +101,14 @@ class CheckSmsViewModel(
             }
             .catch {
                 logException(it,"onNumberObservableClicked")
-                formatSmsError(it)
             }
             .launchIn(viewModelScope)
 
     }
 
-    private fun formatSmsError(throwable: Throwable) {
-        //onTechEventLog("formatSmsError", throwable)
-    }
+
 
     private fun formatSmsComplete(code: String) {
-        //onTechEventLog("formatSmsComplete", "code " + code.length)
         _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)
         if (code.length == NUMBER_LENGTH_MAX) fetchAuth(code)
     }
@@ -136,16 +133,12 @@ class CheckSmsViewModel(
         timerState.handle(this)
     }
 
-    private fun onHandleSignUpTimerError(throwable: Throwable) {
-        //onTechEventLog("onHandleSignUpError", throwable)
-    }
-
     fun onRepeatPassword() {
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordProgress
         viewModelScope.launch {
             try {
                 interactor.couriersExistAndSavePhone(formatPhone())
-                fetchingPasswordComplete()
+                //fetchingPasswordComplete()
             } catch (e: Exception) {
                 logException(e,"onRepeatPassword")
                 fetchingPasswordError(e)
@@ -156,12 +149,10 @@ class CheckSmsViewModel(
 
 
     private fun fetchingPasswordComplete() {
-        //onTechEventLog("fetchingPasswordComplete")
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
     private fun fetchingPasswordError(throwable: Throwable) {
-        //onTechEventLog("fetchingPasswordError", throwable)
         when (throwable) {
             is NoInternetException -> _repeatStateUI.value =
                 CheckSmsUIRepeatState.ErrorPassword(
@@ -211,13 +202,11 @@ class CheckSmsViewModel(
     }
 
     private fun authComplete() {
-        //onTechEventLog("authComplete", "NavigateToAppLoader")
         _checkSmsUIState.value = CheckSmsUIState.Complete
         _navigationEvent.value = CheckSmsNavigationState.NavigateToAppLoader
     }
 
     private fun authError(throwable: Throwable) {
-        //onTechEventLog("authError", throwable)
         _checkSmsUIState.value = when (throwable) {
             is NoInternetException,is UnknownHostException -> CheckSmsUIState.MessageError(
                 resourceProvider.getGenericInternetTitleError(),
@@ -269,15 +258,13 @@ class CheckSmsViewModel(
     }
 
     override fun onTimeIsOverState() {
-        //onTechEventLog("onTimeIsOverState")
         _repeatStateUI.value = CheckSmsUIRepeatState.RepeatPasswordComplete
     }
 
     override fun onCleared() {
         super.onCleared()
-        viewModelScope.launch {
-            interactor.stopTimer()
-        }
+        interactor.stopTimer()
+
     }
 
     override fun getScreenTag(): String {
