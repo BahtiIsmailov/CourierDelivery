@@ -202,13 +202,15 @@ class CourierWarehousesFragment :
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     override fun onResume() {
         super.onResume()
         viewModel.resumeInit()// если убрать то показывается дэмо версию
         viewModel.updateData()// если убрать то не отображается список складов
     }
-
-//
 
     private fun showDialogInfo(
         errorDialogData: ErrorDialogData

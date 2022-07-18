@@ -23,7 +23,7 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun mapAction(action: CourierMapAction)
 
-
+    fun clearCacheMutableSharedFlow()
 
 }
 

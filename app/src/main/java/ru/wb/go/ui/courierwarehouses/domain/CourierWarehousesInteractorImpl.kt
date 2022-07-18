@@ -52,6 +52,9 @@ class CourierWarehousesInteractorImpl(
         courierMapRepository.mapAction(action)
     }
 
+    override fun clearCacheMutableSharedFlow() {
+        courierMapRepository.clearCacheSharedFlow()
+    }
     override fun isDemoMode(): Boolean {
         return tokenManager.isDemo()
     }

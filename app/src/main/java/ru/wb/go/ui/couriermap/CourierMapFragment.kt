@@ -96,7 +96,6 @@ class CourierMapFragment : Fragment()  {
         super.onCreate(savedInstanceState)
         createLocationRequest()
         buildGoogleApiClient()
-
     }
 
     override fun onCreateView(
@@ -472,7 +471,11 @@ class CourierMapFragment : Fragment()  {
     }
 
     private fun clearMap() {
-        binding.map.overlays.clear()
+        binding.map.overlay.clear()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {

@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -59,11 +60,9 @@ class CourierWarehousesViewModel(
     val demoState: LiveData<Boolean>
         get() = _demoState
 
-    var countTest = 0
-
     private var warehouseEntities = mutableSetOf<CourierWarehouseLocalEntity>()
-    private var warehouseItems = mutableListOf<CourierWarehouseItem>()
-    private var mapMarkers = mutableListOf<CourierMapMarker>()
+    private var warehouseItems = mutableSetOf<CourierWarehouseItem>()
+    private var mapMarkers = mutableSetOf<CourierMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private var myLocation: CoordinatePoint? = null
         get() = if (field == null){
@@ -76,6 +75,7 @@ class CourierWarehousesViewModel(
     private var whSelectedId: Int? = null
 
 
+
     fun resumeInit() {
         observeMapAction()
         checkDemoMode()
@@ -84,10 +84,6 @@ class CourierWarehousesViewModel(
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
     }
-
-
-
-
 
     private fun observeMapAction() {
         interactor.observeMapAction()
@@ -128,6 +124,7 @@ class CourierWarehousesViewModel(
                 val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
                 getWarehousesComplete(r) // сюда пришли данные размер массива
+                interactor.clearCacheMutableSharedFlow()
             } catch (e: Exception) {
                 logException(e,"getWarehouses")
                 getWarehousesError(e)
@@ -170,6 +167,7 @@ class CourierWarehousesViewModel(
         convertAndSaveItemsPointsMarkers()
         updateMyLocation()
         courierWarehouseComplete()
+
     }
 
 
@@ -189,11 +187,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun convertAndSaveItemsPointsMarkers() {
-        warehouseItems = mutableListOf()
-        warehouseItems.toMutableSet()
+        warehouseItems = mutableSetOf()
         coordinatePoints = mutableListOf()
-        mapMarkers = mutableListOf()
-        mapMarkers.toMutableSet()
+        mapMarkers = mutableSetOf()
         warehouseEntities.forEachIndexed { index, item ->
             val wi = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
             warehouseItems.add(wi)
@@ -239,8 +235,9 @@ class CourierWarehousesViewModel(
 
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList())) // here send for map state to update markers
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
+
     }
 
     private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
@@ -279,9 +276,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeSelectedWarehouseItemsByMap(indexItemClick: Int, isMapSelected: Boolean) {
-        warehouseItems[indexItemClick].isSelected = isMapSelected
+        warehouseItems.toMutableList()[indexItemClick].isSelected = isMapSelected
         if (whSelectedId != null && whSelectedId != indexItemClick) {
-            warehouseItems[whSelectedId!!].isSelected = false
+            warehouseItems.toMutableList()[whSelectedId!!].isSelected = false
         }
         whSelectedId = if (isMapSelected) indexItemClick else null
     }
@@ -292,16 +289,15 @@ class CourierWarehousesViewModel(
     }
 
     private fun isMapSelected(indexItemClick: Int) =
-        mapMarkers[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
+        mapMarkers.toMutableList()[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
 
     private fun updateMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation!!))
     }
 
     fun onItemClick(index: Int) {
-        //onTechEventLog("onItemClick", "index $index")
-        val isSelected = !warehouseItems[index].isSelected
+        val isSelected = !warehouseItems.toMutableList()[index].isSelected
         changeMapMarkers(index, isSelected)
         changeWarehouseItems(index, isSelected)
         changeShowDetailsOrder(isSelected)
@@ -321,7 +317,7 @@ class CourierWarehousesViewModel(
         }
         updateMarkersWithMyLocation(myLocation!!)
         if (isSelected) {
-            with(mapMarkers[clickItemIndex].point) {
+            with(mapMarkers.toMutableList()[clickItemIndex].point) {
                 val coordinatePoint = CoordinatePoint(lat, long)
                 interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
             }
