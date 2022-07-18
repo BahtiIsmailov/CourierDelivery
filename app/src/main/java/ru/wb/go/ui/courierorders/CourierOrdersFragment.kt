@@ -262,15 +262,15 @@ class CourierOrdersFragment :
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
-                is CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                is CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
-                is CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
+                CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
+                CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
+                CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
                 is CourierOrdersNavigationState.NavigateToOrderDetails ->
                     showBottomSheetOrderDetails(it.isDemo)
-                is CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
-                is CourierOrdersNavigationState.NavigateToRegistrationDialog ->
+                CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
+                CourierOrdersNavigationState.NavigateToRegistrationDialog ->
                     showRegistrationDialogConfirmInfo()
-                is CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
+                CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
                     ResourcesCompat.getDrawable(resources, it.icon, null)
                         ?.let { binding.iconAddress.setImageDrawable(it) }
@@ -280,14 +280,14 @@ class CourierOrdersFragment :
                         fadeOut(binding.addressDetailLayout).start()
                     }
                 }
-                is CourierOrdersNavigationState.CloseAddressesDetail -> {
+                CourierOrdersNavigationState.CloseAddressesDetail -> {
                     fadeIn(binding.addressDetailLayout).start()
                 }
-                is CourierOrdersNavigationState.OnMapClick ->
+                CourierOrdersNavigationState.OnMapClick ->
                     if (isOrderDetailsExpanded()) {
                         viewModel.onMapClickWithDetail()
                     }
-                is CourierOrdersNavigationState.CourierLoader ->
+                CourierOrdersNavigationState.CourierLoader ->
                     findNavController().navigate(
                         CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
                     )
@@ -364,7 +364,7 @@ class CourierOrdersFragment :
                     with(binding.selectedOrder) {
 
                         when (it.carNumber) {
-                            is CarNumberState.Empty -> {
+                            CarNumberState.Empty -> {
                                 binding.carNumber.visibility = GONE
                                 binding.carNumberEmpty.visibility = VISIBLE
                             }
@@ -403,7 +403,7 @@ class CourierOrdersFragment :
 
         viewModel.showOrderState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderShowOrdersState.Disable -> {
+                CourierOrderShowOrdersState.Disable -> {
                     with(binding.showOrderFab){
                          isEnabled = false
                          //isClickable = false
@@ -411,15 +411,15 @@ class CourierOrdersFragment :
                     }
 
                 }
-                is CourierOrderShowOrdersState.Enable -> {
+                CourierOrderShowOrdersState.Enable -> {
                     with(binding.showOrderFab) {
                          isEnabled = true
                          //isClickable = true
                          backgroundTintList = colorFab(R.color.colorPrimary)
                     }
                 }
-                is CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
-                is CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
+                CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
+                CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
             }
         }
 
@@ -437,7 +437,7 @@ class CourierOrdersFragment :
                     binding.addresses.adapter =
                         CourierOrderDetailsAddressAdapter(requireContext(), it.items, callback)
                 }
-                is CourierOrderAddressesUIState.Empty -> {
+                CourierOrderAddressesUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.addresses.visibility = GONE
                     binding.takeOrder.isEnabled = false
