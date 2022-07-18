@@ -78,7 +78,6 @@ class CourierMapFragment : Fragment()  {
 
     private var googleApiClient: GoogleApiClient? = null
 
-
     private lateinit var locationRequest: LocationRequest
 
     private var lastLocation: Location? = null
@@ -204,7 +203,7 @@ class CourierMapFragment : Fragment()  {
         val config: IConfigurationProvider = Configuration.getInstance()
         config.osmdroidBasePath = createOsmdroidBasePath()
         config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
-        // FIXME: ??? 
+        // FIXME: ???
         config.userAgentValue = context?.packageName
         config.load(
             requireActivity(),
@@ -268,7 +267,6 @@ class CourierMapFragment : Fragment()  {
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
         viewModel.clearMap.observe(viewLifecycleOwner) {
-            Log.e("mapDebug","clearMap")
             clearMap()
         }
 
@@ -289,12 +287,10 @@ class CourierMapFragment : Fragment()  {
         }
 
         viewModel.updateMarkers.observe(viewLifecycleOwner) {
-            Log.e("mapDebug","updateMarkers")
             updateMarkers(it.points)
         }
 
         viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
-            Log.e("mapDebug","updateMarkersWithIndex")
             updateMarkersWithIndex(it.points)
         }
         viewModel.navigateToMarker.observe(viewLifecycleOwner) {
@@ -310,7 +306,6 @@ class CourierMapFragment : Fragment()  {
         }
 
         viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
-            Log.e("mapDebug","updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
@@ -802,13 +797,9 @@ class CourierMapFragment : Fragment()  {
     }
 
     override fun onDestroyView() {
-        viewModel.clearSubscription()
-
         super.onDestroyView()
         _binding = null
     }
-
-
 
     @SuppressLint("MissingPermission")
     private fun updateLastLocation() {

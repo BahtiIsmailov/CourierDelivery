@@ -33,12 +33,11 @@ class CourierMapInteractorImpl(
         return courierMapRepository.observeMapState()
             .onEach { // слушает все события с картой
                 when (it) {
-                    is CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
+                    CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
                     is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
                     else -> {}
                 }
             }
-
     }
 
 

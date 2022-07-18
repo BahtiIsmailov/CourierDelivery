@@ -157,7 +157,7 @@ class CourierWarehousesFragment :
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
+                CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
@@ -169,7 +169,7 @@ class CourierWarehousesFragment :
                             )
                         )
                     )
-                is CourierWarehousesNavigationState.NavigateToRegistration -> {
+                CourierWarehousesNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
                     )

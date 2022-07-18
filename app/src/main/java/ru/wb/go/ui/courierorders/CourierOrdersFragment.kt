@@ -160,12 +160,6 @@ class CourierOrdersFragment :
     }
 
 
-    override fun onDestroyView() {
-        viewModel.clearSubscription()
-        viewModel.clearMap()
-        super.onDestroyView()
-    }
-
     private fun getHalfHeightDisplay(): Int {
         val outMetrics = DisplayMetrics()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
