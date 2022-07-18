@@ -35,5 +35,7 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     suspend fun courierLocalOrderEntity():LocalOrderEntity
 
+    fun clearedSharedFlow()
+
 }
 

@@ -122,6 +122,9 @@ class CourierMapViewModel(
 
 
 
+//    init {
+//        subscribeMapState()
+//    }
 
     fun subscribeMapState() {
         interactor.subscribeMapState()
@@ -207,7 +210,7 @@ class CourierMapViewModel(
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-        interactor.onForcedLocationUpdate(point)
+        interactor.onForcedLocationUpdate(point)//1
     }
 
     fun onForcedLocationUpdateDefault() {

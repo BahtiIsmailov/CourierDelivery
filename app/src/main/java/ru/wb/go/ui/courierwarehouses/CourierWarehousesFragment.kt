@@ -96,7 +96,7 @@ class CourierWarehousesFragment :
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
-                is CourierWarehouseItemState.NoInternet -> {
+                CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.visibility = VISIBLE
                     binding.items.visibility = GONE
                 }
@@ -200,6 +200,10 @@ class CourierWarehousesFragment :
                 return SNAP_TO_START
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun onResume() {

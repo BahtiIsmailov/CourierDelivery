@@ -21,11 +21,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -102,7 +105,9 @@ class CourierOrdersFragment :
     private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
         override  fun handleOnBackPressed() {
             when {
-                isOrdersExpanded() -> { viewModel.onCloseOrdersClick() }
+                isOrdersExpanded() -> {
+                    viewModel.onCloseOrdersClick()
+                }
                 isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
@@ -159,6 +164,10 @@ class CourierOrdersFragment :
         else if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 
+    override fun onStop(){
+        super.onStop()
+        viewModel.clearSharedFlow()
+    }
 
     private fun getHalfHeightDisplay(): Int {
         val outMetrics = DisplayMetrics()
@@ -263,7 +272,9 @@ class CourierOrdersFragment :
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
                 CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
+                CourierOrdersNavigationState.NavigateToWarehouse -> {
+                    findNavController().popBackStack(R.id.courierOrdersFragment,true)
+                }
                 CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
                 is CourierOrdersNavigationState.NavigateToOrderDetails ->
                     showBottomSheetOrderDetails(it.isDemo)
