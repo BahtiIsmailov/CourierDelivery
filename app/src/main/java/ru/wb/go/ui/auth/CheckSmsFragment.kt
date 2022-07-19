@@ -57,7 +57,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     private fun initListener() {
         binding.toolbarLayout.back.setOnClickListener {
-            findNavController().popBackStack()
+            findNavController().popBackStack(R.id.checkSmsFragment,true)
         }
 
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.asFlow())
@@ -97,7 +97,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
             val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                NetworkState.Complete -> R.drawable.ic_inet_complete
                 else -> R.drawable.ic_inet_failed
             }
             binding.toolbarLayout.noInternetImage.setImageDrawable(
