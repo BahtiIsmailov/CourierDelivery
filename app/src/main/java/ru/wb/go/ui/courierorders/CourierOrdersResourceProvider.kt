@@ -52,12 +52,13 @@ class CourierOrdersResourceProvider(private val context: Context) :
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)
 
-    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String) =
+    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String,boxCountWithRouteId:Int) =
         context.getString(
             R.string.courier_orders_details_dialog_message,
             carNumber,
             volume,
-            reserve
+            reserve,
+            boxCountWithRouteId
         )
 
     fun getConfirmPositiveDialog() =
@@ -68,6 +69,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
 
     fun getTaskReject() =
         context.getString(R.string.courier_orders_details_dialog_task_reject)
+
 
     @DrawableRes
     fun getTypeIcons(type: Int): Int {

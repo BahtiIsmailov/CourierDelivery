@@ -12,6 +12,7 @@ data class CourierOrderLocalEntity(
     val rowId: Int,
     val routeID: Int,
     val route: String?,
+    val ridMask:Long?,
     val gate: String,
     val minPrice: Int,
     val minVolume: Int,

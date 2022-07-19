@@ -9,6 +9,7 @@ data class CourierOrderEntity(
     val routeID: Int,
     val route:String,
     val gate: String,
+    val ridMask:Long?,
     val minPrice: Int,
     val minVolume: Int,
     val minBoxesCount: Int,

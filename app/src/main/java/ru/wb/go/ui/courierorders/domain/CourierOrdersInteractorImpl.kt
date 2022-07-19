@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierorders.domain
 
+import androidx.core.text.isDigitsOnly
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -15,6 +16,7 @@ import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.network.api.app.AppRemoteRepository
 import ru.wb.go.network.api.app.AppTasksRepository
+import ru.wb.go.network.api.app.remote.courier.TaskBoxCountResponse
 import ru.wb.go.network.monitor.NetworkMonitorRepository
 import ru.wb.go.network.token.TokenManager
 import ru.wb.go.network.token.UserManager
@@ -130,6 +132,7 @@ class CourierOrdersInteractorImpl(
             rowId = rowId,
             routeID = routeID,
             gate = gate,
+            ridMask = ridMask,
             minPrice = minPrice,
             minVolume = minVolume,
             minBoxesCount = minBoxesCount,
@@ -178,12 +181,15 @@ class CourierOrdersInteractorImpl(
 
     var orderId: String? = null
 
-    override suspend fun anchorTask() {
+    override suspend fun anchorTask(){
         val localOrderEntity = courierLocalOrderEntity()
         reserveTask(localOrderEntity)
         orderId = localOrderEntity.orderId.toString()
         courierLocalRepository.setOrderInReserve(localOrderEntity)
     }
+
+    override suspend fun getBoxCountWithRouteId(it: CourierOrderLocalEntity): TaskBoxCountResponse =
+        appTasksRepository.getBoxCountWithRouteId(it.ridMask?:0)
 
 
     private suspend fun reserveTask(it: LocalOrderEntity) =
@@ -199,6 +205,7 @@ class CourierOrdersInteractorImpl(
     override fun clearedSharedFlow() {
         courierMapRepository.clearCacheSharedFlow()
     }
+
 
     private fun convertToLocalOrderEntity(
         orderEntity: CourierOrderLocalDataEntity,

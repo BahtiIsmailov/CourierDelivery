@@ -123,8 +123,49 @@ class CourierOrdersViewModel(
 
     }
 
+    fun onConfirmOrderClick() {
+        setLoader(WaitLoader.Wait)
+        viewModelScope.launch {
+            try {
+                interactor.anchorTask()
+                anchorTaskComplete()
+            } catch (e: Exception) {
+                anchorTaskError(e)
+            } finally {
+                val localOderEntity = interactor.courierLocalOrderEntity()
+                logCourierAndOrderData(localOderEntity)
+            }
+        }
+    }
 
-    fun clearSharedFlow(){
+    private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
+        with(orderLocalDataEntities[it]) {
+            viewModelScope.launch {
+               val boxCountWithRouteId:Int = interactor.getBoxCountWithRouteId(courierOrderLocalEntity).count
+
+                _navigateToDialogConfirmScoreInfo.value =
+                    NavigateToDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
+                        resourceProvider.getConfirmMessageDialog(
+                            CarNumberUtils(interactor.carNumber()).fullNumber(),
+                            resourceProvider.getCargo(
+                                courierOrderLocalEntity.minVolume,
+                                courierOrderLocalEntity.minBoxesCount
+                            ),
+                            courierOrderLocalEntity.reservedDuration,
+                            if (boxCountWithRouteId == -1) courierOrderLocalEntity.minBoxesCount
+                            else  boxCountWithRouteId
+                        ),
+                        resourceProvider.getConfirmPositiveDialog(),
+                        resourceProvider.getConfirmNegativeDialog()
+                    )
+            }
+        }
+    }
+
+
+    fun clearSharedFlow() {
         interactor.clearedSharedFlow()
     }
 
@@ -143,30 +184,11 @@ class CourierOrdersViewModel(
                 setLoader(WaitLoader.Complete)
             }
             .catch {
-                logException(it,"restoreDetails")
+                logException(it, "restoreDetails")
                 initOrdersError(it)
             }
             .launchIn(viewModelScope)
     }
-/*
-   fun restoreDetails() {
-        setLoader(WaitLoader.Wait)
-        addSubscription(
-            interactor.freeOrdersLocal()
-                .doOnSuccess { this.orderLocalDataEntities = it }
-                .subscribe(
-                    {
-                        addressLabel()
-                        convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
-                        updateOrderAndWarehouseMarkers()
-                        showAllAndOrderItems()
-                        initOrderDetails(interactor.selectedRowOrder())
-                        setLoader(WaitLoader.Complete)
-                    },
-                    { initOrdersError(it) })
-        )
-    }
- */
 
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
@@ -210,9 +232,11 @@ class CourierOrdersViewModel(
     fun onConfirmTakeOrderClick() {
         when {
             interactor.isDemoMode() -> navigateToRegistrationDialog()
-            interactor.carNumberIsConfirm() -> withSelectedRowOrder(
-                navigateToDialogConfirmScoreInfo()
-            )
+            interactor.carNumberIsConfirm() -> {
+                withSelectedRowOrder(
+                    navigateToDialogConfirmScoreInfo()
+                )
+            }
             else -> withSelectedRowOrder(navigateToCreateCarNumber())
         }
     }
@@ -231,25 +255,6 @@ class CourierOrdersViewModel(
 
     }
 
-    private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
-        with(orderLocalDataEntities[it]) {
-            _navigateToDialogConfirmScoreInfo.value =
-                NavigateToDialogConfirmInfo(
-                    DialogInfoStyle.INFO.ordinal,
-                    resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
-                    resourceProvider.getConfirmMessageDialog(
-                        CarNumberUtils(interactor.carNumber()).fullNumber(),
-                        resourceProvider.getCargo(
-                            courierOrderLocalEntity.minVolume,
-                            courierOrderLocalEntity.minBoxesCount
-                        ),
-                        courierOrderLocalEntity.reservedDuration
-                    ),
-                    resourceProvider.getConfirmPositiveDialog(),
-                    resourceProvider.getConfirmNegativeDialog()
-                )
-        }
-    }
 
     private fun observeMapActionComplete(courierMapAction: CourierMapAction) {
         when (courierMapAction) {
@@ -618,8 +623,6 @@ class CourierOrdersViewModel(
         )
     }
 
-
-
     private fun removeWarehouseFromAddressMapMarker() {
         addressMapMarkers.removeAt(WAREHOUSE_FIRST_INDEX)
     }
@@ -632,8 +635,6 @@ class CourierOrdersViewModel(
                 DETAILS_HEIGHT
             )
         )
-
-
     }
 
     private fun addressesBoundingBox() =
@@ -669,7 +670,7 @@ class CourierOrdersViewModel(
     fun getAddressFromOrderAddressItems() {
         sharedWorker.save(
             SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
-           "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
+            "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
         )
     }
 
@@ -761,20 +762,6 @@ class CourierOrdersViewModel(
         _navigationState.value = CourierOrdersNavigationState.NavigateToWarehouse
     }
 
-    fun onConfirmOrderClick() {
-        setLoader(WaitLoader.Wait)
-        viewModelScope.launch {
-            try {
-                interactor.anchorTask()
-                anchorTaskComplete()
-            } catch (e: Exception) {
-                anchorTaskError(e)
-            }finally {
-                val localOderEntity = interactor.courierLocalOrderEntity()
-                logCourierAndOrderData(localOderEntity)
-            }
-        }
-    }
 
     private fun anchorTaskComplete() {
         setLoader(WaitLoader.Complete)
@@ -784,12 +771,11 @@ class CourierOrdersViewModel(
     private fun anchorTaskError(it: Throwable) {
         //onTechEventLog("anchorTaskError", it)
         setLoader(WaitLoader.Complete)
-        if (it is HttpException){
-            if (it.code() == COURIER_ONLY_ONE_TASK_ERROR_400){
+        if (it is HttpException) {
+            if (it.code() == COURIER_ONLY_ONE_TASK_ERROR_400) {
                 _navigationState.value = CourierOrdersNavigationState.CourierLoader
             }
-        }
-        else if (it is BadRequestException) {
+        } else if (it is BadRequestException) {
             if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
                 _navigationState.value = CourierOrdersNavigationState.CourierLoader
             } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {

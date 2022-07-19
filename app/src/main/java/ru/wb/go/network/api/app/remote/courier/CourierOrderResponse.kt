@@ -4,6 +4,7 @@ data class CourierOrderResponse(
     val id: Int,
     val routeID: Int?,
     val route: String?,
+    val ridMask: Long?,
     val gate: String?,
     val srcOffice: CourierOrderSrcOfficeResponse?,
     val minPrice: Int,
