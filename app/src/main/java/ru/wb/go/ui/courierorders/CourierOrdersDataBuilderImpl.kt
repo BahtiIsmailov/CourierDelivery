@@ -24,7 +24,8 @@ class CourierOrdersDataBuilderImpl(
                 cost = resourceProvider.getCost(coast),
                 cargo = resourceProvider.getCargo(
                     courierOrderLocalEntity.minVolume,
-                 ),//courierOrderLocalEntity.minBoxesCount
+                    courierOrderLocalEntity.minBoxesCount
+                 ),
                 countPvz = resourceProvider.getCountPvz(dstOffices.size),
                 arrive = resourceProvider.getArrive(courierOrderLocalEntity.reservedDuration),
                 idView = index,
