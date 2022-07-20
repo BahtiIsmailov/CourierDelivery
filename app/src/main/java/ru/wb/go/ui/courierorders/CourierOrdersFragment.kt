@@ -217,10 +217,7 @@ class CourierOrdersFragment :
 
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.takeOrder.setOnClickListener {
-            viewModel.getAddressFromOrderAddressItems()
-            viewModel.onConfirmTakeOrderClick()
-        }
+        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }

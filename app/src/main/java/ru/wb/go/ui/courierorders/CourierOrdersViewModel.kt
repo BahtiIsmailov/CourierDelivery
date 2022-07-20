@@ -667,12 +667,12 @@ class CourierOrdersViewModel(
 
     }
 
-    fun getAddressFromOrderAddressItems() {
-        sharedWorker.save(
-            SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
-            "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
-        )
-    }
+//    fun getAddressFromOrderAddressItems() {
+//        sharedWorker.save(
+//            SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
+//            "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
+//        )
+//    }
 
 
     private fun saveAddressItems(items: List<CourierOrderDetailsAddressItem>) {

@@ -1,26 +1,22 @@
 package ru.wb.go.utils
 
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object NavigateUtils {
 
-    private var navigateUtilsSharedFlow = MutableSharedFlow<String>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private var navigateUtilsSharedFlow = MutableStateFlow("")
+    var test:String? = null
 
     fun setDataToNavigateUtilsSharedFlow(fragmentName:String){
         navigateUtilsSharedFlow.tryEmit(fragmentName)
     }
 
-    fun getDataNavigateUtilsSharedFlow():Flow<String>{
-        return navigateUtilsSharedFlow
+
+    fun getDataNavigateUtilsSharedFlow():String{
+        return navigateUtilsSharedFlow.value
     }
 
     fun clearNavigateUtilsSharedFlow(){
-        navigateUtilsSharedFlow = MutableSharedFlow(
-            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-        )
+        //navigateUtilsSharedFlow = Channel(onBufferOverflow = BufferOverflow.DROP_OLDEST)
     }
 }

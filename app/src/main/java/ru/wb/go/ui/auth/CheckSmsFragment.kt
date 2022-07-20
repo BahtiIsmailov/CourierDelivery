@@ -47,6 +47,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.saveDataToShared()
         initViews()
         initListener()
         initObserve()
@@ -74,10 +75,11 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         }
 
         viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
+
             when (state) {
                 CheckSmsNavigationState.NavigateToAppLoader -> {
                     val navBuilder = NavOptions.Builder()
-                    NavigateUtils.setDataToNavigateUtilsSharedFlow("fromSMS")
+
                     //val Dist
                     val navOptions: NavOptions =
                         navBuilder.setPopUpTo(R.id.load_navigation, true).build()

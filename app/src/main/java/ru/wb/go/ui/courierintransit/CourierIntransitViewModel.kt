@@ -491,12 +491,6 @@ class CourierIntransitViewModel(
 
     }
 
-    private fun getSchedule(): String {
-        val value = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT, "")
-        val parts = value.split(";")
-        return parts[1]
-    }
-
     private fun changeSelectedItems(selectIndex: Int) {
         intransitItems.forEachIndexed { index, item ->
             intransitItems[index].isSelected =

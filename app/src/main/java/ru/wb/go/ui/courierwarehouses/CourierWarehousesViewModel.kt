@@ -1,15 +1,14 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.exceptions.NoInternetException
@@ -21,18 +20,20 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
-import ru.wb.go.utils.NavigateUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.prefs.SharedWorker
+import ru.wb.go.utils.prefs.SharedWorker.Companion.FRAGMENT_MANAGER
 
 class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
-    private val errorDialogManager: ErrorDialogManager
+    private val errorDialogManager: ErrorDialogManager,
+    private val sharedWorker: SharedWorker,
 ) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
@@ -65,20 +66,23 @@ class CourierWarehousesViewModel(
     private var mapMarkers = mutableSetOf<CourierMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private var myLocation: CoordinatePoint? = null
-        get() = if (field == null){
-                CoordinatePoint(55.751244, 37.618423)
-            }else{
-                field
-            }
+        get() = if (field == null) {
+            CoordinatePoint(55.751244, 37.618423)
+        } else {
+            field
+        }
 
 
     private var whSelectedId: Int? = null
-
+    private var stringFromSms: String? = null
 
 
     fun resumeInit() {
         observeMapAction()
         checkDemoMode()
+    }
+    init {
+        stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
     }
 
     private fun checkDemoMode() {
@@ -99,7 +103,7 @@ class CourierWarehousesViewModel(
                 }
             }
             .catch {
-                logException(it,"observeMapAction")
+                logException(it, "observeMapAction")
             }
             .launchIn(viewModelScope)
     }
@@ -124,25 +128,19 @@ class CourierWarehousesViewModel(
                 val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
                 getWarehousesComplete(r) // сюда пришли данные размер массива
-                workWithSharedFlow()
+                if (stringFromSms == "") {
+                    interactor.clearCacheMutableSharedFlow()
+                }else{
+                    sharedWorker.saveMediate(FRAGMENT_MANAGER,"")
+                    stringFromSms = ""
+                }
             } catch (e: Exception) {
-                logException(e,"getWarehouses")
+                logException(e, "getWarehouses")
                 getWarehousesError(e)
             } finally {
                 clearFabAndWhList()
             }
         }
-    }
-
-    private fun workWithSharedFlow(){
-        NavigateUtils.getDataNavigateUtilsSharedFlow()
-            .onEach {
-                if (it != "fromSMS"){
-                    interactor.clearCacheMutableSharedFlow()
-                }
-            }
-            .launchIn(viewModelScope)
-        NavigateUtils.clearNavigateUtilsSharedFlow()
     }
 
 
@@ -155,7 +153,7 @@ class CourierWarehousesViewModel(
                     fullAddress = it.fullAddress,
                     longitude = it.long,
                     latitude = it.lat,
-                    distanceFromUser = getDistanceFromUser(it.lat,it.long)
+                    distanceFromUser = getDistanceFromUser(it.lat, it.long)
                 )
             )
         }
@@ -164,7 +162,7 @@ class CourierWarehousesViewModel(
     }
 
 
-    private fun getDistanceFromUser(lat:Double,long:Double) : Float {
+    private fun getDistanceFromUser(lat: Double, long: Double): Float {
         val loc1 = Location("")
         loc1.latitude = lat
         loc1.longitude = long

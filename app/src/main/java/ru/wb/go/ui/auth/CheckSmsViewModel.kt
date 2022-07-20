@@ -1,5 +1,6 @@
 package ru.wb.go.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,12 +15,14 @@ import ru.wb.go.ui.auth.domain.CheckSmsInteractor
 import ru.wb.go.ui.auth.keyboard.KeyboardNumericView
 import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
+import ru.wb.go.utils.prefs.SharedWorker
 import java.net.UnknownHostException
 import kotlin.math.floor
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
     private val interactor: CheckSmsInteractor,
+    private val sharedWorker: SharedWorker,
     private val resourceProvider: AuthResourceProvider,
 ) : TimerStateHandler, NetworkViewModel() {
 
@@ -76,6 +79,10 @@ class CheckSmsViewModel(
 
     }
 
+    fun saveDataToShared(){
+        sharedWorker.saveMediate(SharedWorker.FRAGMENT_MANAGER,"fromSms")
+    }
+
     private fun subscribeTimer() {
         interactor.timer
             .onEach {
@@ -105,8 +112,6 @@ class CheckSmsViewModel(
             .launchIn(viewModelScope)
 
     }
-
-
 
     private fun formatSmsComplete(code: String) {
         _checkSmsUIState.value = CheckSmsUIState.CodeFormat(code)

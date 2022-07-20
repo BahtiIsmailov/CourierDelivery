@@ -32,6 +32,9 @@ class SharedWorkerImpl(context: Context, private val gson: Gson) : SharedWorker 
         return preferences.getInt(key, defValue)
     }
 
+    override fun saveMediate(key: String, value: String): Boolean {
+        return preferences.edit().putString(key, value).commit()
+    }
     override fun save(key: String, value: String) {
         preferences.edit().putString(key, value).apply()
     }
