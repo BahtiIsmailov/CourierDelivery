@@ -120,7 +120,6 @@ class CourierOrdersViewModel(
     fun updateOrders(height: Int) {
         checkDemoMode()
         initOrders(height)
-
     }
 
     fun onConfirmOrderClick() {
@@ -165,9 +164,7 @@ class CourierOrdersViewModel(
     }
 
 
-    fun clearSharedFlow() {
-        interactor.clearedSharedFlow()
-    }
+
 
     fun restoreDetails() {
         setLoader(WaitLoader.Wait)
@@ -180,7 +177,7 @@ class CourierOrdersViewModel(
                 convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
                 updateOrderAndWarehouseMarkers()
                 showAllAndOrderItems()
-                //initOrderDetails(interactor.selectedRowOrder())
+                initOrderDetails(interactor.selectedRowOrder())
                 setLoader(WaitLoader.Complete)
             }
             .catch {

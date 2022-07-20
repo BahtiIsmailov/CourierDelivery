@@ -74,7 +74,7 @@ class CourierIntransitInteractorImpl(
         return courierMapRepository.observeMapAction()
     }
 
-    override  fun mapState(state: CourierMapState) {
+    override fun mapState(state: CourierMapState) {
         return courierMapRepository.mapState(state)
 
     }

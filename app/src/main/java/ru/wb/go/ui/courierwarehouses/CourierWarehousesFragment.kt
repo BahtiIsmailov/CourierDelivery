@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -203,10 +204,6 @@ class CourierWarehousesFragment :
                 return SNAP_TO_START
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onResume() {
