@@ -50,9 +50,6 @@ class CourierLoadingInteractorImpl(
     ): Flow<CourierLoadingProcessData> {
         scanRepo.scannerState(scannerState)
         return flowOf(CourierLoadingProcessData(data, boxCount))
-//            .onEach{
-//                scanRepo.holdStart()
-//            }
             .onEach {
                 CourierLoadingProcessData(
                     CourierLoadingScanBoxData.ScannerReady,
@@ -188,14 +185,18 @@ class CourierLoadingInteractorImpl(
     }
 
     override suspend fun confirmLoadingBoxes(): CourierCompleteData {
-        val one = localRepo.readAllLoadingBoxesSync()
-        val two = localRepo.getOrderId()
-        val res = remoteRepo.setReadyTask(two, one)
-        localRepo.setOrderAfterLoadStatus(res.coast)
-        return CourierCompleteData(res.coast, one.size)
-
+        val readAllLoadingBoxes = localRepo.readAllLoadingBoxesSync()
+        val orderId = localRepo.getOrderId()
+        val setReadyTask = remoteRepo.setReadyTask(orderId, readAllLoadingBoxes)
+        localRepo.setOrderAfterLoadStatus(setReadyTask.coast)
+        return CourierCompleteData(setReadyTask.coast, readAllLoadingBoxes.size)
     }
 
+    override suspend fun confirmLoadingBoxesEveryFiveMinutes() {
+        val readAllLoadingBoxes = localRepo.readAllLoadingBoxesSync()
+        val orderId = localRepo.getOrderId()
+        //TODO(здесь будет дергаться запрос на отправку данных на сервере каждые пять минут)
+    }
 
     override suspend fun getGate(): String? {
         return localRepo.getOrderGate()

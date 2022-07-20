@@ -41,7 +41,7 @@ class CourierLoadingScanFragment :
 
 
     private val bottomSheetDetails: BottomSheetBehavior<FrameLayout>
-    get() = BottomSheetBehavior.from(binding.detailsGoals)
+        get() = BottomSheetBehavior.from(binding.detailsGoals)
 
     override val viewModel by viewModel<CourierLoadingScanViewModel>()
 
@@ -80,7 +80,8 @@ class CourierLoadingScanFragment :
     }
 
     private fun initRecyclerViewDetails() {
-        binding.boxDetails.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.boxDetails.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.boxDetails.setHasFixedSize(true)
         initSmoothScrollerAddress()
     }
@@ -167,13 +168,13 @@ class CourierLoadingScanFragment :
                     binding.timerLayout.visibility = View.GONE
                 }
                 is CourierLoadingScanTimerState.Info -> {
-                    binding.gate.text = if (it.gate == "0"){
+                    binding.gate.text = if (it.gate == "0") {
                         binding.gateDigit.isGone = true
                         requireContext().getText(R.string.courier_loading_pandus)
-                    }else {
+                    } else {
                         binding.gateDigit.isVisible = true
                         binding.gateDigit.text = it.gate
-                         requireContext().getText(R.string.courier_loading_gate)
+                        requireContext().getText(R.string.courier_loading_gate)
                     }
                 }
             }
@@ -201,7 +202,8 @@ class CourierLoadingScanFragment :
                 is CourierLoadingScanNavAction.InitAndShowLoadingItems -> {
                     binding.pvzCountTitle.text = state.pvzCount
                     binding.boxCountTitle.text = state.boxCount
-                    binding.boxDetails.adapter = CourierLoadingDetailsAdapter(requireContext(), state.items)
+                    binding.boxDetails.adapter =
+                        CourierLoadingDetailsAdapter(requireContext(), state.items)
 
                     bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
                 }
@@ -238,15 +240,15 @@ class CourierLoadingScanFragment :
             binding.completeButton.isEnabled = it
         }
 
-        viewModel.dublicateBoxId.observe(viewLifecycleOwner){
-            if (it){
+        viewModel.dublicateBoxId.observe(viewLifecycleOwner) {
+            if (it) {
                 showDialogInfo(
-                     ErrorDialogData(
-                         "Warning",
-                         DialogInfoStyle.WARNING.ordinal,
-                         "Внимание",
-                         "коробка была уже отсканирована"
-                     )
+                    ErrorDialogData(
+                        "Warning",
+                        DialogInfoStyle.WARNING.ordinal,
+                        "Внимание",
+                        "коробка была уже отсканирована"
+                    )
                 )
 
             }
@@ -297,7 +299,7 @@ class CourierLoadingScanFragment :
 
                 }
                 is CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
-                    with(binding){
+                    with(binding) {
                         timerLayout.visibility = View.VISIBLE
                         boxInfoLayout.visibility = View.GONE
                         ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
@@ -307,9 +309,9 @@ class CourierLoadingScanFragment :
                 }
                 is CourierLoadingScanBoxState.NotRecognizedQr -> {
                     holdBackButtonOnScanBox()
-                    with(binding){
+                    with(binding) {
                         timerLayout.visibility = View.GONE
-                        boxInfoLayout.visibility =  VISIBLE
+                        boxInfoLayout.visibility = VISIBLE
                         ribbonStatus.setText(R.string.courier_loading_not_recognized_qr)
                         ribbonStatus.setBackgroundColor(getColor(R.color.yellow))
                     }

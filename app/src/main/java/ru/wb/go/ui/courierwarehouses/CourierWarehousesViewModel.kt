@@ -31,8 +31,7 @@ import ru.wb.go.utils.map.MapPoint
 class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
-    private val errorDialogManager: ErrorDialogManager,
-    private val courierWarehouseDao: CourierWarehouseDao
+    private val errorDialogManager: ErrorDialogManager
 ) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
