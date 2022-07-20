@@ -36,18 +36,6 @@ class CourierMapInteractorImpl(
                 }
             }
     }
-    /*
-     override fun subscribeMapState(): Observable<CourierMapState> {
-        return courierMapRepository
-            .observeMapState()
-            .doOnNext {
-                when (it) {
-                    CourierMapState.ShowManagerBar -> prolongHideTimerManager()
-                    is CourierMapState.UpdateMarkers -> hideManagerBar()
-                    else -> {}
-                }
-            }
-     */
 
 
     override fun markerClick(point: MapPoint) {
@@ -101,7 +89,7 @@ class CourierMapInteractorImpl(
 
     }
 
-    private fun hideManagerBar() {
+    private suspend fun hideManagerBar() {
         courierMapRepository.mapState(CourierMapState.HideManagerBar)
     }
 

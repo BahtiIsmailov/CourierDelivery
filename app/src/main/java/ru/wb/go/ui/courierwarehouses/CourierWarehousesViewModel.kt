@@ -127,13 +127,7 @@ class CourierWarehousesViewModel(
                 val response = interactor.getWarehouses()
                 val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
-                getWarehousesComplete(r) // сюда пришли данные размер массива
-                if (stringFromSms == "") {
-                    interactor.clearCacheMutableSharedFlow()
-                }else{
-                    sharedWorker.saveMediate(FRAGMENT_MANAGER,"")
-                    stringFromSms = ""
-                }
+                getWarehousesComplete(r)
             } catch (e: Exception) {
                 logException(e, "getWarehouses")
                 getWarehousesError(e)
@@ -177,7 +171,6 @@ class CourierWarehousesViewModel(
         convertAndSaveItemsPointsMarkers()
         updateMyLocation()
         courierWarehouseComplete()
-
     }
 
 
@@ -220,7 +213,7 @@ class CourierWarehousesViewModel(
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
             else CourierWarehouseItemState.InitItems(
-                warehouseItems.toMutableSet()
+                warehouseItems
             )
     }
 
@@ -245,7 +238,7 @@ class CourierWarehousesViewModel(
 
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList())) // here send for map state to update markers
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
 
     }
@@ -286,9 +279,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeSelectedWarehouseItemsByMap(indexItemClick: Int, isMapSelected: Boolean) {
-        warehouseItems.toMutableList()[indexItemClick].isSelected = isMapSelected
+        warehouseItems.elementAt(indexItemClick).isSelected = isMapSelected
         if (whSelectedId != null && whSelectedId != indexItemClick) {
-            warehouseItems.toMutableList()[whSelectedId!!].isSelected = false
+            warehouseItems.elementAt(whSelectedId!!).isSelected = false
         }
         whSelectedId = if (isMapSelected) indexItemClick else null
     }
@@ -299,7 +292,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun isMapSelected(indexItemClick: Int) =
-        mapMarkers.toMutableList()[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
+        mapMarkers.elementAt(indexItemClick).icon == resourceProvider.getWarehouseMapSelectedIcon()
 
     private fun updateMarkers() {
         interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
@@ -307,7 +300,7 @@ class CourierWarehousesViewModel(
     }
 
     fun onItemClick(index: Int) {
-        val isSelected = !warehouseItems.toMutableList()[index].isSelected
+        val isSelected = !warehouseItems.elementAt(index).isSelected
         changeMapMarkers(index, isSelected)
         changeWarehouseItems(index, isSelected)
         changeShowDetailsOrder(isSelected)
@@ -327,7 +320,7 @@ class CourierWarehousesViewModel(
         }
         updateMarkersWithMyLocation(myLocation!!)
         if (isSelected) {
-            with(mapMarkers.toMutableList()[clickItemIndex].point) {
+            with(mapMarkers.elementAt(clickItemIndex).point) {
                 val coordinatePoint = CoordinatePoint(lat, long)
                 interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
             }
@@ -383,6 +376,12 @@ class CourierWarehousesViewModel(
     private fun clearFabAndWhList() {
         whSelectedId = null
         changeShowDetailsOrder(false)
+        if (stringFromSms == "") {
+            interactor.clearCacheMutableSharedFlow()
+        }else{
+            sharedWorker.saveMediate(FRAGMENT_MANAGER,"")
+            stringFromSms = ""
+        }
     }
 
     override fun getScreenTag(): String {
