@@ -6,6 +6,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,6 +30,7 @@ class AppLoaderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val t =
         (activity as NavToolbarListener).hideToolbar()
         initObserver()
         initListener()
@@ -54,6 +56,7 @@ class AppLoaderFragment : Fragment() {
                         AppLoaderFragmentDirections.actionAuthLoaderFragmentToAuthNavigation()
                     )
                 }
+
                 AppLoaderNavigatioState.NavigateToCourier ->
                     findNavController().navigate(
                         AppLoaderFragmentDirections.actionAuthLoaderFragmentToCourierNavigation()

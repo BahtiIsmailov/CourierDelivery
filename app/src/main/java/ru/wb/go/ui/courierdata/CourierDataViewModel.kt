@@ -12,7 +12,6 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
@@ -111,7 +110,7 @@ class UserFormViewModel(
             }
             .catch {
                 logException(it,"onFormChanges")
-                LogUtils { logDebugApp(it.toString()) }
+
             }
             .launchIn(viewModelScope)
     }

@@ -21,6 +21,7 @@ import ru.wb.go.ui.couriermap.CourierMapMarker
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
+import ru.wb.go.utils.NavigateUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
@@ -123,7 +124,7 @@ class CourierWarehousesViewModel(
                 val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
                 getWarehousesComplete(r) // сюда пришли данные размер массива
-                interactor.clearCacheMutableSharedFlow()
+                workWithSharedFlow()
             } catch (e: Exception) {
                 logException(e,"getWarehouses")
                 getWarehousesError(e)
@@ -132,6 +133,18 @@ class CourierWarehousesViewModel(
             }
         }
     }
+
+    private fun workWithSharedFlow(){
+        NavigateUtils.getDataNavigateUtilsSharedFlow()
+            .onEach {
+                if (it != "fromSMS"){
+                    interactor.clearCacheMutableSharedFlow()
+                }
+            }
+            .launchIn(viewModelScope)
+        NavigateUtils.clearNavigateUtilsSharedFlow()
+    }
+
 
     private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): List<CourierWarehouseLocalEntity> {
         courierWarehouseResponse.data.forEach {

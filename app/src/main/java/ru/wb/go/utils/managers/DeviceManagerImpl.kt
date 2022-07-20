@@ -5,7 +5,6 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import ru.wb.go.app.AppPreffsKeys
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.prefs.SharedWorker
 import java.util.*
 
@@ -28,7 +27,7 @@ class DeviceManagerImpl(private val context: Context,
                 packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                 packageInfo.versionName = packageInfo.versionName
             } catch (e: PackageManager.NameNotFoundException) {
-                LogUtils { logError(this, "Can't get application version") }
+
             }
             return packageInfo?.versionName ?: ""
         }

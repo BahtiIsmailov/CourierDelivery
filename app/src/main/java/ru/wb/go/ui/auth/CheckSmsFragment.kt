@@ -26,6 +26,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.utils.NavigateUtils
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -76,7 +77,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             when (state) {
                 CheckSmsNavigationState.NavigateToAppLoader -> {
                     val navBuilder = NavOptions.Builder()
-
+                    NavigateUtils.setDataToNavigateUtilsSharedFlow("fromSMS")
                     //val Dist
                     val navOptions: NavOptions =
                         navBuilder.setPopUpTo(R.id.load_navigation, true).build()
@@ -185,6 +186,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             }
         }
     }
+
 
     private fun timeSpannable(state: CheckSmsUIRepeatState.RepeatPasswordTimer): Spannable {
         val title = state.text
